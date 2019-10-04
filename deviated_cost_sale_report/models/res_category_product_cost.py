@@ -5,6 +5,7 @@ from odoo import fields, models, api
 
 class PartnerProductCost(models.Model):
     _name = 'res.category.product.cost'
+    _description = 'Deviated product cost'
 
     product_id = fields.Many2one('product.product', string="Product")
     cost = fields.Float(string="Cost")

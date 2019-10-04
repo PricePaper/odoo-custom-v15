@@ -9,7 +9,7 @@ class ProductSkuReference(models.Model):
     competitor_desc = fields.Char(string='Competitor description')
     website_link = fields.Char(string='URL')
     qty_in_uom = fields.Float(string='Units in UOM')
-    competitor = fields.Selection([('rdepot', 'Restaurant Depot'), ('wdepot', 'Webstaurant Depot')], related='web_config.competitor', string='Competitor')
+    competitor = fields.Selection([('rdepot', 'Restaurant Depot'), ('wdepot', 'Webstaurant Depot')], related='web_config.competitor', string='Competitors')
     web_config = fields.Many2one('website.scraping.cofig', string='Competitor')
     scheduled_ids = fields.One2many('price.fetch.schedule', 'product_sku_ref_id', string='Scheduled Price Fetches')
     in_exception = fields.Boolean(string='Exception', default=False)

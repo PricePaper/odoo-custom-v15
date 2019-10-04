@@ -19,7 +19,7 @@ class SaleOrderLine(models.Model):
                         l.product_id = (%d) AND o.state IN ('purchase', 'done') ORDER BY o.release_date DESC limit 1;""" % (line.product_id.id)
                 self.env.cr.execute(query)
                 result = self.env.cr.fetchone()
-                if result and result[0] > str(datetime.now()):
+                if result and result[0] > datetime.now():
                     line.product_arrival_date = result[0]
 
 

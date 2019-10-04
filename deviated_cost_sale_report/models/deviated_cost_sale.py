@@ -5,6 +5,7 @@ from odoo.exceptions import ValidationError
 
 class ReportDeviatedCost(models.AbstractModel):
     _name = 'report.deviated_cost_sale_report.deviated_cost_report'
+    _description = 'Deviated cost sale report'
 
     def get_sale_order_lines(self,data):
         res = []

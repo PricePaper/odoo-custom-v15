@@ -8,7 +8,7 @@ class ResCompany(models.Model):
 
     burden_percent = fields.Float(string='Burden %')
     partner_delivery_method_id = fields.Many2one('delivery.carrier', string='Delivery Method')
-    partner_country_id = fields.Many2one('res.country', string='Country')
+    partner_country_id = fields.Many2one('res.country', string=' Partner\'s Country')
     partner_state_id = fields.Many2one('res.country.state', string='State')
 
 

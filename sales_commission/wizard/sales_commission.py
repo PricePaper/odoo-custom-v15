@@ -125,7 +125,7 @@ class GenerateCommission(models.TransientModel):
         year = self.month.split('-')[1]
         month_last_date = calendar.monthrange(int(year), int(month))[1]
         from_date = "%s-%s-01 00:00:00" %(year, month)
-        to_date = "%s-%s-%s 00:00:00" %(year, month, month_last_date)
+        to_date = "%s-%s-%s 23:59:59" %(year, month, month_last_date)
 
         salespersons = []
 

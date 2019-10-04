@@ -248,7 +248,7 @@ class ProductProduct(models.Model):
                         if product_uom_qty[2] == self.uom_id.id:
                             qty += product_uom_qty[1]
                         else:
-                            sale_uom_factor = self.env['product.uom'].browse(product_uom_qty[2]).factor
+                            sale_uom_factor = self.env['uom.uom'].browse(product_uom_qty[2]).factor
                             qty += ((product_uom_qty[1] * self.uom_id.factor) / sale_uom_factor)
                     res.append((val,qty))
             start_date = start_date + relativedelta(days=1)

@@ -3,6 +3,7 @@ from datetime import datetime
 
 class PriceFetchSchedule(models.Model):
     _name = "price.fetch.schedule"
+    _description = "Scheduler for price fetching"
 
     product_sku_ref_id = fields.Many2one('product.sku.reference', string='Reference', readonly=True, required=True, ondelete='cascade')
     name = fields.Many2one(related='product_sku_ref_id.product_id', string='Product', readonly=True)

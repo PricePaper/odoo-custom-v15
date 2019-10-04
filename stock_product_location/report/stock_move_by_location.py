@@ -42,12 +42,12 @@ class StockMoveLocation(models.Model):
     product_id = fields.Many2one('product.product', string='Product',  readonly=True)
     categ_id = fields.Many2one(related='product_id.categ_id', relation="product.category", string='Category', readonly=True)
     name = fields.Float(string='Quantity', digits=(16, 2), readonly=True)
-    uom_id = fields.Many2one(related='product_id.uom_id', relation="product.uom", string="UoM", readonly=True)
+    uom_id = fields.Many2one(related='product_id.uom_id', relation="uom.uom", string="UoM", readonly=True)
     product_qty_pending = fields.Float(string='Quantity Pending', digits=(16, 2), readonly=True)
     date = fields.Datetime(string='Date Planned',  readonly=True)
     picking_id = fields.Many2one('stock.picking', string='Packing',  readonly=True)
     company_id = fields.Many2one('res.company', string='Company', readonly=True)
-    
+
     def init(self):
         self.env.cr.execute("""create or replace view stock_move_by_location
 as
@@ -70,7 +70,7 @@ l.id as location_id ,product_id,
  o.name as description,
  case when state ='done' then -product_qty else 0 end as name,
  case when state !='done' then -product_qty else 0 end as product_qty_pending,
- date, 
+ date,
  picking_id,l.company_id
 from stock_location l,
      stock_move o

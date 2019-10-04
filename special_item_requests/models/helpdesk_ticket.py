@@ -134,6 +134,7 @@ HelpDeskTicket()
 
 class ItemsAvailable(models.Model):
     _name = 'items.available'
+    _description = 'Items Available'
 
     ticket_id = fields.Many2one('helpdesk.ticket', string='Ticket')
     product_id = fields.Many2one('product.product', string='Product')
@@ -155,5 +156,3 @@ class HelpDeskTeam(models.Model):
     is_special_order_team = fields.Boolean(string='Special Order Processing Team')
 
 HelpDeskTeam()
-
-

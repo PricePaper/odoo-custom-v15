@@ -41,7 +41,7 @@ class CostChange(models.Model):
                 else:
                     if line.product_uom.id not in partner_lines[line.order_id.partner_id.id]:
                         partner_lines[line.order_id.partner_id.id][line.product_uom.id] = line.price_unit
-            print('\n\n\n\n', partner_lines)
+
 
 
 

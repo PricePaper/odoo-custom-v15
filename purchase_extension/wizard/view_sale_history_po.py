@@ -16,7 +16,7 @@ class ViewSalesHistoryPo(models.TransientModel):
     partner_id = fields.Many2one('res.partner', string="Customer")
     product_id = fields.Many2one('product.product', string="Product")
     quantity = fields.Float(string="Product Quantity")
-    uom = fields.Many2one('product.uom', string="UOM")
+    uom = fields.Many2one('uom.uom', string="UOM")
     sale_line_id = fields.Many2one('sale.order.line', string="Sale Line")
 
 

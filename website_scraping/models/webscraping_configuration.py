@@ -2,6 +2,7 @@ from odoo import models, fields, api,_
 
 class WebsiteScrapingConfig(models.Model):
     _name = "website.scraping.cofig"
+    _description = "Website Scrapping Config"
 
     name = fields.Char(string='Name')
     home_page_url = fields.Char('Home page URL')

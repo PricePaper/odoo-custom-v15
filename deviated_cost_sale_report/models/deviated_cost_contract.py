@@ -5,6 +5,7 @@ from odoo import fields, models, api
 
 class DeviatedCostContract(models.Model):
     _name = 'deviated.cost.contract'
+    _description = 'Deviated Cost Contract'
 
     name = fields.Char(string="Contract Name")
     expiration_date = fields.Datetime(string="Expiration Date")

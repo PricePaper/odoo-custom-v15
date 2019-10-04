@@ -2,7 +2,8 @@ from odoo import models, fields, api,_
 
 class CompetitorItems(models.Model):
     _name = "competitor.website.price"
-    
+    _description = "Price from competitor's website"
+
 
     product_sku_ref_id = fields.Many2one('product.sku.reference', string='Reference')
     item_name = fields.Char(string='Competitor Item Name')

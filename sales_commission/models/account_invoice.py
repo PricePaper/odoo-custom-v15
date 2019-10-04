@@ -25,8 +25,41 @@ class AccountInvoice(models.Model):
             rec = invoice.calculate_commission()
             if rec and invoice.state == 'paid':
                 rec.write({'is_paid': True})
+                invoice.check_commission(rec)
                 invoice.check_due_date(rec)
         return res
+
+
+    def check_commission(self, lines):
+        for line in lines:
+            profit = self.gross_profit
+            amount = self.amount_total
+            commission = line.commission
+
+            if self.payment_term_id.due_days:
+                days=self.payment_term_id.due_days
+                if datetime.date.today() > self.date_invoice+relativedelta(days=days):
+                    profit += self.amount_total*(self.payment_term_id.discount_per/100)
+            if self.payment_ids[0].payment_method_id.code == 'electronic' and self.partner_id.payment_method == 'cash':
+                profit -= self.amount_total*0.03
+            if self.payment_ids[0].payment_method_id.code == 'manual' and self.partner_id.payment_method == 'credit_card':
+                profit += self.amount_total*0.03
+
+            rule_id = self.partner_id.commission_percentage_ids.filtered(lambda r : r.sale_person_id == line.sale_person_id)
+            if not rule_id:
+                if rule_id.based_on in ['profit', 'profit_delivery']:
+                    commission = profit  * (rule_id.percentage/100)
+                elif rule_id.based_on =='invoice':
+                    amount = self.amount_total
+                    # if self.partner_id.payment_method == 'credit_card':
+                    #     amount -= self.amount_total*0.03
+                    # if self.payment_term_id.discount_per > 0:
+                    #     amount -= self.amount_total*(self.payment_term_id.discount_per/100)
+                    commission = amount * (rec.rule_id.percentage/100)
+            line.write({'commission': commission})
+
+
+
 
     @api.multi
     def action_cancel(self):
@@ -68,18 +101,20 @@ class AccountInvoice(models.Model):
             return False
         commission_rec = self.env['sale.commission'].search([('invoice_id', '=', self.id)])
         if not commission_rec and self.type in ['out_invoice','out_refund']:
-            # if self.payment_term_id.due_days:
-            #     days=self.payment_term_id.due_days
-            #     if datetime.date.today() > self.date_invoice+relativedelta(days=days):
-            #         profit = self.gross_profit +
+            profit = self.gross_profit
             for rec in self.partner_id.commission_percentage_ids:
                 if not rec.rule_id:
                     raise UserError(_('Commission rule is not configured for %s.' %(rec.sale_person_id.name)))
                 commission = 0
                 if rec.rule_id.based_on in ['profit', 'profit_delivery']:
-                    commission = self.gross_profit  * (rec.rule_id.percentage/100)
+                    commission = profit  * (rec.rule_id.percentage/100)
                 elif rec.rule_id.based_on =='invoice':
-                    commission = self.amount_total * (rec.rule_id.percentage/100)
+                    amount = self.amount_total
+                    # if self.partner_id.payment_method == 'credit_card':
+                    #     amount -= self.amount_total*0.03
+                    # if self.payment_term_id.discount_per > 0:
+                    #     amount -= self.amount_total*(self.payment_term_id.discount_per/100)
+                    commission = amount * (rec.rule_id.percentage/100)
                 if self.type == 'out_refund':
                     commission = -commission
 

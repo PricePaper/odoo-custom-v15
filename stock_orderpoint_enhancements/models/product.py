@@ -154,7 +154,7 @@ class ProductProduct(models.Model):
             try:
                 forecast = self.env['odoo_fbprophet.prophet.bridge'].run_prophet(result, from_date, date_to, periods=periods, freq=freq, config=config)
             except:
-                server_log.error("No data available for the product %s to forecast sales" % (self.name))
+                server_log.error("Exception in run_prophet for product %s" % (self.name))
         else:
             server_log.error("No data available for the product %s to forecast sales" % (self.name))
         return forecast

@@ -1,5 +1,5 @@
 from odoo import fields, models, api, _
-import datetime
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import statistics
 
@@ -21,7 +21,7 @@ class ProductProduct(models.Model):
 
 
 #    @api.multi
-#    @api.onchange('uom_id','standard_price','burden_percent','lst_price','customer_price_ids','competitor_price_ids','future_price_ids')
+#                        @api.onchange('uom_id','standard_price','burden_percent','lst_price','customer_price_ids','competitor_price_ids','future_price_ids')
 #    def onchange_change_flag(self):
 #        action = self.env.ref('price_maintanance.action_price_maintanace')
 #        action = action and action.id
@@ -86,7 +86,7 @@ class ProductProduct(models.Model):
 
     @api.multi
     def _calculate_median_price(self):
-        today = datetime.datetime.now()
+        today = datetime.now()
         date_10_days_back_start_date = today - relativedelta(days=10)
         date_30_days_back_start_date = today-relativedelta(days=30)
         date_60_days_back_start_date = today-relativedelta(days=60)
@@ -140,5 +140,24 @@ class ProductProduct(models.Model):
                                                     'note': audit_notes,
                                                     'user_id': self.env.user.id
                                                    })
+
+    @api.model
+    def _cron_update_product_lst_price(self):
+        OrderLine = self.env['sale.order.line']
+        date_from = datetime.today() - relativedelta(months=9, day=1)
+
+        domain = [('display_type', '=', False), ('order_id.date_order', '>=', date_from.strftime('%Y-%m-%d'))]
+        line_data = OrderLine.read_group(domain, ['product_id'], ['product_id'])
+
+        for data in line_data:
+            lines = OrderLine.search(data['__domain'], order="id desc")
+            partners = lines.mapped('order_id.partner_id')
+            partner_count = len(partners)
+            if partner_count >= 4:
+                price = sum([lines.filtered(lambda l: l.order_id.partner_id == partner)[:1].price_unit for partner in partners])
+                if price:
+                    product = self.browse(data['product_id'][0])
+                    product.lst_price = (price / partner_count)
+        return True
 
 ProductProduct()

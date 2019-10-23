@@ -5,7 +5,7 @@
 
 
 <!--overriden(replaced) the whole delivery module inherrit for sales order form  this is done to ensure the get/set delivery views are available in confirmed state order-->
-        <record id="view_order_form_with_carrier" model="ir.ui.view">
+        <record id="delivery.view_order_form_with_carrier" model="ir.ui.view">
             <field name="name">delivery.sale.order.form.view.with_carrier</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>

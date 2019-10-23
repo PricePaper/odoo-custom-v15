@@ -134,9 +134,18 @@ class PurchaseOrder(models.Model):
                                'product_pseudo_id': k,
                               })
             result_list.append(month_data)
-
-
         return result_list
+
+
+    @api.multi
+    def button_confirm(self):
+        """
+        cancel all other RFQ under the same purchase agreement 
+        """
+        for purchase_order in self:
+            orders = self.search([('requisition_id', '=', purchase_order.requisition_id.id),('id','not in', purchase_order.ids)])
+            orders.button_cancel()
+        return super(PurchaseOrder, self).button_confirm()
 
 
 

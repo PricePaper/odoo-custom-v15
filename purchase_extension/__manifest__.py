@@ -24,9 +24,10 @@ Custom module implemented for Purchase extension.
             'views/res_partner.xml',
             'views/sale_order.xml',
             'views/product_view.xml',
+            'views/purchase_requisition_views.xml',
             ],
 
-    'depends': ['purchase', 'price_paper'],
+    'depends': ['purchase_requisition', 'price_paper'],
     'installable': True,
     'auto_install': False,
     'application': False,

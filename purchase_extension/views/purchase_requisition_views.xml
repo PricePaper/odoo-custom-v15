@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+       <record id="view_purchase_requisition_form_inherit_purchase_requisition_extension" model="ir.ui.view">
+           <field name="name">purchase.requisition.form.view.inherit</field>
+           <field name="model">purchase.requisition</field>
+           <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
+           <field name="arch" type="xml">
+               <xpath expr="//field[@name='vendor_id']" position='attributes'>
+                  <attribute name="invisible">1</attribute>
+                </xpath>
+               <xpath expr="//field[@name='vendor_id']" position='after'>
+                  <field name="supplier_ids" widget="many2many_tags" domain="[('supplier','=',True)]"/>
+                </xpath>
+           </field>
+       </record>
+    </data>
+</odoo>

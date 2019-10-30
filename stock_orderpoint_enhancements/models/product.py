@@ -279,7 +279,7 @@ class ProductProduct(models.Model):
         prophet_start_date = self.env['ir.config_parameter'].sudo().get_param('prophet_start_date')
         to_date = prophet_start_date and datetime.datetime.strptime(prophet_start_date, '%Y-%m-%d').date() or datetime.date.today()
 
-        vendor = self.seller_ids.filtered(lambda r : r.is_primary_vendor == True)
+        vendor = self.seller_ids.filtered('is_primary_vendor')[0]
         if not vendor:
             vendor = self.seller_ids and self.seller_ids[0]
 

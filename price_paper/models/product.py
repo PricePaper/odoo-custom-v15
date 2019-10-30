@@ -230,3 +230,11 @@ class ProductUom(models.Model):
 
 
 ProductUom()
+
+
+class  SupplierInfo(models.Model):
+    _inherit = 'product.supplierinfo'
+
+    is_primary_vendor = fields.Boolean(string='Primary Vendor', default=False)
+
+SupplierInfo()

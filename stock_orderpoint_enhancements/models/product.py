@@ -279,17 +279,20 @@ class ProductProduct(models.Model):
         prophet_start_date = self.env['ir.config_parameter'].sudo().get_param('prophet_start_date')
         to_date = prophet_start_date and datetime.datetime.strptime(prophet_start_date, '%Y-%m-%d').date() or datetime.date.today()
 
-        vendor = self.seller_ids
+        vendor = self.seller_ids.filtered(lambda r : r.is_primary_vendor == True)
+        if not vendor:
+            vendor = self.seller_ids and self.seller_ids[0]
+
         if not vendor:
             server_log.error('Supplier is not set for product %s' % self.name)
         else:
-            delivery_lead_time = vendor and self.seller_ids[0].delay or 0
+            delivery_lead_time = vendor.delay or 0
             if not delivery_lead_time:
-                delivery_lead_time = vendor and self.seller_ids[0].name.delay or 0
+                delivery_lead_time = vendor.name.delay or 0
                 if not delivery_lead_time:
                     server_log.error('Delivery lead time is not available for product %s' % self.name)
 
-            max_delivery_lead_time = delivery_lead_time + (vendor and self.seller_ids[0].name.order_freq or 0)
+            max_delivery_lead_time = delivery_lead_time + (vendor.name.order_freq or 0)
 
             to_date_plus_delay = to_date + relativedelta(days=delivery_lead_time)
             max_to_date_plus_delay = to_date + relativedelta(days=max_delivery_lead_time)

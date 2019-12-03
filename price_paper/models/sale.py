@@ -549,10 +549,10 @@ class SaleOrderLine(models.Model):
 
 
         res = super(SaleOrderLine, self).product_id_change()
-#        lst_price = 0
-#        working_cost = 0
-#        if not self.product_id:
-#            res.update({'value' : {'lst_price': lst_price, 'working_cost': working_cost}})
+        lst_price = 0
+        working_cost = 0
+        if not self.product_id:
+           res.update({'value' : {'lst_price': lst_price, 'working_cost': working_cost}})
         if self.product_id:
             warn_msg = not self.product_id.purchase_ok and "This item can no longer be purchased from vendors"  or ""
             partner_history = self.env['sale.order.line'].search([('order_id.partner_shipping_id', '=', self.order_id and self.order_id.partner_shipping_id.id), ('product_id', '=', self.product_id and self.product_id.id), ('is_last', '=', True)], limit=1)
@@ -560,23 +560,23 @@ class SaleOrderLine(models.Model):
                 self.tax_id = [(5, _, _)] # clear all tax values, no Taxes to be used
 
             #force domain the tax_id field with only available taxes based on applied fpos
-            if not res.get('domain', False):
-                res.update({'domain':{}})
-            pro_tax_ids = self.product_id.taxes_id
-            if self.order_id.fiscal_position_id:
-                taxes_ids = self.order_id.fiscal_position_id.map_tax(pro_tax_ids, self.product_id, self.order_id.partner_id).ids
-                res.get('domain', {}).update({'tax_id':[('id', 'in', taxes_ids)]})
+            # if not res.get('domain', False):
+            #     res.update({'domain':{}})
+            # pro_tax_ids = self.product_id.taxes_id
+            # if self.order_id.fiscal_position_id:
+            #     taxes_ids = self.order_id.fiscal_position_id.map_tax(pro_tax_ids, self.product_id, self.order_id.partner_id).ids
+            #     res.get('domain', {}).update({'tax_id':[('id', 'in', taxes_ids)]})
 
             msg, product_price, price_from = self.calculate_customer_price()
             if msg:
                 res.update({'warning': {'title': _('Warning!'),'message' : warn_msg and '%s\n%s' %(warn_msg,msg) or msg}})
-            #standard price on sale order line
-#            if self.product_id.lst_price:
-#                lst_price = self.product_id.lst_price
-#            if self.product_id.cost:
-#                working_cost = self.product_id.cost
+            # standard price on sale order line
+            if self.product_id.lst_price:
+                lst_price = self.product_id.lst_price
+            if self.product_id.cost:
+                working_cost = self.product_id.cost
 
-            res.update({'value' : {'price_unit' : product_price, 'price_from': price_from}}) # 'lst_price': lst_price, 'working_cost': working_cost}})
+            res.update({'value' : {'price_unit' : product_price, 'price_from': price_from, 'lst_price': lst_price, 'working_cost': working_cost}})
             # for uom only show those applicable uoms
             domain = res.get('domain', {})
             product_uom_domain = domain.get('product_uom', [])

@@ -52,9 +52,9 @@
                                     <form string="Detailed Info">
                                         <group>
                                             <group>
-                                                <field name="product_id"/>
+                                                <field name="product_id" required="1"/>
                                                 <field name="sale_uoms" invisible='1'/>
-                                                <field name="product_uom"/>
+                                                <field name="product_uom" required="1"/>
                                                 <field name="price" required="1"/>
                                                 <field name="std_price" readonly="1"/>
                                                 <field name="deviation"/>

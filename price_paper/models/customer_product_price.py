@@ -45,4 +45,12 @@ class CustomerProductPrice(models.Model):
             result.append((record.id,name))
         return result
 
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        if self.product_id:
+            self.product_uom = self.product_id.uom_id and self.product_id.uom_id
+        else:
+            self.product_uom = False
+
+
 CustomerProductPrice()

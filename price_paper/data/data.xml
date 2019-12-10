@@ -14,6 +14,15 @@
             <field eval="False" name="doall"/>
         </record>
 
+        <record id="price_change_lock_update_cron" model="ir.cron">
+            <field name="name">Pricelist : Price Change Lock Updation</field>
+            <field name="model_id" ref="product.model_product_pricelist" />
+            <field name="state">code</field>
+            <field name="code">model._cron_update_price_change_lock()</field>
+            <field name="interval_type">months</field>
+            <field name="interval_number">1</field>
+            <field name="numbercall">-1</field>
+        </record>
 
         <record id="sales_team_item_price_low" model="helpdesk.team">
             <field name="name">Sales Team</field>

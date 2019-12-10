@@ -49,8 +49,10 @@ class CustomerProductPrice(models.Model):
     def onchange_product_id(self):
         if self.product_id:
             self.product_uom = self.product_id.uom_id and self.product_id.uom_id
+            self.price = self.product_id.lst_price
         else:
             self.product_uom = False
+            self.price = 0.0
 
 
 CustomerProductPrice()

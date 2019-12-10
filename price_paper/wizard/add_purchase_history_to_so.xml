@@ -20,7 +20,7 @@
                                     <field name="search_box" />
                                 </group>
                             </group>
-                            <field name="purchase_history_ids" mode="tree" >
+                            <field name="purchase_history_ids" mode="tree">
                                 <tree create="0" delete="0" editable="top">
                                     <field name="qty_to_be" style="color:blue"/>
                                     <field name="product_name" readonly='1' tabindex="0"/>
@@ -37,6 +37,7 @@
                         <button string="Add Line" type="object" name="add_history_lines"/>
                         or
                         <button string="Cancel" class="oe_link" special="cancel"/>
+                        <a string="" class="pull-right" onclick="$('main.modal-body').scrollTop(0);"><span aria-label="scroll-top" title='scrolltop' class="fa fa-arrow-circle-o-up fa-2x"></span></a>
                     </footer>
                 </form>
             </field>

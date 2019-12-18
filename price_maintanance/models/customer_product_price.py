@@ -21,7 +21,7 @@ class CustomerProductPrice(models.Model):
     def get_deviation(self):
         for line in self:
             if line.std_price != 0.0:
-                line.deviation = (line.price - line.std_price) / line.std_price
+                line.deviation = (line.price - line.std_price) * 100 / line.std_price
 
     @api.multi
     def _get_competietor_prices(self):

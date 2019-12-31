@@ -160,9 +160,11 @@ class SaleOrder(models.Model):
         """
         res = super(SaleOrder, self).create(vals)
         res.check_payment_term()
-        if not res.credit_warning and not res.is_quotation:
+        if res.is_quotation or not vals.get('order_line', False):
+            return res
+        if not res.credit_warning:
             res.action_confirm()
-        elif res.credit_warning and not res.is_quotation:
+        elif res.credit_warning:
             res.write({'is_creditexceed':True, 'ready_to_release': False})
             res.message_post(body=res.credit_warning)
             msg=''
@@ -351,14 +353,16 @@ class SaleOrderLine(models.Model):
     working_cost = fields.Float(string='Working Cost', digits=dp.get_precision('Product Price'), store=True, compute='_compute_lst_cost_prices')
 
 
-
-    @api.depends('product_id')
+    @api.depends('product_id', 'product_uom')
     def _compute_lst_cost_prices(self):
         for line in self:
-            if line.product_id.lst_price:
+            if line.product_uom:
+                line.lst_price = line.product_id.uom_id._compute_price(line.product_id.lst_price, line.product_uom)
+            elif line.product_id.lst_price:
                 line.lst_price = line.product_id.lst_price
             if line.product_id.cost:
                 line.working_cost = line.product_id.cost
+
 
     @api.multi
     def unlink(self):
@@ -388,13 +392,10 @@ class SaleOrderLine(models.Model):
         return result
 
 
-
-
     def update_price_list(self):
         """
         Update pricelist
         """
-
         if not self.is_delivery and not self.is_downpayment:
             unit_price = self.price_unit
             if self.product_id.uom_id == self.product_uom and self.product_uom_qty % 1 != 0.0:
@@ -460,7 +461,6 @@ class SaleOrderLine(models.Model):
                     self.price_from = price_from.id
 
 
-
     @api.multi
     def write(self, vals):
 
@@ -506,6 +506,7 @@ class SaleOrderLine(models.Model):
                     line.last_sale = 'Order Date  - %s\nPrice Unit    - %s\nSale Order  - %s' %(last_date, last.price_unit, last.order_id.name)
                 else:
                      line.last_sale = 'No Previous information Found'
+
 
     @api.depends('product_id', 'product_uom_qty', 'price_unit')
     def calculate_profit_margin(self):
@@ -570,13 +571,7 @@ class SaleOrderLine(models.Model):
             msg, product_price, price_from = self.calculate_customer_price()
             if msg:
                 res.update({'warning': {'title': _('Warning!'),'message' : warn_msg and '%s\n%s' %(warn_msg,msg) or msg}})
-            # standard price on sale order line
-            if self.product_id.lst_price:
-                lst_price = self.product_id.lst_price
-            if self.product_id.cost:
-                working_cost = self.product_id.cost
-
-            res.update({'value' : {'price_unit' : product_price, 'price_from': price_from, 'lst_price': lst_price, 'working_cost': working_cost}})
+            res.update({'value' : {'price_unit' : product_price, 'price_from': price_from}})
             # for uom only show those applicable uoms
             domain = res.get('domain', {})
             product_uom_domain = domain.get('product_uom', [])

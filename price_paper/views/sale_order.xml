@@ -71,13 +71,13 @@
                 <button name="action_cancel" position="after">
                     <button name="action_ready_to_release"  type="object" string="Release" groups="price_paper.group_allow_more_than_credit_limit" attrs="{'invisible': ['|', ('is_creditexceed', '=', False), ('ready_to_release', '=', True)]}"/>
                 </button>
-                <xpath expr="//div[hasclass('oe_title')]" position="after">
+                <!-- <xpath expr="//div[hasclass('oe_title')]" position="after">
                     <group>
                         <group>
                             <field name="is_quotation" attrs="{'invisible':['|', ('state', '!=', 'draft'), ('is_creditexceed', '=', True)]}"/>
                         </group>
                     </group>
-                </xpath>
+                </xpath> -->
                 <xpath expr="//field[@name='validity_date']" position="after">
                     <field name="release_date"/>
                     <field name="deliver_by"/>
@@ -89,9 +89,6 @@
                 </xpath>
                 <xpath expr="//tree[1]" position="attributes">
                     <attribute name="editable" />
-                    <!-- <attribute name="decoration-danger">color=='R'</attribute>
-                    <attribute name="decoration-info">color=='B'</attribute>
-                    <attribute name="decoration-success">color=='G'</attribute> -->
                     <attribute name="decoration-danger">profit_margin&lt;0</attribute>
                     <attribute name="decoration-info">profit_margin==0</attribute>
                     <attribute name="decoration-success">profit_margin&gt;0</attribute>
@@ -103,7 +100,6 @@
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
                     <field name="profit_margin"/>
                     <field name="price_from" invisible="1"/>
-                    <!-- <field name="color" invisible="1"/> -->
                 </xpath>
                 <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']" position="before">
                     <field name="lst_price" readonly="1" attrs="{'invisible': [('display_type', '!=', False)]}"/>
@@ -138,10 +134,9 @@
                     <field name="gross_profit" widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"/>
                 </xpath>
 
-             <xpath expr="//field[@name='order_line']" position="before">
-                <button  type="object" name="add_purchase_history_to_so_line"
-string="Browse History Lines"/>
-            </xpath>
+                <xpath expr="//field[@name='order_line']" position="before">
+                    <button  type="object" name="add_purchase_history_to_so_line" string="Browse History Lines"/>
+                </xpath>
 
                 <xpath expr="//field[@name='order_line']/form" position="inside">
                     <script>

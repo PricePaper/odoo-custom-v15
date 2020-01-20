@@ -25,6 +25,7 @@ Custom module implemented for Price Paper.
              'views/res_company.xml',
              'views/stock_move.xml',
              'views/product_notes.xml',
+             'views/assets.xml',
              'views/sale_order.xml',
              'views/res_partner.xml',
              'views/product.xml',

@@ -20,6 +20,13 @@ class SaleOrder(models.Model):
     gross_profit = fields.Monetary(compute='calculate_gross_profit', string='Predicted Profit')
     is_quotation = fields.Boolean(string="Create as Quotation", default=False, copy=False)
     profit_final = fields.Monetary(string='Profit')
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('sent', 'Quotation Sent'),
+        ('sale', 'Sales Order'),
+        ('done', 'Locked'),
+        ('cancel', 'Cancelled'),
+        ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', track_sequence=3, default='draft')
 
 
     @api.model
@@ -151,37 +158,6 @@ class SaleOrder(models.Model):
         return res
 
 
-    @api.model
-    def create(self, vals):
-        """
-        override to Confirm the sale order on creation
-        unless field is_quotation set as true.
-
-        """
-        res = super(SaleOrder, self).create(vals)
-        res.check_payment_term()
-        if res.is_quotation or not vals.get('order_line', False):
-            return res
-        if not res.credit_warning:
-            res.action_confirm()
-        elif res.credit_warning:
-            res.write({'is_creditexceed':True, 'ready_to_release': False})
-            res.message_post(body=res.credit_warning)
-            msg=''
-            for order_line in res.order_line:
-                if order_line.profit_margin < 0.0 and not ('rebate_contract_id' in order_line and order_line.rebate_contract_id):
-                    msg = msg+'[%s]%s ' % (order_line.product_id.default_code,order_line.product_id.name) + "Unit Price is less than  Product Cost Price\n"
-            if msg:
-                team = self.env['helpdesk.team'].search([('is_sales_team', '=', True)], limit=1)
-                if team:
-                    vals = {'name': 'Sale order with Product below working cost',
-                            'team_id': team and team.id,
-                            'description': 'Order : ' + res.name + '\n' + msg,
-                            }
-                    ticket = self.env['helpdesk.ticket'].create(vals)
-        return res
-
-
     @api.depends('order_line.profit_margin')
     def calculate_gross_profit(self):
         """
@@ -255,6 +231,18 @@ class SaleOrder(models.Model):
                 new_cr = self.pool.cursor()
                 so = order.with_env(order.env(cr=new_cr))
                 if msg:
+                    message=''
+                    for order_line in so.order_line:
+                        if order_line.profit_margin < 0.0 and not ('rebate_contract_id' in order_line and order_line.rebate_contract_id):
+                            message = message+'[%s]%s ' % (order_line.product_id.default_code,order_line.product_id.name) + "Unit Price is less than  Product Cost Price\n"
+                    if message:
+                        team = so.env['helpdesk.team'].search([('is_sales_team', '=', True)], limit=1)
+                        if team:
+                            vals = {'name': 'Sale order with Product below working cost',
+                                    'team_id': team and team.id,
+                                    'description': 'Order : ' + so.name + '\n' + message,
+                                    }
+                            ticket = so.env['helpdesk.ticket'].create(vals)
                     so.write({'is_creditexceed':True, 'ready_to_release': False})
                     so.message_post(body=msg)
                 else:
@@ -290,11 +278,6 @@ class SaleOrder(models.Model):
                 raise ValidationError(_('Payment term is not set for this order please set to proceed.'))
 
 
-
-
-
-
-
     @api.multi
     def action_confirm(self):
         """
@@ -305,7 +288,6 @@ class SaleOrder(models.Model):
         if not self.ready_to_release:
             self.check_credit_limit()
         res = super(SaleOrder, self).action_confirm()
-
         for order in self:
             for order_line in order.order_line:
                 order_line.update_price_list()

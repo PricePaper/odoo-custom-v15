@@ -11,7 +11,7 @@
                                     <tr style="border-bottom:hidden;height:30%;">
                                         <td>
                                             <t t-if="line.picking_id.partner_id.name">
-                                                <strong t-field="line.picking_id.partner_id.name" style="float:left;width:70%;font-size:20px;"/>
+                                                <strong t-field="line.picking_id.partner_id.name" style="float:left;width:70%;font-size:16px;"/>
                                                 <strong t-field="line.picking_id.scheduled_date" style="float:right;width:30%;font-size:20px;"/>
                                             </t>
                                         </td>

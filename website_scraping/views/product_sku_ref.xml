@@ -101,5 +101,15 @@ records.schedule_price_update()
         </field>
     </record>
 
+    <record model="ir.actions.server" id="action_product_sku_reference_mark_exception_fixed">
+        <field name="name">Mark Exception as Fixed</field>
+        <field name="model_id" ref="website_scraping.model_product_sku_reference"/>
+        <field name="binding_model_id" ref="website_scraping.model_product_sku_reference"/>
+        <field name="state">code</field>
+        <field name="code">
+records.mark_exception_fixed()
+        </field>
+    </record>
+
     </data>
 </odoo>

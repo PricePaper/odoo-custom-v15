@@ -24,4 +24,9 @@ class SaleOrder(models.Model):
         invoice = self.invoice_ids
         return invoice.invoice_print()
 
+    @api.multi
+    def action_print_picking_operation(self):
+        picking = self.picking_ids
+        return picking.print_picking_operation()
+
 SaleOrder()

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 from datetime import date
 from odoo.exceptions import ValidationError
 
@@ -86,7 +86,21 @@ class CostChange(models.Model):
             if rec.item_filter in ['vendor']:
                 rec.price_filter = 'percentage'
 
-
+    @api.onchange('burden_change', 'price_change')
+    def onchange_price_increase(self):
+        for rec in self:
+            warning = False
+            if not rec.update_customer_pricelist or not rec.update_standard_price:
+                if rec.price_filter == 'fixed':
+                    if rec.old_cost < rec.price_change:
+                        warning = True
+                    if rec.product_id and rec.product_id.burden_percent < rec.burden_change:
+                        warning = True
+                else:
+                    if rec.price_change > 0 or rec.burden_change > 0:
+                        warning=True
+            if warning:
+                return {'warning': {'title': _('Not selected'),'message' : "Price or burden is increasing and Update Customer Pricelist and/or Update Standard Price is not checked."}}
 
 
     @api.onchange('product_id')

@@ -179,8 +179,13 @@ class SaleOrder(models.Model):
 
 
 
-    @api.constrains('release_date')
+    @api.constrains('release_date', 'deliver_by')
     def get_release_date_warning(self):
+
+        if not self.release_date:
+            self.release_date = date.today()+timedelta(days=1)
+        if not self.deliver_by:
+            self.deliver_by = date.today()+timedelta(days=1)
 
         if self.release_date and self.release_date > date.today()+timedelta(days=+6):
             raise ValidationError(_('Earliest Delivery Date is greater than 1 week'))

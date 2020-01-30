@@ -285,6 +285,8 @@ class SaleOrder(models.Model):
         and also update the customer pricelist if needed
         """
 
+        if not self.carrier_id:
+            raise ValidationError(_('Delivery method should be set before confirming an order'))
         if not self.ready_to_release:
             self.check_credit_limit()
         res = super(SaleOrder, self).action_confirm()

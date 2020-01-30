@@ -20,6 +20,7 @@
                                 <field name='partner_delivery_method_id'/>
                                 <field name='partner_country_id'/>
                                 <field name='partner_state_id'/>
+                                <field name='price_lock_days'/>
                             </group>
                         </group>
                     </page>

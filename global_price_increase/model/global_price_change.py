@@ -20,7 +20,7 @@ class GlobalPriceChange(models.Model):
     vendor_id = fields.Many2one('res.partner', string='Vendor')
     product_category_ids = fields.Many2many('product.category', string='Category')
     is_exclude = fields.Boolean(string='Exclude customer by creation Date', default=True)
-    exclude_date = fields.Date(string='Customer creation date', default=datetime.today() - relativedelta(months=6))
+    exclude_date = fields.Date(string='Customer creation date', default=date.today() - relativedelta(months=6))
     price_change = fields.Float(string='Price Change %')
     run_date = fields.Date('Update Date', default=fields.Date.context_today)
     is_done = fields.Boolean(string='Done', copy=False, default=False)
@@ -87,7 +87,8 @@ class GlobalPriceChange(models.Model):
                 customer_price_lists = customer_price_lists.filtered(lambda r: r.product_id.id in products_to_filter.ids)
 
             if rec.is_exclude and rec.exclude_date:
-                customer_price_lists = customer_price_lists.filtered((lambda r: r.partner_id.create_date < rec.exclude_date))
+                date_exclude =  datetime.combine(rec.exclude_date, datetime.min.time())
+                customer_price_lists = customer_price_lists.filtered((lambda r: r.partner_id.create_date < date_exclude))
 
             today = date.today()
             for price_list in customer_price_lists:

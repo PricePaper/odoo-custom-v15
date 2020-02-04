@@ -52,6 +52,7 @@ class AddPurchaseHistorySO(models.TransientModel):
                                  'product_name': line.product_id.display_name
                                 }
                         lines.append((0,0,val))
+                self.purchase_history_ids = False
                 self.purchase_history_ids = lines
 
             else:
@@ -67,6 +68,7 @@ class AddPurchaseHistorySO(models.TransientModel):
                              'product_name': line.product_id.display_name
                             }
                     lines.append((0,0,val))
+                self.purchase_history_ids = False
                 self.purchase_history_ids = lines
 
 

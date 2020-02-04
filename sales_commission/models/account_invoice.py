@@ -76,7 +76,7 @@ class AccountInvoice(models.Model):
 
         for line in lines:
             if datetime.date.today() > self.date_due:
-                extra_days = datetime.date.today() - due_date
+                extra_days = datetime.date.today() - self.date_due
                 if self.partner_id.company_id.commission_ageing_ids:
                     commission_ageing = self.partner_id.company_id.commission_ageing_ids.filtered(lambda r : r.delay_days <= extra_days.days)
                     commission_ageing = commission_ageing.sorted(key=lambda r: r.delay_days, reverse=True)

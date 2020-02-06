@@ -59,13 +59,15 @@ class SaleOrder(models.Model):
         """
         auto save the delivery line.
         """
+
         res = super(SaleOrder, self).write(vals)
         self.check_payment_term()
         for order in self:
-            if order.carrier_id:
-                order.adjust_delivery_line()
-            else:
-                order._remove_delivery_line()
+            if 'state' not in vals or 'state' in vals and vals['state'] != 'done':
+                if order.carrier_id:
+                    order.adjust_delivery_line()
+                else:
+                    order._remove_delivery_line()
         return res
 
 

@@ -1,9 +1,34 @@
 <odoo>
     <data>
-
-
-
-
+        <record id="sale_order_tree_inherit_commission" model="ir.ui.view">
+            <field name="name">sale.order.tree.inherit.commission</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree"/>
+            <field name="arch" type="xml">
+                <field name="user_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="user_id" position="after">
+                    <field name="sales_person_ids" widget="many2many_tags"/>
+                </field>
+                <field name="name" position="after">
+                    <field name="state"/>
+                </field>
+            </field>
+        </record>
+        <record id="sale_order_form_inherit_commission" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit.commission</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_tree"/>
+            <field name="arch" type="xml">
+                <field name="user_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="user_id" position="after">
+                    <field name="sales_person_ids" widget="many2many_tags"/>
+                </field>
+            </field>
+        </record>
         <record id="sale_order_inherit_salescommission" model="ir.ui.view">
             <field name="name">sale.order.salecommission</field>
             <field name="model">sale.order</field>
@@ -14,8 +39,5 @@
                 </field>
             </field>
         </record>
-
-
-
     </data>
 </odoo>

@@ -32,6 +32,7 @@ Custom module implemented for Price Paper.
              'views/cost_change.xml',
              'views/product_pricelist.xml',
              'views/customer_product_price.xml',
+             'views/zip_delivery_day.xml',
              'views/account_view.xml',
              'views/delivery_carrier_view.xml',
              'views/helpdesk_team_view.xml',

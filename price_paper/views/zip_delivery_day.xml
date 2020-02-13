@@ -1,0 +1,52 @@
+<odoo>
+    <data>
+        <record id="view_zip_delivery_day_tree" model="ir.ui.view">
+            <field name="name">Zip.delivery.day.tree</field>
+            <field name="model">zip.delivery.day</field>
+            <field name="arch" type="xml">
+                <tree string="Zip Delivery Day">
+                    <field name="zip" required='1'/>
+                    <field name="shipping_easiness" />
+                </tree>
+            </field>
+        </record>
+        <record id="view_zip_delivery_day_form" model="ir.ui.view">
+            <field name="name">Zip.delivery.day.form</field>
+            <field name="model">zip.delivery.day</field>
+            <field name="arch" type="xml">
+                <form string="Zip Delivery Day">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="zip" required='1'/>
+                                <field name="shipping_easiness" />
+                            </group>
+                            <group>
+                                <field name="delivery_day_mon"/>
+                                <field name="delivery_day_tue"/>
+                                <field name="delivery_day_wed"/>
+                                <field name="delivery_day_thu"/>
+                                <field name="delivery_day_fri"/>
+                                <field name="delivery_day_sat"/>
+                                <field name="delivery_day_sun"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="action_zip_delivery_days" model="ir.actions.act_window">
+            <field name="name">Zip Delivery Days</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">zip.delivery.day</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_zip_delivery_day_tree"/>
+            <field name="help" type="html">
+              <p>
+                Create New delivery day based on the Zip.
+              </p>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -22,6 +22,26 @@ class ResPartner(models.Model):
     delivery_day_sat = fields.Boolean(string='Saturday')
     delivery_day_sun = fields.Boolean(string='Sunday')
     shipping_easiness = fields.Selection([('easy', 'Easy'), ('neutral', 'Neutral'), ('hard', 'Hard')], string='Easiness of shipping')
+    change_delivery_days = fields.Boolean(string='Change Zip delivery days')
+    zip_delivery_id = fields.Many2one('zip.delivery.day', string='Zip Delivery Days', compute='compute_delivery_day_id')
+    zip_delivery_day_mon = fields.Boolean(string='Monday.', related='zip_delivery_id.delivery_day_mon')
+    zip_delivery_day_tue = fields.Boolean(string='Tuesday.', related='zip_delivery_id.delivery_day_tue')
+    zip_delivery_day_wed = fields.Boolean(string='Wednesday.', related='zip_delivery_id.delivery_day_wed')
+    zip_delivery_day_thu = fields.Boolean(string='Thursday.', related='zip_delivery_id.delivery_day_thu')
+    zip_delivery_day_fri = fields.Boolean(string='Friday.', related='zip_delivery_id.delivery_day_fri')
+    zip_delivery_day_sat = fields.Boolean(string='Saturday.', related='zip_delivery_id.delivery_day_sat')
+    zip_delivery_day_sun = fields.Boolean(string='Sunday.', related='zip_delivery_id.delivery_day_sun')
+    zip_shipping_easiness = fields.Selection([('easy', 'Easy'), ('neutral', 'Neutral'), ('hard', 'Hard')], string='Easiness of shipping.')
+
+
+    @api.depends('zip')
+    def compute_delivery_day_id(self):
+        for rec in self:
+            if rec.zip:
+                zip_delivery_id = self.env['zip.delivery.day'].search([('zip', '=', rec.zip)])
+                rec.zip_delivery_id = zip_delivery_id and zip_delivery_id.id or False
+            else:
+                rec.zip_delivery_id = False
 
     @api.model
     def default_get(self, fields_list):

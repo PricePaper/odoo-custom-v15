@@ -130,20 +130,37 @@ class SaleOrder(models.Model):
         if self.partner_id:
             shipping_date = date.today() + relativedelta(days=1)
             day_list = []
-            if self.partner_id.delivery_day_mon:
-                day_list.append(0)
-            if self.partner_id.delivery_day_tue:
-                day_list.append(1)
-            if self.partner_id.delivery_day_wed:
-                day_list.append(2)
-            if self.partner_id.delivery_day_thu:
-                day_list.append(3)
-            if self.partner_id.delivery_day_fri:
-                day_list.append(4)
-            if self.partner_id.delivery_day_sat:
-                day_list.append(5)
-            if self.partner_id.delivery_day_sun:
-                day_list.append(6)
+            if self.partner_id.change_delivery_days:
+                if self.partner_id.delivery_day_mon:
+                    day_list.append(0)
+                if self.partner_id.delivery_day_tue:
+                    day_list.append(1)
+                if self.partner_id.delivery_day_wed:
+                    day_list.append(2)
+                if self.partner_id.delivery_day_thu:
+                    day_list.append(3)
+                if self.partner_id.delivery_day_fri:
+                    day_list.append(4)
+                if self.partner_id.delivery_day_sat:
+                    day_list.append(5)
+                if self.partner_id.delivery_day_sun:
+                    day_list.append(6)
+            else:
+                if self.partner_id.zip_delivery_id:
+                    if self.partner_id.zip_delivery_day_mon:
+                        day_list.append(0)
+                    if self.partner_id.zip_delivery_day_tue:
+                        day_list.append(1)
+                    if self.partner_id.zip_delivery_day_wed:
+                        day_list.append(2)
+                    if self.partner_id.zip_delivery_day_thu:
+                        day_list.append(3)
+                    if self.partner_id.zip_delivery_day_fri:
+                        day_list.append(4)
+                    if self.partner_id.zip_delivery_day_sat:
+                        day_list.append(5)
+                    if self.partner_id.zip_delivery_day_sun:
+                        day_list.append(6)
             weekday = date.today().weekday()
             day_diff = 0
             if day_list:

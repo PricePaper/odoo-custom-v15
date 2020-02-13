@@ -32,13 +32,22 @@
                 </xpath>
                 <xpath expr="//notebook/page[@name='sales_purchases']/group[1]" position="after">
                     <group string="Shipping Days">
-                        <field name="delivery_day_mon"/>
-                        <field name="delivery_day_tue"/>
-                        <field name="delivery_day_wed"/>
-                        <field name="delivery_day_thu"/>
-                        <field name="delivery_day_fri"/>
-                        <field name="delivery_day_sat"/>
-                        <field name="delivery_day_sun"/>
+                        <field name="change_delivery_days"/>
+                        <field name="zip_delivery_id" invisible="1"/>
+                        <field name="delivery_day_mon" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
+                        <field name="delivery_day_tue" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
+                        <field name="delivery_day_wed" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
+                        <field name="delivery_day_thu" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
+                        <field name="delivery_day_fri" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
+                        <field name="delivery_day_sat" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
+                        <field name="delivery_day_sun" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
+                        <field name="zip_delivery_day_mon" attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
+                        <field name="zip_delivery_day_tue" attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
+                        <field name="zip_delivery_day_wed" attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
+                        <field name="zip_delivery_day_thu" attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
+                        <field name="zip_delivery_day_fri" attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
+                        <field name="zip_delivery_day_sat" attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
+                        <field name="zip_delivery_day_sun" attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
                     </group>
                 </xpath>
                 <xpath expr="//div[hasclass('oe_title')]" position="after">

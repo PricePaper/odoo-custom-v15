@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from . import res_company
 from . import res_partner
-from . import sale
 from . import product
 from . import customer_product_price
+from . import zip_delivery_day
+from . import sale
 from . import customer_pricelist
 from . import product_pricelist
 from . import account

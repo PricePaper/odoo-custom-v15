@@ -14,13 +14,13 @@ class ProductPricelist(models.Model):
     expiry_date = fields.Date('Valid Upto')
     price_lock = fields.Boolean(string='Price Change Lock', default=False)
     lock_expiry_date = fields.Date(string='Lock Expiry date')
-    partner_id = fields.Many2one('res.partner', string='Customer', store=True) #compute='_compute_partner',
+    partner_id = fields.Many2one('res.partner', string='Customer', store=True, compute='_compute_partner')
 
-#    @api.depends('customer_product_price_ids.partner_id')
-#    def _compute_partner(self):
-#        for pricelist in self:
-#            if pricelist.type == 'customer':
-#                pricelist.partner_id = pricelist.customer_product_price_ids and pricelist.customer_product_price_ids[0].partner_id.id or False
+    @api.depends('customer_product_price_ids.partner_id')
+    def _compute_partner(self):
+        for pricelist in self:
+            if pricelist.type == 'customer':
+                pricelist.partner_id = pricelist.customer_product_price_ids and pricelist.customer_product_price_ids[0].partner_id.id or False
 
     @api.model
     def _cron_update_price_change_lock(self):

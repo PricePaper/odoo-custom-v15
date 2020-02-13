@@ -10,10 +10,6 @@
                 </tree>
             </field>
         </record>
-
-
-
-
         <record id="customer_price_maintanace_form_view" model="ir.ui.view">
             <field name="name">customer.price.maintanace.form</field>
             <field name="model">res.partner</field>
@@ -35,10 +31,8 @@
                                     <field name="country_id" placeholder="Country" class="o_address_country" readonly="1"/>
                                 </div>
                             </group>
-
-
                             <group string="Customer Product Price">
-                                <field name="customer_pricelist_line_ids" nolabel="1">
+                                <field name="partner_pricelist_line_ids" nolabel="1" readonly='0'>
                                     <tree>
                                         <field name="product_id" required="1"/>
                                         <field name="product_uom" required="1"/>

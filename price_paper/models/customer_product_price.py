@@ -55,14 +55,14 @@ class CustomerProductPrice(models.Model):
             self.product_uom = False
             self.price = 0.0
 
-    @api.onchange('price_lock')
-    def onchange_price_lock(self):
-        if self.price_lock:
-            if self.env.user.company_id and self.env.user.company_id.price_lock_days:
-                days = self.env.user.company_id.price_lock_days
-                self.lock_expiry_date =  date.today()+relativedelta(days=days)
-        else:
-            self.lock_expiry_date = False
+    # @api.onchange('price_lock')
+    # def onchange_price_lock(self):
+    #     if self.price_lock:
+    #         if self.env.user.company_id and self.env.user.company_id.price_lock_days:
+    #             days = self.env.user.company_id.price_lock_days
+    #             self.lock_expiry_date =  date.today()-relativedelta(days=days)
+    #     else:
+    #         self.lock_expiry_date = False
 
 
 

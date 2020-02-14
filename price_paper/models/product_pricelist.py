@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
-from datetime import datetime
+from datetime import datetime,date
+from dateutil.relativedelta import relativedelta
 
 
 class ProductPricelist(models.Model):
@@ -15,6 +16,15 @@ class ProductPricelist(models.Model):
     price_lock = fields.Boolean(string='Price Change Lock', default=False)
     lock_expiry_date = fields.Date(string='Lock Expiry date')
     partner_id = fields.Many2one('res.partner', string='Customer', store=True, compute='_compute_partner')
+
+    @api.onchange('price_lock')
+    def onchange_price_lock(self):
+        if self.price_lock:
+            if self.env.user.company_id and self.env.user.company_id.price_lock_days:
+                days = self.env.user.company_id.price_lock_days
+                self.lock_expiry_date =  date.today()+relativedelta(days=days)
+        else:
+            self.lock_expiry_date = False
 
     @api.depends('customer_product_price_ids.partner_id')
     def _compute_partner(self):

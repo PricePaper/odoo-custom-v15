@@ -49,7 +49,7 @@
             <field name="action" eval="False" />
         </record>
         <record id="sale.menu_sale_quotations" model="ir.ui.menu">
-            <field name="sequence" eval="1001"/>
+            <field name="sequence" eval="1"/>
             <field name="name">Draft</field>
         </record>
         <record model="ir.ui.menu" id="stock.product_product_menu">

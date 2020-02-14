@@ -71,16 +71,9 @@
                 <button name="action_cancel" position="after">
                     <button name="action_ready_to_release"  type="object" string="Release" groups="price_paper.group_allow_more_than_credit_limit" attrs="{'invisible': ['|', ('is_creditexceed', '=', False), ('ready_to_release', '=', True)]}"/>
                 </button>
-                <!-- <xpath expr="//div[hasclass('oe_title')]" position="after">
-                    <group>
-                        <group>
-                            <field name="is_quotation" attrs="{'invisible':['|', ('state', '!=', 'draft'), ('is_creditexceed', '=', True)]}"/>
-                        </group>
-                    </group>
-                </xpath> -->
                 <xpath expr="//field[@name='validity_date']" position="after">
-                    <field name="release_date"/>
-                    <field name="deliver_by"/>
+                    <field name="release_date" required='1'/>
+                    <field name="deliver_by" required='1'/>
                     <field name="is_creditexceed" invisible="1" />
                     <field name="ready_to_release" invisible="1" />
                 </xpath>
@@ -234,6 +227,10 @@
         <record id="sale.action_quotations" model="ir.actions.act_window">
             <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel'))]</field>
             <field name="context">{'default_is_quotation': 1}</field>
+            <field name="name">Drafts</field>
+        </record>
+        <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+            <field name="name">Drafts</field>
         </record>
 
     </data>

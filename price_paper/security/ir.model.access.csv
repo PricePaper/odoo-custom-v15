@@ -6,3 +6,5 @@ access_model_cost_change,access_model_cost_change,model_cost_change,base.group_u
 access_product_pricelist_user,product.pricelist.user,product.model_product_pricelist,base.group_user,1,1,1,1
 access_product_pricelist_item_user,product.pricelist.item.user,product.model_product_pricelist_item,sales_team.group_sale_salesman,1,1,1,0
 access_product_product_sale_own_user,product.product.sale.own.user,product.model_product_product,sales_team.group_sale_salesman,1,1,0,0
+access_zip_delivery_days_user,access_zip_delivery_days_user,model_zip_delivery_day,base.group_user,1,0,0,0
+access_zip_delivery_days_manager,access_zip_delivery_days_manager,model_zip_delivery_day,stock.group_stock_manager,1,1,1,1

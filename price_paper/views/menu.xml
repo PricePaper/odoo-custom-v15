@@ -27,6 +27,16 @@
             parent="purchase.menu_procurement_management"
             groups="purchase.group_purchase_manager"
             />
+        <menuitem id="menu_zip_delivery_days"
+            name="Delivery Days"
+            action="action_zip_delivery_days"
+            parent="stock.menu_stock_inventory_control"
+            groups="stock.group_stock_manager" />
+        <!-- <menuitem id="menu_report_product_all_today"
+            name="Sales Today"
+            action="menu_report_product_all_today"
+            parent="menu_sale_report"
+            sequence="2"/> -->
 
         <record model="ir.ui.menu" id="sale.menu_product_template_action">
             <field name="action" eval="False" />
@@ -40,6 +50,7 @@
         </record>
         <record id="sale.menu_sale_quotations" model="ir.ui.menu">
             <field name="sequence" eval="1001"/>
+            <field name="name">Draft</field>
         </record>
         <record model="ir.ui.menu" id="stock.product_product_menu">
             <field name="name">Products</field>

@@ -71,6 +71,16 @@
                 <button name="action_cancel" position="after">
                     <button name="action_ready_to_release"  type="object" string="Release" groups="price_paper.group_allow_more_than_credit_limit" attrs="{'invisible': ['|', ('is_creditexceed', '=', False), ('ready_to_release', '=', True)]}"/>
                 </button>
+                <button name="action_quotation_send" position="after">
+                    <button name="action_fax_send" string="Send by Fax" type="object" states="draft,order,sent" class="btn-primary"/>
+                </button>
+                <!-- <xpath expr="//div[hasclass('oe_title')]" position="after">
+                    <group>
+                        <group>
+                            <field name="is_quotation" attrs="{'invisible':['|', ('state', '!=', 'draft'), ('is_creditexceed', '=', True)]}"/>
+                        </group>
+                    </group>
+                </xpath> -->
                 <xpath expr="//field[@name='validity_date']" position="after">
                     <field name="release_date" required='1'/>
                     <field name="deliver_by" required='1'/>

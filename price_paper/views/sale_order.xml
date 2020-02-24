@@ -55,6 +55,9 @@
                         </p>
                     </div>
                 </sheet>
+                <field name="partner_id" position="before">
+                    <field name="customer_code"/>
+                </field>
                 <field name="partner_id" position="attributes">
                     <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
                     <attribute name="domain">[('type', '=', 'contact'),('customer','=',True)]</attribute>

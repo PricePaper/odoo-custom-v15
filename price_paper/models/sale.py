@@ -13,6 +13,7 @@ class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     release_date = fields.Date(string="Earliest Delivery Date", copy=False, default=lambda s: s.get_release_deliver_default_date())
+    customer_code = fields.Char(string='Partner Code', related='partner_id.customer_code')
     deliver_by = fields.Date(string="Deliver By", copy=False, default=lambda s: s.get_release_deliver_default_date())
     is_creditexceed = fields.Boolean(string="Credit limit exceeded", default=False, copy=False)
     credit_warning = fields.Text(string='Warning Message', compute='compute_credit_warning', copy=False)

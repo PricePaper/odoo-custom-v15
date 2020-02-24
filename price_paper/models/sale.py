@@ -12,8 +12,8 @@ from odoo.addons import decimal_precision as dp
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    release_date = fields.Date(string="Earliest Delivery Date", default=lambda s: s.get_release_deliver_default_date())
-    deliver_by = fields.Date(string="Deliver By", default=lambda s: s.get_release_deliver_default_date())
+    release_date = fields.Date(string="Earliest Delivery Date", copy=False, default=lambda s: s.get_release_deliver_default_date())
+    deliver_by = fields.Date(string="Deliver By", copy=False, default=lambda s: s.get_release_deliver_default_date())
     is_creditexceed = fields.Boolean(string="Credit limit exceeded", default=False, copy=False)
     credit_warning = fields.Text(string='Warning Message', compute='compute_credit_warning', copy=False)
     ready_to_release = fields.Boolean(string="Ready to release", default=False, copy=False)

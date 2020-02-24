@@ -39,40 +39,16 @@ class SaleOrder(models.Model):
             template_id = ir_model_data.get_object_reference('price_paper', 'fax_template_edi_sale')[1]
         except ValueError:
             template_id = False
+        if not self.partner_id.fax_number:
+            raise ValidationError(_('Please enter customer Fax number first.'))
         email_to = self.partner_id.fax_number  + '@efaxsend.com'
         email_context = self.env.context.copy()
         email_context.update({
             'email_to': email_to,
             'recipient_ids': ''
         })
-        print(email_context)
         template = self.env['mail.template'].browse(template_id)
         return template.with_context(email_context).send_mail(self.id)
-        # try:
-        #     compose_form_id = ir_model_data.get_object_reference('mail', 'email_compose_message_wizard_form')[1]
-        # except ValueError:
-        #     compose_form_id = False
-        # ctx = {
-        #     'default_model': 'sale.order',
-        #     'default_res_id': self.ids[0],
-        #     'default_use_template': bool(template_id),
-        #     'default_template_id': template_id,
-        #     'default_composition_mode': 'comment',
-        #     'mark_so_as_sent': True,
-        #     'custom_layout': "mail.mail_notification_paynow",
-        #     'proforma': self.env.context.get('proforma', False),
-        #     'force_email': True
-        # }
-        # return {
-        #     'type': 'ir.actions.act_window',
-        #     'view_type': 'form',
-        #     'view_mode': 'form',
-        #     'res_model': 'mail.compose.message',
-        #     'views': [(compose_form_id, 'form')],
-        #     'view_id': compose_form_id,
-        #     'target': 'new',
-        #     'context': ctx,
-        # }
 
 
     @api.model

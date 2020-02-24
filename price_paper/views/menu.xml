@@ -50,7 +50,7 @@
         </record>
         <record id="sale.menu_sale_quotations" model="ir.ui.menu">
             <field name="sequence" eval="1"/>
-            <field name="name">Draft</field>
+            <field name="name">Draft Order</field>
         </record>
         <record model="ir.ui.menu" id="stock.product_product_menu">
             <field name="name">Products</field>

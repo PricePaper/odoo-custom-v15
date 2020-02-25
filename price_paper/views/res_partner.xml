@@ -59,9 +59,9 @@
                         </group>
                     </group>
                 </xpath>
-
                 <xpath expr="//field[@name='vat']" position="replace">
                     <field name="vat" attrs="{'readonly':True}"/>
+                    <field name="fax_number"/>
                 </xpath>
 
             </field>

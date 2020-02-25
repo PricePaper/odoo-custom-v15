@@ -12,6 +12,7 @@ class ResPartner(models.Model):
 
     destination_code = fields.Char(string='Destination Code')
     corp_name = fields.Char(string='Corporate name ')
+    fax_number = fields.Char(string='Fax')
     customer_pricelist_ids = fields.One2many('customer.pricelist', 'partner_id', string="Customer Pricelists")
     customer_code = fields.Char(string='Partner Code')
     delivery_day_mon = fields.Boolean(string='Monday')
@@ -71,6 +72,22 @@ class ResPartner(models.Model):
             customer_code_results = customer_code_results.name_get()
             res = res + customer_code_results
         return res
+
+    @api.multi
+    def name_get(self):
+        result = []
+        for customer in self:
+            name = ''
+            if customer.street:
+                name += customer.street + ' '
+            if customer.city:
+                name += customer.city + ' '
+            if customer.state_id:
+                name += customer.state_id.name
+            result.append((customer.id, _('%s (%s)') % (customer.name, name)))
+        return result
+
+
 
     @api.constrains('customer_code')
     def check_partner_code(self):

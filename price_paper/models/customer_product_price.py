@@ -32,8 +32,13 @@ class CustomerProductPrice(models.Model):
 
     @api.constrains('partner_id')
     def check_partner(self):
-        if self.pricelist_id.type == 'customer' and self.pricelist_id.partner_id and self.pricelist_id.partner_id.id != self.partner_id.id:
-            raise ValidationError(_('Partner should be same as pricelist mentioned partner in customer pricelists.'))
+        if self.pricelist_id.type == 'customer' and self.pricelist_id.partner_id:
+            if self.partner_id.parent_id and self.pricelist_id.partner_id.id == self.partner_id.parent_id.id:
+                pass
+            elif self.pricelist_id.partner_id.id == self.partner_id.id:
+                pass
+            else:
+                raise ValidationError(_('Partner should be same as pricelist mentioned partner in customer pricelists.'))
 
 
 
@@ -60,7 +65,7 @@ class CustomerProductPrice(models.Model):
     #     if self.price_lock:
     #         if self.env.user.company_id and self.env.user.company_id.price_lock_days:
     #             days = self.env.user.company_id.price_lock_days
-    #             self.lock_expiry_date =  date.today()-relativedelta(days=days)
+    #             self.lock_expiry_date =  date.today()+relativedelta(days=days)
     #     else:
     #         self.lock_expiry_date = False
 

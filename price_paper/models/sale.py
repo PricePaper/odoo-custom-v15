@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from odoo.exceptions import ValidationError, UserError
 from datetime import timedelta
 import pytz
+import time
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.addons import decimal_precision as dp
 
@@ -28,6 +29,115 @@ class SaleOrder(models.Model):
         ('done', 'Locked'),
         ('cancel', 'Cancelled'),
         ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', track_sequence=3, default='draft')
+    storage_contract = fields.Boolean(string="Storage Product", default=False, copy=True)
+
+
+    @api.onchange('order_line')
+    def onchange_order_line(self):
+        if self.order_line and any(line.product_id.is_storage_contract for line in self.order_line):
+            self.storage_contract = True
+        else:
+            self.storage_contract = False
+
+    @api.multi
+    def _create_storage_downpayment_invoice(self, order, so_lines):
+        """
+        Create invoice for storage contract product down payment
+        """
+
+        inv_obj = self.env['account.invoice']
+        ir_property_obj = self.env['ir.property']
+
+        context = {'lang': order.partner_id.lang}
+        name = _('Down Payment')
+        del context
+        invoice_line_ids = []
+        for line in so_lines:
+            taxes = line.product_id.taxes_id.filtered(lambda r: not order.company_id or r.company_id == order.company_id)
+            if order.fiscal_position_id and taxes:
+                tax_ids = order.fiscal_position_id.map_tax(taxes, line.product_id, order.partner_shipping_id).ids
+            else:
+                tax_ids = taxes.ids
+            account_id = False
+            if line.product_id.id:
+                account_id = order.fiscal_position_id.map_account(line.product_id.storage_contract_account_id).id
+            if not account_id:
+                raise UserError(
+                    _('There is no storage income account defined for this product: "%s". You may have to install a chart of account from Accounting app, settings menu.') %
+                    (product_id.name,))
+            invoice_line = (0, 0, {
+                'name': name,
+                'origin': order.name,
+                'account_id': account_id,
+                'price_unit': line.price_unit,
+                'quantity': 1.0,
+                'discount': 0.0,
+                'uom_id': line.product_id.uom_id.id,
+                'product_id': line.product_id.id,
+                'sale_line_ids': [(6, 0, [line.id])],
+                'invoice_line_tax_ids': [(6, 0, tax_ids)],
+                'analytic_tag_ids': [(6, 0, line.analytic_tag_ids.ids)],
+                'account_analytic_id': order.analytic_account_id.id or False,
+                })
+            invoice_line_ids.append(invoice_line)
+
+        invoice = inv_obj.create({
+            'name': order.client_order_ref or order.name,
+            'origin': order.name,
+            'type': 'out_invoice',
+            'reference': False,
+            'account_id': order.partner_id.property_account_receivable_id.id,
+            'partner_id': order.partner_invoice_id.id,
+            'partner_shipping_id': order.partner_shipping_id.id,
+            'invoice_line_ids': invoice_line_ids,
+            'currency_id': order.pricelist_id.currency_id.id,
+            'payment_term_id': order.payment_term_id.id,
+            'fiscal_position_id': order.fiscal_position_id.id or order.partner_id.property_account_position_id.id,
+            'team_id': order.team_id.id,
+            'user_id': order.user_id.id,
+            'comment': order.note,
+        })
+        invoice.compute_taxes()
+        invoice.message_post_with_view('mail.message_origin_link',
+                    values={'self': invoice, 'origin': order},
+                    subtype_id=self.env.ref('mail.mt_note').id)
+        return invoice
+
+    @api.multi
+    def action_create_storage_downpayment(self):
+        """
+        Create invoice for storage contract product down payment
+        """
+
+        sale_line_obj = self.env['sale.order.line']
+        for order in self:
+            for line in order.order_line:
+                analytic_tag_ids = [(4, analytic_tag.id, None) for analytic_tag in line.analytic_tag_ids]
+            so_lines = self.env['sale.order.line']
+            for line in order.order_line:
+                taxes = line.product_id.taxes_id.filtered(lambda r: not order.company_id or r.company_id == order.company_id)
+                if order.fiscal_position_id and taxes:
+                    tax_ids = order.fiscal_position_id.map_tax(taxes, line.product_id, order.partner_shipping_id).ids
+                else:
+                    tax_ids = taxes.ids
+                if line.product_id.is_storage_contract and not line.is_downpayment:
+                    context = {'lang': order.partner_id.lang}
+                    so_lines |= sale_line_obj.create({
+                        'name': _('Advance: %s') % (time.strftime('%m %Y'),),
+                        'price_unit': line.price_subtotal+line.price_tax,
+                        'product_uom_qty': 0.0,
+                        'order_id': order.id,
+                        'discount': 0.0,
+                        'product_uom': line.product_id.uom_id.id,
+                        'product_id': line.product_id.id,
+                        'analytic_tag_ids': analytic_tag_ids,
+                        'tax_id': [(6, 0, tax_ids)],
+                        'is_downpayment': True,
+                    })
+                    del context
+            self._create_storage_downpayment_invoice(order, so_lines)
+        return True
+
 
     @api.multi
     def action_fax_send(self):
@@ -329,17 +439,29 @@ class SaleOrder(models.Model):
     def action_confirm(self):
         """
         create record in customer.price.history
-        and also update the customer pricelist if needed
+        and also update the customer pricelist if needed.
+        create invoice for bill_with_goods customers.
         """
 
         if not self.carrier_id:
             raise ValidationError(_('Delivery method should be set before confirming an order'))
         if not self.ready_to_release:
             self.check_credit_limit()
+        if any(line.product_id.is_storage_contract for line in self.order_line):
+            if not any(line.is_downpayment for line in self.order_line):
+                raise ValidationError(_('Advance payment for Storage contract products should be created before order confirmation.'))
+            if not all(invoice.state == 'paid' for invoice in self.invoice_ids):
+                raise ValidationError(_('Advance payment invoice for Storage contract products is not paid.'))
         res = super(SaleOrder, self).action_confirm()
+
         for order in self:
+            if order.partner_id.bill_with_goods:
+                order.action_invoice_create(final=True)
             for order_line in order.order_line:
                 order_line.update_price_list()
+                # if order_line.is_downpayment and order_line.product_id.is_storage_contract:
+                #     product_id = self.env['ir.config_parameter'].sudo().get_param('sale.default_deposit_product_id')
+                #     order_line.write({'product_id': int(product_id)})
         return res
 
     @api.multi
@@ -375,7 +497,7 @@ class SaleOrderLine(models.Model):
     product_onhand = fields.Float(string='Product Qty Available', related='product_id.virtual_available', digits=dp.get_precision('Product Unit of Measure'))
     new_product = fields.Boolean(string='New Product', copy=False)
     manual_price = fields.Boolean(string='Manual Price Change', copy=False)
-    is_last = fields.Boolean(string='Is last Purchase')
+    is_last = fields.Boolean(string='Is last Purchase', copy=False)
     shipping_id = fields.Many2one(related='order_id.partner_shipping_id', string='Shipping Address')
     note = fields.Text('Note')
     note_type = fields.Selection(string='Note Type', selection=[('permanant', 'Save note'), ('temporary', 'Temporary Note')], default='temporary')
@@ -393,6 +515,23 @@ class SaleOrderLine(models.Model):
                 line.lst_price = line.product_id.lst_price
             if line.product_id.cost:
                 line.working_cost = line.product_id.cost
+
+    @api.multi
+    def _prepare_invoice_line(self, qty):
+        res = super(SaleOrderLine, self)._prepare_invoice_line(qty)
+        if self.is_downpayment and self.product_id.is_storage_contract:
+            account = self.product_id.storage_contract_account_id or self.product_id.property_account_income_id or self.product_id.categ_id.property_account_income_categ_id
+
+            if not account and self.product_id:
+                raise UserError(_('Please define storage contract account for this product: "%s" (id:%d)".') %
+                    (self.product_id.name, self.product_id.id))
+
+            fpos = self.order_id.fiscal_position_id or self.order_id.partner_id.property_account_position_id
+            if fpos and account:
+                account = fpos.map_account(account)
+            res.update({'account_id': account.id, 'product_id': False})
+        return res
+
 
 
     @api.multi

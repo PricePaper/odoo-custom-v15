@@ -27,6 +27,10 @@ class ProductProduct(models.Model):
     is_bel_min_qty = fields.Boolean(string='Below Minimum Quantity', compute='compute_qty_status', search='_search_bel_min_qty')
     is_bel_crit_qty = fields.Boolean(string='Below Critical Quantity', compute='compute_qty_status', search='_search_bel_crit_qty')
     is_abv_max_qty = fields.Boolean(string='Above Max Quantity', compute='compute_qty_status', search='_search_abv_max_qty')
+    is_storage_contract = fields.Boolean(string='Storage Contract Product')
+    storage_contract_account_id = fields.Many2one('account.account', company_dependent=True,
+        string="Storage Contract Income Account",
+        domain=[('deprecated', '=', False)])
 
     # list_price_percentage = fields.Float('Standard price %')
     # lst_price = fields.Float(

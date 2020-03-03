@@ -58,6 +58,12 @@
                     <field name="burden_percent" groups="sales_team.group_sale_manager"/>
                     <field name="cost" widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"/>
                 </field>
+                <field name="type" position="before">
+                    <field name="is_storage_contract"/>
+                </field>
+                <field name="property_account_income_id" position="before">
+                    <field name="storage_contract_account_id" attrs="{'required':[('is_storage_contract', '=', True)], 'invisible':[('is_storage_contract', '=', False)]}"/>
+                </field>
 
                 <field name="lst_price" position="before">
                     <field name="superseded" domain="[('active','!=','True'), ('id', '!=', id)]" attrs="{'invisible':[('active', '=', False)]}"/>

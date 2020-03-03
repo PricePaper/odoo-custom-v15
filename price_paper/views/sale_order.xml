@@ -55,6 +55,9 @@
                         </p>
                     </div>
                 </sheet>
+                <xpath expr="//field[@name='validity_date']" position="after">
+                    <field name="storage_contract" invisible="1" />
+                </xpath>
                 <field name="partner_id" position="before">
                     <field name="customer_code"/>
                 </field>
@@ -73,6 +76,9 @@
 
                 <button name="action_cancel" position="after">
                     <button name="action_ready_to_release"  type="object" string="Release" groups="price_paper.group_allow_more_than_credit_limit" attrs="{'invisible': ['|', ('is_creditexceed', '=', False), ('ready_to_release', '=', True)]}"/>
+                </button>
+                <button name="action_cancel" position="after">
+                    <button name="action_create_storage_downpayment"  type="object" string="SC Payment"  attrs="{'invisible': ['|', '|', ('invoice_count', '>', 0), ('storage_contract', '=', False), ('state', 'in', ['sale', 'done', 'cancel'])]}"/>
                 </button>
                 <button name="action_quotation_send" position="after">
                     <button name="action_fax_send" string="Send by Fax" type="object" states="draft,order,sent" class="btn-primary"/>

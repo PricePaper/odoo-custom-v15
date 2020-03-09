@@ -97,20 +97,21 @@ class ResPartner(models.Model):
     @api.model
     def create(self, vals):
 
-        if not vals.get('customer_code', False):
-            if 'company_id' in vals:
-                while True:
-                    customer_code = vals.get('name')[0:3].upper() +  self.env['ir.sequence'].with_context(force_company=vals['company_id']).next_by_code('res.partner')
-                    if not self.search([('customer_code', '=ilike', customer_code)]):
-                        vals['customer_code'] = customer_code
-                        break
+        if vals.get('is_company', False):
+            if not vals.get('customer_code', False):
+                if 'company_id' in vals:
+                    while True:
+                        customer_code = vals.get('name')[0:3].upper() +  self.env['ir.sequence'].with_context(force_company=vals['company_id']).next_by_code('res.partner')
+                        if not self.search([('customer_code', '=ilike', customer_code)]):
+                            vals['customer_code'] = customer_code
+                            break
 
-            else:
-                while True:
-                    customer_code = vals.get('name')[0:3].upper() +  self.env['ir.sequence'].next_by_code('res.partner')
-                    if not self.search([('customer_code', '=ilike', customer_code)]):
-                        vals['customer_code'] = customer_code
-                        break
+                else:
+                    while True:
+                        customer_code = vals.get('name')[0:3].upper() +  self.env['ir.sequence'].next_by_code('res.partner')
+                        if not self.search([('customer_code', '=ilike', customer_code)]):
+                            vals['customer_code'] = customer_code
+                            break
 
         result = super(ResPartner, self).create(vals)
         if result.customer:

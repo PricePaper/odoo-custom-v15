@@ -114,7 +114,7 @@ class ResPartner(models.Model):
                             break
 
         result = super(ResPartner, self).create(vals)
-        if result.customer:
+        if result.customer and result.is_company:
             result.setup_pricelist_for_new_customer()
         return result
 

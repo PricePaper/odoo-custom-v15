@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteMappingsManager">
+    <list>
+      <list>
+        <remote-mappings server-id="python@docker://python:3.7-alpine/python">
+          <settings>
+            <list>
+              <mapping local-root="$USER_HOME$/work/code/python/odoo12/enterprise" remote-root="/enterprise" />
+              <mapping local-root="$PROJECT_DIR$" remote-root="/odoo-custom" />
+              <mapping local-root="$USER_HOME$/work/code/python/odoo12/odoo" remote-root="/odoo" />
+            </list>
+          </settings>
+        </remote-mappings>
+        <remote-mappings server-id="python@docker://registry.pricepaper.com/odoo12-docker-extramodules:latest/python3">
+          <settings>
+            <list>
+              <mapping local-root="$PROJECT_DIR$" remote-root="/odoo-custom" />
+            </list>
+          </settings>
+        </remote-mappings>
+      </list>
+    </list>
+  </component>
+</project>

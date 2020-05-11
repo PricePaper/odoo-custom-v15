@@ -20,6 +20,7 @@ Sales commission module implemented for Price Papers.
              'security/ir.model.access.csv',
              'wizard/existing_user.xml',
              'wizard/sales_commission.xml',
+             'views/sale_commission.xml',
              'views/saleorder_report.xml',
              'views/invoice_report.xml',
              'views/res_partner.xml',

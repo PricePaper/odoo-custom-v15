@@ -1,0 +1,30 @@
+<odoo>
+    <data>
+        <record id="view_commission_sale_grouped_tree" model="ir.ui.view">
+            <field name="name">commission.sale.tree</field>
+            <field name="model">sale.commission</field>
+            <field name="arch" type="xml">
+                <tree string="Sales Commission">
+                    <field name="sale_person_id" />
+                    <field name="sale_order" />
+                    <field name="invoice_id" />
+                    <field name="invoice_amount" />
+                    <field name="commission" />
+                    <field name="is_paid" />
+                </tree>
+            </field>
+        </record>
+        <record id="action_sales_commission_grouped" model="ir.actions.act_window">
+            <field name="name">Sales Commission</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.commission</field>
+            <field name="view_type">tree</field>
+            <field name="view_mode">tree,</field>
+            <field name="help" type="html">
+              <p>
+                No sale commission.
+              </p>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -14,7 +14,7 @@ class ResPartner(models.Model):
     corp_name = fields.Char(string='Corporate name ')
     fax_number = fields.Char(string='Fax')
     customer_pricelist_ids = fields.One2many('customer.pricelist', 'partner_id', string="Customer Pricelists")
-    customer_code = fields.Char(string='Partner Code')
+    customer_code = fields.Char(string='Partner Code', copy=False)
     delivery_day_mon = fields.Boolean(string='Monday')
     delivery_day_tue = fields.Boolean(string='Tuesday')
     delivery_day_wed = fields.Boolean(string='Wednesday')

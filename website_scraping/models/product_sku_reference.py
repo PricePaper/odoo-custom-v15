@@ -4,7 +4,7 @@ class ProductSkuReference(models.Model):
     _name = "product.sku.reference"
     _inherit = ['mail.thread']
 
-    product_id = fields.Many2one('product.product', string='Product')
+    product_id = fields.Many2one('product.product', string='Product', required=True)
     competitor_sku = fields.Char(string='Competitor SKU')
     competitor_desc = fields.Char(string='Competitor description')
     website_link = fields.Char(string='URL')

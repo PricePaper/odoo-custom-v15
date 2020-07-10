@@ -16,6 +16,11 @@
             parent="sale.sale_order_menu"
             groups="price_paper.group_allow_more_than_credit_limit"
             sequence="12" />
+        <menuitem id="menu_sale_history"
+            name="Sale History"
+            action="action_sale_history"
+            parent="sale.sale_order_menu"
+            sequence="13" />
         <menuitem id="menu_customer_product_price"
             name="Customer Product Price"
             action="action_customer_product_price"

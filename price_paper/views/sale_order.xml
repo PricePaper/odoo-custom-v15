@@ -56,7 +56,7 @@
                     </div>
                 </sheet>
                 <xpath expr="//field[@name='validity_date']" position="after">
-                    <field name="storage_contract" invisible="1" />
+                    <field name="storage_contract" invisible="0" />
                 </xpath>
                 <field name="partner_id" position="before">
                     <field name="customer_code"/>

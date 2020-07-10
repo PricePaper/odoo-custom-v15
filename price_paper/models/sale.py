@@ -469,8 +469,7 @@ class SaleOrder(models.Model):
         """
         Return 'add purchase history to so wizard'
         """
-        line_ids1 = self.env['sale.order.line'].search(['|', '&', ('shipping_id','=', self.partner_shipping_id.id), ('is_last', '=', True), '&', ('order_id.validity_date', '>=', str(date.today())), ('order_id.state', '=', 'draft')])
-        context ={'line_ids1' : line_ids1.ids}
+        context ={'customer_id' : self.partner_id.id}
         view_id = self.env.ref('price_paper.view_purchase_history_add_so_wiz').id
         return {
             'name': _('Add purchase history to SO'),
@@ -576,6 +575,15 @@ class SaleOrderLine(models.Model):
             partner_history = self.env['sale.order.line'].search([('product_id', '=', self.product_id.id), ('shipping_id', '=', self.shipping_id.id), ('is_last', '=', True), ('product_uom', '=', self.product_uom.id)])
             partner_history and partner_history.write({'is_last': False})
             self.write({'is_last': True})
+
+            partner = self.order_id.partner_id.id
+            sale_history = self.env['sale.history'].search([('partner_id', '=', partner), ('product_id', '=', self.product_id.id), ('uom_id', '=', self.product_uom.id)])
+            if sale_history:
+                sale_history.order_line_id = self
+            else:
+                vals={'order_line_id' : self.id}
+                self.env['sale.history'].create(vals)
+
 
             #Create record in customer.product.price if not exist
             #if exist then check the price and update

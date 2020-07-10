@@ -8,4 +8,4 @@ access_product_pricelist_item_user,product.pricelist.item.user,product.model_pro
 access_product_product_sale_own_user,product.product.sale.own.user,product.model_product_product,sales_team.group_sale_salesman,1,1,0,0
 access_zip_delivery_days_user,access_zip_delivery_days_user,model_zip_delivery_day,base.group_user,1,0,0,0
 access_zip_delivery_days_manager,access_zip_delivery_days_manager,model_zip_delivery_day,stock.group_stock_manager,1,1,1,1
-
+access_sale_history_user,access_sale_history_user,model_sale_history,base.group_user,1,1,1,1

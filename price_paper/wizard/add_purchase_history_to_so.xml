@@ -19,6 +19,9 @@
                                 <group>
                                     <field name="search_box" />
                                 </group>
+                                <group>
+                                    <field name="sale_history_months" />
+                                </group>
                             </group>
                             <field name="purchase_history_ids" mode="tree">
                                 <tree create="0" delete="0" editable="top">

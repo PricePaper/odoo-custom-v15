@@ -28,6 +28,7 @@ Custom module implemented for Price Paper.
              'views/product_notes.xml',
              'views/assets.xml',
              'views/sale_order.xml',
+             'views/sale_history.xml',
              'views/res_partner.xml',
              'views/product.xml',
              'views/cost_change.xml',

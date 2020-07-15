@@ -138,6 +138,19 @@ class SaleOrder(models.Model):
             self._create_storage_downpayment_invoice(order, so_lines)
         return True
 
+    @api.depends('picking_policy')
+    def _compute_expected_date(self):
+        super(SaleOrder, self)._compute_expected_date()
+        for order in self:
+            dates_list = []
+            confirm_date = fields.Datetime.from_string((order.confirmation_date or order.write_date) if order.state in ('sale','done') else fields.Datetime.now())
+            for line in order.order_line.filtered(lambda x: x.state != 'cancel' and not x._is_delivery()):
+                dt = confirm_date + timedelta(days=line.customer_lead or 0.0)
+                dates_list.append(dt)
+            if dates_list:
+                expected_date = min(dates_list) if order.picking_policy == 'direct' else max(dates_list)
+                order.expected_date = fields.Datetime.to_string(expected_date)
+
 
     @api.multi
     def action_fax_send(self):
@@ -577,11 +590,11 @@ class SaleOrderLine(models.Model):
             self.write({'is_last': True})
 
             partner = self.order_id.partner_id.id
-            sale_history = self.env['sale.history'].search([('partner_id', '=', partner), ('product_id', '=', self.product_id.id), ('uom_id', '=', self.product_uom.id)])
+            sale_history = self.env['sale.history'].search([('partner_id', '=', partner), ('product_id', '=', self.product_id.id), ('uom_id', '=', self.product_uom.id), '|', ('active', '=', True), ('active', '=', False)])
             if sale_history:
                 sale_history.order_line_id = self
             else:
-                vals={'order_line_id' : self.id}
+                vals={'order_line_id' : self.id, 'partner_id': partner}
                 self.env['sale.history'].create(vals)
 
 

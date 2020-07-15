@@ -77,6 +77,43 @@ class StockPickingBatch(models.Model):
         return super(StockPickingBatch, self).name_get()
 
     @api.multi
+    def view_pending_products(self):
+        product_dict = {}
+        for batch in self:
+            for picking in batch.picking_ids:
+                for move in picking.move_ids_without_package:
+                    print(move.product_id, move.product_uom_qty, move.reserved_availability)
+                    product_id = move.product_id.id
+                    initial_demand = move.product_uom_qty
+                    pending_qty = initial_demand - move.reserved_availability
+
+                    if product_id in product_dict:
+                        initial_demand += product_dict[product_id][0]
+                        pending_qty += product_dict[product_id][1]
+                    product_dict[product_id] = [initial_demand, pending_qty]
+            self.env['picking.pending.product'].search([]).unlink()
+            for product in product_dict:
+                vals={'product_id': product,
+                    'total': product_dict[product_id][0],
+                    'pending':product_dict[product_id][1],
+                    'batch_id': batch.id
+                    }
+                self.env['picking.pending.product'].create(vals)
+        view_id = self.env.ref('batch_delivery.view_picking_pending_product_tree').id
+        res = {
+            "type": "ir.actions.act_window",
+            "name" : "Pending Product",
+            "res_model": "picking.pending.product",
+            "views": [[view_id, "tree"]],
+            "context": {},
+            "domain":[],
+            "target": "current",
+        }
+        return res
+
+
+
+    @api.multi
     def print_master_pickticket(self):
         return self.env.ref('batch_delivery.report_master_pick_ticket').report_action(self, config=False)
 
@@ -145,7 +182,7 @@ class StockPickingBatch(models.Model):
         for rec in self:
             partners = rec.picking_ids and rec.picking_ids.filtered(lambda rec:rec.partner_id and rec.partner_id.partner_latitude and rec.partner_id.partner_longitude).mapped('partner_id')
             params={'partner_ids':','.join(map(str, partners and partners.ids or [])),
-                        'partner_url' : 'customers'
+                    'partner_url' : 'customers'
                     }
         return urlplus('/google_map', params)
 

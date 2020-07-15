@@ -12,4 +12,5 @@ from . import stock_move_line
 from . import procurement
 from . import sale
 from . import stock_production_lot
+from . import picking_pending_product
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

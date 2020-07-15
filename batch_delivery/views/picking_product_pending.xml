@@ -1,0 +1,32 @@
+<odoo>
+    <data>
+        <record id="view_picking_pending_product_tree" model="ir.ui.view">
+            <field name="name">picking.pending.product.tree</field>
+            <field name="model">picking.pending.product</field>
+            <field name="arch" type="xml">
+                <tree string="Pending Products" create="0" delete="0" edit="0">
+                    <field name="product_id" />
+                    <field name="total" />
+                    <field name="pending" />
+                    <field name="batch_id" invisible='1'/>
+
+                    <button name="open_pickings" string="View Pickings" type="object"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record id="action_pending_products" model="ir.actions.act_window">
+            <field name="name">Pending Products</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">picking.pending.product</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+              <p>
+                All product are reserved.
+              </p>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -9,6 +9,7 @@
             <field name="arch" type="xml">
 
                 <button name="print_picking" position="before">
+                    <button name="view_pending_products" string="Pending Products" type="object" class="oe_highlight"/>
                     <button name="print_master_pickticket" string="Print Master PickTicket" type="object" class="oe_highlight"/>
                 </button>
 

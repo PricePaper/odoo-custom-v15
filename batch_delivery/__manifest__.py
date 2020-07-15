@@ -32,6 +32,7 @@ This module sets up the batch delivery process for price paper.
              'views/report_template.xml',
 #             'views/product_view.xml',
              'views/account_view.xml',
+             'views/picking_product_pending.xml',
              'views/sale_view.xml',
              'views/website_asset.xml',
              'security/ir.model.access.csv',

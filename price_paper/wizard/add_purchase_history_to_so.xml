@@ -8,7 +8,7 @@
                 <form string="Add Purchase history">
                     <sheet>
                         <p class="oe_grey">
-                            Use product name, product internal reference or order date to search.
+                            Use product name or product internal reference to search.
                         </p>
                         <p>
                             <b>Please select atleast one line by checking the select checkbox before pressing ADD LINE button.</b>

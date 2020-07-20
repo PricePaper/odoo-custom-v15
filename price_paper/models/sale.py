@@ -590,7 +590,7 @@ class SaleOrderLine(models.Model):
             self.write({'is_last': True})
 
             partner = self.order_id.partner_id.id
-            sale_history = self.env['sale.history'].search([('partner_id', '=', partner), ('product_id', '=', self.product_id.id), ('uom_id', '=', self.product_uom.id), '|', ('active', '=', True), ('active', '=', False)])
+            sale_history = self.env['sale.history'].search([('partner_id', '=', partner), ('product_id', '=', self.product_id.id), ('uom_id', '=', self.product_uom.id), '|', ('active', '=', True), ('active', '=', False)], limit=1)
             if sale_history:
                 sale_history.order_line_id = self
             else:

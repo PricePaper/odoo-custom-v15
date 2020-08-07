@@ -15,4 +15,5 @@ from . import delivery_carrier
 from . import helpdesk
 from . import stock_move
 from . import sale_history
+from . import tax_history
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

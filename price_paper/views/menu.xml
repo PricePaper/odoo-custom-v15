@@ -21,6 +21,16 @@
             action="action_sale_history"
             parent="sale.sale_order_menu"
             sequence="13" />
+        <menuitem id="menu_sale_tax_history"
+            name="Sale Tax History"
+            action="action_sale_tax_history"
+            parent="sale.sale_order_menu"
+            sequence="14" />
+        <menuitem id="menu_create_sale_tax_history"
+            name="Create Sale Tax History"
+            action="action_create_sale_tax_history"
+            parent="sale.sale_order_menu"
+            sequence="15" />
         <menuitem id="menu_customer_product_price"
             name="Customer Product Price"
             action="action_customer_product_price"

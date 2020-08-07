@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_sale_tax_history_wiz" model="ir.ui.view">
+            <field name="name">sale.tax.history.wizard</field>
+            <field name="model">sale.tax.history.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Create sale tax history lines">
+                    <sheet>
+                        <p class="oe_grey">
+                            Press submit button to create sale tax history table
+                        </p>
+                    </sheet>
+                    <footer>
+                        <button string="Submit" type="object" name="add_sale_tax_history_lines"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                        <a string="" class="pull-right" onclick="$('main.modal-body').scrollTop(0);"><span aria-label="scroll-top" title='scrolltop' class="fa fa-arrow-circle-o-up fa-2x"></span></a>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="action_create_sale_tax_history" model="ir.actions.act_window">
+            <field name="name">Create Sale Tax History</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.tax.history.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_sale_tax_history_wiz"/>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

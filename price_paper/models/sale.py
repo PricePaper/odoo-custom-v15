@@ -597,6 +597,19 @@ class SaleOrderLine(models.Model):
                 vals={'order_line_id' : self.id, 'partner_id': partner}
                 self.env['sale.history'].create(vals)
 
+            sale_tax_history = self.env['sale.tax.history'].search([('partner_id', '=', self.order_id.partner_shipping_id.id), ('product_id', '=', self.product_id.id)], limit=1)
+            is_tax = False
+            if self.tax_id:
+                is_tax = True
+            if sale_tax_history:
+                sale_tax_history.tax = is_tax
+            else:
+                vals={'product_id' : self.product_id.id,
+                    'partner_id': self.order_id.partner_shipping_id.id,
+                    'tax': is_tax
+                    }
+                self.env['sale.tax.history'].create(vals)
+
 
             #Create record in customer.product.price if not exist
             #if exist then check the price and update
@@ -747,17 +760,19 @@ class SaleOrderLine(models.Model):
            res.update({'value' : {'lst_price': lst_price, 'working_cost': working_cost}})
         if self.product_id:
             warn_msg = not self.product_id.purchase_ok and "This item can no longer be purchased from vendors"  or ""
-            partner_history = self.env['sale.order.line'].search([('order_id.partner_shipping_id', '=', self.order_id and self.order_id.partner_shipping_id.id), ('product_id', '=', self.product_id and self.product_id.id), ('is_last', '=', True)], limit=1)
-            if self.order_id and self.order_id.partner_id.vat and partner_history and not partner_history.tax_id:
-                self.tax_id = [(5, _, _)] # clear all tax values, no Taxes to be used
+            partner_history = self.env['sale.tax.history'].search([('partner_id', '=', self.order_id and self.order_id.partner_shipping_id.id), ('product_id', '=', self.product_id and self.product_id.id)], limit=1)
+            # if self.order_id and self.order_id.partner_id.vat and partner_history and not partner_history.tax:
+            #     self.tax_id = [(5, _, _)] # clear all tax values, no Taxes to be used
+            if partner_history and not partner_history.tax:
+                self.tax_id = [(5, _, _)]
 
-            #force domain the tax_id field with only available taxes based on applied fpos
-            # if not res.get('domain', False):
-            #     res.update({'domain':{}})
-            # pro_tax_ids = self.product_id.taxes_id
-            # if self.order_id.fiscal_position_id:
-            #     taxes_ids = self.order_id.fiscal_position_id.map_tax(pro_tax_ids, self.product_id, self.order_id.partner_id).ids
-            #     res.get('domain', {}).update({'tax_id':[('id', 'in', taxes_ids)]})
+            # force domain the tax_id field with only available taxes based on applied fpos
+            if not res.get('domain', False):
+                res.update({'domain':{}})
+            pro_tax_ids = self.product_id.taxes_id
+            if self.order_id.fiscal_position_id:
+                taxes_ids = self.order_id.partner_shipping_id.property_account_position_id.map_tax(pro_tax_ids, self.product_id, self.order_id.partner_shipping_id).ids
+                res.get('domain', {}).update({'tax_id':[('id', 'in', taxes_ids)]})
 
             msg, product_price, price_from = self.calculate_customer_price()
             if msg:

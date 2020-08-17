@@ -8,6 +8,7 @@ class SaleOrderHistory(models.Model):
     _description = 'Sale History'
 
     partner_id = fields.Many2one('res.partner', string='Customer')
+    customer_code = fields.Char(related='partner_id.customer_code', string='Customer Code')
     product_id = fields.Many2one('product.product', related='order_line_id.product_id', string='Product')
     uom_id = fields.Many2one('uom.uom', related='order_line_id.product_uom', string='UOM')
     order_id = fields.Many2one('sale.order' ,related='order_line_id.order_id', string='Order')

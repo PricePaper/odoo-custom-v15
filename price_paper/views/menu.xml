@@ -25,11 +25,13 @@
             name="Sale Tax History"
             action="action_sale_tax_history"
             parent="sale.sale_order_menu"
+            groups="sales_team.group_sale_manager"
             sequence="14" />
         <menuitem id="menu_create_sale_tax_history"
-            name="Create Sale Tax History"
+            name="Create Sales Tax History"
             action="action_create_sale_tax_history"
-            parent="sale.sale_order_menu"
+            groups="sales_team.group_sale_manager"
+            parent="sale.menu_sale_config"
             sequence="15" />
         <menuitem id="menu_customer_product_price"
             name="Customer Product Price"

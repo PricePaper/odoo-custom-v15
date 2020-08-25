@@ -3,4 +3,4 @@ from . import res_company
 from . import res_partner
 from . import product
 from . import fbprophet_config
-from . import stock
+# from . import stock

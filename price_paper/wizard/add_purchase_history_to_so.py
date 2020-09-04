@@ -9,7 +9,7 @@ from odoo.exceptions import UserError
 class SaleHistoryLinesWizard(models.TransientModel):
 
     _name = 'sale.history.lines.wizard'
-    _description = 'Sale History Line Wizard'
+    _description = 'Sales History Line Wizard'
 
     product_name = fields.Char(string='Product')
     product_uom = fields.Many2one('uom.uom', string="UOM")
@@ -31,7 +31,7 @@ class AddPurchaseHistorySO(models.TransientModel):
 
     search_box = fields.Char(string='Search')
     purchase_history_ids = fields.One2many('sale.history.lines.wizard', 'search_wizard_id', string="Purchase History")
-    sale_history_months = fields.Integer(string='Sale History For # Months ', default=lambda s: s.default_sale_history())
+    sale_history_months = fields.Integer(string='Sales History For # Months ', default=lambda s: s.default_sale_history())
 
     @api.model
     def default_sale_history(self):

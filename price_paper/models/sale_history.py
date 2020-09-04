@@ -5,7 +5,7 @@ from odoo.addons.queue_job.job import job
 
 class SaleOrderHistory(models.Model):
     _name = 'sale.history'
-    _description = 'Sale History'
+    _description = 'Sales History'
 
     partner_id = fields.Many2one('res.partner', string='Customer')
     customer_code = fields.Char(related='partner_id.customer_code', string='Customer Code')
@@ -45,7 +45,7 @@ class SaleOrderHistory(models.Model):
         self._cr.execute("select distinct on (so.partner_id,sol.product_id, sol.product_uom) sol.id,sol.product_id,sol.product_uom,so.partner_id  from sale_order_line sol join sale_order so on sol.order_id = so.id where so.state in ('done', 'sale') order by so.partner_id, sol.product_id, sol.product_uom, so.confirmation_date desc")
         line_ids = self._cr.fetchall()
         for line in line_ids:
-            self.with_delay(channel='root.Sale History').job_queue_create_purchase_history(line)
+            self.with_delay(channel='root.Sales_History').job_queue_create_purchase_history(line)
 
 
 SaleOrderHistory()

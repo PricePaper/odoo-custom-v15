@@ -332,7 +332,7 @@ class ProductProduct(models.Model):
 
         products = self.env['product.product'].search([('active','=',True), ('type', '=', 'product'), ('dont_use_fbprophet', '=', False)], order='last_op_update_date')
         for product in products:
-            product.with_delay(channel='root.Product Orderpoint').job_queue_forecast()
+            product.with_delay(channel='root.Product_Orderpoint').job_queue_forecast()
 
 
 

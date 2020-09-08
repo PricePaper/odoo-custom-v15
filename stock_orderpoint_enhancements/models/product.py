@@ -24,74 +24,74 @@ class ProductProduct(models.Model):
     real_forecast_qty = fields.Float(string='Real Forecast Qty', compute='compute_real_forecast_qty')
 
 
-    @api.multi
-    def compute_real_forecast_qty(self, prophet_start_date=''):
-        """
-        Fb Prophet test harness
-        shows the real quantity of products sold and fbprophet forecast
-        using past data based on prophet_start_date key in system parameters
-        and forecast_days field set in product ie: if 2018-02-28 set in system param
-        and 30 set as forecast_days in product form, then this methord
-        will tell the actual quantity sold and forecasted quantity according to
-        fb prophet for the date range 2019-04-08 - 2019-05-08
-        """
-        for pro in self:
-            qty = 0
-            for_quantity = 0
-            for_quantity_min = 0
-            for_quantity_max = 0
-            from_flag = True
-            if isinstance(prophet_start_date, dict):
-                from_flag = False
-                prophet_start_date = pro.env['ir.config_parameter'].sudo().get_param('prophet_start_date')
-
-            start_date = prophet_start_date and datetime.datetime.strptime(prophet_start_date, '%Y-%m-%d').date() or False
-            if start_date and start_date <= datetime.date.today():
-                to_date = start_date + relativedelta(days=pro.forecast_days)
-
-
-                product_ids = [pro.id]
-                forecast = []
-                if pro.superseded:
-                    product_ids.append(pro.superseded.id)
-                query = """
-                        SELECT sum(l.product_uom_qty), l.product_uom from sale_order o, sale_order_line
-                        l WHERE o.date_order > '%s'
-                        AND o.date_order <= '%s' AND o.id=l.order_id AND
-                        l.product_id in (%s) AND l.product_uom_qty>0 AND o.state IN ('sale', 'done') GROUP BY l.product_uom;""" % (str(start_date),str(to_date), (",".join(str(x) for x in product_ids)))
-                self.env.cr.execute(query)
-                result = self.env.cr.fetchall()
-                for product_uom_qty in result:
-                    if product_uom_qty[1] == pro.uom_id.id:
-                        qty += product_uom_qty[0]
-                    else:
-                        sale_uom_factor = self.env['uom.uom'].browse(product_uom_qty[1]).factor
-                        qty += ((product_uom_qty[0] * pro.uom_id.factor) / sale_uom_factor)
-
-            periods = pro.forecast_days or 31
-            forecast = pro.forecast_sales(periods=periods, freq='d', to_date=str(start_date))
-            range_end = start_date+relativedelta(days=periods)
-            flag = False
-            for ele in forecast:
-                if datetime.datetime.strptime(ele[0], '%Y-%m-%d').date() >= start_date:
-                    flag = True
-                if flag:
-                    for_quantity += ele[1] # quantity,
-                    for_quantity_min += ele[2] #min_quantity,
-                    for_quantity_max += ele[3] # max_quantity,
-            if from_flag:
-                return {'start_date': str(start_date),
-                       'end_date': str(range_end),
-                       'real_qty': str(round(qty,2)),
-                       'forecasted': str(round(for_quantity,2)),
-                       'forecasted_max': str(round(for_quantity_max,2)),
-                       'forecasted_min': str(round(for_quantity_min,2)),
-                       'product_sku': str(pro.default_code),
-                       'product_name': str(pro.name),
-                       'UOM': pro.uom_id.name,
-                      }
-
-            raise UserError("Evaluation Period: %s - %s\nReal Qty: %s %s\n Forecasted: %s %s\n Forecasted Max: %s %s\n Forecasted Min: %s %s" %(str(start_date), str(range_end), qty, pro.uom_id.name, round(for_quantity,2), pro.uom_id.name, round(for_quantity_max, 2), pro.uom_id.name, round(for_quantity_min,2 ), pro.uom_id.name))
+    # @api.multi
+    # def compute_real_forecast_qty(self, prophet_start_date=''):
+    #     """
+    #     Fb Prophet test harness
+    #     shows the real quantity of products sold and fbprophet forecast
+    #     using past data based on prophet_start_date key in system parameters
+    #     and forecast_days field set in product ie: if 2018-02-28 set in system param
+    #     and 30 set as forecast_days in product form, then this methorzd
+    #     will tell the actual quantity sold and forecasted quantity according to
+    #     fb prophet for the date range 2019-04-08 - 2019-05-08
+    #     """
+    #     for pro in self:
+    #         qty = 0
+    #         for_quantity = 0
+    #         for_quantity_min = 0
+    #         for_quantity_max = 0
+    #         from_flag = True
+    #         if isinstance(prophet_start_date, dict):
+    #             from_flag = False
+    #             prophet_start_date = pro.env['ir.config_parameter'].sudo().get_param('prophet_start_date')
+    #
+    #         start_date = prophet_start_date and datetime.datetime.strptime(prophet_start_date, '%Y-%m-%d').date() or False
+    #         if start_date and start_date <= datetime.date.today():
+    #             to_date = start_date + relativedelta(days=pro.forecast_days)
+    #
+    #
+    #             product_ids = [pro.id]
+    #             forecast = []
+    #             if pro.superseded:
+    #                 product_ids.append(pro.superseded.id)
+    #             query = """
+    #                     SELECT sum(l.product_uom_qty), l.product_uom from sale_order o, sale_order_line
+    #                     l WHERE o.date_order > '%s'
+    #                     AND o.date_order <= '%s' AND o.id=l.order_id AND
+    #                     l.product_id in (%s) AND l.product_uom_qty>0 AND o.state IN ('sale', 'done') GROUP BY l.product_uom;""" % (str(start_date),str(to_date), (",".join(str(x) for x in product_ids)))
+    #             self.env.cr.execute(query)
+    #             result = self.env.cr.fetchall()
+    #             for product_uom_qty in result:
+    #                 if product_uom_qty[1] == pro.uom_id.id:
+    #                     qty += product_uom_qty[0]
+    #                 else:
+    #                     sale_uom_factor = self.env['uom.uom'].browse(product_uom_qty[1]).factor
+    #                     qty += ((product_uom_qty[0] * pro.uom_id.factor) / sale_uom_factor)
+    #
+    #         periods = pro.forecast_days or 31
+    #         forecast = pro.forecast_sales(periods=periods, freq='d', to_date=str(start_date))
+    #         range_end = start_date+relativedelta(days=periods)
+    #         flag = False
+    #         for ele in forecast:
+    #             if datetime.datetime.strptime(ele[0], '%Y-%m-%d').date() >= start_date:
+    #                 flag = True
+    #             if flag:
+    #                 for_quantity += ele[1] # quantity,
+    #                 for_quantity_min += ele[2] #min_quantity,
+    #                 for_quantity_max += ele[3] # max_quantity,
+    #         if from_flag:
+    #             return {'start_date': str(start_date),
+    #                    'end_date': str(range_end),
+    #                    'real_qty': str(round(qty,2)),
+    #                    'forecasted': str(round(for_quantity,2)),
+    #                    'forecasted_max': str(round(for_quantity_max,2)),
+    #                    'forecasted_min': str(round(for_quantity_min,2)),
+    #                    'product_sku': str(pro.default_code),
+    #                    'product_name': str(pro.name),
+    #                    'UOM': pro.uom_id.name,
+    #                   }
+    #
+    #         raise UserError("Evaluation Period: %s - %s\nReal Qty: %s %s\n Forecasted: %s %s\n Forecasted Max: %s %s\n Forecasted Min: %s %s" %(str(start_date), str(range_end), qty, pro.uom_id.name, round(for_quantity,2), pro.uom_id.name, round(for_quantity_max, 2), pro.uom_id.name, round(for_quantity_min,2 ), pro.uom_id.name))
 
 
     @api.multi
@@ -183,7 +183,8 @@ class ProductProduct(models.Model):
         ploted with the forecast result
         """
         prophet_start_date = self.env['ir.config_parameter'].sudo().get_param('prophet_start_date')
-        to_date = prophet_start_date and datetime.datetime.strptime(prophet_start_date, '%Y-%m-%d').date() or datetime.date.today()
+        # to_date = prophet_start_date and datetime.datetime.strptime(prophet_start_date, '%Y-%m-%d').date() or datetime.date.today()
+        to_date = datetime.date.today()
         self.ensure_one()
         periods = self.forecast_days or 31
         forecast = self.forecast_sales(periods=periods, freq='d', to_date=str(to_date))
@@ -323,6 +324,17 @@ class ProductProduct(models.Model):
         return True
 
 
+    @api.multi
+    def reset_orderpoint(self):
+        """
+        Method to set the orderpoints(OP) for single product
+        uses fbprophet based forecasting for the OP setup.
+        """
+
+        for product in self:
+            product.with_delay(channel='root.Product_Orderpoint').job_queue_forecast()
+
+
     @api.model
     def set_orderpoint_cron(self):
         """
@@ -375,12 +387,6 @@ class  SupplierInfo(models.Model):
         prophet_start_date = self.env['ir.config_parameter'].sudo().get_param('prophet_start_date')
         to_date = prophet_start_date and datetime.datetime.strptime(prophet_start_date, '%Y-%m-%d').date() or datetime.date.today()
         forecast = product.forecast_sales(periods=30, freq='d', to_date=str(to_date))
-
-
-
-
-
-
 
         orderpoint = product.orderpoint_ids and product.orderpoint_ids[0] or False
         delivery_lead_time = self.delay or self.name and self.name.delay

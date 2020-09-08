@@ -8,11 +8,12 @@
             <field name="arch" type="xml">
                 <xpath expr="//div[@name='button_box']" position="inside">
                     <button class="oe_stat_button" name="show_forecast" type="object"  string="View Sales Forecast" icon="fa-signal"/>
-<!--                    <button class="oe_stat_button" name="compute_real_forecast_qty" type="object"  string="FBProphet test harness" icon="fas fa-signal"/>-->
+                    <!-- <button class="oe_stat_button" name="compute_real_forecast_qty" type="object"  string="FBProphet test harness" icon="fa-signal"/> -->
+                    <button class="oe_stat_button" name="reset_orderpoint" type="object"  string="Reset Orderpoint" icon="fa-refresh"/>
                 </xpath>
                 <xpath expr="//field[@name='categ_id']" position="after">
                     <field name="forecast_days"/>
-<!--                    <field name="real_forecast_qty"/>-->
+                   <!-- <field name="real_forecast_qty"/> -->
                     <field name="orderpoint_update_date"/>
                     <field name="past_days"/>
                     <field name="dont_use_fbprophet"/>

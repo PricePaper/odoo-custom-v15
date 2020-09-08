@@ -15,7 +15,7 @@
         </record>
 
         <record forcecreate="True" id="ir_cron_sale_history" model="ir.cron">
-            <field name="name">Sale History Creation</field>
+            <field name="name">Sales History Creation</field>
             <field name="model_id" ref="model_sale_history"/>
             <field name="state">code</field>
             <field name="code">model.update_purchase_history()</field>

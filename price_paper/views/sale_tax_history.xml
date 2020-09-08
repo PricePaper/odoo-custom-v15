@@ -4,7 +4,7 @@
             <field name="name">sale.tax.history.tree</field>
             <field name="model">sale.tax.history</field>
             <field name="arch" type="xml">
-                <tree string="Sale History" create="0" delete="1">
+                <tree string="Sales History" create="0" delete="1">
                     <field name="partner_id" readonly="1"/>
                     <field name="product_id" readonly="1"/>
                     <field name="tax" readonly="1"/>

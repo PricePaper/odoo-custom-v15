@@ -128,7 +128,7 @@ AddSaleHistoryPoLine()
 class AddSaleHistoryPO(models.TransientModel):
 
     _name = 'add.sale.history.po'
-    _description = "Add Sale History to PO"
+    _description = "Add Sales History to PO"
 
     search_box = fields.Char(string='Search')
     sale_history_ids = fields.One2many('add.sale.history.po.line', 'parent_id', string="Sales History")

@@ -4,7 +4,7 @@
             <field name="name">sale.history.tree</field>
             <field name="model">sale.history</field>
             <field name="arch" type="xml">
-                <tree string="Sale History" create="0" delete="1" editable="top">
+                <tree string="Sales History" create="0" delete="1" editable="top">
                     <field name="order_line_id" invisible="1" />
                     <field name="partner_id" readonly="1"/>
                     <field name="customer_code" readonly="1"/>
@@ -32,14 +32,14 @@
         </record>
 
         <record id="action_sale_history" model="ir.actions.act_window">
-            <field name="name">Sale History</field>
+            <field name="name">Sales History</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">sale.history</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree</field>
             <field name="help" type="html">
               <p>
-                No Sale History Available.
+                No Sales History Available.
               </p>
             </field>
         </record>

@@ -8,7 +8,7 @@
         <menuitem id="inactive_inventory_customer_report"
             name="Inactive Customer Report"
             action="action_inactive_customer_report"
-            parent="stock.menu_warehouse_report"
+            parent="crm.crm_menu_report"
             sequence="121" />
         <menuitem id="menu_orders_credit_limit_exceeded"
             name="Credit limit exceeded orders"

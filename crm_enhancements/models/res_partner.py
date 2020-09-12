@@ -92,7 +92,7 @@ class ResPartner(models.Model):
         by seaching his current month sales transactions
         """
         for partner in self:
-            orders = self.env['sale.order'].search([('partner_id', 'child_of', partner.id), ('state', 'in', ['sale', 'locked'])])
+            orders = self.env['sale.order'].search([('confirmation_date', '!=', False)('partner_id', 'child_of', partner.id), ('state', 'in', ['sale', 'done'])])
             date_today = datetime.date.today()
             start_date_this_mon, end_date_this_mon = self.get_month_start_end_date(date_today)
             orders_this_month = orders.filtered(lambda so: so.confirmation_date > start_date_this_mon and so.confirmation_date < end_date_this_mon)

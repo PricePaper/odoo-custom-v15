@@ -35,7 +35,7 @@
             <field name="view_mode">tree</field>
             <field name="help" type="html">
               <p>
-                No Sale Tax History Available.
+                No Sales Tax History Available.
               </p>
             </field>
         </record>

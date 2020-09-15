@@ -4,12 +4,22 @@ from odoo import models, fields, api, _
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    quick_sale = fields.Boolean(string='is_quick_sale', default=False)
+    quick_sale = fields.Boolean(string='is_quick_sale', default=False, copy=False)
+
+    @api.multi
+    def write(self, vals):
+        """
+        auto save the delivery line.
+        """
+        res = super(SaleOrder, self).write(vals)
+        for order in self:
+            if order.quick_sale:
+                order._remove_delivery_line()
 
     @api.multi
     def action_quick_sale(self):
         for rec in self:
-            # rec.quick_sale = True
+            rec.quick_sale = True
             rec.action_confirm()
             rec.picking_ids.action_confirm()
             rec.picking_ids.action_assign()
@@ -20,7 +30,7 @@ class SaleOrder(models.Model):
             rec.picking_ids.deliver_products()
             rec.action_invoice_create()
             rec.invoice_ids.action_invoice_open()
-            rec.quick_sale = True
+            # rec.quick_sale = True
         return True
 
     @api.multi

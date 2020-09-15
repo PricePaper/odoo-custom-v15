@@ -4,14 +4,16 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from datetime import datetime
 import calendar
-
+from dateutil.easter import easter
+import logging as server_log
 try:
     import pandas as pd
 #    import numpy as np
     from fbprophet import Prophet
     from pandas.tseries.holiday import USFederalHolidayCalendar
-except ImportError:
-    pass
+    import holidays as pypiholidays
+except ImportError as e:
+   server_log.error(e)
 
 
 class YearlyHolidays(models.Model):
@@ -35,12 +37,18 @@ class YearlyHolidays(models.Model):
         end = "%s-12-31" %(self.name)
         holidays = cal.holidays(start=start, end=end).to_pydatetime()
         holidays = [t.strftime('%Y-%m-%d')for t in holidays]
+        # Add in Easter
+        holidays.append(easter(int(self.name)))
+
         existing_holidays = self.env['holiday.day'].search([('year_id', '=', self.id)])
         existing_holidays = [h.date for h in existing_holidays]
+        us_holidays = pypiholidays.UnitedStates()
+
         for holiday in holidays:
+            holiday_name = us_holidays.get(holiday)
             if holiday in existing_holidays:
                 continue
-            self.env['holiday.day'].create({'date': holiday, 'year_id':self.id})
+            self.env['holiday.day'].create({'description': holiday_name, 'date': holiday, 'year_id':self.id})
 
 
     @api.constrains('name')

@@ -8,7 +8,7 @@
                 <form string="Create sales tax history lines">
                     <sheet>
                         <p class="oe_grey">
-                            Press submit button to create sale tax history table
+                            Press submit button to create sales tax history table
                         </p>
                     </sheet>
                     <footer>

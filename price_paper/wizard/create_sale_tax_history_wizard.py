@@ -4,7 +4,7 @@ from odoo.addons.queue_job.job import job
 class SaleTaxHistoryWizard(models.TransientModel):
 
     _name = 'sale.tax.history.wizard'
-    _description = 'Sale Tax History Wizard'
+    _description = 'Sales Tax History Wizard'
 
     @api.multi
     @job
@@ -27,4 +27,4 @@ class SaleTaxHistoryWizard(models.TransientModel):
         self._cr.execute("select distinct on (so.partner_shipping_id,sol.product_id) sol.id  from sale_order_line sol join sale_order so on sol.order_id = so.id where so.state in ('done', 'sale') order by so.partner_shipping_id, sol.product_id, so.confirmation_date desc")
         line_ids = self._cr.fetchall()
         for line in line_ids:
-            self.with_delay(channel='root.Sale Tax History').job_queue_create_sale_tax_history(line)
+            self.with_delay(channel='root.Sales_Tax_History').job_queue_create_sale_tax_history(line)

@@ -5,10 +5,10 @@
             <field name="name">sale.tax.history.wizard</field>
             <field name="model">sale.tax.history.wizard</field>
             <field name="arch" type="xml">
-                <form string="Create sale tax history lines">
+                <form string="Create sales tax history lines">
                     <sheet>
                         <p class="oe_grey">
-                            Press submit button to create sale tax history table
+                            Press submit button to create sales tax history table
                         </p>
                     </sheet>
                     <footer>
@@ -21,7 +21,7 @@
             </field>
         </record>
         <record id="action_create_sale_tax_history" model="ir.actions.act_window">
-            <field name="name">Create Sale Tax History</field>
+            <field name="name">Create Sales Tax History</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">sale.tax.history.wizard</field>
             <field name="view_type">form</field>

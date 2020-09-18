@@ -152,10 +152,16 @@
             <field name="state" position="attributes">
                 <attribute name="statusbar_visible">draft,confirmed,partially_available,assigned,done,delivered</attribute>
             </field>
+            <field name="location_id" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </field>
 
 
                 <xpath expr="//field[@name='move_line_ids_without_package']/tree/field[@name='lot_id']" position="after">
                     <field name="pref_lot_id" domain="[('product_id', '=', product_id)]"/>
+                </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="after">
+                    <field name="location_id" />
                 </xpath>
 
 

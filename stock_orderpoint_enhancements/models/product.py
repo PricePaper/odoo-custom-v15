@@ -184,8 +184,8 @@ class ProductProduct(models.Model):
         ploted with the forecast result
         """
         prophet_start_date = self.env['ir.config_parameter'].sudo().get_param('prophet_start_date')
-        # to_date = prophet_start_date and datetime.datetime.strptime(prophet_start_date, '%Y-%m-%d').date() or datetime.date.today()
-        to_date = datetime.date.today()
+        to_date = prophet_start_date and datetime.datetime.strptime(prophet_start_date, '%Y-%m-%d').date() or datetime.date.today()
+        # to_date = datetime.date.today()
         self.ensure_one()
         periods = self.forecast_days or 31
         forecast = self.forecast_sales(periods=periods, freq='d', to_date=str(to_date))

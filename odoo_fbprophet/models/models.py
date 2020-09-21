@@ -180,7 +180,7 @@ class ProphetBridge(models.AbstractModel):
 
         forecast = m.predict(future)                      #run prophet to predict future
         forecast['ds'] = pd.to_datetime(forecast['ds']).apply(lambda x: x.date().strftime('%Y-%m-%d'))
-        forecast = list(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].itertuples(index=False)) # convert the result back to list of tuples
+        forecast = list(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].itertuples(index=False, name=None)) # convert the result back to list of tuples
         return forecast
 
 

@@ -15,7 +15,7 @@ class CustomerProductPrice(models.Model):
     median_price = fields.Html(string='Median Prices', related='product_id.median_price', readonly=True)
     competietor_price_ids = fields.Many2many('customer.product.price', compute="_get_competietor_prices", string='Competietor Price Entries')
     std_price = fields.Float(string='Standard Price', related='product_id.lst_price', readonly=True)
-    deviation = fields.Float(string='Deviation%', compute="get_deviation", readonly=True)
+    deviation = fields.Integer(string='Deviation%', compute="get_deviation", readonly=True)
 
     @api.depends('price','std_price')
     def get_deviation(self):

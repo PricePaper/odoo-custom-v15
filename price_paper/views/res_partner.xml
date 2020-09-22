@@ -56,7 +56,7 @@
                 <xpath expr="//div[hasclass('oe_title')]" position="after">
                     <group>
                         <group>
-                            <field name="corp_name"/>
+                            <field name="corp_name" attrs="{'invisible': [('company_type', '!=', 'company')]}"/>
                         </group>
                         <group>
                         </group>

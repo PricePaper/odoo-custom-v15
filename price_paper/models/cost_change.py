@@ -10,19 +10,21 @@ class CostChange(models.Model):
 
     item_filter = fields.Selection([('product', 'Product'), ('vendor', 'Vendor and/or Product Category')], string='Update Cost of', default='product')
     price_filter = fields.Selection([('percentage', '%'), ('fixed', 'Fix to an Amount')], string='Increase Cost as', default='fixed', help='Percentage: increase cost by percentage \n Fix to an Amount: sets the price to the specified fixed amount')
-    vendor_id  = fields.Many2one('res.partner', string="Vendor")
+    vendor_id  = fields.Many2one('res.partner', string="Vendor", domain=[('supplier', '=', True)])
     category_id  = fields.Many2many('product.category', string="Product Category")
     product_id = fields.Many2one('product.product', string="Product")
     price_change = fields.Float(string='Cost Change')
     is_done = fields.Boolean(string='Done', copy=False, default=False)
     run_date = fields.Date('Update Date', default=fields.Date.context_today)
     update_customer_pricelist = fields.Boolean('Update Customer Pricelist')
+    update_vendor_pricelist = fields.Boolean('Update Vendor Pricelist', default=True)
     update_standard_price = fields.Boolean('Update Standard Price', default=True)
     old_cost = fields.Float(compute='set_old_price', string='Old Cost', store=True)
     new_cost = fields.Float(compute='compute_new_cost', string='New Cost')
     price_difference = fields.Float(compute='compute_price_difference_percent', string="Price Difference")
     price_difference_per = fields.Float(compute='compute_price_difference_percent', string="Price Difference %")
     burden_change = fields.Float(string='Burden%')
+    burden_old = fields.Float(string='Old Burden%')
     update_burden = fields.Boolean('Update Burden%')
 
 
@@ -43,8 +45,14 @@ class CostChange(models.Model):
         for rec in self:
             if rec.item_filter == 'product' and rec.product_id:
                 rec.old_cost = rec.product_id.standard_price
+                rec.burden_old = rec.product_id.burden_percent
+                vendors = rec.product_id.seller_ids.mapped('name')
+                vendors = vendors and vendors.ids
+                if vendors:
+                    return {'domain':{'vendor_id':[('id','in',vendors)]}}
             else:
                 rec.old_cost = 0.00
+                return {'domain':{'vendor_id':[('supplier', '=', 'True')]}}
 
     @api.onchange('update_burden', 'product_id')
     def onchange_update_burden(self):
@@ -159,6 +167,23 @@ class CostChange(models.Model):
                     new_price = rec.calculate_new_price(product, price_list_rec)
                     price_list_rec.price = new_price
 
+            # Update vendor pricelist
+            if rec.update_vendor_pricelist and rec.item_filter == 'vendor':
+                vendor_price_ids = self.env['product.supplierinfo'].search([('name', '=', rec.vendor_id.id)])
+                for vendor_price in vendor_price_ids:
+                    vendor_price.price = vendor_price.price * ((100+rec.price_change)/100)
+
+
+
+            # Update vendor price for single product
+            if rec.item_filter == 'product' and rec.vendor_id:
+                supplier_info = rec.product_id.seller_ids.filtered(lambda r: r.name == rec.vendor_id)
+                if rec.price_filter == 'fixed':
+                    supplier_info.write({'price': rec.price_change})
+                else:
+                    supplier_info.price = supplier_info.price * ((100+rec.price_change)/100)
+
+
             #Update Fixed Cost
             if rec.price_filter == 'fixed':
                 products_to_filter.write({'standard_price': rec.price_change})
@@ -167,7 +192,8 @@ class CostChange(models.Model):
                     product.standard_price = product.standard_price * ((100+rec.price_change)/100)
             #Update burden%
             if rec.update_burden and rec.burden_change:
-                products_to_filter.write({'burden_percent': rec.burden_change})
+                for product in products_to_filter:
+                    product.write({'burden_percent': rec.burden_change})
             rec.is_done = True
         return True
 

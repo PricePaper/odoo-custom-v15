@@ -51,8 +51,9 @@
                                 <field name="item_filter" widget="radio" required='1' attrs="{'readonly':[('is_done', '=', True)]}"/>
                             </group>
                             <group>
-                                <field name="product_id" attrs="{'invisible': [('item_filter', '!=', 'product')], 'readonly':[('is_done', '=', True)], 'required': [('item_filter', '=', 'product')]}"/>
-                                <field name="vendor_id" domain="[('supplier', '=', 'True')]" attrs="{'invisible': [('item_filter', '!=', 'vendor')], 'readonly':[('is_done', '=', True)], 'required': [('item_filter', '=', 'vendor')]}"/>
+                                <field name="product_id" options="{'no_create': True, 'no_edit': True}" attrs="{'invisible': [('item_filter', '!=', 'product')], 'readonly':[('is_done', '=', True)], 'required': [('item_filter', '=', 'product')]}"/>
+                                <field name="vendor_id" domain="[('supplier', '=', 'True')]" options="{'no_create': True, 'no_edit': True}" attrs="{'readonly':[('is_done', '=', True)], 'required': [('item_filter', '=', 'vendor')]}"/>
+                                <field name="update_vendor_pricelist" attrs="{'invisible': [('item_filter', '!=', 'vendor')], 'readonly':[('is_done', '=', True)]}"/>
                                 <field name="category_id" widget="many2many_tags" attrs="{'invisible': [('item_filter', '!=', 'vendor')], 'readonly':[('is_done', '=', True)]}"/>
                             </group>
                         </group>
@@ -74,6 +75,7 @@
                                 <field name="burden_change" attrs="{'readonly':[('is_done', '=', True)], 'invisible':[('update_burden', '!=', True)]}" class="oe_inline"/>
                             </group>
                             <group>
+                                <field name="burden_old" attrs="{'invisible':[('item_filter', '!=', 'product')]}"/>
                                 <field name="old_cost" attrs="{'invisible':[('item_filter', '!=', 'product')]}"/>
                                 <field name="new_cost" attrs="{'invisible':['|',('item_filter', '!=', 'product'), ('is_done', '=', True)]}"/>
                                 <field name="is_done" invisible="1"/>

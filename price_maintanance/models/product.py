@@ -1,7 +1,8 @@
 from odoo import fields, models, api, _
-from datetime import datetime
+from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 import statistics
+from odoo.addons.queue_job.job import job
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
@@ -16,6 +17,8 @@ class ProductProduct(models.Model):
     future_price_ids = fields.One2many('cost.change', 'product_id', string='Future Price', domain=[('is_done', '=', False), ('product_id', '!=', False)])
     change_flag = fields.Boolean(string='Log an Audit Note')
     audit_notes = fields.Text(string='Audit Note')
+    standard_price_date_lock = fields.Date(string='Standard Price Lock Date')
+
 
 
 
@@ -144,20 +147,39 @@ class ProductProduct(models.Model):
     @api.model
     def _cron_update_product_lst_price(self):
         OrderLine = self.env['sale.order.line']
-        date_from = datetime.today() - relativedelta(months=9, day=1)
+        search_target = self.env.user.company_id.product_lst_price_months or 0
+        date_to = datetime.today() - relativedelta(months=search_target, day=1)
 
-        domain = [('display_type', '=', False), ('order_id.date_order', '>=', date_from.strftime('%Y-%m-%d'))]
+        # 6Months products
+        domain = [
+            ('display_type', '=', False),
+            ('order_id.date_order', '>=', date_to.strftime('%Y-%m-%d')),
+        ]
         line_data = OrderLine.read_group(domain, ['product_id'], ['product_id'])
 
         for data in line_data:
-            lines = OrderLine.search(data['__domain'], order="id desc")
-            partners = lines.mapped('order_id.partner_id')
-            partner_count = len(partners)
-            if partner_count >= 4:
-                price = sum([lines.filtered(lambda l: l.order_id.partner_id == partner)[:1].price_unit for partner in partners])
-                if price:
-                    product = self.browse(data['product_id'][0])
-                    product.lst_price = (price / partner_count)
+            print(data)
+            product = self.browse(data['product_id'][0])
+            if product.standard_price_date_lock and product.standard_price_date_lock > str(date.today()):
+                continue
+            product.with_delay(channel='root.standardprice').job_queue_standard_price_update(data)
+
+    @job
+    @api.multi
+    def job_queue_standard_price_update(self, data):
+
+        OrderLine = self.env['sale.order.line']
+        lines = OrderLine.search(data['__domain'], order="id desc")
+        partners = lines.mapped('order_id.partner_id')
+        partner_count = len(partners)
+        partner_count_company = self.env.user.company_id.partner_count or 0
+        if partner_count >= partner_count_company:
+            price = sum(
+                [lines.filtered(lambda l: l.order_id.partner_id == partner)[:1].price_unit for partner in partners])
+            if price:
+                self.lst_price = (price / partner_count)
+        else:
+            self.lst_price = self.categ_id.standard_price
         return True
 
 ProductProduct()

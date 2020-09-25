@@ -17,6 +17,7 @@ Custom module implemented for Price maintanance.
             'data/data.xml',
             'wizard/price_edit_note.xml',
             'views/price_edit_notes.xml',
+            'views/res_company.xml',
             'views/product.xml',
             'views/customer.xml',
             ],

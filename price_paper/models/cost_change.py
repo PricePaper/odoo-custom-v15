@@ -3,6 +3,7 @@
 from odoo import fields, models, api, _
 from datetime import date
 from odoo.exceptions import ValidationError
+from dateutil.relativedelta import relativedelta
 
 class CostChange(models.Model):
     _name = 'cost.change'
@@ -48,6 +49,7 @@ class CostChange(models.Model):
                 rec.burden_old = rec.product_id.burden_percent
                 vendors = rec.product_id.seller_ids.mapped('name')
                 vendors = vendors and vendors.ids
+                print(vendors)
                 if vendors:
                     return {'domain':{'vendor_id':[('id','in',vendors)]}}
             else:
@@ -148,6 +150,8 @@ class CostChange(models.Model):
             if rec.update_standard_price:
                 for product in products_to_filter:
                     new_price = rec.calculate_new_price(product)
+                    standard_price_days = self.env.user.company_id.standard_price_config_days or 75
+                    product.standard_price_date_lock = date.today() + relativedelta(days=standard_price_days)
                     product.lst_price = new_price
 
             # Update Customer pricelist
@@ -170,6 +174,7 @@ class CostChange(models.Model):
             # Update vendor pricelist
             if rec.update_vendor_pricelist and rec.item_filter == 'vendor':
                 vendor_price_ids = self.env['product.supplierinfo'].search([('name', '=', rec.vendor_id.id)])
+                print(len(vendor_price_ids))
                 for vendor_price in vendor_price_ids:
                     vendor_price.price = vendor_price.price * ((100+rec.price_change)/100)
 
@@ -182,6 +187,8 @@ class CostChange(models.Model):
                     supplier_info.write({'price': rec.price_change})
                 else:
                     supplier_info.price = supplier_info.price * ((100+rec.price_change)/100)
+                print(supplier_info, supplier_info.price)
+
 
 
             #Update Fixed Cost

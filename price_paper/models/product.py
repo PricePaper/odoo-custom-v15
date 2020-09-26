@@ -31,6 +31,7 @@ class ProductProduct(models.Model):
     storage_contract_account_id = fields.Many2one('account.account', company_dependent=True,
         string="Storage Contract Income Account",
         domain=[('deprecated', '=', False)])
+    standard_price_date_lock = fields.Date(string='Standard Price Lock Date')
 
     # list_price_percentage = fields.Float('Standard price %')
     # lst_price = fields.Float(

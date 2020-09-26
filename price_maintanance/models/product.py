@@ -17,7 +17,7 @@ class ProductProduct(models.Model):
     future_price_ids = fields.One2many('cost.change', 'product_id', string='Future Price', domain=[('is_done', '=', False), ('product_id', '!=', False)])
     change_flag = fields.Boolean(string='Log an Audit Note')
     audit_notes = fields.Text(string='Audit Note')
-    standard_price_date_lock = fields.Date(string='Standard Price Lock Date')
+    # standard_price_date_lock = fields.Date(string='Standard Price Lock Date')
 
 
 
@@ -158,10 +158,10 @@ class ProductProduct(models.Model):
         line_data = OrderLine.read_group(domain, ['product_id'], ['product_id'])
 
         for data in line_data:
-            print(data)
             product = self.browse(data['product_id'][0])
-            if product.standard_price_date_lock and product.standard_price_date_lock > str(date.today()):
+            if product.standard_price_date_lock and product.standard_price_date_lock > date.today():
                 continue
+            product.standard_price_date_lock = False
             product.with_delay(channel='root.standardprice').job_queue_standard_price_update(data)
 
     @job

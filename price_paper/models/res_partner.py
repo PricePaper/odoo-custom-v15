@@ -87,7 +87,9 @@ class ResPartner(models.Model):
                 name += customer.city + ' '
             if customer.state_id:
                 name += customer.state_id.name
-            result.append((customer.id, _('%s (%s)') % (customer.name, name)))
+            if customer.company_type == 'company' and name:
+                result.append((customer.id, _('%s (%s)') % (customer.name, name)))
+            result.append((customer.id, _('%s') % (customer.name)))
         return result
 
 

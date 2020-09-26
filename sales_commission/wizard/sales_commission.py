@@ -15,8 +15,12 @@ class GenerateCommission(models.TransientModel):
     def generate_commission(self):
         self.ensure_one()
         paid=False
+
         if self.report_type == 'invoice_paid':
             paid=True
+        domain = [['is_paid', '=', paid]]
+        if self.salesperson_id:
+            domain.append(['sale_person_id', '=', self.salesperson_id.id])
         view_id = self.env.ref('sales_commission.view_commission_sale_grouped_tree').id
         res = {
             "type": "ir.actions.act_window",
@@ -24,7 +28,7 @@ class GenerateCommission(models.TransientModel):
             "res_model": "sale.commission",
             "views": [[view_id, "tree"]],
             "context": {'group_by':['sale_person_id', 'write_date:month']},
-            "domain":[['is_paid', '=', paid]],
+            "domain":domain,
             "target": "current",
         }
         if not self.env.user.has_group('sales_commission.group_sales_commission'):

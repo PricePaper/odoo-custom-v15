@@ -87,18 +87,17 @@ class GlobalPriceChange(models.Model):
                 customer_price_lists = customer_price_lists.filtered(lambda r: r.product_id.id in products_to_filter.ids)
 
             if rec.is_exclude and rec.exclude_date:
-                date_exclude =  datetime.combine(rec.exclude_date, datetime.min.time())
-                customer_price_lists = customer_price_lists.filtered((lambda r: r.partner_id.create_date < date_exclude))
+                customer_price_lists = customer_price_lists.filtered((lambda r: r.partner_id.established_date < rec.exclude_date))
 
             today = date.today()
             for price_list in customer_price_lists:
 
                 # skips the update pricelist if expiry lock is active and lock expiry date is set
-                if price_list.price_lock and price_list.lock_expiry_date > str(today):
+                if price_list.price_lock and price_list.lock_expiry_date > today:
                     continue
 
                 # skips the update pricelist if expiry lock is active and lock expiry date is set for the parent pricelist itself
-                if price_list.pricelist_id and price_list.pricelist_id.price_lock and price_list.pricelist_id.lock_expiry_date > str(today):
+                if price_list.pricelist_id and price_list.pricelist_id.price_lock and price_list.pricelist_id.lock_expiry_date > today:
                     continue
 
                 price_list.price = price_list.price*((100+rec.price_change)/100)

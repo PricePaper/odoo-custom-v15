@@ -10,7 +10,9 @@
                     <field name="product_uom" />
                     <field name="price" />
                     <field name="partner_id" />
-                    <field name="price_last_updated" />                    
+                    <field name="price_last_updated" />
+                    <field name="price_lock"/>
+                    <field name="lock_expiry_date" attrs="{'required': [('price_lock', '=', True)], 'invisible': [('price_lock', '=', False)]}"/>
                 </tree>
             </field>
         </record>
@@ -42,6 +44,8 @@
                             <group>
                                 <field name="pricelist_id" required='1'/>
                                 <field name="partner_id" />
+                                <field name="price_lock"/>
+                                <field name="lock_expiry_date" attrs="{'required': [('price_lock', '=', True)], 'invisible': [('price_lock', '=', False)]}"/>
                             </group>
                             <group>
                                 <field name="product_id" required='1'/>

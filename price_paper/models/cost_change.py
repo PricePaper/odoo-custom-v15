@@ -160,11 +160,11 @@ class CostChange(models.Model):
                 today = date.today()
                 for price_list_rec in customer_price_lists:
                     # skips the update pricelist if expiry lock is active and lock expiry date is set
-                    if price_list_rec.price_lock and price_list_rec.lock_expiry_date > str(today):
+                    if price_list_rec.price_lock and price_list_rec.lock_expiry_date > today:
                         continue
 
                     # skips the update pricelist if expiry lock is active and lock expiry date is set for the parent pricelist itself
-                    if price_list_rec.pricelist_id and price_list_rec.pricelist_id.price_lock and price_list_rec.pricelist_id.lock_expiry_date > str(today):
+                    if price_list_rec.pricelist_id and price_list_rec.pricelist_id.price_lock and price_list_rec.pricelist_id.lock_expiry_date > today:
                         continue
 
                     product = price_list_rec.product_id
@@ -187,8 +187,6 @@ class CostChange(models.Model):
                     supplier_info.write({'price': rec.price_change})
                 else:
                     supplier_info.price = supplier_info.price * ((100+rec.price_change)/100)
-                print(supplier_info, supplier_info.price)
-
 
 
             #Update Fixed Cost

@@ -17,7 +17,7 @@
                         </group>
                         <group>
                             <field name="price_lock"/>
-                            <field name="lock_expiry_date" attrs="{'required': [('price_lock', '=', True)]}"/>
+                            <field name="lock_expiry_date" attrs="{'required': [('price_lock', '=', True)], 'invisible': [('price_lock', '=', False)]}"/>
                         </group>
                     </group>
                     <button name="%(action_upload_pricelist_wizard)d" type="action" string="Upload CSV File" context="{'pricelist_id':active_id,'is_competitor':type}"/>
@@ -40,7 +40,7 @@
                                 <field name="sale_uoms" widget="many2many_tags" invisible="1"/>
                                 <field name="price_last_updated" />
                                 <field name="price_lock"/>
-                                <field name="lock_expiry_date" attrs="{'required': [('price_lock', '=', True)]}"/>
+                                <field name="lock_expiry_date" attrs="{'required': [('price_lock', '=', True)], 'invisible': [('price_lock', '=', False)]}"/>
                             </tree>
                         </field>
                     </div>

@@ -41,7 +41,7 @@
                                         <field name="deviation"/>
                                         <field name="price_last_updated"/>
                                         <field name="price_lock"/>
-                                        <field name="lock_expiry_date" attrs="{'required': [('price_lock', '=', True)]}"/>
+                                        <field name="lock_expiry_date" attrs="{'invisible': [('price_lock', '=', False)], 'required': [('price_lock', '=', True)]}"/>
                                     </tree>
                                     <form string="Detailed Info">
                                         <group>
@@ -56,7 +56,7 @@
                                             <group>
                                                 <field name="price_last_updated"/>
                                                 <field name="price_lock"/>
-                                                <field name="lock_expiry_date" attrs="{'required': [('price_lock', '=', True)]}"/>
+                                                <field name="lock_expiry_date" attrs="{'invisible': [('price_lock', '=', False)], 'required': [('price_lock', '=', True)]}"/>
                                             </group>
                                         </group>
                                             <group string="Sales">

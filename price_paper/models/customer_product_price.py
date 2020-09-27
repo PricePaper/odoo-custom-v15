@@ -19,6 +19,11 @@ class CustomerProductPrice(models.Model):
     price_lock = fields.Boolean(string='Price Change Lock', default=False)
     lock_expiry_date = fields.Date(string='Lock Expiry date')
 
+    _sql_constraints = [
+        ('pricelist_product_uom_uniq', 'UNIQUE (pricelist_id, product_id, product_uom)',
+         'Combination of Product and product UOM must be unique'),
+    ]
+
 
     @api.multi
     def write(self, vals):

@@ -6,7 +6,7 @@
             <field name="inherit_id" ref="base.view_partner_form" />
             <field name="arch" type="xml">
                 <field name='category_id' position='after'>
-                    <field name='sales_person_ids' widget='many2many_tags' domain="[('is_sales_person', '=', True)]"/>
+                    <field name='sales_person_ids' widget='many2many_tags' domain="[('is_sales_person', '=', True)]" options='{"always_reload": True}' context="{'default_is_sales_person':1}"/>
                 </field>
                 <field name='property_payment_term_id' position='after'>
                     <field name='payment_method'/>

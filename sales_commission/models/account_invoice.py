@@ -36,9 +36,10 @@ class AccountInvoice(models.Model):
             amount = self.amount_total
             commission = line.commission
 
+            payment_date = max([rec.payment_date for rec in self.payment_ids])
             if self.payment_term_id.due_days:
                 days=self.payment_term_id.due_days
-                if datetime.date.today() > self.date_invoice+relativedelta(days=days):
+                if payment_date > self.date_invoice+relativedelta(days=days):
                     profit += self.amount_total*(self.payment_term_id.discount_per/100)
             if self.payment_ids[0].payment_method_id.code == 'electronic' and self.partner_id.payment_method == 'cash':
                 profit -= self.amount_total*0.03
@@ -75,8 +76,9 @@ class AccountInvoice(models.Model):
         """
 
         for line in lines:
-            if datetime.date.today() > self.date_due:
-                extra_days = datetime.date.today() - self.date_due
+            payment_date = max([rec.payment_date for rec in self.payment_ids])
+            if payment_date > self.date_due:
+                extra_days = payment_date - self.date_due
                 if self.partner_id.company_id.commission_ageing_ids:
                     commission_ageing = self.partner_id.company_id.commission_ageing_ids.filtered(lambda r : r.delay_days <= extra_days.days)
                     commission_ageing = commission_ageing.sorted(key=lambda r: r.delay_days, reverse=True)

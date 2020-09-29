@@ -19,10 +19,22 @@ class CustomerProductPrice(models.Model):
     price_lock = fields.Boolean(string='Price Change Lock', default=False)
     lock_expiry_date = fields.Date(string='Lock Expiry date')
 
-    _sql_constraints = [
-        ('pricelist_product_uom_uniq', 'UNIQUE (pricelist_id, product_id, product_uom)',
-         'Combination of Product and product UOM must be unique'),
-    ]
+    # _sql_constraints = [
+    #     ('pricelist_product_uom_uniq', 'UNIQUE (pricelist_id, product_id, product_uom)',
+    #      'Combination of Product and product UOM must be unique'),
+    # ]
+
+    @api.multi
+    @api.constrains('pricelist_id', 'product_id', 'product_uom')
+    def _check_unique_constrain(self):
+        for rec in self:
+            if rec.pricelist_id and rec.product_id and rec.product_uom:
+                result = self.pricelist_id.customer_product_price_ids.filtered(
+                    lambda r: r.product_id.id == self.product_id.id and
+                    r.product_uom.id == self.product_uom.id)
+                if result:
+                    raise ValidationError(
+                    _('Already a record with same product and same UOM exists in Pricelist'))
 
 
     @api.multi

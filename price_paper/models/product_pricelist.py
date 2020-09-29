@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
-from datetime import datetime
+from datetime import datetime,date
+from dateutil.relativedelta import relativedelta
 
 
 class ProductPricelist(models.Model):
@@ -14,13 +15,25 @@ class ProductPricelist(models.Model):
     expiry_date = fields.Date('Valid Upto')
     price_lock = fields.Boolean(string='Price Change Lock', default=False)
     lock_expiry_date = fields.Date(string='Lock Expiry date')
-    partner_id = fields.Many2one('res.partner', string='Customer', store=True, compute='_compute_partner')
+    customer_ids = fields.Many2many('res.partner', string='Customers',compute='_compute_partner', store=False)
 
-    @api.depends('customer_product_price_ids.partner_id')
+    @api.onchange('price_lock')
+    def onchange_price_lock(self):
+        if self.price_lock:
+            if self.env.user.company_id and self.env.user.company_id.price_lock_days:
+                days = self.env.user.company_id.price_lock_days
+                self.lock_expiry_date =  date.today()+relativedelta(days=days)
+        else:
+            self.lock_expiry_date = False
+
+    @api.depends('customer_pricelist_ids')
     def _compute_partner(self):
         for pricelist in self:
-            if pricelist.type == 'customer':
-                pricelist.partner_id = pricelist.customer_product_price_ids and pricelist.customer_product_price_ids[0].partner_id.id or False
+            if pricelist.type != 'competitor':
+                partner_ids = pricelist.customer_pricelist_ids.mapped('partner_id').ids
+                if partner_ids:
+                    pricelist.customer_ids = [(6, 0, partner_ids)]
+
 
     @api.model
     def _cron_update_price_change_lock(self):

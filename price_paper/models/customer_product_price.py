@@ -35,18 +35,6 @@ class CustomerProductPrice(models.Model):
             self.price_last_updated = date.today()
         return result
 
-    @api.constrains('partner_id')
-    def check_partner(self):
-        if self.pricelist_id.type == 'customer' and self.pricelist_id.partner_id:
-            if self.partner_id.parent_id and self.pricelist_id.partner_id.id == self.partner_id.parent_id.id:
-                pass
-            elif self.pricelist_id.partner_id.id == self.partner_id.id:
-                pass
-            else:
-                raise ValidationError(_('Partner should be same as pricelist mentioned partner in customer pricelists.'))
-
-
-
     @api.multi
     @api.depends('pricelist_id', 'product_id', 'partner_id')
     def name_get(self):

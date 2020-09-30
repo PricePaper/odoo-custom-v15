@@ -6,5 +6,6 @@ class MailThread(models.AbstractModel):
 
     @api.multi
     def create(self, vals):
-        vals.pop('message_follower_ids', False)
+        if self._name == 'sale.order':
+            vals.pop('message_follower_ids', False)
         return super().create(vals)

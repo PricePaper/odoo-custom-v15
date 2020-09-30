@@ -11,7 +11,8 @@
                 </xpath>
                 <xpath expr="//field[@name='barcode']" position="after">
                     <field name="vendor_id"/>
-                    <field name="stock_value" sum="Stock Valuation" widget="monetary" string="Total Value"/>
+                    <field name="stock_value" sum="Stock Valuation"
+                      widget="monetary" string="Total Value"/>
                 </xpath>
                 <xpath expr="//field[@name='qty_available']" position="after">
                     <field name="incoming_qty"/>
@@ -26,10 +27,15 @@
             <field name="inherit_id" ref="product.product_search_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='name']" position="after">
-                    <field name="vendor_id" string="Vendor" filter_domain="[('vendor_id','ilike',self)]"/>
-                    <field name="description" string="Internal Notes" filter_domain="[('description','ilike',self)]"/>
+                    <field name="vendor_id" string="Vendor"
+                      filter_domain="[('vendor_id','ilike',self)]"/>
+                    <field name="default_code" string="Internal reference"
+                      filter_domain="[('default_code','ilike',self)]"/>
+                    <field name="description" string="Internal Notes"
+                      filter_domain="[('description','ilike',self)]"/>
                      <group expand="0" string="Group By">
-                        <filter string="Vendor" name="groupby_vendor" domain="[]" context="{'group_by': 'vendor_id'}"/>
+                        <filter string="Vendor" name="groupby_vendor"
+                          domain="[]" context="{'group_by': 'vendor_id'}"/>
                     </group>
                 </xpath>
                 <!-- <xpath expr="//filter[@name='real_stock_available']" position="after">
@@ -50,24 +56,33 @@
             <field name="inherit_id" ref="product.product_normal_form_view" />
             <field name="arch" type="xml">
                 <xpath expr="//div[@name='button_box']" position="inside">
-                    <button class="oe_stat_button" type="action" name="%(price_paper.act_product_2_product_notes)d"
+                    <button class="oe_stat_button"
+                      type="action" name="%(price_paper.act_product_2_product_notes)d"
                         string=" Product Notes" icon="fa-sticky-note"/>
                 </xpath>
                 <field name="lst_price" position="after">
                     <!-- <field name="list_price_percentage" groups="sales_team.group_sale_manager"/> -->
-                    <field name="standard_price_date_lock" groups="sales_team.group_sale_manager"/>
-                    <field name="burden_percent" groups="sales_team.group_sale_manager"/>
-                    <field name="cost" widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                    <field name="standard_price_date_lock"
+                      groups="sales_team.group_sale_manager"/>
+                    <field name="burden_percent"
+                      groups="sales_team.group_sale_manager"/>
+                    <field name="cost" widget="monetary"
+                      options="{'currency_field': 'currency_id', 'field_digits': True}"/>
                 </field>
                 <field name="type" position="before">
                     <field name="is_storage_contract"/>
                 </field>
                 <field name="property_account_income_id" position="before">
-                    <field name="storage_contract_account_id" attrs="{'required':[('is_storage_contract', '=', True)], 'invisible':[('is_storage_contract', '=', False)]}"/>
+                    <field name="storage_contract_account_id"
+                      attrs="{'required':[('is_storage_contract', '=', True)],
+                      'invisible':[('is_storage_contract', '=', False)]}"/>
                 </field>
 
                 <field name="lst_price" position="before">
-                    <field name="superseded" domain="[('active','!=','True'), ('id', '!=', id)]" attrs="{'invisible':[('active', '=', False)]}"/>
+                    <field name="superseded"
+                      domain="[('active','!=','True'), ('id', '!=', id)]"
+                      attrs="{'invisible':[('active', '=', False)]}"
+                      help="Select a product that has been archived that this product will replace"/>
                 </field>
 
                 <xpath expr="//div[@name='pricelist_item']" position="attributes">
@@ -126,7 +141,10 @@
             <field name="inherit_id" ref="product.product_search_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='name']" position="replace" >
-                    <field name="name" string="Products" filter_domain="['|','|','|',('superseded.default_code','=',self),('default_code','ilike',self),('name','ilike',self),('barcode','ilike',self)]"/>
+                    <field name="name" string="Products"
+                      filter_domain="['|','|','|',('superseded.default_code','=',self),
+                      ('default_code','ilike',self),('name','ilike',self),
+                      ('barcode','ilike',self)]"/>
                 </xpath>
             </field>
         </record>

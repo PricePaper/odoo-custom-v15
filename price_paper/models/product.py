@@ -18,7 +18,7 @@ class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     burden_percent = fields.Float(string='Burden %', default=lambda s: s.default_burden_percent())
-    superseded = fields.Many2one('product.product', string="Superseded")
+    superseded = fields.Many2one('product.product', string="Supersedes")
     cost = fields.Float(compute='compute_sale_burden', string="Working Cost", digits=dp.get_precision('Product Price'))
     sale_uoms = fields.Many2many('uom.uom','product_uom_rel', 'product_id', 'uom_id', string='Sale UOMS')
     vendor_id = fields.Many2one('res.partner', compute='compute_product_vendor', string="Vendor", store=True)

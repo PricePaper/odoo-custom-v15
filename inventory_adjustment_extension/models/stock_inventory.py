@@ -104,8 +104,8 @@ class Inventory(models.Model):
 
 
     @api.onchange('filter')
-    def onchange_filter(self):
-        res = super(Inventory, self).onchange_filter()
+    def _onchange_filter(self):
+        res = super(Inventory, self)._onchange_filter()
         if self.filter != 'vendor':
             self.vendor_id = False
         return res

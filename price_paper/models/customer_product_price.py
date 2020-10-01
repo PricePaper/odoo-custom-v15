@@ -31,7 +31,7 @@ class CustomerProductPrice(models.Model):
             if rec.pricelist_id and rec.product_id and rec.product_uom:
                 result = self.pricelist_id.customer_product_price_ids.filtered(
                     lambda r: r.product_id.id == self.product_id.id and
-                    r.product_uom.id == self.product_uom.id)
+                    r.product_uom.id == self.product_uom.id and r.id != self.id)
                 if result:
                     raise ValidationError(
                     _('Already a record with same product and same UOM exists in Pricelist'))

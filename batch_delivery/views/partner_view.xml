@@ -7,10 +7,15 @@
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
                 <field name='category_id' position="after">
-                    <field name="delivery_notes"/>
                     <field name="is_driver"/>
                     <field name="bill_with_goods"/>
                 </field>
+                <xpath expr="/form/sheet/notebook/page[@name='internal_notes']/field[@name='comment']" position="after">
+                  <group colspan="2" col="2">
+                      <separator string="Delivery Notes" colspan="4" />
+                          <field name="delivery_notes" nolabel="1" />
+                  </group>
+                </xpath>
             </field>
         </record>
 

@@ -12,7 +12,7 @@ class ResPartner(models.Model):
 
 
     is_driver = fields.Boolean(string='Truck Driver')
-    delivery_notes = fields.Char(string='Delivery Notes')
+    delivery_notes = fields.Text(string='Delivery Notes')
     bill_with_goods = fields.Boolean(string='Bill With Goods', default=True)
     location_url = fields.Char(compute='compute_location_url', string="Location URL")
 

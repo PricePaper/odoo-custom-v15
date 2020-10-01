@@ -34,7 +34,7 @@ class StockPicking(models.Model):
     city = fields.Char(string='City', related='partner_id.city')
     state_id = fields.Many2one('res.country.state', string='State', related='partner_id.state_id')
     zip = fields.Char(string='Zip', related='partner_id.zip')
-    delivery_notes = fields.Char(string='Delivery Notes', related='partner_id.delivery_notes')
+    delivery_notes = fields.Text(string='Delivery Notes', related='partner_id.delivery_notes')
     item_count = fields.Integer(string="Item Count", compute='_compute_item_count')
     partner_loc_url = fields.Char(string="Partner Location", related='partner_id.location_url')
     release_date = fields.Date(related='sale_id.release_date', string="Earliest Delivery Date", store=True)

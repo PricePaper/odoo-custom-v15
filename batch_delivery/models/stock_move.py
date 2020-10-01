@@ -9,7 +9,7 @@ class StockMove(models.Model):
 
 
     picking_status = fields.Char(string='Picking Status', compute='_compute_picking_state')
-    delivery_notes = fields.Char(string='Delivery Notes', related='partner_id.delivery_notes')
+    delivery_notes = fields.Text(string='Delivery Notes', related='partner_id.delivery_notes')
     delivery_move_id = fields.Many2one('stock.move', string='Delivery for Move')
     delivery_picking_id = fields.Many2one('stock.picking', string='Delivery for Picking', readonly=True, related='delivery_move_id.picking_id')
 

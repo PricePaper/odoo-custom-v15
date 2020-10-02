@@ -19,6 +19,8 @@
                             <div class="oe_button_box" name="button_box">
                                <button name="%(price_maintanance.act_price_edit_notes_partner)d" string='Audit' type="action" class="oe_stat_button" icon="fa-sticky-note" />
                             </div>
+                            <field name="parent_id" invisible="1"/>
+                            <field name="type" invisible="1"/>                            
                             <group>
                               <group>
                                 <label for="street" string="Address"/>
@@ -27,6 +29,7 @@
                                         attrs="{'readonly': True}"/>
                                     <field name="street2" placeholder="Street 2..." class="o_address_street"
                                         attrs="{'readonly': True}"/>
+                                    <field name="city_id" placeholder="City" readonly="1" invisible="1"/>
                                     <field name="city" placeholder="City" class="o_address_city"
                                         attrs="{'readonly': True}"/>
                                     <field name="state_id" class="o_address_state" placeholder="State" options='{"no_open": True}'

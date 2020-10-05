@@ -105,18 +105,27 @@
                     <attribute name="decoration-info">profit_margin==0</attribute>
                     <attribute name="decoration-success">profit_margin&gt;0</attribute>
                 </xpath>
+
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="before">
                     <field name="lst_price" readonly="1"/>
                     <field name="working_cost" invisible="1"/>
+                    <field name="price_lock" invisible="1"/>
                 </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="attributes">
+                     <attribute name="attrs">{"readonly": [('price_lock', '=', True)]}</attribute>
+                 </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
                     <field name="profit_margin"/>
                     <field name="price_from" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']" position="before">
                     <field name="lst_price" readonly="1" attrs="{'invisible': [('display_type', '!=', False)]}"/>
-                    <field name="working_cost" invisible="1" />
+                    <field name="working_cost" invisible="1"/>
+                    <field name="price_lock" invisible="1"/>
                 </xpath>
+                 <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']" position="attributes">
+                     <attribute name="attrs">{"readonly": [('price_lock', '=', True)]}</attribute>
+                 </xpath>
                 <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']" position="after">
                     <field name="profit_margin" attrs="{'invisible': [('display_type', '!=', False)]}"/>
                     <field name="price_from" invisible="1"/>
@@ -147,7 +156,7 @@
                 </xpath>
 
                 <xpath expr="//field[@name='order_line']" position="before">
-                    <button  type="object" name="add_purchase_history_to_so_line" string="Browse History Lines"/>
+                    <button  type="object" name="add_purchase_history_to_so_line" string="Browse History Lines" context="{'partner':partner_id}"/>
                 </xpath>
 
                 <xpath expr="//field[@name='order_line']/form" position="inside">

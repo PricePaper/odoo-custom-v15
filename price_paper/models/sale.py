@@ -516,6 +516,7 @@ class SaleOrderLine(models.Model):
     lst_price = fields.Float(string='Standard Price', digits=dp.get_precision('Product Price'), store=True, compute='_compute_lst_cost_prices')
     confirmation_date = fields.Datetime(related='order_id.confirmation_date', string='Confirmation Date')
     working_cost = fields.Float(string='Working Cost', digits=dp.get_precision('Product Price'), store=True, compute='_compute_lst_cost_prices')
+    price_lock = fields.Boolean(related='price_from.price_lock', readonly=True)
 
 
     @api.depends('product_id', 'product_uom')

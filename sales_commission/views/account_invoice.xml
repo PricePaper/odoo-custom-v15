@@ -13,6 +13,9 @@
                 <field name="user_id" position="attributes">
                     <attribute name='invisible'>1</attribute>
                 </field>
+                <field name="move_id" position="attributes">
+                    <attribute name='groups'>base.group_user</attribute>
+                </field>
             </field>
         </record>
     </data>

@@ -39,5 +39,22 @@
 
             </field>
         </record>
+        <record id="res_partner_pricepaper_sales_commission_search" model="ir.ui.view">
+            <field name="name">res.partner.pricepaper.search</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+              <field name="user_id" position="replace">
+                  <field name="sales_person_ids" string="Sales person"/>
+              </field>
+
+              <filter name="customer" position="after">
+                  <filter string="Sales Person" name="is_sales_person"
+                    domain="[('is_sales_person','=',True)]"/>
+              </filter>
+              <xpath expr="/search/group/filter[@name='salesperson']" position="replace" />
+
+            </field>
+        </record>
     </data>
 </odoo>

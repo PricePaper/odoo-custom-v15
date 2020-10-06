@@ -39,6 +39,10 @@ This module sets up the batch delivery process for price paper.
             ],
 
     'depends': ['price_paper', 'stock_picking_batch', 'base_geolocalize','website_google_map','website_customer', 'account_reports', 'stock_product_location'],
+    'qweb': [
+
+        "static/src/xml/price_lock.xml",
+    ],
     'installable': True,
     'auto_install': False,
     'application': False,

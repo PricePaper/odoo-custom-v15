@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+
+    <t t-name="ShowPriceLockInfo">
+            <a role="button" tabindex="0" class="js_price_lock fa fa-info-circle"  style="margin-right:5px;" aria-label="Info" t-att-price-form="form" t-att-title="title"></a>
+    </t>
+</templates>

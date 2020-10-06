@@ -1,8 +1,22 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+import json
 
+from odoo import api, fields, models, _
+
+
+class SaleOrder(models.Model):
+    _inherit = 'sale.order'
+
+    have_prive_lock = fields.Boolean(compute='_compute_price_lock')
+
+    @api.depends('order_line.price_lock')
+    def _compute_price_lock(self):
+        for rec in self:
+            rec.have_prive_lock = any(rec.order_line.mapped('price_lock'))
+
+
+SaleOrder()
 
 
 class SaleOrderLine(models.Model):
@@ -10,7 +24,15 @@ class SaleOrderLine(models.Model):
 
 
     lot_id = fields.Many2one('stock.production.lot', 'Lot')
+    info = fields.Char(compute='_get_price_lock_info_JSON')
 
+    @api.one
+    @api.depends('product_id')
+    def _get_price_lock_info_JSON(self):
+        self.info = json.dumps(False)
+        if self.product_id and self.price_from and  self.price_from.price_lock:
+            info = {'title': 'Price locked until '+ self.price_from.lock_expiry_date.strftime('%m/%d/%Y'), 'record': self.price_from.id}
+            self.info = json.dumps(info)
 
     @api.onchange('product_id')
     def _onchange_product_id_set_lot_domain(self):

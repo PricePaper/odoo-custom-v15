@@ -10,5 +10,24 @@
             <field name="description_sale"> </field>
             <field name="default_code">batch_driver_invoice</field>
         </record>
+
+        <record id="stock_return_notification_mail" model="mail.template">
+            <field name="name">Stock Return: Notification</field>
+            <field name="model_id" ref="batch_delivery.model_stock_picking_return"/>
+            <field name="email_from">${user.partner_id.email | safe}</field>
+            <field name="email_to">${','.join(ctx['email_to'])}</field>
+            <field name="subject">Stock Return!!</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px;">
+    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+       Stock Returned.
+        <br/>
+        Reson <strong>${object.reason}</strong>
+    </p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
     </data>
 </odoo>

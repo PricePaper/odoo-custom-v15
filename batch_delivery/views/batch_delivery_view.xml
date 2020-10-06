@@ -24,20 +24,18 @@
                     <attribute name="string">Print Pick Tickets</attribute>
                 </button>
 
-                <xpath expr="//field[@name='picking_ids']/tree//button[@name='action_assign']" position="attributes">
-                    <attribute name="attrs">{'invisible': [('state', 'in', ('delivered', 'cancel', 'confirmed', 'assigned'))]}</attribute>
-                </xpath>
-
                 <xpath expr="//field[@name='picking_ids']/tree//field[@name='name']" position="after">
                     <field name="partner_id"/>
                     <field name="city"/>
-
+                    <field name="show_check_availability" invisible="1"/>
                 </xpath>
 
                 <field name="user_id" position="after">
                     <group>
                         <field name="route_id"/>
-                        <field name="truck_driver_id" domain="[('is_driver', '=', True)]" attrs="{'readonly':[('state', 'in', ['done', 'cancel'])]}"/>
+                        <field name="truck_driver_id" domain="[('is_driver', '=', True), ('is_driver_available', '=', True)]"
+                               attrs="{'readonly':[('state', 'in', ['done', 'cancel'])]}"
+                               context="{'default_is_driver': True}"/>
                     </group>
                     <group>
                         <field name="date"/>
@@ -65,13 +63,15 @@
                     </div>
                 </xpath>
 
-
+                <xpath expr="//field[@name='picking_ids']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('state', 'in', ['in_progress', 'done'])]}</attribute>
+                </xpath>
 
                 <xpath expr="//field[@name='picking_ids']/tree/button[@name='action_assign']" position="attributes">
-                    <attribute name="attrs">{'invisible': [('state', 'in', ('done', 'cancel', 'confirmed', 'assigned', 'delivered'))]}</attribute>
+                    <attribute name="attrs">{'invisible': [('show_check_availability', '=', False)]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='picking_ids']/tree/button[@name='action_cancel']" position="attributes">
-                    <attribute name="attrs">{'invisible': [('state', 'in', ('done', 'cancel', 'delivered'))]}</attribute>
+                    <attribute name="attrs">{'invisible': [('state', 'in', ('in_transit', 'done', 'cancel'))]}</attribute>
                 </xpath>
 
 

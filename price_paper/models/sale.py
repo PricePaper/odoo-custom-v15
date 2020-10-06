@@ -476,8 +476,8 @@ class SaleOrder(models.Model):
         res = super(SaleOrder, self).action_confirm()
 
         for order in self:
-            if order.partner_id.bill_with_goods:
-                order.action_invoice_create(final=True)
+            # if order.partner_id.bill_with_goods:
+            #     order.action_invoice_create(final=True)
             for order_line in order.order_line:
                 order_line.update_price_list()
                 # if order_line.is_downpayment and order_line.product_id.is_storage_contract:

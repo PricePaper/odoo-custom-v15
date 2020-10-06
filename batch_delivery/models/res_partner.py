@@ -15,6 +15,7 @@ class ResPartner(models.Model):
     delivery_notes = fields.Text(string='Delivery Notes')
     bill_with_goods = fields.Boolean(string='Bill With Goods', default=True)
     location_url = fields.Char(compute='compute_location_url', string="Location URL")
+    is_driver_available = fields.Boolean(string='Is Driver Available', default=True)
 
 
 

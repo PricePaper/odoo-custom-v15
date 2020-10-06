@@ -49,7 +49,7 @@ class CostChange(models.Model):
                 rec.burden_old = rec.product_id.burden_percent
                 vendors = rec.product_id.seller_ids.mapped('name')
                 vendors = vendors and vendors.ids
-                print(vendors)
+
                 if vendors:
                     return {'domain':{'vendor_id':[('id','in',vendors)]}}
             else:
@@ -174,7 +174,7 @@ class CostChange(models.Model):
             # Update vendor pricelist
             if rec.update_vendor_pricelist and rec.item_filter == 'vendor':
                 vendor_price_ids = self.env['product.supplierinfo'].search([('name', '=', rec.vendor_id.id)])
-                print(len(vendor_price_ids))
+
                 for vendor_price in vendor_price_ids:
                     vendor_price.price = vendor_price.price * ((100+rec.price_change)/100)
 

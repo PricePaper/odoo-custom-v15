@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, registry, api,_
+from odoo import models, fields, api,_
 from odoo.exceptions import UserError
+from odoo.tools import float_compare
 
 class StockPicking(models.Model):
 
@@ -18,7 +19,7 @@ class StockPicking(models.Model):
         ('confirmed', 'Waiting'),
         ('assigned', 'Ready'),
         ('done', 'In Transit'),
-        ('delivered', 'Delivered'),
+        ('in_transit', 'In Transit'),
         ('cancel', 'Cancelled'),
     ], string='Status', compute='_compute_state',
         copy=False, index=True, readonly=True, store=True, track_visibility='onchange',
@@ -42,6 +43,7 @@ class StockPicking(models.Model):
     delivery_move_ids = fields.One2many('stock.move', 'delivery_picking_id', string='Transit Moves')
     delivery_move_line_ids = fields.One2many('stock.move.line', 'delivery_picking_id', string='Transit Move Lines')
     shipping_easiness = fields.Selection(related='partner_id.shipping_easiness', string='Easiness Of Shipping')
+    is_transit = fields.Boolean(string='Transit', copy=False)
 
 
 
@@ -54,10 +56,7 @@ class StockPicking(models.Model):
                 count += line.product_uom_qty
             picking.item_count = count
 
-
-
-
-    @api.depends('move_type', 'is_delivered', 'move_lines.state', 'move_lines.picking_id')
+    @api.depends('move_type', 'is_delivered', 'move_lines.state', 'move_lines.picking_id', 'is_transit')
     @api.one
     def _compute_state(self):
         ''' State of a picking depends on the state of its related stock.move
@@ -74,6 +73,8 @@ class StockPicking(models.Model):
         '''
         if not self.move_lines:
             self.state = 'draft'
+        elif self.is_transit and not all(move.state in ['cancel', 'done'] for move in self.move_lines):
+            self.state = 'in_transit'
         elif any(move.state == 'draft' for move in self.move_lines):  # TDE FIXME: should be all ?
             self.state = 'draft'
         elif all(move.state == 'cancel' for move in self.move_lines):
@@ -89,7 +90,21 @@ class StockPicking(models.Model):
             else:
                 self.state = relevant_move_state
 
+    @api.multi
+    def _compute_item_count(self):
+        for picking in self:
+            count = 0
+            for line in picking.move_lines:
+                count += line.product_uom_qty
+            picking.item_count = count
 
+    def action_make_transit(self):
+        for rec in self:
+            rec.is_transit = True
+            rec.move_ids_without_package.write({'is_transit': True})
+
+            if rec.sale_id.invoice_status == 'to invoice':
+                rec.sale_id.action_invoice_create(final=True)              
 
     @api.model
     def _read_group_route_ids(self, routes, domain, order):
@@ -127,58 +142,35 @@ class StockPicking(models.Model):
         res = super(StockPicking, self).write(vals)
         return res
 
-
+    @api.multi
+    def _compute_show_check_availability(self):
+        for picking in self:
+            has_moves_to_reserve = any(
+                move.state in ('waiting', 'confirmed', 'partially_available', 'in_transit') and
+                float_compare(move.product_uom_qty, 0, precision_rounding=move.product_uom.rounding)
+                for move in picking.move_lines
+            )
+            picking.show_check_availability = picking.is_locked and picking.state in (
+                'confirmed', 'waiting', 'assigned', 'in_transit') and has_moves_to_reserve
 
     @api.multi
     def action_done(self):
         res = super(StockPicking, self).action_done()
         for pick in self:
-            if pick.picking_type_id.code in ('incoming', 'internal') and pick.state == 'done':
-                pick.state ='delivered'
+            pick.is_transit = False
+            pick.move_ids_without_package.write({'is_transit': False})
         return res
 
-
-
-
+    @api.multi
+    def action_validate(self):
+        result = self.button_validate()
+        return result
 
     @api.multi
-    def deliver_products(self):
-        transit_location = self.env['stock.location'].search([('is_transit_location', '=', True)], limit=1)
-        customer_location = self.env['stock.location'].search([('usage', '=', 'customer')], limit=1)
-        if not transit_location:
-            raise UserError(_("Please go to stock locations and select a stock transit location by checking the field with string Truck Transit Location."))
-        for picking in self:
-            for move in picking.move_lines:
-                move_lines = []
-                for ml in move.move_line_ids:
-                    move_lines.append({
-                                                            'product_id': ml.product_id.id,
-                                                            'product_uom_id': ml.product_uom_id.id,
-                                                            'location_id': transit_location.id,
-                                                            'location_dest_id': customer_location.id,
-                                                            'qty_done': ml.qty_done,
-                                                            'product_uom_qty': ml.product_uom_qty,
-                                                            'lot_id': ml.lot_id.id,
-                                                            'delivery_move_line_id': ml.id,
-                                                            'picking_id': False,
-                                                        })
-                delivery_move = self.env['stock.move'].create({
-                                                   'name': "%s Delivery Move: %s" %(picking.name, move.product_id.display_name),
-                                                   'product_id': move.product_id.id,
-                                                   'product_uom': move.product_uom.id,
-                                                   'location_id': transit_location.id,
-                                                   'location_dest_id': customer_location.id,
-                                                   'state': 'draft',
-                                                   'product_uom_qty': move.quantity_done,
-                                                   'move_line_ids':[(0, 0, vals) for vals in move_lines],
-                                                   'delivery_move_id': move.id,
-                                                   'picking_id': False,
-                                                   })
-                delivery_move._action_confirm()
-                delivery_move._action_assign()
-                delivery_move._action_done()
-            picking.is_delivered = True
-
+    def action_cancel(self):
+        res = super(StockPicking, self).action_cancel()
+        self.mapped('move_ids_without_package').write({'is_transit': False})
+        return res
 
     @api.multi
     def button_validate(self):
@@ -191,9 +183,11 @@ class StockPicking(models.Model):
         if self.picking_type_id.code == 'outgoing':
             for line in self.move_line_ids:
                 if line.lot_id and line.pref_lot_id and line.lot_id != line.pref_lot_id:
-                    raise UserError(_("This Delivery for product %s is supposed to use products from the lot %s please clear the Preferred Lot field to override" %(line.product_id.name, line.pref_lot_id.name)))
+                    raise UserError(_(
+                        "This Delivery for product %s is supposed to use products from the lot %s please clear the Preferred Lot field to override" % (
+                        line.product_id.name, line.pref_lot_id.name)))
 
-            no_quantities_done_lines = self.move_line_ids.filtered(lambda l: l.qty_done == 0.0)
+            no_quantities_done_lines = self.move_line_ids.filtered(lambda l: l.qty_done == 0.0 and not l.is_transit)
             for line in no_quantities_done_lines:
                 if line.move_id and line.move_id.product_uom_qty == line.move_id.reserved_availability:
                     line.qty_done = line.product_uom_qty

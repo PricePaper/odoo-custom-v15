@@ -8,10 +8,21 @@ class PickingPendingProduct(models.Model):
     _description = 'Batch Picking Pending Product'
 
 
-    total = fields.Integer(string='Total')
-    pending = fields.Integer(string='Pending')
+    total = fields.Integer(string='Total', compute='_compute_quantity')
+    pending = fields.Integer(string='Pending', compute='_compute_quantity')
     product_id = fields.Many2one('product.product', string='Product')
     batch_id = fields.Many2one('stock.picking.batch', string='Batch')
+    user_id = fields.Many2one('res.users', string='User')
+
+    @api.depends('batch_id', 'product_id')
+    def _compute_quantity(self):
+        for rec in self:
+            moves = rec.batch_id.picking_ids.mapped('move_ids_without_package').filtered(
+                lambda move: move.product_id == rec.product_id and move.state != 'cancel')
+            total = sum(moves.mapped('product_uom_qty'))
+            reserved = sum(moves.mapped(lambda move: move.product_uom_qty if move.reserved_availability == 0 and move.state == 'done' else 0 if move.reserved_availability == 0 else move.reserved_availability))
+            rec.total = total
+            rec.pending = total - reserved
 
     @api.multi
     def open_pickings(self):

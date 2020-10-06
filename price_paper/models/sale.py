@@ -104,6 +104,14 @@ class SaleOrder(models.Model):
         return invoice
 
     @api.multi
+    def action_create_open_invoice_xmlrpc(self):
+
+        self.action_invoice_create()
+        self.invoice_ids.write({'number':self.note})
+        self.invoice_ids.action_invoice_open()
+        return self.invoice_ids.ids
+
+    @api.multi
     def action_create_storage_downpayment(self):
         """
         Create invoice for storage contract product down payment

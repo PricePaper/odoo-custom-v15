@@ -66,7 +66,7 @@ class AccountInvoice(models.Model):
     def action_cancel(self):
         res = super(AccountInvoice, self).action_cancel()
         for invoice in self:
-            commission_rec = self.env['sale.commission'].search([('invoice_id', '=', self.id)])
+            commission_rec = self.env['sale.commission'].search([('invoice_id', '=', invoice.id)])
             commission_rec and commission_rec.unlink()
         return res
 

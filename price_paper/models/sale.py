@@ -769,7 +769,10 @@ class SaleOrderLine(models.Model):
            res.update({'value' : {'lst_price': lst_price, 'working_cost': working_cost}})
         if self.product_id:
             warn_msg = not self.product_id.purchase_ok and "This item can no longer be purchased from vendors"  or ""
-            partner_history = self.env['sale.tax.history'].search([('partner_id', '=', self.order_id and self.order_id.partner_shipping_id.id), ('product_id', '=', self.product_id and self.product_id.id)], limit=1)
+            partner_history = self.env['sale.tax.history'].search(
+                [('partner_id', '=', self.order_id and self.order_id.partner_shipping_id.id),
+                ('product_id', '=', self.product_id and self.product_id.id)])
+
             # if self.order_id and self.order_id.partner_id.vat and partner_history and not partner_history.tax:
             #     self.tax_id = [(5, _, _)] # clear all tax values, no Taxes to be used
             if partner_history and not partner_history.tax:
@@ -787,6 +790,16 @@ class SaleOrderLine(models.Model):
             if msg:
                 res.update({'warning': {'title': _('Warning!'),'message' : warn_msg and '%s\n%s' %(warn_msg,msg) or msg}})
             res.update({'value' : {'price_unit' : product_price, 'price_from': price_from}})
+            sale_history = self.env['sale.history'].search(
+                [('partner_id', '=', self.order_id and self.order_id.partner_id.id),
+                 ('product_id', '=', self.product_id and self.product_id.id)])
+
+            if sale_history:
+                if len(sale_history) > 1:
+                    orders = sale_history.mapped('order_id')
+                    last_date = max([rec.confirmation_date for rec in orders])
+                    sale_history = sale_history.filtered(lambda r: r.order_date == last_date)
+                res.update({'value' : {'price_unit' : product_price, 'price_from': price_from, 'product_uom': sale_history.uom_id.id}})
             # for uom only show those applicable uoms
             domain = res.get('domain', {})
             product_uom_domain = domain.get('product_uom', [])

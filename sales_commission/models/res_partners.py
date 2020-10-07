@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, registry, api,_
+from ast import literal_eval
 
 
 class ResPartner(models.Model):
@@ -51,6 +52,14 @@ class ResPartner(models.Model):
             if record.commission_percentage_ids:
                 sales_persons = record.commission_percentage_ids.mapped('sale_person_id').ids
                 record.sales_person_ids = [(6,0,sales_persons)]
+
+    @api.multi
+    def action_view_partner_open_invoices(self):
+        self.ensure_one()
+        action = self.env.ref('account.action_invoice_refund_out_tree').read()[0]
+        action['domain'] = literal_eval(action['domain'])
+        action['domain'] += [('partner_id', 'child_of', self.id), ('state', 'not in', ['paid', 'cancel'])]
+        return action
 
     @api.model
     def create(self, vals):

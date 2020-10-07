@@ -32,9 +32,7 @@ class AddPurchaseHistorySO(models.TransientModel):
     search_box = fields.Char(string='Search')
     purchase_history_ids = fields.One2many('sale.history.lines.wizard', 'search_wizard_id', string="Purchase History")
     sale_history_months = fields.Integer(string='Sales History For # Months ', default=lambda s: s.default_sale_history())
-    # sale_history = fields.Many2many('sale.history', readonly=True)
     product_id = fields.Many2one('product.product', string='Product')
-    # qty_to_be = fields.Float(string='Qty')
 
     @api.model
     def default_sale_history(self):
@@ -55,33 +53,41 @@ class AddPurchaseHistorySO(models.TransientModel):
         domain.append(('product_id.sale_ok', '=', True))
         sale_history = self.env['sale.history'].search(domain)
         product_list = sale_history.mapped('product_id').ids
+        for line in self.purchase_history_ids.filtered(lambda rec: rec.qty_to_be != 0.0):
+            lines.append((0, 0, {
+                'product_uom': line.product_uom.id,
+                'date_order': line.date_order,
+                'order_line': line.order_line.id,
+                'qty_to_be': line.qty_to_be,
+                'price_unit': line.price_unit,
+                'product_uom_qty': line.product_uom_qty,
+                'product_category': line.product_category.id,
+                'product_name': line.product_name
+            }))
         if sale_history:
             for line in sale_history:
                 warning, price, price_from = line.order_line_id.calculate_customer_price()
-                val = {
-                    'product_uom': line.uom_id.id,
-                    'date_order': line.order_id.confirmation_date,
-                    'order_line': line.order_line_id.id,
-                    'qty_to_be': 0.0,
-                    'price_unit': price,
-                    'product_uom_qty': line.order_line_id.product_uom_qty,
-                    'product_category': line.product_id.categ_id.id,
-                    'product_name': line.product_id.display_name
-                }
-                lines.append((0, 0, val))
-            self.purchase_history_ids = False
+                history_line = self.purchase_history_ids.filtered(lambda rec: rec.order_line.id == line.order_line_id.id and rec.qty_to_be > 0)
+                if not history_line:
+                    lines.append((0, 0, {
+                        'product_uom': line.uom_id.id,
+                        'date_order': line.order_id.confirmation_date,
+                        'order_line': line.order_line_id.id,
+                        'qty_to_be': 0.0,
+                        'price_unit': price,
+                        'product_uom_qty': line.order_line_id.product_uom_qty,
+                        'product_category': line.product_id.categ_id.id,
+                        'product_name': line.product_id.display_name
+                    }))
+        self.purchase_history_ids = False
         return {
             'domain': {
                 'product_id': [('id', 'in', product_list)]
             },
             'value': {
-                'product_id': self.product_id.id if self.product_id else False,
-                'purchase_history_ids': lines or [(5, 0, 0)]
+                'purchase_history_ids': lines
             }
         }
-
-
-
 
     @api.multi
     def add_history_lines(self):
@@ -96,13 +102,13 @@ class AddPurchaseHistorySO(models.TransientModel):
             if line_id.qty_to_be != 0.0:
                 warning, price, price_from = line_id.order_line.calculate_customer_price()
                 sale_order_line = {
-                    'product_id' : line_id.order_line.product_id.id,
-                    'product_uom' : line_id.order_line.product_uom.id,
-                    'product_uom_qty' : line_id.qty_to_be,
-                    'price_unit' : price,
-                    'order_id' : order_id and order_id.id or False,
-                    'lst_price':line_id.order_line.product_id.lst_price,
-                    'price_from':line_id.order_line.price_from and line_id.order_line.price_from.id
+                    'product_id': line_id.order_line.product_id.id,
+                    'product_uom': line_id.order_line.product_uom.id,
+                    'product_uom_qty': line_id.qty_to_be,
+                    'price_unit': price,
+                    'order_id': order_id and order_id.id or False,
+                    'lst_price': line_id.order_line.product_id.lst_price,
+                    'price_from': line_id.order_line.price_from and line_id.order_line.price_from.id
                     # 'working_cost':line_id.order_line.product_id.cost,
                 }
                 self.env['sale.order.line'].create(sale_order_line)

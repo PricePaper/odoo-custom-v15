@@ -11,7 +11,7 @@ class ResPartner(models.Model):
     delay = fields.Integer(
         string='Delivery Lead Time', required=True, default=lambda s: s.default_delay(),
         help="Lead time in days between the confirmation of the purchase order and the receipt of the products in your warehouse.")
-    order_freq = fields.Integer(string='Order Frequency')
+    order_freq = fields.Integer(string='Order Frequency', default=30)
 
 
     @api.model

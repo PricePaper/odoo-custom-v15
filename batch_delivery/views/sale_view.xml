@@ -20,13 +20,17 @@
                 <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']" position="before">
                     <field name="lot_id"/>
                 </xpath>
-
-                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']" position="replace">
+                <!-- FIX ME -->
+               <!--  <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']" position="replace">
                      <label for="price_unit"/>
                     <div class="o_row">
                         <field name="price_unit" attrs="{'readonly':[('price_lock', '=', True)]}"/>
                       <field name="info" widget="price_lock" string="Lock Info" attrs="{'invisible':[('price_lock', '=', False)]}"/>
                     </div>
+                </xpath> -->
+                <!-- FIX ME -->
+                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']" position="after">
+                	<field name="info" widget="price_lock" string="Lock Info" attrs="{'invisible':[('price_lock', '=', False)]}"/>
                 </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
                     <field name="info" widget="price_lock" string="Lock Info" attrs="{'column_invisible':[('parent.have_prive_lock', '=', False)]}"/>

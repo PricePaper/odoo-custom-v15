@@ -7,3 +7,4 @@ from . import sale_commission
 from . import sale
 from . import commission_ageing
 from . import res_company
+from . import sale_commission_settlement

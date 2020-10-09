@@ -4,13 +4,21 @@
             <field name="name">commission.sale.tree</field>
             <field name="model">sale.commission</field>
             <field name="arch" type="xml">
-                <tree string="Sales Commission">
+                <tree string="Sales Commission" decoration-danger="is_removed == True">
                     <field name="sale_person_id" />
-                    <field name="sale_order" />
+                    <field name="sale_id"/>
                     <field name="invoice_id" />
-                    <field name="invoice_amount" />
+                    <field name="invoice_amount"/>
                     <field name="commission" />
-                    <field name="is_paid" />
+                    <field name="is_paid"/>
+                    <field name="is_settled"/>
+                    <field name="is_removed" invisible="1"/>
+                    <button name="action_commission_add"
+                            string="Add" type="object" icon="fa-check text-success"
+                            attrs="{'invisible': [('is_removed', '=', False)]}"/>
+                    <button name="action_commission_remove"
+                            string="Remove" type="object" icon="fa-times-circle text-danger"
+                            attrs="{'invisible': [('is_removed', '=', True)]}"/>
                 </tree>
             </field>
         </record>

@@ -1,0 +1,92 @@
+<odoo>
+    <data>
+        <record id="view_sale_commission_settlement_tree" model="ir.ui.view">
+            <field name="name">sale.commission.settlement.tree</field>
+            <field name="model">sale.commission.settlement</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="sales_person_id"/>
+                    <field name="date_from"/>
+                    <field name="amount_paid"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="view_sale_commission_settlement_form" model="ir.ui.view">
+            <field name="name">sale.commission.settlement.form</field>
+            <field name="model">sale.commission.settlement</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_load" type="object" string="Load Commissions" states="draft"/>
+                        <button name="action_confirm" type="object" string="Confirm" attrs="{'invisible': ['|', '&amp;',('state', '=', 'draft'), ('commission_ids', '=', []), ('state', '!=', 'draft')]}"/>
+                        <button name="action_make_payment" type="object" string="Make Payment" states="confirmed" confirm="You are going to settled the Commission. Are you sure you want to proceed? "/>
+                        <button name="action_cancel" type="object" string="Cancel" states="confirmed,paid"/>
+                        <button name="action_draft" type="object" string="Set to Draft" states="cancel"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,paid"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="sales_person_id" domain="[('is_sales_person', '=', True)]"/>
+                                <field name="date_from"/>
+                            </group>
+                            <group>
+                                <field name="amount_paid"/>
+                            </group>
+                        </group>
+                        <field name="commission_ids" widget="section_and_note_one2many" attrs="{'readonly': [('state', '!=', 'draft')]}">
+                            <tree create="0" decoration-danger="is_removed == True">
+                                <field name="sale_person_id"/>
+                                <field name="sale_id"/>
+                                <field name="invoice_id"/>
+                                <field name="invoice_amount"/>
+                                <field name="commission"/>
+                                <field name="is_paid"/>
+                                <field name="is_settled"/>
+                                <field name="is_removed" invisible="1"/>
+                                <button name="action_commission_add"
+                                        string="Add" type="object" icon="fa-check text-success"
+                                        attrs="{'invisible': ['|', '&amp;',('parent.state', '=', 'draft'),('is_removed', '=', False), ('parent.state', '!=', 'draft')]}"/>
+                                <button name="action_commission_remove"
+                                        string="Remove" type="object" icon="fa-times-circle text-danger"
+                                        attrs="{'invisible': ['|', '&amp;', ('parent.state', '=', 'draft'),('is_removed', '=', True), ('parent.state', '!=', 'draft')]}"/>
+                            </tree>
+                        </field>
+                        <div class="oe_clear"/>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_view_sale_commission_settlement" model="ir.actions.act_window">
+            <field name="name">Commission Settlement</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.commission.settlement</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p>
+                No Records Available.
+              </p>
+            </field>
+        </record>
+
+         <menuitem id="menusale_commission_settlement"
+            parent="sale.sale_order_menu"
+            action="action_view_sale_commission_settlement"
+            groups="sales_team.group_sale_salesman"
+            sequence="5"/>
+    </data>
+</odoo>

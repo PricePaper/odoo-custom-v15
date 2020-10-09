@@ -16,10 +16,12 @@ Sales commission module implemented for Price Papers.
 
     'data': [
              'data/account_data.xml',
+             'data/ir_sequence_data.xml',
              'security/sales_commission_security.xml',
              'security/ir.model.access.csv',
              'wizard/existing_user.xml',
              'wizard/sales_commission.xml',
+             'views/sale_commission_settlement.xml',
              'views/sale_commission.xml',
              'views/saleorder_report.xml',
              'views/invoice_report.xml',

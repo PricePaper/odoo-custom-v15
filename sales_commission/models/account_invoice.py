@@ -47,7 +47,7 @@ class AccountInvoice(models.Model):
                 profit += self.amount_total*0.03
 
             rule_id = self.partner_id.commission_percentage_ids.filtered(lambda r : r.sale_person_id == line.sale_person_id)
-            if not rule_id:
+            if rule_id:
                 if rule_id.based_on in ['profit', 'profit_delivery']:
                     commission = profit  * (rule_id.percentage/100)
                 elif rule_id.based_on =='invoice':
@@ -56,7 +56,7 @@ class AccountInvoice(models.Model):
                     #     amount -= self.amount_total*0.03
                     # if self.payment_term_id.discount_per > 0:
                     #     amount -= self.amount_total*(self.payment_term_id.discount_per/100)
-                    commission = amount * (rec.rule_id.percentage/100)
+                    commission = amount * (rule_id.percentage/100)
             line.write({'commission': commission})
 
 
@@ -86,7 +86,7 @@ class AccountInvoice(models.Model):
                         commission = commission_ageing[0].reduce_percentage * line.commission / 100
                         vals = {
                                 'sale_person_id' : line.sale_person_id.id,
-                                'sale_order': line.sale_order,
+                                'sale_id': line.sale_id.id,
                                 'commission': -commission,
                                 'invoice_id' : self.id,
                                 'invoice_type' : self.type,
@@ -119,10 +119,10 @@ class AccountInvoice(models.Model):
                     commission = amount * (rec.rule_id.percentage/100)
                 if self.type == 'out_refund':
                     commission = -commission
-
+                sale = self.invoice_line_ids.mapped('sale_line_ids')
                 vals = {
                         'sale_person_id' : rec.sale_person_id.id,
-                        'sale_order': self.origin,
+                        'sale_id': sale and sale[-1].order_id.id,
                         'commission': commission,
                         'invoice_id' : self.id,
                         'invoice_type' : self.type,

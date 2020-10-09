@@ -43,7 +43,7 @@ class SaleCommissionSettlement(models.Model):
             if rec.date_from:
                 domain.append(('date_invoice', '<=', rec.date_from))
             if domain:
-                domain.append(('is_paid', '=', True))
+                domain.extend([('is_paid', '=', True), ('is_settled', '=', False)])
                 commission_lines = self.env['sale.commission'].search(domain)
             commission_lines -= self.env['sale.commission.settlement'].search([('state', '=', 'draft')]).mapped('commission_ids')
             rec.commission_ids = commission_lines

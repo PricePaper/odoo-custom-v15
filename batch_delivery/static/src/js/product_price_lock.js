@@ -37,13 +37,13 @@ var PriceLock = AbstractField.extend({
         event.stopPropagation();
         event.preventDefault();
         var self = this;
-        var paymentId = parseInt($(event.target).attr('price-form'));
+        var priceFormId = parseInt($(event.target).attr('price-form'));
         this.do_action({
             name: 'Customer Product Price',
             type: 'ir.actions.act_window',
             res_model: 'customer.product.price',
             views: [[false, 'form']],
-            res_id: paymentId,
+            res_id: priceFormId,
             target:'new',
             flags:{mode:'readonly'}
             },

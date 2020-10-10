@@ -15,10 +15,10 @@
                     <field name="is_removed" invisible="1"/>
                     <button name="action_commission_add"
                             string="Add" type="object" icon="fa-check text-success"
-                            attrs="{'invisible': [('is_removed', '=', False)]}"/>
+                            attrs="{'invisible': ['|', ('is_settled', '=', True), ('is_removed', '=', False)]}"/>
                     <button name="action_commission_remove"
                             string="Remove" type="object" icon="fa-times-circle text-danger"
-                            attrs="{'invisible': [('is_removed', '=', True)]}"/>
+                            attrs="{'invisible': ['|', ('is_settled', '=', True), ('is_removed', '=', True)]}"/>
                 </tree>
             </field>
         </record>

@@ -45,7 +45,7 @@ class SaleCommissionSettlement(models.Model):
             if domain:
                 domain.extend([('is_paid', '=', True), ('is_settled', '=', False)])
                 commission_lines = self.env['sale.commission'].search(domain)
-            commission_lines -= self.env['sale.commission.settlement'].search([('state', '=', 'draft')]).mapped('commission_ids')
+            commission_lines -= self.search([]).mapped('commission_ids').filtered(lambda rec: not rec.is_removed)
             rec.commission_ids = commission_lines
 
     @api.multi

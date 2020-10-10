@@ -41,8 +41,8 @@
                                 <field name="amount_paid"/>
                             </group>
                         </group>
-                        <field name="commission_ids" widget="section_and_note_one2many" attrs="{'readonly': [('state', '!=', 'draft')]}">
-                            <tree create="0" decoration-danger="is_removed == True">
+                        <field name="commission_ids" widget="section_and_note_one2many" readonly="1">
+                            <tree decoration-danger="is_removed == True">
                                 <field name="sale_person_id"/>
                                 <field name="sale_id"/>
                                 <field name="invoice_id"/>

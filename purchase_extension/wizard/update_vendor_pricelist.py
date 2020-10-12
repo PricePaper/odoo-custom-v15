@@ -18,7 +18,7 @@ class UpdateVendorPricelist(models.TransientModel):
     @api.onchange('vendor_id')
     def onchange_vendor_id(self):
         self.ensure_one()
-        self.line_ids.unlink()
+        self.line_ids = False
         if self.vendor_id:
             pricelists = self.env['product.supplierinfo'].search([('name', '=', self.vendor_id.id)])
             res = []

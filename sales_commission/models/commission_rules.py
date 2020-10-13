@@ -7,9 +7,9 @@ class CommissionRules(models.Model):
     _name = 'commission.rules'
     _description = 'Commission Rules'
 
-    sales_person_id = fields.Many2one('res.partner', string='Sales Persons')
-    based_on = fields.Selection(selection=[('profit', 'Profit'), ('invoice', 'Paid Invoice'), ('profit_delivery', 'Profit After Delivery')], string='Based on')
-    percentage = fields.Float(string='Percentage')
+    sales_person_id = fields.Many2one('res.partner', string='Sales Persons', required=True)
+    based_on = fields.Selection(selection=[('profit', 'Profit'), ('invoice', 'Paid Invoice'), ('profit_delivery', 'Profit After Delivery')], string='Based on', required=True)
+    percentage = fields.Float(string='Percentage', required=True)
 
 
     @api.multi

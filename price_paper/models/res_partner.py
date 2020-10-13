@@ -42,10 +42,12 @@ class ResPartner(models.Model):
     def _compute_last_date(self):
         for rec in self:
             if rec.invoice_ids:
-                payment_date = max([payment.payment_date for payment in rec.invoice_ids.mapped('payment_ids') if payment.payment_date])
+                payment_date_list =[payment.payment_date for payment in rec.invoice_ids.mapped('payment_ids') if payment.payment_date]
+                payment_date = max(payment_date_list) if payment_date_list else False
                 rec.last_paid_date = payment_date
             if rec.sale_order_ids:
-                sale_date = max([sale.confirmation_date.date() for sale in rec.sale_order_ids if sale.confirmation_date])
+                sale_date_list = [sale.confirmation_date.date() for sale in rec.sale_order_ids if sale.confirmation_date]
+                sale_date = max(sale_date_list) if sale_date_list else False
                 rec.last_sold_date = sale_date
 
     @api.depends('zip')

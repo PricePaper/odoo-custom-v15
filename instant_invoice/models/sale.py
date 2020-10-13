@@ -27,7 +27,6 @@ class SaleOrder(models.Model):
                 for move_line in picking.move_line_ids:
                     move_line.qty_done = move_line.product_uom_qty
             rec.picking_ids.button_validate()
-            rec.picking_ids.deliver_products()
             rec.action_invoice_create()
             rec.invoice_ids.action_invoice_open()
             # rec.quick_sale = True

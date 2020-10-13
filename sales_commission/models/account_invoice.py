@@ -46,7 +46,7 @@ class AccountInvoice(models.Model):
             if self.payment_ids[0].payment_method_id.code == 'manual' and self.partner_id.payment_method == 'credit_card':
                 profit += self.amount_total*0.03
 
-            rule_id = self.partner_id.commission_percentage_ids.filtered(lambda r : r.sale_person_id == line.sale_person_id)
+            rule_id = self.partner_id.commission_percentage_ids.filtered(lambda r : r.sale_person_id == line.sale_person_id).mapped('rule_id')
             if rule_id:
                 if rule_id.based_on in ['profit', 'profit_delivery']:
                     commission = profit  * (rule_id.percentage/100)

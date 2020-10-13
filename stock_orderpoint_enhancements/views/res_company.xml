@@ -7,6 +7,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='burden_percent']" position="after">
                     <field name='delay'/>
+                    <field name="order_freq"/>
                     <field name='buffer_percetage'/>
                 </xpath>
             </field>

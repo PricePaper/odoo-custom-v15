@@ -18,7 +18,7 @@ class SaleCommissionSettlement(models.Model):
         ('confirmed', 'Confirmed'),
         ('paid', 'Paid'),
         ('cancel', 'Cancelled'),
-    ], copy=False, string='Status', default='draft')
+    ], copy=False, string='Status', track_visibility='onchange', default='draft')
 
     @api.depends('commission_ids.commission', 'commission_ids.is_removed')
     def _compute_total_amount(self):
@@ -45,7 +45,7 @@ class SaleCommissionSettlement(models.Model):
             if domain:
                 domain.extend([('is_paid', '=', True), ('is_settled', '=', False)])
                 commission_lines = self.env['sale.commission'].search(domain)
-            commission_lines -= self.search([]).mapped('commission_ids').filtered(lambda rec: not rec.is_removed)
+            commission_lines -= self.search([]).mapped('commission_ids').filtered(lambda rec: not rec.is_removed and rec.is_settled)
             rec.commission_ids = commission_lines
 
     @api.multi

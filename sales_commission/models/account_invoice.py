@@ -35,11 +35,11 @@ class AccountInvoice(models.Model):
             profit = self.gross_profit
             amount = self.amount_total
             commission = line.commission
-
-            payment_date = max([rec.payment_date for rec in self.payment_ids])
+            payment_date_list = [rec.payment_date for rec in self.payment_ids]
+            payment_date = max(payment_date_list) if payment_date_list else False
             if self.payment_term_id.due_days:
                 days=self.payment_term_id.due_days
-                if payment_date > self.date_invoice+relativedelta(days=days):
+                if payment_date and payment_date > self.date_invoice+relativedelta(days=days):
                     profit += self.amount_total*(self.payment_term_id.discount_per/100)
             if self.payment_ids[0].payment_method_id.code == 'electronic' and self.partner_id.payment_method == 'cash':
                 profit -= self.amount_total*0.03

@@ -15,6 +15,7 @@ Sales commission module implemented for Price Papers.
     'images': [],
 
     'data': [
+             'data/data.xml',
              'data/account_data.xml',
              'data/ir_sequence_data.xml',
              'security/sales_commission_security.xml',

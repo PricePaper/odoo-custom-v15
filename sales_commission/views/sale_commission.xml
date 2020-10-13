@@ -6,6 +6,7 @@
             <field name="arch" type="xml">
                 <tree string="Sales Commission" decoration-danger="is_removed == True">
                     <field name="sale_person_id" />
+                    <field name="invoice_type" />
                     <field name="sale_id"/>
                     <field name="invoice_id" />
                     <field name="invoice_amount"/>

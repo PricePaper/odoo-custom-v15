@@ -374,7 +374,7 @@ class SaleOrder(models.Model):
         for order in self:
             debit_due = self.env['account.move.line'].search([('partner_id', '=', order.partner_id.id),('full_reconcile_id', '=', False), ('debit', '!=', False), ('date_maturity_grace', '<', date.today())], order='date_maturity_grace desc')
             msg = ''
-            if order.partner_id.credit_limit and (order.partner_id.credit + order.amount_total > order.partner_id.credit_limit):
+            if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
                 msg = "Customer Credit limit Exceeded.\n%s's Credit limit is %s and due amount is %s\n" %(order.partner_id.name,order.partner_id.credit_limit,(order.partner_id.credit + order.amount_total))
             if debit_due:
                 msg = msg + 'Customer has pending invoices.'

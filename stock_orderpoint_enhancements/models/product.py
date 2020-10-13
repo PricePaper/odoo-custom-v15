@@ -358,9 +358,9 @@ ProductProduct()
 class  SupplierInfo(models.Model):
     _inherit = 'product.supplierinfo'
 
-#    delay = fields.Integer(
-#        string='Delivery Lead Time', related='name.delay', required=True, store=True,
-#        help="Lead time in days between the confirmation of the purchase order and the receipt of the products in your warehouse. Used by the scheduler for automatic computation of the purchase order planning.")
+    delay = fields.Integer(
+       string='Delivery Lead Time', related='name.delay', required=True, store=True,
+       help="Lead time in days between the confirmation of the purchase order and the receipt of the products in your warehouse. Used by the scheduler for automatic computation of the purchase order planning.")
 
 
     @api.multi
@@ -369,7 +369,6 @@ class  SupplierInfo(models.Model):
         Overriding write method to track changes in delivery lead time and
         reset orderpoint min/max qty according to delivery lead time
         """
-
         res = super(SupplierInfo, self).write(values)
         if 'delay' in values:
             product = self.product_id or self.env['product.product'].browse(self.product_tmpl_id.product_variant_id[0].id)

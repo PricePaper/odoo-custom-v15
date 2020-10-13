@@ -464,26 +464,32 @@ class SaleOrder(models.Model):
         create invoice for bill_with_goods customers.
         """
 
-        if not self.carrier_id:
-            raise ValidationError(_('Delivery method should be set before confirming an order'))
-        if not self.ready_to_release:
-            self.check_credit_limit()
-        if any(line.product_id.is_storage_contract for line in self.order_line):
-            if not any(line.is_downpayment for line in self.order_line):
-                raise ValidationError(_('Advance payment for Storage contract products should be created before order confirmation.'))
-            if not all(invoice.state == 'paid' for invoice in self.invoice_ids):
-                raise ValidationError(_('Advance payment invoice for Storage contract products is not paid.'))
-        res = super(SaleOrder, self).action_confirm()
+        if self._context.get('from_import'):
+            res = super(SaleOrder, self).action_confirm()
+        else:
+            if not self.carrier_id:
+                raise ValidationError(_('Delivery method should be set before confirming an order'))
+            if not self.ready_to_release:
+                self.check_credit_limit()
+            if any(line.product_id.is_storage_contract for line in self.order_line):
+                if not any(line.is_downpayment for line in self.order_line):
+                    raise ValidationError(_('Advance payment for Storage contract products should be created before order confirmation.'))
+                if not all(invoice.state == 'paid' for invoice in self.invoice_ids):
+                    raise ValidationError(_('Advance payment invoice for Storage contract products is not paid.'))
+            res = super(SaleOrder, self).action_confirm()
 
-        for order in self:
-            # if order.partner_id.bill_with_goods:
-            #     order.action_invoice_create(final=True)
-            for order_line in order.order_line:
-                order_line.update_price_list()
-                # if order_line.is_downpayment and order_line.product_id.is_storage_contract:
-                #     product_id = self.env['ir.config_parameter'].sudo().get_param('sale.default_deposit_product_id')
-                #     order_line.write({'product_id': int(product_id)})
+            for order in self:
+                for order_line in order.order_line:
+                    order_line.update_price_list()
+                    # if order_line.is_downpayment and order_line.product_id.is_storage_contract:
+                    #     product_id = self.env['ir.config_parameter'].sudo().get_param('sale.default_deposit_product_id')
+                    #     order_line.write({'product_id': int(product_id)})
         return res
+
+    @api.multi
+    def import_action_confirm(self):
+        self = self.with_context(from_import=True)
+        return self.action_confirm()
 
     @api.multi
     def add_purchase_history_to_so_line(self):
@@ -521,10 +527,16 @@ class SaleOrderLine(models.Model):
     shipping_id = fields.Many2one(related='order_id.partner_shipping_id', string='Shipping Address')
     note = fields.Text('Note')
     note_type = fields.Selection(string='Note Type', selection=[('permanant', 'Save note'), ('temporary', 'Temporary Note')], default='temporary')
-    lst_price = fields.Float(string='Standard Price', digits=dp.get_precision('Product Price'), store=True, compute='_compute_lst_cost_prices')
     confirmation_date = fields.Datetime(related='order_id.confirmation_date', string='Confirmation Date')
-    working_cost = fields.Float(string='Working Cost', digits=dp.get_precision('Product Price'), store=True, compute='_compute_lst_cost_prices')
     price_lock = fields.Boolean(related='price_from.price_lock', readonly=True)
+
+    #comment the below 2 lines while running sale order line import scripts
+    lst_price = fields.Float(string='Standard Price', digits=dp.get_precision('Product Price'), store=True, compute='_compute_lst_cost_prices')
+    working_cost = fields.Float(string='Working Cost', digits=dp.get_precision('Product Price'), store=True, compute='_compute_lst_cost_prices')
+
+    #Uncomment the below 2 lines while running sale order line import scripts
+    # lst_price = fields.Float(string='Standard Price', digits=dp.get_precision('Product Price'))
+    # working_cost = fields.Float(string='Working Cost', digits=dp.get_precision('Product Price'))
 
 
     @api.depends('product_id', 'product_uom')
@@ -742,12 +754,6 @@ class SaleOrderLine(models.Model):
                         line_price = round(numer / denom, 2)
 
                     line.profit_margin = (line_price - product_price) * line.product_uom_qty
-                # if line.profit_margin < 0.0:
-                #     line.color = 'R'
-                # elif line.profit_margin > 0.0:
-                #     line.color = 'G'
-                # else:
-                #     line.color = 'B'
 
     @api.multi
     @api.onchange('product_id')

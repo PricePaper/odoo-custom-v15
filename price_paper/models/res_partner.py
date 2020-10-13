@@ -16,8 +16,8 @@ class ResPartner(models.Model):
     customer_pricelist_ids = fields.One2many('customer.pricelist', 'partner_id', string="Customer Pricelists")
     customer_code = fields.Char(string='Partner Code', copy=False)
     established_date = fields.Date(string='Established Date')
-    last_sold_date = fields.Date(string='Last Sold Date')
-    last_paid_date = fields.Date(string='Last Paid Date')
+    last_sold_date = fields.Date(string='Last Sold Date', compute='_compute_last_date', store=False)
+    last_paid_date = fields.Date(string='Last Paid Date', compute='_compute_last_date', store=False)
     delivery_day_mon = fields.Boolean(string='Monday')
     delivery_day_tue = fields.Boolean(string='Tuesday')
     delivery_day_wed = fields.Boolean(string='Wednesday')
@@ -37,6 +37,16 @@ class ResPartner(models.Model):
     zip_delivery_day_sun = fields.Boolean(string='Sunday.', related='zip_delivery_id.delivery_day_sun')
     zip_shipping_easiness = fields.Selection([('easy', 'Easy'), ('neutral', 'Neutral'), ('hard', 'Hard')], string='Easiness of shipping.')
 
+
+    @api.depends('sale_order_ids.confirmation_date', 'invoice_ids.payment_ids.payment_date')
+    def _compute_last_date(self):
+        for rec in self:
+            if rec.invoice_ids:
+                payment_date = max([payment.payment_date for payment in rec.invoice_ids.mapped('payment_ids') if payment.payment_date])
+                rec.last_paid_date = payment_date
+            if rec.sale_order_ids:
+                sale_date = max([sale.confirmation_date.date() for sale in rec.sale_order_ids if sale.confirmation_date])
+                rec.last_sold_date = sale_date
 
     @api.depends('zip')
     def compute_delivery_day_id(self):

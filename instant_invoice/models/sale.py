@@ -23,9 +23,6 @@ class SaleOrder(models.Model):
             rec.action_confirm()
             rec.picking_ids.action_confirm()
             rec.picking_ids.action_assign()
-            for picking in rec.picking_ids:
-                for move_line in picking.move_line_ids:
-                    move_line.qty_done = move_line.product_uom_qty
             rec.picking_ids.button_validate()
             rec.action_invoice_create()
             rec.invoice_ids.action_invoice_open()

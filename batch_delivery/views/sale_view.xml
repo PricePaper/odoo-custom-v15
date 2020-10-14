@@ -33,7 +33,9 @@
                 	<field name="info" widget="price_lock" string="Lock Info" attrs="{'invisible':[('price_lock', '=', False)]}"/>
                 </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
-                    <field name="info" widget="price_lock" string="Lock Info" attrs="{'column_invisible':[('parent.have_prive_lock', '=', False)]}"/>
+                    <field name="info" widget="price_lock" string="Lock Info"
+                           attrs="{'column_invisible':[('parent.have_prive_lock', '=', False)],
+                                    'invisible':[('price_lock', '=', False)]}"/>
                 </xpath>
 
 

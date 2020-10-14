@@ -38,7 +38,7 @@
                                 </tree>
                             </field>
 
-                        <div class="o_row">
+                        <div class="o_row" attrs="{'invisible':[('purchase_history_temp_ids', '=', [])]}">
                             <span>Show 🛒 </span>
                             <field name="show_cart"/>
                         </div>

@@ -792,20 +792,22 @@ class SaleOrderLine(models.Model):
                 taxes_ids = self.order_id.partner_shipping_id.property_account_position_id.map_tax(pro_tax_ids, self.product_id, self.order_id.partner_shipping_id).ids
                 res.get('domain', {}).update({'tax_id':[('id', 'in', taxes_ids)]})
 
-            msg, product_price, price_from = self.calculate_customer_price()
-            if msg:
-                res.update({'warning': {'title': _('Warning!'),'message' : warn_msg and '%s\n%s' %(warn_msg,msg) or msg}})
-            res.update({'value' : {'price_unit' : product_price, 'price_from': price_from}})
             sale_history = self.env['sale.history'].search(
                 [('partner_id', '=', self.order_id and self.order_id.partner_id.id),
                  ('product_id', '=', self.product_id and self.product_id.id)])
-
             if sale_history:
                 if len(sale_history) > 1:
                     orders = sale_history.mapped('order_id')
                     last_date = max([rec.confirmation_date for rec in orders])
                     sale_history = sale_history.filtered(lambda r: r.order_date == last_date)
-                res.update({'value' : {'price_unit' : product_price, 'price_from': price_from, 'product_uom': sale_history.uom_id.id}})
+                self.product_uom = sale_history.uom_id
+
+            msg, product_price, price_from = self.calculate_customer_price()
+            if msg:
+                res.update({'warning': {'title': _('Warning!'),'message' : warn_msg and '%s\n%s' %(warn_msg,msg) or msg}})
+            res.update({'value' : {'price_unit' : product_price, 'price_from': price_from}})
+
+
             # for uom only show those applicable uoms
             domain = res.get('domain', {})
             product_uom_domain = domain.get('product_uom', [])
@@ -857,7 +859,6 @@ class SaleOrderLine(models.Model):
         if product is not found in any pricelist,set
         product price as cost price of product
         """
-
         prices_all = self.env['customer.product.price']
         for rec in self.order_id.partner_id.customer_pricelist_ids:
             if not rec.pricelist_id.expiry_date or rec.pricelist_id.expiry_date >= str(date.today()):

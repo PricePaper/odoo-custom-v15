@@ -27,6 +27,8 @@ class StockBackorderConfirmation(models.TransientModel):
                     'delivered_qty': move.quantity_done if move.reserved_availability == move.product_uom_qty else move.reserved_availability,
                 }) for move in pick_id.move_ids_without_package if move.quantity_done != move.product_uom_qty]
             })
+            for move in pick_id.move_ids_without_package:
+                move.sale_line_id.qty_delivered -= move.quantity_done
             order = self.env['sale.order.line'].search(
                 [('order_id', '=', pick_id.sale_id.id), ('is_delivery', '=', True)])
             order.write({'product_uom_qty': order.product_uom_qty + 1})

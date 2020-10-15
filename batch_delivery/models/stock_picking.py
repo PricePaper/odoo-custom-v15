@@ -104,7 +104,7 @@ class StockPicking(models.Model):
             rec.move_ids_without_package.write({'is_transit': True})
             for line in rec.move_line_ids:
                 line.qty_done = line.move_id.reserved_availability
-                line.move_id.sale_line_id.qty_delivered = line.move_id.reserved_availability
+                line.move_id.sale_line_id.qty_delivered += line.move_id.reserved_availability
             if rec.sale_id.invoice_status == 'to invoice':
                 rec.sale_id.action_invoice_create(final=True)              
 

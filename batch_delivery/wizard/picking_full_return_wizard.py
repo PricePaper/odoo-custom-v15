@@ -30,6 +30,8 @@ class PickingFullReturnWizard(models.TransientModel):
         picking.write({'state': 'assigned', 'is_transit': False})
         picking.mapped('move_ids_without_package').write({'quantity_done': 0, 'is_transit': False})
         picking.mapped('move_line_ids').write({'qty_done': 0, 'is_transit': False})
+        for line in picking.move_line_ids:
+            line.move_id.sale_line_id.qty_delivered -= line.move_id.reserved_availability
         order = self.env['sale.order.line'].search([('order_id', '=', picking.sale_id.id), ('is_delivery', '=', True)])
         order.write({'product_uom_qty': order.product_uom_qty + 1})
         invoice = picking.sale_id.invoice_ids.filtered(lambda rec: picking in rec.picking_ids)

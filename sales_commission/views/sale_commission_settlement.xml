@@ -41,7 +41,7 @@
                                 <field name="amount_paid"/>
                             </group>
                         </group>
-                        <field name="commission_ids" widget="section_and_note_one2many" readonly="1">
+                        <field name="commission_ids" attrs="{'readonly': [('state', 'not in', ['draft', 'confirm'])]}" widget="many2many" options="{'not_delete': True}">
                             <tree decoration-danger="is_removed == True">
                                 <field name="sale_person_id"/>
                                 <field name="sale_id"/>
@@ -86,7 +86,7 @@
          <menuitem id="menusale_commission_settlement"
             parent="sale.sale_order_menu"
             action="action_view_sale_commission_settlement"
-            groups="sales_team.group_sale_salesman"
+            groups="sales_commission.group_sales_commission"
             sequence="5"/>
     </data>
 </odoo>

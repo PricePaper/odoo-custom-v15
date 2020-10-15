@@ -79,8 +79,6 @@ class StockPicking(models.Model):
             self.state = 'draft'
         elif all(move.state == 'cancel' for move in self.move_lines):
             self.state = 'cancel'
-        elif self.is_delivered:
-            self.state = 'delivered'
         elif all(move.state in ['cancel', 'done'] for move in self.move_lines):
             self.state = 'done'
         else:
@@ -99,14 +97,18 @@ class StockPicking(models.Model):
             picking.item_count = count
 
     def action_make_transit(self):
-        for rec in self:
-            rec.is_transit = True
-            rec.move_ids_without_package.write({'is_transit': True})
-            for line in rec.move_line_ids:
-                line.qty_done = line.move_id.reserved_availability
-                line.move_id.sale_line_id.qty_delivered += line.move_id.reserved_availability
-            if rec.sale_id.invoice_status == 'to invoice':
-                rec.sale_id.action_invoice_create(final=True)              
+        for pick in self:
+            if pick.state not in ['in_transit', 'done']:
+                pick.is_transit = True
+                pick.move_ids_without_package.write({'is_transit': True})
+                for line in pick.move_line_ids:
+                    line.qty_done = line.move_id.reserved_availability
+                    line.move_id.sale_line_id.qty_delivered += line.move_id.reserved_availability
+                if pick.sale_id.invoice_status == 'to invoice':
+                    pick.sale_id.action_invoice_create(final=True)
+            invoice = pick.sale_id.invoice_ids.filtered(lambda rec: pick in rec.picking_ids)
+            invoice.write({'date_invoice': pick.batch_id.date})
+            pick.sale_id.write({'delivery_date': pick.batch_id.date})
 
     @api.model
     def _read_group_route_ids(self, routes, domain, order):

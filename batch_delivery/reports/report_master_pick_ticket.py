@@ -16,7 +16,7 @@ class ReportMasterPickingTicket(models.AbstractModel):
             else:
                 picking_ids += doc.picking_ids
         product_main = {}
-        for picking in picking_ids:
+        for picking in picking_ids.filtered(lambda rec: rec.state != 'cancel'):
             for line in picking.move_lines:
                 location = line.product_id.property_stock_location and line.product_id.property_stock_location.name or '00-Location not assigned'
                 if product_main.get(location, False):

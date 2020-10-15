@@ -152,14 +152,7 @@ class StockPickingBatch(models.Model):
             # invoice creation from batch procesing
             # move every shipment to transit location(default done state of odoo picking)
             for pick in pickings:
-                sale = pick.sale_id
-
-                if pick.state not in ['in_transit', 'done']:
-                    pick.action_make_transit()
-                invoice = pick.sale_id.invoice_ids.filtered(lambda rec: pick in rec.picking_ids)
-                invoice.write({'date_invoice': batch.date})
-                sale.write({'delivery_date': batch.date})
-
+                pick.action_make_transit()
         self.write({'state': 'in_progress'})
         return True
 

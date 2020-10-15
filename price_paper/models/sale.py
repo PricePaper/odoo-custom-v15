@@ -64,7 +64,7 @@ class SaleOrder(models.Model):
             if not account_id:
                 raise UserError(
                     _('There is no storage income account defined for this product: "%s". You may have to install a chart of account from Accounting app, settings menu.') %
-                    (product_id.name,))
+                    (line.product_id.name,))
             invoice_line = (0, 0, {
                 'name': name,
                 'origin': order.name,
@@ -224,7 +224,15 @@ class SaleOrder(models.Model):
                     order._remove_delivery_line()
         return res
 
-
+    @api.multi
+    def copy(self, default=None):
+        ctx = dict(self.env.context)
+        self = self.with_context(ctx)
+        new_so = super(SaleOrder, self).copy(default=default)
+        for line in new_so.order_line:
+            if line.is_delivery:
+                line.product_uom_qty = 1
+        return new_so
 
     def get_delivery_price(self):
         """
@@ -271,7 +279,7 @@ class SaleOrder(models.Model):
                 delivery_line.product_id = order.carrier_id.product_id.id
                 delivery_line.price_unit = price_unit
                 delivery_line.name = order.carrier_id.name
-                delivery_line.product_uom_qty = 1
+                delivery_line.product_uom_qty = delivery_line.product_uom_qty if delivery_line.product_uom_qty > 1 else 1
                 delivery_line.product_uom = order.carrier_id.product_id.uom_id.id
 
         return True

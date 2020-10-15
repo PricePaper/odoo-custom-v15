@@ -14,7 +14,7 @@ class AssignRouteWizard(models.TransientModel):
     @api.multi
     def assign_routes(self):
         self.env['truck.route'].search([]).write({'set_active': False})
-        pickings = self.env['stock.picking'].search([('state','in', ['confirmed', 'assigned', 'transit']), ('picking_type_code', '=', 'outgoing'), ('route_id', '=', False)])
+        pickings = self.env['stock.picking'].search([('state','in', ['confirmed', 'assigned', 'in_transit']), ('picking_type_code', '=', 'outgoing'), ('route_id', '=', False)])
 
         # group all potential pickings into a dictionary based on partner_id. this dictionary is later used to assign routes for pickings
         picking_dict = {}
@@ -47,7 +47,7 @@ class AssignRouteWizard(models.TransientModel):
             "name" : "Assign Routes",
             "res_model": "stock.picking",
             "views": [[kanban_id, "kanban"], [list_id, "list"]],
-            "domain": [('state','in', ['confirmed', 'assigned', 'transit']), ('picking_type_code', '=', 'outgoing'), '|', ('route_id', '=', False), ('route_id.set_active', '=', True)],
+            "domain": [('state','in', ['confirmed', 'assigned', 'in_transit']), ('picking_type_code', '=', 'outgoing'), '|', ('route_id', '=', False), ('route_id.set_active', '=', True)],
             "target": "current",
         }
 

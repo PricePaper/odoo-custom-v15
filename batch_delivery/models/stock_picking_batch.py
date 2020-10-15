@@ -25,6 +25,14 @@ class StockPickingBatch(models.Model):
     total_amount = fields.Float(string="Total Sale Amount", store=True, compute='_calculate_batch_profit')
     profit_percentage = fields.Float(string="Profit%", store=True, compute='_calculate_batch_profit')
     total_profit = fields.Float(string="Total Profit", store=True, compute='_calculate_batch_profit')
+    late_order_print = fields.Boolean(string="Late Order")
+    have_late_order = fields.Boolean(compute='_compute_late_order')
+
+    @api.depends('picking_ids.is_late_order')
+    def _compute_late_order(self):
+        for rec in self:
+            rec.have_late_order = any(rec.picking_ids.mapped('is_late_order'))
+
 
     @api.multi
     @api.depends('picking_ids.move_lines', 'picking_ids.move_line_ids')
@@ -100,6 +108,12 @@ class StockPickingBatch(models.Model):
 
     @api.multi
     def print_master_pickticket(self):
+        self.write({'late_order_print': False})
+        return self.env.ref('batch_delivery.report_master_pick_ticket').report_action(self, config=False)
+
+    @api.multi
+    def print_master_late_order_pickticket(self):
+        self.write({'late_order_print': True})
         return self.env.ref('batch_delivery.report_master_pick_ticket').report_action(self, config=False)
 
     @api.multi

@@ -43,6 +43,7 @@ class StockPicking(models.Model):
     delivery_move_line_ids = fields.One2many('stock.move.line', 'delivery_picking_id', string='Transit Move Lines')
     shipping_easiness = fields.Selection(related='partner_id.shipping_easiness', string='Easiness Of Shipping')
     is_transit = fields.Boolean(string='Transit', copy=False)
+    is_late_order = fields.Boolean(string='Late Order', copy=False)
 
 
 
@@ -131,13 +132,17 @@ class StockPicking(models.Model):
 
             route_id = vals.get('route_id', False)
             if route_id:
-                draft_batch = self.env['stock.picking.batch'].search([('state', '=', 'draft'), ('route_id', '=', route_id)], limit=1)
-                if not draft_batch:
-                    draft_batch = self.env['stock.picking.batch'].create({'route_id': route_id})
+                BatchOB = self.env['stock.picking.batch']
+                batch = BatchOB.search([('state', '=', 'in_progress'), ('route_id', '=', route_id)], limit=1)
+                if not batch:
+                    batch = BatchOB.search([('state', '=', 'draft'), ('route_id', '=', route_id)], limit=1)
+                if not batch:
+                    batch = BatchOB.create({'route_id': route_id})
                 if picking.state not in ('assigned', 'done'):
                     error = "The requested operation cannot be processed because all quantities are not available for picking %s. Please assign quantities for this picking." %(picking.name)
                     raise UserError(_(error))
-                picking.batch_id = draft_batch.id
+                picking.batch_id = batch
+                vals['is_late_order'] = batch.state == 'in_progress'
             if 'route_id' in vals.keys() and not (vals.get('route_id', False)) and picking.batch_id and picking.batch_id.state == 'draft':
                 vals.update({'batch_id': False})
         res = super(StockPicking, self).write(vals)

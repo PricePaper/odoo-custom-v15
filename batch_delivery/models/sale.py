@@ -9,6 +9,7 @@ class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     have_prive_lock = fields.Boolean(compute='_compute_price_lock')
+    delivery_date = fields.Date(string="Delivery Date")
 
     @api.depends('order_line.price_lock')
     def _compute_price_lock(self):

@@ -9,8 +9,11 @@
             <field name="arch" type="xml">
 
                 <button name="print_picking" position="before">
-                    <button name="view_pending_products" string="Pending Products" type="object" class="oe_highlight"/>
-                    <button name="print_master_pickticket" string="Print Master PickTicket" type="object" class="oe_highlight"/>
+                    <button name="view_pending_products"
+                            string="Pending Products" type="object" class="oe_highlight"/>
+                    <button name="print_master_pickticket" string="Print Master PickTicket"
+                            type="object" class="oe_highlight" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                    <button name="print_master_late_order_pickticket" string="Print Master Late Order PickTicket" type="object" class="oe_highlight" attrs="{'invisible': [('have_late_order', '=', False)]}"/>
                 </button>
 
                 <button name="print_picking" position="after">
@@ -25,8 +28,8 @@
                 </button>
 
                 <xpath expr="//field[@name='picking_ids']/tree//field[@name='name']" position="after">
-                    <field name="partner_id"/>
-                    <field name="city"/>
+                    <field name="partner_id" readonly="1"/>
+                    <field name="city" readonly="1"/>
                     <field name="show_check_availability" invisible="1"/>
                 </xpath>
 
@@ -64,17 +67,39 @@
                 </xpath>
 
                 <xpath expr="//field[@name='picking_ids']" position="attributes">
-                    <attribute name="attrs">{'readonly': [('state', 'in', ['in_progress', 'done'])]}</attribute>
+                    <attribute name="attrs">{'readonly': [('state', '=', 'done')]}</attribute>
                 </xpath>
 
                 <xpath expr="//field[@name='picking_ids']/tree/button[@name='action_assign']" position="attributes">
                     <attribute name="attrs">{'invisible': [('show_check_availability', '=', False)]}</attribute>
                 </xpath>
+
+                <xpath expr="//field[@name='picking_ids']/tree" position="attributes">
+                    <attribute name="create">0</attribute>
+                    <attribute name="edit">1</attribute>
+                    <attribute name="editable">bottom</attribute>
+                </xpath>
+                <xpath expr="//field[@name='picking_ids']/tree/field[@name='name']" position="attributes">
+                    <attribute name="readonly">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='picking_ids']/tree/field[@name='backorder_id']" position="attributes">
+                    <attribute name="readonly">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='picking_ids']/tree/field[@name='date']" position="attributes">
+                    <attribute name="readonly">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='picking_ids']/tree/field[@name='origin']" position="attributes">
+                    <attribute name="readonly">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='picking_ids']/tree/field[@name='scheduled_date']" position="attributes">
+                    <attribute name="readonly">True</attribute>
+                </xpath>
                 <xpath expr="//field[@name='picking_ids']/tree/button[@name='action_cancel']" position="attributes">
                     <attribute name="attrs">{'invisible': [('state', 'in', ('in_transit', 'done', 'cancel'))]}</attribute>
                 </xpath>
-
-
+                  <xpath expr="//field[@name='picking_ids']/tree/field[@name='scheduled_date']" position="after">
+                    <field name="is_late_order" attrs="{'readonly':[('parent.state','=', 'done')]}"/>
+                </xpath>
 
                 <field name="picking_ids" position="after">
                     <div attrs="{'invisible':[('state', '!=', 'done')]}">
@@ -93,6 +118,7 @@
                     </div>
 
                     <field name="is_posted" invisible="1"/>
+                    <field name="have_late_order" invisible="1"/>
                     <field name="payment_ids" invisible="1"/>
 
                 </field>

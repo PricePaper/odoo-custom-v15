@@ -11,7 +11,10 @@ class ReportMasterPickingTicket(models.AbstractModel):
     def _get_master_tickets(self, docs):
         picking_ids = self.env['stock.picking']
         for doc in docs:
-            picking_ids += doc.picking_ids
+            if doc.late_order_print:
+                picking_ids += doc.picking_ids.filtered(lambda rec: rec.is_late_order)
+            else:
+                picking_ids += doc.picking_ids
         product_main = {}
         for picking in picking_ids:
             for line in picking.move_lines:

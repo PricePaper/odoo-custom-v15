@@ -178,6 +178,12 @@ class StockPickingBatch(models.Model):
         return True
 
     @api.multi
+    def cancel_picking(self):
+        result = super(StockPickingBatch, self).cancel_picking()
+        self.mapped('truck_driver_id').write({'is_driver_available': True})
+        return result
+
+    @api.multi
     def compute_url(self):
         """
         Compute location URL

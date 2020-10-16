@@ -402,35 +402,29 @@ class SaleOrder(models.Model):
         partner has pending invoices block the sale order confirmation
         and display warning message.
         """
-
         for order in self:
             msg = order.credit_warning and order.credit_warning or ''
-            with api.Environment.manage():
-                new_cr = self.pool.cursor()
-                so = order.with_env(order.env(cr=new_cr))
-                if msg:
-                    message=''
-                    for order_line in so.order_line:
-                        if order_line.profit_margin < 0.0 and not ('rebate_contract_id' in order_line and order_line.rebate_contract_id):
-                            message = message+'[%s]%s ' % (order_line.product_id.default_code,order_line.product_id.name) + "Unit Price is less than  Product Cost Price\n"
-                    if message:
-                        team = so.env['helpdesk.team'].search([('is_sales_team', '=', True)], limit=1)
-                        if team:
-                            vals = {'name': 'Sale order with Product below working cost',
-                                    'team_id': team and team.id,
-                                    'description': 'Order : ' + so.name + '\n' + message,
-                                    }
-                            ticket = so.env['helpdesk.ticket'].create(vals)
-                    so.write({'is_creditexceed':True, 'ready_to_release': False})
-                    so.message_post(body=msg)
-                else:
-                    order.write({'is_creditexceed':False, 'ready_to_release': True})
-                new_cr.commit()
-                new_cr.close()
+            message=''
             if msg:
-                raise ValidationError(_(msg))
+                for order_line in order.order_line:
+                    if order_line.profit_margin < 0.0 and not ('rebate_contract_id' in order_line and order_line.rebate_contract_id):
+                        message = message+'[%s]%s ' % (order_line.product_id.default_code,order_line.product_id.name) + "Unit Price is less than  Product Cost Price\n"
+                if message:
+                    team = self.env['helpdesk.team'].search([('is_sales_team', '=', True)], limit=1)
+                    if team:
+                        vals = {'name': 'Sale order with Product below working cost',
+                                'team_id': team and team.id,
+                                'description': 'Order : ' + order.name + '\n' + message,
+                                }
+                        ticket = self.env['helpdesk.ticket'].create(vals)
+                order.write({'is_creditexceed':True, 'ready_to_release': False})
+                order.message_post(body=msg)
             else:
-                return True
+                order.write({'is_creditexceed':False, 'ready_to_release': True})
+            if msg:
+                return msg
+            else:
+                return {}
 
 
     @api.onchange('payment_term_id')
@@ -470,7 +464,21 @@ class SaleOrder(models.Model):
             if not self.carrier_id:
                 raise ValidationError(_('Delivery method should be set before confirming an order'))
             if not self.ready_to_release:
-                self.check_credit_limit()
+                warning = self.check_credit_limit()
+                if warning:
+                    context ={'warning_message' : warning}
+                    view_id = self.env.ref('price_paper.view_sale_warning_wizard').id
+                    return {
+                        'name': _('Sale Warning'),
+                        'view_type': 'form',
+                        'view_mode': 'form',
+                        'res_model': 'sale.warning.wizard',
+                        'view_id': view_id,
+                        'type': 'ir.actions.act_window',
+                        'context' : context,
+                        'target' :'new'
+                    }
+
             if any(line.product_id.is_storage_contract for line in self.order_line):
                 if not any(line.is_downpayment for line in self.order_line):
                     raise ValidationError(_('Advance payment for Storage contract products should be created before order confirmation.'))

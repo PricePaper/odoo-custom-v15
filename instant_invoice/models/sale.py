@@ -20,7 +20,9 @@ class SaleOrder(models.Model):
     def action_quick_sale(self):
         for rec in self:
             rec.quick_sale = True
-            rec.action_confirm()
+            res = rec.action_confirm()
+            if res and res != True and res.get('context') and res.get('context').get('warning_message'):
+                return res
             rec.picking_ids.action_confirm()
             rec.picking_ids.action_assign()
             rec.picking_ids.button_validate()

@@ -19,6 +19,7 @@ Custom module implemented for Price Paper.
              'security/ir.model.access.csv',
              'data/fax_data.xml',
              'data/data.xml',
+             'wizard/sale_warning.xml',
              'wizard/upload_pricelist.xml',
              'wizard/inactive_product_report_wizard.xml',
              'wizard/inactive_customer_report_wizard.xml',

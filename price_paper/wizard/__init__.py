@@ -5,6 +5,7 @@ from . import inactive_product_wizard
 from . import inactive_customer_wizard
 from . import sale_make_invoice_advanced
 from . import create_sale_tax_history_wizard
+from . import sale_warning
 
 
 

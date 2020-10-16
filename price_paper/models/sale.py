@@ -410,35 +410,29 @@ class SaleOrder(models.Model):
         partner has pending invoices block the sale order confirmation
         and display warning message.
         """
-
         for order in self:
             msg = order.credit_warning and order.credit_warning or ''
-            with api.Environment.manage():
-                new_cr = self.pool.cursor()
-                so = order.with_env(order.env(cr=new_cr))
-                if msg:
-                    message=''
-                    for order_line in so.order_line:
-                        if order_line.profit_margin < 0.0 and not ('rebate_contract_id' in order_line and order_line.rebate_contract_id):
-                            message = message+'[%s]%s ' % (order_line.product_id.default_code,order_line.product_id.name) + "Unit Price is less than  Product Cost Price\n"
-                    if message:
-                        team = so.env['helpdesk.team'].search([('is_sales_team', '=', True)], limit=1)
-                        if team:
-                            vals = {'name': 'Sale order with Product below working cost',
-                                    'team_id': team and team.id,
-                                    'description': 'Order : ' + so.name + '\n' + message,
-                                    }
-                            ticket = so.env['helpdesk.ticket'].create(vals)
-                    so.write({'is_creditexceed':True, 'ready_to_release': False})
-                    so.message_post(body=msg)
-                else:
-                    order.write({'is_creditexceed':False, 'ready_to_release': True})
-                new_cr.commit()
-                new_cr.close()
+            message=''
             if msg:
-                raise ValidationError(_(msg))
+                for order_line in order.order_line:
+                    if order_line.profit_margin < 0.0 and not ('rebate_contract_id' in order_line and order_line.rebate_contract_id):
+                        message = message+'[%s]%s ' % (order_line.product_id.default_code,order_line.product_id.name) + "Unit Price is less than  Product Cost Price\n"
+                if message:
+                    team = self.env['helpdesk.team'].search([('is_sales_team', '=', True)], limit=1)
+                    if team:
+                        vals = {'name': 'Sale order with Product below working cost',
+                                'team_id': team and team.id,
+                                'description': 'Order : ' + order.name + '\n' + message,
+                                }
+                        ticket = self.env['helpdesk.ticket'].create(vals)
+                order.write({'is_creditexceed':True, 'ready_to_release': False})
+                order.message_post(body=msg)
             else:
-                return True
+                order.write({'is_creditexceed':False, 'ready_to_release': True})
+            if msg:
+                return msg
+            else:
+                return {}
 
 
     @api.onchange('payment_term_id')
@@ -478,7 +472,21 @@ class SaleOrder(models.Model):
             if not self.carrier_id:
                 raise ValidationError(_('Delivery method should be set before confirming an order'))
             if not self.ready_to_release:
-                self.check_credit_limit()
+                warning = self.check_credit_limit()
+                if warning:
+                    context ={'warning_message' : warning}
+                    view_id = self.env.ref('price_paper.view_sale_warning_wizard').id
+                    return {
+                        'name': _('Sale Warning'),
+                        'view_type': 'form',
+                        'view_mode': 'form',
+                        'res_model': 'sale.warning.wizard',
+                        'view_id': view_id,
+                        'type': 'ir.actions.act_window',
+                        'context' : context,
+                        'target' :'new'
+                    }
+
             if any(line.product_id.is_storage_contract for line in self.order_line):
                 if not any(line.is_downpayment for line in self.order_line):
                     raise ValidationError(_('Advance payment for Storage contract products should be created before order confirmation.'))
@@ -800,20 +808,22 @@ class SaleOrderLine(models.Model):
                 taxes_ids = self.order_id.partner_shipping_id.property_account_position_id.map_tax(pro_tax_ids, self.product_id, self.order_id.partner_shipping_id).ids
                 res.get('domain', {}).update({'tax_id':[('id', 'in', taxes_ids)]})
 
-            msg, product_price, price_from = self.calculate_customer_price()
-            if msg:
-                res.update({'warning': {'title': _('Warning!'),'message' : warn_msg and '%s\n%s' %(warn_msg,msg) or msg}})
-            res.update({'value' : {'price_unit' : product_price, 'price_from': price_from}})
             sale_history = self.env['sale.history'].search(
                 [('partner_id', '=', self.order_id and self.order_id.partner_id.id),
                  ('product_id', '=', self.product_id and self.product_id.id)])
-
             if sale_history:
                 if len(sale_history) > 1:
                     orders = sale_history.mapped('order_id')
                     last_date = max([rec.confirmation_date for rec in orders])
                     sale_history = sale_history.filtered(lambda r: r.order_date == last_date)
-                res.update({'value' : {'price_unit' : product_price, 'price_from': price_from, 'product_uom': sale_history.uom_id.id}})
+                self.product_uom = sale_history.uom_id
+
+            msg, product_price, price_from = self.calculate_customer_price()
+            if msg:
+                res.update({'warning': {'title': _('Warning!'),'message' : warn_msg and '%s\n%s' %(warn_msg,msg) or msg}})
+            res.update({'value' : {'price_unit' : product_price, 'price_from': price_from}})
+
+
             # for uom only show those applicable uoms
             domain = res.get('domain', {})
             product_uom_domain = domain.get('product_uom', [])
@@ -865,7 +875,6 @@ class SaleOrderLine(models.Model):
         if product is not found in any pricelist,set
         product price as cost price of product
         """
-
         prices_all = self.env['customer.product.price']
         for rec in self.order_id.partner_id.customer_pricelist_ids:
             if not rec.pricelist_id.expiry_date or rec.pricelist_id.expiry_date >= str(date.today()):

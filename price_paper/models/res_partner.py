@@ -85,7 +85,9 @@ class ResPartner(models.Model):
                 domain.append(('customer', '=', True))
             customer_code_results = self.search(domain)
             customer_code_results = customer_code_results.name_get()
-            res = res + customer_code_results
+            for code in customer_code_results:
+                if code[0] not in [rec[0] for rec in res]:
+                    res.append(code)
         return res
 
     @api.multi
@@ -101,7 +103,8 @@ class ResPartner(models.Model):
                 name += customer.state_id.name
             if customer.company_type == 'company' and name:
                 result.append((customer.id, _('%s (%s)') % (customer.name, name)))
-            result.append((customer.id, _('%s') % (customer.name)))
+            else:
+                result.append((customer.id, _('%s') % (customer.name)))
         return result
 
 

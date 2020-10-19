@@ -10,3 +10,4 @@ access_zip_delivery_days_user,access_zip_delivery_days_user,model_zip_delivery_d
 access_zip_delivery_days_manager,access_zip_delivery_days_manager,model_zip_delivery_day,stock.group_stock_manager,1,1,1,1
 access_sale_history_user,access_sale_history_user,model_sale_history,base.group_user,1,1,1,1
 access_sale_tax_history_user,access_sale_tax_history_user,model_sale_tax_history,base.group_user,1,1,1,1
+access_product_superseded_user,access_product_superseded_user,model_product_superseded,base.group_user,1,1,1,1

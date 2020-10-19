@@ -18,7 +18,7 @@ class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     burden_percent = fields.Float(string='Burden %', default=lambda s: s.default_burden_percent())
-    superseded = fields.Many2one('product.product', string="Supersedes")
+    superseded = fields.One2many(comodel_name='product.superseded', inverse_name='product_child_id', string="Supersedes")
     cost = fields.Float(compute='compute_sale_burden', string="Working Cost", digits=dp.get_precision('Product Price'))
     sale_uoms = fields.Many2many('uom.uom','product_uom_rel', 'product_id', 'uom_id', string='Sale UOMS')
     vendor_id = fields.Many2one('res.partner', compute='compute_product_vendor', string="Vendor", store=True)
@@ -107,12 +107,13 @@ class ProductProduct(models.Model):
         """
 
         result = super(ProductProduct, self).toggle_active()
+        supersede_obj = self.env['product.superseded']
         if self.active:
-            child_product = self.search([('superseded', '=', self.id)])
-            if child_product:
-                child_product.write({'superseded': False})
+            to_unlink = supersede_obj.search([('old_product', '=', self.id)])
+            to_unlink.unlink()
         if not self.active:
-            self.write({'superseded': False})
+            to_unlink = supersede_obj.search([('product_child_id', '=', self.id)])
+            to_unlink.unlink()
         return result
 
 
@@ -235,6 +236,29 @@ class ProductUom(models.Model):
 
 
 ProductUom()
+
+class ProductSuperseded(models.Model):
+    _name = 'product.superseded'
+    _description = 'Superseded Products'
+
+    old_product = fields.Many2one('product.product', string="Old Product",
+    domain=[('active', '=', False)], required=True, ondelete='cascade')
+    product_child_id = fields.Many2one('product.product', string="New Product",
+    readonly=True, required=True)
+
+    @api.one
+    @api.constrains('old_product', 'product_child_id')
+    def check_duplicates(self):
+        result = self.search([('old_product', '=', self.old_product.id),
+            ('product_child_id', '=', self.product_child_id.id),
+            ('id' ,'!=', self.id)])
+        if result:
+            raise UserError('Duplicate entry in superseded')
+
+
+ProductSuperseded()
+
+
 
 
 # class  SupplierInfo(models.Model):

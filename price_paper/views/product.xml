@@ -79,10 +79,24 @@
                 </field>
 
                 <field name="lst_price" position="before">
-                    <field name="superseded"
-                      domain="[('active','!=','True'), ('id', '!=', id)]"
-                      attrs="{'invisible':[('active', '=', False)]}"
-                      help="Select a product that has been archived that this product will replace"/>
+                  <field name="superseded"
+                    attrs="{'invisible':[('active', '=', False)]}"
+                    context="{'default_product_child_id':id}"
+                    domain="[('product_child_id', '=', id)]"
+                    help="Select a product that has been archived that this product will replace" >
+                    <tree>
+                      <field name='old_product'/>
+                    </tree>
+                    <form>
+                      <group>
+                        <group>
+                          <field name='old_product'/>
+                          <field name='product_child_id' readonly='1'/>
+                        </group>
+                      </group>
+                    </form>
+                  </field>
+
                 </field>
 
                 <xpath expr="//div[@name='pricelist_item']" position="attributes">
@@ -142,7 +156,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='name']" position="replace" >
                     <field name="name" string="Products"
-                      filter_domain="['|','|','|',('superseded.default_code','=',self),
+                      filter_domain="['|','|','|',('superseded.old_product.default_code','=',self),
                       ('default_code','ilike',self),('name','ilike',self),
                       ('barcode','ilike',self)]"/>
                 </xpath>

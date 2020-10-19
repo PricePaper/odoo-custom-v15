@@ -138,7 +138,7 @@ class ProductProduct(models.Model):
         product_ids = [self.id]
         forecast = []
         if self.superseded:
-            product_ids.append(self.superseded.id)
+            product_ids += self.superseded.mapped('old_product').ids
         query = """
                 SELECT to_char(o.date_order, 'YYYY-MM-DD')as
                 year_month_day, sum(l.product_uom_qty), l.product_uom from sale_order o, sale_order_line

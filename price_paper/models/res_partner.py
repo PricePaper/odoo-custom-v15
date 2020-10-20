@@ -35,7 +35,7 @@ class ResPartner(models.Model):
     zip_delivery_day_fri = fields.Boolean(string='Friday.', related='zip_delivery_id.delivery_day_fri')
     zip_delivery_day_sat = fields.Boolean(string='Saturday.', related='zip_delivery_id.delivery_day_sat')
     zip_delivery_day_sun = fields.Boolean(string='Sunday.', related='zip_delivery_id.delivery_day_sun')
-    zip_shipping_easiness = fields.Selection([('easy', 'Easy'), ('neutral', 'Neutral'), ('hard', 'Hard')], string='Easiness of shipping.')
+    zip_shipping_easiness = fields.Selection(related='zip_delivery_id.shipping_easiness', string='Easiness of shipping.')
 
 
     @api.depends('sale_order_ids.confirmation_date', 'invoice_ids.payment_ids.payment_date')

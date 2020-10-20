@@ -41,11 +41,19 @@ class StockPicking(models.Model):
     deliver_by = fields.Date(related='sale_id.deliver_by', string="Deliver By", store=True)
     delivery_move_ids = fields.One2many('stock.move', 'delivery_picking_id', string='Transit Moves')
     delivery_move_line_ids = fields.One2many('stock.move.line', 'delivery_picking_id', string='Transit Move Lines')
-    shipping_easiness = fields.Selection(related='partner_id.shipping_easiness', string='Easiness Of Shipping')
+    shipping_easiness = fields.Selection([('easy', 'Easy'), ('neutral', 'Neutral'), ('hard', 'Hard')],
+    string='Easiness Of Shipping')
     is_transit = fields.Boolean(string='Transit', copy=False)
     is_late_order = fields.Boolean(string='Late Order', copy=False)
 
 
+    @api.onchange('partner_id')
+    def onchange_partner_id(self):
+        if self.partner_id:
+            if self.partner_id.change_delivery_days:
+                self.shipping_easiness = self.partner_id.shipping_easiness
+            else:
+                self.shipping_easiness = self.partner_id.zip_shipping_easiness
 
 
     @api.multi

@@ -118,7 +118,7 @@ class PurchaseOrder(models.Model):
         current_date = date.today()
         first_day = current_date.replace(day=1)
         first_month_list = [str((first_day + relativedelta(months=-x)).strftime('%Y-%m-%d %H:%M:%S')) for x in range (0, 15)]
-        date_matrix = {ele: 'month'+str(x) for x, ele in zip(range(1, 16), first_month_list)}
+        date_matrix = {datetime.strptime(ele,"%Y-%m-%d %H:%M:%S"): 'month'+str(x) for x, ele in zip(range(1, 16), first_month_list)}
         for key in result_dict2.keys():
             result = {}
             for ele in date_matrix.keys():

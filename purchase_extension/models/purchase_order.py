@@ -11,6 +11,7 @@ class PurchaseOrder(models.Model):
     release_date = fields.Datetime(string='Release Date')
     total_volume = fields.Float(string="Total Order Volume", compute='_compute_total_weight_volume')
     total_weight = fields.Float(string="Total Order Weight", compute='_compute_total_weight_volume')
+    purchase_default_message = fields.Html(related="company_id.purchase_default_message", readonly=True)
 
 
     @api.depends('order_line.product_id', 'order_line.product_qty')
@@ -89,6 +90,8 @@ class PurchaseOrder(models.Model):
         vals parameter for create argument of Odoo
         """
         # Converts the result_dict quantities to purchase unit scale
+        from pprint import pprint
+        pprint(result_dict)
         for ele in result_dict.keys():
             product_purchase_unit = self.env['product.product'].browse(ele).uom_po_id
             for row in result_dict[ele]:
@@ -98,6 +101,8 @@ class PurchaseOrder(models.Model):
                     row['units'] = changed_uom_qty
 
         # merges values of same period to a single record
+        print('\n\n\n\n\n\n\n\n\n\n\n\n')
+        pprint(result_dict)
         result_dict2 = {}
         for ele in result_dict.keys():
             result_dict2.update({ele:{}})
@@ -109,7 +114,8 @@ class PurchaseOrder(models.Model):
                     result_dict2[ele].update({row['period']:row['units'] + current_count})
 
 
-
+        print('\n\n\n')
+        pprint(result_dict2)
         # Formats the result to a key value pair where key is the product id and values is a dictionary with key as period and value as quantity
         current_date = date.today()
         first_day = current_date.replace(day=1)

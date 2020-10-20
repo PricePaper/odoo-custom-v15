@@ -32,8 +32,10 @@ string="ADD ADDITIONAL PRODUCTS" icon="fa-history"/>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='product_qty']" position="before">
                     <button name="show_sales_history" type="object" icon="fa-history" string="Show sales history"/>
                 </xpath>
-
-
+                <xpath expr="//notebook" position="after">
+                    <separator/>
+                    <field name="purchase_default_message"/>
+                </xpath>
 
             </field>
         </record>

@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api, _
+import calendar
 import datetime
-from dateutil.relativedelta import *
-import calendar
-from math import ceil, floor
-from odoo.exceptions import ValidationError
-from odoo.exceptions import UserError
 import logging as server_log
-import calendar
+from math import ceil
+
+from dateutil.relativedelta import *
+
+from odoo import fields, models, api
 from odoo.addons.queue_job.job import job
 
 to_date_hardcoded = datetime.datetime.strptime('2017-12-28', '%Y-%m-%d').date()
+
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
@@ -20,8 +20,10 @@ class ProductProduct(models.Model):
     forecast_days = fields.Integer(string="Forecast Days", default=30)
     orderpoint_update_date = fields.Date(string='Orderpoint Update Date')
     dont_use_fbprophet = fields.Boolean(string='Do not use Fbprophet Forecasting')
-    past_days = fields.Integer(string="Fbprophet Hist Days", help="Days worth of historical data to be taken into consideration for Fbprophet calculation", default=1825)
-    real_forecast_qty = fields.Float(string='Real Forecast Qty', compute='compute_real_forecast_qty')
+    past_days = fields.Integer(string="Fbprophet Hist Days",
+                               help="Days worth of historical data to be taken into consideration for Fbprophet calculation",
+                               default=1825)
+    # real_forecast_qty = fields.Float(string='Real Forecast Qty', compute='compute_real_forecast_qty')
 
 
     # @api.multi
@@ -93,7 +95,6 @@ class ProductProduct(models.Model):
     #
     #         raise UserError("Evaluation Period: %s - %s\nReal Qty: %s %s\n Forecasted: %s %s\n Forecasted Max: %s %s\n Forecasted Min: %s %s" %(str(start_date), str(range_end), qty, pro.uom_id.name, round(for_quantity,2), pro.uom_id.name, round(for_quantity_max, 2), pro.uom_id.name, round(for_quantity_min,2 ), pro.uom_id.name))
 
-
     @api.multi
     def get_fbprophet_config(self):
         """
@@ -102,23 +103,21 @@ class ProductProduct(models.Model):
 
         config = self.env['fbprophet.config'].search([('config_type', '=', 'inventory')]) or False
         if config:
-            product_config = config.filtered(lambda r : r.inv_config_for == 'product' and r.product_id == self)
+            product_config = config.filtered(lambda r: r.inv_config_for == 'product' and r.product_id == self)
             if product_config:
                 return product_config[0]
-            categ_config = config.filtered(lambda r : r.inv_config_for == 'categ' and r.categ_id == self.categ_id)
+            categ_config = config.filtered(lambda r: r.inv_config_for == 'categ' and r.categ_id == self.categ_id)
             if categ_config:
                 return categ_config[0]
-            global_config = config.filtered(lambda r : r.inv_config_for == 'global')
+            global_config = config.filtered(lambda r: r.inv_config_for == 'global')
             if global_config:
                 return global_config[0]
 
         config = self.env['fbprophet.config'].search([('config_type', '=', 'default')], limit=1) or False
         return config
 
-
-
     @api.multi
-    def forecast_sales(self, periods=30, freq='d', to_date = str(datetime.date.today())):
+    def forecast_sales(self, periods=30, freq='d', to_date=str(datetime.date.today())):
         """
         Forecast the sale of a product in daily basis by collecting
         past 5 years sales details
@@ -126,7 +125,7 @@ class ProductProduct(models.Model):
 
         to_date = datetime.datetime.strptime(to_date, "%Y-%m-%d").date()
         if periods == 30 and freq == 'd':
-            forecast_from = (to_date+relativedelta(days=1))
+            forecast_from = (to_date + relativedelta(days=1))
 
             month_last_date = calendar.monthrange(forecast_from.year, forecast_from.month)[1]
             periods = month_last_date
@@ -134,7 +133,7 @@ class ProductProduct(models.Model):
         self.ensure_one()
         config = self.get_fbprophet_config()
         # to_date = datetime.date.today()
-        from_date = (to_date-relativedelta(days=self.past_days)).strftime('%Y-%m-%d')
+        from_date = (to_date - relativedelta(days=self.past_days)).strftime('%Y-%m-%d')
         product_ids = [self.id]
         forecast = []
         if self.superseded:
@@ -144,7 +143,8 @@ class ProductProduct(models.Model):
                 year_month_day, sum(l.product_uom_qty), l.product_uom from sale_order o, sale_order_line
                 l WHERE o.date_order >= '%s'
                 AND o.date_order <= '%s' AND o.id=l.order_id AND
-                l.product_id in (%s) AND l.product_uom_qty>0 AND o.state IN ('sale', 'done') GROUP BY l.product_uom, year_month_day ORDER BY year_month_day;""" % (from_date,str(to_date), (",".join(str(x) for x in product_ids)))
+                l.product_id in (%s) AND l.product_uom_qty>0 AND o.state IN ('sale', 'done') GROUP BY l.product_uom, year_month_day ORDER BY year_month_day;""" % (
+        from_date, str(to_date), (",".join(str(x) for x in product_ids)))
 
         self.env.cr.execute(query)
         result = self.env.cr.fetchall()
@@ -152,7 +152,9 @@ class ProductProduct(models.Model):
             result = self.filler_to_append_zero_qty(result, to_date)
             date_to = (to_date + relativedelta(days=periods)).strftime('%Y-%m-%d')
             try:
-                forecast = self.env['odoo_fbprophet.prophet.bridge'].run_prophet(result, from_date, date_to, periods=periods, freq=freq, config=config)
+                forecast = self.env['odoo_fbprophet.prophet.bridge'].run_prophet(result, from_date, date_to,
+                                                                                 periods=periods, freq=freq,
+                                                                                 config=config)
             except Exception as e:
                 server_log.error("Exception in run_prophet for product %s" % (self.name))
                 server_log.error(e)
@@ -164,7 +166,8 @@ class ProductProduct(models.Model):
     def get_qty_from_orders(self, product_id, forecast_begin):
         to_date = datetime.datetime.strptime(forecast_begin, "%Y-%m-%d").date()
         forecast_end = (to_date + relativedelta(months=1)).strftime('%Y-%m-%d')
-        orders = self.env['sale.order'].search([('confirmation_date', '>', forecast_begin), ('confirmation_date', '<', str(forecast_end))])
+        orders = self.env['sale.order'].search(
+            [('confirmation_date', '>', forecast_begin), ('confirmation_date', '<', str(forecast_end))])
         qty = 0.00
         for order in orders:
             for line in order.order_line:
@@ -175,7 +178,6 @@ class ProductProduct(models.Model):
                         sale_uom_factor = line.product_uom.factor
                         qty += ((line.product_uom_qty * self.uom_id.factor) / sale_uom_factor)
         return qty
-
 
     @api.multi
     def show_forecast(self):
@@ -196,22 +198,22 @@ class ProductProduct(models.Model):
             if datetime.datetime.strptime(ele[0], '%Y-%m-%d').date() >= to_date:
                 flag = True
             if flag:
-                count+=1
+                count += 1
                 self.env['product.forecast'].create({'product_id': self.id,
                                                      'date': ele[0],
-                                                     'quantity': ele[1], # quantity,
-                                                     'quantity_min': ele[2], #min_quantity,
-                                                     'quantity_max': ele[3], # max_quantity,
-                                                    })
+                                                     'quantity': ele[1],  # quantity,
+                                                     'quantity_min': ele[2],  # min_quantity,
+                                                     'quantity_max': ele[3],  # max_quantity,
+                                                     })
 
-#        if count>45:
-#            raise ValidationError(_("Graphical representation is not possible due to large data,Please minimize forecast days"))
+        #        if count>45:
+        #            raise ValidationError(_("Graphical representation is not possible due to large data,Please minimize forecast days"))
 
-        graph_id  = self.env.ref('stock_orderpoint_enhancements.view_order_product_forecast_graph').id
+        graph_id = self.env.ref('stock_orderpoint_enhancements.view_order_product_forecast_graph').id
         pivot_id = self.env.ref('stock_orderpoint_enhancements.view_order_product_forecast_pivot').id
         res = {
             "type": "ir.actions.act_window",
-            "name" : "Sale Forecast",
+            "name": "Sale Forecast",
             "res_model": "product.forecast",
             "views": [[graph_id, "graph"], [pivot_id, "pivot"]],
             "domain": [["product_id", "=", self.id]],
@@ -219,9 +221,6 @@ class ProductProduct(models.Model):
         }
 
         return res
-
-
-
 
     @api.model
     def filler_to_append_zero_qty(self, result, to_date):
@@ -231,18 +230,17 @@ class ProductProduct(models.Model):
         Converts uom_qty into base uom_qty
         """
         res = []
-#        to_date = datetime.date.today()
-#        start_date = (to_date-relativedelta(years=3)).replace(day=1)
+        #        to_date = datetime.date.today()
+        #        start_date = (to_date-relativedelta(years=3)).replace(day=1)
         start_date = result and result[0] and result[0][0]
         start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
 
-
-        while(start_date <= to_date):
+        while (start_date <= to_date):
             val = start_date.strftime("%Y-%m-%d")
             in_list = [rec for rec in result if rec and str(rec[0]) == val]
-            if start_date.weekday() not in (5,6):
+            if start_date.weekday() not in (5, 6):
                 if not in_list:
-                    res.append((val,0.0))
+                    res.append((val, 0.0))
                 else:
                     qty = 0
                     for product_uom_qty in in_list:
@@ -251,10 +249,9 @@ class ProductProduct(models.Model):
                         else:
                             sale_uom_factor = self.env['uom.uom'].browse(product_uom_qty[2]).factor
                             qty += ((product_uom_qty[1] * self.uom_id.factor) / sale_uom_factor)
-                    res.append((val,qty))
+                    res.append((val, qty))
             start_date = start_date + relativedelta(days=1)
         return res
-
 
     @api.multi
     def calculate_qty(self, forecast, to_date, to_date_plus_delay):
@@ -263,12 +260,12 @@ class ProductProduct(models.Model):
         for ele in forecast:
             if datetime.datetime.strptime(ele[0], '%Y-%m-%d').date() >= to_date:
                 flag = True
-            if flag and ele[0] <= str(to_date_plus_delay):#calculate min and max qty between to_date and to_date_plus_delay
+            if flag and ele[0] <= str(
+                    to_date_plus_delay):  # calculate min and max qty between to_date and to_date_plus_delay
                 quantity += ele[1]
         if quantity and self.env.user.company_id.buffer_percetage:
-            quantity = quantity * ((100+self.env.user.company_id.buffer_percetage)/100)
+            quantity = quantity * ((100 + self.env.user.company_id.buffer_percetage) / 100)
         return quantity
-
 
     @api.multi
     @job
@@ -279,9 +276,11 @@ class ProductProduct(models.Model):
         """
 
         prophet_start_date = self.env['ir.config_parameter'].sudo().get_param('prophet_start_date')
-        to_date = prophet_start_date and datetime.datetime.strptime(prophet_start_date, '%Y-%m-%d').date() or datetime.date.today()
+        to_date = prophet_start_date and datetime.datetime.strptime(prophet_start_date,
+                                                                    '%Y-%m-%d').date() or datetime.date.today()
 
-        vendor = self.seller_ids and self.seller_ids[0]
+        vendor = self.seller_ids.filtered(lambda seller: seller.is_available) and \
+                 self.seller_ids.filtered(lambda seller: seller.is_available)[0]
 
         if not vendor:
             server_log.error('Supplier is not set for product %s' % self.name)
@@ -297,7 +296,6 @@ class ProductProduct(models.Model):
             to_date_plus_delay = to_date + relativedelta(days=delivery_lead_time)
             max_to_date_plus_delay = to_date + relativedelta(days=max_delivery_lead_time)
 
-
             min_forecast = self.forecast_sales(periods=delivery_lead_time, freq='d', to_date=str(to_date))
             min_quantity = self.calculate_qty(min_forecast, to_date, to_date_plus_delay)
 
@@ -312,18 +310,17 @@ class ProductProduct(models.Model):
                 if not self.orderpoint_update_date or self.orderpoint_update_date < str(datetime.date.today()):
                     orderpoint.write({'product_min_qty': ceil(min_quantity),
                                       'product_max_qty': ceil(max_quantity),
-                                     })
+                                      })
             else:
                 self.env['stock.warehouse.orderpoint'].create({
-                                                               'product_id': self.id,
-                                                               'product_min_qty': min_quantity,
-                                                               'product_max_qty': max_quantity,
-                                                               'qty_multiple': 1,
-                                                               'product_uom': self.uom_id.id,
-                                                              })
+                    'product_id': self.id,
+                    'product_min_qty': min_quantity,
+                    'product_max_qty': max_quantity,
+                    'qty_multiple': 1,
+                    'product_uom': self.uom_id.id,
+                })
             self.last_op_update_date = str(datetime.datetime.today())
         return True
-
 
     @api.multi
     def reset_orderpoint(self):
@@ -335,7 +332,6 @@ class ProductProduct(models.Model):
         for product in self:
             product.with_delay(channel='root.Product_Orderpoint').job_queue_forecast()
 
-
     @api.model
     def set_orderpoint_cron(self):
         """
@@ -343,25 +339,22 @@ class ProductProduct(models.Model):
         uses fbprophet based forecasting for the OP setup.
         """
 
-        products = self.env['product.product'].search([('active','=',True), ('type', '=', 'product'), ('dont_use_fbprophet', '=', False)], order='last_op_update_date')
+        products = self.env['product.product'].search(
+            [('active', '=', True), ('type', '=', 'product'), ('dont_use_fbprophet', '=', False)],
+            order='last_op_update_date')
         for product in products:
             product.with_delay(channel='root.Product_Orderpoint').job_queue_forecast()
-
-
 
 
 ProductProduct()
 
 
-
-
-class  SupplierInfo(models.Model):
+class SupplierInfo(models.Model):
     _inherit = 'product.supplierinfo'
 
     delay = fields.Integer(
-       string='Delivery Lead Time', related='name.delay', required=True, store=True,
-       help="Lead time in days between the confirmation of the purchase order and the receipt of the products in your warehouse. Used by the scheduler for automatic computation of the purchase order planning.")
-
+        string='Delivery Lead Time', related='name.delay', required=True, store=True,
+        help="Lead time in days between the confirmation of the purchase order and the receipt of the products in your warehouse. Used by the scheduler for automatic computation of the purchase order planning.")
 
     @api.multi
     def write(self, values):
@@ -371,10 +364,10 @@ class  SupplierInfo(models.Model):
         """
         res = super(SupplierInfo, self).write(values)
         if 'delay' in values:
-            product = self.product_id or self.env['product.product'].browse(self.product_tmpl_id.product_variant_id[0].id)
+            product = self.product_id or self.env['product.product'].browse(
+                self.product_tmpl_id.product_variant_id[0].id)
             self.reset_orderpoint(product)
         return res
-
 
     @api.multi
     def reset_orderpoint(self, product):
@@ -385,7 +378,8 @@ class  SupplierInfo(models.Model):
         self.ensure_one()
 
         prophet_start_date = self.env['ir.config_parameter'].sudo().get_param('prophet_start_date')
-        to_date = prophet_start_date and datetime.datetime.strptime(prophet_start_date, '%Y-%m-%d').date() or datetime.date.today()
+        to_date = prophet_start_date and datetime.datetime.strptime(prophet_start_date,
+                                                                    '%Y-%m-%d').date() or datetime.date.today()
         forecast = product.forecast_sales(periods=30, freq='d', to_date=str(to_date))
 
         orderpoint = product.orderpoint_ids and product.orderpoint_ids[0] or False
@@ -403,7 +397,7 @@ class  SupplierInfo(models.Model):
         if orderpoint:
             orderpoint.write({'product_min_qty': ceil(min_quantity),
                               'product_max_qty': ceil(max_quantity),
-                             })
+                              })
             product.last_op_update_date = str(datetime.datetime.today())
 
 

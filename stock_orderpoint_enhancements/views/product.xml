@@ -20,15 +20,18 @@
                 </xpath>
             </field>
         </record>
-<!--        <record id="product_supplierinfo_form_view_inherit_pricepaper" model="ir.ui.view">-->
-<!--            <field name="name">roduct.supplierinfo.form.view_inherit_pricepaper</field>-->
-<!--            <field name="model">product.supplierinfo</field>-->
-<!--            <field name="inherit_id" ref="product.product_supplierinfo_form_view" />-->
-<!--            <field name="arch" type="xml">-->
-<!--                <xpath expr="//field[@name='delay']" position="attributes">-->
-<!--                    <attribute name="readonly">1</attribute>-->
-<!--                </xpath>-->
-<!--            </field>-->
-<!--        </record>-->
+        <record id="product_supplierinfo_tree_view_inherit_pricepaper" model="ir.ui.view">
+            <field name="name">roduct.supplierinfo.form.view_inherit_pricepaper</field>
+            <field name="model">product.supplierinfo</field>
+            <field name="inherit_id" ref="product.product_supplierinfo_tree_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='date_end']" position="after">
+                    <field name="is_available" invisible="1"/>
+                </xpath>
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="decoration-danger">is_available==False</attribute>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

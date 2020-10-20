@@ -140,6 +140,7 @@ class AddSaleHistoryPO(models.TransientModel):
         if self._context.get('data', False):
             data = self._context.get('data', False)
             lines = []
+            self.sale_history_ids = False
             if self.search_box:
                 for line in data:
                     product = line.get('product_id', False) and self.env['product.product'].browse(line.get('product_id'))

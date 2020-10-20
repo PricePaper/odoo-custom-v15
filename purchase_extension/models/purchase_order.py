@@ -11,6 +11,8 @@ class PurchaseOrder(models.Model):
     release_date = fields.Datetime(string='Release Date')
     total_volume = fields.Float(string="Total Order Volume", compute='_compute_total_weight_volume')
     total_weight = fields.Float(string="Total Order Weight", compute='_compute_total_weight_volume')
+    purchase_default_message = fields.Html(related="company_id.purchase_default_message", readonly=True)
+    total_qty = fields.Float(string="Total Order Quantity", compute='_compute_total_weight_volume')
 
 
     @api.depends('order_line.product_id', 'order_line.product_qty')
@@ -18,11 +20,14 @@ class PurchaseOrder(models.Model):
         for order in self:
             volume = 0
             weight = 0
+            qty = 0
             for line in order.order_line:
                 volume += line.gross_volume
                 weight += line.gross_weight
+                qty += line.product_qty
             order.total_volume = volume
             order.total_weight= weight
+            order.total_qty = qty
 
     @api.multi
     def add_sale_history_to_po_line(self):
@@ -107,7 +112,6 @@ class PurchaseOrder(models.Model):
                 else:
                     current_count = result_dict2[ele].get(row['period'])
                     result_dict2[ele].update({row['period']:row['units'] + current_count})
-
 
 
         # Formats the result to a key value pair where key is the product id and values is a dictionary with key as period and value as quantity

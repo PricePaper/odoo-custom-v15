@@ -17,7 +17,6 @@
                     <field name="established_date" />
                     <field name="last_sold_date" />
                     <field name="last_paid_date" />
-                    <field name="shipping_easiness" />
                     <field name="destination_code" />
                 </xpath>
                 <field name='vat' position='attributes'>
@@ -37,6 +36,8 @@
                     <group string="Shipping Days">
                         <field name="change_delivery_days"/>
                         <field name="zip_delivery_id" invisible="1"/>
+                        <field name="shipping_easiness" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
+                        <field name="zip_shipping_easiness" attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
                         <field name="delivery_day_mon" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
                         <field name="delivery_day_tue" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
                         <field name="delivery_day_wed" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>

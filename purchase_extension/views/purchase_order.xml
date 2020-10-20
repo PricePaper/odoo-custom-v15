@@ -16,6 +16,7 @@
                     <group name="weight_volume" >
                         <field name="total_volume"/>
                         <field name="total_weight"/>
+                        <field name="total_qty"/>
                     </group>
                 </xpath>
 

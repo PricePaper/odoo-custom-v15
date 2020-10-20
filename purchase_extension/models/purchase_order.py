@@ -12,6 +12,7 @@ class PurchaseOrder(models.Model):
     total_volume = fields.Float(string="Total Order Volume", compute='_compute_total_weight_volume')
     total_weight = fields.Float(string="Total Order Weight", compute='_compute_total_weight_volume')
     purchase_default_message = fields.Html(related="company_id.purchase_default_message", readonly=True)
+    total_qty = fields.Float(string="Total Order Quantity", compute='_compute_total_weight_volume')
 
 
     @api.depends('order_line.product_id', 'order_line.product_qty')
@@ -19,11 +20,14 @@ class PurchaseOrder(models.Model):
         for order in self:
             volume = 0
             weight = 0
+            qty = 0
             for line in order.order_line:
                 volume += line.gross_volume
                 weight += line.gross_weight
+                qty += line.product_qty
             order.total_volume = volume
             order.total_weight= weight
+            order.total_qty = qty
 
     @api.multi
     def add_sale_history_to_po_line(self):
@@ -90,8 +94,6 @@ class PurchaseOrder(models.Model):
         vals parameter for create argument of Odoo
         """
         # Converts the result_dict quantities to purchase unit scale
-        from pprint import pprint
-        pprint(result_dict)
         for ele in result_dict.keys():
             product_purchase_unit = self.env['product.product'].browse(ele).uom_po_id
             for row in result_dict[ele]:
@@ -101,8 +103,6 @@ class PurchaseOrder(models.Model):
                     row['units'] = changed_uom_qty
 
         # merges values of same period to a single record
-        print('\n\n\n\n\n\n\n\n\n\n\n\n')
-        pprint(result_dict)
         result_dict2 = {}
         for ele in result_dict.keys():
             result_dict2.update({ele:{}})
@@ -114,8 +114,6 @@ class PurchaseOrder(models.Model):
                     result_dict2[ele].update({row['period']:row['units'] + current_count})
 
 
-        print('\n\n\n')
-        pprint(result_dict2)
         # Formats the result to a key value pair where key is the product id and values is a dictionary with key as period and value as quantity
         current_date = date.today()
         first_day = current_date.replace(day=1)

@@ -21,33 +21,35 @@
             </field>
         </record>
 
-        <record id="product_search_view_inherit_pricepaper" model="ir.ui.view">
-            <field name="name">product.serch.view.inherit</field>
-            <field name="model">product.product</field>
-            <field name="inherit_id" ref="product.product_search_form_view"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='name']" position="after">
-                    <field name="vendor_id" string="Vendor"
-                      filter_domain="[('vendor_id','ilike',self)]"/>
-                    <field name="default_code" string="Internal reference"
-                      filter_domain="[('default_code','ilike',self)]"/>
-                    <field name="description" string="Internal Notes"
-                      filter_domain="[('description','ilike',self)]"/>
-                     <group expand="0" string="Group By">
-                        <filter string="Vendor" name="groupby_vendor"
-                          domain="[]" context="{'group_by': 'vendor_id'}"/>
-                    </group>
-                </xpath>
-                <!-- <xpath expr="//filter[@name='real_stock_available']" position="after">
-                    <filter name="incoming_qty" string="Incoming Products" domain="[('incoming_qty','&gt;',0)]"/>
-                    <filter name="outgoing_qty" string="Outgoing Products" domain="[('outgoing_qty','&gt;',0)]"/>
+<!--        <record id="product_search_view_inherit_pricepaper" model="ir.ui.view">-->
+<!--            <field name="name">product.serch.view.inherit</field>-->
+<!--            <field name="model">product.product</field>-->
+<!--            <field name="inherit_id" ref="product.product_search_form_view"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//field[@name='name']" position="after">-->
+<!--                    <field name="vendor_id" string="Vendor"-->
+<!--                      filter_domain="[('vendor_id','ilike',self)]"/>-->
+<!--                    <field name="default_code" string="Internal reference"-->
+<!--                      filter_domain="[('default_code','ilike',self)]"/>-->
+<!--                    <field name="description" string="Internal Notes"-->
+<!--                      filter_domain="[('description','ilike',self)]"/>-->
+<!--                    <filter name="is_abv_max_qty" string="Above Max Qty" domain="[('is_abv_max_qty','=',True)]"/>-->
+<!--                    <filter name="is_bel_min_qty" string="Below Min Qty" domain="[('is_bel_min_qty','=',True)]"/>-->
+<!--                     <group expand="0" string="Group By">-->
+<!--                        <filter string="Vendor" name="groupby_vendor"-->
+<!--                          domain="[]" context="{'group_by': 'vendor_id'}"/>-->
+<!--                    </group>-->
+<!--                </xpath>-->
+<!--&lt;!&ndash;                <xpath expr="//filter[@name='name']" position="after">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <filter name="incoming_qty" string="Incoming Products" domain="[('incoming_qty','&gt;',0)]"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <filter name="outgoing_qty" string="Outgoing Products" domain="[('outgoing_qty','&gt;',0)]"/>&ndash;&gt;-->
 
-                    <filter name="is_abv_max_qty" string="Above Max Qty" domain="[('is_abv_max_qty','=',True)]"/>
-                    <filter name="is_bel_min_qty" string="Below Min Qty" domain="[('is_bel_min_qty','=',True)]"/>
-                    <filter name="is_bel_crit_qty" string="Below Critical Qty" domain="[('is_bel_crit_qty','=',True)]"/>
-                </xpath> -->
-            </field>
-        </record>
+<!--&lt;!&ndash;                    <filter name="is_abv_max_qty" string="Above Max Qty" domain="[('is_abv_max_qty','=',True)]"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <filter name="is_bel_min_qty" string="Below Min Qty" domain="[('is_bel_min_qty','=',True)]"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <filter name="is_bel_crit_qty" string="Below Critical Qty" domain="[('is_bel_crit_qty','=',True)]"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                </xpath>&ndash;&gt;-->
+<!--            </field>-->
+<!--        </record>-->
 
 
         <record id="product_product_common_inherit_pricepaper" model="ir.ui.view">
@@ -154,12 +156,20 @@
             <field name="model">product.product</field>
             <field name="inherit_id" ref="product.product_search_form_view"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='name']" position="replace" >
-                    <field name="name" string="Products"
-                      filter_domain="['|','|','|',('superseded.old_product.default_code','=',self),
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="filter_domain">['|','|','|',('superseded.old_product.default_code','=',self),
                       ('default_code','ilike',self),('name','ilike',self),
-                      ('barcode','ilike',self)]"/>
+                                                     ('barcode','ilike',self)]</attribute>
                 </xpath>
+                 <xpath expr="//filter[@name='consumable']" position="after">
+                    <separator/>
+                    <filter name="is_abv_max_qty" string="Above Max Qty" domain="[('is_abv_max_qty','=',True)]"/>
+                    <filter name="is_bel_min_qty" string="Below Min Qty" domain="[('is_bel_min_qty','=',True)]"/>
+                     <group expand="0" string="Group By">
+                        <filter string="Vendor" name="groupby_vendor"
+                          domain="[]" context="{'group_by': 'vendor_id'}"/>
+                      </group>
+                 </xpath>
             </field>
         </record>
 

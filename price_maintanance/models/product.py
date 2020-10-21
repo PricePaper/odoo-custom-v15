@@ -112,7 +112,7 @@ class ProductProduct(models.Model):
             unit_price_median_60_day = product.get_median(sale_order_lines_60_day_back)
             unit_price_median_90_day = product.get_median(sale_order_lines_90_day_back)
 
-            product.median_price = "<table style='width:500px'><tr><th>Number of Days</th><th>Median</th></tr><tr><td>10 Days</td><td>%s</td></tr><tr><td>30 Days</td><td>%s</td></tr><tr><td>60 Days</td><td>%s</td></tr><tr><td>90 Days</td><td>%s</td></tr></table>"%(unit_price_median_10_day, unit_price_median_30_day, unit_price_median_60_day, unit_price_median_90_day)
+            product.median_price = "<table style='width:500px'><tr><th>Number of Days</th><th>Median</th></tr><tr><td>10 Days</td><td>$ %s</td></tr><tr><td>30 Days</td><td>$ %s</td></tr><tr><td>60 Days</td><td>$ %s</td></tr><tr><td>90 Days</td><td>$ %s</td></tr></table>"%(unit_price_median_10_day, unit_price_median_30_day, unit_price_median_60_day, unit_price_median_90_day)
 
 
 

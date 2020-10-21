@@ -47,7 +47,7 @@
                             </group>
                             <group string="Customer Product Price">
                                 <field name="partner_pricelist_line_ids" nolabel="1" readonly='0'>
-                                    <tree>
+                                    <tree decoration-danger="deviation&lt;0" decoration-info="deviation==0" decoration-success="deviation&gt;0">
                                         <field name="product_id" required="1"/>
                                         <field name="product_uom" required="1"/>
                                         <field name="price" required="1"/>
@@ -60,12 +60,17 @@
                                     <form string="Detailed Info">
                                         <group>
                                             <group>
+                                                <field name="currency_id" invisible="1"/>
                                                 <field name="product_id" required="1"/>
                                                 <field name="sale_uoms" invisible='1'/>
                                                 <field name="product_uom" required="1"/>
-                                                <field name="price" required="1"/>
-                                                <field name="std_price" readonly="1"/>
-                                                <field name="deviation"/>
+                                                <field name="price" required="1" widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                                                <field name="std_price" readonly="1" widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                                                <label for="deviation"/>
+                                                <div class="o_row">
+                                                    <field name="deviation"/>
+                                                    <span>%</span>
+                                                </div>
                                             </group>
                                             <group>
                                                 <field name="price_last_updated"/>

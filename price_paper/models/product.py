@@ -111,9 +111,6 @@ class ProductProduct(models.Model):
         if self.active:
             to_unlink = supersede_obj.search([('old_product', '=', self.id)])
             to_unlink.unlink()
-        if not self.active:
-            to_unlink = supersede_obj.search([('product_child_id', '=', self.id)])
-            to_unlink.unlink()
         return result
 
 

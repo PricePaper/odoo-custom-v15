@@ -88,8 +88,8 @@ class ChangepointDates(models.Model):
         """
         for date in self:
             if date.date:
-                date_obj = datetime.strptime(date.date, '%Y-%m-%d').date()
-                date.day = calendar.day_name[date_obj.weekday()]
+                #date_obj = datetime.strptime(date.date, '%Y-%m-%d').date()
+                date.day = calendar.day_name[date.date.weekday()]
 
 
     @api.constrains('date')

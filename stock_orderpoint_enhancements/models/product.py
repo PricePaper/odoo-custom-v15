@@ -5,6 +5,7 @@ import datetime
 import logging as server_log
 from math import ceil
 
+import datetime
 from dateutil.relativedelta import *
 
 from odoo import fields, models, api
@@ -235,22 +236,39 @@ class ProductProduct(models.Model):
         start_date = result and result[0] and result[0][0]
         start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
 
+        def _get_next_business_day(date):
+
+            exclude_days = (4, 5)
+
+            # Before 2019-04-26 trucks where loaded M-F, after 04-26 they were
+            # loaded Su-Th
+            if date < datetime.date(2019, 4, 26):
+                exclude_days = (5, 6)
+
+            next_date = date
+
+            while True:
+                next_date = next_date + relativedelta(days=1)
+                if next_date.weekday() not in exclude_days:
+                    return next_date
+                continue
+
         while (start_date <= to_date):
             val = start_date.strftime("%Y-%m-%d")
             in_list = [rec for rec in result if rec and str(rec[0]) == val]
-            if start_date.weekday() not in (5, 6):
-                if not in_list:
-                    res.append((val, 0.0))
-                else:
-                    qty = 0
-                    for product_uom_qty in in_list:
-                        if product_uom_qty[2] == self.uom_id.id:
-                            qty += product_uom_qty[1]
-                        else:
-                            sale_uom_factor = self.env['uom.uom'].browse(product_uom_qty[2]).factor
-                            qty += ((product_uom_qty[1] * self.uom_id.factor) / sale_uom_factor)
-                    res.append((val, qty))
-            start_date = start_date + relativedelta(days=1)
+
+            if not in_list:
+                res.append((val, 0.0))
+            else:
+                qty = 0
+                for product_uom_qty in in_list:
+                    if product_uom_qty[2] == self.uom_id.id:
+                        qty += product_uom_qty[1]
+                    else:
+                        sale_uom_factor = self.env['uom.uom'].browse(product_uom_qty[2]).factor
+                        qty += ((product_uom_qty[1] * self.uom_id.factor) / sale_uom_factor)
+                res.append((val, qty))
+            start_date = _get_next_business_day(start_date)
         return res
 
     @api.multi

@@ -100,14 +100,14 @@ class ProphetBridge(models.AbstractModel):
 
 
     @api.model
-    def remove_weekends_from_dataframe(self, dataframe):
+    def remove_non_shipping_days_from_dataframe(self, dataframe):
         """
-        removes the weekend days from the provided dataset
+        removes non-shipping days from the provided dataset
         """
         del_list = []
         for index, row in dataframe.iterrows():
             date = datetime.strptime(str(row['ds']), '%Y-%m-%d %H:%M:%S').date()
-            if date.weekday() in (5, 6):
+            if date.weekday() in (4, 5):
                 del_list.append(index)
         dataframe.drop(dataframe.index[del_list], inplace=True)
         return dataframe
@@ -172,7 +172,7 @@ class ProphetBridge(models.AbstractModel):
         m = self.create_prophet_object(date_from, date_to, config=config)
         m.fit(dataframe)       #pass historical dataframe
         future = m.make_future_dataframe(periods=periods, freq=freq)     #make future dataframe
-        future = self.remove_weekends_from_dataframe(future)
+        future = self.remove_non_shipping_days_from_dataframe(future)
 
         if config and config.growth == 'logistic':  #cap and floor values needs to be set if growth is set as logistic
             future['cap'] = config.dataframe_cap

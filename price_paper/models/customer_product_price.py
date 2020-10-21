@@ -18,6 +18,7 @@ class CustomerProductPrice(models.Model):
     price_last_updated = fields.Date(string='Price last updated', default=date.today(), readonly=True)
     price_lock = fields.Boolean(string='Price Change Lock', default=False)
     lock_expiry_date = fields.Date(string='Lock Expiry date')
+    currency_id = fields.Many2one(related="product_id.currency_id", readonly=True)
 
     # _sql_constraints = [
     #     ('pricelist_product_uom_uniq', 'UNIQUE (pricelist_id, product_id, product_uom)',

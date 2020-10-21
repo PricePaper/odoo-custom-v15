@@ -102,7 +102,7 @@ class ResPartner(models.Model):
                 name += customer.city + ' '
             if customer.state_id:
                 name += customer.state_id.name
-            if customer.company_type == 'company' and name:
+            if (customer.company_type == 'company' or (customer.parent_id and customer.parent_id.company_type == 'company')) and name:
                 result.append((customer.id, _('%s (%s)') % (customer.name, name)))
             else:
                 result.append((customer.id, _('%s') % (customer.name)))

@@ -27,7 +27,7 @@ class PickingFullReturnWizard(models.TransientModel):
                 'delivered_qty': 0,
             }) for move in picking.move_ids_without_package]
         })
-        picking.write({'state': 'assigned', 'is_transit': False})
+        picking.write({'state': 'assigned', 'is_transit': False, 'batch_id': False})
         picking.mapped('move_ids_without_package').write({'is_transit': False})
         picking.mapped('move_line_ids').write({'qty_done': 0})
 

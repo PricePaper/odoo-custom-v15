@@ -3,7 +3,9 @@ from datetime import date
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
+from odoo.tools import float_compare
 
 
 class SaleHistoryLinesWizard(models.TransientModel):
@@ -20,7 +22,71 @@ class SaleHistoryLinesWizard(models.TransientModel):
     qty_to_be = fields.Float(string='New Qty')
     product_category = fields.Many2one('product.category', string='Product Category')
     search_wizard_temp_id = fields.Many2one('add.purchase.history.so', string='Parent Win')
+    qty_available = fields.Float(string='Available Qty')
 
+    def _check_routing(self, order_id, product):
+        is_available = False
+
+        product_routes = product.route_ids + product.categ_id.total_route_ids
+
+        # Check MTO
+        wh_mto_route = order_id.warehouse_id.mto_pull_id.route_id
+        if wh_mto_route and wh_mto_route <= product_routes:
+            is_available = True
+        else:
+            mto_route = False
+            try:
+                mto_route = self.env['stock.warehouse']._find_global_route('stock.route_warehouse0_mto', _('Make To Order'))
+            except UserError:
+                # if route MTO not found in ir_model_data, we treat the product as in MTS
+                pass
+            if mto_route and mto_route in product_routes:
+                is_available = True
+
+        # Check Drop-Shipping
+        if not is_available:
+            for pull_rule in product_routes.mapped('rule_ids'):
+                if pull_rule.picking_type_id.sudo().default_location_src_id.usage == 'supplier' and\
+                        pull_rule.picking_type_id.sudo().default_location_dest_id.usage == 'customer':
+                    is_available = True
+                    break
+
+        return is_available
+
+    @api.onchange('qty_to_be', 'product_uom',)
+    def _onchange_product_id_check_availability(self):
+        if not self.qty_to_be or not self.product_uom:
+            return {}
+        if self.order_line.product_id.type == 'product':
+            precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+            active_id = self._context.get('active_id')
+            order_id = self.env['sale.order'].browse(active_id)
+            product = self.order_line.product_id.with_context(
+                warehouse=order_id.warehouse_id.id,
+                lang=order_id.partner_id.lang or self.env.user.lang or 'en_US'
+            )
+            product_qty = self.product_uom._compute_quantity(self.qty_to_be, self.order_line.product_id.uom_id)
+            if float_compare(product.virtual_available, product_qty, precision_digits=precision) == -1:
+                is_available = self._check_routing(order_id, product)
+                if not is_available:
+                    message = _('You plan to sell %s %s of %s but you only have %s %s available in %s warehouse.') % \
+                              (self.qty_to_be, self.product_uom.name, self.product_name,
+                               product.virtual_available, product.uom_id.name, order_id.warehouse_id.name)
+                    # We check if some products are available in other warehouses.
+                    if float_compare(product.virtual_available, self.order_line.product_id.virtual_available,
+                                     precision_digits=precision) == -1:
+                        message += _('\nThere are %s %s available across all warehouses.\n\n') % \
+                                   (self.product_id.virtual_available, product.uom_id.name)
+                        for warehouse in self.env['stock.warehouse'].search([]):
+                            quantity = self.order_line.product_id.with_context(warehouse=warehouse.id).virtual_available
+                            if quantity > 0:
+                                message += "%s: %s %s\n" % (warehouse.name, quantity, self.order_line.product_id.uom_id.name)
+                    warning_mess = {
+                        'title': _('Not enough inventory!'),
+                        'message': message
+                    }
+                    return {'warning': warning_mess}
+        return {}
 
 SaleHistoryLinesWizard()
 
@@ -65,6 +131,7 @@ class AddPurchaseHistorySO(models.TransientModel):
                 'date_order': line.date_order,
                 'order_line': line.order_line.id,
                 'qty_to_be': line.qty_to_be,
+                'qty_available': line.qty_available,
                 'price_unit': line.price_unit,
                 'product_uom_qty': line.product_uom_qty,
                 'product_category': line.product_category.id,
@@ -84,6 +151,7 @@ class AddPurchaseHistorySO(models.TransientModel):
                     'date_order': line.order_id.confirmation_date,
                     'order_line': line.order_line_id.id,
                     'qty_to_be': 0.0,
+                    'qty_available': line.product_id.virtual_available,
                     'price_unit': price,
                     'product_uom_qty': line.order_line_id.product_uom_qty,
                     'product_category': line.product_id.categ_id.id,
@@ -117,6 +185,7 @@ class AddPurchaseHistorySO(models.TransientModel):
                     'product_id': line_id.order_line.product_id.id,
                     'product_uom': line_id.order_line.product_uom.id,
                     'product_uom_qty': line_id.qty_to_be,
+                    'qty_available': line_id.qty_available,
                     'price_unit': price,
                     'order_id': order_id and order_id.id or False,
                     'lst_price': line_id.order_line.product_id.lst_price,

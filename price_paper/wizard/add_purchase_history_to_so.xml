@@ -30,6 +30,7 @@
                                     <field name="qty_to_be" style="color:blue" sum="Total Quantity"/>
                                     <field name="product_name" readonly='1' tabindex="0"/>
                                     <field name="product_uom_qty" readonly='1' tabindex="0"/>
+                                    <field name="qty_available" readonly='1' tabindex="0"/>
                                     <field name="product_uom" readonly='1' tabindex="0" widget="selection"/>
                                     <field name="price_unit" readonly='1' tabindex="0"/>
                                     <field name="date_order" readonly='1' tabindex="0"/>
@@ -47,6 +48,7 @@
                                     <field name="qty_to_be" style="color:blue" sum="Total Quantity" string="Qty"/>
                                     <field name="product_name" readonly='1' tabindex="0"/>
                                     <field name="product_uom_qty" readonly='1' tabindex="0"/>
+                                    <field name="qty_available" readonly='1' tabindex="0"/>
                                     <field name="product_uom" readonly='1' tabindex="0" widget="selection"/>
                                     <field name="price_unit" readonly='1' tabindex="0"/>
                                     <field name="date_order" readonly='1' tabindex="0"/>

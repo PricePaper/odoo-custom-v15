@@ -80,27 +80,6 @@
                       'invisible':[('is_storage_contract', '=', False)]}"/>
                 </field>
 
-                <field name="lst_price" position="before">
-                  <field name="superseded"
-                    attrs="{'invisible':[('active', '=', False)]}"
-                    context="{'default_product_child_id':id}"
-                    domain="[('product_child_id', '=', id)]"
-                    help="Select a product that has been archived that this product will replace" >
-                    <tree>
-                      <field name='old_product'/>
-                    </tree>
-                    <form>
-                      <group>
-                        <group>
-                          <field name='old_product'/>
-                          <field name='product_child_id' readonly='1'/>
-                        </group>
-                      </group>
-                    </form>
-                  </field>
-
-                </field>
-
                 <xpath expr="//div[@name='pricelist_item']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
@@ -116,6 +95,34 @@
                 </xpath>
                 <xpath expr="//field[@name='uom_po_id']" position="attributes">
                     <attribute name='domain'>[('product_ids.id', '=', active_id)]</attribute>
+                </xpath>
+                <xpath expr="//notebook" position="inside">
+                  <page name='superseded' string='Superseded Products' groups="base.group_no_one" >
+                      <group>
+                          <group string="Supersedes">
+                            <field name="superseded"
+                              attrs="{'invisible':[('active', '=', False)]}"
+                              context="{'default_product_child_id':id}"
+                              domain="[('product_child_id', '=', id)]"
+                              help="Select a product that has been archived that this product will replace"
+                              nolabel="1" >
+                              <tree>
+                                <field name='old_product'/>
+                              </tree>
+                              <form>
+                                <group>
+                                  <group>
+                                    <field name='old_product'/>
+                                  </group>
+                                  <group>
+                                    <field name='product_child_id' readonly='1'/>
+                                  </group>
+                                </group>
+                              </form>
+                            </field>
+                          </group>
+                      </group>
+                  </page>
                 </xpath>
 
 <!--                <label for='standard_price' position="replace">-->

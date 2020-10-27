@@ -13,6 +13,7 @@ Custom module implemented for Purchase extension.
     'images': [],
 
     'data': [
+            'data/data.xml',
             'wizard/view_sale_history_po_views.xml',
             'wizard/discount_check_generate.xml',
             'wizard/update_vendor_pricelist_view.xml',

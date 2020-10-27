@@ -29,6 +29,7 @@ class PurchaseOrder(models.Model):
             order.total_weight= weight
             order.total_qty = qty
 
+
     @api.multi
     def add_sale_history_to_po_line(self):
         if not self.partner_id:
@@ -175,6 +176,27 @@ class PurchaseOrderLine(models.Model):
             weight = line.product_id.weight * line.product_qty
             line.gross_volume = volume
             line.gross_weight= weight
+
+
+    @api.model
+    def schedule_update_date_po_line(self):
+        order_lines = self.env['purchase.order'].search([('state', 'in', ('draft', 'sent'))]).mapped('order_line')
+        for line in order_lines:
+            params = {'order_id': line.order_id}
+            seller = line.product_id._select_seller(
+                partner_id=line.partner_id,
+                quantity=line.product_qty,
+                date=line.order_id.date_order and line.order_id.date_order.date(),
+                uom_id=line.product_uom,
+                params=params)
+            date_order = datetime.today()
+            if line.order_id.date_order and date_order < line.order_id.date_order:
+                date_order = line.order_id.date_order
+            if seller:
+                line.date_planned = date_order + relativedelta(days=seller.delay if seller else 0)
+            else:
+                line.date_planned = date_order + relativedelta(days=line.partner_id.delay if line.partner_id else 0)
+
 
     @api.multi
     def show_sales_history(self):

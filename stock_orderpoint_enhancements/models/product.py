@@ -332,8 +332,8 @@ class ProductProduct(models.Model):
             else:
                 self.env['stock.warehouse.orderpoint'].create({
                     'product_id': self.id,
-                    'product_min_qty': min_quantity,
-                    'product_max_qty': max_quantity,
+                    'product_min_qty': ceil(min_quantity),
+                    'product_max_qty': ceil(max_quantity),
                     'qty_multiple': 1,
                     'product_uom': self.uom_id.id,
                 })

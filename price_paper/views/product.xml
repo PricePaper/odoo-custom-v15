@@ -26,7 +26,7 @@
 <!--            <field name="model">product.product</field>-->
 <!--            <field name="inherit_id" ref="product.product_search_form_view"/>-->
 <!--            <field name="arch" type="xml">-->
-<!--                <xpath expr="//field[@name='name']" position="after">-->
+               <!-- <xpath expr="//field[@name='name']" position="after">-->
 <!--                    <field name="vendor_id" string="Vendor"-->
 <!--                      filter_domain="[('vendor_id','ilike',self)]"/>-->
 <!--                    <field name="default_code" string="Internal reference"-->
@@ -39,7 +39,7 @@
 <!--                        <filter string="Vendor" name="groupby_vendor"-->
 <!--                          domain="[]" context="{'group_by': 'vendor_id'}"/>-->
 <!--                    </group>-->
-<!--                </xpath>-->
+<!--                </xpath> -->
 <!--&lt;!&ndash;                <xpath expr="//filter[@name='name']" position="after">&ndash;&gt;-->
 <!--&lt;!&ndash;                    <filter name="incoming_qty" string="Incoming Products" domain="[('incoming_qty','&gt;',0)]"/>&ndash;&gt;-->
 <!--&lt;!&ndash;                    <filter name="outgoing_qty" string="Outgoing Products" domain="[('outgoing_qty','&gt;',0)]"/>&ndash;&gt;-->
@@ -167,6 +167,14 @@
                     <attribute name="filter_domain">['|','|','|',('superseded.old_product.default_code','=',self),
                       ('default_code','ilike',self),('name','ilike',self),
                                                      ('barcode','ilike',self)]</attribute>
+                </xpath>
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="vendor_id" string="Vendor"
+                      filter_domain="[('vendor_id','ilike',self)]"/>
+                    <field name="default_code" string="Internal reference"
+                      filter_domain="[('default_code','ilike',self)]"/>
+                    <field name="description" string="Internal Notes"
+                      filter_domain="[('description','ilike',self)]"/>
                 </xpath>
                  <xpath expr="//filter[@name='consumable']" position="after">
                     <separator/>

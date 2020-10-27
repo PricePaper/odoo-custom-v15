@@ -32,6 +32,9 @@
                         </field>
                     </group>
                 </xpath>
+                <xpath expr="//field[@name='category_id']" position="after">
+                    <field name="seller_partner_ids" attrs="{'invisible': [('supplier', '=', False)]}" widget="many2many_tags"/>
+                </xpath>
                 <xpath expr="//notebook/page[@name='sales_purchases']/group[1]" position="after">
                     <group string="Shipping Days">
                         <field name="change_delivery_days"/>

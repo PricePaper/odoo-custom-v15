@@ -42,7 +42,7 @@ class ProductPricelist(models.Model):
                  downgrade=lambda self, value, args, offset=0, limit=None, order=None,
                                   count=False: value if count else value.ids)
     def search(self, args, offset=0, limit=None, order=None, count=False):
-        if self.env.user.has_group('price_paper.group_salesman_customer_own_pricelist'):
+        if self.env.user.has_group('price_paper.group_salesman_customer_own_pricelist') and not self.env.user.has_group('base.group_system'):
             records = super(ProductPricelist, self).search(args, offset, limit, order, count)
             out_result = records.filtered(
                 lambda rec: rec.type == 'competitor' or self.env.user.partner_id.id in rec.mapped(

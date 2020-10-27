@@ -22,7 +22,7 @@ Custom module implemented for Price maintanance.
             'views/customer.xml',
             ],
 
-    'depends': ['website_scraping', 'crm_enhancements'],
+    'depends': ['website_scraping', 'crm_enhancements', 'base_address_city'],
     'installable': True,
     'auto_install': False,
     'application': False,

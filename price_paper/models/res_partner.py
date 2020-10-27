@@ -36,7 +36,8 @@ class ResPartner(models.Model):
     zip_delivery_day_sat = fields.Boolean(string='Saturday.', related='zip_delivery_id.delivery_day_sat')
     zip_delivery_day_sun = fields.Boolean(string='Sunday.', related='zip_delivery_id.delivery_day_sun')
     zip_shipping_easiness = fields.Selection(related='zip_delivery_id.shipping_easiness', string='Easiness of shipping.')
-
+    seller_info_ids = fields.One2many('product.supplierinfo', 'name', string='Seller info')
+    seller_partner_ids = fields.Many2many('res.partner', 'vendor_id', 'seller_partner_id', string='Seller')
 
     @api.depends('sale_order_ids.confirmation_date', 'invoice_ids.payment_ids.payment_date')
     def _compute_last_date(self):
@@ -139,10 +140,20 @@ class ResPartner(models.Model):
             result.setup_pricelist_for_new_customer()
         return result
 
+    @api.multi
+    def write(self, vals):
+        if 'seller_partner_ids' in vals:
+            seller = self.browse(vals.get('seller_partner_ids')[0][-1])
+            for rec in self:
+                removel_ids = rec.seller_partner_ids - seller
+                rec.seller_info_ids.mapped('product_id').message_subscribe(partner_ids=seller.ids)
+                if removel_ids:
+                    rec.seller_info_ids.mapped('product_id').message_unsubscribe(partner_ids=removel_ids.ids)
+        return super(ResPartner, self).write(vals)
 
     @api.model
     def setup_pricelist_for_new_customer(self):
-        pricelist = self.env['product.pricelist'].create({'partner_id': self.id,
+        pricelist = self.env['product.pricelist'].create({
                                                           'name': self.customer_code,
                                                           'type': 'customer'})
         self.env['customer.pricelist'].create({'pricelist_id':pricelist.id,

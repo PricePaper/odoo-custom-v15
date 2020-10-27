@@ -375,6 +375,17 @@ class SupplierInfo(models.Model):
        help="Lead time in days between the confirmation of the purchase order and the receipt of the products in your warehouse. Used by the scheduler for automatic computation of the purchase order planning.")
 
     @api.multi
+    def create(self, values):
+        """
+        Overriding create method to set delay
+
+        """
+        res = super(SupplierInfo, self).create(values)
+        if res.delay == 0:
+            res.delay = self.name.delay
+        return res
+
+    @api.multi
     def write(self, values):
         """
         Overriding write method to track changes in delivery lead time and

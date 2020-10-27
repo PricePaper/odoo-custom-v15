@@ -6,9 +6,6 @@
           <field name="model">sale.warning.wizard</field>
           <field name="arch" type="xml">
               <form string="Warning">
-                  <!-- <script>
-                      document.getElementsByClassName('modal-dialog modal-lg')[0].setAttribute('class', 'modal-dialog modal-sm');
-                  </script> -->
                   <sheet>
                       <group>
                           <group>

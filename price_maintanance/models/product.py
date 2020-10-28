@@ -170,15 +170,17 @@ class ProductProduct(models.Model):
             product = self.browse(data['product_id'][0])
             if product.standard_price_date_lock and product.standard_price_date_lock > date.today():
                 continue
+
             product.standard_price_date_lock = False
-            product.with_delay(channel='root.standardprice').job_queue_standard_price_update(data)
+            product.with_delay(channel='root.standardprice').job_queue_standard_price_update(data['__domain'])
+
 
     @job
     @api.multi
     def job_queue_standard_price_update(self, data):
 
         OrderLine = self.env['sale.order.line']
-        lines = OrderLine.search(data['__domain'], order="id desc")
+        lines = OrderLine.search(data, order="id desc")
         partners = lines.mapped('order_id.partner_id')
         partner_count = len(partners)
         partner_count_company = self.env.user.company_id.partner_count or 0

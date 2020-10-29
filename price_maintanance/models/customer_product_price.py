@@ -42,11 +42,12 @@ class CustomerProductPrice(models.Model):
                 pr_id = record_read and record_read[0].get('product_id', ()) and record_read[0].get('product_id', ())[0]
             if record.pricelist_id.type != 'customer':
                 continue
-            self._cr.execute("""select so.confirmation_date, sol.price_unit, sol.product_uom_qty from sale_order_line sol join sale_order so  ON (so.id = sol.order_id) where so.state in ('sale', 'done') and so.partner_id=%s and sol.product_id=%s order by so.confirmation_date desc limit 1""" % (record.partner_id.id, pr_id))
-            res = self._cr.dictfetchall()
-            if res and res[0]:
-                record.last_sale_date = res[0].get('confirmation_date', '')
-                record.last_sale_price = res[0].get('price_unit', '')
-                record.last_quantity_sold = res[0].get('product_uom_qty', '')
+            if record.partner_id and pr_id :
+                self._cr.execute("""select so.confirmation_date, sol.price_unit, sol.product_uom_qty from sale_order_line sol join sale_order so  ON (so.id = sol.order_id) where so.state in ('sale', 'done') and so.partner_id=%s and sol.product_id=%s order by so.confirmation_date desc limit 1""" % (record.partner_id.id, pr_id))
+                res = self._cr.dictfetchall()
+                if res and res[0]:
+                    record.last_sale_date = res[0].get('confirmation_date', '')
+                    record.last_sale_price = res[0].get('price_unit', '')
+                    record.last_quantity_sold = res[0].get('product_uom_qty', '')
 
 CustomerProductPrice()

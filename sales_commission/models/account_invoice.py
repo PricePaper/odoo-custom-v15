@@ -25,8 +25,9 @@ class AccountInvoice(models.Model):
             rec = invoice.calculate_commission()
             if rec and invoice.state == 'paid':
                 rec.write({'is_paid': True})
-                invoice.check_commission(rec)
-                invoice.check_due_date(rec)
+                if invoice.payment_ids:
+                    invoice.check_commission(rec)
+                    invoice.check_due_date(rec)
         return res
 
 

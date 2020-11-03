@@ -7,19 +7,23 @@ from odoo.exceptions import ValidationError
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    partner_pricelist_line_ids = fields.Many2many('customer.product.price', store=False, string="Customer Pricelist line", compute='_compute_pricelist_lines')
+    partner_pricelist_line_ids = fields.Many2many('customer.product.price', store=False, string="Customer Pricelist line", compute="_compute_pricelist_lines")
     change_flag = fields.Boolean(string='Log an Audit Note')
     audit_notes = fields.Text(string='Audit Note')
+    partner_pricelist_id = fields.Many2one('customer.pricelist', string="Pricelist")
 
 
-    @api.depends('customer_pricelist_ids.pricelist_id')
+    @api.depends('partner_pricelist_id')
     def _compute_pricelist_lines(self):
         for partner in self:
-            pricelist_ids = False
-            if partner.customer_pricelist_ids:
-                pricelist_ids = partner.customer_pricelist_ids.mapped('pricelist_id').mapped('customer_product_price_ids').ids
-            if pricelist_ids:
-                partner.partner_pricelist_line_ids = [(6, 0, pricelist_ids)]
+            if partner.partner_pricelist_id:
+                price_list_lines = partner.partner_pricelist_id.pricelist_id.customer_product_price_ids.ids
+                if price_list_lines:
+                    partner.partner_pricelist_line_ids = [(6, 0, price_list_lines)]
+            else:
+                partner.partner_pricelist_line_ids = False
+
+
 
 #    @api.multi
 #    @api.onchange('customer_pricelist_line_ids.price')

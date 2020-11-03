@@ -20,7 +20,7 @@
                                <button name="%(price_maintanance.act_price_edit_notes_partner)d" string='Audit' type="action" class="oe_stat_button" icon="fa-sticky-note" />
                             </div>
                             <field name="parent_id" invisible="1"/>
-                            <field name="type" invisible="1"/>                            
+                            <field name="type" invisible="1"/>
                             <group>
                               <group>
                                 <label for="street" string="Address"/>
@@ -43,10 +43,12 @@
                               <group>
                                 <field name='customer_code' readonly="1"/>
                                 <field name='sales_person_ids' readonly="1" widget='many2many_tags'/>
+                                <field name='partner_pricelist_id' options='{"no_open": True, "no_create": True}'
+                                  domain="[('partner_id', '=', id)]"/>
                               </group>
                             </group>
                             <group string="Customer Product Price">
-                                <field name="partner_pricelist_line_ids" nolabel="1" readonly='0'>
+                                <field name="partner_pricelist_line_ids" nolabel="1">
                                     <tree decoration-danger="deviation&lt;0" decoration-info="deviation==0" decoration-success="deviation&gt;0">
                                         <field name="product_id" required="1"/>
                                         <field name="product_uom" required="1"/>

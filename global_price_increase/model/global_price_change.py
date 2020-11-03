@@ -76,7 +76,9 @@ class GlobalPriceChange(models.Model):
                 else:
                     raise ValidationError(_('Customer ranking should be comma seperated values(eg : A,B,C or A).'))
 
-            customer_price_lists = self.env['customer.product.price'].search([('partner_id', 'in', partner_to_filter.ids)])
+            customer_price_lists = self.env['customer.pricelist'].search([
+                ('partner_id', 'in', partner_to_filter.ids)]).mapped('pricelist_id').filtered(lambda r: r.type == 'customer')
+            customer_price_lists = customer_price_lists.mapped('customer_product_price_ids')
 
             if rec.product_filter == 'vendor':
                 products_to_filter = product_obj.search([('seller_ids', '!=', False)]).filtered(lambda r: r.seller_ids[0].name.id == rec.vendor_id.id)
@@ -86,11 +88,15 @@ class GlobalPriceChange(models.Model):
             if products_to_filter:
                 customer_price_lists = customer_price_lists.filtered(lambda r: r.product_id.id in products_to_filter.ids)
 
-            if rec.is_exclude and rec.exclude_date:
-                customer_price_lists = customer_price_lists.filtered((lambda r: r.partner_id.established_date < rec.exclude_date))
-
             today = date.today()
             for price_list in customer_price_lists:
+
+                if rec.is_exclude and rec.exclude_date:
+                    partner = price_list .pricelist_id.customer_ids
+                    if not partner or len(partner) > 2:
+                        continue
+                    if partner.established_date and partner.established_date > rec.exclude_date:
+                        continue
 
                 # skips the update pricelist if expiry lock is active and lock expiry date is set
                 if price_list.price_lock and price_list.lock_expiry_date > today:

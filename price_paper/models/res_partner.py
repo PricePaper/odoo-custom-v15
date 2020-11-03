@@ -15,7 +15,7 @@ class ResPartner(models.Model):
     fax_number = fields.Char(string='Fax')
     customer_pricelist_ids = fields.One2many('customer.pricelist', 'partner_id', string="Customer Pricelists")
     customer_code = fields.Char(string='Partner Code', copy=False, readonly=True)
-    established_date = fields.Date(string='Established Date', compute='_compute_last_date', store=False)
+    established_date = fields.Date(string='Established Date', compute='_compute_estbl_date', store=True)
     last_sold_date = fields.Date(string='Last Sold Date', compute='_compute_last_date', store=False)
     last_paid_date = fields.Date(string='Last Paid Date', compute='_compute_last_date', store=False)
     delivery_day_mon = fields.Boolean(string='Monday')
@@ -50,6 +50,14 @@ class ResPartner(models.Model):
                 sale_date_list = [sale.confirmation_date.date() for sale in rec.sale_order_ids if sale.confirmation_date]
                 sale_date = max(sale_date_list) if sale_date_list else False
                 rec.last_sold_date = sale_date
+                rec.established_date = min(sale_date_list) if sale_date_list else False
+
+    @api.depends('sale_order_ids.confirmation_date')
+    def _compute_estbl_date(self):
+        for rec in self:
+            if rec.sale_order_ids and not rec.established_date:
+                sale_date_list = [sale.confirmation_date.date() for sale in rec.sale_order_ids if sale.confirmation_date]
+                sale_date = max(sale_date_list) if sale_date_list else False
                 rec.established_date = min(sale_date_list) if sale_date_list else False
 
     @api.depends('zip')

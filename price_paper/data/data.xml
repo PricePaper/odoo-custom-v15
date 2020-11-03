@@ -19,10 +19,10 @@
             <field name="model_id" ref="model_sale_history"/>
             <field name="state">code</field>
             <field name="code">model.update_purchase_history()</field>
-            <field eval="True" name="active"/>
+            <field eval="False" name="active"/>
             <field name="user_id" ref="base.user_root"/>
-            <field name="interval_number">7</field>
-            <field name="interval_type">days</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">months</field>
             <field name="numbercall">-1</field>
             <field eval="False" name="doall"/>
         </record>

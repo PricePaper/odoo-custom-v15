@@ -18,10 +18,8 @@ class AccountReconciliation(models.AbstractModel):
             batch_ids = list(map(lambda rec: rec['id'], batch))
             payments = self.env['account.batch.payment'].browse(batch_ids).mapped('payment_ids')
 
-            if partner_id is None:
-                partner_id = st_line.partner_id.id
-
-            payments = payments.filtered(lambda rec: rec.partner_id.id == partner_id)
+            if partner_id:
+                payments = payments.filtered(lambda rec: rec.partner_id.id == partner_id)
 
             for payment in payments:
                 journal_accounts = [payment.journal_id.default_debit_account_id.id,
@@ -34,6 +32,10 @@ class AccountReconciliation(models.AbstractModel):
             result.extend(self._prepare_move_lines(move_lines.filtered(lambda rec: rec.id not in excluded_ids),
                                                    target_currency=target_currency, target_date=st_line.date))
 
+            if not result:
+                return super(AccountReconciliation, self).get_move_lines_for_bank_statement_line(st_line_id, partner_id,
+                                                                                          excluded_ids, search_str,
+                                                                                          offset, limit)
             return result
 
         return super(AccountReconciliation, self).get_move_lines_for_bank_statement_line(st_line_id, partner_id,

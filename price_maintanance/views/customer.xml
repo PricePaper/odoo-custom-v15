@@ -113,7 +113,7 @@
             <field name="name">Customer Price Maintanance</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">res.partner</field>
-            <field name="domain">[('customer', '=', True)]</field>
+            <field name="domain">[('customer', '=', True),('parent_id', '=', False)]</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">

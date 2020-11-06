@@ -34,7 +34,7 @@
                         </div>
                         <group>
                             <group>
-                                <field name="sales_person_id" domain="[('is_sales_person', '=', True)]"/>
+                                <field name="sales_person_id" domain="[('is_sales_person', '=', True)]" context="{'search_default_salesperson':1}"/>
                                 <field name="date_from"/>
                             </group>
                             <group>

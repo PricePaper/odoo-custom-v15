@@ -93,6 +93,8 @@ class ResPartner(models.Model):
                 domain.append(('supplier', '=', True))
             elif self._context.get('search_default_customer', False):
                 domain.append(('customer', '=', True))
+            elif self._context.get('search_default_salesperson', False):
+                domain.append(('is_sales_person', '=', True))
             customer_code_results = self.search(domain)
             customer_code_results = customer_code_results.name_get()
             for code in customer_code_results:

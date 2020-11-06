@@ -8,16 +8,18 @@ class SearchExistingCustomer(models.TransientModel):
     _name = "search.existing.customer"
     _description = 'Search Existing Customer'
 
-    search_string = fields.Char(string='Customer Name')
+    search_string = fields.Char(string='Search',
+    help='Search... Name,email,phone,city,mobile,vat,city')
     line_ids = fields.One2many('existing.customer.line', 'parent_id', string='Result')
 
 
     @api.onchange('search_string')
     def search_existing_customer(self):
-        self.line_ids = []
-        if self.search_string != False:
-            string = '%'+self.search_string+'%'
-            query = """SELECT name, commercial_company_name, email, phone, mobile, vat, last_so, last_so_date, parent_id from res_partner where (name ilike('%s') or phone ilike('%s') or mobile ilike('%s') or email ilike('%s') or commercial_company_name ilike('%s') or vat ilike('%s')) and customer=True;""" % (string, string, string, string, string, string)
+        self.line_ids = False
+        if self.search_string:
+            string_val = self.search_string.replace("'","''")
+            string = '%'+string_val+'%'
+            query = """SELECT name, commercial_company_name, email, phone, mobile, vat, last_so, last_so_date, city from res_partner where (name ilike('%s') or phone ilike('%s') or mobile ilike('%s') or email ilike('%s') or commercial_company_name ilike('%s') or vat ilike('%s') or city ilike('%s')) and customer=True and parent_id IS NULL and is_sales_person=False;""" % (string, string, string, string, string, string, string)
             self.env.cr.execute(query)
             result = self.env.cr.fetchall()
             if result:
@@ -31,12 +33,15 @@ class SearchExistingCustomer(models.TransientModel):
                            'last_so': rec[6],
                            'last_so_date': rec[7],
                            'parent_id': self.id,
-                           'parent_partner': rec[8],
+                           'city': rec[8]
                            }
                     res.append((0, _, val))
                 self.line_ids = res
             else:
-                pass
+                self.line_ids = False
+        else:
+            self.line_ids = False
+
 
 
 
@@ -57,6 +62,7 @@ class ExistingCustomerLine(models.TransientModel):
     last_so = fields.Char(string='Last Sale order')
     last_so_date = fields.Datetime(string='Last Sale Date')
     parent_id = fields.Many2one('search.existing.customer', string='Parent')
-    parent_partner = fields.Many2one('res.partner', string='Parent')
+    # parent_partner = fields.Many2one('res.partner', string='Parent')
+    city = fields.Char(string='City')
 
 ExistingCustomerLine()

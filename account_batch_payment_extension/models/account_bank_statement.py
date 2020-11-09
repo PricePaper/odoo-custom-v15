@@ -7,7 +7,7 @@ class AccountBankStatementLine(models.Model):
     def process_reconciliation(self, counterpart_aml_dicts=None, payment_aml_rec=None, new_aml_dicts=None):
         counterpart_moves = super().process_reconciliation(counterpart_aml_dicts=counterpart_aml_dicts,
                                                            payment_aml_rec=payment_aml_rec, new_aml_dicts=new_aml_dicts)
-        statement_line = counterpart_moves.line_ids.mapped('statement_line_id')
+        statement_line = counterpart_moves.mapped('line_ids').mapped('statement_line_id')
 
         for stmt in statement_line:
             if stmt.name == 'DEPOSIT_RETURN':
@@ -44,7 +44,7 @@ class AccountReconcileModel(models.Model):
                 batch_payemnt['inbound'] |= p
             else:
                 batch_payemnt['outbound'] |= p
-
+                              
         for line in st_lines:
             line_residual = line.currency_id and line.amount_currency or line.amount
             if line_residual > 0:

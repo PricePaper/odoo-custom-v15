@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 
+
 class Accountinvoice(models.Model):
     _inherit = "account.invoice"
-
 
     def remove_sale_commission(self):
 
@@ -58,3 +59,6 @@ class Accountinvoice(models.Model):
                         }
             fine_line = self.env['account.invoice.line'].create(line_vals)
         return True
+
+
+Accountinvoice()

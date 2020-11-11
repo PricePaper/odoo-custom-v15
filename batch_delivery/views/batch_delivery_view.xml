@@ -45,6 +45,9 @@
                           <field name="total_amount" groups="sales_team.group_sale_manager"/>
                           <field name="total_profit" groups="sales_team.group_sale_manager"/>
                           <field name="profit_percentage" groups="sales_team.group_sale_manager"/>
+                          <field name="total_unit"/>
+                          <field name="total_volume"/>
+                          <field name="total_weight"/>
                       </group>
                     </group>
                 </xpath>
@@ -97,6 +100,12 @@
                 </xpath>
                 <xpath expr="//field[@name='picking_ids']/tree/button[@name='action_cancel']" position="attributes">
                     <attribute name="attrs">{'invisible': [('state', 'in', ('in_transit', 'done', 'cancel'))]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='picking_ids']" position="attributes">
+                    <attribute name="options">{}</attribute>
+                </xpath>
+                 <xpath expr="//field[@name='picking_ids']/tree/button[@name='action_cancel']" position="after">
+                    <button class="fa fa-trash-o" name="action_remove" type="object" aria-label="Remove row"></button>
                 </xpath>
                   <xpath expr="//field[@name='picking_ids']/tree/field[@name='scheduled_date']" position="after">
                     <field name="is_late_order" attrs="{'readonly':[('parent.state','=', 'done')]}"/>

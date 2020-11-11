@@ -27,6 +27,23 @@ class StockPickingBatch(models.Model):
     total_profit = fields.Float(string="Total Profit", store=True, compute='_calculate_batch_profit')
     late_order_print = fields.Boolean(string="Late Order")
     have_late_order = fields.Boolean(compute='_compute_late_order')
+    total_volume = fields.Float(string="Total Volume", compute='_compute_gross_weight_volume')
+    total_weight = fields.Float(string="Total Weight", compute='_compute_gross_weight_volume')
+    total_unit = fields.Float(string="Total Unit", compute='_compute_gross_weight_volume')
+
+
+    @api.depends('picking_ids.move_lines.product_id', 'picking_ids.move_lines.quantity_done')
+    def _compute_gross_weight_volume(self):
+        for batch in self:
+            for line in batch.mapped('picking_ids').mapped('move_lines'):
+                volume = line.product_id.volume * (line.quantity_done if line.state != 'cancel' and line.quantity_done else line.product_qty)
+                weight = line.product_id.weight * (line.quantity_done if line.state != 'cancel' and line.quantity_done else line.product_qty)
+                if line.state != 'cancel':
+                    batch.total_unit += line.product_uom_qty
+                batch.total_volume += volume
+                batch.total_weight += weight
+
+
 
     @api.depends('picking_ids.is_late_order')
     def _compute_late_order(self):
@@ -35,7 +52,7 @@ class StockPickingBatch(models.Model):
 
 
     @api.multi
-    @api.depends('picking_ids.move_lines', 'picking_ids.move_line_ids')
+    @api.depends('picking_ids.move_lines.quantity_done', 'picking_ids.move_line_ids.qty_done')
     def _calculate_batch_profit(self):
         """
         compute batch total order amount,
@@ -48,18 +65,15 @@ class StockPickingBatch(models.Model):
                 if picking.move_line_ids:
                     for line in picking.move_line_ids:
                         if line.move_id.product_uom_qty:
-                            order_amount += (
-                                                        line.move_id.sale_line_id.price_total / line.move_id.product_uom_qty) * line.qty_done
+                            order_amount += ((line.move_id.sale_line_id.price_total / line.move_id.product_uom_qty) * line.qty_done) if line.qty_done else line.move_id.sale_line_id.price_total
                             if line.move_id.sale_line_id.profit_margin:
-                                profit_amount += (
-                                                             line.move_id.sale_line_id.profit_margin / line.move_id.product_uom_qty) * line.qty_done
+                                profit_amount +=((line.move_id.sale_line_id.profit_margin / line.move_id.product_uom_qty) * line.qty_done) if line.qty_done else line.move_id.sale_line_id.price_total
                 else:
                     for line in picking.move_lines:
                         if line.product_uom_qty:
-                            order_amount += (line.sale_line_id.price_total / line.product_uom_qty) * line.quantity_done
+                            order_amount += ((line.sale_line_id.price_total / line.product_uom_qty) * line.quantity_done)  if line.quantity_done else line.sale_line_id.price_total
                             if line.sale_line_id.profit_margin:
-                                profit_amount += (
-                                                             line.sale_line_id.profit_margin / line.product_uom_qty) * line.quantity_done
+                                profit_amount += ((line.sale_line_id.profit_margin / line.product_uom_qty) * line.quantity_done) if line.quantity_done else line.sale_line_id.price_total
             batch.total_amount = order_amount
             batch.total_profit = profit_amount
             batch.profit_percentage = batch.total_profit and (batch.total_profit / batch.total_amount) * 100 or 0

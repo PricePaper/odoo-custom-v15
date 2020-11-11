@@ -20,6 +20,10 @@
                                     <div class="text-muted o_kanban_record_subtitle">
                                       <b><field name="origin"/></b>
                                     </div>
+                                     <div>
+                                        <b>Route:</b>
+                                        <field name="route_id"/>
+                                    </div>
                                     <div>
                                         <b>Earliest Delivery Date:</b>
                                         <field name="release_date"/>
@@ -48,6 +52,10 @@
                                     <div>
                                         <b>Item Count:</b>
                                         <field name="item_count"/>
+                                    </div>
+                                     <div>
+                                        <b>Available Quantity:</b>
+                                        <field name="reserved_qty"/>
                                     </div>
                                     <div>
                                         <b>Status:</b>
@@ -94,7 +102,7 @@
             <field name="res_model">stock.picking</field>
             <field name="view_mode">kanban,tree</field>
             <field name="domain">[('state','in', ['confirmed', 'assigned', 'done']), ('picking_type_code', '=', 'outgoing'), '|', ('route_id', '=', False), ('route_id.set_active', '=', True)]</field>
-            <field name="context">{"search_default_release_date_tomorrow":1}</field>
+            <field name="context">{}</field>
             <field name="search_view_id" ref="stock.view_picking_internal_search"/>
 
         </record>
@@ -155,6 +163,9 @@
                 </field>
                 <field name="location_id" position="attributes">
                     <attribute name="invisible">True</attribute>
+                </field>
+                <field name="backorder_id" position="after">
+                    <field name="shipping_easiness" invisible="1" force_save="1"/>
                 </field>
                 <field name="origin" position="after">
                     <field name="is_transit" invisible="1"/>

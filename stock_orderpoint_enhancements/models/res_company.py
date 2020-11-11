@@ -8,7 +8,9 @@ class ResCompany(models.Model):
     delay = fields.Integer(string='Delivery Lead Time',
         default=21,
         help="Lead time in days between the confirmation of the purchase order and the receipt of the products in your warehouse.")
-    buffer_percetage = fields.Float(string='OrderPoint Buffer percentage')
+    buffer_percentages = fields.Text(string='OrderPoint Buffer percentages',
+                                     help="One configuration per line. Format is 'comparison':'percent as decimal'. "
+                                        "Example: <=5:0.20")
     order_freq = fields.Integer(string='Order Frequency', default=30)
 
 

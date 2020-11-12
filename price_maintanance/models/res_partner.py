@@ -10,7 +10,19 @@ class ResPartner(models.Model):
     partner_pricelist_line_ids = fields.Many2many('customer.product.price', store=False, string="Customer Pricelist line", compute="_compute_pricelist_lines")
     change_flag = fields.Boolean(string='Log an Audit Note')
     audit_notes = fields.Text(string='Audit Note')
-    partner_pricelist_id = fields.Many2one('customer.pricelist', string="Pricelist")
+    partner_pricelist_id = fields.Many2one('customer.pricelist', string="Pricelist", store=False, compute='_compute_pricelist')
+
+
+    def _compute_pricelist(self):
+        for partner in self:
+            pricelist = False
+            if partner.customer_pricelist_ids:
+                pricelist = partner.customer_pricelist_ids.filtered(lambda r: r.sequence == 0)
+                if pricelist:
+                    pricelist =  pricelist.id
+                else:
+                    pricelist = partner.customer_pricelist_ids[0].id
+            partner.partner_pricelist_id = pricelist
 
 
     @api.depends('partner_pricelist_id')

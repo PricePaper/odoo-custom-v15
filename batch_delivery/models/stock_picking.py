@@ -35,7 +35,7 @@ class StockPicking(models.Model):
     state_id = fields.Many2one('res.country.state', string='State', related='partner_id.state_id')
     zip = fields.Char(string='Zip', related='partner_id.zip')
     delivery_notes = fields.Text(string='Delivery Notes', related='partner_id.delivery_notes')
-    item_count = fields.Integer(string="Item Count", compute='_compute_item_count')
+    item_count = fields.Float(string="Item Count", compute='_compute_item_count')
     partner_loc_url = fields.Char(string="Partner Location", related='partner_id.location_url')
     release_date = fields.Date(related='sale_id.release_date', string="Earliest Delivery Date", store=True)
     deliver_by = fields.Date(related='sale_id.deliver_by', string="Deliver By", store=True)
@@ -45,7 +45,14 @@ class StockPicking(models.Model):
     string='Easiness Of Shipping')
     is_transit = fields.Boolean(string='Transit', copy=False)
     is_late_order = fields.Boolean(string='Late Order', copy=False)
+    reserved_qty = fields.Float('Available Quantity', compute='_compute_available_qty')
 
+
+    @api.depends('move_ids_without_package.reserved_availability')
+    def _compute_available_qty(self):
+        for pick in self:
+            moves = pick.mapped('move_ids_without_package').filtered(lambda move: move.state != 'cancel')
+            pick.reserved_qty = sum(moves.mapped('reserved_availability'))
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):
@@ -96,13 +103,6 @@ class StockPicking(models.Model):
             else:
                 self.state = relevant_move_state
 
-    @api.multi
-    def _compute_item_count(self):
-        for picking in self:
-            count = 0
-            for line in picking.move_lines:
-                count += line.product_uom_qty
-            picking.item_count = count
 
     def action_make_transit(self):
         for pick in self:
@@ -148,9 +148,9 @@ class StockPicking(models.Model):
                     batch = BatchOB.search([('state', '=', 'draft'), ('route_id', '=', route_id)], limit=1)
                 if not batch:
                     batch = BatchOB.create({'route_id': route_id})
-                if picking.state not in ('assigned', 'done'):
-                    error = "The requested operation cannot be processed because all quantities are not available for picking %s. Please assign quantities for this picking." %(picking.name)
-                    raise UserError(_(error))
+                # if picking.state not in ('assigned', 'done'):
+                #     error = "The requested operation cannot be processed because all quantities are not available for picking %s. Please assign quantities for this picking." %(picking.name)
+                #     raise UserError(_(error))
                 picking.batch_id = batch
                 vals['is_late_order'] = batch.state == 'in_progress'
             if 'route_id' in vals.keys() and not (vals.get('route_id', False)) and picking.batch_id and picking.batch_id.state == 'draft':
@@ -187,6 +187,11 @@ class StockPicking(models.Model):
         res = super(StockPicking, self).action_cancel()
         self.mapped('move_ids_without_package').write({'is_transit': False})
         return res
+
+    @api.multi
+    def action_remove(self):
+        result = self.write({'batch_id': False, 'route_id': False})
+        return result
 
     @api.multi
     def button_validate(self):

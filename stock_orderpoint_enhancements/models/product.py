@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import calendar
-import datetime
 import logging as server_log
 from math import ceil
 
@@ -205,8 +204,20 @@ class ProductProduct(models.Model):
             if flag and ele[0] <= str(
                     to_date_plus_delay):  # calculate min and max qty between to_date and to_date_plus_delay
                 quantity += ele[1]
-        if quantity and self.env.user.company_id.buffer_percetage:
-            quantity = quantity * ((100 + self.env.user.company_id.buffer_percetage) / 100)
+
+        if quantity and self.env.user.company_id.buffer_percentages:
+            quantity = ceil(quantity)
+            # Buffer values stored as a Text field with the format of one expression:percent per line
+            # e.g.
+            # "<=5:0.50" meaning if the qty is less than or equal to 5, apply a 50% buffer
+            # ">20:0.10" meaning if the qty is greater than 20 apply a 10% buffer
+            lines = self.env.user.company_id.buffer_percentages.split()
+            values_as_str = [x.split(':') for x in lines]
+            values = [(x[0], float(x[1])) for x in values_as_str]
+
+            for value in values:
+                if eval(str(quantity) + value[0]):
+                    quantity = quantity * (1.0 + value[1])
         return quantity
 
     @api.multi

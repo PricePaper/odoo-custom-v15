@@ -8,7 +8,7 @@
                 <xpath expr="//field[@name='burden_percent']" position="after">
                     <field name='delay'/>
                     <field name="order_freq"/>
-                    <field name='buffer_percetage'/>
+                    <field name='buffer_percentages'/>
                 </xpath>
             </field>
         </record>

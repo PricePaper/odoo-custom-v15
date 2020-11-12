@@ -46,13 +46,13 @@ class AccountReconcileModel(models.Model):
             if line_residual > 0:
                 batch = batch_payemnt['inbound'].filtered(lambda rec: rec.amount == abs(line_residual))
                 if batch:
-                    for aml in batch.payment_ids.mapped('move_line_ids'):
+                    for aml in batch.mapped('payment_ids').mapped('move_line_ids'):
                         if aml.debit:
                             res.get(line.id, {}).get('aml_ids', []).append(aml.id)
             else:
                 batch = batch_payemnt['outbound'].filtered(lambda rec: rec.amount == abs(line_residual))
                 if batch:
-                    for aml in batch.payment_ids.mapped('move_line_ids'):
+                    for aml in batch.mapped('payment_ids').mapped('move_line_ids'):
                         if aml.credit:
                             res.get(line.id, {}).get('aml_ids', []).append(aml.id)
 

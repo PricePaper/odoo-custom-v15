@@ -17,7 +17,7 @@ class ProductProduct(models.Model):
                                            domain=[('pricelist_id.type', '=', 'competitor')])
     customer_price_ids = fields.One2many('customer.product.price', 'product_id',
                                          domain=[('pricelist_id.type', '=', 'customer')], string='Customer price list')
-    median_price = fields.Html(string='Median Prices', compute='_calculate_median_price')
+    median_price = fields.Html(string='Median Prices')
     future_price_ids = fields.One2many('cost.change', 'product_id', string='Future Price',
                                        domain=[('is_done', '=', False), ('product_id', '!=', False)])
     change_flag = fields.Boolean(string='Log an Audit Note')
@@ -87,7 +87,7 @@ class ProductProduct(models.Model):
             median = round(statistics.median(prices), 2)
         return median
 
-    @api.multi
+    @api.model
     def _calculate_median_price(self):
         today = datetime.now()
         date_10_days_back_start_date = today - relativedelta(days=10)
@@ -104,7 +104,8 @@ class ProductProduct(models.Model):
         for order in orders:
             order_lines |= order.order_line
 
-        for product in self:
+        products = self.env['product.product'].search([])
+        for product in products:
             sale_order_lines_10_day_back = order_lines.filtered(lambda
                                                                     line: line.product_id.id == product.id and line.order_id.confirmation_date >= date_10_days_back_start_date)
             sale_order_lines_30_day_back = order_lines.filtered(lambda

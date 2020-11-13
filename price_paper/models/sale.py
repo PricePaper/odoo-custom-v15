@@ -107,8 +107,15 @@ class SaleOrder(models.Model):
     def action_create_open_invoice_xmlrpc(self):
 
         self.action_invoice_create()
-        self.invoice_ids.write({'number':self.note})
+        self.invoice_ids.write({'move_name':self.note})
         self.invoice_ids.action_invoice_open()
+        return self.invoice_ids.ids
+
+    @api.multi
+    def action_create_draft_invoice_xmlrpc(self):
+
+        self.action_invoice_create()
+        self.invoice_ids.write({'move_name':self.note})
         return self.invoice_ids.ids
 
     @api.multi

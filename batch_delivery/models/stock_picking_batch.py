@@ -32,16 +32,14 @@ class StockPickingBatch(models.Model):
     total_unit = fields.Float(string="Total Unit", compute='_compute_gross_weight_volume')
 
 
-    @api.depends('picking_ids.move_lines.product_id', 'picking_ids.move_lines.quantity_done')
+    @api.depends('picking_ids.state', 'picking_ids.move_lines.product_id', 'picking_ids.move_lines.quantity_done')
     def _compute_gross_weight_volume(self):
         for batch in self:
-            for line in batch.mapped('picking_ids').mapped('move_lines'):
-                volume = line.product_id.volume * (line.quantity_done if line.state != 'cancel' and line.quantity_done else line.product_qty)
-                weight = line.product_id.weight * (line.quantity_done if line.state != 'cancel' and line.quantity_done else line.product_qty)
-                if line.state != 'cancel':
-                    batch.total_unit += line.product_uom_qty
-                batch.total_volume += volume
-                batch.total_weight += weight
+            for line in batch.mapped('picking_ids').filtered(lambda rec: rec.state != 'cancel').mapped('move_lines'):
+                product_qty = line.quantity_done if line.state != 'cancel' and line.quantity_done else line.reserved_availability
+                batch.total_unit += line.product_uom_qty
+                batch.total_volume += line.product_id.volume * product_qty
+                batch.total_weight += line.product_id.weight * product_qty
 
 
 

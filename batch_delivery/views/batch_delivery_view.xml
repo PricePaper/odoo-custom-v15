@@ -75,14 +75,10 @@
                 </xpath>
 
                 <xpath expr="//field[@name='picking_ids']/tree/button[@name='action_assign']" position="attributes">
-                    <attribute name="attrs">{'invisible': [('show_check_availability', '=', False)]}</attribute>
+<!--                    <attribute name="attrs">{'invisible': [('show_check_availability', '=', False)]}</attribute>-->
+                    <attribute name="invisible">True</attribute>
                 </xpath>
 
-                <xpath expr="//field[@name='picking_ids']/tree" position="attributes">
-                    <attribute name="create">0</attribute>
-                    <attribute name="edit">1</attribute>
-                    <attribute name="editable">bottom</attribute>
-                </xpath>
                 <xpath expr="//field[@name='picking_ids']/tree/field[@name='name']" position="attributes">
                     <attribute name="readonly">True</attribute>
                 </xpath>
@@ -99,18 +95,25 @@
                     <attribute name="readonly">True</attribute>
                 </xpath>
                 <xpath expr="//field[@name='picking_ids']/tree/button[@name='action_cancel']" position="attributes">
-                    <attribute name="attrs">{'invisible': [('state', 'in', ('in_transit', 'done', 'cancel'))]}</attribute>
-                </xpath>
-                <xpath expr="//field[@name='picking_ids']" position="attributes">
-                    <attribute name="options">{}</attribute>
+<!--                    <attribute name="attrs">{'invisible': [('state', 'in', ('in_transit', 'done', 'cancel'))]}</attribute>-->
+                    <attribute name="invisible">True</attribute>
                 </xpath>
                  <xpath expr="//field[@name='picking_ids']/tree/button[@name='action_cancel']" position="after">
                     <button class="fa fa-trash-o" name="action_remove" type="object" aria-label="Remove row" attrs="{'invisible': [('parent.state', '=', 'done')]}"/>
                 </xpath>
                   <xpath expr="//field[@name='picking_ids']/tree/field[@name='scheduled_date']" position="after">
                     <field name="is_late_order" attrs="{'readonly':[('parent.state','=', 'done')]}"/>
+                    <field name="low_qty_alert" invisible="1"/>
                 </xpath>
-
+                 <xpath expr="//field[@name='picking_ids']/tree" position="attributes">
+                    <attribute name="create">0</attribute>
+                    <attribute name="edit">1</attribute>
+                     <attribute name="delete">0</attribute>
+                    <attribute name="editable">bottom</attribute>
+                </xpath>
+                <xpath expr="//field[@name='picking_ids']/tree" position="attributes">
+                    <attribute name="decoration-danger">low_qty_alert</attribute>
+                </xpath>
                 <field name="picking_ids" position="after">
                     <div attrs="{'invisible':[('state', '!=', 'done')]}">
                         <separator string="Cash Collected Breakup"/>

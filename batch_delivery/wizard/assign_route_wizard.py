@@ -13,7 +13,7 @@ class AssignRouteWizard(models.TransientModel):
 
     @api.multi
     def assign_routes(self):
-        self.env['truck.route'].search([]).write({'set_active': False})
+
         pickings = self.env['stock.picking'].search([('state','in', ['confirmed', 'assigned', 'in_transit']), ('picking_type_code', '=', 'outgoing'), ('route_id', '=', False)])
 
         # group all potential pickings into a dictionary based on partner_id. this dictionary is later used to assign routes for pickings

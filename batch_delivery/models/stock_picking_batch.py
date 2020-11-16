@@ -179,6 +179,7 @@ class StockPickingBatch(models.Model):
                 # if picking.state == 'done':
                 # picking.deliver_products() # button_validate()
             batch.truck_driver_id.is_driver_available = True
+            batch.route_id.set_active = False
             batch.write({'cash_collected_lines': res, 'state': 'done'})
         return True
 

@@ -17,18 +17,19 @@ class Accountinvoice(models.Model):
             commission_rec = self.env['sale.commission'].search([('invoice_id', '=', invoice.id), ('is_paid', '=', True), ('invoice_type', '=', 'out_invoice')])
             for rec in commission_rec:
                 if rec.is_settled:
+                    sale = invoice.invoice_line_ids.mapped('sale_line_ids')
                     commission = rec.commission
-                    vals = {
+                    vals1 = {
                             'sale_person_id' : rec.sale_person_id.id,
                             'sale_id': sale and sale[-1].order_id.id,
                             'commission': -commission,
                             'invoice_id' : invoice.id,
-                            'invoice_type' : 'out_refund',
+                            'invoice_type' : 'bounced_cheque',
                             'is_paid':True,
                             'invoice_amount':invoice.amount_total,
                             }
-                    rec = self.env['sale.commission'].create(vals)
-                    vals = {
+                    refund_rec = self.env['sale.commission'].create(vals1)
+                    vals2 = {
                             'sale_person_id' : rec.sale_person_id.id,
                             'sale_id': sale and sale[-1].order_id.id,
                             'commission': commission,
@@ -37,7 +38,7 @@ class Accountinvoice(models.Model):
                             'is_paid':False,
                             'invoice_amount':invoice.amount_total,
                             }
-                    rec = self.env['sale.commission'].create(vals)
+                    new_rec = self.env['sale.commission'].create(vals2)
                 else:
                     rec.is_paid = False
             check_bounce_product = invoice.company_id.check_bounce_product or False
@@ -48,7 +49,9 @@ class Accountinvoice(models.Model):
             account = check_bounce_product.product_tmpl_id.get_product_accounts(fpos)
             if account and account.get('income',''):
                 account = account['income']
-
+            invoice.with_context(from_check_bounce=True).action_invoice_cancel()
+            invoice.action_invoice_draft()
+            invoice.state = 'draft'
             line_vals = {'invoice_id':invoice.id,
                          'name': 'Check Bounce Fine',
                          'account_id': account.id,
@@ -58,6 +61,7 @@ class Accountinvoice(models.Model):
                          'discount': 0.0,
                         }
             fine_line = self.env['account.invoice.line'].create(line_vals)
+            invoice.action_invoice_open()
         return True
 
 

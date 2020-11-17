@@ -156,6 +156,9 @@ class AccountInvoiceLine(models.Model):
         """
         for line in self:
             if line.product_id and line.quantity > 0 and line.uom_id:
+                if line.product_id == line.invoice_id.company_id.check_bounce_product:
+                    line.profit_margin = 0
+                    continue
                 product_price = round(line.product_id.cost * line.product_id.uom_id.factor / line.uom_id.factor, 2)
                 line_price = line.price_unit
                 if line.product_id.uom_id != line.uom_id:

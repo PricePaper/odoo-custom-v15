@@ -66,6 +66,8 @@ class AccountInvoice(models.Model):
     @api.multi
     def action_cancel(self):
         res = super(AccountInvoice, self).action_cancel()
+        if self._context.get('from_check_bounce', True):
+            return res
         for invoice in self:
             commission_rec = self.env['sale.commission'].search([('invoice_id', '=', invoice.id)])
             commission_rec and commission_rec.unlink()

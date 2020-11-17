@@ -13,7 +13,7 @@ class AccountBankStatementLine(models.Model):
                 if cheque_no and len(cheque_no) > 1:
                     cheque_no = cheque_no[1].split(' ', 1)[0]
                     cheque_no_strip = cheque_no.lstrip('0')
-                    payment = self.env['account.payment'].search(['|', ('communication', '=', cheque_no_strip), ('communication', '=', cheque_no)])
+                    payment = self.env['account.payment'].search(['|', ('communication', '=', cheque_no_strip), ('communication', '=', cheque_no)], limit=1)
                     if payment:
                         invoice = payment.invoice_ids
                         payment.move_line_ids.remove_move_reconcile()

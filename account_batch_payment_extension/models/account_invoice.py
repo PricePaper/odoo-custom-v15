@@ -24,7 +24,7 @@ class Accountinvoice(models.Model):
                             'sale_id': sale and sale[-1].order_id.id,
                             'commission': -commission,
                             'invoice_id' : invoice.id,
-                            'invoice_type' : 'out_refund',
+                            'invoice_type' : 'bounced_cheque',
                             'is_paid':True,
                             'invoice_amount':invoice.amount_total,
                             }

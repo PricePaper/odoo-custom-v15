@@ -195,9 +195,8 @@ class StockPickingBatch(models.Model):
         Compute location URL
         """
         for rec in self:
-            partners = rec.picking_ids and rec.picking_ids.filtered(
-                lambda rec: rec.partner_id and rec.partner_id.partner_latitude and rec.partner_id.partner_longitude).mapped(
-                'partner_id')
+            partners = rec.picking_ids and rec.picking_ids.mapped('partner_id')
+            partners.geo_localize()
             params = {'partner_ids': ','.join(map(str, partners and partners.ids or [])),
                       'partner_url': 'customers'
                       }

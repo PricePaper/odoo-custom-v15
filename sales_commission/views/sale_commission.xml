@@ -6,12 +6,14 @@
             <field name="arch" type="xml">
                 <tree string="Sales Commission" decoration-danger="is_removed == True">
                     <field name="sale_person_id" />
+                    <field name="commission_date" />
                     <field name="invoice_type" />
                     <field name="sale_id"/>
                     <field name="invoice_id" />
                     <field name="invoice_amount"/>
                     <field name="commission" />
                     <field name="is_paid"/>
+                    <field name="is_cancelled" invisible="1"/>
                     <field name="is_settled"/>
                     <field name="is_removed" invisible="1"/>
                     <button name="action_commission_add"

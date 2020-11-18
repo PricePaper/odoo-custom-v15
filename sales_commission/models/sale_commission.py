@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
-from datetime import datetime
+from datetime import date
 
 class SaleCommission(models.Model):
     _name = 'sale.commission'
@@ -10,14 +10,16 @@ class SaleCommission(models.Model):
     sale_person_id = fields.Many2one('res.partner', string='Sale Person')
     commission = fields.Float(string='Commission')
     invoice_id = fields.Many2one('account.invoice', string='Invoice')
-    is_paid = fields.Boolean(string='Paid')
-    invoice_type = fields.Selection(selection=[('out_invoice', 'Invoice'), ('out_refund', 'Refund'), ('draw', 'Weekly Draw'), ('bounced_cheque', 'Cheque Bounce')], string='Type')
+    is_paid = fields.Boolean(string='Paid', default=False)
+    is_cancelled = fields.Boolean(string='Cancelled', default=False)
+    invoice_type = fields.Selection(selection=[('out_invoice', 'Invoice'), ('out_refund', 'Refund'), ('draw', 'Weekly Draw'), ('bounced_cheque', 'Cheque Bounce'), ('cancel', 'Invoice Cancelled')], string='Type')
     invoice_amount = fields.Float(string='Amount')
     date_invoice = fields.Date(related='invoice_id.date_invoice', string="Invoice Date", readonly=True, store=True)
     sale_id = fields.Many2one('sale.order', string="Sale Order")
     is_settled = fields.Boolean(string='Settled')
     is_removed = fields.Boolean(string='Removed')
     settlement_id = fields.Many2one('sale.commission.settlement', string='Settlement')
+    commission_date = fields.Date('Date')
 
     @api.multi
     def action_commission_remove(self):
@@ -47,7 +49,8 @@ class SaleCommission(models.Model):
                         'sale_person_id' : sales_person.id,
                         'commission': -daily_amount,
                         'is_paid':True,
-                        'invoice_type': 'draw'
+                        'invoice_type': 'draw',
+                        'commission_date': date.today()
                         }
                 self.env['sale.commission'].create(vals)
 

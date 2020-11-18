@@ -15,6 +15,8 @@ class AccountInvoice(models.Model):
     def invoice_validate(self):
         res = super(AccountInvoice, self).invoice_validate()
         for invoice in self:
+            if invoice.check_bounce_invoice:
+                continue
             rec = invoice.calculate_commission()
         return res
 
@@ -22,6 +24,8 @@ class AccountInvoice(models.Model):
     def action_invoice_paid(self):
         res = super(AccountInvoice, self).action_invoice_paid()
         for invoice in self:
+            if invoice.check_bounce_invoice:
+                continue
             rec = invoice.calculate_commission()
             if rec and invoice.state == 'paid':
                 rec.write({'is_paid': True})
@@ -65,12 +69,25 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def action_cancel(self):
-        res = super(AccountInvoice, self).action_cancel()
-        if self._context.get('from_check_bounce', True):
-            return res
         for invoice in self:
             commission_rec = self.env['sale.commission'].search([('invoice_id', '=', invoice.id)])
-            commission_rec and commission_rec.unlink()
+            settled_rec = commission_rec.filtered(lambda r : r.is_settled and not r.is_cancelled and r.invoice_type != 'cancel')
+            for rec in settled_rec:
+                commission = rec.commission
+                vals = {
+                        'sale_person_id' : rec.sale_person_id.id,
+                        'commission': -commission,
+                        'invoice_id' : invoice.id,
+                        'invoice_type' : 'cancel',
+                        'is_paid':True,
+                        'invoice_amount':self.amount_total,
+                        }
+                self.env['sale.commission'].create(vals)
+                rec.is_cancelled = True
+
+            paid_rec = commission_rec.filtered(lambda r : not r.is_settled and r.invoice_type != 'cancel')
+            paid_rec and paid_rec.unlink()
+        res = super(AccountInvoice, self).action_cancel()
         return res
 
     def check_due_date(self, lines):
@@ -89,7 +106,7 @@ class AccountInvoice(models.Model):
                         commission = commission_ageing[0].reduce_percentage * line.commission / 100
                         vals = {
                                 'sale_person_id' : line.sale_person_id.id,
-                                'sale_id': line.sale_id.id,
+                                'sale_id': line.sale_id and line.sale_id.id,
                                 'commission': -commission,
                                 'invoice_id' : self.id,
                                 'invoice_type' : self.type,
@@ -120,6 +137,8 @@ class AccountInvoice(models.Model):
                     # if self.payment_term_id.discount_per > 0:
                     #     amount -= self.amount_total*(self.payment_term_id.discount_per/100)
                     commission = amount * (rec.rule_id.percentage/100)
+                if commission == 0:
+                    continue
                 if self.type == 'out_refund':
                     commission = -commission
                 sale = self.invoice_line_ids.mapped('sale_line_ids')
@@ -131,6 +150,7 @@ class AccountInvoice(models.Model):
                         'invoice_type' : self.type,
                         'is_paid':False,
                         'invoice_amount':self.amount_total,
+                        'commission_date': self.date_invoice and self.date_invoice
                         }
                 commission_rec = self.env['sale.commission'].create(vals)
         return commission_rec

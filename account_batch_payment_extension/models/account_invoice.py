@@ -7,16 +7,17 @@ from odoo.exceptions import UserError
 class Accountinvoice(models.Model):
     _inherit = "account.invoice"
 
+    check_bounce_invoice = fields.Boolean(string='Check Bounce Invoice', default=False)
+
     def remove_sale_commission(self):
 
-        invoice_num = len(self)
-        fine_amount = 30
-        if invoice_num > 1:
-            fine_amount = 30/invoice_num
         for invoice in self:
-            commission_rec = self.env['sale.commission'].search([('invoice_id', '=', invoice.id), ('is_paid', '=', True), ('invoice_type', '=', 'out_invoice')])
+            commission_rec = self.env['sale.commission'].search([
+                ('invoice_id', '=', invoice.id), ('is_paid', '=', True),
+                ('is_cancelled', '=', False), ('invoice_type', '=', 'out_invoice')])
             for rec in commission_rec:
                 if rec.is_settled:
+                    rec.is_cancelled = True
                     sale = invoice.invoice_line_ids.mapped('sale_line_ids')
                     commission = rec.commission
                     vals1 = {
@@ -49,19 +50,29 @@ class Accountinvoice(models.Model):
             account = check_bounce_product.product_tmpl_id.get_product_accounts(fpos)
             if account and account.get('income',''):
                 account = account['income']
-            invoice.with_context(from_check_bounce=True).action_invoice_cancel()
-            invoice.action_invoice_draft()
-            invoice.state = 'draft'
-            line_vals = {'invoice_id':invoice.id,
+            line_vals = [(0,0,{
                          'name': 'Check Bounce Fine',
                          'account_id': account.id,
                          'product_id':check_bounce_product.id,
-                         'price_unit': fine_amount,
+                         'price_unit': check_bounce_product.lst_price,
                          'quantity': 1.0,
                          'discount': 0.0,
-                        }
-            fine_line = self.env['account.invoice.line'].create(line_vals)
-            invoice.action_invoice_open()
+                        })]
+
+            invoice_vals = {
+                'type': 'out_invoice',
+                'reference': False,
+                'account_id': invoice.account_id.id,
+                'partner_id': invoice.partner_id.id,
+                'partner_shipping_id': invoice.partner_shipping_id.id,
+                'invoice_line_ids': line_vals,
+                'currency_id': invoice.currency_id.id,
+                'payment_term_id': invoice.payment_term_id.id,
+                'fiscal_position_id': invoice.fiscal_position_id and invoice.fiscal_position_id.id,
+                'team_id': invoice.team_id.id,
+                'check_bounce_invoice': True
+            }
+            invoice_fine = self.env['account.invoice'].create(invoice_vals)
         return True
 
 

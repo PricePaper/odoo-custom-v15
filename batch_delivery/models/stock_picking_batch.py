@@ -65,13 +65,13 @@ class StockPickingBatch(models.Model):
                         if line.move_id.product_uom_qty:
                             order_amount += ((line.move_id.sale_line_id.price_total / line.move_id.product_uom_qty) * line.qty_done) if line.qty_done else line.move_id.sale_line_id.price_total
                             if line.move_id.sale_line_id.profit_margin:
-                                profit_amount +=((line.move_id.sale_line_id.profit_margin / line.move_id.product_uom_qty) * line.qty_done) if line.qty_done else line.move_id.sale_line_id.price_total
+                                profit_amount +=((line.move_id.sale_line_id.profit_margin / line.move_id.product_uom_qty) * line.qty_done) if line.qty_done else line.move_id.sale_line_id.profit_margin
                 else:
                     for line in picking.move_lines:
                         if line.product_uom_qty:
                             order_amount += ((line.sale_line_id.price_total / line.product_uom_qty) * line.quantity_done)  if line.quantity_done else line.sale_line_id.price_total
                             if line.sale_line_id.profit_margin:
-                                profit_amount += ((line.sale_line_id.profit_margin / line.product_uom_qty) * line.quantity_done) if line.quantity_done else line.sale_line_id.price_total
+                                profit_amount += ((line.sale_line_id.profit_margin / line.product_uom_qty) * line.quantity_done) if line.quantity_done else line.sale_line_id.profit_margin
             batch.total_amount = order_amount
             batch.total_profit = profit_amount
             batch.profit_percentage = batch.total_profit and (batch.total_profit / batch.total_amount) * 100 or 0

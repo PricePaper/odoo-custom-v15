@@ -356,7 +356,8 @@ class SaleOrder(models.Model):
             for line in order.order_line:
                 if line.is_delivery:
                     gross_profit += line.price_subtotal
-                    gross_profit -= order.carrier_id.average_company_cost
+                    price_unit = order.carrier_id.rate_shipment(order)['price']
+                    gross_profit -= price_unit
                 else:
                     gross_profit += line.profit_margin
             if order.partner_id.payment_method == 'credit_card':
@@ -503,6 +504,8 @@ class SaleOrder(models.Model):
 
             for order in self:
                 for order_line in order.order_line:
+                    if order_line.is_delivery:
+                        continue
                     order_line.update_price_list()
                     # if order_line.is_downpayment and order_line.product_id.is_storage_contract:
                     #     product_id = self.env['ir.config_parameter'].sudo().get_param('sale.default_deposit_product_id')
@@ -765,6 +768,9 @@ class SaleOrderLine(models.Model):
             if line.product_id:
                 if line.is_delivery or line.is_downpayment:
                     line.profit_margin = 0.0
+                    if line.is_delivery:
+                        price_unit = line.order_id.carrier_id.rate_shipment(line.order_id)['price']
+                        line.profit_margin = line.price_subtotal - price_unit
                 else:
                     # product_price = line.product_uom and round(line.product_id.cost * line.product_id.uom_id.factor / line.product_uom.factor, 2) or 0
                     product_price = line.product_uom and round(line.working_cost * line.product_id.uom_id.factor / line.product_uom.factor, 2) or 0

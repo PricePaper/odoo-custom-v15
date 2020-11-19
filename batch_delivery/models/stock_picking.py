@@ -54,7 +54,7 @@ class StockPicking(models.Model):
         for pick in self:
             moves = pick.mapped('move_ids_without_package').filtered(lambda move: move.state != 'cancel')
             pick.reserved_qty = sum(moves.mapped('reserved_availability'))
-            pick.low_qty_alert = pick.item_count != pick.reserved_qty
+            pick.low_qty_alert = pick.item_count != pick.reserved_qty and pick.state != 'done'
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):

@@ -1,12 +1,21 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 class AccountBankStatementLine(models.Model):
     _inherit = "account.bank.statement.line"
 
     def process_reconciliation(self, counterpart_aml_dicts=None, payment_aml_rec=None, new_aml_dicts=None):
+        for rec in new_aml_dicts:
+            if rec.get('name', False) == 'DEPOSIT_RETURN':
+                account_id = rec.get('account_id', False)
+                if account_id:
+                    account = self.env['account.account'].browse(account_id)
+                    if account and account.internal_type != 'receivable':
+                        raise UserError(_('DEPOSIT RETURN write-off Account should be recievable account.'))
         counterpart_moves = super().process_reconciliation(counterpart_aml_dicts=counterpart_aml_dicts, payment_aml_rec=payment_aml_rec, new_aml_dicts=new_aml_dicts)
         statement_line = counterpart_moves.mapped('line_ids').mapped('statement_line_id')
+
         for stmt in statement_line:
             if stmt.name == 'DEPOSIT_RETURN':
                 cheque_no = stmt.ref and stmt.ref.split('CK#:')

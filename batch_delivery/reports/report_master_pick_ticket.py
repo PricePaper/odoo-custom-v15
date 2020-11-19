@@ -26,7 +26,7 @@ class ReportMasterPickingTicket(models.AbstractModel):
                         else:
                             product_main.get(location, False).get(line.product_id, False)[line.product_uom] = line.quantity_done
                     else:
-                        product_main.update({location: {line.product_id:{line.product_uom:line.quantity_done}}})
+                        product_main.get(location, False)[line.product_id] = {line.product_uom:line.quantity_done}
                 else:
                     product_main.update({location: {line.product_id:{line.product_uom:line.quantity_done}}})
         locations = product_main.keys()

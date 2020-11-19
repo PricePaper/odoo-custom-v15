@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
-import datetime
+from datetime import datetime, date
 from odoo.exceptions import UserError
 from dateutil.relativedelta import relativedelta
 
@@ -81,6 +81,7 @@ class AccountInvoice(models.Model):
                         'invoice_type' : 'cancel',
                         'is_paid':True,
                         'invoice_amount':self.amount_total,
+                        'commission_date': date.today()
                         }
                 self.env['sale.commission'].create(vals)
                 rec.is_cancelled = True
@@ -112,6 +113,7 @@ class AccountInvoice(models.Model):
                                 'invoice_type' : self.type,
                                 'is_paid':True,
                                 'invoice_amount':self.amount_total,
+                                'commission_date': self.date_invoice and self.date_invoice
                                 }
                         commission_rec = self.env['sale.commission'].create(vals)
 

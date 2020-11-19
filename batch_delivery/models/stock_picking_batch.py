@@ -295,6 +295,7 @@ class CashCollectedLines(models.Model):
     batch_id = fields.Many2one('stock.picking.batch', string='Batch')
     partner_id = fields.Many2one('res.partner', string='Customer', required=True)
     amount = fields.Float(string='Amount Collected')
+    communication = fields.Char(string=' Check Number')
 
     @api.multi
     def create_payment(self):
@@ -314,7 +315,7 @@ class CashCollectedLines(models.Model):
                 'partner_id': line.partner_id.id,
                 'amount': line.amount,
                 'journal_id': cash_journal.id,
-                'communication': line.batch_id.name,
+                'communication': line.communication,
                 'batch_id': line.batch_id.id,
             }
             payment = self.env['account.payment'].create(payment_vals)

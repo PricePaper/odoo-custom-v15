@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
+from datetime import date
 from odoo.exceptions import UserError
 
 
@@ -28,6 +29,7 @@ class Accountinvoice(models.Model):
                             'invoice_type' : 'bounced_cheque',
                             'is_paid':True,
                             'invoice_amount':invoice.amount_total,
+                            'commission_date': date.today()
                             }
                     refund_rec = self.env['sale.commission'].create(vals1)
                     vals2 = {
@@ -38,6 +40,7 @@ class Accountinvoice(models.Model):
                             'invoice_type' : 'out_invoice',
                             'is_paid':False,
                             'invoice_amount':invoice.amount_total,
+                            'commission_date': self.date_invoice and self.date_invoice
                             }
                     new_rec = self.env['sale.commission'].create(vals2)
                 else:

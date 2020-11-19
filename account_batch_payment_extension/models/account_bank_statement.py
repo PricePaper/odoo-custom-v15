@@ -6,13 +6,7 @@ class AccountBankStatementLine(models.Model):
     _inherit = "account.bank.statement.line"
 
     def process_reconciliation(self, counterpart_aml_dicts=None, payment_aml_rec=None, new_aml_dicts=None):
-        for rec in new_aml_dicts:
-            if rec.get('name', False) == 'DEPOSIT_RETURN':
-                account_id = rec.get('account_id', False)
-                if account_id:
-                    account = self.env['account.account'].browse(account_id)
-                    if account and account.internal_type != 'receivable':
-                        raise UserError(_('DEPOSIT RETURN write-off Account should be recievable account.'))
+
         counterpart_moves = super().process_reconciliation(counterpart_aml_dicts=counterpart_aml_dicts, payment_aml_rec=payment_aml_rec, new_aml_dicts=new_aml_dicts)
         statement_line = counterpart_moves.mapped('line_ids').mapped('statement_line_id')
 
@@ -52,13 +46,7 @@ class AccountReconcileModel(models.Model):
             else:
                 batch_payemnt['outbound'] |= p
 
-        print('\n\n\n\n\n\n\n\n', re)
         for line in st_lines:
-            print(line.name)
-            if line.name == 'DEPOSIT_RETURN':
-                line.account_id = re
-            from pprint import pprint
-            pprint(line.read())
             line_residual = line.currency_id and line.amount_currency or line.amount
             if line_residual > 0:
                 batch = batch_payemnt['inbound'].filtered(lambda rec: rec.amount == abs(line_residual))

@@ -125,6 +125,7 @@
                         <field name="cash_collected_lines" attrs="{'readonly':[('is_posted', '=', True)]}">
                             <tree editable="bottom">
                                 <field name="partner_id" domain="[('customer', '=', True)]"/>
+                                <field name="communication"/>
                                 <field name="amount"/>
                             </tree>
                         </field>

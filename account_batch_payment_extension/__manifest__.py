@@ -15,6 +15,7 @@ This module help to filter out the move lines from existing batch payments
     'website': 'http://confianzit.com',
     'depends': ['account_batch_payment', 'sales_commission'],
     'data': [
+             'views/assets.xml',
              'views/res_company.xml',
              'views/account_invoice.xml',
             ],

@@ -34,6 +34,8 @@ class AccountReconcileModel(models.Model):
     def _apply_rules(self, st_lines, excluded_ids=None, partner_map=None):
         res = super()._apply_rules(st_lines, excluded_ids, partner_map)
         batch_payemnt = {'inbound': self.env['account.batch.payment'], 'outbound': self.env['account.batch.payment']}
+        re = self.env['account.account'].search(
+            [('user_type_id', '=', self.env.ref('account.data_account_type_receivable').id)], limit=1)
 
         for p in self.env['account.batch.payment'].search([('state', '!=', 'reconciled')]):
             if p.batch_type == 'inbound':
@@ -41,7 +43,13 @@ class AccountReconcileModel(models.Model):
             else:
                 batch_payemnt['outbound'] |= p
 
+        print('\n\n\n\n\n\n\n\n', re)
         for line in st_lines:
+            print(line.name)
+            if line.name == 'DEPOSIT_RETURN':
+                line.account_id = re
+            from pprint import pprint
+            pprint(line.read())
             line_residual = line.currency_id and line.amount_currency or line.amount
             if line_residual > 0:
                 batch = batch_payemnt['inbound'].filtered(lambda rec: rec.amount == abs(line_residual))

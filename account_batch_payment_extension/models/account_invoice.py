@@ -40,7 +40,7 @@ class Accountinvoice(models.Model):
                             'invoice_type' : 'out_invoice',
                             'is_paid':False,
                             'invoice_amount':invoice.amount_total,
-                            'commission_date': invoice.date_invoice and self.date_invoice
+                            'commission_date': invoice.date_invoice and invoice.date_invoice
                             }
                     new_rec = self.env['sale.commission'].create(vals2)
                 else:

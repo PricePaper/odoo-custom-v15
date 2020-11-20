@@ -1,6 +1,6 @@
 odoo.define('account_batch_payment_extension.create', function (require) {
 "use strict";
-var Dialog = require('web.Dialog');
+
 var core = require('web.core');
 var LineRenderer = require('account.ReconciliationRenderer').LineRenderer;
 

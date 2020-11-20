@@ -11,7 +11,7 @@ return LineRenderer.include({
       update: function (state) {
             var _super = this._super.bind(this);
             if (state.createForm) {
-                self = this;
+                var self = this;
                 var label = state.createForm.label;
                 var account = state.createForm.account_id;
                 if (label == 'DEPOSIT_RETURN' && account) {

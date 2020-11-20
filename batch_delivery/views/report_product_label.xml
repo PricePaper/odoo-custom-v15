@@ -12,7 +12,7 @@
                                         <td>
                                             <t t-if="line.picking_id.partner_id.name">
                                                 <strong t-field="line.picking_id.partner_id.name" style="float:left;width:70%;font-size:16px;"/>
-                                                <strong t-field="line.picking_id.scheduled_date" style="float:right;width:30%;font-size:20px;"/>
+                                                <strong t-field="line.picking_id.scheduled_date" style="float:right;width:30%;font-size:12px;"/>
                                             </t>
                                         </td>
                                     </tr>
@@ -27,7 +27,7 @@
                                     </tr>
                                     <tr style="border-top:hidden;height:30%;">
                                         <td>
-                                            <strong style="display:block;float:left;width:70%;font-size:15px;">
+                                            <strong style="display:block;float:left;width:70%;font-size:12px;">
                                                 <t t-if="line.product_id.default_code">
                                                     [<span t-field="line.product_id.default_code"/>]
                                                 </t>

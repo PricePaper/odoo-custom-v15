@@ -305,7 +305,7 @@ class SupplierInfo(models.Model):
 
     delay = fields.Integer(
        string='Delivery Lead Time', required=True, default=0,
-       help="Lead time in days between the confirmation of the purchase order and the receipt of the products in your warehouse. Used by the scheduler for automatic computation of the purchase order planning.")
+       help="Lead time in days between the confirmation of the purchase order and the receipt of the products in your warehouse. Used by the scheduler for automatic computation of the purchase order planning.A value of zero (0) will tell the system to use the delay provided by the product vendor")
 
     @api.multi
     def create(self, values):
@@ -334,10 +334,10 @@ class SupplierInfo(models.Model):
         return res
 
 
-    @api.onchange('name')
-    def onchange_vendor(self):
-        if self.name:
-            self.delay = self.name.delay
+    # @api.onchange('name')
+    # def onchange_vendor(self):
+    #     if self.name:
+    #         self.delay = self.name.delay
 
     @api.multi
     def reset_orderpoint(self, product):

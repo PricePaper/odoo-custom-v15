@@ -307,7 +307,7 @@ class SupplierInfo(models.Model):
        string='Delivery Lead Time', required=True, default=0,
        help="Lead time in days between the confirmation of the purchase order and the receipt of the products in your warehouse. Used by the scheduler for automatic computation of the purchase order planning.A value of zero (0) will tell the system to use the delay provided by the product vendor")
 
-    @api.multi
+    @api.model
     def create(self, values):
         """
         Overriding create method to set delay

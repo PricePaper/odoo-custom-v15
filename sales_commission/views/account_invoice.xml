@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+      <record id="account_invoice_tree_inherit_commission" model="ir.ui.view">
+          <field name="name">account.invoice.tree.view.commission</field>
+          <field name="model">account.invoice</field>
+          <field name="type">form</field>
+          <field name="inherit_id" ref="account.invoice_tree" />
+          <field name="arch" type="xml">
+              <field name="user_id" position="after">
+                  <field name="sales_person_ids" widget='many2many_tags'/>
+                  <field name="check_bounce_invoice" invisible='1'/>
+              </field>
+              <field name="user_id" position="attributes">
+                  <attribute name='invisible'>1</attribute>
+              </field>
+          </field>
+      </record>
         <record id="account_invoice_form_view_inherit_commission" model="ir.ui.view">
             <field name="name">account.invoice.form.view.commission</field>
             <field name="model">account.invoice</field>
@@ -9,6 +24,7 @@
             <field name="arch" type="xml">
                 <field name="user_id" position="after">
                     <field name="sales_person_ids" widget='many2many_tags'/>
+                    <field name="check_bounce_invoice" invisible='1'/>
                 </field>
                 <field name="user_id" position="attributes">
                     <attribute name='invisible'>1</attribute>
@@ -16,6 +32,16 @@
                 <field name="move_id" position="attributes">
                     <attribute name='groups'>base.group_user</attribute>
                 </field>
+            </field>
+        </record>
+        <record id="view_account_invoice_filter_price_paper_bounce" model="ir.ui.view">
+            <field name="name">account.invoice.check.bounce</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='late']" position="before">
+                    <filter name="check_bounce" string="Check Bounce Fee" domain="[('check_bounce_invoice', '=', True)]"/>
+                </xpath>
             </field>
         </record>
     </data>

@@ -8,8 +8,6 @@ from odoo.exceptions import UserError
 class Accountinvoice(models.Model):
     _inherit = "account.invoice"
 
-    check_bounce_invoice = fields.Boolean(string='Check Bounce Invoice', default=False)
-
     def remove_sale_commission(self):
 
         for invoice in self:
@@ -45,10 +43,11 @@ class Accountinvoice(models.Model):
                     new_rec = self.env['sale.commission'].create(vals2)
                 else:
                     rec.is_paid = False
-            check_bounce_product = invoice.company_id.check_bounce_product or False
-            if not check_bounce_product:
-                raise UserError(_('Check Bounce Product is not configured in Company'))
-
+        check_bounce_product = invoice.company_id.check_bounce_product or False
+        if not check_bounce_product:
+            raise UserError(_('Check Bounce Product is not configured in Company'))
+        invoice = self and self[0]
+        if invoice:
             fpos = invoice.fiscal_position_id
             account = check_bounce_product.product_tmpl_id.get_product_accounts(fpos)
             if account and account.get('income',''):

@@ -9,6 +9,7 @@ class AccountInvoice(models.Model):
     _inherit = 'account.invoice'
 
     sales_person_ids = fields.Many2many('res.partner', related='partner_id.sales_person_ids', string='Associated Sales Persons')
+    check_bounce_invoice = fields.Boolean(string='Check Bounce Invoice', default=False)
 
 
     @api.multi

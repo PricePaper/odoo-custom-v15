@@ -355,9 +355,10 @@ class SaleOrder(models.Model):
             gross_profit = 0
             for line in order.order_line:
                 if line.is_delivery:
-                    gross_profit += line.price_subtotal
-                    price_unit = order.carrier_id.rate_shipment(order)['price']
-                    gross_profit -= price_unit
+                    if order.carrier_id:
+                        gross_profit += line.price_subtotal
+                        price_unit = order.carrier_id.rate_shipment(order)['price']
+                        gross_profit -= price_unit
                 else:
                     gross_profit += line.profit_margin
             if order.partner_id.payment_method == 'credit_card':

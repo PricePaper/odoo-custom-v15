@@ -33,17 +33,18 @@ class ResPartner(models.Model):
         end_date = datetime.datetime.now()-relativedelta(months=1)
         end_date = datetime.datetime(end_date.year, end_date.month, calendar.mdays[end_date.month], 00, 00, 00)
 
+        last_year_sale_orders = self.env['sale.order'].search([('state', 'in', ['sale', 'done']), ('confirmation_date', '>=', str(last_year_start_date)),('confirmation_date', '<=', str(end_date))])
+
+        last_3_month_sale_orders = self.env['sale.order'].search([('state', 'in', ['sale', 'done']), ('confirmation_date', '>=', str(last_3_month_start_date)), ('confirmation_date', '<=', str(end_date))])
+
         for customer in self.env['res.partner'].search([('customer', '=', True)]):
+            customer_last_year_sale_order = last_year_sale_orders.filtered(lambda so: so.partner_id == customer)
+            customer_last_3_month_sale_orders = last_3_month_sale_orders.filtered(lambda so: so.partner_id == customer)
 
-            last_year_sale_orders = self.env['sale.order'].search([('state', 'in', ['sale', 'done']), ('partner_id', '=', customer.id), ('confirmation_date', '>=', str(last_year_start_date)),('confirmation_date', '<=', str(end_date))])
-
-            last_3_month_sale_orders = self.env['sale.order'].search([('state', 'in', ['sale', 'done']), ('partner_id', '=', customer.id), ('confirmation_date', '>=', str(last_3_month_start_date)), ('confirmation_date', '<=', str(end_date))])
-
-            last_year_total = sum(last_year_sale_orders.mapped('amount_total'))
-            last_3_month_total = sum(last_3_month_sale_orders.mapped('amount_total'))
-            profit_margin_lst_3_mnt = sum(last_3_month_sale_orders.mapped('gross_profit'))
+            last_year_total = sum(customer_last_year_sale_order.mapped('amount_total'))
+            last_3_month_total = sum(customer_last_3_month_sale_orders.mapped('amount_total'))
+            profit_margin_lst_3_mnt = sum(customer_last_3_month_sale_orders.mapped('gross_profit'))
             proj_3month_to_one_year = last_3_month_total*4
-
 
             if last_3_month_total:
                 customer.mrg_per_lst_3_mon = round(100*(profit_margin_lst_3_mnt/last_3_month_total), 2)

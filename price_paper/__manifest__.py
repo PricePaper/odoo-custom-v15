@@ -22,6 +22,7 @@ Custom module implemented for Price Paper.
              'wizard/sale_warning.xml',
              'wizard/upload_pricelist.xml',
              'wizard/inactive_product_report_wizard.xml',
+             'wizard/release_sale_order_view.xml',
              'wizard/inactive_customer_report_wizard.xml',
              'wizard/add_purchase_history_to_so.xml',
              'wizard/create_sale_tax_history_wizard.xml',

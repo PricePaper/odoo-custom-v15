@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from . import upload_pricelist_wizard
+from . import release_sale_order
 from . import add_purchase_history_to_so
 from . import inactive_product_wizard
 from . import inactive_customer_wizard

@@ -46,6 +46,9 @@ class Accountinvoice(models.Model):
         check_bounce_product = invoice.company_id.check_bounce_product or False
         if not check_bounce_product:
             raise UserError(_('Check Bounce Product is not configured in Company'))
+        check_bounce_term = invoice.company_id.check_bounce_term or False
+        if not check_bounce_term:
+            raise UserError(_('Check Bounce Payment Term is not configured in Company'))
         invoice = self and self[0]
         if invoice:
             fpos = invoice.fiscal_position_id
@@ -69,7 +72,7 @@ class Accountinvoice(models.Model):
                 'partner_shipping_id': invoice.partner_shipping_id.id,
                 'invoice_line_ids': line_vals,
                 'currency_id': invoice.currency_id.id,
-                'payment_term_id': invoice.payment_term_id.id,
+                'payment_term_id': check_bounce_term.id,
                 'fiscal_position_id': invoice.fiscal_position_id and invoice.fiscal_position_id.id,
                 'team_id': invoice.team_id.id,
                 'check_bounce_invoice': True

@@ -38,6 +38,7 @@ class ResPartner(models.Model):
     zip_shipping_easiness = fields.Selection(related='zip_delivery_id.shipping_easiness', string='Easiness of shipping.')
     seller_info_ids = fields.One2many('product.supplierinfo', 'name', string='Seller info')
     seller_partner_ids = fields.Many2many('res.partner', 'vendor_id', 'seller_partner_id', string='Seller')
+    credit_limit = fields.Float(string='Credit Limit', default=lambda self: self.env.user.company_id.credit_limit)
 
     @api.depends('sale_order_ids.confirmation_date', 'invoice_ids.payment_ids.payment_date')
     def _compute_last_date(self):

@@ -13,6 +13,7 @@ class ResCompany(models.Model):
     price_lock_days = fields.Integer(string='Price list lock days #', default=90)
     sale_history_months = fields.Integer(string='Sales History Months ', default=15)
     standard_price_config_days = fields.Integer(string='Standard price lock # days', default=60)
+    credit_limit = fields.Integer(string='Credit Limit', default=4000)
 
 
 ResCompany()

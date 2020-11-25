@@ -13,6 +13,7 @@
                         <group>
                             <group>
                                 <field name='burden_percent'/>
+                                <field name='credit_limit'/>
                                 <field name='sale_history_months'/>
                                 <field name='standard_price_config_days'/>
                             </group>

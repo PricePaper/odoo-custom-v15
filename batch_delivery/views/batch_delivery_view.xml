@@ -180,7 +180,7 @@
                     <header>
                         <button name="register_payments"
                                 confirm="All payments will be posted and this action can't be undone are you sure you want to proceed?"
-                                string="Register Payments" type="object" class="oe_highlight"
+                                string="Register Payments" type="object" class="oe_highlight" attrs="{'invisible': [('is_posted', '=', True)]}"
                                 />
                     </header>
                     <sheet>
@@ -198,6 +198,7 @@
                         <separator string="Cash Collected Lines"/>
                         <field name="picking_ids" invisible="1"/>
                         <field name="payment_ids" invisible="1"/>
+                        <field name="is_posted" invisible="1"/>
                         <field name="cash_collected_lines">
                             <tree editable="bottom">
                                 <field name="partner_id" domain="[('customer', '=', True)]"/>
@@ -223,6 +224,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="domain">[('state', '=', 'done')]</field>
+            <field name="context">{'create': False}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     The goal of the batch picking is to group operations that may

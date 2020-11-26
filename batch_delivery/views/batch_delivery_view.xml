@@ -20,7 +20,6 @@
                     <button name="print_product_labels" string="Print Product Labels" type="object" class="oe_highlight"/>
                     <button name="print_delivery_slip" string="Print Delivery Slip" type="object" class="oe_highlight"/>
                     <button name="print_driver_spreadsheet" string="Print Drivers Document" type="object" class="oe_highlight"/>
-                    <button name="register_payments" confirm="All payments will be posted and this action can't be undone are you sure you want to proceed?" string="Register Payments" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', 'not in', ['done']), ('is_posted', '=', True)]}"/>
                 </button>
 
                 <button name="print_picking" position="attributes">

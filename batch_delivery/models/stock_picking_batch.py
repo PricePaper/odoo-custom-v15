@@ -314,7 +314,7 @@ class CashCollectedLines(models.Model):
     partner_id = fields.Many2one('res.partner', string='Customer', required=True)
     amount = fields.Float(string='Amount Collected')
     communication = fields.Char(string='Memo')
-    payment_method_id = fields.Many2one('account.payment.method', domain=[('payment_type', '=', 'inbound')])
+    payment_method_id = fields.Many2one('account.payment.method', domain=[('payment_type', '=', 'inbound')], required=True)
     is_communication = fields.Boolean(string='Is Communication')
 
     @api.onchange('partner_id')

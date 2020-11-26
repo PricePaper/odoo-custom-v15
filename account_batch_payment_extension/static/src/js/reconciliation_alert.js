@@ -22,7 +22,7 @@ return LineRenderer.include({
                         fields: ['internal_type'],
                         }).then(function (rec) {
                             if(rec[0].internal_type != "receivable") {
-                                self.do_warn(_t("Alert!!"), 'DEPOSIT RETURN write-off Account should be recievable account.');
+                                self.do_warn(_t("Alert!!"), 'DEPOSIT RETURN write-off Account should be receivable account.');
                                 return;
                             }
                             return _super(state);

@@ -227,6 +227,24 @@ class StockPickingBatch(models.Model):
         return action
 
     @api.multi
+    def view_batch_payments(self):
+        self.ensure_one()
+        payments = self.payment_ids
+        batch_payments = payments.mapped('batch_payment_id')
+        action = self.env.ref('account_batch_payment.action_batch_payment_in').read()[0]
+
+        if len(batch_payments) > 1:
+            action['domain'] = [('id', 'in', batch_payments.ids)]
+        elif len(batch_payments) == 1:
+            action['views'] = [(self.env.ref('account_batch_payment.view_batch_payment_form').id, 'form')]
+            action['res_id'] = batch_payments.ids[0]
+        else:
+            action = {'type': 'ir.actions.act_window_close'}
+
+        return action
+
+
+    @api.multi
     def register_payments(self):
         for batch in self:
             if not batch.actual_returned:
@@ -296,30 +314,56 @@ class CashCollectedLines(models.Model):
     partner_id = fields.Many2one('res.partner', string='Customer', required=True)
     amount = fields.Float(string='Amount Collected')
     communication = fields.Char(string='Memo')
+    payment_method_id = fields.Many2one('account.payment.method', domain=[('payment_type', '=', 'inbound')])
+    is_communication = fields.Boolean(string='Is Communication')
+
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        if self.batch_id:
+            partner_list = self.batch_id.picking_ids.mapped('partner_id').ids
+            return {'domain': {'partner_id': [('id', 'in', partner_list)]}}
+        return {}
+
+    @api.onchange('payment_method_id')
+    def _onchange_payment_method_id(self):
+        self.is_communication =  self.payment_method_id.code == 'check_printing'
 
     @api.multi
     def create_payment(self):
-        cash_journal = self.env['account.journal'].search([('type', '=', 'cash')], limit=1)
-        payment_method = self.env['account.payment.method'].search(
-            [('code', '=', 'manual'), ('payment_type', '=', 'inbound')], limit=1)
-        if not cash_journal:
+        bank_journal = self.env['account.journal'].search([('type', '=', 'bank')], limit=1)#TODO Fix me with Cash also
+
+        if not bank_journal:
             raise UserError(_(
                 'Cash journal not defined! \nPlease create a cash journal in the system to process these transactions.'))
+
+        batch_payment_info = {}
+
         for line in self:
             if not line.amount:
                 continue
-            payment_vals = {
-                'payment_type': 'inbound',
-                'partner_type': 'customer',
-                'payment_method_id': payment_method.id,
-                'partner_id': line.partner_id.id,
-                'amount': line.amount,
-                'journal_id': cash_journal.id,
-                'communication': line.communication,
-                'batch_id': line.batch_id.id,
-            }
-            payment = self.env['account.payment'].create(payment_vals)
-            payment.post()
 
+            batch_payment_info.setdefault(line.payment_method_id, []).\
+                append({
+                    'payment_type': 'inbound',
+                    'partner_type': 'customer',
+                    'payment_method_id': line.payment_method_id.id,
+                    'partner_id': line.partner_id.id,
+                    'amount': line.amount,
+                    'journal_id': bank_journal.id,
+                    'communication': line.communication,
+                    'batch_id': line.batch_id.id
+                })
+
+        AccountBatchPayment = self.env['account.batch.payment']
+
+        for payment_method, payments in batch_payment_info.items():
+            AccountBatchPayment.create({
+                'batch_type': 'inbound',
+                'journal_id': bank_journal.id,
+                'payment_ids': [(0, 0, vals) for vals in payments],
+                'payment_method_id': payment_method.id,
+
+            })
 
 CashCollectedLines()
+

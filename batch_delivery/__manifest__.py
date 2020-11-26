@@ -43,7 +43,7 @@ This module sets up the batch delivery process for price paper.
              'security/ir.model.access.csv',
             ],
 
-    'depends': ['price_paper', 'stock_picking_batch', 'base_geolocalize','website_google_map','website_customer', 'account_reports', 'stock_product_location'],
+    'depends': ['price_paper', 'stock_picking_batch', 'base_geolocalize','website_google_map','website_customer', 'account_reports', 'stock_product_location', 'account_batch_payment'],
     'qweb': [
 
         "static/src/xml/price_lock.xml",

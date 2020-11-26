@@ -173,13 +173,83 @@
             </field>
         </record>
 
+        <record id="stock_picking_batch_view_form" model="ir.ui.view">
+            <field name="name">stock.picking.batch.payment.view.form</field>
+            <field name="model">stock.picking.batch</field>
+            <field name="arch" type="xml">
+                <form string="Stock Batch Picking">
+                    <header>
+                        <button name="register_payments"
+                                confirm="All payments will be posted and this action can't be undone are you sure you want to proceed?"
+                                string="Register Payments" type="object" class="oe_highlight"
+                                />
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" name="view_batch_payments" icon="fa-pencil-square-o" attrs="{'invisible': [('payment_ids', '=', [])]}" type="object" string="Batch Payments"/>
+                        </div>
+                        <div class="oe_title">
+                            <h1><field name="name" class="oe_inline" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="user_id"/>
+                            </group>
+                        </group>
+                        <separator string="Cash Collected Lines"/>
+                        <field name="picking_ids" invisible="1"/>
+                        <field name="payment_ids" invisible="1"/>
+                        <field name="cash_collected_lines">
+                            <tree editable="bottom">
+                                <field name="partner_id" domain="[('customer', '=', True)]"/>
+                                <field name="payment_method_id"/>
+                                <field name="communication" attrs="{'required': [('is_communication', '=', True)]}"/>
+                                <field name="is_communication" invisible="1"/>
+                                <field name="amount"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
 
+        <record id="stock_picking_batch_payment_action" model="ir.actions.act_window">
+            <field name="name">Batch Pickings Payments</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">stock.picking.batch</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state', '=', 'done')]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    The goal of the batch picking is to group operations that may
+                    (needs to) be done together in order to increase their efficiency.
+                    It may also be useful to assign jobs (one person = one batch) or
+                    help the timing management of operations (tasks to be done at 1pm).
+                </p>
+            </field>
+        </record>
 
+        <record id="stock_picking_batch_payment_tree" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="batch_delivery.batch_picking_tree_inherrit"/>
+            <field name="act_window_id" ref="stock_picking_batch_payment_action"/>
+        </record>
 
+        <record id="stock_picking_batch_payment_form" model="ir.actions.act_window.view">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="stock_picking_batch_view_form"/>
+            <field name="act_window_id" ref="stock_picking_batch_payment_action"/>
+        </record>
 
-
-
-
+        <menuitem action="stock_picking_batch_payment_action" id="stock_picking_batch_payment_menu"
+                  parent="account.menu_finance_receivables" sequence="19"/>
 
     </data>
 </odoo>

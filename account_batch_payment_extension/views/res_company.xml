@@ -4,7 +4,7 @@
         <record id="res_company_inherit_returned_check" model="ir.ui.view">
             <field name="name">res.company.pricepaper.orderpoint</field>
             <field name="model">res.company</field>
-            <field name="inherit_id" ref="base.view_company_form" />
+            <field name="inherit_id" ref="price_paper.res_company_inherit_price_paper" />
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='burden_percent']" position="after">
                   <field name='check_bounce_product'/>

@@ -1,6 +1,6 @@
 <odoo>
     <data>
-        <record id="res_company_inherit_order_point" model="ir.ui.view">
+        <record id="res_company_inherit_price_paper" model="ir.ui.view">
             <field name="name">res.company.pricepaper.orderpoint</field>
             <field name="model">res.company</field>
             <field name="inherit_id" ref="base.view_company_form" />

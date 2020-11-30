@@ -30,8 +30,15 @@ class StockPickingBatch(models.Model):
     total_volume = fields.Float(string="Total Volume", compute='_compute_gross_weight_volume')
     total_weight = fields.Float(string="Total Weight", compute='_compute_gross_weight_volume')
     total_unit = fields.Float(string="Total Unit", compute='_compute_gross_weight_volume')
+    batch_payment_count = fields.Integer(string='Batch Payment', compute='_compute_batch_payment_count')
 
+    @api.multi
+    @api.depends('payment_ids')
+    def _compute_batch_payment_count(self):
+        for rec in self:
+            rec.batch_payment_count = len(rec.payment_ids.mapped('batch_payment_id'))
 
+    @api.multi
     @api.depends('picking_ids.state', 'picking_ids.move_lines.product_id', 'picking_ids.move_lines.quantity_done')
     def _compute_gross_weight_volume(self):
         for batch in self:
@@ -41,8 +48,7 @@ class StockPickingBatch(models.Model):
                 batch.total_volume += line.product_id.volume * product_qty
                 batch.total_weight += line.product_id.weight * product_qty
 
-
-
+    @api.multi
     @api.depends('picking_ids.is_late_order')
     def _compute_late_order(self):
         for rec in self:
@@ -314,8 +320,10 @@ class CashCollectedLines(models.Model):
     partner_id = fields.Many2one('res.partner', string='Customer', required=True)
     amount = fields.Float(string='Amount Collected')
     communication = fields.Char(string='Memo')
-    payment_method_id = fields.Many2one('account.payment.method', domain=[('payment_type', '=', 'inbound')], required=True)
+    payment_method_id = fields.Many2one('account.payment.method', domain=[('payment_type', '=', 'inbound')],
+                                        required=True)
     is_communication = fields.Boolean(string='Is Communication')
+    journal_id = fields.Many2one('account.journal', string='Journal', required=True)
 
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
@@ -326,15 +334,10 @@ class CashCollectedLines(models.Model):
 
     @api.onchange('payment_method_id')
     def _onchange_payment_method_id(self):
-        self.is_communication =  self.payment_method_id.code == 'check_printing'
+        self.is_communication = self.payment_method_id.code == 'check_printing'
 
     @api.multi
     def create_payment(self):
-        bank_journal = self.env['account.journal'].search([('type', '=', 'bank')], limit=1)#TODO Fix me with Cash also
-
-        if not bank_journal:
-            raise UserError(_(
-                'Cash journal not defined! \nPlease create a cash journal in the system to process these transactions.'))
 
         batch_payment_info = {}
 
@@ -342,28 +345,29 @@ class CashCollectedLines(models.Model):
             if not line.amount:
                 continue
 
-            batch_payment_info.setdefault(line.payment_method_id, []).\
+            batch_payment_info.setdefault(line.journal_id, {}).\
+                setdefault(line.payment_method_id, []).\
                 append({
                     'payment_type': 'inbound',
                     'partner_type': 'customer',
                     'payment_method_id': line.payment_method_id.id,
                     'partner_id': line.partner_id.id,
                     'amount': line.amount,
-                    'journal_id': bank_journal.id,
+                    'journal_id': line.journal_id.id,
                     'communication': line.communication,
                     'batch_id': line.batch_id.id
                 })
 
         AccountBatchPayment = self.env['account.batch.payment']
 
-        for payment_method, payments in batch_payment_info.items():
-            AccountBatchPayment.create({
-                'batch_type': 'inbound',
-                'journal_id': bank_journal.id,
-                'payment_ids': [(0, 0, vals) for vals in payments],
-                'payment_method_id': payment_method.id,
-
-            })
+        for journal, batch_vals in batch_payment_info.items():
+            for payment_method, payment_vals in batch_vals.items():
+                AccountBatchPayment.create({
+                    'batch_type': 'inbound',
+                    'journal_id': journal.id,
+                    'payment_ids': [(0, 0, vals) for vals in payment_vals],
+                    'payment_method_id': payment_method.id,
+                        })
 
 CashCollectedLines()
 

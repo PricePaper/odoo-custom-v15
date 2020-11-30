@@ -206,7 +206,7 @@
                         <field name="picking_ids" invisible="1"/>
                         <field name="payment_ids" invisible="1"/>
                         <field name="is_posted" invisible="1"/>
-                        <field name="cash_collected_lines">
+                        <field name="cash_collected_lines" attrs="{'readonly': [('is_posted', '=', True)]}">
                             <tree editable="bottom">
                                 <field name="partner_id" domain="[('customer', '=', True)]"/>
                                 <field name="journal_id"/>

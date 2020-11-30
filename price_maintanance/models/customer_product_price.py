@@ -12,6 +12,7 @@ class CustomerProductPrice(models.Model):
     last_sale_date = fields.Datetime(compute='_get_last_sale_details', string='Last Sale', readonly=True)
     last_sale_price = fields.Float(compute='_get_last_sale_details', string='Last Sale Price', readonly=True)
     last_quantity_sold = fields.Float(compute='_get_last_sale_details', string='Last Sale Qty', readonly=True)
+    is_taxable = fields.Boolean(compute='_get_last_sale_details', string='Is Taxable', readonly=True)
     median_price = fields.Html(string='Median Prices', related='product_id.median_price', readonly=True)
     competietor_price_ids = fields.Many2many('customer.product.price', compute="_get_competietor_prices", string='Competietor Price Entries')
     std_price = fields.Float(string='Standard Price', related='product_id.lst_price', readonly=True)
@@ -29,9 +30,6 @@ class CustomerProductPrice(models.Model):
             comp_lines = self.search([('pricelist_id.type', '=', 'competitor'), ('product_id', '=', line.product_id.id)])
             line.competietor_price_ids = [l.id for l in comp_lines]
 
-
-
-
     @api.depends('partner_id', 'product_id')
     def _get_last_sale_details(self):
         for record in self:
@@ -43,11 +41,26 @@ class CustomerProductPrice(models.Model):
             if record.pricelist_id.type != 'customer':
                 continue
             if record.partner_id and pr_id:
-                self._cr.execute("""select so.confirmation_date, sol.price_unit, sol.product_uom_qty from sale_order_line sol join sale_order so  ON (so.id = sol.order_id) where so.state in ('sale', 'done') and so.partner_id=%s and sol.product_id=%s order by so.confirmation_date desc limit 1""" % (record.partner_id.id, pr_id))
-                res = self._cr.dictfetchall()
-                if res and res[0]:
-                    record.last_sale_date = res[0].get('confirmation_date', '')
-                    record.last_sale_price = res[0].get('price_unit', '')
-                    record.last_quantity_sold = res[0].get('product_uom_qty', '')
+                res = self.env['sale.history'].search([('product_id', '=', pr_id), ('partner_id', '=', record.partner_id.id)])
+                if res:
+                    record.last_sale_date = res.order_date
+                    record.last_sale_price = res.order_line_id.price_unit
+                    record.last_quantity_sold = res.order_line_id.product_uom_qty
+                tax_res = self.env['sale.tax.history'].search([('product_id', '=', pr_id), ('partner_id', '=', record.partner_id.id)])
+                if tax_res and tax_res.tax:
+                    record.is_taxable = True
+                else:
+                    record.is_taxable = False
+
+    @api.multi
+    def action_remove(self):
+        self.unlink()
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+            }
+
+
+
 
 CustomerProductPrice()

@@ -60,6 +60,9 @@
                                         <field name="lock_expiry_date" attrs="{'invisible': [('price_lock', '=', False)], 'required': [('price_lock', '=', True)]}"/>
                                     </tree>
                                     <form string="Detailed Info">
+                                        <div class="oe_button_box" name="button_box">
+                                           <button name="action_remove" string='Delete' type="object" class="oe_stat_button" icon="fa-trash-o" />
+                                        </div>
                                         <group>
                                             <group>
                                                 <field name="currency_id" invisible="1"/>
@@ -75,6 +78,10 @@
                                                 </div>
                                             </group>
                                             <group>
+                                                <field name="last_sale_date"/>
+                                                <field name="last_sale_price"/>
+                                                <field name="last_quantity_sold"/>
+                                                <field name="is_taxable"/>
                                                 <field name="price_last_updated"/>
                                                 <field name="price_lock"/>
                                                 <field name="lock_expiry_date" attrs="{'invisible': [('price_lock', '=', False)], 'required': [('price_lock', '=', True)]}"/>

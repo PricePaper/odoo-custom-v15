@@ -12,13 +12,23 @@ class CustomerProductPrice(models.Model):
     pricelist_id = fields.Many2one('product.pricelist', string='Price List')
     product_id = fields.Many2one('product.product', string='Product')
     price = fields.Float(string='Price')
-    partner_id = fields.Many2one('res.partner' , string='Customer')
+    partner_id = fields.Many2one('res.partner' , string='Customer', compute='_compute_partner', store=False)
     sale_uoms = fields.Many2many(related='product_id.sale_uoms', string='Sale UOMS')
     product_uom = fields.Many2one('uom.uom', string='Unit Of Measure', domain="[('id', 'in', sale_uoms)]")
     price_last_updated = fields.Date(string='Price last updated', default=date.today(), readonly=True)
     price_lock = fields.Boolean(string='Price Change Lock', default=False)
     lock_expiry_date = fields.Date(string='Lock Expiry date')
     currency_id = fields.Many2one(related="product_id.currency_id", readonly=True)
+
+    @api.depends('pricelist_id')
+    def _compute_partner(self):
+        for rec in self:
+            if rec.pricelist_id and rec.pricelist_id.type == 'customer':
+                partner_id = rec.pricelist_id.mapped('customer_ids')
+                if partner_id and len(partner_id) == 1:
+                    rec.partner_id = partner_id.id
+
+
 
     # _sql_constraints = [
     #     ('pricelist_product_uom_uniq', 'UNIQUE (pricelist_id, product_id, product_uom)',

@@ -320,10 +320,9 @@ class CashCollectedLines(models.Model):
     partner_id = fields.Many2one('res.partner', string='Customer', required=True)
     amount = fields.Float(string='Amount Collected')
     communication = fields.Char(string='Memo')
-    payment_method_id = fields.Many2one('account.payment.method', domain=[('payment_type', '=', 'inbound')],
-                                        required=True)
+    payment_method_id = fields.Many2one('account.payment.method', domain=[('payment_type', '=', 'inbound')])
     is_communication = fields.Boolean(string='Is Communication')
-    journal_id = fields.Many2one('account.journal', string='Journal', required=True)
+    journal_id = fields.Many2one('account.journal', string='Journal', domain=[('type', 'in', ['bank', 'cash'])])
 
     @api.onchange('partner_id')
     def _onchange_partner_id(self):

@@ -199,7 +199,11 @@
                         </div>
                         <group>
                             <group>
-                                <field name="user_id"/>
+                                <field name="actual_returned"/>
+                                <field name="pending_amount"/>
+                            </group>
+                            <group>
+                                <field name="truck_driver_id" readonly="1"/>
                             </group>
                         </group>
                         <separator string="Cash Collected Lines"/>
@@ -209,8 +213,8 @@
                         <field name="cash_collected_lines" attrs="{'readonly': [('is_posted', '=', True)]}">
                             <tree editable="bottom">
                                 <field name="partner_id" domain="[('customer', '=', True)]"/>
-                                <field name="journal_id"/>
-                                <field name="payment_method_id"/>
+                                <field name="journal_id" required="1"/>
+                                <field name="payment_method_id" required="1"/>
                                 <field name="communication" attrs="{'required': [('is_communication', '=', True)]}"/>
                                 <field name="is_communication" invisible="1"/>
                                 <field name="amount"/>

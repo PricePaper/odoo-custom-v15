@@ -8,7 +8,7 @@ class CommissionPercentage(models.Model):
     _description = 'Commission Percentage'
 
     sale_person_id = fields.Many2one('res.partner', string='Sales Person', required=True)
-    partner_id = fields.Many2one('res.partner', string='Customer', required=True)
+    partner_id = fields.Many2one('res.partner', string='Customer', required=True, ondelete='cascade')
     rule_id = fields.Many2one('commission.rules', string='Rule', required=True)
 
     @api.onchange('sale_person_id')

@@ -750,14 +750,16 @@ class SaleOrderLine(models.Model):
             if not line.order_id.partner_id:
                 raise ValidationError(_('Please enter customer information first.'))
             line.last_sale = False
-            if line.product_id:
-                last = self.env['sale.order.line'].sudo().search([('order_id.partner_shipping_id', '=', line.order_id.partner_shipping_id and line.order_id.partner_shipping_id.id), ('product_id', '=', line.product_id.id), ('product_uom', '=', line.product_uom.id), ('is_last', '=', True)], limit=1)
+            if line.product_id and line.order_id.partner_shipping_id:
+                last = self.env['sale.order.line'].sudo().search([('order_id.partner_shipping_id', '=', line.order_id.partner_shipping_id.id), ('product_id', '=', line.product_id.id), ('product_uom', '=', line.product_uom.id), ('is_last', '=', True)], limit=1)
                 if last:
                     local = pytz.timezone(self.sudo().env.user.tz or "UTC")
                     last_date = datetime.strftime(pytz.utc.localize(datetime.strptime(str(last.order_id.confirmation_date), DEFAULT_SERVER_DATETIME_FORMAT)).astimezone(local),"%m/%d/%Y %H:%M:%S")
                     line.last_sale = 'Order Date  - %s\nPrice Unit    - %s\nSale Order  - %s' %(last_date, last.price_unit, last.order_id.name)
                 else:
-                     line.last_sale = 'No Previous information Found'
+                    line.last_sale = 'No Previous information Found'
+            else:
+                line.last_sale = 'No Previous information Found'
 
 
     @api.depends('product_id', 'product_uom_qty', 'price_unit')

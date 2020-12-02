@@ -105,11 +105,18 @@ class SaleOrder(models.Model):
 
     @api.multi
     def action_create_open_invoice_xmlrpc(self):
-
-        self.action_invoice_create()
-        self.invoice_ids.write({'move_name':self.note})
-        self.invoice_ids.action_invoice_open()
-        return self.invoice_ids.ids
+        sale_amount = self.amount_total or 0
+        invoice_amount = round(sum(rec.amount_total_signed for rec in self.invoice_ids) or 0.0, 2)
+        data = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
+        if sale_amount == invoice_amount or sale_amount == -invoice_amount:
+            return self.invoice_ids and self.invoice_ids.ids or False, data
+        else:
+            self.action_invoice_create(final=True)
+            self.invoice_ids.write({'move_name':self.note+'1'})
+            self.invoice_ids.action_invoice_open()
+            invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
+            data = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
+            return self.invoice_ids.ids , data
 
     @api.multi
     def action_create_draft_invoice_xmlrpc(self):

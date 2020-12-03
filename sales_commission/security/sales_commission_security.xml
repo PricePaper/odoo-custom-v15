@@ -173,5 +173,17 @@
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('sales_commission.group_sales_commission'))]"/>
         </record>
+        <record id="sale_commission_salesman_personal_only" model="ir.rule">
+            <field name="name">Personal comission</field>
+            <field ref="sales_commission.model_sale_commission" name="model_id"/>
+            <field name="domain_force">[('sale_person_id.id','=',user.partner_id.id)]</field>
+            <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+        </record>
+        <record id="sale_commission_commission_manager" model="ir.rule">
+            <field name="name">Commission Manager: sale commission</field>
+            <field ref="sales_commission.model_sale_commission" name="model_id"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('sales_commission.group_sales_commission'))]"/>
+        </record>
     </data>
 </odoo>

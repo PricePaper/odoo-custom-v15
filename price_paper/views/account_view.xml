@@ -71,6 +71,17 @@
                 </xpath>
             </field>
         </record>
+        <record id="inherit_view_tax_form_pricepaper" model="ir.ui.view">
+            <field name="name">inherited.account.tax.form.view</field>
+            <field name="model">account.tax</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="account.view_tax_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="code"/>
+                </xpath>
+            </field>
+        </record>
 
     </data>
 </odoo>

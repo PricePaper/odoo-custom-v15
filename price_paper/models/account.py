@@ -22,6 +22,14 @@ class AccountFiscalPosition(models.Model):
 
 AccountFiscalPosition()
 
+class AccountTax(models.Model):
+    _inherit = "account.tax"
+
+    code = fields.Char(string='Code')
+
+
+AccountTax()
+
 
 class AccountMove(models.Model):
     _inherit = "account.move.line"

@@ -46,5 +46,12 @@ class SaleOrder(models.Model):
         picking = self.picking_ids
         return picking.print_product_label()
 
+    @api.multi
+    def print_quotation(self):
+        if self.quick_sale:
+            return self.env.ref('instant_invoice.action_report_quick_saleorder')\
+                .with_context(discard_logo_check=True).report_action(self)
+        return super(SaleOrder, self).print_quotation()
+
 
 SaleOrder()

@@ -47,7 +47,7 @@ class AssignRouteWizard(models.TransientModel):
             "name" : "Assign Routes",
             "res_model": "stock.picking",
             "views": [[kanban_id, "kanban"], [list_id, "list"]],
-            "domain": [('state','in', ['confirmed', 'assigned', 'in_transit']), ('picking_type_code', '=', 'outgoing'), '|', ('route_id', '=', False), ('route_id.set_active', '=', True)],
+            "domain": [('state','in', ['confirmed', 'assigned', 'in_transit']), ('picking_type_code', '=', 'outgoing'), ('route_id', '=', False)],
             "target": "current",
         }
 

@@ -7,7 +7,7 @@
            <field name="inherit_id" ref="sale.view_order_form"/>
            <field name="arch" type="xml">
                <xpath expr="//header" position='inside'>
-                   <button name="action_quick_sale" type="object" string="Quick Sale" class='oe_highlight' attrs="{'invisible': [('state','not in',('draft'))]}"/>
+                   <button name="action_quick_sale" type="object" string="Quick Sale" class='oe_highlight' attrs="{'invisible': [('state','not in',('draft','sent'))]}"/>
                    <button name="action_print_invoice" type="object" string="Print Invoice" attrs="{'invisible': ['|', ('quick_sale', '=', False), ('state','!=','sale')]}"/>
                    <button name="action_print_picking_operation" type="object" string="Print Picking Operation" attrs="{'invisible': ['|', ('quick_sale', '=', False), ('state','!=','sale')]}"/>
                    <button name="action_print_product_label" type="object" string="Print Product Label" attrs="{'invisible': ['|', ('quick_sale', '=', False), ('state','!=','sale')]}"/>

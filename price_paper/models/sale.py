@@ -112,7 +112,7 @@ class SaleOrder(models.Model):
             return self.invoice_ids and self.invoice_ids.ids or False, data
         else:
             self.action_invoice_create(final=True)
-            self.invoice_ids.write({'move_name':self.note+'1'})
+            self.invoice_ids.write({'move_name':self.note})
             self.invoice_ids.action_invoice_open()
             invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
             data = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}

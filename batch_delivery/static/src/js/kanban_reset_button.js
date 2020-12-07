@@ -16,7 +16,6 @@ var KanbanButtonController = KanbanController.extend({
     },
 
     renderButtons: function ($node) {
-        console.log('hello');
         this.$buttons = $(qweb.render('KanbanReset.buttons'));
         this.$buttons.on('click', '.o_kanban_discard', this._onKanbanReset.bind(this));
         this.$buttons.appendTo($node);
@@ -26,7 +25,6 @@ var KanbanButtonController = KanbanController.extend({
     _onKanbanReset: function () {
         framework.blockUI();
         var self = this;
-        console.log('hello',this);
         this._rpc({
             model: 'stock.picking',
             method: 'reset_picking_with_route',

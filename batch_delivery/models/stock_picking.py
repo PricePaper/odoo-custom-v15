@@ -218,6 +218,12 @@ class StockPicking(models.Model):
         res = super(StockPicking, self).button_validate()
         return res
 
-
+    @api.model
+    def reset_picking_with_route(self, args):
+        if args:
+            picking = self.env['stock.picking'].search([('id', 'in', args)])
+            picking.mapped('route_id').write({'set_active': False})
+            picking.write({'route_id': False})
+        return True
 
 StockPicking()

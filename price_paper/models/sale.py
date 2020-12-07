@@ -778,7 +778,7 @@ class SaleOrderLine(models.Model):
             if line.product_id:
                 if line.is_delivery or line.is_downpayment:
                     line.profit_margin = 0.0
-                    if line.is_delivery:
+                    if line.is_delivery and line.order_id.carrier_id:
                         price_unit = line.order_id.carrier_id.rate_shipment(line.order_id)['price']
                         line.profit_margin = line.price_subtotal - price_unit
                 else:

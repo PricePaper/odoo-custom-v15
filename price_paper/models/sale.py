@@ -814,32 +814,33 @@ class SaleOrderLine(models.Model):
            res.update({'value' : {'lst_price': lst_price, 'working_cost': working_cost}})
         if self.product_id:
             warn_msg = not self.product_id.purchase_ok and "This item can no longer be purchased from vendors"  or ""
-            partner_history = self.env['sale.tax.history'].search(
-                [('partner_id', '=', self.order_id and self.order_id.partner_shipping_id.id),
-                ('product_id', '=', self.product_id and self.product_id.id)])
+            if self.order_id:
+                partner_history = self.env['sale.tax.history'].search(
+                    [('partner_id', '=', self.order_id and self.order_id.partner_shipping_id.id or False),
+                    ('product_id', '=', self.product_id and self.product_id.id)])
 
-            # if self.order_id and self.order_id.partner_id.vat and partner_history and not partner_history.tax:
-            #     self.tax_id = [(5, _, _)] # clear all tax values, no Taxes to be used
-            if partner_history and not partner_history.tax:
-                self.tax_id = [(5, _, _)]
+                # if self.order_id and self.order_id.partner_id.vat and partner_history and not partner_history.tax:
+                #     self.tax_id = [(5, _, _)] # clear all tax values, no Taxes to be used
+                if partner_history and not partner_history.tax:
+                    self.tax_id = [(5, _, _)]
 
-            # force domain the tax_id field with only available taxes based on applied fpos
-            if not res.get('domain', False):
-                res.update({'domain':{}})
-            pro_tax_ids = self.product_id.taxes_id
-            if self.order_id.fiscal_position_id:
-                taxes_ids = self.order_id.partner_shipping_id.property_account_position_id.map_tax(pro_tax_ids, self.product_id, self.order_id.partner_shipping_id).ids
-                res.get('domain', {}).update({'tax_id':[('id', 'in', taxes_ids)]})
+                # force domain the tax_id field with only available taxes based on applied fpos
+                if not res.get('domain', False):
+                    res.update({'domain':{}})
+                pro_tax_ids = self.product_id.taxes_id
+                if self.order_id.fiscal_position_id:
+                    taxes_ids = self.order_id.partner_shipping_id.property_account_position_id.map_tax(pro_tax_ids, self.product_id, self.order_id.partner_shipping_id).ids
+                    res.get('domain', {}).update({'tax_id':[('id', 'in', taxes_ids)]})
 
-            sale_history = self.env['sale.history'].search(
-                [('partner_id', '=', self.order_id and self.order_id.partner_id.id),
-                 ('product_id', '=', self.product_id and self.product_id.id)])
-            if sale_history:
-                if len(sale_history) > 1:
-                    orders = sale_history.mapped('order_id')
-                    last_date = max([rec.confirmation_date for rec in orders])
-                    sale_history = sale_history.filtered(lambda r: r.order_date == last_date)
-                self.product_uom = sale_history.uom_id
+                sale_history = self.env['sale.history'].search(
+                    [('partner_id', '=', self.order_id and self.order_id.partner_id.id),
+                     ('product_id', '=', self.product_id and self.product_id.id)])
+                if sale_history:
+                    if len(sale_history) > 1:
+                        orders = sale_history.mapped('order_id')
+                        last_date = max([rec.confirmation_date for rec in orders])
+                        sale_history = sale_history.filtered(lambda r: r.order_date == last_date)
+                    self.product_uom = sale_history.uom_id
 
             msg, product_price, price_from = self.calculate_customer_price()
             if msg:

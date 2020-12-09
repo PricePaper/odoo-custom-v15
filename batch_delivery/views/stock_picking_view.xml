@@ -22,18 +22,6 @@
                                     <div class="text-muted o_kanban_record_subtitle">
                                       <b><field name="origin"/></b>
                                     </div>
-                                     <div>
-                                        <b>Route:</b>
-                                        <field name="route_id"/>
-                                    </div>
-                                    <div>
-                                        <b>Earliest Delivery Date:</b>
-                                        <field name="release_date"/>
-                                    </div>
-                                    <div>
-                                        <b>Deliver By:</b>
-                                        <field name="deliver_by"/>
-                                    </div>
                                     <div t-attf-class="o_kanban_record_subtitle {{( record.item_count.raw_value === record.reserved_qty.raw_value)? 'text-success':'text-danger'}}">
                                         <div>
                                             <b><field name="partner_id"/></b>
@@ -50,6 +38,14 @@
                                             <field name="partner_loc_url" widget="url" text="View Location"/>
                                           </t>
                                       </div>
+                                    </div>
+                                    <div>
+                                        <b>Earliest Delivery Date:</b>
+                                        <field name="release_date"/>
+                                    </div>
+                                    <div>
+                                        <b>Deliver By:</b>
+                                        <field name="deliver_by"/>
                                     </div>
                                     <div>
                                         <b>Item Count:</b>
@@ -78,6 +74,19 @@
                 </kanban>
             </field>
         </record>
+        <record id="vpicktree_inherit_batch_delivery" model="ir.ui.view">
+            <field name="name">stock.picking.tree</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.vpicktree"/>
+            <field name="arch" type="xml">
+              <xpath expr="//field[@name='location_dest_id']" position="attributes">
+                  <attribute name="attrs">{'invisible': 1}</attribute>
+              </xpath>
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="route_id"/>
+                </xpath>
+            </field>
+        </record>
 
         <record id="view_picking_internal_search_inherit_price_paper" model="ir.ui.view">
             <field name="name">stock.picking.internal.search</field>
@@ -85,6 +94,8 @@
             <field name="inherit_id" ref="stock.view_picking_internal_search"/>
             <field name="arch" type="xml">
                 <filter name="late" position="after">
+                    <filter string="Truck Deliveries" name="truck_deliveries"
+                        domain="[('carrier_id.show_in_route', '=', True)]"/>
                     <filter string="Earliest Delivery Today" name="release_date"
                         domain="[('release_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
                     <filter string="Deliver By Today" name="deliver_by"
@@ -104,7 +115,7 @@
             <field name="res_model">stock.picking</field>
             <field name="view_mode">kanban,tree</field>
             <field name="domain">[('state','in', ['confirmed', 'assigned', 'in_transit']), ('picking_type_code', '=', 'outgoing'), '|', ('route_id', '=', False), ('route_id.set_active', '=', True)]</field>
-            <field name="context">{}</field>
+            <field name="context">{'search_default_truck_deliveries': 1}</field>
             <field name="search_view_id" ref="stock.view_picking_internal_search"/>
 
         </record>
@@ -120,7 +131,7 @@
         <record model="ir.actions.act_window.view" id="action_stock_picking_driver_tree">
             <field name="sequence" eval="5"/>
             <field name="view_mode">tree</field>
-            <field name="view_id" ref="stock.vpicktree"/>
+            <field name="view_id" ref="batch_delivery.vpicktree_inherit_batch_delivery"/>
             <field name="act_window_id" ref="stock_picking_act_route_assign"/>
         </record>
 

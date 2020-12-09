@@ -93,12 +93,17 @@ class StockPickingBatch(models.Model):
 
     @api.multi
     def name_get(self):
+        result = []
         if 'from_route_picker' in self._context:
-            result = []
             for batch in self:
+                if batch.route_id:
+                    result.append((batch.id, _('%s (%s) (%s)') % (batch.name, batch.date and batch.date or '', batch.route_id.name and batch.route_id.name or '')))
                 result.append((batch.id, _('%s (%s)') % (batch.name, batch.date and batch.date or '')))
             return result
-        return super(StockPickingBatch, self).name_get()
+        for batch in self:
+            if batch.route_id:
+                result.append((batch.id, _('%s (%s)') % (batch.name, batch.route_id.name and batch.route_id.name or '')))
+        return result
 
     @api.multi
     def view_pending_products(self):
@@ -369,4 +374,3 @@ class CashCollectedLines(models.Model):
                         })
 
 CashCollectedLines()
-

@@ -224,6 +224,8 @@ class StockPicking(models.Model):
             picking = self.env['stock.picking'].search([('id', 'in', args)])
             picking.mapped('route_id').write({'set_active': False})
             picking.write({'route_id': False})
+            # removed newly created batch with empty pciking lines.
+            picking.mapped('batch_id').sudo().unlink()
         return True
 
 StockPicking()

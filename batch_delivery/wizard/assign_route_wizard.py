@@ -36,20 +36,8 @@ class AssignRouteWizard(models.TransientModel):
                     [picking.write({'route_id': line.route_id.id}) for picking in picking_dict[partner_id]]
                     partners_assigned.append(partner_id)
 
-
-
-
-
-        kanban_id  = self.env.ref('batch_delivery.stock_picking_batch_kanban').id
-        list_id = self.env.ref('stock.vpicktree').id
-        res = {
-            "type": "ir.actions.act_window",
-            "name" : "Assign Routes",
-            "res_model": "stock.picking",
-            "views": [[kanban_id, "kanban"], [list_id, "list"]],
-            "domain": [('state','in', ['confirmed', 'assigned', 'in_transit']), ('picking_type_code', '=', 'outgoing'), ('route_id', '=', False)],
-            "target": "current",
-        }
+        #it will preserve the context and domain value for view transition.
+        res = self.env.ref('batch_delivery.stock_picking_act_route_assign').read()[0]
 
         return res
 

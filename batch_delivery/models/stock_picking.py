@@ -221,11 +221,12 @@ class StockPicking(models.Model):
     @api.model
     def reset_picking_with_route(self, args):
         if args:
-            picking = self.env['stock.picking'].browse(args).filtered(lambda batch: batch.state == 'draft')
+            picking = self.env['stock.picking'].browse(args).filtered(lambda picking: picking.batch_id and picking.batch_id.state == 'draft')
             picking.mapped('route_id').write({'set_active': False})
-            picking.write({'route_id': False})
             # removed newly created batch with empty pciking lines.
             picking.mapped('batch_id').sudo().unlink()
+            picking.write({'route_id': False})
+
         return True
 
 StockPicking()

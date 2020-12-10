@@ -23,9 +23,9 @@
                                       <b><field name="origin"/></b>
                                     </div>
                                     <div t-attf-class="o_kanban_record_subtitle {{( record.item_count.raw_value === record.reserved_qty.raw_value)? 'text-success':'text-danger'}}">
-                                        <div>
-                                            <b><field name="partner_id"/></b>
-                                        </div>
+                                      <div>
+                                          <b><field name="partner_id"/></b>
+                                      </div>
                                       <div>
                                           <field name="street"/>
                                           <field name="street2"/>
@@ -63,8 +63,13 @@
                                         <b>Easiness Of Shipping:</b>
                                         <field name="shipping_easiness"/>
                                     </div>
-                                    <div class="text-muted o_kanban_record_subtitle">
-                                      <strong><i><field name="delivery_notes"/></i></strong>
+                                    <div>
+                                        <div style="width: 50%; float:left" class="text-muted o_kanban_record_subtitle">
+                                            <strong><i><field name="delivery_notes"/></i></strong>
+                                        </div>
+                                        <div style="width: 50%; float:left">
+                                          <span></span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="oe_clear"/>

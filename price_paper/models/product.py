@@ -2,7 +2,7 @@
 
 from odoo import fields, models, api, _
 from odoo.addons import decimal_precision as dp
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 import operator as py_operator
 OPERATORS = {
     '<': py_operator.lt,
@@ -107,6 +107,9 @@ class ProductProduct(models.Model):
         """
 
         result = super(ProductProduct, self).toggle_active()
+        if self.qty_available > 0:
+            raise ValidationError(_("Can't archive product with inventory on hand"))
+
         supersede_obj = self.env['product.superseded']
         if self.active:
             to_unlink = supersede_obj.search([('old_product', '=', self.id)])

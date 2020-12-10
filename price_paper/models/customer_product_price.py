@@ -24,7 +24,7 @@ class CustomerProductPrice(models.Model):
     def _compute_partner(self):
         for rec in self:
             if rec.pricelist_id and rec.pricelist_id.type == 'customer':
-                partner_id = rec.pricelist_id.mapped('customer_ids')
+                partner_id = rec.pricelist_id.mapped('partner_ids')
                 if partner_id and len(partner_id) == 1:
                     rec.partner_id = partner_id.id
 

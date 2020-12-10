@@ -92,7 +92,7 @@ class GlobalPriceChange(models.Model):
             for price_list in customer_price_lists:
 
                 if rec.is_exclude and rec.exclude_date:
-                    partner = price_list .pricelist_id.customer_ids
+                    partner = price_list.pricelist_id.partner_ids
                     if not partner or len(partner) > 2:
                         continue
                     if partner.established_date and partner.established_date > rec.exclude_date:

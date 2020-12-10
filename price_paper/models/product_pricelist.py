@@ -16,7 +16,7 @@ class ProductPricelist(models.Model):
     expiry_date = fields.Date('Valid Upto')
     price_lock = fields.Boolean(string='Price Change Lock', default=False)
     lock_expiry_date = fields.Date(string='Lock Expiry date')
-    customer_ids = fields.Many2many('res.partner', string='Customers',compute='_compute_partner', store=False)
+    partner_ids = fields.Many2many('res.partner', string='Customers',compute='_compute_partner', store=True)
 
     @api.onchange('price_lock')
     def onchange_price_lock(self):
@@ -27,13 +27,14 @@ class ProductPricelist(models.Model):
         else:
             self.lock_expiry_date = False
 
-    @api.depends('customer_pricelist_ids')
+    @api.depends('customer_pricelist_ids.partner_id')
     def _compute_partner(self):
         for pricelist in self:
             if pricelist.type != 'competitor':
                 partner_ids = pricelist.customer_pricelist_ids.mapped('partner_id').ids
                 if partner_ids:
-                    pricelist.customer_ids = [(6, 0, partner_ids)]
+                    pricelist.partner_ids = [(6, 0, partner_ids)]
+
 
     @api.model
     @api.returns('self',
@@ -46,7 +47,7 @@ class ProductPricelist(models.Model):
             records = super(ProductPricelist, self).search(args, offset, limit, order, count)
             out_result = records.filtered(
                 lambda rec: rec.type == 'competitor' or self.env.user.partner_id.id in rec.mapped(
-                    'customer_ids').mapped('sales_person_ids').ids)
+                    'partner_ids').mapped('sales_person_ids').ids)
             return out_result
         return super(ProductPricelist, self).search(args, offset, limit, order, count)
 

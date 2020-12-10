@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="product_pricelist_view_search_inherit_price_paper" model="ir.ui.view">
+          <field name="name">product.pricelist.search.pricepaper</field>
+          <field name="model">product.pricelist</field>
+          <field name="inherit_id" ref="product.product_pricelist_view_search"/>
+          <field name="arch" type="xml">
+              <field name="name" position="attributes">
+                  <attribute name="string">Pricelist</attribute>
+              </field>
+              <field name="name" position="after">
+                  <field name="partner_ids" />
+              </field>
+          </field>
+        </record>
         <record id="product_pricelist_inherit_pricepaper" model="ir.ui.view">
             <field name="name">product.pricelist.pricepaper</field>
             <field name="model">product.pricelist</field>
@@ -13,7 +26,7 @@
                         <group>
                             <field name="type" />
                             <field name="expiry_date" />
-                            <field name='customer_ids' widget="many2many_tags"/>
+                            <field name='partner_ids' widget="many2many_tags"/>
                         </group>
                         <group>
                             <field name="price_lock"/>

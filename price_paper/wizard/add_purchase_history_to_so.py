@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import date
+from datetime import date, datetime
 
 from dateutil.relativedelta import relativedelta
 
@@ -57,7 +57,17 @@ class SaleHistoryLinesWizard(models.TransientModel):
     def _onchange_product_id_check_availability(self):
         if not self.qty_to_be or not self.product_uom:
             return {}
-        if self.order_line.product_id.type == 'product':
+
+        product = self.order_line.product_id
+
+        if product.type == 'product':
+            active_id = self._context.get('active_id')
+            order_id = self.env['sale.order'].browse(active_id)
+            message = ''
+
+            if product.id in order_id.order_line.mapped('product_id').ids:
+                message += _(f"\n{product.name} is already in SO.")
+
             precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
             active_id = self._context.get('active_id')
             order_id = self.env['sale.order'].browse(active_id)
@@ -69,7 +79,7 @@ class SaleHistoryLinesWizard(models.TransientModel):
             if float_compare(product.virtual_available, product_qty, precision_digits=precision) == -1:
                 is_available = self._check_routing(order_id, product)
                 if not is_available:
-                    message = _('You plan to sell %s %s of %s but you only have %s %s available in %s warehouse.') % \
+                    message += _('\nYou plan to sell %s %s of %s but you only have %s %s available in %s warehouse.') % \
                               (self.qty_to_be, self.product_uom.name, self.product_name,
                                product.virtual_available, product.uom_id.name, order_id.warehouse_id.name)
                     # We check if some products are available in other warehouses.
@@ -80,12 +90,13 @@ class SaleHistoryLinesWizard(models.TransientModel):
                         for warehouse in self.env['stock.warehouse'].search([]):
                             quantity = self.order_line.product_id.with_context(warehouse=warehouse.id).virtual_available
                             if quantity > 0:
-                                message += "%s: %s %s\n" % (warehouse.name, quantity, self.order_line.product_id.uom_id.name)
-                    warning_mess = {
+                                message += _("%s: %s %s\n" % (warehouse.name, quantity, self.order_line.product_id.uom_id.name))
+
+            if message:
+                return {'warning': {
                         'title': _('Not enough inventory!'),
                         'message': message
-                    }
-                    return {'warning': warning_mess}
+                    }}
         return {}
 
 SaleHistoryLinesWizard()
@@ -103,6 +114,7 @@ class AddPurchaseHistorySO(models.TransientModel):
     purchase_history_temp_ids = fields.One2many('sale.history.lines.wizard', 'search_wizard_temp_id',
                                                 string="Purchase History Temp")
     show_cart = fields.Boolean(string="Show Cart")
+    sale_history_ids = fields.Many2many('sale.history')
 
     @api.model
     def default_sale_history(self):
@@ -112,18 +124,19 @@ class AddPurchaseHistorySO(models.TransientModel):
 
     @api.onchange('sale_history_months', 'product_id')
     def onchange_select_month(self):
-        partner = self._context['partner']
-        history_from = date.today() - relativedelta(months=self.sale_history_months)
-        domain = [('partner_id', '=', partner)]
+        sale_history = self.sale_history_ids
+        history_from = datetime.today() - relativedelta(months=self.sale_history_months)
         lines = []
         lines_temp = []
-        if self.product_id:
-            domain.append(('product_id', '=', self.product_id.id))
-        if self.sale_history_months:
-            domain.append(('order_id.confirmation_date', '>=', history_from))
-        domain.append(('product_id.sale_ok', '=', True))
-        sale_history = self.env['sale.history'].search(domain)
-        product_list = sale_history.mapped('product_id').ids
+
+        if self.product_id and self.sale_history_months:
+            sale_history = sale_history.filtered(lambda rec: rec.product_id.id == self.product_id.id and rec.order_id.confirmation_date >= history_from)
+        elif self.product_id:
+            sale_history = sale_history.filtered(lambda rec: rec.product_id.id == self.product_id.id)
+        elif self.sale_history_months:
+            sale_history = sale_history.filtered(lambda rec: rec.order_id.confirmation_date >= history_from)
+
+        product_list = self._context.get('products', [])
 
         for line in self.purchase_history_ids.filtered(lambda rec: rec.qty_to_be != 0.0):
             lines_temp.append((0, 0, {
@@ -140,8 +153,7 @@ class AddPurchaseHistorySO(models.TransientModel):
 
         self.purchase_history_temp_ids = lines_temp
         history_lines = self.purchase_history_temp_ids.mapped('order_line').ids
-        sale_history = self.env['sale.history'].search(domain).\
-            filtered(lambda rec: rec.order_line_id.id not in history_lines)
+        sale_history = sale_history.filtered(lambda rec: rec.order_line_id.id not in history_lines)
 
         if sale_history:
             for line in sale_history:

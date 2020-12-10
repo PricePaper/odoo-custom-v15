@@ -29,7 +29,7 @@ Custom module implemented for Purchase extension.
             'views/purchase_requisition_views.xml',
             ],
 
-    'depends': ['purchase_requisition', 'price_paper'],
+    'depends': ['purchase_requisition', 'stock_orderpoint_enhancements'],
     'installable': True,
     'auto_install': False,
     'application': False,

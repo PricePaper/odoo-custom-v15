@@ -30,7 +30,24 @@ class SaleOrder(models.Model):
         ('cancel', 'Cancelled'),
         ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', track_sequence=3, default='draft')
     storage_contract = fields.Boolean(string="Storage Product", default=False, copy=True)
+    total_volume = fields.Float(string="Total Order Volume", compute='_compute_total_weight_volume')
+    total_weight = fields.Float(string="Total Order Weight", compute='_compute_total_weight_volume')
+    total_qty = fields.Float(string="Total Order Quantity", compute='_compute_total_weight_volume')
 
+    @api.depends('order_line.product_id', 'order_line.product_uom_qty')
+    def _compute_total_weight_volume(self):
+        for order in self:
+            volume = 0
+            weight = 0
+            qty = 0
+            for line in order.order_line:
+                volume += line.gross_volume
+                weight += line.gross_weight
+                qty += line.product_uom_qty
+
+            order.total_volume = volume
+            order.total_weight = weight
+            order.total_qty = qty
 
     @api.onchange('order_line')
     def onchange_order_line(self):
@@ -530,8 +547,16 @@ class SaleOrder(models.Model):
         """
         Return 'add purchase history to so wizard'
         """
-        context ={'customer_id' : self.partner_id.id}
         view_id = self.env.ref('price_paper.view_purchase_history_add_so_wiz').id
+        history_from = datetime.today() - relativedelta(months=self.env.user.company_id.sale_history_months)
+        products = self.order_line.mapped('product_id').ids
+        sales_history = self.env['sale.history'].search([('partner_id', '=', self.partner_id.id), ('order_id.confirmation_date', '>=', history_from), ('product_id', 'not in', products), ('product_id.sale_ok', '=', True)])
+        search_products = sales_history.mapped('product_id').ids
+        context = {
+            'default_sale_history_ids': [(6, 0, sales_history.ids)],
+            'products': search_products
+        }
+
         return {
             'name': _('Add purchase history to SO'),
             'view_type': 'form',
@@ -571,7 +596,16 @@ class SaleOrderLine(models.Model):
     #Uncomment the below 2 lines while running sale order line import scripts
     # lst_price = fields.Float(string='Standard Price', digits=dp.get_precision('Product Price'))
     # working_cost = fields.Float(string='Working Cost', digits=dp.get_precision('Product Price'))
+    gross_volume = fields.Float(string="Gross Volume", compute='_compute_gross_weight_volume')
+    gross_weight = fields.Float(string="Gross Weight", compute='_compute_gross_weight_volume')
 
+    @api.depends('product_id.volume', 'product_id.weight')
+    def _compute_gross_weight_volume(self):
+        for line in self:
+            volume = line.product_id.volume * line.product_qty
+            weight = line.product_id.weight * line.product_qty
+            line.gross_volume = volume
+            line.gross_weight = weight
 
     @api.depends('product_id', 'product_uom')
     def _compute_lst_cost_prices(self):
@@ -814,6 +848,9 @@ class SaleOrderLine(models.Model):
            res.update({'value' : {'lst_price': lst_price, 'working_cost': working_cost}})
         if self.product_id:
             warn_msg = not self.product_id.purchase_ok and "This item can no longer be purchased from vendors"  or ""
+            if sum([1 for line in self.order_id.order_line if line.product_id.id == self.product_id.id]) > 1:
+                warn_msg += f"\n{self.product_id.name} is already in SO."
+
             if self.order_id:
                 partner_history = self.env['sale.tax.history'].search(
                     [('partner_id', '=', self.order_id and self.order_id.partner_shipping_id.id or False),
@@ -843,8 +880,11 @@ class SaleOrderLine(models.Model):
                     self.product_uom = sale_history.uom_id
 
             msg, product_price, price_from = self.calculate_customer_price()
-            if msg:
-                res.update({'warning': {'title': _('Warning!'),'message' : warn_msg and '%s\n%s' %(warn_msg,msg) or msg}})
+            warn_msg += f"\n{msg}"
+
+            if warn_msg:
+                res.update({'warning': {'title': _('Warning!'),'message' : warn_msg}})
+
             res.update({'value' : {'price_unit' : product_price, 'price_from': price_from}})
 
 

@@ -26,6 +26,19 @@ odoo.define('batch_delivery.kanban_reset_button', function (require) {
                 self.reload();
             }).always(framework.unblockUI.bind(framework));
         },
+
+        _onDeleteColumn: function (event) {
+            var self = this;
+            var column = event.target;
+            this._rpc({
+                model: column.relation,
+                method: 'write',
+                args: [[column.id], {set_active: false}],
+                context: {}
+            }).then(function(r){
+                self.reload();
+            });
+    },
     });
 
     var KanbanButtonView = KanbanView.extend({

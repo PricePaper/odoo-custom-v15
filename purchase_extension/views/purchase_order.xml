@@ -37,6 +37,10 @@ string="ADD ADDITIONAL PRODUCTS" icon="fa-history"/>
                     <separator/>
                     <field name="purchase_default_message"/>
                 </xpath>
+                <xpath expr="//field[@name='requisition_id']" position="after">
+                    <field name="vendor_delay"/>
+                    <field name="vendor_order_freq"/>
+                </xpath>
 
             </field>
         </record>

@@ -56,7 +56,7 @@
                                     <field name="order_line" invisible="1"/>
                                 </tree>
                         </field>
-<!--                        <field name="sale_history" invisible="0"/>-->
+                        <field name="sale_history_ids" invisible="1"/>
 
                     </sheet>
                     <footer>

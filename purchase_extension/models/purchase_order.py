@@ -13,6 +13,8 @@ class PurchaseOrder(models.Model):
     total_weight = fields.Float(string="Total Order Weight", compute='_compute_total_weight_volume')
     purchase_default_message = fields.Html(related="company_id.purchase_default_message", readonly=True)
     total_qty = fields.Float(string="Total Order Quantity", compute='_compute_total_weight_volume')
+    vendor_delay = fields.Integer(related='partner_id.delay', string="Vendor Lead Time", readonly=True)
+    vendor_order_freq = fields.Integer(related='partner_id.order_freq', string="Vendor Order Frequency", readonly=True)
 
 
     @api.depends('order_line.product_id', 'order_line.product_qty')

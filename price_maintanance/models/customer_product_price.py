@@ -41,7 +41,9 @@ class CustomerProductPrice(models.Model):
             if record.pricelist_id.type != 'customer':
                 continue
             if record.partner_id and pr_id:
-                res = self.env['sale.history'].search([('product_id', '=', pr_id), ('partner_id', '=', record.partner_id.id)])
+                res = self.env['sale.history'].search([('product_id', '=', pr_id),
+                 ('partner_id', '=', record.partner_id.id), ('uom_id', '=', record.product_uom.id)], limit=1)
+
                 if res:
                     record.last_sale_date = res.order_date
                     record.last_sale_price = res.order_line_id.price_unit

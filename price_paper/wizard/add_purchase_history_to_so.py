@@ -136,7 +136,7 @@ class AddPurchaseHistorySO(models.TransientModel):
         elif self.sale_history_months:
             sale_history = sale_history.filtered(lambda rec: rec.order_id.confirmation_date >= history_from)
 
-        product_list = self._context.get('products', [])
+        product_list = sale_history.mapped('product_id.id')
 
         for line in self.purchase_history_ids.filtered(lambda rec: rec.qty_to_be != 0.0):
             lines_temp.append((0, 0, {

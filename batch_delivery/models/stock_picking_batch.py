@@ -207,11 +207,13 @@ class StockPickingBatch(models.Model):
         """
         for rec in self:
             partners = rec.picking_ids and rec.picking_ids.mapped('partner_id')
-            partners.geo_localize()
-            params = {'partner_ids': ','.join(map(str, partners and partners.ids or [])),
+            if partners:
+                partners.geo_localize()
+                params = {'partner_ids': ','.join(map(str, partners and partners.ids or [])),
                       'partner_url': 'customers'
                       }
-        return urlplus('/google_map', params)
+                return urlplus('/google_map', params)
+            raise UserError(_('Partners Not Found,\nPlease add pickings before proceed.'))
 
     @api.multi
     def view_location_map(self):

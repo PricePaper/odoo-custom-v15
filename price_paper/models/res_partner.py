@@ -103,25 +103,6 @@ class ResPartner(models.Model):
                     res.append(code)
         return res
 
-    @api.multi
-    def name_get(self):
-        result = []
-        for customer in self:
-            name = ''
-            if customer.street:
-                name += customer.street + ' '
-            if customer.city:
-                name += customer.city + ' '
-            if customer.state_id:
-                name += customer.state_id.name
-            if (customer.company_type == 'company' or customer.type in ['invoice','delivery']) and name:
-                result.append((customer.id, _('%s (%s)') % (customer.name, name)))
-            else:
-                result.append((customer.id, _('%s') % (customer.name)))
-        return result
-
-
-
     @api.constrains('customer_code')
     def check_partner_code(self):
         if self.search([('customer_code', '=ilike', self.customer_code), ('id', '!=', self.id)]):

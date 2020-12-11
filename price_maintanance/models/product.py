@@ -77,14 +77,16 @@ class ProductProduct(models.Model):
 
     def get_median(self, order_lines):
 
-        prices = []
-        median = 0
+        prices = {}
+        median = {}
         for line in order_lines:
-            product_price = line.product_uom._compute_price(line.price_unit,
-                                                            line.product_id.uom_id) + line.product_id.price_extra
-            prices.append(product_price)
-        if prices:
-            median = round(statistics.median(prices), 2)
+            product_price = line.price_unit + line.product_id.price_extra
+            if line.product_uom.id in prices:
+                prices[line.product_uom.id].append(product_price)
+            else:
+                prices[line.product_uom.id] = [product_price]
+        for uom in prices:
+            median[uom] = round(statistics.median(prices[uom]), 2)
         return median
 
     @api.model
@@ -118,15 +120,22 @@ class ProductProduct(models.Model):
             unit_price_median_30_day = product.get_median(sale_order_lines_30_day_back)
             unit_price_median_60_day = product.get_median(sale_order_lines_60_day_back)
             unit_price_median_90_day = product.get_median(sale_order_lines_90_day_back)
-
-            product.median_price = "<table style='width:500px'>\
-            <tr><th>Number of Days</th><th>Median</th></tr>\
-            <tr><td>10 Days</td><td>$ {:.02f}</td></tr>\
-            <tr><td>30 Days</td><td>$ {:.02f}</td></tr>\
-            <tr><td>60 Days</td><td>$ {:.02f}</td></tr>\
-            <tr><td>90 Days</td><td>$ {:.02f}</td></tr>\
-            </table>".format(unit_price_median_10_day, unit_price_median_30_day, unit_price_median_60_day,
-                             unit_price_median_90_day)
+            sale_uoms = product.sale_uoms.ids
+            median_price = ""
+            for uom in sale_uoms:
+                name = self.env['uom.uom'].browse(uom).name
+                median_price += "<table style='width:500px'>\
+                                <tr><th>{}</th></tr>\
+                                <tr><th>Number of Days</th><th>Median</th></tr>\
+                                <tr><td>10 Days</td><td>$ {:.02f}</td></tr>\
+                                <tr><td>30 Days</td><td>$ {:.02f}</td></tr>\
+                                <tr><td>60 Days</td><td>$ {:.02f}</td></tr>\
+                                <tr><td>90 Days</td><td>$ {:.02f}</td></tr>\
+                                </table>".format(name, unit_price_median_10_day.get(uom, 0),
+                                 unit_price_median_30_day.get(uom, 0),
+                                  unit_price_median_60_day.get(uom, 0),
+                                 unit_price_median_90_day.get(uom, 0))
+            product.median_price = median_price
 
     @api.multi
     def write(self, vals):

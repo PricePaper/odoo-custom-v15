@@ -713,7 +713,6 @@ class SaleOrderLine(models.Model):
                 for rec in self.order_id.partner_id.customer_pricelist_ids:
                     if rec.pricelist_id.type in ('shared', 'customer') and (not rec.pricelist_id.expiry_date or rec.pricelist_id.expiry_date >= date.today()):
                         prices_all |= rec.pricelist_id.customer_product_price_ids
-
                 prices_all = prices_all.filtered(lambda r: r.product_id.id == self.product_id.id and r.product_uom.id == self.product_uom.id and (not r.partner_id or r.partner_id.id == self.order_id.partner_shipping_id.id))
                 price_from = False
                 for price_rec in prices_all:
@@ -742,7 +741,14 @@ class SaleOrderLine(models.Model):
                                                                               'partner_id': self.order_id.partner_id.id,
                                                                               'sequence': 0
                                                                               })
-                    price_from = self.env['customer.product.price'].create({
+                    else:
+                        price_from = price_lists[0].pricelist_id.customer_product_price_ids.filtered(lambda r: r.product_id.id == self.product_id.id and r.product_uom.id == self.product_uom.id)
+                        if price_from:
+                            if price_from.price < unit_price:
+                                price_from.price = unit_price
+                                self.manual_price = True
+                    if not price_from:
+                        price_from = self.env['customer.product.price'].create({
                                                                'partner_id' : self.order_id.partner_shipping_id.id,
                                                                'product_id' : self.product_id.id,
                                                                'product_uom' : self.product_uom.id,

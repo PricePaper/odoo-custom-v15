@@ -7,15 +7,19 @@
             <field name="model">stock.picking</field>
             <field name="priority" eval="1"/>
             <field name="arch" type="xml">
-                <kanban js_class="kanban_reset" default_group_by="route_id" create="0" delete="0" group_create="0">
+                <kanban js_class="kanban_reset" default_group_by="route_id" default_order="sequence" create="0" delete="0" group_create="0">
                     <field name="route_id"/>
                     <field name="partner_loc_url"/>
                     <field name="item_count"/>
                     <field name="reserved_qty"/>
+                    <field name="sequence"/>
                     <templates>
                         <t t-name="kanban-box">
                             <div t-attf-class="oe_kanban_global_click">
                                 <div class="oe_kanban_content">
+                                     <div>
+                                      <field name="sequence" widget="handle" invisible="1"/>
+                                    </div>
                                     <div>
                                         <strong class="o_kanban_record_title"><field name="name"/></strong>
                                     </div>

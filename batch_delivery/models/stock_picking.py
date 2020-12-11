@@ -47,7 +47,7 @@ class StockPicking(models.Model):
     is_late_order = fields.Boolean(string='Late Order', copy=False)
     reserved_qty = fields.Float('Available Quantity', compute='_compute_available_qty')
     low_qty_alert = fields.Boolean(string="Low Qty", compute='_compute_available_qty')
-
+    sequence = fields.Integer(string='Order')
 
     @api.depends('move_ids_without_package.reserved_availability')
     def _compute_available_qty(self):

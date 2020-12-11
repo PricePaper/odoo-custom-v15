@@ -26,6 +26,14 @@
                     <attribute name="string">Print Pick Tickets</attribute>
                 </button>
 
+                <xpath expr="//field[@name='picking_ids']/tree//field[@name='name']" position="before">
+                    <field name="sequence" widget="handel" invisible="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='picking_ids']/tree" position="attributes">
+                    <attribute name="default_order">sequence</attribute>
+                </xpath>
+                
                 <xpath expr="//field[@name='picking_ids']/tree//field[@name='name']" position="after">
                     <field name="partner_id" readonly="1"/>
                     <field name="city" readonly="1"/>

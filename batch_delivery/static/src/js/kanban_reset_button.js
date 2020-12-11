@@ -20,8 +20,7 @@ odoo.define('batch_delivery.kanban_reset_button', function (require) {
             var self = this;
             this._rpc({
                 model: 'stock.picking',
-                method: 'reset_picking_with_route',
-                args: [this.initialState.res_ids],
+                method: 'reset_picking_with_route'
             }).then(function () {
                 self.reload();
             }).always(framework.unblockUI.bind(framework));

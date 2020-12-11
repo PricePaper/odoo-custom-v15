@@ -18,6 +18,7 @@ odoo.define('batch_delivery.kanban_reset_button', function (require) {
         _onKanbanReset: function () {
             framework.blockUI();
             var self = this;
+            this.do_notify(_t("Resetting"), 'Please Wait..!');
             this._rpc({
                 model: 'stock.picking',
                 method: 'reset_picking_with_route'
@@ -29,6 +30,10 @@ odoo.define('batch_delivery.kanban_reset_button', function (require) {
         _onDeleteColumn: function (event) {
             var self = this;
             var column = event.target;
+            if (!column.isEmpty()) {
+                 self.do_warn(_t("Alert!!"), 'Please remove pickings from route before delete.');
+                 return;
+            }
             this._rpc({
                 model: column.relation,
                 method: 'write',
@@ -38,6 +43,7 @@ odoo.define('batch_delivery.kanban_reset_button', function (require) {
                 self.reload();
             });
     },
+
     });
 
     var KanbanButtonView = KanbanView.extend({

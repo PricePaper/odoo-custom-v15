@@ -2,6 +2,7 @@
 
 from odoo import models, fields, registry, api,_
 from ast import literal_eval
+from odoo.exceptions import UserError
 
 
 class ResPartner(models.Model):
@@ -20,6 +21,10 @@ class ResPartner(models.Model):
 
     def _inverse_set_salespersons(self):
         for partner in self:
+            partner_with_out_rule_id = partner.sales_person_ids.filtered(lambda r: not r.default_commission_rule)
+            if partner_with_out_rule_id:
+                raise UserError(_('Commission rule Not Found !!\n\nPlease update commission rule for \n%s') % ('\n'.join([p.name for p in partner_with_out_rule_id])))
+
             all_salespersons = [c.sale_person_id.id for c in partner.commission_percentage_ids]
             all_salespersons_brw = self.browse(all_salespersons)
             to_delete = partner.commission_percentage_ids.filtered(lambda c: c.sale_person_id.id not in partner.sales_person_ids.ids)
@@ -61,13 +66,15 @@ class ResPartner(models.Model):
         action['domain'] += [('partner_id', 'child_of', self.id), ('state', 'not in', ['paid', 'cancel'])]
         return action
 
-    @api.model
-    def create(self, vals):
-        if not vals.get('commission_percentage_ids') and self.env.user.has_group('sales_team.group_sale_salesman_all_leads') and not self.env.user.has_group('sales_team.group_sale_manager'):
-            vals['commission_percentage_ids'] = [(4,self.env['commission.percentage'].create({
-                'sale_person_id': self.env.user.partner_id.id,
-                'rule_id': self.env.user.partner_id.default_commission_rule.id
-                }).id)]
-        return super(ResPartner, self).create(vals)
+    # @api.model
+    # def create(self, vals):
+    #     if not vals.get('commission_percentage_ids') and self.env.user.has_group('sales_team.group_sale_salesman_all_leads') and not self.env.user.has_group('sales_team.group_sale_manager'):
+    #         vals['commission_percentage_ids'] = [(4,self.env['commission.percentage'].create({
+    #             'sale_person_id': self.env.user.partner_id.id,
+    #             'rule_id': self.env.user.partner_id.default_commission_rule.id
+    #             }).id)]
+    #     return super(ResPartner, self).create(vals)
+
+
 
 ResPartner()

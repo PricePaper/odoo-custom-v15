@@ -15,6 +15,7 @@ class Lead(models.Model):
                                                 ('biweek', 'Biweekly'),
                                                 ('month', 'Monthly')], string="Frequency")
     planned_revenue = fields.Float(compute="_calc_expected_revenue", string='Monthly Revenue Expected', store=True)
+    sales_person_ids = fields.Many2many('res.partner', string="Sales Persons")
 
 
 
@@ -49,6 +50,12 @@ class Lead(models.Model):
                 partner = self.env['res.partner'].browse(vals.get('partner_id'))
                 partner.rev_per_trans = lead.rev_per_trans or vals.get('rev_per_trans', 0.00)
                 partner.business_freq = lead.business_freq or vals.get('business_freq', '')
+
+    @api.multi
+    def _create_lead_partner_data(self, name, is_company, parent_id=False):
+        result = super(Lead, self)._create_lead_partner_data(name, is_company, parent_id)
+        result['sales_person_ids'] = [(6, 0, self.sales_person_ids.ids)]
+        return result
 
 
 Lead()

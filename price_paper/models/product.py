@@ -106,6 +106,7 @@ class ProductProduct(models.Model):
         archive reordering rules before archiving product
         """
 
+
         result = super(ProductProduct, self).toggle_active()
         if self.qty_available > 0:
             raise ValidationError(_("Can't archive product with inventory on hand"))
@@ -128,7 +129,7 @@ class ProductProduct(models.Model):
         #TODO Update price_list when standard price change
 
         if 'active' in vals and not vals.get('active'):
-            reordering_rules = self.env['stock.warehouse.orderpoint'].search([('product_id', 'in', self.ids)])
+            reordering_rules = self.env['stock.warehouse.orderpoint'].search([('product_id', 'in', self.ids),('active', '=', True)])
             reordering_rules.toggle_active()
 
         result = super(ProductProduct, self).write(vals)
@@ -257,13 +258,3 @@ class ProductSuperseded(models.Model):
 
 
 ProductSuperseded()
-
-
-
-
-# class  SupplierInfo(models.Model):
-#     _inherit = 'product.supplierinfo'
-#
-#     is_primary_vendor = fields.Boolean(string='Primary Vendor', default=False)
-#
-# SupplierInfo()

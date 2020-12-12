@@ -127,16 +127,21 @@ class ProductProduct(models.Model):
         lst_price or burden_percent changes
         """
         #TODO Update price_list when standard price change
+        for product in self:
+            if 'active' in vals and not vals.get('active'):
+                if product.qty_available > 0:
+                    raise ValidationError(_("Can't archive product with inventory on hand"))
 
-        if 'active' in vals and not vals.get('active'):
-            reordering_rules = self.env['stock.warehouse.orderpoint'].search([('product_id', 'in', self.ids),('active', '=', True)])
-            reordering_rules.toggle_active()
+                reordering_rules = self.env['stock.warehouse.orderpoint'].search([('product_id', 'in', self.ids), ('active', '=', True)])
+                reordering_rules.toggle_active()
+
+                if vals.get('burden_percent'):
+                    # self.update_customer_product_price()
+                    if vals.get('burden_percent') and product.cost > product.lst_price:
+                        product.lst_price = product.cost
+
 
         result = super(ProductProduct, self).write(vals)
-        if vals.get('burden_percent'):
-            # self.update_customer_product_price()
-            if vals.get('burden_percent') and self.cost > self.lst_price:
-                self.lst_price = self.cost
         return result
 
 

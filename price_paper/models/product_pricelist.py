@@ -36,20 +36,20 @@ class ProductPricelist(models.Model):
                     pricelist.partner_ids = [(6, 0, partner_ids)]
 
 
-    # @api.model
-    # @api.returns('self',
-    #              upgrade=lambda self, value, args, offset=0, limit=None, order=None,
-    #                             count=False: value if count else self.browse(value),
-    #              downgrade=lambda self, value, args, offset=0, limit=None, order=None,
-    #                               count=False: value if count else value.ids)
-    # def search(self, args, offset=0, limit=None, order=None, count=False):
-    #     if self.env.user.has_group('price_paper.group_salesman_customer_own_pricelist') and not self.env.user.has_group('base.group_system'):
-    #         records = super(ProductPricelist, self).search(args, offset, limit, order, count)
-    #         out_result = records.filtered(
-    #             lambda rec: rec.type == 'competitor' or self.env.user.partner_id.id in rec.mapped(
-    #                 'partner_ids').mapped('sales_person_ids').ids)
-    #         return out_result
-    #     return super(ProductPricelist, self).search(args, offset, limit, order, count)
+    @api.model
+    @api.returns('self',
+                 upgrade=lambda self, value, args, offset=0, limit=None, order=None,
+                                count=False: value if count else self.browse(value),
+                 downgrade=lambda self, value, args, offset=0, limit=None, order=None,
+                                  count=False: value if count else value.ids)
+    def search(self, args, offset=0, limit=None, order=None, count=False):
+        if self.env.user.has_group('price_paper.group_salesman_customer_own_pricelist') and not self.env.user.has_group('base.group_system'):
+            records = super(ProductPricelist, self).search(args, offset, limit, order, count)
+            out_result = records.filtered(
+                lambda rec: rec.type == 'competitor' or self.env.user.partner_id.id in rec.mapped(
+                    'partner_ids').mapped('sales_person_ids').ids)
+            return out_result
+        return super(ProductPricelist, self).search(args, offset, limit, order, count)
 
     @api.model
     def _cron_update_price_change_lock(self):

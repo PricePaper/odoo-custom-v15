@@ -1,4 +1,4 @@
-    # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 from odoo import models, fields, registry, api,_
 from ast import literal_eval
@@ -10,7 +10,7 @@ class ResPartner(models.Model):
     is_sales_person = fields.Boolean(string='Is sale person')
     commission_percentage_ids = fields.One2many('commission.percentage', 'partner_id', string='Sales Persons Commissions')
     default_commission_rule = fields.Many2one('commission.rules', string='Default Commission Rule')
-    sales_person_ids = fields.Many2many('res.partner', 'sale_per_id', 'cust_id', compute='get_sales_persons', string='Sales Persons', store=True, inverse="_inverse_set_salespersons", compute_sudo=True)
+    sales_person_ids = fields.Many2many('res.partner', 'sale_per_id', 'cust_id', compute='get_sales_persons', string='Sales Persons', store=True, inverse="_inverse_set_salespersons")
     customer_ids = fields.Many2many('res.partner', 'cust_id', 'sale_per_id', string='Customers')
     weekly_draw = fields.Float(string='Weekly Draw Amount')
     last_so = fields.Char(string='Last Sale order', compute='get_last_sale_order', store=True)

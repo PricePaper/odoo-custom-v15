@@ -27,7 +27,7 @@
                 </button>
 
                 <xpath expr="//field[@name='picking_ids']/tree//field[@name='name']" position="before">
-                    <field name="sequence" widget="handle"/>
+                    <field name="sequence" widget="handel" invisible="1"/>
                 </xpath>
 
                 <xpath expr="//field[@name='picking_ids']/tree" position="attributes">

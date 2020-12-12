@@ -13,7 +13,7 @@
                    <button name="action_print_product_label" type="object" string="Print Product Label" attrs="{'invisible': ['|', ('quick_sale', '=', False), ('state','!=','sale')]}"/>
                 </xpath>
                 <xpath expr="//field[@name='validity_date']" position="after">
-                    <field name="quick_sale" invisible="0" />
+                    <field name="quick_sale" invisible="1" />
                 </xpath>
            </field>
        </record>

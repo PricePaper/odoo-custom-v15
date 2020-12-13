@@ -76,13 +76,13 @@ class SaleHistoryLinesWizard(models.TransientModel):
             if float_compare(product.virtual_available, product_qty, precision_digits=precision) == -1:
                 is_available = self._check_routing(order_id, product)
                 if not is_available:
-                    message += _('\nYou plan to sell %s %s of %s but you only have %s %s available in %s warehouse.') % \
+                    message += _('You plan to sell %s %s of %s but you only have %s %s available in %s warehouse.\n\n') % \
                               (self.qty_to_be, self.product_uom.name, self.product_name,
                                product.virtual_available, product.uom_id.name, order_id.warehouse_id.name)
                     # We check if some products are available in other warehouses.
                     if float_compare(product.virtual_available, self.order_line.product_id.virtual_available,
                                      precision_digits=precision) == -1:
-                        message += _('\nThere are %s %s available across all warehouses.\n\n') % \
+                        message += _('There are %s %s available across all warehouses.\n\n') % \
                                    (self.product_id.virtual_available, product.uom_id.name)
                         for warehouse in self.env['stock.warehouse'].search([]):
                             quantity = self.order_line.product_id.with_context(warehouse=warehouse.id).virtual_available

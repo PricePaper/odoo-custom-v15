@@ -65,9 +65,6 @@ class SaleHistoryLinesWizard(models.TransientModel):
             order_id = self.env['sale.order'].browse(active_id)
             message = ''
 
-            if product.id in order_id.order_line.mapped('product_id').ids:
-                message += _(f"\n{product.name} is already in SO.")
-
             precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
             active_id = self._context.get('active_id')
             order_id = self.env['sale.order'].browse(active_id)

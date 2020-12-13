@@ -855,7 +855,7 @@ class SaleOrderLine(models.Model):
         if self.product_id:
             warn_msg = not self.product_id.purchase_ok and "This item can no longer be purchased from vendors"  or ""
             if sum([1 for line in self.order_id.order_line if line.product_id.id == self.product_id.id]) > 1:
-                warn_msg += f"\n{self.product_id.name} is already in SO."
+                warn_msg += "\n{} is already in SO.".format(self.product_id.name)
 
             if self.order_id:
                 partner_history = self.env['sale.tax.history'].search(
@@ -886,7 +886,7 @@ class SaleOrderLine(models.Model):
                     self.product_uom = sale_history.uom_id
 
             msg, product_price, price_from = self.calculate_customer_price()
-            warn_msg += f"\n{msg}"
+            warn_msg += "\n\n{}".format(msg)
 
             if warn_msg:
                 res.update({'warning': {'title': _('Warning!'),'message' : warn_msg}})

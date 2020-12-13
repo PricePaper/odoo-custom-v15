@@ -108,7 +108,7 @@ class ProductProduct(models.Model):
 
 
         result = super(ProductProduct, self).toggle_active()
-        if self.qty_available > 0:
+        if self.qty_available > 0 and self.active:
             raise ValidationError(_("Can't archive product with inventory on hand"))
 
         supersede_obj = self.env['product.superseded']

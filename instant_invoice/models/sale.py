@@ -18,7 +18,7 @@ class SaleOrder(models.Model):
 
     @api.multi
     def action_quick_sale(self):
-        for rec in self:
+        for rec in self.sudo():
             rec.quick_sale = True
             res = rec.action_confirm()
             if res and res != True and res.get('context') and res.get('context').get('warning_message'):

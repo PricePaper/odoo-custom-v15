@@ -165,39 +165,33 @@ class ProductProduct(models.Model):
 
     @api.model
     def _cron_update_product_lst_price(self):
-        OrderLine = self.env['sale.order.line']
-        search_target = self.env.user.company_id.product_lst_price_months or 0
-        date_to = datetime.today() - relativedelta(months=search_target, day=1)
 
-        # 6Months products
-        domain = [
-            ('display_type', '=', False),
-            ('order_id.date_order', '>=', date_to.strftime('%Y-%m-%d')),
-            ('order_id.state', 'in', ['sale', 'done']),
-        ]
-        line_data = OrderLine.read_group(domain, ['product_id'], ['product_id'])
-
-        for data in line_data:
-            product = self.browse(data['product_id'][0])
+        products = self.env['product.product'].search([])
+        for product in products:
             if product.standard_price_date_lock and product.standard_price_date_lock > date.today():
                 continue
 
             product.standard_price_date_lock = False
-            product.with_delay(channel='root.standardprice').job_queue_standard_price_update(data['__domain'])
-
+            product.with_delay(channel='root.standardprice').job_queue_standard_price_update()
 
     @job
     @api.multi
-    def job_queue_standard_price_update(self, data):
+    def job_queue_standard_price_update(self):
 
-        data.append(('product_uom', '=', self.uom_id.id))
+        date_to = datetime.today() - relativedelta(months=self.env.user.company_id.product_lst_price_months or 0, day=1)
+        domain = [
+            ('display_type', '=', False),
+            ('order_id.date_order', '>=', date_to.strftime('%Y-%m-%d')),
+            ('order_id.state', 'in', ['sale', 'done']),
+            ('product_uom', '=', self.uom_id.id),
+            ('product_id', '=', self.id)
+        ]
         OrderLine = self.env['sale.order.line']
-        lines = OrderLine.search(data, order="confirmation_date desc")
+        lines = OrderLine.search(domain, order="confirmation_date desc")
         partners = lines.mapped('order_id.partner_id')
         partner_count = len(partners)
         partner_count_company = self.env.user.company_id.partner_count or 0
         if partner_count >= partner_count_company:
-
             price = sum(
                 [lines.filtered(lambda l: l.order_id.partner_id == partner)[:1].price_unit for partner in partners])
 
@@ -206,6 +200,5 @@ class ProductProduct(models.Model):
         else:
             self.lst_price = self.categ_id.standard_price
         return True
-
 
 ProductProduct()

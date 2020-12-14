@@ -13,14 +13,12 @@
                         <field name="line_ids">
                             <tree string="lines" editable="bottom" limit="100" create="0" delete="0">
                                 <field name="name" readonly="1"/>
-                                <!-- <field name="parent_partner" readonly="1"/> -->
                                 <field name="email" readonly="1"/>
                                 <field name="city" readonly="1"/>
                                 <field name="phone" readonly="1"/>
-                                <field name="mobile" readonly="1"/>
                                 <field name="tin" readonly="1"/>
-                                <field name="last_so" readonly="1"/>
                                 <field name="last_so_date" readonly="1"/>
+                                <field name="sales_person" readonly="1"/>
                             </tree>
                         </field>
                     </sheet>

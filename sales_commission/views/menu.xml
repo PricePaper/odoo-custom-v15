@@ -9,7 +9,7 @@
         <menuitem id="menu_existing_user"
             name="Search Existing Customer"
             action="action_existing_user"
-            parent="sale.sale_order_menu"
+            parent="crm.crm_menu_sales"
             groups="sales_team.group_sale_salesman"
             sequence="9"
              />

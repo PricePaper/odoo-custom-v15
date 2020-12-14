@@ -14,6 +14,12 @@
         </function>
         <function name="write" model="ir.model.data">
             <function name="search" model="ir.model.data">
+                <value eval="[('module', '=', 'sale'), ('name', '=', 'sale_order_line_personal_rule')]" />
+            </function>
+            <value eval="{'noupdate': False}" />
+        </function>
+        <function name="write" model="ir.model.data">
+            <function name="search" model="ir.model.data">
                 <value eval="[('module', '=', 'base'), ('name', '=', 'res_partner_rule_private_employee')]" />
             </function>
             <value eval="{'noupdate': False}" />
@@ -26,11 +32,24 @@
             <field name="domain_force">['|', '&amp;',('user_id.id','=',user.id), ('sales_person_ids','=',False), ('sales_person_ids.id','=',user.partner_id.id)]</field>
             <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
         </record>
+        <record id="sale_history_personal_rule" model="ir.rule">
+            <field name="name">Personal Sale History</field>
+            <field ref="price_paper.model_sale_history" name="model_id"/>
+            <field name="domain_force">[('partner_id.sales_person_ids.id','=',user.partner_id.id)]</field>
+            <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+        </record>
+        <record id="sale_history_all_rule" model="ir.rule">
+            <field name="name">All Sale History</field>
+            <field ref="price_paper.model_sale_history" name="model_id"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
+        </record>
 
-        <record id="sale_order_line_personal_rule" model="ir.rule">
+        <record id="sale.sale_order_line_personal_rule" model="ir.rule">
             <field name="name">Personal Order Lines</field>
             <field ref="sale.model_sale_order_line" name="model_id"/>
-            <field name="domain_force">['|', '&amp;',('order_id.user_id.id','=',user.id), ('order_id.sales_person_ids','=',False),('order_id.sales_person_ids.id','=',user.partner_id.id)]</field>
+            <!-- <field name="domain_force">['|', '&amp;',('order_id.user_id.id','=',user.id), ('order_id.sales_person_ids','=',False),('order_id.sales_person_ids.id','=',user.partner_id.id)]</field> -->
+            <field name="domain_force">[('order_id.sales_person_ids.id','=',user.partner_id.id)]</field>
             <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
         </record>
 
@@ -142,7 +161,7 @@
             <field name="perm_unlink" eval="False"/>
         </record>
         <record id="customer_product_price_all_rule" model="ir.rule">
-            <field name="name">Personal Pricelist Items</field>
+            <field name="name">All Pricelist Items</field>
             <field ref="price_paper.model_customer_product_price" name="model_id"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>

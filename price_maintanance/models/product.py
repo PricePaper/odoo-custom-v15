@@ -173,6 +173,7 @@ class ProductProduct(models.Model):
         domain = [
             ('display_type', '=', False),
             ('order_id.date_order', '>=', date_to.strftime('%Y-%m-%d')),
+            ('order_id.state', 'in', ['sale', 'done']),
         ]
         line_data = OrderLine.read_group(domain, ['product_id'], ['product_id'])
 
@@ -189,14 +190,17 @@ class ProductProduct(models.Model):
     @api.multi
     def job_queue_standard_price_update(self, data):
 
+        data.append(('product_uom', '=', self.uom_id.id))
         OrderLine = self.env['sale.order.line']
-        lines = OrderLine.search(data, order="id desc")
+        lines = OrderLine.search(data, order="confirmation_date desc")
         partners = lines.mapped('order_id.partner_id')
         partner_count = len(partners)
         partner_count_company = self.env.user.company_id.partner_count or 0
         if partner_count >= partner_count_company:
+
             price = sum(
                 [lines.filtered(lambda l: l.order_id.partner_id == partner)[:1].price_unit for partner in partners])
+
             if price:
                 self.lst_price = (price / partner_count)
         else:

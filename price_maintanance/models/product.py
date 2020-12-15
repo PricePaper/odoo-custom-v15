@@ -13,10 +13,10 @@ class ProductProduct(models.Model):
     last_purchase_price = fields.Char(string='Last Purchase Price', compute='compute_last_purchase_price', store=False)
     last_po = fields.Many2one('purchase.order', string='Last PO', compute='compute_last_purchase_price', store=False)
     price_margin = fields.Float(string='Margin %', compute='compute_margin')
-    competitor_price_ids = fields.One2many('customer.product.price', 'product_id', string='Restuarant depot price',
+    competitor_price_ids = fields.One2many('customer.product.price', 'product_id', string='Competitor prices',
                                            domain=[('pricelist_id.type', '=', 'competitor')])
     customer_price_ids = fields.One2many('customer.product.price', 'product_id',
-                                         domain=[('pricelist_id.type', '=', 'customer')], string='Customer price list')
+                                         domain=[('pricelist_id.type', '=', 'customer')], string='Customer prices')
     median_price = fields.Html(string='Median Prices')
     future_price_ids = fields.One2many('cost.change', 'product_id', string='Future Price',
                                        domain=[('is_done', '=', False), ('product_id', '!=', False)])
@@ -73,7 +73,7 @@ class ProductProduct(models.Model):
     def compute_margin(self):
         for product in self:
             if product.cost:
-                product.price_margin = 100 * (product.lst_price - product.cost) / product.cost
+                product.price_margin = 100 * (product.lst_price - product.cost) / product.lst_price
 
     def get_median(self, order_lines):
 
@@ -86,7 +86,10 @@ class ProductProduct(models.Model):
             else:
                 prices[line.product_uom.id] = [product_price]
         for uom in prices:
-            median[uom] = round(statistics.median(prices[uom]), 2)
+            try:
+                median[uom] = round(statistics.median_high(prices[uom]), 2)
+            except statistics.StatisticsError as e:
+                median[uom] = 0
         return median
 
     @api.model
@@ -191,14 +194,20 @@ class ProductProduct(models.Model):
         partners = lines.mapped('order_id.partner_id')
         partner_count = len(partners)
         partner_count_company = self.env.user.company_id.partner_count or 0
-        if partner_count >= partner_count_company:
-            price = sum(
-                [lines.filtered(lambda l: l.order_id.partner_id == partner)[:1].price_unit for partner in partners])
+        new_lst_price = 0
+        get_price_from_categ = lambda s: round(s.cost / (1 - (s.categ_id.standard_price / 100)), 2)
 
-            if price:
-                self.lst_price = (price / partner_count)
+        if partner_count >= partner_count_company:
+            try:
+                new_lst_price = statistics.median_high(
+                    [lines.filtered(lambda l: l.order_id.partner_id == partner)[:1].price_unit for partner in partners])
+
+            except statistics.StatisticsError as e:
+                new_lst_price = get_price_from_categ(self)
         else:
-            self.lst_price = self.categ_id.standard_price
+            new_lst_price = get_price_from_categ(self)
+
+        self.lst_price = new_lst_price
         return True
 
 ProductProduct()

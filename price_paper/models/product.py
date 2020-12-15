@@ -228,7 +228,7 @@ class ProductCategory(models.Model):
 
     repacking_upcharge = fields.Float(string="Repacking Charge %")
     categ_code = fields.Char(string='Category Code')
-    standard_price = fields.Float(string="Class Standard Price", digits=dp.get_precision('Product Price'))
+    standard_price = fields.Float(string="Class Standard Price Percent", digits=dp.get_precision('Product Price'))
 
 
 ProductCategory()

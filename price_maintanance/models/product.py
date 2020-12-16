@@ -199,7 +199,6 @@ class ProductProduct(models.Model):
         partner_count = len(partners)
         partner_count_company = self.env.user.company_id.partner_count or 0
         new_lst_price = 0
-        get_price_from_categ = lambda s: round(s.cost / (1 - (s.categ_id.standard_price / 100)), 2)
         get_price_from_categ = lambda s: margin.get_price(s.cost, s.categ_id.standard_price, percent = True)
 
         if partner_count >= partner_count_company:

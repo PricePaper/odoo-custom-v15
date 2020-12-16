@@ -1,3 +1,4 @@
+import logging
 import statistics
 from datetime import datetime, date
 
@@ -5,14 +6,17 @@ from dateutil.relativedelta import relativedelta
 
 from odoo import fields, models, api, _
 from odoo.addons.queue_job.job import job
+import odoo.addons.decimal_precision as dp
+from odoo.addons.price_paper.models import margin
 
+_logger = logging.getLogger(__name__)
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     last_purchase_price = fields.Char(string='Last Purchase Price', compute='compute_last_purchase_price', store=False)
     last_po = fields.Many2one('purchase.order', string='Last PO', compute='compute_last_purchase_price', store=False)
-    price_margin = fields.Float(string='Margin %', compute='compute_margin')
+    price_margin = fields.Float(string='Margin %', compute='compute_margin', digits=dp.get_precision("Product Price"))
     competitor_price_ids = fields.One2many('customer.product.price', 'product_id', string='Competitor prices',
                                            domain=[('pricelist_id.type', '=', 'competitor')])
     customer_price_ids = fields.One2many('customer.product.price', 'product_id',
@@ -73,7 +77,7 @@ class ProductProduct(models.Model):
     def compute_margin(self):
         for product in self:
             if product.cost:
-                product.price_margin = 100 * (product.lst_price - product.cost) / product.lst_price
+                product.price_margin = margin.get_margin(product.lst_price, product.cost, percent=True)
 
     def get_median(self, order_lines):
 
@@ -196,6 +200,7 @@ class ProductProduct(models.Model):
         partner_count_company = self.env.user.company_id.partner_count or 0
         new_lst_price = 0
         get_price_from_categ = lambda s: round(s.cost / (1 - (s.categ_id.standard_price / 100)), 2)
+        get_price_from_categ = lambda s: margin.get_price(s.cost, s.categ_id.standard_price, percent = True)
 
         if partner_count >= partner_count_company:
             try:
@@ -203,6 +208,8 @@ class ProductProduct(models.Model):
                     [lines.filtered(lambda l: l.order_id.partner_id == partner)[:1].price_unit for partner in partners])
 
             except statistics.StatisticsError as e:
+                _logger.error(f'Not enough data to find mean price for product_id: {self.id}.'
+                                f'Using category margin.')
                 new_lst_price = get_price_from_categ(self)
         else:
             new_lst_price = get_price_from_categ(self)

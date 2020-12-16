@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, registry, api,_
+from odoo.addons.price_paper.models import margin
 
 
 class SaleOrderline(models.Model):
@@ -22,7 +23,7 @@ class SaleOrderline(models.Model):
     def _calculate_percent(self):
         for line in self:
             if line.cost:
-                line.percent = ((line.price_unit - line.cost)/line.cost) * 100
+                line.percent = margin.get_margin(line.price_unit, line.cost, percent=True)
 
 
     @api.multi
@@ -38,16 +39,11 @@ class SaleOrderline(models.Model):
     def _calculate_remark(self):
         for line in self:
             remarks = []
-            rem = ''
 
-            if line.percent < line.company_margin:
-                remarks.append('BM')
-            elif line.percent > line.company_margin:
-                remarks.append('AM')
-
-            if line.percent < line.class_margin:
+            ## TODO move variance percent to company parameters
+            if line.percent < line.class_margin * 0.90:
                 remarks.append('CBM')
-            elif line.percent > line.class_margin:
+            elif line.percent > line.class_margin * 1.20:
                 remarks.append('CAM')
 
             if not line.price_unit:
@@ -66,10 +62,7 @@ class SaleOrderline(models.Model):
             if line.manual_price:
                 remarks.append('M')
 
-            if remarks:
-                remarks = str(remarks).replace("'", '').replace("[", '').replace("]", '')
-
-            line.remark = remarks
+            line.remark = ",".join(remarks)
 
 
 SaleOrderline()

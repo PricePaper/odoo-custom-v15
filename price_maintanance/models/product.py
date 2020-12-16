@@ -1,6 +1,7 @@
 import logging
 import statistics
 from datetime import datetime, date
+from odoo.tools import float_round
 
 from dateutil.relativedelta import relativedelta
 
@@ -186,34 +187,67 @@ class ProductProduct(models.Model):
     def job_queue_standard_price_update(self):
 
         date_to = datetime.today() - relativedelta(months=self.env.user.company_id.product_lst_price_months or 0, day=1)
-        domain = [
-            ('display_type', '=', False),
-            ('order_id.date_order', '>=', date_to.strftime('%Y-%m-%d')),
-            ('order_id.state', 'in', ['sale', 'done']),
-            ('product_uom', '=', self.uom_id.id),
-            ('product_id', '=', self.id)
-        ]
-        OrderLine = self.env['sale.order.line']
-        lines = OrderLine.search(domain, order="confirmation_date desc")
-        partners = lines.mapped('order_id.partner_id')
-        partner_count = len(partners)
-        partner_count_company = self.env.user.company_id.partner_count or 0
-        new_lst_price = 0
-        get_price_from_categ = lambda s: margin.get_price(s.cost, s.categ_id.standard_price, percent = True)
+        for uom in self.sale_uoms:
+            domain = [
+                ('display_type', '=', False),
+                ('order_id.date_order', '>=', date_to.strftime('%Y-%m-%d')),
+                ('order_id.state', 'in', ['sale', 'done']),
+                ('product_uom', '=', uom.id),
+                ('product_id', '=', self.id)
+            ]
+            OrderLine = self.env['sale.order.line']
+            lines = OrderLine.search(domain, order="confirmation_date desc")
+            partners = lines.mapped('order_id.partner_id')
+            partner_count = len(partners)
+            partner_count_company = self.env.user.company_id.partner_count or 0
+            new_lst_price = 0
+            if partner_count >= partner_count_company:
+                try:
+                    new_lst_price = statistics.median_high(
+                        [lines.filtered(lambda l: l.order_id.partner_id == partner)[:1].price_unit for partner in partners])
 
-        if partner_count >= partner_count_company:
-            try:
-                new_lst_price = statistics.median_high(
-                    [lines.filtered(lambda l: l.order_id.partner_id == partner)[:1].price_unit for partner in partners])
-
-            except statistics.StatisticsError as e:
-                _logger.error(f'Not enough data to find mean price for product_id: {self.id}.'
-                                f'Using category margin.')
-                new_lst_price = get_price_from_categ(self)
-        else:
-            new_lst_price = get_price_from_categ(self)
-
-        self.lst_price = new_lst_price
+                except statistics.StatisticsError as e:
+                    _logger.error(f'Not enough data to find mean price for product_id: {self.id}.')
+                    new_lst_price = self.get_price_from_competitor_or_categ
+            else:
+                new_lst_price = self.get_price_from_competitor_or_categ(uom)
+            uom_rec = self.uom_standard_prices.filtered(lambda p: p.uom_id == uom)
+            if uom_rec:
+                uom_rec.price = new_lst_price
+            else:
+                vals={'product_id': self.id,
+                      'uom_id': uom.id,
+                      'price': new_lst_price}
+                self.env['product.standard.price'].create(vals)
         return True
+
+    def get_price_from_competitor_or_categ(self, uom):
+        new_lst_price = 0
+        cost = self.cost
+        restaurant_id = self.env.ref('website_scraping.website_scraping_cofig_1').id
+        webstaurant_id = self.env.ref('website_scraping.website_scraping_cofig_2').id
+        new_lst_price = self.get_from_competitor(restaurant_id, uom)
+        if not new_lst_price:
+            new_lst_price = self.get_from_competitor(webstaurant_id, uom)
+        if not new_lst_price:
+            if uom != self.uom_id:
+                uom_cost = float_round(self.uom_id._compute_price(cost, uom), precision_digits=2)
+                cost = float_round(uom_cost * (1+(self.categ_id.repacking_upcharge/100)), precision_digits=2)
+            new_lst_price = margin.get_price(cost, self.categ_id.standard_price, percent = True)
+        return new_lst_price
+
+    def get_from_competitor(self, competitor_id, uom):
+        new_lst_price = 0
+        pricelist = self.env['product.pricelist'].search([
+                ('type', '=', 'competitor'),
+                ('competitor_id', '=', competitor_id),
+                ('competietor_margin', '=', 10)])
+        pricelist_line = pricelist.customer_product_price_ids.filtered(lambda p: p.product_id == self)
+        if pricelist_line:
+            new_lst_price = float_round(pricelist_line[0].product_uom._compute_price(pricelist_line[0].price, uom), precision_digits=2)
+            if uom != self.uom_id:
+                competitor_price = float_round(new_lst_price * (1+(self.categ_id.repacking_upcharge/100)), precision_digits=2)
+                new_lst_price = margin.get_price(competitor_price, self.categ_id.standard_price, percent = True)
+        return new_lst_price
 
 ProductProduct()

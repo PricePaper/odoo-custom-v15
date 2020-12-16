@@ -63,9 +63,6 @@
                         string=" Product Notes" icon="fa-sticky-note"/>
                 </xpath>
                 <field name="lst_price" position="after">
-                    <!-- <field name="list_price_percentage" groups="sales_team.group_sale_manager"/> -->
-                    <field name="standard_price_date_lock"
-                      groups="sales_team.group_sale_manager"/>
                     <field name="burden_percent"
                       groups="sales_team.group_sale_manager"/>
                     <field name="cost" widget="monetary"
@@ -88,7 +85,7 @@
                     <attribute name='groups'>sales_team.group_sale_manager</attribute>
                 </xpath>
                 <xpath expr="//field[@name='uom_id']" position="before">
-                    <field name="sale_uoms" widget="many2many_tags"/>
+                    <field name="sale_uoms" widget="many2many_tags" required="1"/>
                 </xpath>
                 <xpath expr="//field[@name='uom_id']" position="attributes">
                     <attribute name='domain'>[('product_ids.id', '=', active_id)]</attribute>
@@ -123,14 +120,26 @@
                           </group>
                       </group>
                   </page>
+                  <page name='standard_price' string='Standard Price' >
+                      <group>
+                          <group string="Standard Price">
+                            <group>
+                                <field name="standard_price_date_lock"
+                                  groups="sales_team.group_sale_manager"/>
+                            </group>
+                            <field name="uom_standard_prices" nolabel="1" >
+                              <tree create="0">
+                                <field name='uom_id'/>
+                                <field name='price'/>
+                              </tree>
+                            </field>
+                          </group>
+                      </group>
+                  </page>
                 </xpath>
-
-<!--                <label for='standard_price' position="replace">-->
-<!--                    <label for="standard_price" string="Base Price" groups="sales_team.group_sale_manager" attrs="{'invisible': [('product_variant_count', '&gt;', 1)]}"/>-->
-<!--                </label>-->
-
                 <xpath expr="//field[@name='lst_price']" position="attributes">
-                    <attribute name="string">Standard Price</attribute>
+                    <!-- <attribute name="string">Standard Price</attribute> -->
+                    <attribute name="invisible">1</attribute>
                 </xpath>
 
             </field>
@@ -187,29 +196,5 @@
                  </xpath>
             </field>
         </record>
-
-        <!-- <record id="product_supplierinfo_form_inherit_pricepaper" model="ir.ui.view">
-            <field name="name">roduct.supplierinfo.view_inherit_pricepaper</field>
-            <field name="model">product.supplierinfo</field>
-            <field name="inherit_id" ref="product.product_supplierinfo_form_view" />
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='product_code']" position="after">
-                    <field name="is_primary_vendor"/>
-                </xpath>
-            </field>
-        </record> -->
-
-        <!-- <record model="ir.ui.view" id="product_supplierinfo_tree_view_inherit_pricepaper">
-            <field name="name">product.supplierinfo.tree.pricepaper.inherit</field>
-            <field name="model">product.supplierinfo</field>
-            <field name="inherit_id" ref="product.product_supplierinfo_tree_view"/>
-            <field name="arch" type="xml">
-              <xpath expr="//field[@name='min_qty']" position="before">
-                  <field name="is_primary_vendor"/>
-              </xpath>
-            </field>
-        </record> -->
-
-
     </data>
 </odoo>

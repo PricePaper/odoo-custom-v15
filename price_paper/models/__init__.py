@@ -2,6 +2,7 @@
 from . import mail_thread
 from . import res_company
 from . import res_partner
+from . import product_standard_price
 from . import product
 from . import customer_product_price
 from . import zip_delivery_day

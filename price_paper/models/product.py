@@ -22,6 +22,7 @@ class ProductProduct(models.Model):
     cost = fields.Float(compute='compute_sale_burden', string="Working Cost", digits=dp.get_precision('Product Price'))
     sale_uoms = fields.Many2many('uom.uom','product_uom_rel', 'product_id', 'uom_id', string='Sale UOMS')
     vendor_id = fields.Many2one('res.partner', compute='compute_product_vendor', string="Vendor", store=True)
+    uom_standard_prices = fields.One2many(comodel_name='product.standard.price', inverse_name='product_id', string="UOM STD Prices")
 
 
     is_bel_min_qty = fields.Boolean(string='Below Minimum Quantity', compute='compute_qty_status', search='_search_bel_min_qty')

@@ -139,7 +139,7 @@
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
               <p>
-                No Sale Order Found.
+                No Item Found.
               </p>
             </field>
         </record>

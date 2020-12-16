@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, registry, api,_
+from odoo.tools import float_round
 from datetime import datetime,date
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import ValidationError, UserError
@@ -610,12 +611,15 @@ class SaleOrderLine(models.Model):
     @api.depends('product_id', 'product_uom')
     def _compute_lst_cost_prices(self):
         for line in self:
-            if line.product_uom:
-                line.lst_price = line.product_id.uom_id._compute_price(line.product_id.lst_price, line.product_uom)
-            elif line.product_id.lst_price:
-                line.lst_price = line.product_id.lst_price
-            if line.product_id.cost:
-                line.working_cost = line.product_id.cost
+            if line.product_id and line.product_uom:
+                uom_price = line.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == line.product_uom)
+                if uom_price:
+                    line.lst_price = uom_price[0].price
+            if line.product_id.cost and line.product_uom:
+                working_cost = line.product_id.uom_id._compute_price(line.product_id.cost, line.product_uom)
+                if line.product_uom != line.product_id.uom_id:
+                    working_cost = float_round(working_cost * (1+(line.product_id.categ_id.repacking_upcharge/100)), precision_digits=2)
+                line.working_cost = working_cost
 
     @api.multi
     def _prepare_invoice_line(self, qty):
@@ -822,11 +826,10 @@ class SaleOrderLine(models.Model):
                         price_unit = line.order_id.carrier_id.rate_shipment(line.order_id)['price']
                         line.profit_margin = line.price_subtotal - price_unit
                 else:
-                    # product_price = line.product_uom and round(line.product_id.cost * line.product_id.uom_id.factor / line.product_uom.factor, 2) or 0
                     product_price = line.product_uom and round(line.working_cost * line.product_id.uom_id.factor / line.product_uom.factor, 2) or 0
                     line_price = line.price_unit
                     if line.product_id.uom_id != line.product_uom:
-                        line_price = line.price_unit * (100/(100+ line.product_id.categ_id.repacking_upcharge))
+                        product_price = float_round(product_price * (1+(line.product_id.categ_id.repacking_upcharge/100)), precision_digits=2)
                     elif line.product_id.uom_id == line.product_uom and line.product_uom_qty % 1 != 0.0:
                         numer = line.price_unit * line.product_uom_qty
                         denom = (int(line.product_uom_qty / 1.0) + ((line.product_uom_qty % 1) * (100 + line.product_id.categ_id.repacking_upcharge) / 100))
@@ -966,13 +969,11 @@ class SaleOrderLine(models.Model):
             break
         if not price_from:
             if self.product_id and self.product_uom:
-                product_price = self.product_id.uom_id._compute_price(self.product_id.list_price, self.product_uom) + self.product_id.price_extra
+                uom_price = self.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == self.product_uom)
+                if uom_price:
+                    product_price = uom_price[0].price
 
             msg = "Unit Price for this product is not found in any pricelists, fetching the unit price as product standard price."
-
-            # broken UOM case add package breaking upcharge.
-            if self.product_id.uom_id != self.product_uom and (self.product_id.uom_id.factor_inv > self.product_uom.factor_inv):
-                product_price = product_price * ((100+self.product_id.categ_id.repacking_upcharge)/100)
 
         if self.product_id.uom_id == self.product_uom and self.product_uom_qty % 1 != 0.0:
             product_price = ((int(self.product_uom_qty / 1) * product_price) + ((self.product_uom_qty % 1) * product_price * ((100+self.product_id.categ_id.repacking_upcharge)/100))) / self.product_uom_qty

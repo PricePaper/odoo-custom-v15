@@ -15,8 +15,16 @@ class CustomerProductPrice(models.Model):
     is_taxable = fields.Boolean(compute='_get_last_sale_details', string='Is Taxable', readonly=True)
     median_price = fields.Html(string='Median Prices', related='product_id.median_price', readonly=True)
     competietor_price_ids = fields.Many2many('customer.product.price', compute="_get_competietor_prices", string='Competietor Price Entries')
-    std_price = fields.Float(string='Standard Price', related='product_id.lst_price', readonly=True)
+    std_price = fields.Float(string='Standard Price', compute="_get_std_price", store=False)
     deviation = fields.Integer(string='Deviation%', compute="get_deviation", readonly=True)
+
+    @api.depends('product_id', 'product_uom')
+    def _get_std_price(self):
+        for line in self:
+            if line.product_id and line.product_uom:
+                uom_price = line.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == line.product_uom)
+                if uom_price:
+                    line.std_price = uom_price[0].price
 
     @api.depends('price','std_price')
     def get_deviation(self):

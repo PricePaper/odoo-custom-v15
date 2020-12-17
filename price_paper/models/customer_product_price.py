@@ -71,9 +71,22 @@ class CustomerProductPrice(models.Model):
     def onchange_product_id(self):
         if self.product_id:
             self.product_uom = self.product_id.uom_id and self.product_id.uom_id
-            self.price = self.product_id.lst_price
+            uom_price = self.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == self.product_id.uom_id)
+            if uom_price:
+                product_price = uom_price[0].price
+                self.price = product_price
         else:
             self.product_uom = False
+            self.price = 0.0
+
+    @api.onchange('product_uom')
+    def onchange_product_uom(self):
+        if self.product_id and self.product_uom:
+            uom_price = self.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == self.product_uom)
+            if uom_price:
+                product_price = uom_price[0].price
+                self.price = product_price
+        else:
             self.price = 0.0
 
     @api.onchange('price_lock')

@@ -17,7 +17,7 @@ class ProductProduct(models.Model):
 
     last_purchase_price = fields.Char(string='Last Purchase Price', compute='compute_last_purchase_price', store=False)
     last_po = fields.Many2one('purchase.order', string='Last PO', compute='compute_last_purchase_price', store=False)
-    price_margin = fields.Float(string='Margin %', compute='compute_margin', digits=dp.get_precision("Product Price"))
+    # price_margin = fields.Float(string='Margin %', compute='compute_margin', digits=dp.get_precision("Product Price"))
     competitor_price_ids = fields.One2many('customer.product.price', 'product_id', string='Competitor prices',
                                            domain=[('pricelist_id.type', '=', 'competitor')])
     customer_price_ids = fields.One2many('customer.product.price', 'product_id',
@@ -74,11 +74,11 @@ class ProductProduct(models.Model):
                 product.last_purchase_price = '%s %s %s' % (line.price_unit, line.product_uom.name, line.date_order)
                 product.last_po = line.order_id.id
 
-    @api.depends('lst_price', 'cost')
-    def compute_margin(self):
-        for product in self:
-            if product.cost:
-                product.price_margin = margin.get_margin(product.lst_price, product.cost, percent=True)
+    # @api.depends('lst_price', 'cost')
+    # def compute_margin(self):
+    #     for product in self:
+    #         if product.cost:
+    #             product.price_margin = margin.get_margin(product.lst_price, product.cost, percent=True)
 
     def get_median(self, order_lines):
 

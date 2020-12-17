@@ -149,10 +149,9 @@ class CostChange(models.Model):
             #Update list price
             if rec.update_standard_price:
                 for product in products_to_filter:
-                    new_price = rec.calculate_new_price(product)
+                    rec.calculate_new_stdprice(product)
                     standard_price_days = self.env.user.company_id.standard_price_config_days or 75
                     product.standard_price_date_lock = date.today() + relativedelta(days=standard_price_days)
-                    product.lst_price = new_price
 
             # Update Customer pricelist
             if rec.update_customer_pricelist:
@@ -211,6 +210,29 @@ class CostChange(models.Model):
         return True
 
 
+    def calculate_new_stdprice(self, product):
+        for rec in product.uom_standard_prices:
+            new_price = 0
+            margin = rec.price_margin/100
+            if self.price_filter == 'fixed':
+                new_working_cost = self.price_change * ((100+product.burden_percent)/100)
+                if self.update_burden and self.burden_change:
+                    new_working_cost = self.price_change * ((100+self.burden_change)/100)
+                if product.uom_id != rec.uom_id:
+                    new_price = (product.uom_id._compute_price(new_working_cost, rec.uom_id) * ((100+product.categ_id.repacking_upcharge)/100)) / (1-margin)
+                else:
+                    new_price = new_working_cost / (1-margin)
+            else:
+                new_working_cost = (product.standard_price * (100+self.price_change)/100) * ((100+product.burden_percent)/100)
+                if self.update_burden and self.burden_change:
+                    new_working_cost = (product.standard_price * (100+self.price_change)/100) * ((100+self.burden_change)/100)
+                if product.uom_id != rec.uom_id:
+                    new_price = (product.uom_id._compute_price(new_working_cost, rec.uom_id) * ((100+product.categ_id.repacking_upcharge)/100)) / (1-margin)
+                else:
+                    new_price = new_working_cost / (1-margin)
+            rec.price = new_price
+
+
     def calculate_new_price(self, product, pricelist=None):
         new_price = 0
         old_list_price = product.lst_price
@@ -237,7 +259,8 @@ class CostChange(models.Model):
                     new_working_cost = (product.standard_price * (100+self.price_change)/100) * ((100+self.burden_change)/100)
                 if pricelist and product.uom_id != pricelist.product_uom:
                     new_price = (product.uom_id._compute_price(new_working_cost, pricelist.product_uom) * ((100+product.categ_id.repacking_upcharge)/100)) / (1-margin)
-                new_price = new_working_cost / (1-margin)
+                else:
+                    new_price = new_working_cost / (1-margin)
         return new_price
 
 

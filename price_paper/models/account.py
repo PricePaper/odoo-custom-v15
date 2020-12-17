@@ -221,17 +221,16 @@ class AccountInvoiceLine(models.Model):
                 break
             if not product_price:
                 if self.uom_id and self.product_id:
-                    product_price = self.product_id.uom_id._compute_price(self.product_id.list_price, self.uom_id) + self.product_id.price_extra
-                if self.product_id.uom_id != self.uom_id:
-                    product_price = product_price * ((100+self.product_id.categ_id.repacking_upcharge)/100)
+                    uom_price = self.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == self.uom_id)
+                    if uom_price:
+                        product_price = uom_price[0].price
             if self.product_id.uom_id == self.uom_id and self.quantity % 1 != 0.0:
                 product_price = ((int(self.quantity / 1) * product_price) + ((self.quantity % 1) * product_price * ((100+self.product_id.categ_id.repacking_upcharge)/100))) / self.quantity
             self.price_unit = product_price
 
-            partner_history = self.env['sale.order.line'].search([('order_id.partner_shipping_id', '=', self.invoice_id.partner_shipping_id and self.invoice_id.partner_shipping_id.id), ('product_id', '=', self.product_id and self.product_id.id), ('is_last', '=', True)])
-            if self.invoice_id and self.invoice_id.partner_id.vat and partner_history and not partner_history.tax_id:
-                self.invoice_line_tax_ids = [(5, _, _)] # clear all tax values, no Taxes to be used
-
+            sale_tax_history = self.env['sale.tax.history'].search([('partner_id', '=', self.invoice_id.partner_shipping_id.id), ('product_id', '=', self.product_id.id)], limit=1)
+            if sale_tax_history and not sale_tax_history.tax:
+                self.tax_id = [(5, _, _)]
 
         return res
 

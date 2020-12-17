@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from lxml import etree
+
 from odoo import fields, models, api, _
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import UserError, ValidationError
+from odoo.osv.orm import setup_modifiers
 import operator as py_operator
 OPERATORS = {
     '<': py_operator.lt,
@@ -54,7 +57,19 @@ class ProductProduct(models.Model):
             return self.env.user.company_id.burden_percent
         return 0
 
-
+    @api.model
+    def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
+        res = super(ProductProduct, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+        if not self.env.user.has_group('stock.group_stock_manager'):
+            doc = etree.XML(res['arch'])
+            if view_type == 'form':
+                nodes = doc.xpath("//notebook//page[@name='superseded']//field[@name='superseded']")
+                for node in nodes:
+                    node.set('readonly', '1')
+                    setup_modifiers(node, res['fields']['superseded'])
+                    res['arch'] = etree.tostring(doc)
+                return res
+        return res
 
     @api.multi
     @api.depends('qty_available','orderpoint_ids.product_max_qty','orderpoint_ids.product_min_qty')

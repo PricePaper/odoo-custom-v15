@@ -11,16 +11,16 @@ class ProductStandardPrice(models.Model):
     product_id = fields.Many2one('product.product', string="Product")
     uom_id = fields.Many2one('uom.uom', string="UOM")
     price = fields.Float(string="Standard Price")
-    cost = fields.Float(string="cost", compute='compute_cost')
+    cost = fields.Float(string="cost", compute='compute_cost', store=False)
     price_margin = fields.Float(string='Margin %', compute='compute_margin', digits=dp.get_precision("Product Price"))
 
-    @api.depends('price', 'product_id.cost')
+    @api.depends('price', 'product_id.cost', 'cost')
     def compute_margin(self):
         for rec in self:
             if rec.cost:
                 rec.price_margin = margin.get_margin(rec.price, rec.cost, percent=True)
 
-    @api.depends('product_id.cost')
+    @api.depends('product_id.cost', 'uom_id')
     def compute_cost(self):
         for rec in self:
             if rec.product_id and rec.product_id.cost:

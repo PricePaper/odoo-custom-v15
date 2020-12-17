@@ -552,6 +552,11 @@ class SaleOrder(models.Model):
         history_from = datetime.today() - relativedelta(months=self.env.user.company_id.sale_history_months)
         products = self.order_line.mapped('product_id').ids
         sales_history = self.env['sale.history'].search([('partner_id', '=', self.partner_id.id), ('order_id.confirmation_date', '>=', history_from), ('product_id', 'not in', products), ('product_id.sale_ok', '=', True)])
+        #addons product filtering
+        addons_products = sales_history.mapped('product_id').filtered(lambda rec: rec.need_sub_product).mapped('product_addons_list')
+        if addons_products:
+            sales_history = sales_history.filtered(lambda rec: rec.product_id not in addons_products)
+
         search_products = sales_history.mapped('product_id').ids
         context = {
             'default_sale_history_ids': [(6, 0, sales_history.ids)],
@@ -599,6 +604,7 @@ class SaleOrderLine(models.Model):
     # working_cost = fields.Float(string='Working Cost', digits=dp.get_precision('Product Price'))
     gross_volume = fields.Float(string="Gross Volume", compute='_compute_gross_weight_volume')
     gross_weight = fields.Float(string="Gross Weight", compute='_compute_gross_weight_volume')
+    is_addon = field_name = fields.Boolean(string='Is Addon')
 
     @api.depends('product_id.volume', 'product_id.weight')
     def _compute_gross_weight_volume(self):
@@ -645,17 +651,26 @@ class SaleOrderLine(models.Model):
         lets users to bypass super unlink block for confirmed lines
         if line is delivery line
         """
-        base = None
-        unlinked_lines = self.env['sale.order.line']
-        for parentClass in self.__class__.__bases__:
-            if parentClass._name == 'base':
-                base = parentClass
-
-        for line in self:
-            if line.is_delivery and base:
-                base.unlink(line)
-                unlinked_lines|= line
-        return super(SaleOrderLine, self-unlinked_lines).unlink()
+        if self.exists():
+            base = None
+            unlinked_lines = self.env['sale.order.line']
+            cascade_line = self.env['sale.order.line']
+            for parentClass in self.__class__.__bases__:
+                if parentClass._name == 'base':
+                    base = parentClass
+          
+            for line in self:
+                if line.is_delivery and base:
+                    base.unlink(line)
+                    unlinked_lines |= line
+                elif line.exists() and line.product_id.need_sub_product:
+                    cascade_line |= line + line.order_id.order_line.filtered(lambda rec: rec.is_addon)
+                elif line.exists():
+                    master_line = line.order_id.order_line.filtered(lambda rec: rec.product_id.need_sub_product and line.product_id in rec.product_id.product_addons_list)
+                    if master_line:
+                        raise UserError(_('Please remove addon product from lines before delete. \n\n{} \n Please refresh the page..').format("\n\t".join([li.product_id.name for li in master_line])))
+            
+            return super(SaleOrderLine, (self - unlinked_lines) + cascade_line).unlink()
 
 
     @api.multi
@@ -766,7 +781,6 @@ class SaleOrderLine(models.Model):
 
     @api.multi
     def write(self, vals):
-
         res = super(SaleOrderLine, self).write(vals)
         for line in self:
             if vals.get('price_unit') and line.order_id.state == 'sale':
@@ -775,7 +789,19 @@ class SaleOrderLine(models.Model):
 
     @api.model
     def create(self, vals):
+
         res = super(SaleOrderLine, self).create(vals)
+
+        if res.product_id.need_sub_product and res.product_id.product_addons_list:
+            for p in res.product_id.product_addons_list.filtered(lambda rec: rec.id not in [res.order_id.order_line.mapped('product_id').ids]):
+                s = self.create({
+                    'product_id': p.id,
+                    'product_uom': p.uom_id.id,
+                    'product_uom_qty': res.product_uom_qty,
+                    'order_id': res.order_id.id,
+                    'is_addon': True
+                    })
+                s.product_id_change()
 
         if res.order_id.state == 'sale':
             res.update_price_list()
@@ -889,7 +915,7 @@ class SaleOrderLine(models.Model):
                     self.product_uom = sale_history.uom_id
 
             msg, product_price, price_from = self.calculate_customer_price()
-            warn_msg += "\n\n{}".format(msg)
+            warn_msg += msg and "\n\n{}".format(msg)
 
             if warn_msg:
                 res.update({'warning': {'title': _('Warning!'),'message' : warn_msg}})

@@ -70,6 +70,7 @@
                 </field>
                 <field name="type" position="before">
                     <field name="is_storage_contract"/>
+                    <field name="need_sub_product"/>
                 </field>
                 <field name="property_account_income_id" position="before">
                     <field name="storage_contract_account_id"
@@ -93,7 +94,15 @@
                 <xpath expr="//field[@name='uom_po_id']" position="attributes">
                     <attribute name='domain'>[('product_ids.id', '=', active_id)]</attribute>
                 </xpath>
+               
                 <xpath expr="//notebook" position="inside">
+                  <page name='addons_product' string='Addons Products' attrs="{'invisible': [('need_sub_product', '=', False)]}">
+                      <group>
+                          <group>
+                            <field name="product_addons_list" nolabel="1" attrs="{'required': [('need_sub_product', '=', True)]}"/>
+                          </group>
+                      </group>
+                  </page>
                   <page name='superseded' string='Superseded Products' groups="base.group_no_one" >
                       <group>
                           <group string="Supersedes">

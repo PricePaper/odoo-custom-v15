@@ -33,6 +33,8 @@ class ProductProduct(models.Model):
         string="Storage Contract Income Account",
         domain=[('deprecated', '=', False)])
     standard_price_date_lock = fields.Date(string='Standard Price Lock Date')
+    product_addons_list = fields.Many2many('product.product', 'product_addons_product_rel', 'product_id', 'addon_product_id', string="Addons Product")
+    need_sub_product = fields.Boolean(string='Need Sub-Products')
 
     # list_price_percentage = fields.Float('Standard price %')
     # lst_price = fields.Float(

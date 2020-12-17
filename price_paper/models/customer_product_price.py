@@ -40,9 +40,9 @@ class CustomerProductPrice(models.Model):
     def _check_unique_constrain(self):
         for rec in self:
             if rec.pricelist_id and rec.product_id and rec.product_uom:
-                result = self.pricelist_id.customer_product_price_ids.filtered(
-                    lambda r: r.product_id.id == self.product_id.id and
-                    r.product_uom.id == self.product_uom.id and r.id != self.id)
+                result = rec.pricelist_id.customer_product_price_ids.filtered(
+                    lambda r: r.product_id.id == rec.product_id.id and
+                    r.product_uom.id == rec.product_uom.id and r.id != rec.id)
                 if result:
                     raise ValidationError(
                     _('Already a record with same product and same UOM exists in Pricelist'))

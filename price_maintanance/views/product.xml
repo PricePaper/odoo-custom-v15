@@ -40,8 +40,6 @@
                                 <field name="standard_price" />
                                 <field name="burden_percent"/>
                                 <field name="cost" />
-                                <!-- <field name="lst_price" string='Standard Price'/>
-                                <field name="price_margin" /> -->
                             </group>
                             <group string="Purchases">
                                 <field name="last_purchase_price" />

@@ -666,9 +666,10 @@ class SaleOrderLine(models.Model):
                 elif line.exists() and line.product_id.need_sub_product:
                     cascade_line |= line + line.order_id.order_line.filtered(lambda rec: rec.is_addon)
                 elif line.exists():
-                    master_line = line.order_id.order_line.filtered(lambda rec: rec.product_id.need_sub_product and line.product_id in rec.product_id.product_addons_list)
-                    if master_line:
-                        raise UserError(_('Please remove addon product from lines before delete. \n\n{} \n Please refresh the page..').format("\n\t".join([li.product_id.name for li in master_line])))
+                    master_product = line.order_id.order_line.mapped('product_id').filtered(lambda rec: rec.need_sub_product and line.product_id in rec.product_addons_list)
+                    addon_products = master_product.product_addons_list
+                    if master_product:
+                        raise UserError(_("Product {} must be sold with \n\n {} \n\ncan't be removed without removing {}. \n\n Please refresh the page...!").format(master_product.name, '\n'.join(['➥ '+product.name for product in addon_products]), master_product.name))
             
             return super(SaleOrderLine, (self - unlinked_lines) + cascade_line).unlink()
 

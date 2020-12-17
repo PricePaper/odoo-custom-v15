@@ -194,7 +194,6 @@ class AddPurchaseHistorySO(models.TransientModel):
                     'product_id': line_id.order_line.product_id.id,
                     'product_uom': line_id.order_line.product_uom.id,
                     'product_uom_qty': line_id.qty_to_be,
-                    'qty_available': line_id.qty_available,
                     'price_unit': price,
                     'order_id': order_id and order_id.id or False,
                     'lst_price': line_id.order_line.product_id.lst_price,

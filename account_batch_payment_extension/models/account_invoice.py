@@ -59,7 +59,7 @@ class Accountinvoice(models.Model):
                          'name': 'Check Bounce Fine',
                          'account_id': account.id,
                          'product_id':check_bounce_product.id,
-                         'price_unit': check_bounce_product.lst_price,
+                         'price_unit': check_bounce_product.cost,
                          'quantity': 1.0,
                          'discount': 0.0,
                         })]

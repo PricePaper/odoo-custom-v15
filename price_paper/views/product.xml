@@ -128,7 +128,7 @@
                                   groups="sales_team.group_sale_manager"/>
                             </group>
                             <field name="uom_standard_prices" nolabel="1" >
-                              <tree create="0">
+                              <tree>
                                 <field name='uom_id'/>
                                 <field name='price'/>
                               </tree>

@@ -920,7 +920,7 @@ class SaleOrderLine(models.Model):
         """
         assign the price unit from customer_product_price
         based on the pricelist.
-        If there is no pricelist assign the cost of product.
+        If there is no pricelist assign the standard price of product.
         """
         old_unit_price = self.price_unit
         res = super(SaleOrderLine, self).product_uom_change()
@@ -946,7 +946,7 @@ class SaleOrderLine(models.Model):
         """
         Fetch unit price from the relevant pricelist of partner
         if product is not found in any pricelist,set
-        product price as cost price of product
+        product price as Standard price of product
         """
         prices_all = self.env['customer.product.price']
         for rec in self.order_id.partner_id.customer_pricelist_ids:

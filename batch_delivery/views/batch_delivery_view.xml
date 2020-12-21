@@ -76,7 +76,11 @@
                             string="View Route Map"/>
                     </div>
                 </xpath>
-
+                <xpath expr="//field[@name='picking_ids']" position="before">
+                    <div class="oe_right">
+                        <button name="create_batch_invoice" string="Create Invoice" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'not in', ['in_progress'])]}"/>
+                    </div>
+                </xpath>
                 <xpath expr="//field[@name='picking_ids']" position="attributes">
                     <attribute name="attrs">{'readonly': [('state', '=', 'done')]}</attribute>
                 </xpath>

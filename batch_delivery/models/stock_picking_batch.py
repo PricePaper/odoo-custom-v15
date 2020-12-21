@@ -187,7 +187,7 @@ class StockPickingBatch(models.Model):
     def done(self):
         for batch in self:
             res = []
-            for picking in batch.picking_ids:
+            for picking in batch.picking_ids.filtered(lambda rec: rec.state != 'done'):
                 if picking._check_backorder():
                     raise UserError(_("""You have processed  delivery order %s less products than the initial demand.\n  
                                       Create a backorder if you expect to process the remaining products later.\n 
@@ -197,11 +197,12 @@ class StockPickingBatch(models.Model):
                 if picking.invoice_status == 'to invoice':
                     raise UserError(_('Please create invoices for delivery order %s, to continue.') % (picking.name))
 
+                picking.button_validate()
 
                 res.append((0, 0, {'partner_id': picking.partner_id.id}))
                 # if picking.state == 'done':
                 # picking.deliver_products() # button_validate()
-            batch.picking_ids.filtered(lambda rec: rec.state != 'done').button_validate()
+            
             batch.truck_driver_id.is_driver_available = True
             batch.route_id.set_active = False
             batch.write({'cash_collected_lines': res, 'state': 'done'})
@@ -251,6 +252,11 @@ class StockPickingBatch(models.Model):
         else:
             action = {'type': 'ir.actions.act_window_close'}
         return action
+
+    @api.multi
+    def create_batch_invoice(self):
+        for batch in self:
+            batch.picking_ids.create_invoice()
 
     @api.multi
     def view_batch_payments(self):

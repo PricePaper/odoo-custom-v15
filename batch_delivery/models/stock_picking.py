@@ -114,9 +114,9 @@ class StockPicking(models.Model):
                 pick.move_ids_without_package.write({'is_transit': True})
                 for line in pick.move_line_ids:
                     line.qty_done = line.move_id.reserved_availability
-                    line.move_id.sale_line_id.qty_delivered += line.move_id.reserved_availability
-
-            pick.sale_id.write({'delivery_date': pick.batch_id.date})
+                    line.move_id.sale_line_id.qty_delivered = line.move_id.reserved_availability
+                if pick.batch_id:
+                    pick.sale_id.write({'delivery_date': pick.batch_id.date})
 
     @api.model
     def _read_group_route_ids(self, routes, domain, order):
@@ -155,6 +155,10 @@ class StockPicking(models.Model):
                 batch = BatchOB.search([('state', '=', 'in_progress'), ('route_id', '=', route_id)], limit=1)
                 if not batch:
                     batch = BatchOB.search([('state', '=', 'draft'), ('route_id', '=', route_id)], limit=1)
+
+                if batch:
+                    picking.action_make_transit()
+                    picking.sale_id.write({'delivery_date': batch.date})
                     if picking.invoice_status != 'to invoice':
                         invoice = picking.sale_id.invoice_ids.filtered(lambda rec: picking in rec.picking_ids)
                         invoice.write({'date_invoice': batch.date})

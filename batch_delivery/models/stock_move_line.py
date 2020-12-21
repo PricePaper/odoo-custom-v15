@@ -16,11 +16,13 @@ class StockMoveLine(models.Model):
     def write(self, vals):
         result = super(StockMoveLine, self).write(vals)
         for line in self:
-            if vals.get('qty_done') and line.move_id.sale_line_id and line.move_id.sale_line_id:
+            if vals.get('qty_done') and line.move_id.sale_line_id:
                 invoice_lines = line.move_id.sale_line_id.invoice_lines.filtered(
                     lambda rec: rec.invoice_id.state != 'cancel' and line.move_id in rec.stock_move_ids)
                 if invoice_lines:
                     invoice_lines.write({'quantity': vals.get('qty_done')})
+                line.move_id.sale_line_id.qty_delivered = vals.get('qty_done')
+
             if 'picking_id' in vals:
                 invoice_lines = line.move_id.sale_line_id.invoice_lines
                 invoice_lines.filtered(lambda rec: line.move_id in rec.stock_move_ids).unlink()

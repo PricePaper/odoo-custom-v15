@@ -48,6 +48,7 @@ class StockPicking(models.Model):
     reserved_qty = fields.Float('Available Quantity', compute='_compute_available_qty')
     low_qty_alert = fields.Boolean(string="Low Qty", compute='_compute_available_qty')
     sequence = fields.Integer(string='Order')
+    invoice_status = fields.Selection(related="sale_id.invoice_status", readonly=True)
 
     @api.depends('move_ids_without_package.reserved_availability')
     def _compute_available_qty(self):
@@ -114,16 +115,22 @@ class StockPicking(models.Model):
                 for line in pick.move_line_ids:
                     line.qty_done = line.move_id.reserved_availability
                     line.move_id.sale_line_id.qty_delivered += line.move_id.reserved_availability
-                if pick.sale_id.invoice_status == 'to invoice':
-                    pick.sale_id.action_invoice_create(final=True)
-            invoice = pick.sale_id.invoice_ids.filtered(lambda rec: pick in rec.picking_ids)
-            invoice.write({'date_invoice': pick.batch_id.date})
+
             pick.sale_id.write({'delivery_date': pick.batch_id.date})
 
     @api.model
     def _read_group_route_ids(self, routes, domain, order):
         route_ids = self.env['truck.route'].search([('set_active', '=', True)])
         return route_ids
+
+    @api.multi
+    def create_invoice(self):
+        for picking in self:
+            if picking.sale_id.invoice_status == 'to invoice':
+                picking.sale_id.action_invoice_create(final=True)
+                if picking.batch_id:
+                    invoice = picking.sale_id.invoice_ids.filtered(lambda rec: picking in rec.picking_ids)
+                    invoice.write({'date_invoice': picking.batch_id.date})
 
     @api.multi
     def write(self, vals):
@@ -148,12 +155,19 @@ class StockPicking(models.Model):
                 batch = BatchOB.search([('state', '=', 'in_progress'), ('route_id', '=', route_id)], limit=1)
                 if not batch:
                     batch = BatchOB.search([('state', '=', 'draft'), ('route_id', '=', route_id)], limit=1)
+                    if picking.invoice_status != 'to invoice':
+                        invoice = picking.sale_id.invoice_ids.filtered(lambda rec: picking in rec.picking_ids)
+                        invoice.write({'date_invoice': batch.date})
+
                 if not batch:
                     batch = BatchOB.create({'route_id': route_id})
                 # if picking.state not in ('assigned', 'done'):
                 #     error = "The requested operation cannot be processed because all quantities are not available for picking %s. Please assign quantities for this picking." %(picking.name)
                 #     raise UserError(_(error))
                 picking.batch_id = batch
+
+
+
                 vals['is_late_order'] = batch.state == 'in_progress'
             if 'route_id' in vals.keys() and not (vals.get('route_id', False)) and picking.batch_id and picking.batch_id.state == 'draft':
                 vals.update({'batch_id': False})

@@ -176,6 +176,10 @@ class StockPickingBatch(models.Model):
             # move every shipment to transit location(default done state of odoo picking)
             for pick in pickings:
                 pick.action_make_transit()
+                invoice = pick.sale_id.invoice_ids.filtered(lambda rec: pick in rec.picking_ids)
+                if invoice:
+                    invoice.write({'date_invoice': pick.batch_id.date})
+
         self.write({'state': 'in_progress'})
         return True
 
@@ -184,11 +188,20 @@ class StockPickingBatch(models.Model):
         for batch in self:
             res = []
             for picking in batch.picking_ids:
-                if picking.state not in ('done', 'cancel'):
-                    raise UserError(_('Please Process the delivery order %s to continue.') % (picking.name))
+                if picking._check_backorder():
+                    raise UserError(_("""You have processed  delivery order %s less products than the initial demand.\n  
+                                      Create a backorder if you expect to process the remaining products later.\n 
+                                      Do not create a backorder if you will not process the remaining products."""
+                                    ) % (picking.name))
+
+                if picking.invoice_status == 'to invoice':
+                    raise UserError(_('Please create invoices for delivery order %s, to continue.') % (picking.name))
+
+
                 res.append((0, 0, {'partner_id': picking.partner_id.id}))
                 # if picking.state == 'done':
                 # picking.deliver_products() # button_validate()
+            batch.picking_ids.filtered(lambda rec: rec.state != 'done').button_validate()
             batch.truck_driver_id.is_driver_available = True
             batch.route_id.set_active = False
             batch.write({'cash_collected_lines': res, 'state': 'done'})

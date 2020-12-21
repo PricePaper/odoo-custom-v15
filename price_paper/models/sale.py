@@ -122,7 +122,7 @@ class SaleOrder(models.Model):
         return invoice
 
     @api.multi
-    def action_create_open_invoice_xmlrpc(self):
+    def action_create_open_invoice_xmlrpc(self, invoice_date):
         sale_amount = self.amount_total or 0
         invoice_amount = round(sum(rec.amount_total_signed for rec in self.invoice_ids) or 0.0, 2)
         data = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
@@ -130,7 +130,7 @@ class SaleOrder(models.Model):
             return self.invoice_ids and self.invoice_ids.ids or False, data
         else:
             self.action_invoice_create(final=True)
-            self.invoice_ids.write({'move_name':self.note})
+            self.invoice_ids.write({'move_name':self.note, 'date_invoice': invoice_date or False})
             self.invoice_ids.action_invoice_open()
             invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
             data = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
@@ -658,7 +658,7 @@ class SaleOrderLine(models.Model):
             for parentClass in self.__class__.__bases__:
                 if parentClass._name == 'base':
                     base = parentClass
-          
+
             for line in self:
                 if line.is_delivery and base:
                     base.unlink(line)
@@ -670,7 +670,7 @@ class SaleOrderLine(models.Model):
                     addon_products = master_product.product_addons_list
                     if master_product:
                         raise UserError(_("Product {} must be sold with \n\n {} \n\ncan't be removed without removing {}. \n\n Please refresh the page...!").format(master_product.name, '\n'.join(['➥ '+product.name for product in addon_products]), master_product.name))
-            
+
             return super(SaleOrderLine, (self - unlinked_lines) + cascade_line).unlink()
 
 

@@ -103,7 +103,7 @@
                           </group>
                       </group>
                   </page>
-                  <page name='superseded' string='Superseded Products' groups="base.group_no_one" >
+                  <page name='superseded' string='Superseded Products'>
                       <group>
                           <group string="Supersedes">
                             <field name="superseded"

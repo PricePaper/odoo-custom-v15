@@ -203,7 +203,7 @@
 
     <template id="report_batch_delivery_slip">
         <t t-foreach="docs" t-as="batch">
-            <t t-foreach="batch.picking_ids" t-as="o">
+            <t t-foreach="batch.picking_ids.sorted(key=lambda b: b.sequence,reverse = True)" t-as="o">
                 <t t-call="batch_delivery.report_delivery_document" t-lang="o.partner_id.lang"/>
                 <t t-call="batch_delivery.report_delivery_document" t-lang="o.partner_id.lang"/>
             </t>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, models
-
+from odoo import api, models, _
+from odoo.exceptions import UserError
 
 class ReportMasterPickingTicket(models.AbstractModel):
 
@@ -38,6 +38,8 @@ class ReportMasterPickingTicket(models.AbstractModel):
     @api.model
     def _get_report_values(self, docids, data=None):
         docs = self.env['stock.picking.batch'].browse(docids)
+        if not docs.mapped('picking_ids'):
+            raise UserError(_('Nothing to print.'))
         return {'doc_ids': docs.ids,
                 'doc_model': 'stock.picking.batch',
                 'docs': docs,

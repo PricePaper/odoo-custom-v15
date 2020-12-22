@@ -14,6 +14,7 @@
                         <table class="table table-bordered mb64">
                             <tr>
                                 <th>Product</th>
+                                <th>Product Code</th>
                                 <th>UOM</th>
                                 <th>Total Quantity</th>
                                 <th>Location</th>
@@ -25,6 +26,9 @@
                                         <tr>
                                             <td>
                                                 <t t-esc="product.name"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="product.default_code"/>
                                             </td>
                                             <td>
                                                 <t t-esc="uom.name"/>

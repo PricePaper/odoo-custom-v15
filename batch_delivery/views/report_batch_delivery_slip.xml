@@ -84,15 +84,15 @@
                             <tr  t-if="o.partner_id.bill_with_goods" ></tr>
                             <tr  t-if="o.partner_id.bill_with_goods">
                                 <td class="text-right" colspan="3">Untaxed Amount</td>
-                                <td class="text-right" ><span t-esc="total"/></td>
+                                <td class="text-right" ><span t-esc="round(total,2)"/></td>
                             </tr>
                             <tr t-if="o.partner_id.bill_with_goods">
                                 <td class="text-right" colspan="3">Taxes</td>
-                                <td class="text-right" ><span t-esc="price_tax"/></td>
+                                <td class="text-right" ><span t-esc="round(price_tax,2)"/></td>
                             </tr>
                             <tr t-if="o.partner_id.bill_with_goods">
                                 <td class="text-right" colspan="3">Total</td>
-                                <td class="text-right" ><span t-esc="total+price_tax"/></td>
+                                <td class="text-right" ><span t-esc="round(total+price_tax,2)"/></td>
                             </tr>
                         </tbody>
                     </table>

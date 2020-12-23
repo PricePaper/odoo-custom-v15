@@ -16,8 +16,8 @@ class TruckRoute(models.Model):
 
     @api.multi
     def unlink(self):
-        # if self.set_active:
-        #     raise UserError(_('Route is assigned to a batch. First complete the batch to delete the route.'))
+        if self.set_active:
+            raise UserError(_('Route is assigned to a batch. First complete the batch to delete the route.'))
         return super(TruckRoute, self).unlink()
 
 

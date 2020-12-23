@@ -103,6 +103,7 @@ class StockPickingBatch(models.Model):
         for batch in self:
             if batch.route_id:
                 result.append((batch.id, _('%s (%s)') % (batch.name, batch.route_id.name and batch.route_id.name or '')))
+            result.append((batch.id, _('%s') % (batch.name)))
         return result
 
     @api.multi
@@ -189,7 +190,7 @@ class StockPickingBatch(models.Model):
             res = []
             for picking in batch.picking_ids.filtered(lambda rec: rec.state != 'done'):
                 if picking._check_backorder():
-                    raise UserError(_("""You have processed  delivery order %s with less products than the initial demand.\n  
+                    raise UserError(_("""You have processed  delivery order %s with less products than the initial demand.\n
                                       ➥ Create a backorder if you expect to process the remaining products later.
                                       ➥ Do not create a backorder if you will not process the remaining products."""
                                     ) % (picking.name))
@@ -204,7 +205,8 @@ class StockPickingBatch(models.Model):
                 # picking.deliver_products() # button_validate()
 
             batch.truck_driver_id.is_driver_available = True
-            batch.route_id.set_active = False
+            if batch.route_id:
+                batch.route_id.set_active = False
             batch.write({'cash_collected_lines': res, 'state': 'done'})
         return True
 

@@ -532,6 +532,8 @@ class SaleOrder(models.Model):
                 for order_line in order.order_line:
                     if order_line.is_delivery:
                         continue
+                    if not order_line.update_pricelist:
+                        continue
                     order_line.update_price_list()
                     # if order_line.is_downpayment and order_line.product_id.is_storage_contract:
                     #     product_id = self.env['ir.config_parameter'].sudo().get_param('sale.default_deposit_product_id')
@@ -605,6 +607,7 @@ class SaleOrderLine(models.Model):
     gross_volume = fields.Float(string="Gross Volume", compute='_compute_gross_weight_volume')
     gross_weight = fields.Float(string="Gross Weight", compute='_compute_gross_weight_volume')
     is_addon = field_name = fields.Boolean(string='Is Addon')
+    update_pricelist = fields.Boolean(string="Update Pricelist", default=True, copy=False)
 
     @api.depends('product_id.volume', 'product_id.weight')
     def _compute_gross_weight_volume(self):

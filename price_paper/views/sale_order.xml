@@ -127,6 +127,7 @@
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
                     <field name="profit_margin"/>
                     <field name="price_from" invisible="1"/>
+
                 </xpath>
                 <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']" position="before">
                     <field name="lst_price" readonly="1" attrs="{'invisible': [('display_type', '!=', False)]}"/>
@@ -137,6 +138,7 @@
                      <attribute name="attrs">{"readonly": [('price_lock', '=', True)]}</attribute>
                  </xpath>
                 <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']" position="after">
+                    <field name="update_pricelist"/>
                     <field name="profit_margin" attrs="{'invisible': [('display_type', '!=', False)]}"/>
                     <field name="price_from" invisible="1"/>
                 </xpath>

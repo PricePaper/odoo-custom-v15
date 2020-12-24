@@ -136,6 +136,7 @@
                 </xpath>
                  <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']" position="attributes">
                      <attribute name="attrs">{"readonly": [('price_lock', '=', True)]}</attribute>
+                     <attribute name="force_save">1</attribute>
                  </xpath>
                 <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']" position="after">
                     <field name="update_pricelist"/>

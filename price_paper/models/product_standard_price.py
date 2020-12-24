@@ -32,6 +32,43 @@ class ProductStandardPrice(models.Model):
             else:
                 rec.cost = 0
 
+    @api.multi
+    def write(self, vals):
+        """
+        product price log
+        """
+
+        if 'price' in vals:
+            log_vals = {'change_date' : fields.Datetime.now(),
+                        'type': 'std_price',
+                        'old_price': self.price,
+                        'new_price': vals.get('price'),
+                        'user_id': self.env.user.id,
+                        'uom_id': self.uom_id.id,
+                        'product_id': self.product_id.id
+                        }
+            if self._context.get('user', False):
+                log_vals['user_id'] = self._context.get('user', False)
+            self.env['product.price.log'].create(log_vals)
+        result = super(ProductStandardPrice, self).write(vals)
+        return result
+
+    @api.model
+    def create(self, vals):
+        res = super(ProductStandardPrice, self).create(vals)
+        if 'price' in vals:
+            log_vals = {'change_date' : fields.Datetime.now(),
+                        'type': 'std_price',
+                        'new_price': vals.get('price'),
+                        'user_id': self.env.user.id,
+                        'uom_id': res.uom_id.id,
+                        'product_id': res.product_id.id
+                        }
+            if self._context.get('user', False):
+                log_vals['user_id'] = self._context.get('user', False)
+            self.env['product.price.log'].create(log_vals)
+        return res
+
 
 
 ProductStandardPrice()

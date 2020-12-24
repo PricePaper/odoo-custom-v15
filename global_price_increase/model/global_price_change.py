@@ -24,6 +24,7 @@ class GlobalPriceChange(models.Model):
     price_change = fields.Float(string='Price Change %')
     run_date = fields.Date('Update Date', default=fields.Date.context_today)
     is_done = fields.Boolean(string='Done', copy=False, default=False)
+    user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
 
 
     @api.constrains('customer_ranking')
@@ -93,7 +94,7 @@ class GlobalPriceChange(models.Model):
 
                 if rec.is_exclude and rec.exclude_date:
                     partner = price_list.pricelist_id.partner_ids
-                    if not partner or len(partner) > 2:
+                    if not partner or len(partner) > 1:
                         continue
                     if partner.established_date and partner.established_date > rec.exclude_date:
                         continue
@@ -106,7 +107,7 @@ class GlobalPriceChange(models.Model):
                 if price_list.pricelist_id and price_list.pricelist_id.price_lock and price_list.pricelist_id.lock_expiry_date > today:
                     continue
 
-                price_list.price = price_list.price*((100+rec.price_change)/100)
+                price_list.with_context({'user':rec.user_id and rec.user_id.id}).price = price_list.price*((100+rec.price_change)/100)
 
             rec.is_done = True
 

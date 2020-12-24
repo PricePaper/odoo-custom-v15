@@ -206,7 +206,8 @@ class ProductProduct(models.Model):
                 new_lst_price = self.get_price_from_competitor_or_categ(uom)
             uom_rec = self.uom_standard_prices.filtered(lambda p: p.uom_id == uom)
             if uom_rec:
-                uom_rec.price = new_lst_price
+                if uom_rec.price != new_lst_price:
+                    uom_rec.price = new_lst_price
             else:
                 vals={'product_id': self.id,
                       'uom_id': uom.id,

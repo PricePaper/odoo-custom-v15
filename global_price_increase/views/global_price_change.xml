@@ -63,6 +63,7 @@
                                 <field name="price_change" required='1' attrs="{'readonly':[('is_done', '=', True)]}"/>
                                 <button string="Apply Immediately" confirm="You are going to change the price in the selected customer pricelists. Are you sure you want to proceed? " type="object" name="immediate_price_change" class="oe_read_only" attrs="{'invisible':[('is_done', '=', True)]}"/>
                                 <field name="is_done" invisible='1'/>
+                                <field name="user_id" invisible="1"/>
                             </group>
                             <group>
                                 <field name="exclude_date" attrs="{'invisible': [('is_exclude', '=', False)], 'required': [('is_exclude', '=', True)], 'readonly':[('is_done', '=', True)]}"/>

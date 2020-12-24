@@ -49,9 +49,10 @@ class CompetitorItems(models.Model):
                 price = rec.price + (rec.price * pricelist.competietor_margin/100)
 
                 for line in lines:
-                    line.write({'price': price,
-                                'product_uom': rec.product_id.uom_id.id,
-                               })
+                    if line.price != price or line.product_uom != rec.product_id.uom_id:
+                        line.write({'price': price,
+                                    'product_uom': rec.product_id.uom_id.id,
+                                   })
                 if not lines:
                     self.env['customer.product.price'].create({'pricelist_id': pricelist.id,
                                                                'product_id': rec.product_id.id,

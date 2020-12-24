@@ -1,0 +1,69 @@
+<odoo>
+    <data>
+        <record id="view_product_price_log_tree" model="ir.ui.view">
+            <field name="name">product.price.log.tree</field>
+            <field name="model">product.price.log</field>
+            <field name="arch" type="xml">
+                <tree string="Product Price Log" create="0" delete="0">
+                    <field name="product_id" />
+                    <field name="type" />
+                    <field name="old_price" />
+                    <field name="new_price" />
+                    <field name="change_date"/>
+                    <field name="user_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_product_price_log_search" model="ir.ui.view">
+            <field name="name">product.price.log.search</field>
+            <field name="model">product.price.log</field>
+            <field name="arch" type="xml">
+                <search string="Search Product Price Log">
+                    <field name="product_id" string="Product" />
+                    <group expand="0" string="Group By">
+                        <filter string="Product" name="groupby_product" domain="[]" context="{'group_by':'product_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="view_product_price_log_form" model="ir.ui.view">
+            <field name="name">product.price.log.form</field>
+            <field name="model">product.price.log</field>
+            <field name="arch" type="xml">
+                <form string="Product Price Log" create="0" delete="0" edit="0">
+                    <sheet>
+                        <group>
+                            <group>
+                              <field name="product_id" />
+                              <field name="type" />
+                              <field name="change_date"/>
+                              <field name="user_id"/>
+                            </group>
+                            <group>
+                              <field name="pricelist_id"/>
+                              <field name="uom_id"/>
+                              <field name="new_price" />
+                              <field name="old_price" />
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_product_price_log" model="ir.actions.act_window">
+            <field name="name">Product Price Log</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.price.log</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p>
+                No records available.
+              </p>
+            </field>
+        </record>
+    </data>
+</odoo>

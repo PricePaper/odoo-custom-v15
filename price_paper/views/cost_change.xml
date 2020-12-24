@@ -79,6 +79,7 @@
                                 <field name="old_cost" attrs="{'invisible':[('item_filter', '!=', 'product')]}"/>
                                 <field name="new_cost" attrs="{'invisible':['|',('item_filter', '!=', 'product'), ('is_done', '=', True)]}"/>
                                 <field name="is_done" invisible="1"/>
+                                <field name="user_id" invisible="1"/>
                                 <button string="Apply Immediately" attrs="{'invisible':[('is_done', '=', True)]}" confirm="You are going to change the Cost. Are you sure you want to proceed? " type="object" name="cost_change_method" class="oe_read_only oe_highlight"/>
                             </group>
                             <group>

@@ -53,10 +53,41 @@ class CustomerProductPrice(models.Model):
         """
         overriden to update price_last_updated
         """
+        if 'price' in vals:
+            log_vals = {'change_date' : fields.Datetime.now(),
+                        'type': 'pricelist_price',
+                        'old_price': self.price,
+                        'new_price': vals.get('price'),
+                        'user_id': self.env.user.id,
+                        'uom_id': self.product_uom.id,
+                        'pricelist_id':self.pricelist_id and self.pricelist_id.id,
+                        'product_id': self.product_id.id
+                        }
+            if self._context.get('user', False):
+                log_vals['user_id'] = self._context.get('user', False)
+            # if self._context.get('from_cron', False):
+            #     log_vals['user_id'] = False
+            self.env['product.price.log'].create(log_vals)
+            vals['price_last_updated'] = date.today()
         result = super(CustomerProductPrice, self).write(vals)
-        if vals.get('price'):
-            self.price_last_updated = date.today()
         return result
+
+    @api.model
+    def create(self, vals):
+        res = super(CustomerProductPrice, self).create(vals)
+        if 'price' in vals:
+            log_vals = {'change_date' : fields.Datetime.now(),
+                        'type': 'pricelist_price',
+                        'new_price': vals.get('price'),
+                        'user_id': self.env.user.id,
+                        'uom_id': res.product_uom.id,
+                        'pricelist_id':res.pricelist_id and self.pricelist_id.id,
+                        'product_id': res.product_id.id
+                        }
+            if self._context.get('user', False):
+                log_vals['user_id'] = self._context.get('user', False)
+            self.env['product.price.log'].create(log_vals)
+        return res
 
     @api.multi
     @api.depends('pricelist_id', 'product_id', 'partner_id')

@@ -146,6 +146,30 @@ class ProductProduct(models.Model):
         """
         #TODO Update price_list when standard price change
         for product in self:
+            if 'standard_price' in vals:
+                log_vals = {'change_date' : fields.Datetime.now(),
+                            'type': 'cost',
+                            'old_price': self.standard_price,
+                            'new_price': vals.get('standard_price'),
+                            'user_id': self.env.user.id,
+                            'uom_id': product.uom_id.id,
+                            'product_id': product.id
+                            }
+                if self._context.get('user', False):
+                    log_vals['user_id'] = self._context.get('user', False)
+                self.env['product.price.log'].create(log_vals)
+            if 'burden_percent' in vals:
+                log_vals = {'change_date' : fields.Datetime.now(),
+                            'type': 'burden',
+                            'old_price': self.burden_percent,
+                            'new_price': vals.get('burden_percent'),
+                            'user_id': self.env.user.id,
+                            'uom_id': product.uom_id.id,
+                            'product_id': product.id
+                            }
+                if self._context.get('user', False):
+                    log_vals['user_id'] = self._context.get('user', False)
+                self.env['product.price.log'].create(log_vals)
             if 'active' in vals and not vals.get('active'):
                 if product.qty_available > 0:
                     raise ValidationError(_("Can't archive product with inventory on hand"))
@@ -153,14 +177,42 @@ class ProductProduct(models.Model):
                 reordering_rules = self.env['stock.warehouse.orderpoint'].search([('product_id', 'in', self.ids), ('active', '=', True)])
                 reordering_rules.toggle_active()
 
-                if vals.get('burden_percent'):
-                    # self.update_customer_product_price()
-                    if vals.get('burden_percent') and product.cost > product.lst_price:
-                        product.lst_price = product.cost
+            if vals.get('burden_percent') or vals.get('standard_price'):
+                # self.update_customer_product_price()
+                for rec in product.uom_standard_prices:
+                    if rec.cost > rec.price:
+                        rec.price = rec.cost
 
 
         result = super(ProductProduct, self).write(vals)
         return result
+
+    @api.model
+    def create(self, vals):
+        res = super(ProductProduct, self).create(vals)
+        if 'standard_price' in vals:
+            log_vals = {'change_date' : fields.Datetime.now(),
+                        'type': 'cost',
+                        'new_price': vals.get('standard_price'),
+                        'user_id': self.env.user.id,
+                        'uom_id': res.uom_id.id,
+                        'product_id': res.id
+                        }
+            if self._context.get('user', False):
+                log_vals['user_id'] = self._context.get('user', False)
+            self.env['product.price.log'].create(log_vals)
+        if 'burden_percent' in vals:
+            log_vals = {'change_date' : fields.Datetime.now(),
+                        'type': 'burden',
+                        'new_price': vals.get('burden_percent'),
+                        'user_id': self.env.user.id,
+                        'uom_id': res.uom_id.id,
+                        'product_id': res.id
+                        }
+            if self._context.get('user', False):
+                log_vals['user_id'] = self._context.get('user', False)
+            self.env['product.price.log'].create(log_vals)
+        return res
 
 
     # def update_customer_product_price(self):
@@ -220,26 +272,6 @@ class ProductProduct(models.Model):
 
 
 ProductProduct()
-
-#
-# class ProductAttributeValue(models.Model):
-#     _inherit = "product.attribute.price"
-#
-#     @api.multi
-#     def write(self, vals):
-#         """
-#         overriden to update the customer product price when
-#         price_extra changes
-#         """
-#         result = super(ProductAttributeValue, self).write(vals)
-#         if vals.get('price_extra'):
-#             variants = self.product_tmpl_id.product_variant_ids.filtered(lambda r: self.value_id in r.attribute_value_ids)
-#             for variant in variants:
-#                 variant.update_customer_product_price()
-#         return result
-#
-# ProductAttributeValue()
-
 
 class ProductCategory(models.Model):
     _inherit = "product.category"

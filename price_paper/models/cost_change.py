@@ -27,6 +27,7 @@ class CostChange(models.Model):
     burden_change = fields.Float(string='Burden%')
     burden_old = fields.Float(string='Old Burden%')
     update_burden = fields.Boolean('Update Burden%')
+    user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
 
 
 
@@ -167,7 +168,7 @@ class CostChange(models.Model):
                         continue
 
                     new_price = rec.calculate_new_price(price_list_rec)
-                    price_list_rec.price = new_price
+                    price_list_rec.with_context({'user':rec.user_id and rec.user_id.id}).price = new_price
 
             # Update vendor pricelist
             if rec.update_vendor_pricelist and rec.item_filter == 'vendor':
@@ -189,14 +190,14 @@ class CostChange(models.Model):
 
             #Update Fixed Cost
             if rec.price_filter == 'fixed':
-                products_to_filter.write({'standard_price': rec.price_change})
+                products_to_filter.with_context({'user':rec.user_id and rec.user_id.id}).write({'standard_price': rec.price_change})
             else:
                 for product in products_to_filter:
-                    product.standard_price = product.standard_price * ((100+rec.price_change)/100)
+                    product.with_context({'user':rec.user_id and rec.user_id.id}).standard_price = product.standard_price * ((100+rec.price_change)/100)
             #Update burden%
             if rec.update_burden and rec.burden_change:
                 for product in products_to_filter:
-                    product.write({'burden_percent': rec.burden_change})
+                    product.with_context({'user':rec.user_id and rec.user_id.id}).write({'burden_percent': rec.burden_change})
             rec.is_done = True
         return True
 
@@ -229,7 +230,7 @@ class CostChange(models.Model):
                     new_price = (product.uom_id._compute_price(new_working_cost, rec.uom_id) * ((100+product.categ_id.repacking_upcharge)/100)) / (1-margin)
                 else:
                     new_price = new_working_cost / (1-margin)
-            rec.price = new_price
+            rec.with_context({'user':self.user_id and self.user_id.id}).price = new_price
 
 
     def calculate_new_price(self, pricelist=None):

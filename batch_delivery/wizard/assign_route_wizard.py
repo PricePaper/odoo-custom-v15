@@ -1,11 +1,7 @@
-from odoo import models, fields, api,_
-
-
-
+from odoo import models, fields, api
 
 
 class AssignRouteWizard(models.TransientModel):
-
     _name = 'assign.route.wizard'
     _description = 'Assign Route'
 
@@ -14,7 +10,9 @@ class AssignRouteWizard(models.TransientModel):
     @api.multi
     def assign_routes(self):
 
-        pickings = self.env['stock.picking'].search([('state','in', ['confirmed', 'assigned', 'in_transit']), ('picking_type_code', '=', 'outgoing'), ('route_id', '=', False)])
+        pickings = self.env['stock.picking'].search(
+            [('state', 'in', ['confirmed', 'assigned', 'in_transit']), ('picking_type_code', '=', 'outgoing'),
+             ('route_id', '=', False)])
 
         # group all potential pickings into a dictionary based on partner_id. this dictionary is later used to assign routes for pickings
         picking_dict = {}
@@ -22,7 +20,7 @@ class AssignRouteWizard(models.TransientModel):
             if picking.partner_id.id in picking_dict.keys():
                 picking_dict[picking.partner_id.id].append(picking)
             else:
-                picking_dict.update({picking.partner_id.id:[picking]})
+                picking_dict.update({picking.partner_id.id: [picking]})
 
         # the below loop assigns routes to the available pickings ready for delivery when route is assigned, batch is auto assigned based in the logic written in stock.picking model
         partners_assigned = []
@@ -36,7 +34,7 @@ class AssignRouteWizard(models.TransientModel):
                     [picking.write({'route_id': line.route_id.id}) for picking in picking_dict[partner_id]]
                     partners_assigned.append(partner_id)
 
-        #it will preserve the context and domain value for view transition.
+        # it will preserve the context and domain value for view transition.
         res = self.env.ref('batch_delivery.stock_picking_act_route_assign').read()[0]
 
         return res
@@ -46,7 +44,6 @@ AssignRouteWizard()
 
 
 class AssignRouteWizardLines(models.TransientModel):
-
     _name = 'assign.route.wizard.line'
     _description = 'Assign Route Line'
 
@@ -54,12 +51,9 @@ class AssignRouteWizardLines(models.TransientModel):
     route_id = fields.Many2one('truck.route', string='Route')
     prior_batch_id = fields.Many2one('stock.picking.batch', string='Prior Batch')
 
-
-
     @api.onchange('route_id')
     def onchange_route_id(self):
-        return {'domain': { 'prior_batch_id': ([('route_id', '=', self.route_id.id)])}}
-
+        return {'domain': {'prior_batch_id': ([('route_id', '=', self.route_id.id)])}}
 
 
 AssignRouteWizardLines()

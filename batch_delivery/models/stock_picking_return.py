@@ -21,7 +21,8 @@ class StockPickingReturn(models.Model):
         email_context = {}
         if record.sales_person_ids:
             email_context['partner_to'] = ','.join(map(str, record.sales_person_ids.ids))
-            template.with_context(email_context).send_mail(record.id, force_send=True, notif_layout="mail.mail_notification_light")
+            template.with_context(email_context).send_mail(record.id, force_send=True,
+                                                           notif_layout="mail.mail_notification_light")
         return record
 
 

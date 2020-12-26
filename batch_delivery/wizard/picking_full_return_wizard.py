@@ -37,6 +37,8 @@ class PickingFullReturnWizard(models.TransientModel):
         order.write({'product_uom_qty': order.product_uom_qty + 1})
         invoice = picking.sale_id.invoice_ids.filtered(lambda rec: picking in rec.picking_ids)
         invoice.action_cancel()
+        #TODO :: Picking Return
+        # action = self.env['ir.actions.act_window'].for_xml_id('stock', 'act_stock_return_picking')
         return True
 
 

@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, registry, api,_
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
 
-
-
 class TruckRoute(models.Model):
-
     _name = 'truck.route'
     _description = 'Truck Route'
     _order = 'name'

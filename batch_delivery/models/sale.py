@@ -23,7 +23,6 @@ SaleOrder()
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
-
     lot_id = fields.Many2one('stock.production.lot', 'Lot')
     info = fields.Char(compute='_get_price_lock_info_JSON')
 
@@ -31,8 +30,9 @@ class SaleOrderLine(models.Model):
     @api.depends('product_id')
     def _get_price_lock_info_JSON(self):
         self.info = json.dumps(False)
-        if self.product_id and self.price_from and  self.price_from.price_lock:
-            info = {'title': 'Price locked until '+ self.price_from.lock_expiry_date.strftime('%m/%d/%Y'), 'record': self.price_from.id}
+        if self.product_id and self.price_from and self.price_from.price_lock:
+            info = {'title': 'Price locked until ' + self.price_from.lock_expiry_date.strftime('%m/%d/%Y'),
+                    'record': self.price_from.id}
             self.info = json.dumps(info)
 
     @api.onchange('product_id')
@@ -52,17 +52,16 @@ class SaleOrderLine(models.Model):
             'domain': {'lot_id': [('id', 'in', available_lot_ids)]}
         }
 
-
     @api.onchange('lot_id')
     def _onchange_product_id_lot_qty_warning(self):
         if self.lot_id and self.lot_id.quant_ids:
-
             quants = self.lot_id.quant_ids.filtered(lambda q: q.location_id.usage in ['internal'])
             product_qty = sum(quants.mapped('quantity'))
 
             warning_mess = {
                 'title': _('Warning!'),
-                'message' : _('Please note that there are only %s quantities of %s currently in this lot' %(product_qty, self.product_id.name))
+                'message': _('Please note that there are only %s quantities of %s currently in this lot' % (
+                    product_qty, self.product_id.name))
             }
             res = {'warning': warning_mess}
             return res
@@ -75,7 +74,6 @@ class SaleOrderLine(models.Model):
         if moves:
             result.update({'stock_move_ids': [(6, 0, moves.ids)]})
         return result
-
 
 
 SaleOrderLine()

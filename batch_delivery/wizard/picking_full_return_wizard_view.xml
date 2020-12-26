@@ -1,6 +1,7 @@
 <odoo>
     <data>
-        <record id="view_picking_full_return_wizard_form" model="ir.ui.view">
+
+    <record id="view_picking_full_return_wizard_form" model="ir.ui.view">
             <field name="name">picking.full.return.wizard</field>
             <field name="model">picking.full.return.wizard</field>
             <field name="arch" type="xml">

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api,_
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from odoo.tools import float_compare
 
-class StockPicking(models.Model):
 
+class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
     _order = 'release_date, deliver_by'
@@ -42,7 +42,7 @@ class StockPicking(models.Model):
     delivery_move_ids = fields.One2many('stock.move', 'delivery_picking_id', string='Transit Moves')
     delivery_move_line_ids = fields.One2many('stock.move.line', 'delivery_picking_id', string='Transit Move Lines')
     shipping_easiness = fields.Selection([('easy', 'Easy'), ('neutral', 'Neutral'), ('hard', 'Hard')],
-    string='Easiness Of Shipping')
+                                         string='Easiness Of Shipping')
     is_transit = fields.Boolean(string='Transit', copy=False)
     is_late_order = fields.Boolean(string='Late Order', copy=False)
     reserved_qty = fields.Float('Available Quantity', compute='_compute_available_qty')
@@ -65,11 +65,10 @@ class StockPicking(models.Model):
             else:
                 self.shipping_easiness = self.partner_id.zip_shipping_easiness
 
-
     @api.multi
     def _compute_item_count(self):
         for picking in self:
-            count=0
+            count = 0
             for line in picking.move_lines:
                 count += line.product_uom_qty
             picking.item_count = count
@@ -106,7 +105,6 @@ class StockPicking(models.Model):
             else:
                 self.state = relevant_move_state
 
-
     def action_make_transit(self):
         for pick in self:
             if pick.state not in ['in_transit', 'done']:
@@ -137,27 +135,25 @@ class StockPicking(models.Model):
 
         for picking in self:
 
+            #            in_transit = vals.get('in_transit', False)
+            #            if in_transit:
+            #                historical_picking = self.env['stock.picking'].search([('route_id', '!=', False), ('state', '=', 'done'), ('picking_type_id.code', '=', 'outgoing'), ('partner_id', '=', picking.partner_id.id)], order='create_date desc', limit=1)
 
-
-#            in_transit = vals.get('in_transit', False)
-#            if in_transit:
-#                historical_picking = self.env['stock.picking'].search([('route_id', '!=', False), ('state', '=', 'done'), ('picking_type_id.code', '=', 'outgoing'), ('partner_id', '=', picking.partner_id.id)], order='create_date desc', limit=1)
-
-#                route_id = historical_picking and historical_picking.route_id and historical_picking.route_id.id or False
-#                if route_id:
-#                    vals.update({'route_id': route_id})
-
-
+            #                route_id = historical_picking and historical_picking.route_id and historical_picking.route_id.id or False
+            #                if route_id:
+            #                    vals.update({'route_id': route_id})
 
             route_id = vals.get('route_id', False)
             if route_id:
                 BatchOB = self.env['stock.picking.batch']
                 batch = BatchOB.search([('state', '=', 'in_progress'), ('route_id', '=', route_id)], limit=1)
-                if not batch:
+                if batch:
+                    picking.action_make_transit()
+                elif not batch:
                     batch = BatchOB.search([('state', '=', 'draft'), ('route_id', '=', route_id)], limit=1)
 
                 if batch:
-                    picking.action_make_transit()
+                    # picking.action_make_transit()
                     picking.sale_id.write({'delivery_date': batch.date})
                     if picking.invoice_status != 'to invoice':
                         invoice = picking.sale_id.invoice_ids.filtered(lambda rec: picking in rec.picking_ids)
@@ -170,10 +166,9 @@ class StockPicking(models.Model):
                 #     raise UserError(_(error))
                 picking.batch_id = batch
 
-
-
                 vals['is_late_order'] = batch.state == 'in_progress'
-            if 'route_id' in vals.keys() and not (vals.get('route_id', False)) and picking.batch_id and picking.batch_id.state == 'draft':
+            if 'route_id' in vals.keys() and not (
+                    vals.get('route_id', False)) and picking.batch_id and picking.batch_id.state == 'draft':
                 vals.update({'batch_id': False})
         res = super(StockPicking, self).write(vals)
         return res
@@ -206,11 +201,12 @@ class StockPicking(models.Model):
     def action_cancel(self):
         res = super(StockPicking, self).action_cancel()
         self.mapped('move_ids_without_package').write({'is_transit': False})
+        self.write({'batch_id': False, 'is_late_order': False})
         return res
 
     @api.multi
     def action_remove(self):
-        result = self.write({'batch_id': False, 'route_id': False})
+        result = self.write({'batch_id': False, 'route_id': False, 'is_late_order': False})
         return result
 
     @api.multi
@@ -226,7 +222,7 @@ class StockPicking(models.Model):
                 if line.lot_id and line.pref_lot_id and line.lot_id != line.pref_lot_id:
                     raise UserError(_(
                         "This Delivery for product %s is supposed to use products from the lot %s please clear the Preferred Lot field to override" % (
-                        line.product_id.name, line.pref_lot_id.name)))
+                            line.product_id.name, line.pref_lot_id.name)))
 
             no_quantities_done_lines = self.move_line_ids.filtered(lambda l: l.qty_done == 0.0 and not l.is_transit)
             for line in no_quantities_done_lines:
@@ -238,12 +234,15 @@ class StockPicking(models.Model):
 
     @api.model
     def reset_picking_with_route(self):
-        picking = self.env['stock.picking'].search([('state', 'in', ['confirmed', 'assigned', 'in_transit']),('batch_id', '!=', False), ('batch_id.state','=', 'draft')])
+        picking = self.env['stock.picking'].search(
+            [('state', 'in', ['confirmed', 'assigned', 'in_transit']), ('batch_id', '!=', False),
+             ('batch_id.state', '=', 'draft')])
         picking.mapped('route_id').write({'set_active': False})
         # removed newly created batch with empty pciking lines.
         picking.mapped('batch_id').sudo().unlink()
         picking.write({'route_id': False})
 
         return True
+
 
 StockPicking()

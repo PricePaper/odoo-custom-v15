@@ -19,26 +19,26 @@
                 <form>
                     <sheet>
                         <div class="oe_title">
-                        <h1>
-                            <field name="name" readonly="1"/>
-                        </h1>
-                    </div>
-                    <group>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
                         <group>
-                            <field name="sale_id" readonly="1"/>
-                            <field name="picking_id" readonly="1"/>
+                            <group>
+                                <field name="sale_id" readonly="1"/>
+                                <field name="picking_id" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="sales_person_ids" widget="many2many_tags" readonly="1"/>
+                                <field name="reason" readonly="1"/>
+                            </group>
                         </group>
-                        <group>
-                            <field name="sales_person_ids" widget="many2many_tags" readonly="1"/>
-                            <field name="reason" readonly="1"/>
-                        </group>
-                    </group>
                         <field name="return_line_ids" widget="section_and_note_one2many" readonly="1">
                             <tree>
-                                 <field name="product_id"/>
-                                 <field name="ordered_qty"/>
-                                 <field name="delivered_qty"/>
-                                 <field name="returned_qty"/>
+                                <field name="product_id"/>
+                                <field name="ordered_qty"/>
+                                <field name="delivered_qty"/>
+                                <field name="returned_qty"/>
                             </tree>
                         </field>
                     </sheet>
@@ -54,15 +54,15 @@
             <field name="view_mode">tree,form</field>
             <field name="context">{'create': False}</field>
             <field name="help" type="html">
-              <p>
-                No Record Available.
-              </p>
+                <p>
+                    No Record Available.
+                </p>
             </field>
         </record>
 
-         <menuitem id="menu_stock_return_analysis"
-            parent="sale.sale_order_menu"
-            action="action_stock_return_analysis"
-            sequence="7"/>
+        <menuitem id="menu_stock_return_analysis"
+                  parent="sale.sale_order_menu"
+                  action="action_stock_return_analysis"
+                  sequence="7"/>
     </data>
 </odoo>

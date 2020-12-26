@@ -25,7 +25,8 @@ class Product(models.Model):
         action['context'] = {'search_default_groupby_location_id': 1}
         return action
 
-    @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done', 'stock_move_ids.is_transit')
+    @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done',
+                 'stock_move_ids.is_transit')
     def _compute_quantities(self):
         super(Product, self)._compute_quantities()
         for product in self:

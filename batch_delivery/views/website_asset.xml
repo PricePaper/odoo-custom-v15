@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-	<!-- inherit from web assets backend -->
-	<template id="google_maps" name="google_maps assets"
-		inherit_id="website_google_map.google_map">
-		<xpath expr="//script[@src='/website_google_map/static/src/js/website_google_map.js']" position="replace">
+    <!-- inherit from web assets backend -->
+    <template id="google_maps" name="google_maps assets"
+              inherit_id="website_google_map.google_map">
+        <xpath expr="//script[@src='/website_google_map/static/src/js/website_google_map.js']" position="replace">
 
-			<script type="text/javascript" src="/batch_delivery/static/src/js/website_google_maps.js"></script>
+            <script type="text/javascript" src="/batch_delivery/static/src/js/website_google_maps.js"></script>
 
-		</xpath>
+        </xpath>
 
-	</template>
+    </template>
 
-	<template id="assets_backend" name="account assets" inherit_id="web.assets_backend">
+    <template id="assets_backend" name="account assets" inherit_id="web.assets_backend">
         <xpath expr="." position="inside">
             <script type="text/javascript" src="/batch_delivery/static/src/js/product_price_lock.js"></script>
-			<script type="text/javascript" src="/batch_delivery/static/src/js/kanban_reset_button.js"></script>
+            <script type="text/javascript" src="/batch_delivery/static/src/js/kanban_reset_button.js"></script>
         </xpath>
-	</template>
+    </template>
 
 </odoo>

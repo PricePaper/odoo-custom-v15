@@ -3,6 +3,7 @@
 from datetime import date
 
 import werkzeug
+
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
@@ -31,6 +32,13 @@ class StockPickingBatch(models.Model):
     total_weight = fields.Float(string="Total Weight", compute='_compute_gross_weight_volume')
     total_unit = fields.Float(string="Total Unit", compute='_compute_gross_weight_volume')
     batch_payment_count = fields.Integer(string='Batch Payment', compute='_compute_batch_payment_count')
+    to_invoice = fields.Boolean(string='Need Invoice', compute='_compute_to_invoice_state')
+
+    @api.multi
+    @api.depends('picking_ids.invoice_status')
+    def _compute_to_invoice_state(self):
+        for rec in self:
+            rec.to_invoice = any([pick.invoice_status == 'to invoice' for pick in rec.picking_ids])
 
     @api.multi
     @api.depends('payment_ids')
@@ -54,7 +62,6 @@ class StockPickingBatch(models.Model):
         for rec in self:
             rec.have_late_order = any(rec.picking_ids.mapped('is_late_order'))
 
-
     @api.multi
     @api.depends('picking_ids.move_lines.quantity_done', 'picking_ids.move_line_ids.qty_done')
     def _calculate_batch_profit(self):
@@ -69,15 +76,19 @@ class StockPickingBatch(models.Model):
                 if picking.move_line_ids:
                     for line in picking.move_line_ids:
                         if line.move_id.product_uom_qty:
-                            order_amount += ((line.move_id.sale_line_id.price_total / line.move_id.product_uom_qty) * line.qty_done) if line.qty_done else line.move_id.sale_line_id.price_total
+                            order_amount += ((
+                                                     line.move_id.sale_line_id.price_total / line.move_id.product_uom_qty) * line.qty_done) if line.qty_done else line.move_id.sale_line_id.price_total
                             if line.move_id.sale_line_id.profit_margin:
-                                profit_amount +=((line.move_id.sale_line_id.profit_margin / line.move_id.product_uom_qty) * line.qty_done) if line.qty_done else line.move_id.sale_line_id.profit_margin
+                                profit_amount += ((
+                                                          line.move_id.sale_line_id.profit_margin / line.move_id.product_uom_qty) * line.qty_done) if line.qty_done else line.move_id.sale_line_id.profit_margin
                 else:
                     for line in picking.move_lines:
                         if line.product_uom_qty:
-                            order_amount += ((line.sale_line_id.price_total / line.product_uom_qty) * line.quantity_done)  if line.quantity_done else line.sale_line_id.price_total
+                            order_amount += ((
+                                                     line.sale_line_id.price_total / line.product_uom_qty) * line.quantity_done) if line.quantity_done else line.sale_line_id.price_total
                             if line.sale_line_id.profit_margin:
-                                profit_amount += ((line.sale_line_id.profit_margin / line.product_uom_qty) * line.quantity_done) if line.quantity_done else line.sale_line_id.profit_margin
+                                profit_amount += ((
+                                                          line.sale_line_id.profit_margin / line.product_uom_qty) * line.quantity_done) if line.quantity_done else line.sale_line_id.profit_margin
             batch.total_amount = order_amount
             batch.total_profit = profit_amount
             batch.profit_percentage = batch.total_profit and (batch.total_profit / batch.total_amount) * 100 or 0
@@ -97,12 +108,15 @@ class StockPickingBatch(models.Model):
         if 'from_route_picker' in self._context:
             for batch in self:
                 if batch.route_id:
-                    result.append((batch.id, _('%s (%s) (%s)') % (batch.name, batch.date and batch.date or '', batch.route_id.name and batch.route_id.name or '')))
+                    result.append((batch.id, _('%s (%s) (%s)') % (
+                        batch.name, batch.date and batch.date or '',
+                        batch.route_id.name and batch.route_id.name or '')))
                 result.append((batch.id, _('%s (%s)') % (batch.name, batch.date and batch.date or '')))
             return result
         for batch in self:
             if batch.route_id:
-                result.append((batch.id, _('%s (%s)') % (batch.name, batch.route_id.name and batch.route_id.name or '')))
+                result.append(
+                    (batch.id, _('%s (%s)') % (batch.name, batch.route_id.name and batch.route_id.name or '')))
             result.append((batch.id, _('%s') % (batch.name)))
         return result
 
@@ -168,7 +182,8 @@ class StockPickingBatch(models.Model):
                 pick.action_assign()
 
             # if atleast one picking not assigned, donot allow to proceed
-            pickings = batch.picking_ids.filtered(lambda picking: picking.state not in ('cancel'))
+            pickings = batch.picking_ids.filtered(
+                lambda picking: picking.state not in ('cancel', 'waiting', 'confirmed'))
 
             if any(picking.state not in ('assigned', 'in_transit', 'done') for picking in pickings):
                 raise UserError(_(
@@ -188,12 +203,12 @@ class StockPickingBatch(models.Model):
     def done(self):
         for batch in self:
             res = []
-            for picking in batch.picking_ids.filtered(lambda rec: rec.state != 'done'):
+            for picking in batch.picking_ids.filtered(lambda rec: rec.state not in ['done', 'cancel']):
                 if picking._check_backorder():
                     raise UserError(_("""You have processed  delivery order %s with less products than the initial demand.\n
                                       ➥ Create a backorder if you expect to process the remaining products later.
                                       ➥ Do not create a backorder if you will not process the remaining products."""
-                                    ) % (picking.name))
+                                      ) % (picking.name))
 
                 if picking.invoice_status == 'to invoice':
                     raise UserError(_('Please create invoices for delivery order %s, to continue.') % (picking.name))
@@ -226,8 +241,8 @@ class StockPickingBatch(models.Model):
             if partners:
                 partners.geo_localize()
                 params = {'partner_ids': ','.join(map(str, partners and partners.ids or [])),
-                      'partner_url': 'customers'
-                      }
+                          'partner_url': 'customers'
+                          }
                 return urlplus('/google_map', params)
             raise UserError(_('Partners Not Found,\nPlease add pickings before proceed.'))
 
@@ -277,7 +292,6 @@ class StockPickingBatch(models.Model):
 
         return action
 
-
     @api.multi
     def register_payments(self):
         for batch in self:
@@ -315,7 +329,7 @@ class StockPickingBatch(models.Model):
                 'credit': batch.pending_amount < 0 and abs(batch.pending_amount) or 0.00,
                 'debit': batch.pending_amount > 0 and batch.pending_amount or 0.00,
                 'date_maturity': fields.Date.today()
-                                  }
+            }
 
             receivable_line_dict = {
                 'name': batch.pending_amount > 0 and 'Truck Driver Repay' or 'Truck Driver Default',
@@ -324,14 +338,14 @@ class StockPickingBatch(models.Model):
                 'credit': batch.pending_amount > 0 and batch.pending_amount or 0.00,
                 'debit': batch.pending_amount < 0 and abs(batch.pending_amount) or 0.00,
                 'date_maturity': fields.Date.today()
-                                    }
+            }
 
             journal_entry_vals = {
                 'ref': batch.name,
                 'journal_id': cash_journal.id,
                 'line_ids': [(0, 0, writeoff_line_dict), (0, 0, receivable_line_dict)],
                 'state': 'draft',
-                                  }
+            }
             journal_entry = self.env['account.move'].create(journal_entry_vals)
             journal_entry.post()
         return True
@@ -372,18 +386,18 @@ class CashCollectedLines(models.Model):
             if not line.amount:
                 continue
 
-            batch_payment_info.setdefault(line.journal_id, {}).\
-                setdefault(line.payment_method_id, []).\
+            batch_payment_info.setdefault(line.journal_id, {}). \
+                setdefault(line.payment_method_id, []). \
                 append({
-                    'payment_type': 'inbound',
-                    'partner_type': 'customer',
-                    'payment_method_id': line.payment_method_id.id,
-                    'partner_id': line.partner_id.id,
-                    'amount': line.amount,
-                    'journal_id': line.journal_id.id,
-                    'communication': line.communication,
-                    'batch_id': line.batch_id.id
-                })
+                'payment_type': 'inbound',
+                'partner_type': 'customer',
+                'payment_method_id': line.payment_method_id.id,
+                'partner_id': line.partner_id.id,
+                'amount': line.amount,
+                'journal_id': line.journal_id.id,
+                'communication': line.communication,
+                'batch_id': line.batch_id.id
+            })
 
         AccountBatchPayment = self.env['account.batch.payment']
 
@@ -394,6 +408,7 @@ class CashCollectedLines(models.Model):
                     'journal_id': journal.id,
                     'payment_ids': [(0, 0, vals) for vals in payment_vals],
                     'payment_method_id': payment_method.id,
-                        })
+                })
+
 
 CashCollectedLines()

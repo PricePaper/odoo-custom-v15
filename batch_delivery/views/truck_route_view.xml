@@ -5,8 +5,8 @@
             <field name="name">Truck Route Tree</field>
             <field name="model">truck.route</field>
             <field name="arch" type="xml">
-                <tree string="Truck Route" >
-                    <field name="name" />
+                <tree string="Truck Route">
+                    <field name="name"/>
                 </tree>
             </field>
         </record>
@@ -15,7 +15,7 @@
             <field name="name">truck Route form</field>
             <field name="model">truck.route</field>
             <field name="arch" type="xml">
-                <form string="Truck Route" >
+                <form string="Truck Route">
                     <sheet>
                         <group>
                             <field name="name"/>
@@ -29,9 +29,7 @@
             <field name="name">Truck Routes</field>
             <field name="res_model">truck.route</field>
             <field name="view_mode">tree,form</field>
-<!--            <field name="search_view_id" ref="stock.view_picking_internal_search"/>-->
         </record>
-
 
         <record model="ir.actions.act_window.view" id="action_truck_route_tree">
             <field name="sequence" eval="1"/>
@@ -47,19 +45,12 @@
             <field name="act_window_id" ref="truck_route_action"/>
         </record>
 
-
-
-
         <menuitem id="menu_truck_route"
-            name="Routes"
-            action="truck_route_action"
-            parent="stock.menu_stock_warehouse_mgmt"
-            sequence="7"
-             />
-
-
-
-
+                  name="Routes"
+                  action="truck_route_action"
+                  parent="stock.menu_stock_warehouse_mgmt"
+                  sequence="7"
+        />
 
     </data>
 </odoo>

@@ -20,11 +20,14 @@ class PendingProductView(models.TransientModel):
         # consider the picking as in transit state to recalculate on hand qty with updated qty.
         # make move state in transit for calculation on hand quantity
         self.batch_ids.mapped('picking_ids').action_make_transit()
-        move_lines = self.batch_ids.mapped('picking_ids'). \
-            filtered(lambda pick: pick.state not in ['done', 'cancel']). \
-            mapped('move_lines').ids
+        move_lines = self.batch_ids.mapped('picking_ids').filtered(
+            lambda pick: pick.state not in ['done', 'cancel']
+        ).mapped('move_lines').ids
 
-        action = self.env.ref("batch_delivery.stock_move_pending_product_action").read()[0]
+        action = self.env['ir.actions.act_window'].for_xml_id('batch_delivery', 'stock_move_pending_product_action')
         action['domain'] = [('id', 'in', move_lines)]
 
         return action
+
+
+PendingProductView()

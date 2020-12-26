@@ -34,3 +34,6 @@ class StockBackorderConfirmation(models.TransientModel):
                 order.write({'product_uom_qty': order.product_uom_qty + 1})
 
         super(StockBackorderConfirmation, self)._process(cancel_backorder)
+
+
+StockBackorderConfirmation()

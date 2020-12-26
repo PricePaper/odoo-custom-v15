@@ -3,11 +3,14 @@
 from odoo import models, fields, api
 
 
-class Product(models.Model):
+class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     def action_open_quants(self):
         return {}
+
+
+ProductTemplate()
 
 
 class Product(models.Model):
@@ -39,3 +42,8 @@ class Product(models.Model):
             product.qty_available -= product_qty
             product.outgoing_qty -= product_qty
             product.transit_qty = product_qty
+
+
+Product()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

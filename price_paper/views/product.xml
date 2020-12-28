@@ -157,8 +157,12 @@
                                   </group>
                                 </group>
                               </form>
-
                             </field>
+                          </group>
+                      </group>
+                      <group>
+                          <group>
+                              <field name='similar_product_ids' widget="many2many_tags"/>
                           </group>
                       </group>
                   </page>

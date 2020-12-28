@@ -167,11 +167,17 @@ class ProductProduct(models.Model):
     @api.model
     def _cron_update_product_lst_price(self):
 
-        products = self.env['product.product'].search([])
+        products = self.env['product.product'].search([('id', 'in', (145,141,142))])
+        similar_products = []
         for product in products:
+            if product.id in similar_products:
+                continue
             if product.standard_price_date_lock and product.standard_price_date_lock > date.today():
                 continue
 
+
+            if product.similar_product_ids:
+                similar_products += product.similar_product_ids.ids
             product.standard_price_date_lock = False
             product.with_delay(channel='root.standardprice').job_queue_standard_price_update()
 
@@ -180,13 +186,18 @@ class ProductProduct(models.Model):
     def job_queue_standard_price_update(self):
 
         date_to = datetime.today() - relativedelta(months=self.env.user.company_id.product_lst_price_months or 0, day=1)
-        for uom in self.sale_uoms:
+        product_list = self
+        if self.similar_product_ids:
+            product_list += self.similar_product_ids
+        sale_uoms = product_list.mapped('sale_uoms')
+        for uom in sale_uoms:
+
             domain = [
                 ('display_type', '=', False),
                 ('order_id.date_order', '>=', date_to.strftime('%Y-%m-%d')),
                 ('order_id.state', 'in', ['sale', 'done']),
                 ('product_uom', '=', uom.id),
-                ('product_id', '=', self.id)
+                ('product_id', 'in', product_list.ids)
             ]
             OrderLine = self.env['sale.order.line']
             lines = OrderLine.search(domain, order="confirmation_date desc")
@@ -204,15 +215,17 @@ class ProductProduct(models.Model):
                     new_lst_price = self.get_price_from_competitor_or_categ
             else:
                 new_lst_price = self.get_price_from_competitor_or_categ(uom)
-            uom_rec = self.uom_standard_prices.filtered(lambda p: p.uom_id == uom)
-            if uom_rec:
-                if uom_rec.price != new_lst_price:
-                    uom_rec.price = new_lst_price
-            else:
-                vals={'product_id': self.id,
-                      'uom_id': uom.id,
-                      'price': new_lst_price}
-                self.env['product.standard.price'].create(vals)
+            for product in product_list:
+                if uom in product.sale_uoms:
+                    uom_rec = product.uom_standard_prices.filtered(lambda p: p.uom_id == uom)
+                    if uom_rec:
+                        if uom_rec.price != new_lst_price:
+                            uom_rec.price = new_lst_price
+                    else:
+                        vals={'product_id': product.id,
+                              'uom_id': uom.id,
+                              'price': new_lst_price}
+                        self.env['product.standard.price'].create(vals)
         return True
 
     def get_price_from_competitor_or_categ(self, uom):

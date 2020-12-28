@@ -38,6 +38,8 @@ class ProductProduct(models.Model):
     standard_price_date_lock = fields.Date(string='Standard Price Lock Date')
     product_addons_list = fields.Many2many('product.product', 'product_addons_product_rel', 'product_id', 'addon_product_id', string="Addons Product")
     need_sub_product = fields.Boolean(string='Need Sub-Products')
+    similar_product_ids = fields.Many2many('product.product', 'product_similar_product_rel', 'product_id', 'similar_product_id', string="Similar Product")
+
 
     # list_price_percentage = fields.Float('Standard price %')
     # lst_price = fields.Float(

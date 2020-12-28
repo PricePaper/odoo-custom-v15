@@ -210,7 +210,7 @@ class StockPickingBatch(models.Model):
                                       ➥ Do not create a backorder if you will not process the remaining products."""
                                       ) % (picking.name))
 
-                if picking.invoice_status == 'to invoice':
+                if picking.sale_id and picking.sale_id.invoice_status == 'to invoice' or not picking.is_invoiced:
                     raise UserError(_('Please create invoices for delivery order %s, to continue.') % (picking.name))
 
                 picking.button_validate()

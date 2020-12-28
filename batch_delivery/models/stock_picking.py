@@ -48,7 +48,6 @@ class StockPicking(models.Model):
     reserved_qty = fields.Float('Available Quantity', compute='_compute_available_qty')
     low_qty_alert = fields.Boolean(string="Low Qty", compute='_compute_available_qty')
     sequence = fields.Integer(string='Order')
-    invoice_status = fields.Selection(related="sale_id.invoice_status", readonly=True)
     is_invoiced = fields.Boolean(string="Invoiced", copy=False)
 
     @api.depends('move_ids_without_package.reserved_availability')

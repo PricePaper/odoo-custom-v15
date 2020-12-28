@@ -35,10 +35,10 @@ class StockPickingBatch(models.Model):
     to_invoice = fields.Boolean(string='Need Invoice', compute='_compute_to_invoice_state')
 
     @api.multi
-    @api.depends('picking_ids.invoice_status')
+    @api.depends('picking_ids.is_invoiced')
     def _compute_to_invoice_state(self):
         for rec in self:
-            rec.to_invoice = any([pick.invoice_status == 'to invoice' for pick in rec.picking_ids])
+            rec.to_invoice = not all([pick.is_invoiced for pick in rec.picking_ids])
 
     @api.multi
     @api.depends('payment_ids')

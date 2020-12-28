@@ -2,39 +2,39 @@
 <odoo>
     <data>
 
-
-
-
         <record id="account_form_inherit_batch_delivery" model="ir.ui.view">
             <field name="name">account form inherit</field>
             <field name="model">account.account</field>
             <field name="inherit_id" ref="account.view_account_form"/>
             <field name="arch" type="xml">
+
                 <field name='deprecated' position="after">
                     <field name="is_driver_writeoff_account"/>
                 </field>
+
             </field>
         </record>
 
-         <record id="account_invoice_form_inherit_batch_delivery" model="ir.ui.view">
+        <record id="account_invoice_form_inherit_batch_delivery" model="ir.ui.view">
             <field name="name">account invoice form inherit</field>
             <field name="model">account.invoice</field>
             <field name="inherit_id" ref="account.invoice_form"/>
             <field name="arch" type="xml">
+
                 <field name="type" position="after">
                     <field name="picking_ids" invisible="1"/>
                 </field>
-               <xpath expr="//div[@name='button_box']" position="inside">
+
+                <xpath expr="//div[@name='button_box']" position="inside">
                     <button type="object"
-                              name="action_view_picking"
-                              class="oe_stat_button"
-                              string="Delivery"
-                              icon="fa-truck" attrs="{'invisible':[('picking_ids','=',[])]}"/>
-               </xpath>
+                            name="action_view_picking"
+                            class="oe_stat_button"
+                            string="Delivery"
+                            icon="fa-truck" attrs="{'invisible':[('picking_ids','=',[])]}"/>
+                </xpath>
+
             </field>
-
         </record>
-
 
         <record id="view_batch_payment_form_inherit_batch_delivery" model="ir.ui.view">
             <field name="name">view.batch.payment.form</field>

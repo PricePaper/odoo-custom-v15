@@ -1,6 +1,7 @@
 <odoo>
     <data>
-        <record id="view_driver_invoice_wizard_form" model="ir.ui.view">
+
+    <record id="view_driver_invoice_wizard_form" model="ir.ui.view">
             <field name="name">create.driver.invoice</field>
             <field name="model">driver.invoice.wizard</field>
             <field name="arch" type="xml">
@@ -18,5 +19,6 @@
                 </form>
             </field>
         </record>
+
     </data>
 </odoo>

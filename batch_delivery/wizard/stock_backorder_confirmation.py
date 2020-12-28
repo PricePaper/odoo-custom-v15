@@ -28,9 +28,18 @@ class StockBackorderConfirmation(models.TransientModel):
                 }) for move in pick_id.move_ids_without_package if move.quantity_done != move.product_uom_qty]
             })
 
+            for move in pick_id.move_ids_without_package:
+                move.sale_line_id.pre_delivered_qty += move.quantity_done
+
             if not cancel_backorder:
                 order = self.env['sale.order.line'].search(
                     [('order_id', '=', pick_id.sale_id.id), ('is_delivery', '=', True)])
                 order.write({'product_uom_qty': order.product_uom_qty + 1})
 
         super(StockBackorderConfirmation, self)._process(cancel_backorder)
+
+
+StockBackorderConfirmation()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+

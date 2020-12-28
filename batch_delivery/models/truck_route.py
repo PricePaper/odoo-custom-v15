@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, registry, api,_
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
 
-
-
 class TruckRoute(models.Model):
-
     _name = 'truck.route'
     _description = 'Truck Route'
     _order = 'name'
@@ -22,3 +19,5 @@ class TruckRoute(models.Model):
 
 
 TruckRoute()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

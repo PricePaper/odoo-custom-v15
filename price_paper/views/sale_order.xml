@@ -93,6 +93,9 @@
                 <button name="action_quotation_send" position="after">
                     <button name="action_fax_send" string="Send by Fax" type="object" states="draft,order,sent" class="btn-primary"/>
                 </button>
+                <button name="action_draft" position="attributes">
+                    <attribute name="string">Set to Draft</attribute>
+                </button>
                 <!-- <xpath expr="//div[hasclass('oe_title')]" position="after">
                     <group>
                         <group>

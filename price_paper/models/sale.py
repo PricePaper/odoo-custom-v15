@@ -830,8 +830,6 @@ class SaleOrderLine(models.Model):
             product_qty = line.product_uom_qty - qty
 
             procurement_uom = line.product_uom
-            quant_uom = line.product_id.uom_id
-            get_param = self.env['ir.config_parameter'].sudo().get_param
 
             try:
                 self.env['procurement.group'].run(line.product_id, product_qty, procurement_uom, line.order_id.partner_shipping_id.property_stock_customer, line.name, line.order_id.name, values)

@@ -7,7 +7,6 @@ class PickingPendingProduct(models.Model):
     _name = 'picking.pending.product'
     _description = 'Batch Picking Pending Product'
 
-
     total = fields.Integer(string='Total', compute='_compute_quantity')
     pending = fields.Integer(string='Pending', compute='_compute_quantity')
     product_id = fields.Many2one('product.product', string='Product')
@@ -20,7 +19,8 @@ class PickingPendingProduct(models.Model):
             moves = rec.batch_id.picking_ids.mapped('move_ids_without_package').filtered(
                 lambda move: move.product_id == rec.product_id and move.state != 'cancel')
             total = sum(moves.mapped('product_uom_qty'))
-            reserved = sum(moves.mapped(lambda move: move.product_uom_qty if move.reserved_availability == 0 and move.state == 'done' else 0 if move.reserved_availability == 0 else move.reserved_availability))
+            reserved = sum(moves.mapped(lambda
+                                            move: move.product_uom_qty if move.reserved_availability == 0 and move.state == 'done' else 0 if move.reserved_availability == 0 else move.reserved_availability))
             rec.total = total
             rec.pending = total - reserved
 
@@ -35,15 +35,16 @@ class PickingPendingProduct(models.Model):
         form_id = self.env.ref('stock.view_picking_form').id
         res = {
             "type": "ir.actions.act_window",
-            "name" : "Pickings With Pending Product",
+            "name": "Pickings With Pending Product",
             "res_model": "stock.picking",
             "views": [[list_id, "tree"], [form_id, "form"]],
             "context": {},
-            "domain":[('id', 'in', pickings)],
+            "domain": [('id', 'in', pickings)],
             "target": "current",
         }
         return res
 
 
-
 PickingPendingProduct()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

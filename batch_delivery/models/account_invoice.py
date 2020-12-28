@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api, _
+from odoo import fields, models, api
 
 
 class AccountInvoice(models.Model):
@@ -36,3 +36,5 @@ class AccountInvoiceLine(models.Model):
 
 
 AccountInvoiceLine()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

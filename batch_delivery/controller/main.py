@@ -3,9 +3,10 @@
 import json
 
 from odoo import http
+from odoo.addons.website_google_map.controllers.main import GoogleMap
 from odoo.http import request
 from odoo.tools import html_escape as escape
-from odoo.addons.website_google_map.controllers. main import GoogleMap
+
 
 class GoogleMapExte(GoogleMap):
     '''

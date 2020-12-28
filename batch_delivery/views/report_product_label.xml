@@ -11,8 +11,10 @@
                                     <tr style="border-bottom:hidden;height:30%;">
                                         <td>
                                             <t t-if="line.picking_id.partner_id.name">
-                                                <strong t-field="line.picking_id.partner_id.name" style="float:left;width:70%;font-size:16px;"/>
-                                                <strong t-field="line.picking_id.scheduled_date" style="float:right;width:30%;font-size:12px;"/>
+                                                <strong t-field="line.picking_id.partner_id.name"
+                                                        style="float:left;width:70%;font-size:16px;"/>
+                                                <strong t-field="line.picking_id.scheduled_date"
+                                                        style="float:right;width:30%;font-size:12px;"/>
                                             </t>
                                         </td>
                                     </tr>
@@ -20,8 +22,8 @@
                                     <tr style="border-top:hidden;border-bottom:hidden;height:40%;">
                                         <td style="text-align:center; vertical-align:middle;" class="col-xs-5">
                                             <img
-                                                 t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', barcode, 600, 150)"
-                                                 style="width:100%;height:20%;"/>
+                                                    t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', barcode, 600, 150)"
+                                                    style="width:100%;height:20%;"/>
                                             <span t-esc="barcode"/>
                                         </td>
                                     </tr>
@@ -34,7 +36,8 @@
                                                 <span t-field="line.product_id.name"/>
                                                 (<span t-field="line.product_uom.name"/>)
                                             </strong>
-                                            <strong t-field="line.sale_line_id.order_id.name" style="float:right;width:30%;font-size:20px;"/>
+                                            <strong t-field="line.sale_line_id.order_id.name"
+                                                    style="float:right;width:30%;font-size:20px;"/>
                                         </td>
                                     </tr>
                                 </tbody>

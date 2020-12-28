@@ -25,6 +25,7 @@ class SaleOrderLine(models.Model):
 
     lot_id = fields.Many2one('stock.production.lot', 'Lot')
     info = fields.Char(compute='_get_price_lock_info_JSON')
+    pre_delivered_qty = fields.Float(default=0.00, copy=False)
 
     @api.one
     @api.depends('product_id')

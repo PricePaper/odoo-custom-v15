@@ -112,7 +112,7 @@ class StockPicking(models.Model):
                 pick.move_ids_without_package.write({'is_transit': True})
                 for line in pick.move_line_ids:
                     line.qty_done = line.move_id.reserved_availability
-                    line.move_id.sale_line_id.qty_delivered = line.move_id.reserved_availability
+                    line.move_id.sale_line_id.qty_delivered = line.move_id.sale_line_id.pre_delivered_qty + line.move_id.reserved_availability
                 if pick.batch_id:
                     pick.sale_id.write({'delivery_date': pick.batch_id.date})
 

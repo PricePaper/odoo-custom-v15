@@ -28,6 +28,9 @@ class StockBackorderConfirmation(models.TransientModel):
                 }) for move in pick_id.move_ids_without_package if move.quantity_done != move.product_uom_qty]
             })
 
+            for move in pick_id.move_ids_without_package:
+                move.sale_line_id.pre_delivered_qty += move.quantity_done
+
             if not cancel_backorder:
                 order = self.env['sale.order.line'].search(
                     [('order_id', '=', pick_id.sale_id.id), ('is_delivery', '=', True)])

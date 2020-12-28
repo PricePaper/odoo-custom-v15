@@ -49,6 +49,7 @@ class StockPicking(models.Model):
     low_qty_alert = fields.Boolean(string="Low Qty", compute='_compute_available_qty')
     sequence = fields.Integer(string='Order')
     invoice_status = fields.Selection(related="sale_id.invoice_status", readonly=True)
+    is_invoiced = fields.Boolean(string="Invoiced", copy=False)
 
     @api.depends('move_ids_without_package.reserved_availability')
     def _compute_available_qty(self):
@@ -124,8 +125,9 @@ class StockPicking(models.Model):
     @api.multi
     def create_invoice(self):
         for picking in self:
-            if picking.sale_id.invoice_status == 'to invoice':
+            if not picking.is_invoiced:
                 picking.sale_id.action_invoice_create(final=True)
+                picking.is_invoiced = True
                 if picking.batch_id:
                     invoice = picking.sale_id.invoice_ids.filtered(lambda rec: picking in rec.picking_ids)
                     invoice.write({'date_invoice': picking.batch_id.date})
@@ -155,7 +157,7 @@ class StockPicking(models.Model):
                 if batch:
                     # picking.action_make_transit()
                     picking.sale_id.write({'delivery_date': batch.date})
-                    if picking.invoice_status != 'to invoice':
+                    if picking.is_invoiced:
                         invoice = picking.sale_id.invoice_ids.filtered(lambda rec: picking in rec.picking_ids)
                         invoice.write({'date_invoice': batch.date})
 

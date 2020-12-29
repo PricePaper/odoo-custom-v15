@@ -4,6 +4,8 @@ from odoo import models, fields, api,_
 import datetime
 from datetime import timedelta, date
 from odoo.exceptions import ValidationError
+from odoo.addons import decimal_precision as dp
+from odoo.tools import float_compare, float_round
 
 class AccountPaymentTermLine(models.Model):
     _inherit = "account.payment.term.line"
@@ -82,24 +84,6 @@ class AccountInvoice(models.Model):
                 gross_profit -= invoice.amount_total*(invoice.payment_term_id.discount_per/100)
             invoice.update({'gross_profit' : round(gross_profit,2)})
 
-
-
-#    @api.multi
-#    def action_invoice_open(self):
-#        """
-#        overriden to raise validation error when unit_price is less than cost price.
-#        """
-
-#        for invoice in self:
-#            if invoice.type == 'out_invoice':
-#                for invoice_line in invoice.invoice_line_ids:
-#                    if invoice_line.profit_margin < 0:
-#                        msg = '[%s]%s ' % (invoice_line.product_id.default_code,invoice_line.product_id.name) + "Unit Price is less than Product Cost Price"
-#                        raise ValidationError(_('%s' % (msg)))
-#        res = super(AccountInvoice, self).action_invoice_open()
-#        return res
-
-
     @api.multi
     def finalize_invoice_move_lines(self, move_lines):
         """
@@ -141,9 +125,8 @@ class AccountInvoiceLine(models.Model):
 
 
     profit_margin = fields.Monetary(compute='calculate_profit_margin', string="Profit Margin")
-    # color = fields.Text(compute='calculate_profit_margin', string="Color", store=False)
-
-
+    lst_price = fields.Float(string='Standard Price', digits=dp.get_precision('Product Price'), store=True, compute='_compute_lst_cost_prices')
+    working_cost = fields.Float(string='Working Cost', digits=dp.get_precision('Product Price'), store=True, compute='_compute_lst_cost_prices')
 
     @api.onchange('product_id')
     def _onchange_product_id(self):
@@ -155,6 +138,16 @@ class AccountInvoiceLine(models.Model):
         product_uom_domain.append(('id', 'in', self.product_id.sale_uoms.ids))
         return res
 
+
+    @api.depends('product_id', 'uom_id')
+    def _compute_lst_cost_prices(self):
+        for line in self:
+            if line.product_id and line.uom_id:
+                uom_price = line.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == line.uom_id)
+                if uom_price:
+                    line.lst_price = uom_price[0].price
+                    if line.product_id.cost:
+                        line.working_cost = uom_price[0].cost
 
 
     @api.depends('product_id', 'price_unit', 'quantity')
@@ -173,22 +166,14 @@ class AccountInvoiceLine(models.Model):
                     else:
                         line.profit_margin = line.sale_line_ids.profit_margin * line.quantity / line.sale_line_ids.product_uom_qty
                     continue
-                product_price = round(line.product_id.cost * line.product_id.uom_id.factor / line.uom_id.factor, 2)
+                product_price = line.working_cost
                 line_price = line.price_unit
-                if line.product_id.uom_id != line.uom_id:
-                    line_price = line.price_unit * (100/(100+ line.product_id.categ_id.repacking_upcharge))
-                elif line.product_id.uom_id == line.uom_id and line.quantity % 1 != 0.0:
+                if line.product_id.uom_id == line.uom_id and line.quantity % 1 != 0.0:
                     numer = line.price_unit * line.quantity
                     denom = (int(line.quantity / 1.0) + ((line.quantity % 1) * (100 + line.product_id.categ_id.repacking_upcharge) / 100))
                     line_price = round(numer / denom, 2)
-
                 line.profit_margin = (line_price - product_price) * line.quantity
-                # if line.profit_margin < 0:
-                #     line.color = 'R'
-                # elif line.profit_margin > 0:
-                #     line.color = 'G'
-                # else:
-                #     line.color = 'B'
+
 
     @api.onchange('uom_id')
     def _onchange_uom_id(self):

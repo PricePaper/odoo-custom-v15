@@ -41,7 +41,8 @@
                 </xpath>
                 <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="after">
                     <field name="profit_margin"/>
-                    <!-- <field name="color" invisible="1"/> -->
+                    <field name="lst_price" invisible="1"/>
+                    <field name="working_cost" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='amount_untaxed']" position="after">
                     <field name="gross_profit"  widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"/>
@@ -57,6 +58,8 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='price_unit']" position="before">
                     <field name="profit_margin" attrs="{'invisible': [('parent.type','!=','out_invoice')]}"/>
+                    <field name="lst_price" invisible="1"/>
+                    <field name="working_cost" invisible="1"/>
                 </xpath>
             </field>
         </record>

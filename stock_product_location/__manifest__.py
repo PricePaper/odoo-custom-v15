@@ -17,9 +17,10 @@
     'data': ['security/ir.model.access.csv',
              'views/product_view.xml',
              'views/stock_move_by_location_view.xml',
-                   ],
-    
-    'installable' : True,
-    'active'      : False,
+             ],
+
+    'installable': True,
+    'active': False,
 }
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

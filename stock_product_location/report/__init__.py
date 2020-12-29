@@ -21,4 +21,5 @@
 ##############################################################################
 
 from . import stock_move_by_location
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

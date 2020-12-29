@@ -28,7 +28,7 @@
 # 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 ###############################################
-from odoo import api, fields, models, _
+from odoo import fields, models
 
 
 class StockMoveLocation(models.Model):
@@ -37,15 +37,16 @@ class StockMoveLocation(models.Model):
     _auto = False
 
     id = fields.Char(string='id', readonly=True)
-    description = fields.Char(string ='Description', readonly=True)
+    description = fields.Char(string='Description', readonly=True)
     location_id = fields.Many2one('stock.location', string='Location', readonly=True)
-    product_id = fields.Many2one('product.product', string='Product',  readonly=True)
-    categ_id = fields.Many2one(related='product_id.categ_id', relation="product.category", string='Category', readonly=True)
+    product_id = fields.Many2one('product.product', string='Product', readonly=True)
+    categ_id = fields.Many2one(related='product_id.categ_id', relation="product.category", string='Category',
+                               readonly=True)
     name = fields.Float(string='Quantity', digits=(16, 2), readonly=True)
     uom_id = fields.Many2one(related='product_id.uom_id', relation="uom.uom", string="UoM", readonly=True)
     product_qty_pending = fields.Float(string='Quantity Pending', digits=(16, 2), readonly=True)
-    date = fields.Datetime(string='Date Planned',  readonly=True)
-    picking_id = fields.Many2one('stock.picking', string='Packing',  readonly=True)
+    date = fields.Datetime(string='Date Planned', readonly=True)
+    picking_id = fields.Many2one('stock.picking', string='Packing', readonly=True)
     company_id = fields.Many2one('res.company', string='Company', readonly=True)
 
     def init(self):

@@ -15,15 +15,14 @@ This module sets up the inventory Adjustment process for price paper.
     'images': [],
 
     'data': [
-            'views/report_stock_inventory.xml',
-            'views/stock_inventory.xml',
-            ],
+        'views/report_stock_inventory.xml',
+        'views/stock_inventory.xml',
+    ],
 
-    'depends': ['stock','batch_delivery'],
+    'depends': ['stock', 'batch_delivery'],
     'installable': True,
     'auto_install': False,
     'application': False,
 }
-
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

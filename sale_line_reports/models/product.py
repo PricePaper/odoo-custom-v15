@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, registry, api,_
+from odoo import models, api
 
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
-
-
-
-
 
     @api.multi
     def name_get(self):
@@ -21,10 +17,12 @@ class ProductProduct(models.Model):
         if self._context.get('params', {}).get('action', 0) == sale_line_view_action.id:
             for record in self:
                 name = record.default_code
-                result.append((record.id,name))
+                result.append((record.id, name))
         else:
             result = super(ProductProduct, self).name_get()
         return result
 
 
 ProductProduct()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

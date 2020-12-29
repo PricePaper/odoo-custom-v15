@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, registry, api,_
+from odoo import models, fields, api
 from odoo.addons.price_paper.models import margin
 
 
@@ -18,13 +18,11 @@ class SaleOrderline(models.Model):
     company_margin = fields.Float(related='company_id.company_margin')
     remark = fields.Char(string='RM', compute='_calculate_remark')
 
-
     @api.multi
     def _calculate_percent(self):
         for line in self:
             if line.cost:
                 line.percent = margin.get_margin(line.price_unit, line.cost, percent=True)
-
 
     @api.multi
     def _is_taxed(self):
@@ -33,7 +31,6 @@ class SaleOrderline(models.Model):
                 line.is_taxed = 'T'
             else:
                 line.is_taxed = ''
-
 
     @api.multi
     def _calculate_remark(self):
@@ -66,3 +63,5 @@ class SaleOrderline(models.Model):
 
 
 SaleOrderline()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

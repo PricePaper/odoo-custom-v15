@@ -1,9 +1,5 @@
 <odoo>
     <data>
-
-
-
-
         <record id="company_sale_line_report_inherit" model="ir.ui.view">
             <field name="name">company.view.saleline.report</field>
             <field name="model">res.company</field>
@@ -14,8 +10,5 @@
                 </xpath>
             </field>
         </record>
-
-
-
     </data>
 </odoo>

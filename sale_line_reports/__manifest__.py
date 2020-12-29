@@ -15,16 +15,15 @@ Sale Line Reports module implemented for Price Papers.
     'images': [],
 
     'data': [
-             'views/sale_order_line.xml',
-             'views/product_category_view.xml',
-             'views/res_company_view.xml',
-            ],
+        'views/sale_order_line.xml',
+        'views/product_category_view.xml',
+        'views/res_company_view.xml',
+    ],
 
     'depends': ['price_paper'],
     'installable': True,
     'auto_install': False,
     'application': False,
 }
-
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

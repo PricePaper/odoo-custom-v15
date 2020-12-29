@@ -161,7 +161,10 @@ class AccountInvoiceLine(models.Model):
                     if line.quantity == line.sale_line_ids.product_uom_qty:
                         line.profit_margin = line.sale_line_ids.profit_margin
                     else:
-                        line.profit_margin = line.sale_line_ids.profit_margin * line.quantity / line.sale_line_ids.product_uom_qty
+                        if line.sale_line_ids.product_uom_qty == 0:
+                            line.profit_margin = 0
+                        else:
+                            line.profit_margin = line.sale_line_ids.profit_margin * line.quantity / line.sale_line_ids.product_uom_qty
                     continue
                 product_price = line.working_cost
                 line_price = line.price_unit

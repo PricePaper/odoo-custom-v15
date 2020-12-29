@@ -24,3 +24,5 @@ Creates a helpdesk ticket if a product added in a Sale line is low in inventory.
     'auto_install': False,
     'application': False,
 }
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

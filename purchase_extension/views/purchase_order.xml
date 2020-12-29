@@ -13,17 +13,17 @@
                 </field>
 
                 <xpath expr="//group[hasclass('oe_subtotal_footer')]" position="before">
-                    <group name="weight_volume" >
+                    <group name="weight_volume">
                         <field name="total_volume"/>
                         <field name="total_weight"/>
                         <field name="total_qty"/>
                     </group>
                 </xpath>
 
-             <xpath expr="//field[@name='order_line']" position="before">
-                <button  type="object" name="add_sale_history_to_po_line"
-string="ADD ADDITIONAL PRODUCTS" icon="fa-history"/>
-            </xpath>
+                <xpath expr="//field[@name='order_line']" position="before">
+                    <button type="object" name="add_sale_history_to_po_line"
+                            string="ADD ADDITIONAL PRODUCTS" icon="fa-history"/>
+                </xpath>
 
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_subtotal']" position="before">
                     <field name="gross_volume"/>

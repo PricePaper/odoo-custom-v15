@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, registry, api,_
+from odoo import models, fields, registry, api, _
 
 
 class PaymentTerm(models.Model):
@@ -11,6 +11,7 @@ class PaymentTerm(models.Model):
     due_days = fields.Integer(string='Discount Days')
     discount_per = fields.Float(string='Discount Percent')
 
+
 PaymentTerm()
 
-
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

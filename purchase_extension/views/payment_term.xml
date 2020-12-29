@@ -6,7 +6,7 @@
             <field name="inherit_id" ref="account.view_payment_term_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//sheet/group/group" position="after">
-                    <group name="weight_volume" >
+                    <group name="weight_volume">
                         <field name="code"/>
                         <field name="order_type"/>
                         <field name="due_days" attrs="{'invisible':[('order_type', '=', False)]}"/>

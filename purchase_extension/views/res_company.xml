@@ -19,7 +19,7 @@
                 <xpath expr="//page[1]" position="after">
                     <page string="Purchase Message">
                         <group>
-                           <field name="purchase_default_message"/>
+                            <field name="purchase_default_message"/>
                         </group>
                     </page>
                 </xpath>

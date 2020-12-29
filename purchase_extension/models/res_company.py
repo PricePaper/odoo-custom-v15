@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
-from odoo import models, fields, api,_
+from odoo import models, fields, api, _
 
 
 class ResCompany(models.Model):
@@ -17,7 +16,11 @@ class ResCompany(models.Model):
             </div>"""
         return result
 
-    purchase_writeoff_account_id = fields.Many2one('account.account', string='Purchase Writeoff Account', domain=[('deprecated', '=', False)])
+    purchase_writeoff_account_id = fields.Many2one('account.account', string='Purchase Writeoff Account',
+                                                   domain=[('deprecated', '=', False)])
     purchase_default_message = fields.Html(string='Default Purchase Message', default=_get_default_purchase_msg)
 
+
 ResCompany()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

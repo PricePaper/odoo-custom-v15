@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api,_
+from odoo import models, fields, api, _
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
 
@@ -17,4 +17,7 @@ class AccountInvoice(models.Model):
             if invoice.date_invoice and invoice.payment_term_id and invoice.payment_term_id.due_days:
                 invoice.discount_due_date = invoice.date_invoice + relativedelta(days=invoice.payment_term_id.due_days)
 
+
 AccountInvoice()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -7,11 +7,12 @@
             <field name="inherit_id" ref="product.product_supplierinfo_search_view"/>
             <field name="arch" type="xml">
                 <field name="name" position="after">
-                      <field name="product_id" string="Product"/>
-                      <field name="default_code" />
+                    <field name="product_id" string="Product"/>
+                    <field name="default_code"/>
                 </field>
             </field>
         </record>
+
         <record id="inherit_stock_product_form_view_purchase_extensions" model="ir.ui.view">
             <field name="name">inherited.stock.product.form.view</field>
             <field name="model">product.template</field>
@@ -19,12 +20,12 @@
             <field name="inherit_id" ref="stock.view_template_property_form"/>
             <field name="arch" type="xml">
 
-            <xpath expr="//div[@name='weight']/span" position="replace">
-                <span><b>lb</b></span>
-            </xpath>
-            <xpath expr="//div[@name='volume']/span" position="replace">
-                <span><b>ft3</b></span>
-            </xpath>
+                <xpath expr="//div[@name='weight']/span" position="replace">
+                    <span><b>lb</b></span>
+                </xpath>
+                <xpath expr="//div[@name='volume']/span" position="replace">
+                    <span><b>ft3</b></span>
+                </xpath>
             </field>
         </record>
     </data>

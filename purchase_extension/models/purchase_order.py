@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, registry, api,_
+from odoo import models, fields, registry, api, _
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import ValidationError
+
 
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
@@ -16,7 +17,6 @@ class PurchaseOrder(models.Model):
     vendor_delay = fields.Integer(related='partner_id.delay', string="Vendor Lead Time", readonly=True)
     vendor_order_freq = fields.Integer(related='partner_id.order_freq', string="Vendor Order Frequency", readonly=True)
 
-
     @api.depends('order_line.product_id', 'order_line.product_qty')
     def _compute_total_weight_volume(self):
         for order in self:
@@ -28,9 +28,8 @@ class PurchaseOrder(models.Model):
                 weight += line.gross_weight
                 qty += line.product_qty
             order.total_volume = volume
-            order.total_weight= weight
+            order.total_weight = weight
             order.total_qty = qty
-
 
     @api.multi
     def add_sale_history_to_po_line(self):
@@ -47,13 +46,16 @@ class PurchaseOrder(models.Model):
                 for prod in prod_ids:
                     all_vendor_products.append(prod)
 
-        product_ids = tuple(all_vendor_products) if len(all_vendor_products)>1 else all_vendor_products and all_vendor_products[0] or 0
-        operator = 'in' if len(all_vendor_products)>1 else '='
+        product_ids = tuple(all_vendor_products) if len(all_vendor_products) > 1 else all_vendor_products and \
+                                                                                      all_vendor_products[0] or 0
+        operator = 'in' if len(all_vendor_products) > 1 else '='
         if all_vendor_products:
             current_date = date.today()
             first_day = current_date.replace(day=1)
             date_limit = str(first_day + relativedelta(months=-15))
-            self._cr.execute("SELECT date_trunc('month', so.confirmation_date) AS cnf_date, sol.product_id, sol.product_uom, sum(sol.product_uom_qty) FROM sale_order_line sol JOIN sale_order so on so.id=sol.order_id WHERE so.state in ('sale', 'done') AND sol.product_id %s %s and so.confirmation_date >= '%s' GROUP BY sol.product_id, sol.product_uom, cnf_date ORDER BY sol.product_id, sol.product_uom, cnf_date desc" %(operator, product_ids, str(date_limit) ))
+            self._cr.execute(
+                "SELECT date_trunc('month', so.confirmation_date) AS cnf_date, sol.product_id, sol.product_uom, sum(sol.product_uom_qty) FROM sale_order_line sol JOIN sale_order so on so.id=sol.order_id WHERE so.state in ('sale', 'done') AND sol.product_id %s %s and so.confirmation_date >= '%s' GROUP BY sol.product_id, sol.product_uom, cnf_date ORDER BY sol.product_id, sol.product_uom, cnf_date desc" % (
+                operator, product_ids, str(date_limit)))
 
             res = self._cr.dictfetchall()
             if not res:
@@ -63,19 +65,19 @@ class PurchaseOrder(models.Model):
             for element in res:
                 if product_id != element['product_id']:
                     product_id = element['product_id']
-                    result_dict.update({product_id:[{
-                                                    'period': element['cnf_date'],
-                                                    'units': element['sum'],
-                                                    'uom': element['product_uom'],
-                                                    }]})
+                    result_dict.update({product_id: [{
+                        'period': element['cnf_date'],
+                        'units': element['sum'],
+                        'uom': element['product_uom'],
+                    }]})
                 else:
                     result_dict[product_id].append({'period': element['cnf_date'],
                                                     'units': element['sum'],
                                                     'uom': element['product_uom'],
-                                                     })
+                                                    })
             result_list = self.sanitize_uom(result_dict)
 
-        context ={'data' : result_list}
+        context = {'data': result_list}
         view_id = self.env.ref('purchase_extension.view_sale_history_add_po_wiz').id
         return {
             'name': _('Add sale history to PO'),
@@ -84,11 +86,9 @@ class PurchaseOrder(models.Model):
             'res_model': 'add.sale.history.po',
             'view_id': view_id,
             'type': 'ir.actions.act_window',
-            'context' : context,
-            'target' :'new'
+            'context': context,
+            'target': 'new'
         }
-
-
 
     @api.model
     def sanitize_uom(self, result_dict):
@@ -101,37 +101,37 @@ class PurchaseOrder(models.Model):
             product_purchase_unit = self.env['product.product'].browse(ele).uom_po_id
             for row in result_dict[ele]:
                 if row['uom'] != product_purchase_unit.id:
-                    changed_uom_qty = self.env['uom.uom'].browse(row['uom'])._compute_quantity(row['units'], product_purchase_unit)
+                    changed_uom_qty = self.env['uom.uom'].browse(row['uom'])._compute_quantity(row['units'],
+                                                                                               product_purchase_unit)
                     row['uom'] = product_purchase_unit.id
                     row['units'] = changed_uom_qty
 
         # merges values of same period to a single record
         result_dict2 = {}
         for ele in result_dict.keys():
-            result_dict2.update({ele:{}})
+            result_dict2.update({ele: {}})
             for row in result_dict[ele]:
                 if not result_dict2[ele].get(row['period'], False):
-                    result_dict2[ele].update({row['period']:row['units']})
+                    result_dict2[ele].update({row['period']: row['units']})
                 else:
                     current_count = result_dict2[ele].get(row['period'])
-                    result_dict2[ele].update({row['period']:row['units'] + current_count})
-
+                    result_dict2[ele].update({row['period']: row['units'] + current_count})
 
         # Formats the result to a key value pair where key is the product id and values is a dictionary with key as period and value as quantity
         current_date = date.today()
         first_day = current_date.replace(day=1)
-        first_month_list = [str((first_day + relativedelta(months=-x)).strftime('%Y-%m-%d %H:%M:%S')) for x in range (0, 15)]
-        date_matrix = {datetime.strptime(ele,"%Y-%m-%d %H:%M:%S"): 'month'+str(x) for x, ele in zip(range(1, 16), first_month_list)}
+        first_month_list = [str((first_day + relativedelta(months=-x)).strftime('%Y-%m-%d %H:%M:%S')) for x in
+                            range(0, 15)]
+        date_matrix = {datetime.strptime(ele, "%Y-%m-%d %H:%M:%S"): 'month' + str(x) for x, ele in
+                       zip(range(1, 16), first_month_list)}
         for key in result_dict2.keys():
             result = {}
             for ele in date_matrix.keys():
                 if ele in result_dict2[key].keys():
                     result.update({date_matrix[ele]: result_dict2[key][ele]})
                 else:
-                    result.update({date_matrix[ele]:0})
+                    result.update({date_matrix[ele]: 0})
             result_dict2[key] = result
-
-
 
         # Converts the result into list of standard dictionarys vals parameter for create argument in Odoo
         result_list = []
@@ -139,10 +139,9 @@ class PurchaseOrder(models.Model):
             month_data = result_dict2[k]
             month_data.update({'product_id': k,
                                'product_pseudo_id': k,
-                              })
+                               })
             result_list.append(month_data)
         return result_list
-
 
     @api.multi
     def button_confirm(self):
@@ -150,17 +149,14 @@ class PurchaseOrder(models.Model):
         cancel all other RFQ under the same purchase agreement
         """
         for purchase_order in self:
-            orders = self.search([('requisition_id', '!=', False),('requisition_id', '=', purchase_order.requisition_id.id),('id','not in', purchase_order.ids)])
+            orders = self.search(
+                [('requisition_id', '!=', False), ('requisition_id', '=', purchase_order.requisition_id.id),
+                 ('id', 'not in', purchase_order.ids)])
             orders.button_cancel()
         return super(PurchaseOrder, self).button_confirm()
 
 
-
-
-
-
 PurchaseOrder()
-
 
 
 class PurchaseOrderLine(models.Model):
@@ -169,16 +165,13 @@ class PurchaseOrderLine(models.Model):
     gross_volume = fields.Float(string="Gross Volume", compute='_compute_gross_weight_volume')
     gross_weight = fields.Float(string="Gross Weight", compute='_compute_gross_weight_volume')
 
-
-
     @api.depends('product_id.volume', 'product_id.weight')
     def _compute_gross_weight_volume(self):
         for line in self:
             volume = line.product_id.volume * line.product_qty
             weight = line.product_id.weight * line.product_qty
             line.gross_volume = volume
-            line.gross_weight= weight
-
+            line.gross_weight = weight
 
     @api.model
     def schedule_update_date_po_line(self):
@@ -199,7 +192,6 @@ class PurchaseOrderLine(models.Model):
             else:
                 line.date_planned = date_order + relativedelta(days=line.partner_id.delay if line.partner_id else 0)
 
-
     @api.multi
     def show_sales_history(self):
         """
@@ -209,17 +201,19 @@ class PurchaseOrderLine(models.Model):
         current_date = date.today()
         first_day = current_date.replace(day=1)
         date_limit = str(first_day + relativedelta(months=-15))
-        self._cr.execute("SELECT sol.id FROM sale_order_line sol JOIN sale_order so on so.id=sol.order_id WHERE sol.product_id=%s AND so.confirmation_date>='%s' and so.state in ('sale', 'done')" %(self.product_id.id, date_limit))
+        self._cr.execute(
+            "SELECT sol.id FROM sale_order_line sol JOIN sale_order so on so.id=sol.order_id WHERE sol.product_id=%s AND so.confirmation_date>='%s' and so.state in ('sale', 'done')" % (
+            self.product_id.id, date_limit))
         res = self._cr.dictfetchall()
         sale_lines = [ele['id'] for ele in res]
         sale_lines = self.env['sale.order.line'].browse(sale_lines)
-#        sale_lines = self.env['sale.order.line'].search([('product_id', '=', self.product_id.id), ('order_id.confirmation_date', '>=', date_limit), ('order_id.state', 'in', ('sale', 'done'))])
+        #        sale_lines = self.env['sale.order.line'].search([('product_id', '=', self.product_id.id), ('order_id.confirmation_date', '>=', date_limit), ('order_id.state', 'in', ('sale', 'done'))])
         if not sale_lines:
             raise ValidationError(_('No history of product found being sold in the last 15 months.'))
         created_ids = []
         for ele in sale_lines:
             uom_qty = ele.product_uom_qty
-            #change uom to purchase units
+            # change uom to purchase units
             if ele.product_uom.id != ele.product_id.uom_po_id.id:
                 uom_qty = ele.product_uom._compute_quantity(uom_qty, ele.product_id.uom_po_id)
             created_ids += self.env['view.sales.history.po'].create({'product_id': ele.product_id.id,
@@ -228,10 +222,14 @@ class PurchaseOrderLine(models.Model):
                                                                      'uom': ele.product_id.uom_po_id.id,
                                                                      'partner_id': ele.order_id.partner_id.id,
                                                                      'sale_line_id': ele.id,
-                                                                    })
+                                                                     })
         action = self.env.ref('purchase_extension.action_view_sales_history_po').read()[0]
         action['domain'] = [("id", "in", [r.id for r in created_ids])]
         action['target'] = 'new'
         return action
 
+
 PurchaseOrderLine()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+

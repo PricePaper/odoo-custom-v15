@@ -6,9 +6,7 @@ from odoo import models, fields, api
 
 
 class Lead(models.Model):
-
     _inherit = "crm.lead"
-
 
     rev_per_trans = fields.Float(string="Revenue Per Transaction")
     business_freq = fields.Selection(selection=[('week', 'Weekly'),
@@ -16,8 +14,6 @@ class Lead(models.Model):
                                                 ('month', 'Monthly')], string="Frequency")
     planned_revenue = fields.Float(compute="_calc_expected_revenue", string='Monthly Revenue Expected', store=True)
     sales_person_ids = fields.Many2many('res.partner', string="Sales Persons")
-
-
 
     @api.depends('rev_per_trans', 'business_freq')
     def _calc_expected_revenue(self):
@@ -29,13 +25,11 @@ class Lead(models.Model):
         for lead in self:
             if lead.rev_per_trans and lead.business_freq:
                 if lead.business_freq == 'week':
-                    lead.planned_revenue = lead.rev_per_trans*4
+                    lead.planned_revenue = lead.rev_per_trans * 4
                 elif lead.business_freq == 'biweek':
-                    lead.planned_revenue = lead.rev_per_trans*2
+                    lead.planned_revenue = lead.rev_per_trans * 2
                 elif lead.business_freq == 'month':
                     lead.planned_revenue = lead.rev_per_trans
-
-
 
     def write(self, vals):
         """
@@ -59,3 +53,5 @@ class Lead(models.Model):
 
 
 Lead()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

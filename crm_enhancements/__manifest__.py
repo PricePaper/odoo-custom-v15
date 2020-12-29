@@ -18,7 +18,6 @@
 
     'depends': ['crm', 'sale', 'price_paper'],
 
-
     'data': [
         'data/data.xml',
         'views/res_partner.xml',
@@ -28,3 +27,5 @@
     ],
 
 }
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

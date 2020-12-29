@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
-import datetime
-from dateutil.relativedelta import *
 import calendar
+import datetime
+
+from dateutil.relativedelta import *
+
+from odoo import models, fields, api
 
 
 class ResPartner(models.Model):
@@ -24,18 +26,22 @@ class ResPartner(models.Model):
 
     @api.model
     def set_customer_ranking_cron(self):
-        last_year_start_date = datetime.datetime.now()-relativedelta(years=1)
+        last_year_start_date = datetime.datetime.now() - relativedelta(years=1)
         last_year_start_date = datetime.datetime(last_year_start_date.year, last_year_start_date.month, 1)
 
-        last_3_month_start_date = datetime.datetime.now()-relativedelta(months=3)
+        last_3_month_start_date = datetime.datetime.now() - relativedelta(months=3)
         last_3_month_start_date = datetime.datetime(last_3_month_start_date.year, last_3_month_start_date.month, 1)
 
-        end_date = datetime.datetime.now()-relativedelta(months=1)
+        end_date = datetime.datetime.now() - relativedelta(months=1)
         end_date = datetime.datetime(end_date.year, end_date.month, calendar.mdays[end_date.month], 00, 00, 00)
 
-        last_year_sale_orders = self.env['sale.order'].search([('state', 'in', ['sale', 'done']), ('confirmation_date', '>=', str(last_year_start_date)),('confirmation_date', '<=', str(end_date))])
+        last_year_sale_orders = self.env['sale.order'].search(
+            [('state', 'in', ['sale', 'done']), ('confirmation_date', '>=', str(last_year_start_date)),
+             ('confirmation_date', '<=', str(end_date))])
 
-        last_3_month_sale_orders = self.env['sale.order'].search([('state', 'in', ['sale', 'done']), ('confirmation_date', '>=', str(last_3_month_start_date)), ('confirmation_date', '<=', str(end_date))])
+        last_3_month_sale_orders = self.env['sale.order'].search(
+            [('state', 'in', ['sale', 'done']), ('confirmation_date', '>=', str(last_3_month_start_date)),
+             ('confirmation_date', '<=', str(end_date))])
 
         for customer in self.env['res.partner'].search([('customer', '=', True)]):
             customer_last_year_sale_order = last_year_sale_orders.filtered(lambda so: so.partner_id == customer)
@@ -44,10 +50,10 @@ class ResPartner(models.Model):
             last_year_total = sum(customer_last_year_sale_order.mapped('amount_total'))
             last_3_month_total = sum(customer_last_3_month_sale_orders.mapped('amount_total'))
             profit_margin_lst_3_mnt = sum(customer_last_3_month_sale_orders.mapped('gross_profit'))
-            proj_3month_to_one_year = last_3_month_total*4
+            proj_3month_to_one_year = last_3_month_total * 4
 
             if last_3_month_total:
-                customer.mrg_per_lst_3_mon = round(100*(profit_margin_lst_3_mnt/last_3_month_total), 2)
+                customer.mrg_per_lst_3_mon = round(100 * (profit_margin_lst_3_mnt / last_3_month_total), 2)
 
             if customer.company_id:
                 company = customer.company_id
@@ -67,8 +73,6 @@ class ResPartner(models.Model):
                 else:
                     customer.rnk_lst_12_mon = 'Z'
 
-
-
                 if proj_3month_to_one_year > company.amount_a:
                     customer.rnk_lst_3_mon = 'A'
                 elif proj_3month_to_one_year > company.amount_b:
@@ -84,7 +88,6 @@ class ResPartner(models.Model):
                 else:
                     customer.rnk_lst_3_mon = 'Z'
 
-
     @api.depends('sale_order_ids')
     def _calc_monthly_revenue(self):
         """
@@ -93,12 +96,14 @@ class ResPartner(models.Model):
         by seaching his current month sales transactions
         """
         for partner in self:
-            orders = self.env['sale.order'].search([('confirmation_date', '!=', False), ('partner_id', 'child_of', partner.id), ('state', 'in', ['sale', 'done'])])
+            orders = self.env['sale.order'].search(
+                [('confirmation_date', '!=', False), ('partner_id', 'child_of', partner.id),
+                 ('state', 'in', ['sale', 'done'])])
             date_today = datetime.date.today()
             start_date_this_mon, end_date_this_mon = self.get_month_start_end_date(date_today)
-            orders_this_month = orders.filtered(lambda so: so.confirmation_date > start_date_this_mon and so.confirmation_date < end_date_this_mon)
+            orders_this_month = orders.filtered(
+                lambda so: so.confirmation_date > start_date_this_mon and so.confirmation_date < end_date_this_mon)
             partner.rev_this_mon = sum([so.amount_untaxed for so in orders_this_month]) or 0
-
 
     @api.model
     def get_month_start_end_date(self, date):
@@ -113,7 +118,6 @@ class ResPartner(models.Model):
         end_date = datetime.datetime.combine(end_date, datetime.datetime.min.time())
         return start_date, end_date
 
-
     @api.depends('rev_per_trans', 'business_freq')
     def _calc_expected_revenue(self):
         """
@@ -124,10 +128,13 @@ class ResPartner(models.Model):
         for partner in self:
             if partner.rev_per_trans and partner.business_freq:
                 if partner.business_freq == 'week':
-                    partner.exp_mon_rev = partner.rev_per_trans*4
+                    partner.exp_mon_rev = partner.rev_per_trans * 4
                 elif partner.business_freq == 'biweek':
-                    partner.exp_mon_rev = partner.rev_per_trans*2
+                    partner.exp_mon_rev = partner.rev_per_trans * 2
                 elif partner.business_freq == 'month':
                     partner.exp_mon_rev = partner.rev_per_trans
 
+
 ResPartner()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

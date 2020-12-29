@@ -1,8 +1,8 @@
+# -*- coding: utf-8 -*-
 from odoo import fields, models, api
 
 
 class Lead2OpportunityPartner(models.TransientModel):
-
     _inherit = 'crm.lead2opportunity.partner'
 
     sales_person_ids = fields.Many2many('res.partner', string="Sales Persons")
@@ -25,3 +25,8 @@ class Lead2OpportunityPartner(models.TransientModel):
             leads.write({'sales_person_ids': [(6, 0, self.sales_person_ids.ids)]})
 
         return super(Lead2OpportunityPartner, self).action_apply()
+
+
+Lead2OpportunityPartner()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

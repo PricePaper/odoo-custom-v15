@@ -29,6 +29,7 @@
                                 <field name="qty_available" readonly='1' tabindex="0"/>
                                 <field name="product_uom" readonly='1' tabindex="0" widget="selection"/>
                                 <field name="price_unit" readonly='1' tabindex="0"/>
+                                <field name="old_price" readonly='1' tabindex="0"/>
                                 <field name="date_order" readonly='1' tabindex="0"/>
                                 <field name="product_category" readonly='1' tabindex="0" widget="selection"/>
                                 <field name="order_line" invisible="1"/>
@@ -47,6 +48,7 @@
                                 <field name="qty_available" readonly='1' tabindex="0"/>
                                 <field name="product_uom" readonly='1' tabindex="0" widget="selection"/>
                                 <field name="price_unit" readonly='1' tabindex="0"/>
+                                <field name="old_price" readonly='1' tabindex="0"/>
                                 <field name="date_order" readonly='1' tabindex="0"/>
                                 <field name="product_category" readonly='1' tabindex="0" widget="selection"/>
                                 <field name="order_line" invisible="1"/>

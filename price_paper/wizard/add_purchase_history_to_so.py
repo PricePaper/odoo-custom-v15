@@ -19,6 +19,7 @@ class SaleHistoryLinesWizard(models.TransientModel):
     date_order = fields.Char(string='Order Date')
     search_wizard_id = fields.Many2one('add.purchase.history.so', string='Parent')
     price_unit = fields.Float(string='Price')
+    old_price = fields.Float(string='History Price')
     order_line = fields.Many2one('sale.order.line', string='Sale order line')
     qty_to_be = fields.Float(string='New Qty')
     product_category = fields.Many2one('product.category', string='Product Category')
@@ -149,6 +150,7 @@ class AddPurchaseHistorySO(models.TransientModel):
                 'qty_to_be': line.qty_to_be,
                 'qty_available': line.qty_available,
                 'price_unit': line.price_unit,
+                'old_price': line.old_price,
                 'product_uom_qty': line.product_uom_qty,
                 'product_category': line.product_category.id,
                 'product_name': line.product_name
@@ -168,6 +170,7 @@ class AddPurchaseHistorySO(models.TransientModel):
                     'qty_to_be': 0.0,
                     'qty_available': line.product_id.virtual_available,
                     'price_unit': price,
+                    'old_price': line.order_line_id.price_unit,
                     'product_uom_qty': line.order_line_id.product_uom_qty,
                     'product_category': line.product_id.categ_id.id,
                     'product_name': line.product_id.display_name

@@ -6,7 +6,7 @@
             <field name="model_id" ref="model_sale_commission"/>
             <field name="state">code</field>
             <field name="code">
-model.create_weeekly_draw()
+                model.create_weeekly_draw()
             </field>
             <field eval="True" name="active"/>
             <field name="user_id" ref="base.user_root"/>

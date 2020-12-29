@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api, _
 from datetime import date
+
+from odoo import fields, models, api
+
 
 class SaleCommission(models.Model):
     _name = 'sale.commission'
@@ -12,7 +14,9 @@ class SaleCommission(models.Model):
     invoice_id = fields.Many2one('account.invoice', string='Invoice')
     is_paid = fields.Boolean(string='Paid', default=False)
     is_cancelled = fields.Boolean(string='Cancelled', default=False)
-    invoice_type = fields.Selection(selection=[('out_invoice', 'Invoice'), ('out_refund', 'Refund'), ('draw', 'Weekly Draw'), ('bounced_cheque', 'Cheque Bounce'), ('cancel', 'Invoice Cancelled')], string='Type')
+    invoice_type = fields.Selection(
+        selection=[('out_invoice', 'Invoice'), ('out_refund', 'Refund'), ('draw', 'Weekly Draw'),
+                   ('bounced_cheque', 'Cheque Bounce'), ('cancel', 'Invoice Cancelled')], string='Type')
     invoice_amount = fields.Float(string='Amount')
     date_invoice = fields.Date(related='invoice_id.date_invoice', string="Invoice Date", readonly=True, store=True)
     sale_id = fields.Many2one('sale.order', string="Sale Order")
@@ -25,8 +29,9 @@ class SaleCommission(models.Model):
     def action_commission_remove(self):
         for rec in self:
             rec.settlement_id.message_post(
-            body='Commission Line removed..!!<br/><span> Source &#8594; %s </span><br/>Amount &#8594; %0.2f' % (rec.invoice_id.move_name, rec.commission),
-            subtype_id=self.env.ref('mail.mt_note').id)
+                body='Commission Line removed..!!<br/><span> Source &#8594; %s </span><br/>Amount &#8594; %0.2f' % (
+                rec.invoice_id.move_name, rec.commission),
+                subtype_id=self.env.ref('mail.mt_note').id)
             rec.is_removed = True
 
     @api.multi
@@ -34,7 +39,7 @@ class SaleCommission(models.Model):
         for rec in self:
             rec.settlement_id.message_post(
                 body='Commission Line Added..!!<br/><span> Source &#8594; %s </span><br/>Amount &#8594; %0.2f' % (
-                rec.invoice_id.move_name, rec.commission),
+                    rec.invoice_id.move_name, rec.commission),
                 subtype_id=self.env.ref('mail.mt_note').id)
             rec.is_removed = False
 
@@ -44,16 +49,17 @@ class SaleCommission(models.Model):
         for sales_person in sales_persons:
             weekly_draw = sales_person.weekly_draw
             if weekly_draw and weekly_draw > 0:
-                daily_amount = weekly_draw/7
+                daily_amount = weekly_draw / 7
                 vals = {
-                        'sale_person_id' : sales_person.id,
-                        'commission': -daily_amount,
-                        'is_paid':True,
-                        'invoice_type': 'draw',
-                        'commission_date': date.today()
-                        }
+                    'sale_person_id': sales_person.id,
+                    'commission': -daily_amount,
+                    'is_paid': True,
+                    'invoice_type': 'draw',
+                    'commission_date': date.today()
+                }
                 self.env['sale.commission'].create(vals)
 
 
-
 SaleCommission()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

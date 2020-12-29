@@ -8,8 +8,10 @@ class SaleCommissionSettlement(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Sale Commission Settlement'
 
-    name = fields.Char('Name', required=True, copy=False, readonly=True, states={'draft': [('readonly', False)]}, index=True, default=lambda self: _('New'))
-    sales_person_id = fields.Many2one('res.partner', string='Sales Person', required=True, readonly=True, states={'draft': [('readonly', False)]})
+    name = fields.Char('Name', required=True, copy=False, readonly=True, states={'draft': [('readonly', False)]},
+                       index=True, default=lambda self: _('New'))
+    sales_person_id = fields.Many2one('res.partner', string='Sales Person', required=True, readonly=True,
+                                      states={'draft': [('readonly', False)]})
     amount_paid = fields.Float(string="Amount", compute='_compute_total_amount', store=True)
     commission_ids = fields.One2many('sale.commission', 'settlement_id', string="Commission Lines", required=True)
     date_from = fields.Date(strong="Date From", readonly=True, required=True, states={'draft': [('readonly', False)]})
@@ -45,7 +47,8 @@ class SaleCommissionSettlement(models.Model):
             if domain:
                 domain.extend([('is_paid', '=', True), ('is_settled', '=', False)])
                 commission_lines = self.env['sale.commission'].search(domain)
-            commission_lines -= self.search([]).mapped('commission_ids').filtered(lambda rec: not rec.is_removed and rec.is_settled)
+            commission_lines -= self.search([]).mapped('commission_ids').filtered(
+                lambda rec: not rec.is_removed and rec.is_settled)
             rec.commission_ids = commission_lines
 
     @api.multi
@@ -58,7 +61,6 @@ class SaleCommissionSettlement(models.Model):
     def action_confirm(self):
         for rec in self:
             rec.state = 'confirmed'
-
 
     @api.multi
     def action_cancel(self):
@@ -73,5 +75,6 @@ class SaleCommissionSettlement(models.Model):
             rec.state = 'draft'
 
 
-
 SaleCommissionSettlement()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

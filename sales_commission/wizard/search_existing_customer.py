@@ -1,25 +1,24 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api,_
-from datetime import datetime
+from odoo import models, fields, api, _
+
 
 class SearchExistingCustomer(models.TransientModel):
-
     _name = "search.existing.customer"
     _description = 'Search Existing Customer'
 
     search_string = fields.Char(string='Search',
-    help='Search... Name,email,phone,city,mobile,vat,city')
+                                help='Search... Name,email,phone,city,mobile,vat,city')
     line_ids = fields.One2many('existing.customer.line', 'parent_id', string='Result')
-
 
     @api.onchange('search_string')
     def search_existing_customer(self):
         self.line_ids = False
         if self.search_string:
-            string_val = self.search_string.replace("'","''")
-            string = '%'+string_val+'%'
-            query = """SELECT name, commercial_company_name, email, phone, mobile, vat, last_so, last_sold_date, city, id from res_partner where (name ilike('%s') or phone ilike('%s') or mobile ilike('%s') or email ilike('%s') or commercial_company_name ilike('%s') or vat ilike('%s') or city ilike('%s')) and customer=True and parent_id IS NULL and is_sales_person=False;""" % (string, string, string, string, string, string, string)
+            string_val = self.search_string.replace("'", "''")
+            string = '%' + string_val + '%'
+            query = """SELECT name, commercial_company_name, email, phone, mobile, vat, last_so, last_sold_date, city, id from res_partner where (name ilike('%s') or phone ilike('%s') or mobile ilike('%s') or email ilike('%s') or commercial_company_name ilike('%s') or vat ilike('%s') or city ilike('%s')) and customer=True and parent_id IS NULL and is_sales_person=False;""" % (
+            string, string, string, string, string, string, string)
             self.env.cr.execute(query)
             result = self.env.cr.fetchall()
             if result:
@@ -47,14 +46,10 @@ class SearchExistingCustomer(models.TransientModel):
             self.line_ids = False
 
 
-
-
-
 SearchExistingCustomer()
 
 
 class ExistingCustomerLine(models.TransientModel):
-
     _name = "existing.customer.line"
     _description = 'Existing Customer Line'
 
@@ -70,4 +65,7 @@ class ExistingCustomerLine(models.TransientModel):
     city = fields.Char(string='City')
     sales_person = fields.Char(string='Salesperson')
 
+
 ExistingCustomerLine()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

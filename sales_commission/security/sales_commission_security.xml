@@ -2,42 +2,45 @@
     <data>
         <function name="write" model="ir.model.data">
             <function name="search" model="ir.model.data">
-                <value eval="[('module', '=', 'sale'), ('name', '=', 'sale_order_see_all')]" />
+                <value eval="[('module', '=', 'sale'), ('name', '=', 'sale_order_see_all')]"/>
             </function>
-            <value eval="{'noupdate': False}" />
+            <value eval="{'noupdate': False}"/>
         </function>
         <function name="write" model="ir.model.data">
             <function name="search" model="ir.model.data">
-                <value eval="[('module', '=', 'sale'), ('name', '=', 'sale_order_personal_rule')]" />
+                <value eval="[('module', '=', 'sale'), ('name', '=', 'sale_order_personal_rule')]"/>
             </function>
-            <value eval="{'noupdate': False}" />
+            <value eval="{'noupdate': False}"/>
         </function>
         <function name="write" model="ir.model.data">
             <function name="search" model="ir.model.data">
-                <value eval="[('module', '=', 'sale'), ('name', '=', 'sale_order_line_personal_rule')]" />
+                <value eval="[('module', '=', 'sale'), ('name', '=', 'sale_order_line_personal_rule')]"/>
             </function>
-            <value eval="{'noupdate': False}" />
+            <value eval="{'noupdate': False}"/>
         </function>
         <function name="write" model="ir.model.data">
             <function name="search" model="ir.model.data">
-                <value eval="[('module', '=', 'base'), ('name', '=', 'res_partner_rule_private_employee')]" />
+                <value eval="[('module', '=', 'base'), ('name', '=', 'res_partner_rule_private_employee')]"/>
             </function>
-            <value eval="{'noupdate': False}" />
+            <value eval="{'noupdate': False}"/>
         </function>
 
 
         <record id="sale.sale_order_personal_rule" model="ir.rule">
             <field name="name">Personal Orders</field>
             <field ref="sale.model_sale_order" name="model_id"/>
-            <field name="domain_force">['|', '&amp;',('user_id.id','=',user.id), ('sales_person_ids','=',False), ('sales_person_ids.id','=',user.partner_id.id)]</field>
+            <field name="domain_force">['|', '&amp;', ('user_id.id', '=', user.id), ('sales_person_ids', '=', False),
+                                        ('sales_person_ids.id', '=', user.partner_id.id)]</field>
             <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
         </record>
+
         <record id="sale_history_personal_rule" model="ir.rule">
             <field name="name">Personal Sale History</field>
             <field ref="price_paper.model_sale_history" name="model_id"/>
-            <field name="domain_force">[('partner_id.sales_person_ids.id','=',user.partner_id.id)]</field>
+            <field name="domain_force">[('partner_id.sales_person_ids.id', '=', user.partner_id.id)]</field>
             <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
         </record>
+
         <record id="sale_history_all_rule" model="ir.rule">
             <field name="name">All Sale History</field>
             <field ref="price_paper.model_sale_history" name="model_id"/>
@@ -48,8 +51,7 @@
         <record id="sale.sale_order_line_personal_rule" model="ir.rule">
             <field name="name">Personal Order Lines</field>
             <field ref="sale.model_sale_order_line" name="model_id"/>
-            <!-- <field name="domain_force">['|', '&amp;',('order_id.user_id.id','=',user.id), ('order_id.sales_person_ids','=',False),('order_id.sales_person_ids.id','=',user.partner_id.id)]</field> -->
-            <field name="domain_force">[('order_id.sales_person_ids.id','=',user.partner_id.id)]</field>
+            <field name="domain_force">[('order_id.sales_person_ids.id', '=', user.partner_id.id)]</field>
             <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
         </record>
 
@@ -57,38 +59,37 @@
             <field name="name">res.partner.rule.private.employee</field>
             <field name="model_id" ref="base.model_res_partner"/>
             <field name="domain_force">
-                ['|',('is_sales_person', '=', True),
-                '|','&amp;',('create_uid','=',user.id),
-                ('sales_person_ids','=',False),'|',
-                ('sales_person_ids.id','=',user.partner_id.id),
-                '|', ('id','=',user.partner_id.id),
-                ('id','=',user.company_id.partner_id.id)]
+                ['|', ('is_sales_person', '=', True),
+                 '|', '&amp;', ('create_uid', '=', user.id),
+                 ('sales_person_ids', '=', False), '|',
+                 ('sales_person_ids.id', '=', user.partner_id.id),
+                 '|', ('id', '=', user.partner_id.id),
+                 ('id', '=', user.company_id.partner_id.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('base.group_user')),
             ]"/>
         </record>
+
         <record id="res_partner_salesman_personal_only" model="ir.rule">
             <field name="name">Personal customers</field>
             <field ref="model_res_partner" name="model_id"/>
-            <field name="domain_force">['|',('is_sales_person', '=', True),
-              '|','&amp;',('create_uid','=',user.id),
-              ('sales_person_ids','=',False),'|',
-              ('sales_person_ids.id','=',user.partner_id.id),
-              '|', ('id','=',user.partner_id.id),
-              ('id','=',user.company_id.partner_id.id)]
+            <field name="domain_force">['|', ('is_sales_person', '=', True),
+                                        '|', '&amp;', ('create_uid', '=', user.id),
+                                        ('sales_person_ids', '=', False), '|',
+                                        ('sales_person_ids.id', '=', user.partner_id.id),
+                                        '|', ('id', '=', user.partner_id.id),
+                                        ('id', '=', user.company_id.partner_id.id)]
             </field>
             <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
         </record>
+
         <record id="account_invoice_salesman_personal_only" model="ir.rule">
             <field name="name">Personal invoices</field>
             <field ref="account.model_account_invoice" name="model_id"/>
-            <field name="domain_force">[('partner_id.sales_person_ids.id','=',user.partner_id.id)]</field>
+            <field name="domain_force">[('partner_id.sales_person_ids.id', '=', user.partner_id.id)]</field>
             <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
         </record>
-
-
-
 
         <record id="sale.sale_order_see_all" model="ir.rule">
             <field name="name">Al Orders</field>
@@ -96,40 +97,28 @@
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
         </record>
+
         <record id="sale.sale_order_line_see_all" model="ir.rule">
             <field name="name">All Order Lines</field>
             <field ref="sale.model_sale_order_line" name="model_id"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
         </record>
+
         <record id="res_partner_personal_only" model="ir.rule">
             <field name="name">All customers</field>
             <field ref="model_res_partner" name="model_id"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
         </record>
+
         <record id="account_invoice_personal_only" model="ir.rule">
             <field name="name">All invoices</field>
             <field ref="account.model_account_invoice" name="model_id"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
         </record>
-<!--        <record id="competitor_price_lists_personal_rule" model="ir.rule">-->
-<!--            <field name="name">Own Documents: Competitor Pricelists</field>-->
-<!--            <field ref="product.model_product_pricelist" name="model_id"/>-->
-<!--            <field name="domain_force">[('type', '=', 'competitor')]</field>-->
-<!--            <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>-->
-<!--            <field name="perm_read" eval="True"/>-->
-<!--            <field name="perm_write" eval="False"/>-->
-<!--            <field name="perm_create" eval="False"/>-->
-<!--            <field name="perm_unlink" eval="False"/>-->
-<!--        </record>-->
-        <!-- <record id="price_lists_personal_rule" model="ir.rule">
-            <field name="name">Personal Pricelists</field>
-            <field ref="product.model_product_pricelist" name="model_id"/>
-            <field name="domain_force">[('partner_ids.sales_person_ids.id','=',user.partner_id.id)]</field>
-            <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
-        </record> -->
+
         <record id="price_lists_all_rule" model="ir.rule">
             <field name="name">All Pricelists</field>
             <field ref="product.model_product_pricelist" name="model_id"/>
@@ -140,6 +129,7 @@
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="True"/>
         </record>
+
         <record id="customer_product_price_competitor_rule" model="ir.rule">
             <field name="name">Competitor Pricelists Line Own Documents</field>
             <field ref="price_paper.model_customer_product_price" name="model_id"/>
@@ -150,16 +140,19 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
+
         <record id="customer_product_price_personal_rule" model="ir.rule">
             <field name="name">Personal Pricelist Items</field>
             <field ref="price_paper.model_customer_product_price" name="model_id"/>
-            <field name="domain_force">[('pricelist_id.partner_ids.sales_person_ids.id','=',user.partner_id.id)]</field>
+            <field name="domain_force">[
+                ('pricelist_id.partner_ids.sales_person_ids.id', '=', user.partner_id.id)]</field>
             <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
         </record>
+
         <record id="customer_product_price_all_rule" model="ir.rule">
             <field name="name">All Pricelist Items</field>
             <field ref="price_paper.model_customer_product_price" name="model_id"/>
@@ -184,24 +177,28 @@
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('sales_commission.group_sales_commission'))]"/>
         </record>
+
         <record id="invoice_commission_manager" model="ir.rule">
             <field name="name">Commission Manager: Invoice</field>
             <field ref="account.model_account_invoice" name="model_id"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('sales_commission.group_sales_commission'))]"/>
         </record>
+
         <record id="sale_order_commission_manager" model="ir.rule">
             <field name="name">Commission Manager: sale order</field>
             <field ref="sale.model_sale_order" name="model_id"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('sales_commission.group_sales_commission'))]"/>
         </record>
+
         <record id="sale_commission_salesman_personal_only" model="ir.rule">
             <field name="name">Personal comission</field>
             <field ref="sales_commission.model_sale_commission" name="model_id"/>
-            <field name="domain_force">[('sale_person_id.id','=',user.partner_id.id)]</field>
+            <field name="domain_force">[('sale_person_id.id', '=', user.partner_id.id)]</field>
             <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
         </record>
+
         <record id="sale_commission_commission_manager" model="ir.rule">
             <field name="name">Commission Manager: sale commission</field>
             <field ref="sales_commission.model_sale_commission" name="model_id"/>

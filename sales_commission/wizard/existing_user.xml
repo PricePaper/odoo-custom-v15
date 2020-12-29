@@ -7,7 +7,7 @@
                 <form string="Search Existing Customer">
                     <sheet>
                         <group>
-                            <field name="search_string" required="1" />
+                            <field name="search_string" required="1"/>
                         </group>
                         <separator string="Search results"/>
                         <field name="line_ids">
@@ -28,7 +28,6 @@
                 </form>
             </field>
         </record>
-
 
         <record id="action_existing_user" model="ir.actions.act_window">
             <field name="name">Search Existing Customer</field>

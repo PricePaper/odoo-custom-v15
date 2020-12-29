@@ -7,10 +7,10 @@
                 <form string="Generate Commission">
                     <sheet>
                         <group col="4">
-                            <!-- <field name="month"/> -->
                             <field name="report_type"/>
                             <field name="salesperson_id" groups="sales_commission.group_sales_commission"
-                              domain="[('is_sales_person', '=', True)]" context="{'search_default_salesperson':1}" options="{'no_create': true, 'create_edit': false}"/>
+                                   domain="[('is_sales_person', '=', True)]" context="{'search_default_salesperson':1}"
+                                   options="{'no_create': true, 'create_edit': false}"/>
                         </group>
                     </sheet>
                     <footer>
@@ -20,7 +20,6 @@
                 </form>
             </field>
         </record>
-
 
         <record id="generate_sales_commission" model="ir.actions.act_window">
             <field name="name">Generate commission</field>

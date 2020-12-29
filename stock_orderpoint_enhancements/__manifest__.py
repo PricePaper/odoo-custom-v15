@@ -14,16 +14,12 @@
     'author': 'Confianz Global',
     'website': 'http://confianzit.com',
 
-
     'category': 'Inventory',
     'version': '0.1',
 
-
-    'depends': ['stock','odoo_fbprophet', 'price_paper', 'queue_job'],
-
+    'depends': ['stock', 'odoo_fbprophet', 'price_paper', 'queue_job'],
 
     'data': [
-#        'security/ir.model.access.csv',
         'data/data.xml',
         'wizard/product_forecast_views.xml',
         'views/res_company.xml',
@@ -34,5 +30,6 @@
     'installable': True,
     'auto_install': False,
     'application': False,
-
 }
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-
-from odoo import models, fields, api
-
+from odoo import models, fields
 
 
 class ProductForecast(models.TransientModel):
     _name = 'product.forecast'
     _description = 'Show product Forecast'
     _order = 'date desc'
-
 
     date = fields.Date(string='Date')
     product_id = fields.Many2one('product.product', string="Product")
@@ -19,5 +15,6 @@ class ProductForecast(models.TransientModel):
     quantity_min = fields.Float(string="Product Quantity Min")
 
 
-
 ProductForecast()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models
 from odoo.tools import float_compare
+
 
 class StockRule(models.Model):
     _inherit = 'stock.rule'
@@ -14,9 +15,11 @@ class StockRule(models.Model):
             order_point = values.get('orderpoint_id')
             precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
             for seller in suppliers.filtered(lambda seller: seller.is_available):
-                quantity_uom_seller = abs(order_point.product_id.qty_available - (order_point.product_max_qty or order_point.product_min_qty))
+                quantity_uom_seller = abs(
+                    order_point.product_id.qty_available - (order_point.product_max_qty or order_point.product_min_qty))
                 if quantity_uom_seller and order_point.product_uom and order_point.product_uom != seller.product_uom:
-                    quantity_uom_seller = order_point.product_uom._compute_quantity(quantity_uom_seller, seller.product_uom)
+                    quantity_uom_seller = order_point.product_uom._compute_quantity(quantity_uom_seller,
+                                                                                    seller.product_uom)
                 if float_compare(quantity_uom_seller, seller.min_qty, precision_digits=precision) == -1:
                     continue
                 res |= seller
@@ -26,10 +29,11 @@ class StockRule(models.Model):
             return res
         return super(StockRule, self)._make_po_select_supplier(values, suppliers)
 
+
 StockRule()
 
 
-class  SupplierInfo(models.Model):
+class SupplierInfo(models.Model):
     _inherit = 'product.supplierinfo'
 
     is_available = fields.Boolean(string='Is Available', compute='_compute_supplierinfo_avl', store=True)
@@ -45,4 +49,7 @@ class  SupplierInfo(models.Model):
             else:
                 seller.is_available = True
 
+
 SupplierInfo()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

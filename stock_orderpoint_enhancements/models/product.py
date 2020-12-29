@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import calendar
+import datetime
 import logging as server_log
 from math import ceil
 
-import datetime
 from dateutil.relativedelta import *
 
 from odoo import fields, models, api
@@ -72,7 +72,7 @@ class ProductProduct(models.Model):
                 l WHERE o.date_order >= '%s'
                 AND o.date_order <= '%s' AND o.id=l.order_id AND
                 l.product_id in (%s) AND l.product_uom_qty>0 AND o.state IN ('sale', 'done') GROUP BY l.product_uom, year_month_day ORDER BY year_month_day;""" % (
-        from_date, str(to_date), (",".join(str(x) for x in product_ids)))
+            from_date, str(to_date), (",".join(str(x) for x in product_ids)))
 
         self.env.cr.execute(query)
         result = self.env.cr.fetchall()
@@ -125,15 +125,13 @@ class ProductProduct(models.Model):
                 flag = True
             if flag:
                 count += 1
-                self.env['product.forecast'].create({'product_id': self.id,
-                                                     'date': ele[0],
-                                                     'quantity': ele[1],  # quantity,
-                                                     'quantity_min': ele[2],  # min_quantity,
-                                                     'quantity_max': ele[3],  # max_quantity,
-                                                     })
-
-        #        if count>45:
-        #            raise ValidationError(_("Graphical representation is not possible due to large data,Please minimize forecast days"))
+                self.env['product.forecast'].create({
+                    'product_id': self.id,
+                    'date': ele[0],
+                    'quantity': ele[1],  # quantity,
+                    'quantity_min': ele[2],  # min_quantity,
+                    'quantity_max': ele[3],  # max_quantity,
+                })
 
         graph_id = self.env.ref('stock_orderpoint_enhancements.view_order_product_forecast_graph').id
         pivot_id = self.env.ref('stock_orderpoint_enhancements.view_order_product_forecast_pivot').id
@@ -304,8 +302,8 @@ class SupplierInfo(models.Model):
     _inherit = 'product.supplierinfo'
 
     delay = fields.Integer(
-       string='Delivery Lead Time', required=True, default=0,
-       help="Lead time in days between the confirmation of the purchase order and the receipt of the products in your warehouse. Used by the scheduler for automatic computation of the purchase order planning.A value of zero (0) will tell the system to use the delay provided by the product vendor")
+        string='Delivery Lead Time', required=True, default=0,
+        help="Lead time in days between the confirmation of the purchase order and the receipt of the products in your warehouse. Used by the scheduler for automatic computation of the purchase order planning.A value of zero (0) will tell the system to use the delay provided by the product vendor")
 
     @api.model
     def create(self, values):
@@ -333,12 +331,6 @@ class SupplierInfo(models.Model):
             self.reset_orderpoint(product)
         return res
 
-
-    # @api.onchange('name')
-    # def onchange_vendor(self):
-    #     if self.name:
-    #         self.delay = self.name.delay
-
     @api.multi
     def reset_orderpoint(self, product):
         """
@@ -350,3 +342,5 @@ class SupplierInfo(models.Model):
 
 
 SupplierInfo()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from odoo import api, fields, models, _
 from datetime import date
-from odoo.exceptions import UserError
 
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 
 class Accountinvoice(models.Model):
@@ -20,26 +20,26 @@ class Accountinvoice(models.Model):
                     sale = invoice.invoice_line_ids.mapped('sale_line_ids')
                     commission = rec.commission
                     vals1 = {
-                            'sale_person_id' : rec.sale_person_id.id,
-                            'sale_id': sale and sale[-1].order_id.id,
-                            'commission': -commission,
-                            'invoice_id' : invoice.id,
-                            'invoice_type' : 'bounced_cheque',
-                            'is_paid':True,
-                            'invoice_amount':invoice.amount_total,
-                            'commission_date': date.today()
-                            }
+                        'sale_person_id': rec.sale_person_id.id,
+                        'sale_id': sale and sale[-1].order_id.id,
+                        'commission': -commission,
+                        'invoice_id': invoice.id,
+                        'invoice_type': 'bounced_cheque',
+                        'is_paid': True,
+                        'invoice_amount': invoice.amount_total,
+                        'commission_date': date.today()
+                    }
                     refund_rec = self.env['sale.commission'].create(vals1)
                     vals2 = {
-                            'sale_person_id' : rec.sale_person_id.id,
-                            'sale_id': sale and sale[-1].order_id.id,
-                            'commission': commission,
-                            'invoice_id' : invoice.id,
-                            'invoice_type' : 'out_invoice',
-                            'is_paid':False,
-                            'invoice_amount':invoice.amount_total,
-                            'commission_date': invoice.date_invoice and invoice.date_invoice
-                            }
+                        'sale_person_id': rec.sale_person_id.id,
+                        'sale_id': sale and sale[-1].order_id.id,
+                        'commission': commission,
+                        'invoice_id': invoice.id,
+                        'invoice_type': 'out_invoice',
+                        'is_paid': False,
+                        'invoice_amount': invoice.amount_total,
+                        'commission_date': invoice.date_invoice and invoice.date_invoice
+                    }
                     new_rec = self.env['sale.commission'].create(vals2)
                 else:
                     rec.is_paid = False
@@ -53,16 +53,16 @@ class Accountinvoice(models.Model):
         if invoice:
             fpos = invoice.fiscal_position_id
             account = check_bounce_product.product_tmpl_id.get_product_accounts(fpos)
-            if account and account.get('income',''):
+            if account and account.get('income', ''):
                 account = account['income']
-            line_vals = [(0,0,{
-                         'name': 'Check Bounce Fine',
-                         'account_id': account.id,
-                         'product_id':check_bounce_product.id,
-                         'price_unit': check_bounce_product.cost,
-                         'quantity': 1.0,
-                         'discount': 0.0,
-                        })]
+            line_vals = [(0, 0, {
+                'name': 'Check Bounce Fine',
+                'account_id': account.id,
+                'product_id': check_bounce_product.id,
+                'price_unit': check_bounce_product.cost,
+                'quantity': 1.0,
+                'discount': 0.0,
+            })]
 
             invoice_vals = {
                 'type': 'out_invoice',
@@ -82,3 +82,5 @@ class Accountinvoice(models.Model):
 
 
 Accountinvoice()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

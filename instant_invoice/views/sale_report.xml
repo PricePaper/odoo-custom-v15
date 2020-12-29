@@ -2,13 +2,13 @@
 <odoo>
     <data>
         <report
-            id="action_report_quick_saleorder"
-            string="Quick Sale - Quotation / Order"
-            model="sale.order"
-            report_type="qweb-pdf"
-            file="instant_invoice.report_quick_saleorder"
-            name="instant_invoice.report_quick_saleorder"
-            print_report_name="(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or 'Order - %s' % (object.name)"
+                id="action_report_quick_saleorder"
+                string="Quick Sale - Quotation / Order"
+                model="sale.order"
+                report_type="qweb-pdf"
+                file="instant_invoice.report_quick_saleorder"
+                name="instant_invoice.report_quick_saleorder"
+                print_report_name="(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or 'Order - %s' % (object.name)"
         />
     </data>
 </odoo>

@@ -1,5 +1,6 @@
-#-*- coding: utf-8 -*-
-from odoo import models, fields, api, _
+# -*- coding: utf-8 -*-
+from odoo import models, fields, api
+
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -49,9 +50,11 @@ class SaleOrder(models.Model):
     @api.multi
     def print_quotation(self):
         if self.quick_sale:
-            return self.env.ref('instant_invoice.action_report_quick_saleorder')\
+            return self.env.ref('instant_invoice.action_report_quick_saleorder') \
                 .with_context(discard_logo_check=True).report_action(self)
         return super(SaleOrder, self).print_quotation()
 
 
 SaleOrder()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

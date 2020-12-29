@@ -1,21 +1,25 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
     <data>
-       <record id="quick_sale_view_order_form" model="ir.ui.view">
-           <field name="name">quick.sale.sale.order.form</field>
-           <field name="model">sale.order</field>
-           <field name="inherit_id" ref="sale.view_order_form"/>
-           <field name="arch" type="xml">
-               <xpath expr="//header" position='inside'>
-                   <button name="action_quick_sale" type="object" string="Quick Sale" class='oe_highlight' attrs="{'invisible': [('state','not in',('draft','sent'))]}"/>
-                   <button name="action_print_invoice" type="object" string="Print Invoice" attrs="{'invisible': ['|', ('quick_sale', '=', False), ('state','!=','sale')]}"/>
-                   <button name="action_print_picking_operation" type="object" string="Print Picking Operation" attrs="{'invisible': ['|', ('quick_sale', '=', False), ('state','!=','sale')]}"/>
-                   <button name="action_print_product_label" type="object" string="Print Product Label" attrs="{'invisible': ['|', ('quick_sale', '=', False), ('state','!=','sale')]}"/>
+        <record id="quick_sale_view_order_form" model="ir.ui.view">
+            <field name="name">quick.sale.sale.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position='inside'>
+                    <button name="action_quick_sale" type="object" string="Quick Sale" class='oe_highlight'
+                            attrs="{'invisible': [('state','not in',('draft','sent'))]}"/>
+                    <button name="action_print_invoice" type="object" string="Print Invoice"
+                            attrs="{'invisible': ['|', ('quick_sale', '=', False), ('state','!=','sale')]}"/>
+                    <button name="action_print_picking_operation" type="object" string="Print Picking Operation"
+                            attrs="{'invisible': ['|', ('quick_sale', '=', False), ('state','!=','sale')]}"/>
+                    <button name="action_print_product_label" type="object" string="Print Product Label"
+                            attrs="{'invisible': ['|', ('quick_sale', '=', False), ('state','!=','sale')]}"/>
                 </xpath>
                 <xpath expr="//field[@name='validity_date']" position="after">
-                    <field name="quick_sale" invisible="1" />
+                    <field name="quick_sale" invisible="1"/>
                 </xpath>
-           </field>
-       </record>
+            </field>
+        </record>
     </data>
 </odoo>

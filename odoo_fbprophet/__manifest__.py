@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 {
     'name': "Odoo fbprophet",
 
@@ -16,21 +17,18 @@
     'category': 'Other',
     'version': '0.1',
 
-
     'depends': ['base'],
-
-
 
     'external_dependencies': {
         'python': ['pandas', 'fbprophet'],
     },
 
-
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
-#        'views/templates.xml',
+        #        'views/templates.xml',
     ],
 
-
 }
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <record model="ir.ui.view" id="yearly_holidays_tree_view">
             <field name="name">Yearly Holidays Tree</field>
             <field name="model">yearly.holidays</field>
             <field name="arch" type="xml">
-            <tree>
-                <field name="name"/>
-            </tree>
+                <tree>
+                    <field name="name"/>
+                </tree>
             </field>
         </record>
 
@@ -41,7 +40,6 @@
             </field>
         </record>
 
-
         <record id="action_yearly_holidays" model="ir.actions.act_window">
             <field name="name">Yearly Holiday List</field>
             <field name="type">ir.actions.act_window</field>
@@ -49,30 +47,32 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
-              <p>
-                Create New Holiday List For a Year.
-              </p>
+                <p>
+                    Create New Holiday List For a Year.
+                </p>
             </field>
         </record>
 
+        <menuitem name="Fbprophet"
+                  id="menu_fbprophet"
+                  parent="base.menu_custom"/>
 
-        <menuitem name="Fbprophet" id="menu_fbprophet" parent="base.menu_custom"/>
-        <menuitem name="Yearly Holidays" id="odoo_fbprophet_hoidays" parent="menu_fbprophet" action="action_yearly_holidays" sequence="20"/>
-
-
+        <menuitem name="Yearly Holidays"
+                  id="odoo_fbprophet_hoidays"
+                  parent="menu_fbprophet"
+                  action="action_yearly_holidays"
+                  sequence="20"/>
 
         <record model="ir.ui.view" id="fbprophet_config_tree_view">
             <field name="name">Fbprophet Config Tree</field>
             <field name="model">fbprophet.config</field>
             <field name="arch" type="xml">
-            <tree>
-              <field name="name"/>
-              <field name="config_type"/>
-            </tree>
+                <tree>
+                    <field name="name"/>
+                    <field name="config_type"/>
+                </tree>
             </field>
         </record>
-
-
 
         <record model="ir.ui.view" id="fbprophet_config_form_view">
             <field name="name">Fbprophet Config Form</field>
@@ -86,10 +86,10 @@
                         </group>
 
                         <group colspan="2">
-                            <group >
+                            <group>
                                 <field name="growth"/>
                             </group>
-                            <group >
+                            <group>
                             </group>
                         </group>
 
@@ -126,8 +126,6 @@
             </field>
         </record>
 
-
-
         <record id="action_fbprophet_config" model="ir.actions.act_window">
             <field name="name">Fbprophet Config</field>
             <field name="type">ir.actions.act_window</field>
@@ -135,13 +133,17 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
-              <p>
+                <p>
                     Set Fbprophet Configuration
-              </p>
+                </p>
             </field>
         </record>
 
-        <menuitem name="Fbprophet Configuration" id="odoo_fbprophet_config" parent="menu_fbprophet" action="action_fbprophet_config" sequence="10"/>
+        <menuitem name="Fbprophet Configuration"
+                  id="odoo_fbprophet_config"
+                  parent="menu_fbprophet"
+                  action="action_fbprophet_config"
+                  sequence="10"/>
 
     </data>
 

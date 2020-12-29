@@ -1,23 +1,25 @@
 # -*- coding: utf-8 -*-
 
+import calendar
+import logging as server_log
+from datetime import datetime
+
+from dateutil.easter import easter
+
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-from datetime import datetime
-import calendar
-from dateutil.easter import easter
-import logging as server_log
+
 try:
     import pandas as pd
-#    import numpy as np
+    #    import numpy as np
     from fbprophet import Prophet
     from pandas.tseries.holiday import USFederalHolidayCalendar
     import holidays as pypiholidays
 except ImportError as e:
-   server_log.error(e)
+    server_log.error(e)
 
 
 class YearlyHolidays(models.Model):
-
     _name = 'yearly.holidays'
     _description = 'Yearly Holidays'
     _order = 'name'
@@ -33,10 +35,10 @@ class YearlyHolidays(models.Model):
         """
         self.ensure_one()
         cal = USFederalHolidayCalendar()
-        start = "%s-01-01" %(self.name)
-        end = "%s-12-31" %(self.name)
+        start = "%s-01-01" % (self.name)
+        end = "%s-12-31" % (self.name)
         holidays = cal.holidays(start=start, end=end).to_pydatetime()
-        holidays = [t.strftime('%Y-%m-%d')for t in holidays]
+        holidays = [t.strftime('%Y-%m-%d') for t in holidays]
         # Add in Easter
         holidays.append(easter(int(self.name)))
 
@@ -48,20 +50,20 @@ class YearlyHolidays(models.Model):
             holiday_name = us_holidays.get(holiday)
             if holiday in existing_holidays:
                 continue
-            self.env['holiday.day'].create({'description': holiday_name, 'date': holiday, 'year_id':self.id})
-
+            self.env['holiday.day'].create({'description': holiday_name, 'date': holiday, 'year_id': self.id})
 
     @api.constrains('name')
     def check_year(self):
-        if not self.name.isdigit() or not len (self.name)==4 or int(self.name)>2260 or int(self.name)<1984:
+        if not self.name.isdigit() or not len(self.name) == 4 or int(self.name) > 2260 or int(self.name) < 1984:
             raise ValidationError(_('Please enter a valid year in four digits.'))
         if self.search([('name', '=', self.name), ('id', '!=', self.id)]):
-            raise ValidationError(_('The year %s already exists in the system.' %(self.name)))
+            raise ValidationError(_('The year %s already exists in the system.' % (self.name)))
+
 
 YearlyHolidays()
 
-class Holiday(models.Model):
 
+class Holiday(models.Model):
     _name = 'holiday.day'
     _description = 'Holiday'
     _order = 'date'
@@ -70,7 +72,6 @@ class Holiday(models.Model):
     description = fields.Char(string="Description")
     day = fields.Char(string='Day', compute='_get_day')
     year_id = fields.Many2one('yearly.holidays', string='Year', ondelete='cascade')
-
 
     @api.depends('date')
     def _get_day(self):
@@ -86,18 +87,15 @@ class Holiday(models.Model):
     @api.constrains('date')
     def check_year(self):
         if self.date and str(self.date).split('-')[0] != self.year_id.name:
-            raise ValidationError(_('Holiday %s does not belong to this year.' %(self.date)))
-
+            raise ValidationError(_('Holiday %s does not belong to this year.' % (self.date)))
 
 
 Holiday()
 
 
 class ProphetBridge(models.AbstractModel):
-
     _name = 'odoo_fbprophet.prophet.bridge'
     _description = 'ODOO FBProphet Bridge'
-
 
     @api.model
     def remove_non_shipping_days_from_dataframe(self, dataframe):
@@ -112,11 +110,9 @@ class ProphetBridge(models.AbstractModel):
         dataframe.drop(dataframe.index[del_list], inplace=True)
         return dataframe
 
-
-
     @api.model
     def create_prophet_object(self, date_from, date_to, config=False):
-        holidays = self.get_holidays_list(date_from, date_to)     #get holidays in a format conditioned for prophet.
+        holidays = self.get_holidays_list(date_from, date_to)  # get holidays in a format conditioned for prophet.
 
         kwargs = {}
 
@@ -132,25 +128,22 @@ class ProphetBridge(models.AbstractModel):
             config.growth and kwargs.update({'growth': config.growth})
             config.n_changepoints and kwargs.update({'n_changepoints': config.n_changepoints})
 
-            ref = {'1': True, '0': False, 'auto':'auto'}
+            ref = {'1': True, '0': False, 'auto': 'auto'}
             config.yearly_seasonality and kwargs.update({'yearly_seasonality': ref.get(config.yearly_seasonality)})
             config.weekly_seasonality and kwargs.update({'weekly_seasonality': ref.get(config.weekly_seasonality)})
             config.daily_seasonality and kwargs.update({'daily_seasonality': ref.get(config.daily_seasonality)})
 
-
-            config.seasonality_prior_scale and kwargs.update({'seasonality_prior_scale': config.seasonality_prior_scale})
+            config.seasonality_prior_scale and kwargs.update(
+                {'seasonality_prior_scale': config.seasonality_prior_scale})
             config.holidays_prior_scale and kwargs.update({'holidays_prior_scale': config.holidays_prior_scale})
-            config.changepoint_prior_scale and kwargs.update({'changepoint_prior_scale': config.changepoint_prior_scale})
+            config.changepoint_prior_scale and kwargs.update(
+                {'changepoint_prior_scale': config.changepoint_prior_scale})
             config.mcmc_samples and kwargs.update({'mcmc_samples': config.mcmc_samples})
             config.interval_width and kwargs.update({'interval_width': config.interval_width})
             config.uncertainty_samples and kwargs.update({'uncertainty_samples': config.uncertainty_samples})
 
-
-        prophet_obj = Prophet(**kwargs)   #add all variables and initialise object
+        prophet_obj = Prophet(**kwargs)  # add all variables and initialise object
         return prophet_obj
-
-
-
 
     @api.model
     def run_prophet(self, dataset, date_from, date_to, periods=12, freq='m', config=False):
@@ -163,26 +156,27 @@ class ProphetBridge(models.AbstractModel):
         daily seasonality should be considered instead of monthly
         or weekly
         """
-        dataframe = pd.DataFrame(dataset, columns=['ds', 'y'])  #convert the dataset to a pandas dataframe object with fbprophet forced coloumn names df and y
+        dataframe = pd.DataFrame(dataset, columns=['ds',
+                                                   'y'])  # convert the dataset to a pandas dataframe object with fbprophet forced coloumn names df and y
 
-        if config and config.growth == 'logistic': #cap and floor values needs to be set if growth is set as logistic
+        if config and config.growth == 'logistic':  # cap and floor values needs to be set if growth is set as logistic
             dataframe['cap'] = config.dataframe_cap
             dataframe['floor'] = config.dataframe_floor
 
         m = self.create_prophet_object(date_from, date_to, config=config)
-        m.fit(dataframe)       #pass historical dataframe
-        future = m.make_future_dataframe(periods=periods, freq=freq)     #make future dataframe
+        m.fit(dataframe)  # pass historical dataframe
+        future = m.make_future_dataframe(periods=periods, freq=freq)  # make future dataframe
         future = self.remove_non_shipping_days_from_dataframe(future)
 
-        if config and config.growth == 'logistic':  #cap and floor values needs to be set if growth is set as logistic
+        if config and config.growth == 'logistic':  # cap and floor values needs to be set if growth is set as logistic
             future['cap'] = config.dataframe_cap
             future['floor'] = config.dataframe_floor
 
-        forecast = m.predict(future)                      #run prophet to predict future
+        forecast = m.predict(future)  # run prophet to predict future
         forecast['ds'] = pd.to_datetime(forecast['ds']).apply(lambda x: x.date().strftime('%Y-%m-%d'))
-        forecast = list(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].itertuples(index=False, name=None)) # convert the result back to list of tuples
+        forecast = list(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].itertuples(index=False,
+                                                                                        name=None))  # convert the result back to list of tuples
         return forecast
-
 
     @api.model
     def get_holidays_list(self, date_from, date_to):
@@ -191,14 +185,20 @@ class ProphetBridge(models.AbstractModel):
         create a dataframe with the given data
         """
 
-        holidays = self.env['holiday.day'].search([('date','>=',date_from), ('date', '<=', date_to)])
+        holidays = self.env['holiday.day'].search([('date', '>=', date_from), ('date', '<=', date_to)])
         if not holidays:
-            raise ValidationError(_('Empty holidays list received,Please enter holidays with the path Settings/Technical/Yearly Holidays/Year'))
+            raise ValidationError(_(
+                'Empty holidays list received,Please enter holidays with the path Settings/Technical/Yearly Holidays/Year'))
         holidays = holidays and [h.date for h in holidays] or []
         holidays = pd.DataFrame({
-          'holiday': 'Holiday',
-          'ds': pd.to_datetime(holidays),
-          'lower_window': 0,
-          'upper_window': 1,
+            'holiday': 'Holiday',
+            'ds': pd.to_datetime(holidays),
+            'lower_window': 0,
+            'upper_window': 1,
         })
         return holidays
+
+
+ProphetBridge()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

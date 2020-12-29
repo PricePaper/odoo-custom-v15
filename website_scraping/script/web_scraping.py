@@ -20,11 +20,9 @@ logging.basicConfig(filename=log_path, level=logging.INFO)
 #Geckodriver Configuration
 geckodriver_path = "/home/anagh/projects/price-paper/custom_addons/website_scraping/script/geckodriver"
 
-
 #Browser Configuration
 options = Options()
 options.add_argument("--headless")  # declare the browser to run in headless mode
-
 
 #Socket Connection Configuration
 login = 1
@@ -32,9 +30,6 @@ pwd = "admin"
 db = "ppt_live_66"
 socket = xmlrpclib.ServerProxy('http://localhost:9997/xmlrpc/object', context=ssl._create_unverified_context())
 #socket = xmlrpclib.ServerProxy('https://odoodemo.pricepaper.com/xmlrpc/object',context=ssl._create_unverified_context())
-
-
-
 
 def odoo_writeback(create_vals, product_id, write_url=''):
     """
@@ -44,8 +39,6 @@ def odoo_writeback(create_vals, product_id, write_url=''):
     if write_url:
         write_status = socket.execute(db, login, pwd, 'product.sku.reference', 'write', product_id, {'website_link': write_url})
     create_status = socket.execute(db, login, pwd, 'competitor.website.price', 'create', create_vals)
-
-
 
 def random_sleep():
     """
@@ -57,8 +50,6 @@ def random_sleep():
         nap_time = random.randint(4,10)
         logging.info("sleeping for %s seconds." %(nap_time))
         time.sleep(nap_time)
-
-
 
 def restaurant_depot_login(driver, website_config):
     login = False
@@ -88,12 +79,6 @@ def restaurant_depot_login(driver, website_config):
             pass
 
     return driver
-
-
-
-
-
-
 
 def restaurant_depot_fetch(driver, item, products, mode):
 
@@ -180,12 +165,6 @@ def restaurant_depot(products, website_config):
         logging.error('Exception! cannot close driver Exiting...')
         return False
 
-
-
-
-
-
-
 def webstaurant_store_fetch(driver, item, products, mode):
     unit_price = 0
     product_sku_id = products[item][0]
@@ -227,9 +206,6 @@ def webstaurant_store_fetch(driver, item, products, mode):
         res = odoo_writeback(create_vals, product_sku_id, write_url=item_url)
         return True
     return False
-
-
-
 
 def webstaurant_store(products, website_config):
     driver = webdriver.Firefox(firefox_options=options, executable_path=geckodriver_path)
@@ -273,8 +249,6 @@ def webstaurant_store(products, website_config):
             if not res and not write_except:
                 write_except = socket.execute(db, login, pwd, 'product.sku.reference', 'log_exception_error', products[item][0], "Couldn't fetch price due to unknown reason, please check.")
 
-
-
     else:
         logging.error('Website Configuration required for Websturant Store')
     try:
@@ -282,9 +256,6 @@ def webstaurant_store(products, website_config):
         driver.quit()
     except:
         logging.error('Cannot close driver. Exiting...')
-
-
-
 
 def check_queued_fetches(login_config):
     queued_fetches = socket.execute(db, login, pwd, 'price.fetch.schedule', 'search_read', [], ['id', 'product_sku_ref_id'])
@@ -300,19 +271,6 @@ def check_queued_fetches(login_config):
         restaurant_depot(rdepot_products, login_config)
     return rdepot_products.keys(), wdepot_products.keys()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 while True:
     website_config = socket.execute(db, login, pwd, 'website.scraping.cofig', 'search_read', [], ['id', 'home_page_url', 'username', 'password', 'competitor'])
     login_config = {config['competitor']: (config['home_page_url'], config['username'], config['password']) for config in website_config}
@@ -322,7 +280,7 @@ while True:
     rdepot_keys, wdepot_keys = check_queued_fetches(login_config)
     time.sleep(300)
 
-
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 
 
 

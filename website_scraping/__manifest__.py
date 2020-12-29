@@ -13,19 +13,21 @@ Custom module implemented for fetching Competitor price.
     'images': [],
 
     'data': [
-             'security/security.xml',
-             'security/ir.model.access.csv',
-             'views/product_sku_ref.xml',
-             'views/website_scrap_config.xml',
-             'views/competitor_website_price.xml',
-             'views/price_fetch_schedule_view.xml',
-             'views/product_pricelist.xml',
-             'views/menu.xml',
-             'data/data.xml',
-            ],
+        'security/security.xml',
+        'security/ir.model.access.csv',
+        'views/product_sku_ref.xml',
+        'views/website_scrap_config.xml',
+        'views/competitor_website_price.xml',
+        'views/price_fetch_schedule_view.xml',
+        'views/product_pricelist.xml',
+        'views/menu.xml',
+        'data/data.xml',
+    ],
 
     'depends': ['price_paper'],
     'installable': True,
     'auto_install': False,
     'application': False,
 }
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

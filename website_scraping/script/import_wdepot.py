@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 import xmlrpclib
 import ssl
@@ -29,7 +30,7 @@ with open("ERROR.csv", "wb") as f, open("no_product.csv", "wb") as f1:
             count+=1
             f1.write(line['PPT CODE'])
             f1.write('\n')
-            print line['PPT CODE']
+            print(line['PPT CODE'])
             continue
         vals={'product_id': items.get(line['PPT CODE']),
               'competitor_sku': line['WEBSTAURANT CODE'],
@@ -37,7 +38,9 @@ with open("ERROR.csv", "wb") as f, open("no_product.csv", "wb") as f1:
               'qty_in_uom': line['COUNT'],
               'web_config': 2
               }
-        print vals
+        print(vals)
         status = socket.execute(db, 1, pwd, 'product.sku.reference', 'create', vals)
-        print status
-print count
+        print(status)
+print(count)
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

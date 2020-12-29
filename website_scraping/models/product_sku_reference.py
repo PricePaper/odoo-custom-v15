@@ -1,4 +1,7 @@
-from odoo import models, fields, api,_
+# -*- coding: utf-8 -*-
+
+from odoo import models, fields, api
+
 
 class ProductSkuReference(models.Model):
     _name = "product.sku.reference"
@@ -9,7 +12,8 @@ class ProductSkuReference(models.Model):
     competitor_desc = fields.Char(string='Competitor description')
     website_link = fields.Char(string='URL')
     qty_in_uom = fields.Float(string='Units in UOM')
-    competitor = fields.Selection([('rdepot', 'Restaurant Depot'), ('wdepot', 'Webstaurant Depot')], related='web_config.competitor', string='Competitors')
+    competitor = fields.Selection([('rdepot', 'Restaurant Depot'), ('wdepot', 'Webstaurant Depot')],
+                                  related='web_config.competitor', string='Competitors')
     web_config = fields.Many2one('website.scraping.cofig', string='Competitor')
     scheduled_ids = fields.One2many('price.fetch.schedule', 'product_sku_ref_id', string='Scheduled Price Fetches')
     in_exception = fields.Boolean(string='Exception', default=False)
@@ -19,8 +23,10 @@ class ProductSkuReference(models.Model):
     def name_get(self):
         result = []
         for record in self:
-            name = "%s_%s" % (record.product_id and record.product_id.name , record.competitor and dict(self._fields['competitor'].selection(record)).get(record.competitor) or '')
-            result.append((record.id,name))
+            name = "%s_%s" % (record.product_id and record.product_id.name,
+                              record.competitor and dict(self._fields['competitor'].selection(record)).get(
+                                  record.competitor) or '')
+            result.append((record.id, name))
         return result
 
     @api.multi
@@ -30,14 +36,13 @@ class ProductSkuReference(models.Model):
         """
         for rec in self:
             if not rec.in_exception:
-                self.env['price.fetch.schedule'].create({'product_sku_ref_id':rec.id})
+                self.env['price.fetch.schedule'].create({'product_sku_ref_id': rec.id})
 
     @api.multi
     def mark_exception_fixed(self):
         for rec in self:
             rec.in_exception = False
             rec.message_post(body="Exception Removed")
-
 
     @api.model
     def log_exception_error(self, ref_id, except_string="Exception Error"):
@@ -48,3 +53,5 @@ class ProductSkuReference(models.Model):
 
 
 ProductSkuReference()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

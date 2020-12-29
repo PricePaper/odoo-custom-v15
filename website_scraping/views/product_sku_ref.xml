@@ -5,11 +5,11 @@
             <field name="model">product.sku.reference</field>
             <field name="arch" type="xml">
                 <tree string="Product SKU reference">
-                    <field name="product_id" />
-                    <field name="competitor_sku" />
+                    <field name="product_id"/>
+                    <field name="competitor_sku"/>
                     <field name="website_link" widget="url"/>
-                    <field name="qty_in_uom" />
-                    <field name="competitor" invisible='1' />
+                    <field name="qty_in_uom"/>
+                    <field name="competitor" invisible='1'/>
                     <field name="web_config"/>
                 </tree>
             </field>
@@ -20,7 +20,7 @@
             <field name="model">product.sku.reference</field>
             <field name="arch" type="xml">
                 <search string="Product SKU reference">
-                    <field name="product_id" string="Product" />
+                    <field name="product_id" string="Product"/>
                     <field name="competitor_sku" string="Competitor SKU"/>
                     <filter name='filter_by_wdepot' string="Webstaurant Store" domain="[('competitor','=','wdepot')]"/>
                     <filter name='filter_by_rdepot' string="Restuarant Depot" domain="[('competitor','=','rdepot')]"/>
@@ -38,20 +38,17 @@
             <field name="model">product.sku.reference</field>
             <field name="arch" type="xml">
                 <form string="Product SKU reference">
-
                     <header>
-                        <button name="schedule_price_update" string="Schedule price Update" type="object" class="btn-primary" attrs="{'invisible':[('scheduled_ids', '!=', [])]}"/>
-                        <button name="mark_exception_fixed" string="Mark Exception as Fixed" type="object" class="btn-primary" attrs="{'invisible': [('in_exception', '=', False)]}"/>
+                        <button name="schedule_price_update" string="Schedule price Update" type="object"
+                                class="btn-primary" attrs="{'invisible':[('scheduled_ids', '!=', [])]}"/>
+                        <button name="mark_exception_fixed" string="Mark Exception as Fixed" type="object"
+                                class="btn-primary" attrs="{'invisible': [('in_exception', '=', False)]}"/>
                     </header>
-
-
-                        <div class="oe_form_box_info oe_text_center" attrs="{'invisible':[('in_exception', '=', False)]}">
-                            <p attrs="{'invisible':[('in_exception', '=', False)]}">
-                                <b>This product configuration encountered and exception while processing.</b>
-                            </p>
-                        </div>
-
-
+                    <div class="oe_form_box_info oe_text_center" attrs="{'invisible':[('in_exception', '=', False)]}">
+                        <p attrs="{'invisible':[('in_exception', '=', False)]}">
+                            <b>This product configuration encountered and exception while processing.</b>
+                        </p>
+                    </div>
                     <sheet>
                         <group>
                             <group>
@@ -61,7 +58,7 @@
                                 <field name="competitor_sku" required='1'/>
                             </group>
                             <group>
-                                <field name="competitor_desc" />
+                                <field name="competitor_desc"/>
                                 <field name="website_link" widget="url"/>
                                 <field name="qty_in_uom" required='1'/>
                             </group>
@@ -84,32 +81,30 @@
             <field name="view_mode">tree,form</field>
             <field name="context">{'search_default_in_exception': True}</field>
             <field name="help" type="html">
-              <p>
-                No records Found
-              </p>
+                <p>
+                    No records Found
+                </p>
             </field>
         </record>
 
+        <record model="ir.actions.server" id="action_product_sku_reference_schedule">
+            <field name="name">Add to Price Fetch Scheduler</field>
+            <field name="model_id" ref="website_scraping.model_product_sku_reference"/>
+            <field name="binding_model_id" ref="website_scraping.model_product_sku_reference"/>
+            <field name="state">code</field>
+            <field name="code">
+                records.schedule_price_update()
+            </field>
+        </record>
 
-    <record model="ir.actions.server" id="action_product_sku_reference_schedule">
-        <field name="name">Add to Price Fetch Scheduler</field>
-        <field name="model_id" ref="website_scraping.model_product_sku_reference"/>
-        <field name="binding_model_id" ref="website_scraping.model_product_sku_reference"/>
-        <field name="state">code</field>
-        <field name="code">
-records.schedule_price_update()
-        </field>
-    </record>
-
-    <record model="ir.actions.server" id="action_product_sku_reference_mark_exception_fixed">
-        <field name="name">Mark Exception as Fixed</field>
-        <field name="model_id" ref="website_scraping.model_product_sku_reference"/>
-        <field name="binding_model_id" ref="website_scraping.model_product_sku_reference"/>
-        <field name="state">code</field>
-        <field name="code">
-records.mark_exception_fixed()
-        </field>
-    </record>
-
+        <record model="ir.actions.server" id="action_product_sku_reference_mark_exception_fixed">
+            <field name="name">Mark Exception as Fixed</field>
+            <field name="model_id" ref="website_scraping.model_product_sku_reference"/>
+            <field name="binding_model_id" ref="website_scraping.model_product_sku_reference"/>
+            <field name="state">code</field>
+            <field name="code">
+                records.mark_exception_fixed()
+            </field>
+        </record>
     </data>
 </odoo>

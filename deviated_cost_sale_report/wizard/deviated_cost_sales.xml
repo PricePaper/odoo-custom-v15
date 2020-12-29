@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <record id="view_deviated_cost_sale_wizard" model="ir.ui.view">
             <field name="name">deviated.cost.sale.wizard</field>
             <field name="model">deviated.cost.sale</field>

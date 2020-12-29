@@ -29,7 +29,6 @@
             </field>
         </record>
 
-
         <record id="action_upload_csv_wizard" model="ir.actions.act_window">
             <field name="name">Upload File</field>
             <field name="type">ir.actions.act_window</field>

@@ -11,7 +11,6 @@ class PartnerProductCost(models.Model):
     cost = fields.Float(string="Cost")
     partner_category_id = fields.Many2one('deviated.cost.contract', string="Rebate Contract")
 
-
     @api.onchange('product_id')
     def change_product(self):
         """
@@ -19,6 +18,9 @@ class PartnerProductCost(models.Model):
         appearing in search result
         """
         product_ids = [product.id for product in self.partner_category_id.partner_product_ids.mapped('product_id')]
-        return {'domain': { 'product_id': ([('id', 'not in', product_ids)])}}
+        return {'domain': {'product_id': ([('id', 'not in', product_ids)])}}
+
 
 PartnerProductCost()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

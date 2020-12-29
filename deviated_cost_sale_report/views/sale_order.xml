@@ -12,8 +12,9 @@
                     <field name="vendor_id" invisible="1"/>
                     <field name="rebate_contract_id" invisible="1"/>
                 </xpath>
-                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']" position="before">
-                    <field name="vendor_id" invisible="1" />
+                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']"
+                       position="before">
+                    <field name="vendor_id" invisible="1"/>
                     <field name="rebate_contract_id" invisible="1"/>
                 </xpath>
             </field>

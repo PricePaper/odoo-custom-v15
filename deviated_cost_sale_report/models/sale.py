@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api,_
 from datetime import datetime
+
+from odoo import models, fields, api
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     vendor_id = fields.Many2one('res.partner', compute='compute_vendor', string="Vendor")
-    rebate_contract_id = fields.Many2one('deviated.cost.contract', string="Rebate Contract Applicable", compute='compute_rebate_contract')
-
+    rebate_contract_id = fields.Many2one('deviated.cost.contract', string="Rebate Contract Applicable",
+                                         compute='compute_rebate_contract')
 
     @api.depends('product_id')
     def compute_vendor(self):
@@ -18,9 +20,10 @@ class SaleOrderLine(models.Model):
         when generating reports)
         """
         for line in self:
-            if line.product_id and line.order_partner_id and bool(line.order_partner_id.mapped('deviated_contract_ids.partner_product_ids').filtered(lambda rec:rec.product_id.id == line.product_id.id)):
+            if line.product_id and line.order_partner_id and bool(
+                    line.order_partner_id.mapped('deviated_contract_ids.partner_product_ids').filtered(
+                            lambda rec: rec.product_id.id == line.product_id.id)):
                 line.vendor_id = line.product_id.seller_ids and line.product_id.seller_ids[0].name.id or False
-
 
     @api.multi
     def calculate_unit_price_and_contract(self):
@@ -34,14 +37,15 @@ class SaleOrderLine(models.Model):
         unit_price = 0
         contract_id = False
         for record in self:
-            contract_ids = record.order_partner_id.deviated_contract_ids.filtered(lambda rec:rec.expiration_date > str(datetime.now()))
+            contract_ids = record.order_partner_id.deviated_contract_ids.filtered(
+                lambda rec: rec.expiration_date > str(datetime.now()))
             for contract in contract_ids:
-                contract_product_cost_id = contract.partner_product_ids.filtered(lambda rec:rec.product_id.id == record.product_id.id)
-                if contract_product_cost_id and  contract_product_cost_id.cost < unit_price or not unit_price:
+                contract_product_cost_id = contract.partner_product_ids.filtered(
+                    lambda rec: rec.product_id.id == record.product_id.id)
+                if contract_product_cost_id and contract_product_cost_id.cost < unit_price or not unit_price:
                     unit_price = contract_product_cost_id.cost
                     contract_id = contract.id if contract_product_cost_id else False
-        return unit_price,contract_id
-
+        return unit_price, contract_id
 
     @api.multi
     def calculate_customer_price(self):
@@ -54,7 +58,6 @@ class SaleOrderLine(models.Model):
             msg = "Unit price of this product is fetched from the contract '%s'" % (self.rebate_contract_id.name)
         return msg, product_price, price_from
 
-
     @api.depends('product_id')
     def compute_rebate_contract(self):
         """
@@ -65,8 +68,6 @@ class SaleOrderLine(models.Model):
         for line in self:
             contract_id = line.calculate_unit_price_and_contract()[1]
             line.rebate_contract_id = contract_id if line.product_id else False
-
-
 
     @api.onchange('product_uom', 'product_uom_qty')
     def product_uom_change(self):
@@ -80,8 +81,6 @@ class SaleOrderLine(models.Model):
             self.price_unit = unit_price
         return res
 
-
-
     @api.onchange('product_id')
     def product_id_change(self):
         """
@@ -91,7 +90,10 @@ class SaleOrderLine(models.Model):
         res = super(SaleOrderLine, self).product_id_change()
         unit_price = self.calculate_unit_price_and_contract()[0]
         if unit_price:
-            res.update({'value' : {'price_unit' : unit_price}})
+            res.update({'value': {'price_unit': unit_price}})
         return res
 
+
 SaleOrderLine()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

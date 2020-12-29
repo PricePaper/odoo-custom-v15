@@ -9,23 +9,17 @@
             <field name="name">Special Item Requests</field>
         </record>
 
-
-
-
-
         <record id="special_item_requests_stage_new" model="helpdesk.stage">
             <field name="name">New Special Requests</field>
             <field name="team_ids" eval="[(4, ref('special_item_requests.special_item_requests_team'), 0)]"/>
             <field name="sequence">100</field>
         </record>
 
-
         <record id="special_item_requests_stage_greg" model="helpdesk.stage">
             <field name="name">Assign to Greg</field>
             <field name="team_ids" eval="[(4, ref('special_item_requests.special_item_requests_team'), 0)]"/>
             <field name="sequence">105</field>
         </record>
-
 
         <record id="special_item_requests_stage_available" model="helpdesk.stage">
             <field name="name">Available</field>

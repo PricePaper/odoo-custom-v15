@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api, _
+from odoo import fields, models, api
 from odoo.exceptions import ValidationError
+
 
 class HelpDeskTicket(models.Model):
     _inherit = 'helpdesk.ticket'
@@ -19,7 +20,6 @@ class HelpDeskTicket(models.Model):
     is_one_time = fields.Boolean(string='Is this a one time purchase?')
     usage_per_month = fields.Char(string='Usage per month?')
 
-
     stage_code = fields.Selection([('special_item_requests_stage_new', 'New Special Requests'),
                                    ('special_item_requests_stage_greg', 'Assign to Greg'),
                                    ('special_item_requests_stage_available', 'Available'),
@@ -29,9 +29,10 @@ class HelpDeskTicket(models.Model):
                                    ('special_item_requests_stage_accept_alternative', 'Accepted Suggested Alternative'),
                                    ('special_item_requests_stage_reject', 'Move Forward With Special item Request'),
                                    ('special_item_requests_stage_close', 'Closed'),
-                                  ], compute='_compute_stage_code', string='Stage Code')
+                                   ], compute='_compute_stage_code', string='Stage Code')
     item_line_ids = fields.One2many('items.available', 'ticket_id', string='Available/Suggested Items')
-    response = fields.Selection([('available', 'Available in Stock'), ('suggest', 'Suggested Alternative'), ('special', 'Special Request to Purchasing')])
+    response = fields.Selection([('available', 'Available in Stock'), ('suggest', 'Suggested Alternative'),
+                                 ('special', 'Special Request to Purchasing')])
 
     @api.multi
     def _compute_stage_code(self):
@@ -40,10 +41,8 @@ class HelpDeskTicket(models.Model):
                 continue
             stage_ext_id = self.stage_id.get_external_id()
             if stage_ext_id:
-                ticket.stage_code = stage_ext_id.get(ticket.stage_id.id, False) and stage_ext_id.get(ticket.stage_id.id, False).split('.')[1]
-
-
-
+                ticket.stage_code = stage_ext_id.get(ticket.stage_id.id, False) and \
+                                    stage_ext_id.get(ticket.stage_id.id, False).split('.')[1]
 
     @api.multi
     def assign_to_greg(self):
@@ -94,7 +93,6 @@ class HelpDeskTicket(models.Model):
         for ticket in self:
             ticket.stage_id = stage_id.id
 
-
     @api.multi
     def reject_suggestion(self):
         stage_id = self.env.ref('special_item_requests.special_item_requests_stage_reject')
@@ -108,28 +106,7 @@ class HelpDeskTicket(models.Model):
             ticket.stage_id = stage_id.id
 
 
-
-
-#    @api.model
-#    def default_get(self, fields):
-#        res = super(HelpDeskTicket, self).default_get(fields)
-#        if res.get('team_id'):
-#            team = self.env['helpdesk.team'].browse(res.get('team_id'))
-#            team_ext_id = team.get_external_id()
-#            if team_ext_id:
-#                team_ext_id = team_ext_id.get(team.id, False) and team_ext_id.get(team.id, False).split('.')[1]
-#                if team_ext_id == 'special_item_requests_team':
-#                    ticket_type = self.env.ref('special_item_requests.special_item_requests_ticket_type')
-#                    res['ticket_type_id'] = ticket_type.id
-#        return res
-
-
-
-
-
-
 HelpDeskTicket()
-
 
 
 class ItemsAvailable(models.Model):
@@ -144,15 +121,12 @@ class ItemsAvailable(models.Model):
 ItemsAvailable()
 
 
-
-
-
-
-
-
 class HelpDeskTeam(models.Model):
     _inherit = 'helpdesk.team'
 
     is_special_order_team = fields.Boolean(string='Special Order Processing Team')
 
+
 HelpDeskTeam()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

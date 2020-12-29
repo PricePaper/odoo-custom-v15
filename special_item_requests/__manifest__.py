@@ -15,13 +15,15 @@ Users can create a helpdesk ticket specifically for special orders.
     'images': [],
 
     'data': [
-                'data/data.xml',
-                'views/helpdesk_view.xml',
-                'security/ir.model.access.csv',
-             ],
+        'data/data.xml',
+        'views/helpdesk_view.xml',
+        'security/ir.model.access.csv',
+    ],
 
     'depends': ['helpdesk'],
     'installable': True,
     'auto_install': False,
     'application': False,
 }
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

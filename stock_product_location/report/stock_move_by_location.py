@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################
 #
 # ChriCar Beteiligungs- und Beratungs- GmbH

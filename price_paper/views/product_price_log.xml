@@ -5,10 +5,10 @@
             <field name="model">product.price.log</field>
             <field name="arch" type="xml">
                 <tree string="Product Price Log" create="0" delete="0">
-                    <field name="product_id" />
-                    <field name="type" />
-                    <field name="old_price" />
-                    <field name="new_price" />
+                    <field name="product_id"/>
+                    <field name="type"/>
+                    <field name="old_price"/>
+                    <field name="new_price"/>
                     <field name="change_date"/>
                     <field name="user_id"/>
                 </tree>
@@ -20,9 +20,10 @@
             <field name="model">product.price.log</field>
             <field name="arch" type="xml">
                 <search string="Search Product Price Log">
-                    <field name="product_id" string="Product" />
+                    <field name="product_id" string="Product"/>
                     <group expand="0" string="Group By">
-                        <filter string="Product" name="groupby_product" domain="[]" context="{'group_by':'product_id'}"/>
+                        <filter string="Product" name="groupby_product" domain="[]"
+                                context="{'group_by':'product_id'}"/>
                     </group>
                 </search>
             </field>
@@ -36,16 +37,16 @@
                     <sheet>
                         <group>
                             <group>
-                              <field name="product_id" />
-                              <field name="type" />
-                              <field name="change_date"/>
-                              <field name="user_id"/>
+                                <field name="product_id"/>
+                                <field name="type"/>
+                                <field name="change_date"/>
+                                <field name="user_id"/>
                             </group>
                             <group>
-                              <field name="pricelist_id"/>
-                              <field name="uom_id"/>
-                              <field name="new_price" />
-                              <field name="old_price" />
+                                <field name="pricelist_id"/>
+                                <field name="uom_id"/>
+                                <field name="new_price"/>
+                                <field name="old_price"/>
                             </group>
                         </group>
                     </sheet>
@@ -60,9 +61,9 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
-              <p>
-                No records available.
-              </p>
+                <p>
+                    No records available.
+                </p>
             </field>
         </record>
     </data>

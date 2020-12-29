@@ -4,27 +4,35 @@
         <record id="res_partner_inherit_pricepaper" model="ir.ui.view">
             <field name="name">res.partner.pricepaper</field>
             <field name="model">res.partner</field>
-            <field name="inherit_id" ref="base.view_partner_form" />
+            <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
                 <button name="toggle_active" position="after">
-                    <button class="oe_stat_button" type="action" name="%(price_paper.act_res_partner_2_sale_order_line)d"
-                        attrs="{'invisible': [('customer', '=', False)]}" string=" Purchase History" icon="fa-history"/>
-                        <button class="oe_stat_button" type="action" name="%(price_paper.act_res_partner_2_product_notes)d"
-                            attrs="{'invisible': [('customer', '=', False)]}" string=" Product Notes" icon="fa-sticky-note"/>
+                    <button class="oe_stat_button" type="action"
+                            name="%(price_paper.act_res_partner_2_sale_order_line)d"
+                            attrs="{'invisible': [('customer', '=', False)]}" string=" Purchase History"
+                            icon="fa-history"/>
+                    <button class="oe_stat_button" type="action" name="%(price_paper.act_res_partner_2_product_notes)d"
+                            attrs="{'invisible': [('customer', '=', False)]}" string=" Product Notes"
+                            icon="fa-sticky-note"/>
                 </button>
-                <xpath expr="//notebook/page[@name='sales_purchases']/group/group/field[@name='customer']" position="after">
-                    <field name="customer_code" />
-                    <field name="established_date" />
-                    <field name="last_sold_date" />
-                    <field name="last_paid_date" />
-                    <field name="destination_code" />
+
+                <xpath expr="//notebook/page[@name='sales_purchases']/group/group/field[@name='customer']"
+                       position="after">
+                    <field name="customer_code"/>
+                    <field name="established_date"/>
+                    <field name="last_sold_date"/>
+                    <field name="last_paid_date"/>
+                    <field name="destination_code"/>
                 </xpath>
+
                 <field name='vat' position='attributes'>
                     <attribute name="groups">account.group_account_user</attribute>
                 </field>
+
                 <xpath expr="//notebook/page[@name='sales_purchases']/group[1]" position="inside">
                     <group string="Pricelists">
-                        <field name='customer_pricelist_ids' attrs="{'invisible':[('customer', '=', False)]}" nolabel="1">
+                        <field name='customer_pricelist_ids' attrs="{'invisible':[('customer', '=', False)]}"
+                               nolabel="1">
                             <tree string="Customer Pricelist priority" editable="bottom">
                                 <field name='sequence' widget="handle"/>
                                 <field name='pricelist_id' nolabel="1" required="1"/>
@@ -32,15 +40,19 @@
                         </field>
                     </group>
                 </xpath>
+
                 <xpath expr="//field[@name='category_id']" position="after">
-                    <field name="seller_partner_ids" attrs="{'invisible': [('supplier', '=', False)]}" widget="many2many_tags"/>
+                    <field name="seller_partner_ids" attrs="{'invisible': [('supplier', '=', False)]}"
+                           widget="many2many_tags"/>
                 </xpath>
+
                 <xpath expr="//notebook/page[@name='sales_purchases']/group[1]" position="after">
                     <group string="Shipping Days">
                         <field name="change_delivery_days"/>
                         <field name="zip_delivery_id" invisible="1"/>
                         <field name="shipping_easiness" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
-                        <field name="zip_shipping_easiness" attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
+                        <field name="zip_shipping_easiness"
+                               attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
                         <field name="delivery_day_mon" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
                         <field name="delivery_day_tue" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
                         <field name="delivery_day_wed" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
@@ -48,15 +60,23 @@
                         <field name="delivery_day_fri" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
                         <field name="delivery_day_sat" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
                         <field name="delivery_day_sun" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
-                        <field name="zip_delivery_day_mon" attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
-                        <field name="zip_delivery_day_tue" attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
-                        <field name="zip_delivery_day_wed" attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
-                        <field name="zip_delivery_day_thu" attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
-                        <field name="zip_delivery_day_fri" attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
-                        <field name="zip_delivery_day_sat" attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
-                        <field name="zip_delivery_day_sun" attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
+                        <field name="zip_delivery_day_mon"
+                               attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
+                        <field name="zip_delivery_day_tue"
+                               attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
+                        <field name="zip_delivery_day_wed"
+                               attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
+                        <field name="zip_delivery_day_thu"
+                               attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
+                        <field name="zip_delivery_day_fri"
+                               attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
+                        <field name="zip_delivery_day_sat"
+                               attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
+                        <field name="zip_delivery_day_sun"
+                               attrs="{'invisible': [('change_delivery_days', '=', True)]}"/>
                     </group>
                 </xpath>
+
                 <xpath expr="//div[hasclass('oe_title')]" position="after">
                     <group>
                         <group>
@@ -66,6 +86,7 @@
                         </group>
                     </group>
                 </xpath>
+
                 <xpath expr="//field[@name='vat']" position="replace">
                     <field name="vat" attrs="{'readonly':True}"/>
                     <field name="fax_number"/>
@@ -73,9 +94,6 @@
 
             </field>
         </record>
-
-
-
 
         <record id="res_partner_pricepaper_vat_readonly" model="ir.ui.view">
             <field name="name">res.partner.pricepaper.vat.readonly</field>
@@ -89,11 +107,10 @@
             </field>
         </record>
 
-
         <record id="res_partner_pricelist_inherit_pricepaper" model="ir.ui.view">
             <field name="name">res.partner.acc.pricepaper</field>
             <field name="model">res.partner</field>
-            <field name="inherit_id" ref="product.view_partner_property_form" />
+            <field name="inherit_id" ref="product.view_partner_property_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='property_product_pricelist']" position="attributes">
                     <attribute name="invisible">1</attribute>
@@ -102,37 +119,33 @@
         </record>
 
         <record id="account.view_partner_property_form" model="ir.ui.view">
-            <field name="groups_id" eval="[(4, ref('account.group_account_invoice')), (4, ref('sales_team.group_sale_salesman'))]"/>
+            <field name="groups_id"
+                   eval="[(4, ref('account.group_account_invoice')), (4, ref('sales_team.group_sale_salesman'))]"/>
         </record>
-
-
 
         <record id="res_partner_account_inherit_pricepaper" model="ir.ui.view">
             <field name="name">res.partner.acc.pricepaper</field>
             <field name="model">res.partner</field>
-            <field name="inherit_id" ref="account.view_partner_property_form" />
+            <field name="inherit_id" ref="account.view_partner_property_form"/>
             <field name="arch" type="xml">
-                <field name="property_payment_term_id" position="after" >
+                <field name="property_payment_term_id" position="after">
                     <field name="trust" readonly="1"/>
-                    <field name="credit" />
+                    <field name="credit"/>
                     <field name="credit_limit" readonly="1"/>
                 </field>
-                <!-- <field name="trust" position="after" >
-                    <field name="credit" />
-                    <field name="credit_limit" readonly="1"/>
-                </field> -->
-                <field name="property_supplier_payment_term_id" position="after" >
-                    <field name="debit" />
+
+                <field name="property_supplier_payment_term_id" position="after">
+                    <field name="debit"/>
                 </field>
-                <!-- <field name="trust" position="attributes">
-                    <attribute name="readonly">1</attribute>
-                </field> -->
+
                 <field name="property_account_position_id" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </field>
+
                 <field name="property_account_receivable_id" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </field>
+
                 <field name="property_account_payable_id" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </field>
@@ -140,13 +153,8 @@
                 <xpath expr="//group[@name='accounting_entries']" position="attributes">
                     <attribute name="groups"></attribute>
                 </xpath>
-
             </field>
         </record>
-
-
-
-
 
 
         <record id="res_partner_pricepaper_payment_term_readonly" model="ir.ui.view">
@@ -158,6 +166,7 @@
                 <xpath expr="//field[@name='property_payment_term_id']" position="attributes">
                     <attribute name="readonly">0</attribute>
                 </xpath>
+
                 <xpath expr="//field[@name='property_supplier_payment_term_id']" position="attributes">
                     <attribute name="readonly">0</attribute>
                 </xpath>
@@ -165,21 +174,24 @@
                 <xpath expr="//field[@name='trust']" position="attributes">
                     <attribute name="readonly">0</attribute>
                 </xpath>
+
                 <xpath expr="//field[@name='property_account_position_id']" position="attributes">
                     <attribute name="readonly">0</attribute>
                 </xpath>
+
                 <xpath expr="//field[@name='property_account_receivable_id']" position="attributes">
                     <attribute name="readonly">0</attribute>
                 </xpath>
+
                 <xpath expr="//field[@name='property_account_payable_id']" position="attributes">
                     <attribute name="readonly">0</attribute>
                 </xpath>
+
                 <xpath expr="//field[@name='credit_limit']" position="attributes">
                     <attribute name="readonly">0</attribute>
                 </xpath>
             </field>
         </record>
-
 
         <record id="res_partner_pricepaper_search" model="ir.ui.view">
             <field name="name">res.partner.pricepaper.search</field>
@@ -192,14 +204,13 @@
             </field>
         </record>
 
-
         <record id="view_partner_category_form_inherit_pricepaper" model="ir.ui.view">
             <field name="name">res.partner.category.pricepaper</field>
             <field name="model">res.partner.category</field>
-            <field name="inherit_id" ref="base.view_partner_category_form" />
+            <field name="inherit_id" ref="base.view_partner_category_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='parent_id']" position="after">
-                    <field name="code" />
+                    <field name="code"/>
                 </xpath>
             </field>
         </record>

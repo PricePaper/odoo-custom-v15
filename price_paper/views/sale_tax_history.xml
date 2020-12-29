@@ -17,11 +17,13 @@
             <field name="model">sale.tax.history</field>
             <field name="arch" type="xml">
                 <search string="Search Tax sale history">
-                    <field name="partner_id" operator="child_of" string="Customer" />
-                    <field name="product_id" string="Product" />
+                    <field name="partner_id" operator="child_of" string="Customer"/>
+                    <field name="product_id" string="Product"/>
                     <group expand="0" string="Group By">
-                        <filter string="Customer" name="groupby_customer" domain="[]" context="{'group_by':'partner_id'}"/>
-                        <filter string="Product" name="groupby_product" domain="[]" context="{'group_by':'product_id'}"/>
+                        <filter string="Customer" name="groupby_customer" domain="[]"
+                                context="{'group_by':'partner_id'}"/>
+                        <filter string="Product" name="groupby_product" domain="[]"
+                                context="{'group_by':'product_id'}"/>
                     </group>
                 </search>
             </field>
@@ -34,9 +36,9 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree</field>
             <field name="help" type="html">
-              <p>
-                No Sales Tax History Available.
-              </p>
+                <p>
+                    No Sales Tax History Available.
+                </p>
             </field>
         </record>
     </data>

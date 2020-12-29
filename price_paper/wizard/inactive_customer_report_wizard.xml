@@ -6,24 +6,24 @@
             <field name="arch" type="xml">
                 <form string="Inactive Customer Report">
                     <script>
-                        document.getElementsByClassName('modal-dialog modal-lg')[0].setAttribute('class', 'modal-dialog modal-sm');
+                        document.getElementsByClassName('modal-dialog modal-lg')[0].setAttribute('class', 'modal-dialog
+                        modal-sm');
                     </script>
                     <sheet>
                         <group>
                             <group>
-                                <field name="latest_sale_date" required="1" />
+                                <field name="latest_sale_date" required="1"/>
                             </group>
                         </group>
                     </sheet>
                     <footer>
-                        <button string="Submit" type="object" name="display_inactive_customer_report" />
+                        <button string="Submit" type="object" name="display_inactive_customer_report"/>
                         or
                         <button string="Cancel" class="oe_link" special="cancel"/>
                     </footer>
                 </form>
             </field>
         </record>
-
 
         <record id="action_inactive_customer_report" model="ir.actions.act_window">
             <field name="name">Inactive Customer Report</field>

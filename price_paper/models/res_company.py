@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models
+
 
 class ResCompany(models.Model):
     _inherit = 'res.company'
-
 
     burden_percent = fields.Float(string='Burden %')
     partner_delivery_method_id = fields.Many2one('delivery.carrier', string='Delivery Method')
@@ -17,3 +17,5 @@ class ResCompany(models.Model):
 
 
 ResCompany()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

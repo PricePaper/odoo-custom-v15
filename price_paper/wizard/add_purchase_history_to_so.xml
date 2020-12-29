@@ -7,54 +7,50 @@
             <field name="arch" type="xml">
                 <form string="Add Purchase history">
                     <sheet>
-<!--                        <p class="oe_grey">-->
-<!--                            Use product name or product internal reference to search.-->
-<!--                        </p>-->
                         <p>
-                            <b>Please select atleast one line by picking a product from dropdown  before pressing ADD LINE button.</b>
+                            <b>Please select atleast one line by picking a product from dropdown before pressing ADD
+                                LINE button.</b>
                         </p>
 
-                            <separator string="Purchase History"/>
+                        <separator string="Purchase History"/>
+                        <group>
                             <group>
-                                <group>
-<!--                                    <field name="search_box" />-->
-                                    <field name="product_id"/>
-                                </group>
-                                <group>
-                                    <field name="sale_history_months"/>
-<!--                                     <field name="qty_to_be"/>-->
-                                </group>
+                                <field name="product_id"/>
                             </group>
-                            <field name="purchase_history_ids" mode="tree">
-                                <tree create="0" delete="0" editable="top" limit="10">
-                                    <field name="qty_to_be" style="color:blue" sum="Total Quantity"/>
-                                    <field name="product_name" readonly='1' tabindex="0"/>
-                                    <field name="product_uom_qty" readonly='1' tabindex="0"/>
-                                    <field name="qty_available" readonly='1' tabindex="0"/>
-                                    <field name="product_uom" readonly='1' tabindex="0" widget="selection"/>
-                                    <field name="price_unit" readonly='1' tabindex="0"/>
-                                    <field name="date_order" readonly='1' tabindex="0"/>
-                                    <field name="product_category" readonly='1' tabindex="0" widget="selection"/>
-                                    <field name="order_line" invisible="1"/>
-                                </tree>
-                            </field>
+                            <group>
+                                <field name="sale_history_months"/>
+                            </group>
+                        </group>
+                        <field name="purchase_history_ids" mode="tree">
+                            <tree create="0" delete="0" editable="top" limit="10">
+                                <field name="qty_to_be" style="color:blue" sum="Total Quantity"/>
+                                <field name="product_name" readonly='1' tabindex="0"/>
+                                <field name="product_uom_qty" readonly='1' tabindex="0"/>
+                                <field name="qty_available" readonly='1' tabindex="0"/>
+                                <field name="product_uom" readonly='1' tabindex="0" widget="selection"/>
+                                <field name="price_unit" readonly='1' tabindex="0"/>
+                                <field name="date_order" readonly='1' tabindex="0"/>
+                                <field name="product_category" readonly='1' tabindex="0" widget="selection"/>
+                                <field name="order_line" invisible="1"/>
+                            </tree>
+                        </field>
 
                         <div class="o_row" attrs="{'invisible':[('purchase_history_temp_ids', '=', [])]}">
                             <span>Show 🛒 </span>
                             <field name="show_cart"/>
                         </div>
                         <field name="purchase_history_temp_ids" attrs="{'invisible':[('show_cart', '=', False)]}">
-                                <tree create="0" delete="0" editable="top">
-                                    <field name="qty_to_be" style="color:blue" sum="Total Quantity" string="Qty"/>
-                                    <field name="product_name" readonly='1' tabindex="0"/>
-                                    <field name="product_uom_qty" readonly='1' tabindex="0"/>
-                                    <field name="qty_available" readonly='1' tabindex="0"/>
-                                    <field name="product_uom" readonly='1' tabindex="0" widget="selection"/>
-                                    <field name="price_unit" readonly='1' tabindex="0"/>
-                                    <field name="date_order" readonly='1' tabindex="0"/>
-                                    <field name="product_category" readonly='1' tabindex="0" widget="selection"/>
-                                    <field name="order_line" invisible="1"/>
-                                </tree>
+                            <tree create="0" delete="0" editable="top">
+                                <field name="qty_to_be" style="color:blue" sum="Total Quantity" string="Qty"/>
+                                <field name="product_name" readonly='1' tabindex="0"/>
+                                <field name="product_uom_qty" readonly='1' tabindex="0"/>
+                                <field name="qty_available" readonly='1' tabindex="0"/>
+                                <field name="product_uom" readonly='1' tabindex="0" widget="selection"/>
+                                <field name="price_unit" readonly='1' tabindex="0"/>
+                                <field name="date_order" readonly='1' tabindex="0"/>
+                                <field name="product_category" readonly='1' tabindex="0" widget="selection"/>
+                                <field name="order_line" invisible="1"/>
+                            </tree>
                         </field>
                         <field name="sale_history_ids" invisible="1"/>
 
@@ -63,7 +59,9 @@
                         <button string="Add Line" type="object" name="add_history_lines"/>
                         or
                         <button string="Cancel" class="oe_link" special="cancel"/>
-                        <a string="" class="pull-right" onclick="$('main.modal-body').scrollTop(0);"><span aria-label="scroll-top" title='scrolltop' class="fa fa-arrow-circle-o-up fa-2x"></span></a>
+                        <a string="" class="pull-right" onclick="$('main.modal-body').scrollTop(0);"><span
+                                aria-label="scroll-top" title='scrolltop'
+                                class="fa fa-arrow-circle-o-up fa-2x"></span></a>
                     </footer>
                 </form>
             </field>

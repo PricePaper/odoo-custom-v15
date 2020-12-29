@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api,_
-from odoo.addons.price_paper.models import margin
 import odoo.addons.decimal_precision as dp
+from odoo import models, fields, api
+from odoo.addons.price_paper.models import margin
 from odoo.tools import float_round
+
 
 class ProductStandardPrice(models.Model):
     _name = "product.standard.price"
@@ -26,7 +27,8 @@ class ProductStandardPrice(models.Model):
             if rec.product_id and rec.product_id.cost:
                 if rec.uom_id != rec.product_id.uom_id:
                     cost = rec.product_id.uom_id._compute_price(rec.product_id.cost, rec.uom_id)
-                    rec.cost = float_round(cost * (1+(rec.product_id.categ_id.repacking_upcharge/100)), precision_digits=2)
+                    rec.cost = float_round(cost * (1 + (rec.product_id.categ_id.repacking_upcharge / 100)),
+                                           precision_digits=2)
                 else:
                     rec.cost = rec.product_id.cost
             else:
@@ -39,7 +41,7 @@ class ProductStandardPrice(models.Model):
         """
 
         if 'price' in vals:
-            log_vals = {'change_date' : fields.Datetime.now(),
+            log_vals = {'change_date': fields.Datetime.now(),
                         'type': 'std_price',
                         'old_price': self.price,
                         'new_price': vals.get('price'),
@@ -57,7 +59,7 @@ class ProductStandardPrice(models.Model):
     def create(self, vals):
         res = super(ProductStandardPrice, self).create(vals)
         if 'price' in vals:
-            log_vals = {'change_date' : fields.Datetime.now(),
+            log_vals = {'change_date': fields.Datetime.now(),
                         'type': 'std_price',
                         'new_price': vals.get('price'),
                         'user_id': self.env.user.id,
@@ -70,5 +72,6 @@ class ProductStandardPrice(models.Model):
         return res
 
 
-
 ProductStandardPrice()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

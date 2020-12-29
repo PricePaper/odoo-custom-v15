@@ -1,18 +1,24 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api, _
 from datetime import date
-from odoo.exceptions import ValidationError
+
 from dateutil.relativedelta import relativedelta
+
+from odoo import fields, models, api, _
+from odoo.exceptions import ValidationError
+
 
 class CostChange(models.Model):
     _name = 'cost.change'
     _description = 'Cost Change'
 
-    item_filter = fields.Selection([('product', 'Product'), ('vendor', 'Vendor and/or Product Category')], string='Update Cost of', default='product')
-    price_filter = fields.Selection([('percentage', '%'), ('fixed', 'Fix to an Amount')], string='Increase Cost as', default='fixed', help='Percentage: increase cost by percentage \n Fix to an Amount: sets the price to the specified fixed amount')
-    vendor_id  = fields.Many2one('res.partner', string="Vendor", domain=[('supplier', '=', True)])
-    category_id  = fields.Many2many('product.category', string="Product Category")
+    item_filter = fields.Selection([('product', 'Product'), ('vendor', 'Vendor and/or Product Category')],
+                                   string='Update Cost of', default='product')
+    price_filter = fields.Selection([('percentage', '%'), ('fixed', 'Fix to an Amount')], string='Increase Cost as',
+                                    default='fixed',
+                                    help='Percentage: increase cost by percentage \n Fix to an Amount: sets the price to the specified fixed amount')
+    vendor_id = fields.Many2one('res.partner', string="Vendor", domain=[('supplier', '=', True)])
+    category_id = fields.Many2many('product.category', string="Product Category")
     product_id = fields.Many2one('product.product', string="Product")
     price_change = fields.Float(string='Cost Change')
     is_done = fields.Boolean(string='Done', copy=False, default=False)
@@ -29,20 +35,18 @@ class CostChange(models.Model):
     update_burden = fields.Boolean('Update Burden%')
     user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
 
-
-
     @api.depends('new_cost', 'old_cost')
     def compute_price_difference_percent(self):
         for rec in self:
             if rec.item_filter == 'product' and rec.product_id:
                 rec.price_difference = rec.price_change and rec.new_cost - rec.old_cost
-                rec.price_difference_per = rec.price_change and rec.old_cost and (100 * (rec.new_cost - rec.old_cost))/rec.old_cost or 0.00
+                rec.price_difference_per = rec.price_change and rec.old_cost and (
+                            100 * (rec.new_cost - rec.old_cost)) / rec.old_cost or 0.00
             else:
                 rec.price_difference = 0.00
                 rec.price_difference_per = 0.00
 
-
-    @api.depends('item_filter','product_id')
+    @api.depends('item_filter', 'product_id')
     def set_old_price(self):
         for rec in self:
             if rec.item_filter == 'product' and rec.product_id:
@@ -52,10 +56,10 @@ class CostChange(models.Model):
                 vendors = vendors and vendors.ids
 
                 if vendors:
-                    return {'domain':{'vendor_id':[('id','in',vendors)]}}
+                    return {'domain': {'vendor_id': [('id', 'in', vendors)]}}
             else:
                 rec.old_cost = 0.00
-                return {'domain':{'vendor_id':[('supplier', '=', 'True')]}}
+                return {'domain': {'vendor_id': [('supplier', '=', 'True')]}}
 
     @api.onchange('update_burden', 'product_id')
     def onchange_update_burden(self):
@@ -73,19 +77,17 @@ class CostChange(models.Model):
             else:
                 rec.price_change = 0.00
 
-
-    @api.depends('old_cost','price_change','price_filter')
+    @api.depends('old_cost', 'price_change', 'price_filter')
     def compute_new_cost(self):
         for rec in self:
             if rec.item_filter == 'product' and rec.price_change:
                 if rec.price_filter == 'fixed':
                     rec.new_cost = rec.price_change
                 else:
-                    rec.new_cost = rec.product_id and rec.product_id.standard_price * ((100+rec.price_change)/100) or 0
+                    rec.new_cost = rec.product_id and rec.product_id.standard_price * (
+                                (100 + rec.price_change) / 100) or 0
             else:
                 rec.new_cost == 0.00
-
-
 
     @api.onchange('item_filter')
     def onchange_item_filter(self):
@@ -109,10 +111,10 @@ class CostChange(models.Model):
                         warning = True
                 else:
                     if rec.price_change > 0 or rec.burden_change > 0:
-                        warning=True
+                        warning = True
             if warning:
-                return {'warning': {'title': _('Not selected'),'message' : "Price or burden is increasing and Update Customer Pricelist and/or Update Standard Price is not checked."}}
-
+                return {'warning': {'title': _('Not selected'),
+                                    'message': "Price or burden is increasing and Update Customer Pricelist and/or Update Standard Price is not checked."}}
 
     @api.onchange('product_id')
     def onchange_product_id(self):
@@ -120,15 +122,13 @@ class CostChange(models.Model):
             rec.vendor_id = False
             rec.category_id = False
             if rec.item_filter == 'product':
-#                if rec.product_id:
-#                    rec.price_change = rec.product_id.standard_price
+                #                if rec.product_id:
+                #                    rec.price_change = rec.product_id.standard_price
                 if rec.product_id and rec.product_id.seller_ids:
                     for seller in rec.product_id.seller_ids:
                         rec.vendor_id = seller.name
                 if rec.product_id and rec.product_id.categ_id:
                     rec.category_id = rec.product_id.categ_id
-
-
 
     @api.multi
     def cost_change_method(self):
@@ -147,7 +147,7 @@ class CostChange(models.Model):
                     categ_products = product_obj.search([('categ_id', 'in', rec.category_id.ids)])
                     products_to_filter = products_to_filter & categ_products
 
-            #Update list price
+            # Update list price
             if rec.update_standard_price:
                 for product in products_to_filter:
                     rec.calculate_new_stdprice(product)
@@ -156,7 +156,9 @@ class CostChange(models.Model):
 
             # Update Customer pricelist
             if rec.update_customer_pricelist:
-                customer_price_lists = self.env['customer.product.price'].search([('product_id', 'in', products_to_filter.ids)]).filtered(lambda r: r.pricelist_id.type != 'competitor')
+                customer_price_lists = self.env['customer.product.price'].search(
+                    [('product_id', 'in', products_to_filter.ids)]).filtered(
+                    lambda r: r.pricelist_id.type != 'competitor')
                 today = date.today()
                 for price_list_rec in customer_price_lists:
                     # skips the update pricelist if expiry lock is active and lock expiry date is set
@@ -168,16 +170,14 @@ class CostChange(models.Model):
                         continue
 
                     new_price = rec.calculate_new_price(price_list_rec)
-                    price_list_rec.with_context({'user':rec.user_id and rec.user_id.id}).price = new_price
+                    price_list_rec.with_context({'user': rec.user_id and rec.user_id.id}).price = new_price
 
             # Update vendor pricelist
             if rec.update_vendor_pricelist and rec.item_filter == 'vendor':
                 vendor_price_ids = self.env['product.supplierinfo'].search([('name', '=', rec.vendor_id.id)])
 
                 for vendor_price in vendor_price_ids:
-                    vendor_price.price = vendor_price.price * ((100+rec.price_change)/100)
-
-
+                    vendor_price.price = vendor_price.price * ((100 + rec.price_change) / 100)
 
             # Update vendor price for single product
             if rec.item_filter == 'product' and rec.vendor_id:
@@ -185,19 +185,22 @@ class CostChange(models.Model):
                 if rec.price_filter == 'fixed':
                     supplier_info.write({'price': rec.price_change})
                 else:
-                    supplier_info.price = supplier_info.price * ((100+rec.price_change)/100)
+                    supplier_info.price = supplier_info.price * ((100 + rec.price_change) / 100)
 
-
-            #Update Fixed Cost
+            # Update Fixed Cost
             if rec.price_filter == 'fixed':
-                products_to_filter.with_context({'user':rec.user_id and rec.user_id.id}).write({'standard_price': rec.price_change})
+                products_to_filter.with_context({'user': rec.user_id and rec.user_id.id}).write(
+                    {'standard_price': rec.price_change})
             else:
                 for product in products_to_filter:
-                    product.with_context({'user':rec.user_id and rec.user_id.id}).standard_price = product.standard_price * ((100+rec.price_change)/100)
-            #Update burden%
+                    product.with_context(
+                        {'user': rec.user_id and rec.user_id.id}).standard_price = product.standard_price * (
+                                (100 + rec.price_change) / 100)
+            # Update burden%
             if rec.update_burden and rec.burden_change:
                 for product in products_to_filter:
-                    product.with_context({'user':rec.user_id and rec.user_id.id}).write({'burden_percent': rec.burden_change})
+                    product.with_context({'user': rec.user_id and rec.user_id.id}).write(
+                        {'burden_percent': rec.burden_change})
             rec.is_done = True
         return True
 
@@ -209,29 +212,31 @@ class CostChange(models.Model):
             rec.cost_change_method()
         return True
 
-
     def calculate_new_stdprice(self, product):
         for rec in product.uom_standard_prices:
             new_price = 0
-            margin = rec.price_margin/100
+            margin = rec.price_margin / 100
             if self.price_filter == 'fixed':
-                new_working_cost = self.price_change * ((100+product.burden_percent)/100)
+                new_working_cost = self.price_change * ((100 + product.burden_percent) / 100)
                 if self.update_burden and self.burden_change:
-                    new_working_cost = self.price_change * ((100+self.burden_change)/100)
+                    new_working_cost = self.price_change * ((100 + self.burden_change) / 100)
                 if product.uom_id != rec.uom_id:
-                    new_price = (product.uom_id._compute_price(new_working_cost, rec.uom_id) * ((100+product.categ_id.repacking_upcharge)/100)) / (1-margin)
+                    new_price = (product.uom_id._compute_price(new_working_cost, rec.uom_id) * (
+                                (100 + product.categ_id.repacking_upcharge) / 100)) / (1 - margin)
                 else:
-                    new_price = new_working_cost / (1-margin)
+                    new_price = new_working_cost / (1 - margin)
             else:
-                new_working_cost = (product.standard_price * (100+self.price_change)/100) * ((100+product.burden_percent)/100)
+                new_working_cost = (product.standard_price * (100 + self.price_change) / 100) * (
+                            (100 + product.burden_percent) / 100)
                 if self.update_burden and self.burden_change:
-                    new_working_cost = (product.standard_price * (100+self.price_change)/100) * ((100+self.burden_change)/100)
+                    new_working_cost = (product.standard_price * (100 + self.price_change) / 100) * (
+                                (100 + self.burden_change) / 100)
                 if product.uom_id != rec.uom_id:
-                    new_price = (product.uom_id._compute_price(new_working_cost, rec.uom_id) * ((100+product.categ_id.repacking_upcharge)/100)) / (1-margin)
+                    new_price = (product.uom_id._compute_price(new_working_cost, rec.uom_id) * (
+                                (100 + product.categ_id.repacking_upcharge) / 100)) / (1 - margin)
                 else:
-                    new_price = new_working_cost / (1-margin)
-            rec.with_context({'user':self.user_id and self.user_id.id}).price = new_price
-
+                    new_price = new_working_cost / (1 - margin)
+            rec.with_context({'user': self.user_id and self.user_id.id}).price = new_price
 
     def calculate_new_price(self, pricelist=None):
 
@@ -242,29 +247,33 @@ class CostChange(models.Model):
         old_working_cost = product.cost
         old_list_price = pricelist.price
         if product.uom_id != pricelist.product_uom:
-            old_working_cost = product.uom_id._compute_price(product.cost, pricelist.product_uom) * ((100+product.categ_id.repacking_upcharge)/100)
+            old_working_cost = product.uom_id._compute_price(product.cost, pricelist.product_uom) * (
+                        (100 + product.categ_id.repacking_upcharge) / 100)
 
         if old_list_price:
             margin = (old_list_price - old_working_cost) / old_list_price
 
             if self.price_filter == 'fixed':
-                new_working_cost = self.price_change * ((100+product.burden_percent)/100)
+                new_working_cost = self.price_change * ((100 + product.burden_percent) / 100)
                 if self.update_burden and self.burden_change:
-                    new_working_cost = self.price_change * ((100+self.burden_change)/100)
+                    new_working_cost = self.price_change * ((100 + self.burden_change) / 100)
                 if product.uom_id != pricelist.product_uom:
-                    new_price = (product.uom_id._compute_price(new_working_cost, pricelist.product_uom) * ((100+product.categ_id.repacking_upcharge)/100)) / (1-margin)
+                    new_price = (product.uom_id._compute_price(new_working_cost, pricelist.product_uom) * (
+                                (100 + product.categ_id.repacking_upcharge) / 100)) / (1 - margin)
                 else:
-                    new_price = new_working_cost / (1-margin)
+                    new_price = new_working_cost / (1 - margin)
             else:
-                new_working_cost = (product.standard_price * (100+self.price_change)/100) * ((100+product.burden_percent)/100)
+                new_working_cost = (product.standard_price * (100 + self.price_change) / 100) * (
+                            (100 + product.burden_percent) / 100)
                 if self.update_burden and self.burden_change:
-                    new_working_cost = (product.standard_price * (100+self.price_change)/100) * ((100+self.burden_change)/100)
+                    new_working_cost = (product.standard_price * (100 + self.price_change) / 100) * (
+                                (100 + self.burden_change) / 100)
                 if product.uom_id != pricelist.product_uom:
-                    new_price = (product.uom_id._compute_price(new_working_cost, pricelist.product_uom) * ((100+product.categ_id.repacking_upcharge)/100)) / (1-margin)
+                    new_price = (product.uom_id._compute_price(new_working_cost, pricelist.product_uom) * (
+                                (100 + product.categ_id.repacking_upcharge) / 100)) / (1 - margin)
                 else:
-                    new_price = new_working_cost / (1-margin)
+                    new_price = new_working_cost / (1 - margin)
         return new_price
-
 
     @api.multi
     @api.depends('run_date')
@@ -272,7 +281,7 @@ class CostChange(models.Model):
         result = []
         for record in self:
             name = "%s" % (record.run_date)
-            result.append((record.id,name))
+            result.append((record.id, name))
         return result
 
     @api.one
@@ -283,3 +292,5 @@ class CostChange(models.Model):
 
 
 CostChange()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

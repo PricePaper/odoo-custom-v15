@@ -3,27 +3,28 @@
 from datetime import datetime, date
 
 from dateutil.relativedelta import relativedelta
+
 from odoo import fields, models, api
 
 
 class ProductPricelist(models.Model):
     _inherit = 'product.pricelist'
 
-
-    type = fields.Selection(string='Type', selection=[('customer', 'Customer'), ('shared', 'Shared'), ('competitor', 'Competitor')])
+    type = fields.Selection(string='Type',
+                            selection=[('customer', 'Customer'), ('shared', 'Shared'), ('competitor', 'Competitor')])
     customer_pricelist_ids = fields.One2many('customer.pricelist', 'pricelist_id')
     customer_product_price_ids = fields.One2many('customer.product.price', 'pricelist_id')
     expiry_date = fields.Date('Valid Upto')
     price_lock = fields.Boolean(string='Price Change Lock', default=False)
     lock_expiry_date = fields.Date(string='Lock Expiry date')
-    partner_ids = fields.Many2many('res.partner', string='Customers',compute='_compute_partner', store=True)
+    partner_ids = fields.Many2many('res.partner', string='Customers', compute='_compute_partner', store=True)
 
     @api.onchange('price_lock')
     def onchange_price_lock(self):
         if self.price_lock:
             if self.env.user.company_id and self.env.user.company_id.price_lock_days:
                 days = self.env.user.company_id.price_lock_days
-                self.lock_expiry_date =  date.today()+relativedelta(days=days)
+                self.lock_expiry_date = date.today() + relativedelta(days=days)
         else:
             self.lock_expiry_date = False
 
@@ -35,7 +36,6 @@ class ProductPricelist(models.Model):
                 if partner_ids:
                     pricelist.partner_ids = [(6, 0, partner_ids)]
 
-
     @api.model
     @api.returns('self',
                  upgrade=lambda self, value, args, offset=0, limit=None, order=None,
@@ -43,7 +43,8 @@ class ProductPricelist(models.Model):
                  downgrade=lambda self, value, args, offset=0, limit=None, order=None,
                                   count=False: value if count else value.ids)
     def search(self, args, offset=0, limit=None, order=None, count=False):
-        if self.env.user.has_group('price_paper.group_salesman_customer_own_pricelist') and not self.env.user.has_group('base.group_system'):
+        if self.env.user.has_group('price_paper.group_salesman_customer_own_pricelist') and not self.env.user.has_group(
+                'base.group_system'):
             records = super(ProductPricelist, self).search(args, offset, limit, order, count)
             out_result = records.filtered(
                 lambda rec: rec.type == 'competitor' or self.env.user.partner_id.id in rec.mapped(
@@ -65,3 +66,5 @@ class ProductPricelist(models.Model):
 
 
 ProductPricelist()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -8,3 +8,5 @@ class HelpDeskTeam(models.Model):
     is_sales_team = fields.Boolean(string='Sales Team')
 
 HelpDeskTeam()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

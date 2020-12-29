@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api, _
-from odoo.addons.queue_job.job import job
+from odoo import fields, models
+
 
 class SaleTaxHistory(models.Model):
     _name = 'sale.tax.history'
@@ -11,4 +11,7 @@ class SaleTaxHistory(models.Model):
     product_id = fields.Many2one('product.product', string='Product')
     tax = fields.Boolean(string='Tax applicable')
 
+
 SaleTaxHistory()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -2,45 +2,45 @@
 <odoo>
     <data>
         <record id="product_pricelist_view_search_inherit_price_paper" model="ir.ui.view">
-          <field name="name">product.pricelist.search.pricepaper</field>
-          <field name="model">product.pricelist</field>
-          <field name="inherit_id" ref="product.product_pricelist_view_search"/>
-          <field name="arch" type="xml">
-              <field name="name" position="attributes">
-                  <attribute name="string">Pricelist</attribute>
-              </field>
-              <field name="name" position="after">
-                  <field name="partner_ids" />
-              </field>
-          </field>
+            <field name="name">product.pricelist.search.pricepaper</field>
+            <field name="model">product.pricelist</field>
+            <field name="inherit_id" ref="product.product_pricelist_view_search"/>
+            <field name="arch" type="xml">
+                <field name="name" position="attributes">
+                    <attribute name="string">Pricelist</attribute>
+                </field>
+                <field name="name" position="after">
+                    <field name="partner_ids"/>
+                </field>
+            </field>
         </record>
+
         <record id="product_pricelist_inherit_pricepaper" model="ir.ui.view">
             <field name="name">product.pricelist.pricepaper</field>
             <field name="model">product.pricelist</field>
-            <field name="inherit_id" ref="product.product_pricelist_view" />
+            <field name="inherit_id" ref="product.product_pricelist_view"/>
             <field name="arch" type="xml">
-
-
                 <xpath expr="//group[1]" position="before">
                     <group>
                         <group>
-                            <field name="type" />
-                            <field name="expiry_date" />
+                            <field name="type"/>
+                            <field name="expiry_date"/>
                             <field name='partner_ids' widget="many2many_tags"/>
                         </group>
                         <group>
                             <field name="price_lock"/>
-                            <field name="lock_expiry_date" attrs="{'required': [('price_lock', '=', True)], 'invisible': [('price_lock', '=', False)]}"/>
+                            <field name="lock_expiry_date"
+                                   attrs="{'required': [('price_lock', '=', True)], 'invisible': [('price_lock', '=', False)]}"/>
                         </group>
                     </group>
-                    <button name="%(action_upload_pricelist_wizard)d" type="action" string="Upload CSV File" context="{'pricelist_id':active_id,'is_competitor':type}"/>
-                    </xpath>
-
-
+                    <button name="%(action_upload_pricelist_wizard)d" type="action" string="Upload CSV File"
+                            context="{'pricelist_id':active_id,'is_competitor':type}"/>
+                </xpath>
 
                 <xpath expr="//field[@name='country_group_ids']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+
                 <xpath expr="//div[3]" position="before">
                     <div>
                         <separator string="Customer Product Price"/>
@@ -50,14 +50,16 @@
                                 <field name="product_uom" required='1'/>
                                 <field name="price" required='1'/>
                                 <field name="sale_uoms" widget="many2many_tags" invisible="1"/>
-                                <field name="price_last_updated" />
+                                <field name="price_last_updated"/>
                                 <field name="price_lock"/>
-                                <field name="lock_expiry_date" attrs="{'required': [('price_lock', '=', True)], 'invisible': [('price_lock', '=', False)]}"/>
+                                <field name="lock_expiry_date"
+                                       attrs="{'required': [('price_lock', '=', True)], 'invisible': [('price_lock', '=', False)]}"/>
                             </tree>
                         </field>
                     </div>
                 </xpath>
-                <xpath  expr="//div[4]" position="attributes">
+
+                <xpath expr="//div[4]" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
             </field>

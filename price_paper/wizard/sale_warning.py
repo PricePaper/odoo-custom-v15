@@ -17,10 +17,12 @@ class SaleWarningWizard(models.TransientModel):
 
     @api.multi
     def close_window(self):
-
         return {
             'type': 'ir.actions.client',
             'tag': 'reload',
-            }
+        }
+
 
 SaleWarningWizard()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

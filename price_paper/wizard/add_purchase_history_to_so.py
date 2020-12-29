@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from datetime import date, datetime
+
+from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
 
@@ -36,7 +37,8 @@ class SaleHistoryLinesWizard(models.TransientModel):
         else:
             mto_route = False
             try:
-                mto_route = self.env['stock.warehouse']._find_global_route('stock.route_warehouse0_mto', _('Make To Order'))
+                mto_route = self.env['stock.warehouse']._find_global_route('stock.route_warehouse0_mto',
+                                                                           _('Make To Order'))
             except UserError:
                 # if route MTO not found in ir_model_data, we treat the product as in MTS
                 pass
@@ -46,14 +48,14 @@ class SaleHistoryLinesWizard(models.TransientModel):
         # Check Drop-Shipping
         if not is_available:
             for pull_rule in product_routes.mapped('rule_ids'):
-                if pull_rule.picking_type_id.sudo().default_location_src_id.usage == 'supplier' and\
+                if pull_rule.picking_type_id.sudo().default_location_src_id.usage == 'supplier' and \
                         pull_rule.picking_type_id.sudo().default_location_dest_id.usage == 'customer':
                     is_available = True
                     break
 
         return is_available
 
-    @api.onchange('qty_to_be', 'product_uom',)
+    @api.onchange('qty_to_be', 'product_uom', )
     def _onchange_product_id_check_availability(self):
         if not self.qty_to_be or not self.product_uom:
             return {}
@@ -76,9 +78,10 @@ class SaleHistoryLinesWizard(models.TransientModel):
             if float_compare(product.virtual_available, product_qty, precision_digits=precision) == -1:
                 is_available = self._check_routing(order_id, product)
                 if not is_available:
-                    message += _('You plan to sell %s %s of %s but you only have %s %s available in %s warehouse.\n\n') % \
-                              (self.qty_to_be, self.product_uom.name, self.product_name,
-                               product.virtual_available, product.uom_id.name, order_id.warehouse_id.name)
+                    message += _(
+                        'You plan to sell %s %s of %s but you only have %s %s available in %s warehouse.\n\n') % \
+                               (self.qty_to_be, self.product_uom.name, self.product_name,
+                                product.virtual_available, product.uom_id.name, order_id.warehouse_id.name)
                     # We check if some products are available in other warehouses.
                     if float_compare(product.virtual_available, self.order_line.product_id.virtual_available,
                                      precision_digits=precision) == -1:
@@ -87,14 +90,16 @@ class SaleHistoryLinesWizard(models.TransientModel):
                         for warehouse in self.env['stock.warehouse'].search([]):
                             quantity = self.order_line.product_id.with_context(warehouse=warehouse.id).virtual_available
                             if quantity > 0:
-                                message += _("%s: %s %s\n" % (warehouse.name, quantity, self.order_line.product_id.uom_id.name))
+                                message += _(
+                                    "%s: %s %s\n" % (warehouse.name, quantity, self.order_line.product_id.uom_id.name))
 
             if message:
                 return {'warning': {
-                        'title': _('Not enough inventory!'),
-                        'message': message
-                    }}
+                    'title': _('Not enough inventory!'),
+                    'message': message
+                }}
         return {}
+
 
 SaleHistoryLinesWizard()
 
@@ -127,7 +132,8 @@ class AddPurchaseHistorySO(models.TransientModel):
         lines_temp = []
 
         if self.product_id and self.sale_history_months:
-            sale_history = sale_history.filtered(lambda rec: rec.product_id.id == self.product_id.id and rec.order_id.confirmation_date >= history_from)
+            sale_history = sale_history.filtered(
+                lambda rec: rec.product_id.id == self.product_id.id and rec.order_id.confirmation_date >= history_from)
         elif self.product_id:
             sale_history = sale_history.filtered(lambda rec: rec.product_id.id == self.product_id.id)
         elif self.sale_history_months:
@@ -203,3 +209,5 @@ class AddPurchaseHistorySO(models.TransientModel):
 
 
 AddPurchaseHistorySO()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

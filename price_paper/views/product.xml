@@ -9,11 +9,13 @@
                 <xpath expr="//field[@name='name']" position="before">
                     <field name="categ_id"/>
                 </xpath>
+
                 <xpath expr="//field[@name='barcode']" position="after">
                     <field name="vendor_id"/>
                     <field name="stock_value" sum="Stock Valuation"
-                      widget="monetary" string="Total Value"/>
+                           widget="monetary" string="Total Value"/>
                 </xpath>
+
                 <xpath expr="//field[@name='qty_available']" position="after">
                     <field name="incoming_qty"/>
                     <field name="outgoing_qty"/>
@@ -21,60 +23,32 @@
             </field>
         </record>
 
-<!--        <record id="product_search_view_inherit_pricepaper" model="ir.ui.view">-->
-<!--            <field name="name">product.serch.view.inherit</field>-->
-<!--            <field name="model">product.product</field>-->
-<!--            <field name="inherit_id" ref="product.product_search_form_view"/>-->
-<!--            <field name="arch" type="xml">-->
-               <!-- <xpath expr="//field[@name='name']" position="after">-->
-<!--                    <field name="vendor_id" string="Vendor"-->
-<!--                      filter_domain="[('vendor_id','ilike',self)]"/>-->
-<!--                    <field name="default_code" string="Internal reference"-->
-<!--                      filter_domain="[('default_code','ilike',self)]"/>-->
-<!--                    <field name="description" string="Internal Notes"-->
-<!--                      filter_domain="[('description','ilike',self)]"/>-->
-<!--                    <filter name="is_abv_max_qty" string="Above Max Qty" domain="[('is_abv_max_qty','=',True)]"/>-->
-<!--                    <filter name="is_bel_min_qty" string="Below Min Qty" domain="[('is_bel_min_qty','=',True)]"/>-->
-<!--                     <group expand="0" string="Group By">-->
-<!--                        <filter string="Vendor" name="groupby_vendor"-->
-<!--                          domain="[]" context="{'group_by': 'vendor_id'}"/>-->
-<!--                    </group>-->
-<!--                </xpath> -->
-<!--&lt;!&ndash;                <xpath expr="//filter[@name='name']" position="after">&ndash;&gt;-->
-<!--&lt;!&ndash;                    <filter name="incoming_qty" string="Incoming Products" domain="[('incoming_qty','&gt;',0)]"/>&ndash;&gt;-->
-<!--&lt;!&ndash;                    <filter name="outgoing_qty" string="Outgoing Products" domain="[('outgoing_qty','&gt;',0)]"/>&ndash;&gt;-->
-
-<!--&lt;!&ndash;                    <filter name="is_abv_max_qty" string="Above Max Qty" domain="[('is_abv_max_qty','=',True)]"/>&ndash;&gt;-->
-<!--&lt;!&ndash;                    <filter name="is_bel_min_qty" string="Below Min Qty" domain="[('is_bel_min_qty','=',True)]"/>&ndash;&gt;-->
-<!--&lt;!&ndash;                    <filter name="is_bel_crit_qty" string="Below Critical Qty" domain="[('is_bel_crit_qty','=',True)]"/>&ndash;&gt;-->
-<!--&lt;!&ndash;                </xpath>&ndash;&gt;-->
-<!--            </field>-->
-<!--        </record>-->
-
-
         <record id="product_product_common_inherit_pricepaper" model="ir.ui.view">
             <field name="name">product.product.common.pricepaper</field>
             <field name="model">product.product</field>
-            <field name="inherit_id" ref="product.product_normal_form_view" />
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//div[@name='button_box']" position="inside">
                     <button class="oe_stat_button"
-                      type="action" name="%(price_paper.act_product_2_product_notes)d"
-                        string=" Product Notes" icon="fa-sticky-note"/>
+                            type="action" name="%(price_paper.act_product_2_product_notes)d"
+                            string=" Product Notes" icon="fa-sticky-note"/>
                 </xpath>
+
                 <field name="lst_price" position="after">
                     <field name="burden_percent"
-                      groups="sales_team.group_sale_manager"/>
+                           groups="sales_team.group_sale_manager"/>
                     <field name="cost" widget="monetary"
-                      options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                           options="{'currency_field': 'currency_id', 'field_digits': True}"/>
                 </field>
+
                 <field name="type" position="before">
                     <field name="is_storage_contract"/>
                     <field name="need_sub_product"/>
                 </field>
+
                 <field name="property_account_income_id" position="before">
                     <field name="storage_contract_account_id"
-                      attrs="{'required':[('is_storage_contract', '=', True)],
+                           attrs="{'required':[('is_storage_contract', '=', True)],
                       'invisible':[('is_storage_contract', '=', False)]}"/>
                 </field>
 
@@ -85,102 +59,105 @@
                 <xpath expr="//field[@name='standard_price']" position="attributes">
                     <attribute name='groups'>sales_team.group_sale_manager</attribute>
                 </xpath>
+
                 <xpath expr="//field[@name='uom_id']" position="before">
                     <field name="sale_uoms" widget="many2many_tags" required="1"/>
                 </xpath>
+
                 <xpath expr="//field[@name='uom_id']" position="attributes">
                     <attribute name='domain'>[('product_ids.id', '=', active_id)]</attribute>
                 </xpath>
+
                 <xpath expr="//field[@name='uom_po_id']" position="attributes">
                     <attribute name='domain'>[('product_ids.id', '=', active_id)]</attribute>
                 </xpath>
 
                 <xpath expr="//notebook" position="inside">
-                  <page name='addons_product' string='Addons Products' attrs="{'invisible': [('need_sub_product', '=', False)]}">
-                      <group>
-                          <group>
-                            <field name="product_addons_list" nolabel="1" attrs="{'required': [('need_sub_product', '=', True)]}"/>
-                          </group>
-                      </group>
-                  </page>
-                  <page name='superseded' string='Superseded Products'>
-                      <group>
-                          <group string="Supersedes">
-                            <field name="superseded"
-                              attrs="{'invisible':[('active', '=', False)]}"
-                              context="{'default_product_child_id':id}"
-                              domain="[('product_child_id', '=', id)]"
-                              help="Select a product that has been archived that this product will replace"
-                              nolabel="1" >
-                              <tree>
-                                <field name='old_product'/>
-                              </tree>
-                              <form>
-                                <group>
-                                  <group>
-                                    <field name='old_product'/>
-                                  </group>
-                                  <group>
-                                    <field name='product_child_id' readonly='1'/>
-                                  </group>
-                                </group>
-                              </form>
-                            </field>
-                          </group>
-                      </group>
-                  </page>
-                  <page name='standard_price' string='Standard Price' >
-                      <group>
-                          <group string="Standard Price">
+                    <page name='addons_product' string='Addons Products'
+                          attrs="{'invisible': [('need_sub_product', '=', False)]}">
+                        <group>
                             <group>
-                                <field name="standard_price_date_lock"/>
+                                <field name="product_addons_list" nolabel="1"
+                                       attrs="{'required': [('need_sub_product', '=', True)]}"/>
                             </group>
-                            <field name="uom_standard_prices"
-                              context="{'default_product_id':id}"
-                              domain="[('product_id', '=', id)]"
-                              groups="sales_team.group_sale_manager"
-                              nolabel="1" >
-                              <tree>
-                                <field name='uom_id'/>
-                                <field name='price'/>
-                              </tree>
-                              <form>
+                        </group>
+                    </page>
+                    <page name='superseded' string='Superseded Products'>
+                        <group>
+                            <group string="Supersedes">
+                                <field name="superseded"
+                                       attrs="{'invisible':[('active', '=', False)]}"
+                                       context="{'default_product_child_id':id}"
+                                       domain="[('product_child_id', '=', id)]"
+                                       help="Select a product that has been archived that this product will replace"
+                                       nolabel="1">
+                                    <tree>
+                                        <field name='old_product'/>
+                                    </tree>
+                                    <form>
+                                        <group>
+                                            <group>
+                                                <field name='old_product'/>
+                                            </group>
+                                            <group>
+                                                <field name='product_child_id' readonly='1'/>
+                                            </group>
+                                        </group>
+                                    </form>
+                                </field>
+                            </group>
+                        </group>
+                    </page>
+                    <page name='standard_price' string='Standard Price'>
+                        <group>
+                            <group string="Standard Price">
                                 <group>
-                                  <group>
-                                    <field name='product_id'/>
-                                    <field name='uom_id'/>
-                                  </group>
-                                  <group>
-                                    <field name='cost' />
-                                    <field name='price' />
-                                    <field name='price_margin' />
-                                  </group>
+                                    <field name="standard_price_date_lock"/>
                                 </group>
-                              </form>
-                            </field>
-                          </group>
-                      </group>
-                      <group>
-                          <group>
-                              <field name='similar_product_ids' widget="many2many_tags"/>
-                          </group>
-                      </group>
-                  </page>
+                                <field name="uom_standard_prices"
+                                       context="{'default_product_id':id}"
+                                       domain="[('product_id', '=', id)]"
+                                       groups="sales_team.group_sale_manager"
+                                       nolabel="1">
+                                    <tree>
+                                        <field name='uom_id'/>
+                                        <field name='price'/>
+                                    </tree>
+                                    <form>
+                                        <group>
+                                            <group>
+                                                <field name='product_id'/>
+                                                <field name='uom_id'/>
+                                            </group>
+                                            <group>
+                                                <field name='cost'/>
+                                                <field name='price'/>
+                                                <field name='price_margin'/>
+                                            </group>
+                                        </group>
+                                    </form>
+                                </field>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name='similar_product_ids' widget="many2many_tags"/>
+                            </group>
+                        </group>
+                    </page>
                 </xpath>
+
                 <xpath expr="//field[@name='lst_price']" position="attributes">
-                    <!-- <attribute name="string">Standard Price</attribute> -->
                     <attribute name="invisible">1</attribute>
                 </xpath>
 
             </field>
         </record>
 
-
-
         <record id="product_category_inherit_pricepaper" model="ir.ui.view">
             <field name="name">product.category.form.pricepaper</field>
             <field name="model">product.category</field>
-            <field name="inherit_id" ref="product.product_category_form_view" />
+            <field name="inherit_id" ref="product.product_category_form_view"/>
             <field name="arch" type="xml">
                 <group name="first" position="after">
                     <group>
@@ -196,34 +173,33 @@
             </field>
         </record>
 
-
         <record id="product_search_form_view_price_paper" model="ir.ui.view">
             <field name="name">product.product.search</field>
             <field name="model">product.product</field>
             <field name="inherit_id" ref="product.product_search_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="filter_domain">['|','|','|',('superseded.old_product.default_code','=',self),
-                      ('default_code','ilike',self),('name','ilike',self),
-                                                     ('barcode','ilike',self)]</attribute>
+                    <attribute name="filter_domain">['|', '|', '|', ('superseded.old_product.default_code', '=', self),
+                                                     ('default_code', 'ilike', self), ('name', 'ilike', self),
+                                                     ('barcode', 'ilike', self)]</attribute>
                 </xpath>
                 <xpath expr="//field[@name='name']" position="after">
                     <field name="vendor_id" string="Vendor"
-                      filter_domain="[('vendor_id','ilike',self)]"/>
+                           filter_domain="[('vendor_id','ilike',self)]"/>
                     <field name="default_code" string="Internal reference"
-                      filter_domain="[('default_code','ilike',self)]"/>
+                           filter_domain="[('default_code','ilike',self)]"/>
                     <field name="description" string="Internal Notes"
-                      filter_domain="[('description','ilike',self)]"/>
+                           filter_domain="[('description','ilike',self)]"/>
                 </xpath>
-                 <xpath expr="//filter[@name='consumable']" position="after">
+                <xpath expr="//filter[@name='consumable']" position="after">
                     <separator/>
                     <filter name="is_abv_max_qty" string="Above Max Qty" domain="[('is_abv_max_qty','=',True)]"/>
                     <filter name="is_bel_min_qty" string="Below Min Qty" domain="[('is_bel_min_qty','=',True)]"/>
-                     <group expand="0" string="Group By">
+                    <group expand="0" string="Group By">
                         <filter string="Vendor" name="groupby_vendor"
-                          domain="[]" context="{'group_by': 'vendor_id'}"/>
-                      </group>
-                 </xpath>
+                                domain="[]" context="{'group_by': 'vendor_id'}"/>
+                    </group>
+                </xpath>
             </field>
         </record>
     </data>

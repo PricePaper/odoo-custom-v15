@@ -28,13 +28,10 @@
             <field name="name">inherited.account.invoice.form.view</field>
             <field name="model">account.invoice</field>
             <field name="type">form</field>
-            <field name="inherit_id" ref="account.invoice_form" />
+            <field name="inherit_id" ref="account.invoice_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//tree[1]" position="attributes">
-                    <attribute name="editable" />
-                    <!-- <attribute name="decoration-danger">color=='R'</attribute>
-                    <attribute name="decoration-info">color=='B'</attribute>
-                    <attribute name="decoration-success">color=='G'</attribute> -->
+                    <attribute name="editable"/>
                     <attribute name="decoration-danger">profit_margin&lt;0</attribute>
                     <attribute name="decoration-info">profit_margin==0</attribute>
                     <attribute name="decoration-success">profit_margin&gt;0</attribute>
@@ -45,7 +42,8 @@
                     <field name="working_cost" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='amount_untaxed']" position="after">
-                    <field name="gross_profit"  widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                    <field name="gross_profit" widget="monetary"
+                           options="{'currency_field': 'currency_id', 'field_digits': True}"/>
                 </xpath>
             </field>
         </record>
@@ -54,7 +52,7 @@
             <field name="name">inherited.account.invoice.line.form.view</field>
             <field name="model">account.invoice.line</field>
             <field name="type">form</field>
-            <field name="inherit_id" ref="account.view_invoice_line_form" />
+            <field name="inherit_id" ref="account.view_invoice_line_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='price_unit']" position="before">
                     <field name="profit_margin" attrs="{'invisible': [('parent.type','!=','out_invoice')]}"/>
@@ -63,22 +61,24 @@
                 </xpath>
             </field>
         </record>
+
         <record id="inherit_view_account_position_form_pricepaper" model="ir.ui.view">
             <field name="name">inherited.account.position.form.view</field>
             <field name="model">account.fiscal.position</field>
             <field name="type">form</field>
-            <field name="inherit_id" ref="account.view_account_position_form" />
+            <field name="inherit_id" ref="account.view_account_position_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='name']" position="after">
                     <field name="code"/>
                 </xpath>
             </field>
         </record>
+
         <record id="inherit_view_tax_form_pricepaper" model="ir.ui.view">
             <field name="name">inherited.account.tax.form.view</field>
             <field name="model">account.tax</field>
             <field name="type">form</field>
-            <field name="inherit_id" ref="account.view_tax_form" />
+            <field name="inherit_id" ref="account.view_tax_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='name']" position="after">
                     <field name="code"/>

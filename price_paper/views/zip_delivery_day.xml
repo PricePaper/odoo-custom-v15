@@ -6,10 +6,11 @@
             <field name="arch" type="xml">
                 <tree string="Zip Delivery Day">
                     <field name="zip" required='1'/>
-                    <field name="shipping_easiness" />
+                    <field name="shipping_easiness"/>
                 </tree>
             </field>
         </record>
+
         <record id="view_zip_delivery_day_form" model="ir.ui.view">
             <field name="name">Zip.delivery.day.form</field>
             <field name="model">zip.delivery.day</field>
@@ -19,7 +20,7 @@
                         <group>
                             <group>
                                 <field name="zip" required='1'/>
-                                <field name="shipping_easiness" />
+                                <field name="shipping_easiness"/>
                             </group>
                             <group>
                                 <field name="delivery_day_mon"/>
@@ -35,6 +36,7 @@
                 </form>
             </field>
         </record>
+
         <record id="action_zip_delivery_days" model="ir.actions.act_window">
             <field name="name">Zip Delivery Days</field>
             <field name="type">ir.actions.act_window</field>
@@ -43,9 +45,9 @@
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_zip_delivery_day_tree"/>
             <field name="help" type="html">
-              <p>
-                Create New delivery day based on the Zip.
-              </p>
+                <p>
+                    Create New delivery day based on the Zip.
+                </p>
             </field>
         </record>
     </data>

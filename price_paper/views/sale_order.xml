@@ -1,119 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
-
-
-<!--overriden(replaced) the whole delivery module inherrit for sales order form  this is done to ensure the get/set delivery views are available in confirmed state order-->
+        <!--overriden(replaced) the whole delivery module inherrit for sales order form  this is done to ensure the get/set delivery views are available in confirmed state order-->
         <record id="delivery.view_order_form_with_carrier" model="ir.ui.view">
             <field name="name">delivery.sale.order.form.view.with_carrier</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <data>
-                  <xpath expr="//field[@name='payment_term_id']" position="after">
-                      <field name="id" invisible="1"/>
-                      <field name="available_carrier_ids" invisible="1"/>
-                      <label for="carrier_id"/>
-                      <div name='carrier_selection'>
-                          <div>
-                            <field name="carrier_id" domain="[('id', 'in', available_carrier_ids)]" context="{'order_id': id}" class="oe_inline" options="{'no_create': True, 'no_open': True}" attrs="{'readonly':[('state','not in',('draft','sent'))]}"/> <i class="fa fa-check text-success" role="img" aria-label="Rating OK" title="Rating OK" attrs="{'invisible':['|','|',('carrier_id','=',False),('state','not in',('draft','sent','sale')),('delivery_rating_success','=',False)]}"></i>
-                          </div>
-                          <div>
-                            <field name='delivery_price' widget='monetary' class="oe_inline" options="{'currency_field': 'currency_id'}" nolabel="1" attrs="{'invisible': [('carrier_id','=', False)]}" force_save="1"/>
-                            <button name="get_delivery_price" type="object" class="oe_inline oe_link" attrs="{'invisible':['|',('carrier_id','=',False),('state','not in',('draft','sent','sale'))]}"><i class="fa fa-arrow-right"/> Get rate</button>
-                            <button name="set_delivery_line" type="object" class="oe_inline oe_link" attrs="{'invisible':['|','|',('carrier_id','=',False),('state','not in',('draft','sent','sale')),('delivery_rating_success','=',False)]}"><i class="fa fa-arrow-right"/> Add to order</button>
-                            <field name='delivery_rating_success' invisible="1" force_save="1"/>
-                          </div>
-                          <div class="alert alert-info" role="status" attrs="{'invisible': ['|',('carrier_id','=', False),('delivery_message','=',False)]}">
-                            <field name='delivery_message' force_save="1"/>
-                          </div>
-                      </div>
-                  </xpath>
-                  <xpath expr="//field[@name='product_uom_qty']" position="after">
-                      <field name="product_qty" invisible="1"/>
-                  </xpath>
+                    <xpath expr="//field[@name='payment_term_id']" position="after">
+                        <field name="id" invisible="1"/>
+                        <field name="available_carrier_ids" invisible="1"/>
+                        <label for="carrier_id"/>
+                        <div name='carrier_selection'>
+                            <div>
+                                <field name="carrier_id" domain="[('id', 'in', available_carrier_ids)]"
+                                       context="{'order_id': id}" class="oe_inline"
+                                       options="{'no_create': True, 'no_open': True}"
+                                       attrs="{'readonly':[('state','not in',('draft','sent'))]}"/> <i
+                                    class="fa fa-check text-success" role="img" aria-label="Rating OK" title="Rating OK"
+                                    attrs="{'invisible':['|','|',('carrier_id','=',False),('state','not in',('draft','sent','sale')),('delivery_rating_success','=',False)]}"></i>
+                            </div>
+                            <div>
+                                <field name='delivery_price' widget='monetary' class="oe_inline"
+                                       options="{'currency_field': 'currency_id'}" nolabel="1"
+                                       attrs="{'invisible': [('carrier_id','=', False)]}" force_save="1"/>
+                                <button name="get_delivery_price" type="object" class="oe_inline oe_link"
+                                        attrs="{'invisible':['|',('carrier_id','=',False),('state','not in',('draft','sent','sale'))]}"><i
+                                        class="fa fa-arrow-right"/> Get rate</button>
+                                <button name="set_delivery_line" type="object" class="oe_inline oe_link"
+                                        attrs="{'invisible':['|','|',('carrier_id','=',False),('state','not in',('draft','sent','sale')),('delivery_rating_success','=',False)]}"><i
+                                        class="fa fa-arrow-right"/> Add to order</button>
+                                <field name='delivery_rating_success' invisible="1" force_save="1"/>
+                            </div>
+                            <div class="alert alert-info" role="status"
+                                 attrs="{'invisible': ['|',('carrier_id','=', False),('delivery_message','=',False)]}">
+                                <field name='delivery_message' force_save="1"/>
+                            </div>
+                        </div>
+                    </xpath>
+
+                    <xpath expr="//field[@name='product_uom_qty']" position="after">
+                        <field name="product_qty" invisible="1"/>
+                    </xpath>
+
                     <xpath expr="//group[hasclass('oe_subtotal_footer')]" position="before">
-                    <group name="weight_volume" >
-                        <field name="total_volume"/>
-                        <field name="total_weight"/>
-                        <field name="total_qty"/>
-                    </group>
-                </xpath>
+                        <group name="weight_volume">
+                            <field name="total_volume"/>
+                            <field name="total_weight"/>
+                            <field name="total_qty"/>
+                        </group>
+                    </xpath>
                 </data>
             </field>
         </record>
-
-
-
-
 
         <record id="inherit_sale_order_form_view" model="ir.ui.view">
             <field name="name">inherited.sale.order.form.view</field>
             <field name="model">sale.order</field>
             <field name="type">form</field>
-            <field name="inherit_id" ref="sale.view_order_form" />
+            <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
 
                 <sheet position='before'>
-                    <div class="oe_form_box_info oe_text_center" attrs="{'invisible':['|', ('is_creditexceed', '=', False), ('ready_to_release', '=', True)]}">
+                    <div class="oe_form_box_info oe_text_center"
+                         attrs="{'invisible':['|', ('is_creditexceed', '=', False), ('ready_to_release', '=', True)]}">
                         <p attrs="{'invisible':[('is_creditexceed', '=', False)]}">
-                            <b><field name='credit_warning' /></b>
+                            <b><field name='credit_warning'/></b>
                         </p>
                     </div>
                 </sheet>
+
                 <xpath expr="//field[@name='validity_date']" position="after">
-                    <field name="storage_contract" invisible="1" />
+                    <field name="storage_contract" invisible="1"/>
                 </xpath>
+
                 <field name="partner_id" position="before">
                     <field name="customer_code"/>
                 </field>
+
                 <field name="partner_id" position="attributes">
                     <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
-                    <attribute name="domain">[('type', '=', 'contact'),('customer','=',True)]</attribute>
-                    <attribute name="context">{'search_default_customer':1, 'show_address': 1, 'show_vat': True,'address_inline': 1}</attribute>
+                    <attribute name="domain">[('type', '=', 'contact'), ('customer', '=', True)]</attribute>
+                    <attribute name="context">{'search_default_customer': 1, 'show_address': 1, 'show_vat': True,
+                                               'address_inline': 1}</attribute>
                 </field>
+
                 <field name="partner_invoice_id" position="attributes">
                     <attribute name="domain">[('parent_id', '=', partner_id)]</attribute>
                     <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
-                    <attribute name="context">{'default_type':'invoice','address_inline': 1}</attribute>
+                    <attribute name="context">{'default_type': 'invoice', 'address_inline': 1}</attribute>
                 </field>
+
                 <field name="partner_shipping_id" position="attributes">
                     <attribute name="domain">[('parent_id', '=', partner_id)]</attribute>
                     <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
-                    <attribute name="context">{'default_type':'invoice','address_inline': 1}</attribute>
+                    <attribute name="context">{'default_type': 'invoice', 'address_inline': 1}</attribute>
                 </field>
 
                 <button name="action_cancel" position="after">
-                    <button name="action_ready_to_release"  type="object" string="Release" groups="price_paper.group_allow_more_than_credit_limit" attrs="{'invisible': ['|', ('is_creditexceed', '=', False), ('ready_to_release', '=', True)]}"/>
+                    <button name="action_ready_to_release" type="object" string="Release"
+                            groups="price_paper.group_allow_more_than_credit_limit"
+                            attrs="{'invisible': ['|', ('is_creditexceed', '=', False), ('ready_to_release', '=', True)]}"/>
                 </button>
+
                 <button name="action_cancel" position="after">
-                    <button name="action_create_storage_downpayment"  type="object" string="SC Payment"  attrs="{'invisible': ['|', '|', ('invoice_count', '>', 0), ('storage_contract', '=', False), ('state', 'in', ['sale', 'done', 'cancel'])]}"/>
+                    <button name="action_create_storage_downpayment" type="object" string="SC Payment"
+                            attrs="{'invisible': ['|', '|', ('invoice_count', '>', 0), ('storage_contract', '=', False), ('state', 'in', ['sale', 'done', 'cancel'])]}"/>
                 </button>
+
                 <button name="action_quotation_send" position="after">
-                    <button name="action_fax_send" string="Send by Fax" type="object" states="draft,order,sent" class="btn-primary"/>
+                    <button name="action_fax_send" string="Send by Fax" type="object" states="draft,order,sent"
+                            class="btn-primary"/>
                 </button>
+
                 <button name="action_draft" position="attributes">
                     <attribute name="string">Set to Draft</attribute>
                 </button>
-                <!-- <xpath expr="//div[hasclass('oe_title')]" position="after">
-                    <group>
-                        <group>
-                            <field name="is_quotation" attrs="{'invisible':['|', ('state', '!=', 'draft'), ('is_creditexceed', '=', True)]}"/>
-                        </group>
-                    </group>
-                </xpath> -->
+
                 <xpath expr="//field[@name='validity_date']" position="after">
                     <field name="release_date" required='1'/>
                     <field name="deliver_by" required='1'/>
-                    <field name="is_creditexceed" invisible="1" />
-                    <field name="ready_to_release" invisible="1" />
+                    <field name="is_creditexceed" invisible="1"/>
+                    <field name="ready_to_release" invisible="1"/>
                 </xpath>
+
                 <xpath expr="//field[@name='pricelist_id']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+
                 <xpath expr="//tree[1]" position="attributes">
-                    <attribute name="editable" />
+                    <attribute name="editable"/>
                     <attribute name="decoration-danger">profit_margin&lt;0</attribute>
                     <attribute name="decoration-info">profit_margin==0</attribute>
                     <attribute name="decoration-success">profit_margin&gt;0</attribute>
@@ -124,55 +141,71 @@
                     <field name="working_cost" invisible="1"/>
                     <field name="price_lock" invisible="1"/>
                 </xpath>
+
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="attributes">
-                     <attribute name="attrs">{"readonly": [('price_lock', '=', True)]}</attribute>
-                 </xpath>
+                    <attribute name="attrs">{"readonly": [('price_lock', '=', True)]}</attribute>
+                </xpath>
+
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
                     <field name="profit_margin"/>
                     <field name="price_from" invisible="1"/>
-
                 </xpath>
-                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']" position="before">
+
+                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']"
+                       position="before">
                     <field name="lst_price" readonly="1" attrs="{'invisible': [('display_type', '!=', False)]}"/>
                     <field name="working_cost" invisible="1"/>
                     <field name="price_lock" invisible="1"/>
                 </xpath>
-                 <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']" position="attributes">
-                     <attribute name="attrs">{"readonly": [('price_lock', '=', True)]}</attribute>
-                     <attribute name="force_save">1</attribute>
-                 </xpath>
-                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']" position="after">
+
+                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']"
+                       position="attributes">
+                    <attribute name="attrs">{"readonly": [('price_lock', '=', True)]}</attribute>
+                    <attribute name="force_save">1</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']"
+                       position="after">
                     <field name="update_pricelist"/>
                     <field name="profit_margin" attrs="{'invisible': [('display_type', '!=', False)]}"/>
                     <field name="price_from" invisible="1"/>
                 </xpath>
+
                 <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']" position="attributes">
-                    <attribute name="options">{"no_open": True,"no_create": 1, "no_create_edit": 1}</attribute>
+                    <attribute name="options">{"no_open": True, "no_create": 1, "no_create_edit": 1}</attribute>
                 </xpath>
-                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='product_id']" position="attributes">
-                    <attribute name="options">{"no_open": True,"no_create": 1, "no_create_edit": 1}</attribute>
+
+                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='product_id']"
+                       position="attributes">
+                    <attribute name="options">{"no_open": True, "no_create": 1, "no_create_edit": 1}</attribute>
                 </xpath>
+
                 <xpath expr="//field[@name='order_line']/form/group[1]" position="after">
                     <div>
                         <group>
                             <group>
-                                <field name="product_onhand" readonly='1' attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                                <field name="product_onhand" readonly='1'
+                                       attrs="{'invisible': [('display_type', '!=', False)]}"/>
                                 <field name="note" attrs="{'invisible': [('display_type', '!=', False)]}"/>
-                                <field name="note_type" widget='radio' attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                                <field name="note_type" widget='radio'
+                                       attrs="{'invisible': [('display_type', '!=', False)]}"/>
                             </group>
                         </group>
                     </div>
-                    <div attrs="{'invisible': ['|', ('state', 'in', ['sale', 'done', 'cancel']), ('display_type', '!=', False)]}" >
-                            <label for="last_sale" />
-                            <field name="last_sale" />
+                    <div attrs="{'invisible': ['|', ('state', 'in', ['sale', 'done', 'cancel']), ('display_type', '!=', False)]}">
+                        <label for="last_sale"/>
+                        <field name="last_sale"/>
                     </div>
                 </xpath>
+
                 <xpath expr="//field[@name='amount_untaxed']" position="after">
-                    <field name="gross_profit" widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                    <field name="gross_profit" widget="monetary"
+                           options="{'currency_field': 'currency_id', 'field_digits': True}"/>
                 </xpath>
 
                 <xpath expr="//field[@name='order_line']" position="before">
-                    <button  type="object" name="add_purchase_history_to_so_line" string="Browse History Lines" context="{'partner':partner_id}"/>
+                    <button type="object" name="add_purchase_history_to_so_line" string="Browse History Lines"
+                            context="{'partner':partner_id}"/>
                 </xpath>
 
                 <xpath expr="//field[@name='order_line']/form" position="inside">
@@ -194,6 +227,7 @@
                 <xpath expr="//filter[@name='my_quotation']" position="replace">
                     <filter string="My Drafts" name="my_quotation" domain="[('state','in',('draft', 'sent'))]"/>
                 </xpath>
+
                 <xpath expr="//filter[@name='draft']" position="replace">
                     <filter string="Drafts" name="draft" domain="[('state','in',('draft', 'sent'))]"/>
                 </xpath>
@@ -203,9 +237,11 @@
         <record id="sale.action_quotations" model="ir.actions.act_window">
             <field name="search_view_id" ref="price_paper.sale_order_view_search_price_paper"/>
         </record>
+
         <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
             <field name="search_view_id" ref="price_paper.sale_order_view_search_price_paper"/>
         </record>
+
         <record id="sale.action_quotations_salesteams" model="ir.actions.act_window">
             <field name="search_view_id" ref="price_paper.sale_order_view_search_price_paper"/>
         </record>
@@ -219,14 +255,14 @@
                 <xpath expr="//filter[@name='draft']" position="after">
                     <separator/>
                     <filter string="Credit Exceeded" name="credit_exceeded" domain="[('is_creditexceed','=', True)]"/>
-                    <filter string="Waiting for release" name="ready_to_release" domain="[('ready_to_release','=', False), ('is_creditexceed','=', True)]"/>
+                    <filter string="Waiting for release" name="ready_to_release"
+                            domain="[('ready_to_release','=', False), ('is_creditexceed','=', True)]"/>
                 </xpath>
                 <xpath expr="//filter[@name='draft']" position="replace">
                     <filter string="Drafts" name="draft" domain="[('state','in',('draft', 'sent'))]"/>
                 </xpath>
             </field>
         </record>
-
 
         <record id="action_orders_credit_limit_exceeded" model="ir.actions.act_window">
             <field name="name">Credit Limit Exceeded Orders</field>
@@ -235,15 +271,13 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="sale_order_view_search_credit_exceeded"/>
-            <field name="context">{"search_default_ready_to_release":1}</field>
+            <field name="context">{"search_default_ready_to_release": 1}</field>
             <field name="help" type="html">
-              <p>
-                No Sale Order Found.
-              </p>
+                <p>
+                    No Sale Order Found.
+                </p>
             </field>
         </record>
-
-
 
         <record id="sale_order_tree_inherit_price" model="ir.ui.view">
             <field name="name">sale.order.tree.inherit.price</field>
@@ -251,6 +285,7 @@
             <field name="inherit_id" ref="sale.view_quotation_tree"/>
             <field name="arch" type="xml">
                 <field name="state" position="replace"/>
+
                 <field name="name" position="after">
                     <field name="state"/>
                 </field>
@@ -267,9 +302,11 @@
                     <field name='is_last'/>
                     <field name='shipping_id'/>
                 </field>
+
                 <field name="price_subtotal" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </field>
+
                 <field name="price_subtotal" position="after">
                     <field name="price_unit"/>
                 </field>
@@ -287,12 +324,12 @@
             </field>
         </record>
 
-
         <record id="act_res_partner_2_sale_order_line" model="ir.actions.act_window">
             <field name="name">Sales Order Lines</field>
             <field name="res_model">sale.order.line</field>
             <field name="view_mode">tree</field>
-            <field name="context">{'search_default_order_partner_id': [active_id], 'default_order_partner_id': active_id, 'search_default_is_last': 1}</field>
+            <field name="context">{'search_default_order_partner_id': [active_id],
+                                   'default_order_partner_id': active_id, 'search_default_is_last': 1}</field>
             <field name="domain">[('state', 'in', ['sale', 'done'])]</field>
         </record>
 
@@ -301,6 +338,7 @@
             <field name="context">{'default_is_quotation': 1}</field>
             <field name="name">Drafts</field>
         </record>
+
         <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
             <field name="name">Drafts</field>
         </record>

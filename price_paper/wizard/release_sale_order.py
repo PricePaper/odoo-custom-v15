@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import models, api, _
-from odoo.exceptions import UserError
+
+from odoo import models, api
 
 
 class SaleOrderRelease(models.TransientModel):
@@ -18,3 +18,8 @@ class SaleOrderRelease(models.TransientModel):
         for record in self.env['sale.order'].browse(active_ids):
             record.action_ready_to_release()
         return {'type': 'ir.actions.act_window_close'}
+
+
+SaleOrderRelease()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

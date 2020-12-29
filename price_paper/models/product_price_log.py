@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api, _
+from odoo import models, fields
+
 
 class ProductPriceLog(models.Model):
     _name = 'product.price.log'
@@ -13,10 +14,13 @@ class ProductPriceLog(models.Model):
     pricelist_id = fields.Many2one('product.pricelist', string='Pricelist')
     uom_id = fields.Many2one('uom.uom', string='UOM')
     type = fields.Selection(string='Type',
-        selection=[('cost', 'Cost'),
-        ('burden', 'Burden Percentage'),
-        ('std_price', 'Standard Price'),
-        ('pricelist_price', 'Pricelist Price')])
+                            selection=[('cost', 'Cost'),
+                                       ('burden', 'Burden Percentage'),
+                                       ('std_price', 'Standard Price'),
+                                       ('pricelist_price', 'Pricelist Price')])
     user_id = fields.Many2one('res.users', string='User')
 
+
 ProductPriceLog()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

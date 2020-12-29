@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api, _
-from datetime import datetime, date
-from odoo.exceptions import ValidationError
+from datetime import date
+
 from dateutil.relativedelta import relativedelta
+
+from odoo import fields, models, api, _
+from odoo.exceptions import ValidationError
+
 
 class CustomerProductPrice(models.Model):
     _name = 'customer.product.price'
@@ -12,7 +15,7 @@ class CustomerProductPrice(models.Model):
     pricelist_id = fields.Many2one('product.pricelist', string='Price List')
     product_id = fields.Many2one('product.product', string='Product')
     price = fields.Float(string='Price')
-    partner_id = fields.Many2one('res.partner' , string='Customer', compute='_compute_partner', store=False)
+    partner_id = fields.Many2one('res.partner', string='Customer', compute='_compute_partner', store=False)
     sale_uoms = fields.Many2many(related='product_id.sale_uoms', string='Sale UOMS')
     product_uom = fields.Many2one('uom.uom', string='Unit Of Measure', domain="[('id', 'in', sale_uoms)]")
     price_last_updated = fields.Date(string='Price last updated', default=date.today(), readonly=True)
@@ -28,13 +31,6 @@ class CustomerProductPrice(models.Model):
                 if partner_id and len(partner_id) == 1:
                     rec.partner_id = partner_id.id
 
-
-
-    # _sql_constraints = [
-    #     ('pricelist_product_uom_uniq', 'UNIQUE (pricelist_id, product_id, product_uom)',
-    #      'Combination of Product and product UOM must be unique'),
-    # ]
-
     @api.multi
     @api.constrains('pricelist_id', 'product_id', 'product_uom')
     def _check_unique_constrain(self):
@@ -42,11 +38,10 @@ class CustomerProductPrice(models.Model):
             if rec.pricelist_id and rec.product_id and rec.product_uom:
                 result = rec.pricelist_id.customer_product_price_ids.filtered(
                     lambda r: r.product_id.id == rec.product_id.id and
-                    r.product_uom.id == rec.product_uom.id and r.id != rec.id)
+                              r.product_uom.id == rec.product_uom.id and r.id != rec.id)
                 if result:
                     raise ValidationError(
-                    _('Already a record with same product and same UOM exists in Pricelist'))
-
+                        _('Already a record with same product and same UOM exists in Pricelist'))
 
     @api.multi
     def write(self, vals):
@@ -54,13 +49,13 @@ class CustomerProductPrice(models.Model):
         overriden to update price_last_updated
         """
         if 'price' in vals:
-            log_vals = {'change_date' : fields.Datetime.now(),
+            log_vals = {'change_date': fields.Datetime.now(),
                         'type': 'pricelist_price',
                         'old_price': self.price,
                         'new_price': vals.get('price'),
                         'user_id': self.env.user.id,
                         'uom_id': self.product_uom.id,
-                        'pricelist_id':self.pricelist_id and self.pricelist_id.id,
+                        'pricelist_id': self.pricelist_id and self.pricelist_id.id,
                         'product_id': self.product_id.id
                         }
             if self._context.get('user', False):
@@ -76,12 +71,12 @@ class CustomerProductPrice(models.Model):
     def create(self, vals):
         res = super(CustomerProductPrice, self).create(vals)
         if 'price' in vals:
-            log_vals = {'change_date' : fields.Datetime.now(),
+            log_vals = {'change_date': fields.Datetime.now(),
                         'type': 'pricelist_price',
                         'new_price': vals.get('price'),
                         'user_id': self.env.user.id,
                         'uom_id': res.product_uom.id,
-                        'pricelist_id':res.pricelist_id and self.pricelist_id.id,
+                        'pricelist_id': res.pricelist_id and self.pricelist_id.id,
                         'product_id': res.product_id.id
                         }
             if self._context.get('user', False):
@@ -94,8 +89,10 @@ class CustomerProductPrice(models.Model):
     def name_get(self):
         result = []
         for record in self:
-            name = "%s_%s_%s_%s" % (record.pricelist_id and record.pricelist_id.name or '', record.product_id and record.product_id.name or '', record.product_uom and record.product_uom.name or '', record.partner_id and record.partner_id.name or '')
-            result.append((record.id,name))
+            name = "%s_%s_%s_%s" % (
+            record.pricelist_id and record.pricelist_id.name or '', record.product_id and record.product_id.name or '',
+            record.product_uom and record.product_uom.name or '', record.partner_id and record.partner_id.name or '')
+            result.append((record.id, name))
         return result
 
     @api.onchange('product_id')
@@ -125,10 +122,11 @@ class CustomerProductPrice(models.Model):
         if self.price_lock:
             if self.env.user.company_id and self.env.user.company_id.price_lock_days:
                 days = self.env.user.company_id.price_lock_days
-                self.lock_expiry_date =  date.today()+relativedelta(days=days)
+                self.lock_expiry_date = date.today() + relativedelta(days=days)
         else:
             self.lock_expiry_date = False
 
 
-
 CustomerProductPrice()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

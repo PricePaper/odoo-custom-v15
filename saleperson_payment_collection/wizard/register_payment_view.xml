@@ -8,30 +8,29 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="partner_id" required="1" domain="[('customer', '=', True)]" />
+                            <field name="partner_id" required="1" domain="[('customer', '=', True)]"/>
                         </group>
                         <group>
-                            <field name="payment_date" required="1" />
+                            <field name="payment_date" required="1"/>
                         </group>
                         <group>
-                            <field name="reference" />
+                            <field name="reference"/>
                         </group>
                         <group>
-                            <field name="currency_id" invisible="1" />
-                            <field name="amount" required="1" />
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount" required="1"/>
                             <field name="journal_id" required="1" widget="selection"
-                                domain="[('type', 'in', ['bank', 'cash'])]" />
+                                   domain="[('type', 'in', ['bank', 'cash'])]"/>
                         </group>
                     </group>
                 </sheet>
                 <footer>
-                    <button string="Post" type="object" name="action_register_payment" class="btn-primary pull-right" />
-                    <button string="Cancel" class="btn-default pull-right" special="cancel" />
+                    <button string="Post" type="object" name="action_register_payment" class="btn-primary pull-right"/>
+                    <button string="Cancel" class="btn-default pull-right" special="cancel"/>
                 </footer>
             </form>
         </field>
     </record>
-
 
     <record id="sale_team_register_payment_action" model="ir.actions.act_window">
         <field name="name">Register Payments</field>
@@ -39,12 +38,14 @@
         <field name="view_type">form</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
-        <field name="view_id" ref="sale_team_register_payment_view_form" />
+        <field name="view_id" ref="sale_team_register_payment_view_form"/>
     </record>
 
-
-    <menuitem id="sale_team_register_payment_menu" name="Register Payments"
-        action="sale_team_register_payment_action"
-        parent="sale.sale_order_menu" sequence="5000" groups="sales_team.group_sale_salesman" />
+    <menuitem id="sale_team_register_payment_menu"
+              name="Register Payments"
+              action="sale_team_register_payment_action"
+              parent="sale.sale_order_menu"
+              sequence="5000"
+              groups="sales_team.group_sale_salesman"/>
 
 </odoo>

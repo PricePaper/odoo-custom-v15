@@ -6,7 +6,6 @@
 #
 ##############################################################################
 
-
 {
     'name': 'Saleperson Payment Collection',
     'version': '12.0.1.0',
@@ -26,6 +25,5 @@
     'application': False,
     'auto_install': False,
 }
-
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

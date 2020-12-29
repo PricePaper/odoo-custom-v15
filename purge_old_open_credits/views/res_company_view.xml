@@ -3,12 +3,12 @@
     <record id="res_company_inherit_purge_old_open_credits" model="ir.ui.view">
         <field name="name">res.company.inherit.purge.old.open.credits</field>
         <field name="model">res.company</field>
-        <field name="inherit_id" ref="price_paper.res_company_inherit_price_paper" />
+        <field name="inherit_id" ref="price_paper.res_company_inherit_price_paper"/>
         <field name="arch" type="xml">
             <field name="burden_percent" position="after">
-                <label for="purge_old_open_credit_limit" class="mt-5" />
+                <label for="purge_old_open_credit_limit" class="mt-5"/>
                 <div class="mt-5">
-                    <field name="purge_old_open_credit_limit" class="oe_inline" style="width: 50%;" />
+                    <field name="purge_old_open_credit_limit" class="oe_inline" style="width: 50%;"/>
                     days
                 </div>
             </field>

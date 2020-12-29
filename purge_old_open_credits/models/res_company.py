@@ -9,5 +9,6 @@ class ResCompany(models.Model):
     purge_old_open_credit_limit = fields.Integer(default=120, string="Open Credit Active Days")
 
 
+ResCompany()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

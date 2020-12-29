@@ -10,7 +10,7 @@ class AccountInvoice(models.Model):
 
     @api.model
     def _cron_purge_old_open_credits(self):
-        limit_days =  self.env.user.company_id and  self.env.user.company_id.purge_old_open_credit_limit or 120
+        limit_days = self.env.user.company_id and self.env.user.company_id.purge_old_open_credit_limit or 120
         domain_date = datetime.today() - timedelta(days=limit_days)
         credit_notes = self.search([
             ('state', '=', 'open'),
@@ -21,5 +21,6 @@ class AccountInvoice(models.Model):
         return True
 
 
+AccountInvoice()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

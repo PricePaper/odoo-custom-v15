@@ -585,7 +585,6 @@ class SaleOrderLine(models.Model):
     profit_margin = fields.Monetary(compute='calculate_profit_margin', string="Profit")
     price_from = fields.Many2one('customer.product.price', string='Product Pricelist')
     last_sale = fields.Text(compute='compute_last_sale_detail', string='Last sale details', store=False)
-    # color = fields.Text(compute='calculate_profit_margin', string="Color", store=False)
     product_onhand = fields.Float(string='Product Qty Available', related='product_id.virtual_available', digits=dp.get_precision('Product Unit of Measure'))
     new_product = fields.Boolean(string='New Product', copy=False)
     manual_price = fields.Boolean(string='Manual Price Change', copy=False)
@@ -623,11 +622,8 @@ class SaleOrderLine(models.Model):
                 uom_price = line.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == line.product_uom)
                 if uom_price:
                     line.lst_price = uom_price[0].price
-            if line.product_id.cost and line.product_uom:
-                working_cost = line.product_id.uom_id._compute_price(line.product_id.cost, line.product_uom)
-                if line.product_uom != line.product_id.uom_id:
-                    working_cost = float_round(working_cost * (1+(line.product_id.categ_id.repacking_upcharge/100)), precision_digits=2)
-                line.working_cost = working_cost
+                    if line.product_id.cost:
+                        line.working_cost = uom_price[0].cost
 
     @api.multi
     def _prepare_invoice_line(self, qty):
@@ -909,15 +905,12 @@ class SaleOrderLine(models.Model):
                         price_unit = line.order_id.carrier_id.rate_shipment(line.order_id)['price']
                         line.profit_margin = line.price_subtotal - price_unit
                 else:
-                    product_price = line.product_uom and round(line.working_cost * line.product_id.uom_id.factor / line.product_uom.factor, 2) or 0
+                    product_price = line.working_cost or 0
                     line_price = line.price_unit
-                    if line.product_id.uom_id != line.product_uom:
-                        product_price = float_round(product_price * (1+(line.product_id.categ_id.repacking_upcharge/100)), precision_digits=2)
-                    elif line.product_id.uom_id == line.product_uom and line.product_uom_qty % 1 != 0.0:
+                    if line.product_id.uom_id == line.product_uom and line.product_uom_qty % 1 != 0.0:
                         numer = line.price_unit * line.product_uom_qty
                         denom = (int(line.product_uom_qty / 1.0) + ((line.product_uom_qty % 1) * (100 + line.product_id.categ_id.repacking_upcharge) / 100))
                         line_price = round(numer / denom, 2)
-
                     line.profit_margin = (line_price - product_price) * line.product_uom_qty
 
     @api.multi

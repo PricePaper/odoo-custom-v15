@@ -167,7 +167,7 @@ class ProductProduct(models.Model):
     @api.model
     def _cron_update_product_lst_price(self):
 
-        products = self.env['product.product'].search([('id', 'in', (145,141,142))])
+        products = self.env['product.product'].search([])
         similar_products = []
         for product in products:
             if product.id in similar_products:

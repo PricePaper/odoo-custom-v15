@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
-from datetime import date, datetime
-from dateutil.relativedelta import relativedelta
+from odoo import models, api
 
 
 class CostChange(models.Model):
     _inherit = 'cost.change'
-
-
 
     @api.model
     def default_get(self, fields_list):
@@ -18,5 +14,6 @@ class CostChange(models.Model):
         return res
 
 
-
 CostChange()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

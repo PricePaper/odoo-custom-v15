@@ -5,8 +5,8 @@
             <field name="model">res.partner</field>
             <field name="arch" type="xml">
                 <tree string="Customer Price Maintanance" create="0" delete="0" edit="0">
-                    <field name="name" />
-                    <field name="phone" />
+                    <field name="name"/>
+                    <field name="phone"/>
                 </tree>
             </field>
         </record>
@@ -16,97 +16,107 @@
             <field name="arch" type="xml">
                 <form string="Customer Price maintanace" create="0" delete="0" edit="1">
                     <sheet>
-                            <div class="oe_button_box" name="button_box">
-                               <button name="%(price_maintanance.act_price_edit_notes_partner)d" string='Audit' type="action" class="oe_stat_button" icon="fa-sticky-note" />
-                            </div>
-                            <field name="parent_id" invisible="1"/>
-                            <field name="type" invisible="1"/>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="%(price_maintanance.act_price_edit_notes_partner)d" string='Audit'
+                                    type="action" class="oe_stat_button" icon="fa-sticky-note"/>
+                        </div>
+                        <field name="parent_id" invisible="1"/>
+                        <field name="type" invisible="1"/>
+                        <group>
                             <group>
-                              <group>
                                 <label for="street" string="Address"/>
                                 <div class="o_address_format">
                                     <field name="street" placeholder="Street..." class="o_address_street"
-                                        attrs="{'readonly': True}"/>
+                                           attrs="{'readonly': True}"/>
                                     <field name="street2" placeholder="Street 2..." class="o_address_street"
-                                        attrs="{'readonly': True}"/>
+                                           attrs="{'readonly': True}"/>
                                     <field name="city_id" placeholder="City" readonly="1" invisible="1"/>
                                     <field name="city" placeholder="City" class="o_address_city"
-                                        attrs="{'readonly': True}"/>
-                                    <field name="state_id" class="o_address_state" placeholder="State" options='{"no_open": True}'
-                                        attrs="{'readonly': True}" context="{'country_id': country_id, 'zip': zip}"/>
+                                           attrs="{'readonly': True}"/>
+                                    <field name="state_id" class="o_address_state" placeholder="State"
+                                           options='{"no_open": True}'
+                                           attrs="{'readonly': True}" context="{'country_id': country_id, 'zip': zip}"/>
                                     <field name="zip" placeholder="ZIP" class="o_address_zip"
-                                        attrs="{'readonly': True}"/>
-                                    <field name="country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'
-                                        attrs="{'readonly': True}"/>
+                                           attrs="{'readonly': True}"/>
+                                    <field name="country_id" placeholder="Country" class="o_address_country"
+                                           options='{"no_open": True, "no_create": True}'
+                                           attrs="{'readonly': True}"/>
                                 </div>
-                              </group>
-                              <group>
+                            </group>
+                            <group>
                                 <field name='customer_code' readonly="1"/>
                                 <field name='sales_person_ids' readonly="1" widget='many2many_tags'/>
                                 <field name='partner_pricelist_id' options='{"no_open": True, "no_create": True}'
-                                  domain="[('partner_id', '=', id)]" attrs="{'readonly': False}"/>
-                              </group>
+                                       domain="[('partner_id', '=', id)]" attrs="{'readonly': False}"/>
                             </group>
-                            <group string="Customer Product Price">
-                                <field name="partner_pricelist_line_ids" nolabel="1" attrs="{'readonly': False}">
-                                    <tree decoration-danger="deviation&lt;0" decoration-info="deviation==0" decoration-success="deviation&gt;0">
-                                        <field name="product_id" required="1"/>
-                                        <field name="product_uom" required="1"/>
-                                        <field name="price" required="1"/>
-                                        <field name="std_price" readonly="1"/>
-                                        <field name="deviation"/>
-                                        <field name="price_last_updated"/>
-                                        <field name="price_lock"/>
-                                        <field name="lock_expiry_date" attrs="{'invisible': [('price_lock', '=', False)], 'required': [('price_lock', '=', True)]}"/>
-                                    </tree>
-                                    <form string="Detailed Info">
-                                        <div class="oe_button_box" name="button_box">
-                                           <button name="action_remove" string='Delete' type="object" class="oe_stat_button" icon="fa-trash-o" />
-                                        </div>
+                        </group>
+                        <group string="Customer Product Price">
+                            <field name="partner_pricelist_line_ids" nolabel="1" attrs="{'readonly': False}">
+                                <tree decoration-danger="deviation&lt;0" decoration-info="deviation==0"
+                                      decoration-success="deviation&gt;0">
+                                    <field name="product_id" required="1"/>
+                                    <field name="product_uom" required="1"/>
+                                    <field name="price" required="1"/>
+                                    <field name="std_price" readonly="1"/>
+                                    <field name="deviation"/>
+                                    <field name="price_last_updated"/>
+                                    <field name="price_lock"/>
+                                    <field name="lock_expiry_date"
+                                           attrs="{'invisible': [('price_lock', '=', False)], 'required': [('price_lock', '=', True)]}"/>
+                                </tree>
+                                <form string="Detailed Info">
+                                    <div class="oe_button_box" name="button_box">
+                                        <button name="action_remove" string='Delete' type="object"
+                                                class="oe_stat_button" icon="fa-trash-o"/>
+                                    </div>
+                                    <group>
                                         <group>
-                                            <group>
-                                                <field name="currency_id" invisible="1"/>
-                                                <field name="product_id" required="1"/>
-                                                <field name="sale_uoms" invisible='1'/>
-                                                <field name="product_uom" required="1"/>
-                                                <field name="price" required="1" widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"/>
-                                                <field name="std_price" readonly="1" widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"/>
-                                                <label for="deviation"/>
-                                                <div class="o_row">
-                                                    <field name="deviation"/>
-                                                    <span>%</span>
-                                                </div>
-                                            </group>
-                                            <group>
-                                                <field name="last_sale_date"/>
-                                                <field name="last_sale_price"/>
-                                                <field name="last_quantity_sold"/>
-                                                <field name="is_taxable"/>
-                                                <field name="price_last_updated"/>
-                                                <field name="price_lock"/>
-                                                <field name="lock_expiry_date" attrs="{'invisible': [('price_lock', '=', False)], 'required': [('price_lock', '=', True)]}"/>
-                                            </group>
+                                            <field name="currency_id" invisible="1"/>
+                                            <field name="product_id" required="1"/>
+                                            <field name="sale_uoms" invisible='1'/>
+                                            <field name="product_uom" required="1"/>
+                                            <field name="price" required="1" widget="monetary"
+                                                   options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                                            <field name="std_price" readonly="1" widget="monetary"
+                                                   options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                                            <label for="deviation"/>
+                                            <div class="o_row">
+                                                <field name="deviation"/>
+                                                <span>%</span>
+                                            </div>
                                         </group>
-                                            <group string="Sales">
-                                                <field name="median_price" nolabel="1"/>
-                                            </group>
-                                            <group string="Competitive Pricing">
-                                                <field name="competietor_price_ids" nolabel="1">
-                                                    <tree>
-                                                        <field name="pricelist_id" string="Competitor"/>
-                                                        <field name="product_id" required="1"/>
-                                                        <field name="product_uom" required="1"/>
-                                                        <field name="price" required="1"/>
-                                                    </tree>
-                                                </field>
-                                            </group>
-                                    </form>
-                                </field>
-                            </group>
-                            <group>
-                                <field name="change_flag"/>
-                                <field name="audit_notes" placeholder="Enter Notes Here..." attrs="{'invisible':[('change_flag', '=', False)], 'required': [('change_flag', '=', True)]}" />
-                            </group>
+                                        <group>
+                                            <field name="last_sale_date"/>
+                                            <field name="last_sale_price"/>
+                                            <field name="last_quantity_sold"/>
+                                            <field name="is_taxable"/>
+                                            <field name="price_last_updated"/>
+                                            <field name="price_lock"/>
+                                            <field name="lock_expiry_date"
+                                                   attrs="{'invisible': [('price_lock', '=', False)], 'required': [('price_lock', '=', True)]}"/>
+                                        </group>
+                                    </group>
+                                    <group string="Sales">
+                                        <field name="median_price" nolabel="1"/>
+                                    </group>
+                                    <group string="Competitive Pricing">
+                                        <field name="competietor_price_ids" nolabel="1">
+                                            <tree>
+                                                <field name="pricelist_id" string="Competitor"/>
+                                                <field name="product_id" required="1"/>
+                                                <field name="product_uom" required="1"/>
+                                                <field name="price" required="1"/>
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </form>
+                            </field>
+                        </group>
+                        <group>
+                            <field name="change_flag"/>
+                            <field name="audit_notes" placeholder="Enter Notes Here..."
+                                   attrs="{'invisible':[('change_flag', '=', False)], 'required': [('change_flag', '=', True)]}"/>
+                        </group>
 
                     </sheet>
                 </form>
@@ -114,42 +124,40 @@
         </record>
 
 
-
-
         <record id="action_customer_price_maintanace" model="ir.actions.act_window">
             <field name="name">Customer Price Maintanance</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">res.partner</field>
-            <field name="domain">[('customer', '=', True),('parent_id', '=', False)]</field>
+            <field name="domain">[('customer', '=', True), ('parent_id', '=', False)]</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
-              <p>
-                No Customers Defined.
-              </p>
+                <p>
+                    No Customers Defined.
+                </p>
             </field>
         </record>
 
         <record model="ir.actions.act_window.view" id="action_customer_price_maintanace_tree">
-             <field name="sequence" eval="1"/>
-             <field name="view_mode">tree</field>
-             <field name="view_id" ref="customer_price_maintanace_tree_view"/>
-             <field name="act_window_id" ref="action_customer_price_maintanace"/>
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="customer_price_maintanace_tree_view"/>
+            <field name="act_window_id" ref="action_customer_price_maintanace"/>
         </record>
 
         <record model="ir.actions.act_window.view" id="action_customer_price_maintanace_form">
-             <field name="sequence" eval="2"/>
-             <field name="view_mode">form</field>
-             <field name="view_id" ref="customer_price_maintanace_form_view"/>
-             <field name="act_window_id" ref="action_customer_price_maintanace"/>
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="customer_price_maintanace_form_view"/>
+            <field name="act_window_id" ref="action_customer_price_maintanace"/>
         </record>
 
         <menuitem id="menu_customer_price_maintanace"
-            name="Customer Price Maintanace"
-            action="action_customer_price_maintanace"
-            parent="sale.sale_order_menu"
-            groups="sales_team.group_sale_salesman"
-            sequence="15" />
+                  name="Customer Price Maintanace"
+                  action="action_customer_price_maintanace"
+                  parent="sale.sale_order_menu"
+                  groups="sales_team.group_sale_salesman"
+                  sequence="15"/>
 
     </data>
 </odoo>

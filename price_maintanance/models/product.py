@@ -1,16 +1,18 @@
+# -*- coding: utf-8 -*-
+
 import logging
 import statistics
 from datetime import datetime, date
-from odoo.tools import float_round
 
 from dateutil.relativedelta import relativedelta
 
 from odoo import fields, models, api, _
-from odoo.addons.queue_job.job import job
-import odoo.addons.decimal_precision as dp
 from odoo.addons.price_paper.models import margin
+from odoo.addons.queue_job.job import job
+from odoo.tools import float_round
 
 _logger = logging.getLogger(__name__)
+
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
@@ -26,25 +28,6 @@ class ProductProduct(models.Model):
                                        domain=[('is_done', '=', False), ('product_id', '!=', False)])
     change_flag = fields.Boolean(string='Log an Audit Note')
     audit_notes = fields.Text(string='Audit Note')
-
-    # standard_price_date_lock = fields.Date(string='Standard Price Lock Date')
-
-    #    @api.multi
-    #                        @api.onchange('uom_id','standard_price','burden_percent','lst_price','customer_price_ids','competitor_price_ids','future_price_ids')
-    #    def onchange_change_flag(self):
-    #        action = self.env.ref('price_maintanance.action_price_maintanace')
-    #        action = action and action.id
-    #        context_action = self._context.get('params', {}).get('action', False)
-
-    #        if context_action == action:
-    #            if not self.change_flag:
-    #                self.change_flag = True
-    #                res =  {'warning': {
-    #                                    'title': _('Warning'),
-    #                                    'message': _('You have made changes in this form. Please do not forget to enter an audit note under the bottom part of the screen before you save.')
-    #                                   }
-    #                       }
-    #                return res
 
     @api.multi
     def edit_price(self):
@@ -133,9 +116,9 @@ class ProductProduct(models.Model):
                                 <tr><td>60 Days</td><td>$ {:.02f}</td></tr>\
                                 <tr><td>90 Days</td><td>$ {:.02f}</td></tr>\
                                 </table>".format(name, unit_price_median_10_day.get(uom, 0),
-                                 unit_price_median_30_day.get(uom, 0),
-                                  unit_price_median_60_day.get(uom, 0),
-                                 unit_price_median_90_day.get(uom, 0))
+                                                 unit_price_median_30_day.get(uom, 0),
+                                                 unit_price_median_60_day.get(uom, 0),
+                                                 unit_price_median_90_day.get(uom, 0))
             product.median_price = median_price
 
     @api.multi
@@ -175,7 +158,6 @@ class ProductProduct(models.Model):
             if product.standard_price_date_lock and product.standard_price_date_lock > date.today():
                 continue
 
-
             if product.similar_product_ids:
                 similar_products += product.similar_product_ids.ids
             product.standard_price_date_lock = False
@@ -208,7 +190,8 @@ class ProductProduct(models.Model):
             if partner_count >= partner_count_company:
                 try:
                     new_lst_price = statistics.median_high(
-                        [lines.filtered(lambda l: l.order_id.partner_id == partner)[:1].price_unit for partner in partners])
+                        [lines.filtered(lambda l: l.order_id.partner_id == partner)[:1].price_unit for partner in
+                         partners])
 
                 except statistics.StatisticsError as e:
                     _logger.error(f'Not enough data to find mean price for product_id: {self.id}.')
@@ -222,9 +205,9 @@ class ProductProduct(models.Model):
                         if uom_rec.price != new_lst_price:
                             uom_rec.price = new_lst_price
                     else:
-                        vals={'product_id': product.id,
-                              'uom_id': uom.id,
-                              'price': new_lst_price}
+                        vals = {'product_id': product.id,
+                                'uom_id': uom.id,
+                                'price': new_lst_price}
                         self.env['product.standard.price'].create(vals)
         return True
 
@@ -239,22 +222,27 @@ class ProductProduct(models.Model):
         if not new_lst_price:
             if uom != self.uom_id:
                 uom_cost = float_round(self.uom_id._compute_price(cost, uom), precision_digits=2)
-                cost = float_round(uom_cost * (1+(self.categ_id.repacking_upcharge/100)), precision_digits=2)
-            new_lst_price = margin.get_price(cost, self.categ_id.standard_price, percent = True)
+                cost = float_round(uom_cost * (1 + (self.categ_id.repacking_upcharge / 100)), precision_digits=2)
+            new_lst_price = margin.get_price(cost, self.categ_id.standard_price, percent=True)
         return new_lst_price
 
     def get_from_competitor(self, competitor_id, uom):
         new_lst_price = 0
         pricelist = self.env['product.pricelist'].search([
-                ('type', '=', 'competitor'),
-                ('competitor_id', '=', competitor_id),
-                ('competietor_margin', '=', 10)])
+            ('type', '=', 'competitor'),
+            ('competitor_id', '=', competitor_id),
+            ('competietor_margin', '=', 10)])
         pricelist_line = pricelist.customer_product_price_ids.filtered(lambda p: p.product_id == self)
         if pricelist_line:
-            new_lst_price = float_round(pricelist_line[0].product_uom._compute_price(pricelist_line[0].price, uom), precision_digits=2)
+            new_lst_price = float_round(pricelist_line[0].product_uom._compute_price(pricelist_line[0].price, uom),
+                                        precision_digits=2)
             if uom != self.uom_id:
-                competitor_price = float_round(new_lst_price * (1+(self.categ_id.repacking_upcharge/100)), precision_digits=2)
-                new_lst_price = margin.get_price(competitor_price, self.categ_id.standard_price, percent = True)
+                competitor_price = float_round(new_lst_price * (1 + (self.categ_id.repacking_upcharge / 100)),
+                                               precision_digits=2)
+                new_lst_price = margin.get_price(competitor_price, self.categ_id.standard_price, percent=True)
         return new_lst_price
 
+
 ProductProduct()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

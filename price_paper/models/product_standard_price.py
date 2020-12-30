@@ -8,6 +8,7 @@ from odoo.tools import float_round
 
 class ProductStandardPrice(models.Model):
     _name = "product.standard.price"
+    _description = 'Product Standard Price'
 
     product_id = fields.Many2one('product.product', string="Product")
     uom_id = fields.Many2one('uom.uom', string="UOM")

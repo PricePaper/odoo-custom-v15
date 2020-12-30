@@ -613,7 +613,7 @@ class SaleOrderLine(models.Model):
     # working_cost = fields.Float(string='Working Cost', digits=dp.get_precision('Product Price'))
     gross_volume = fields.Float(string="Gross Volume", compute='_compute_gross_weight_volume')
     gross_weight = fields.Float(string="Gross Weight", compute='_compute_gross_weight_volume')
-    is_addon = field_name = fields.Boolean(string='Is Addon')
+    is_addon = fields.Boolean(string='Is Addon')
     update_pricelist = fields.Boolean(string="Update Pricelist", default=True, copy=False)
 
     @api.depends('product_id.volume', 'product_id.weight')

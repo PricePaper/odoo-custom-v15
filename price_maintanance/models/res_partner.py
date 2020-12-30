@@ -11,7 +11,7 @@ class ResPartner(models.Model):
                                                   string="Customer Pricelist line", compute="_compute_pricelist_lines")
     change_flag = fields.Boolean(string='Log an Audit Note')
     audit_notes = fields.Text(string='Audit Note')
-    partner_pricelist_id = fields.Many2one('customer.pricelist', string="Pricelist", store=False,
+    partner_pricelist_id = fields.Many2one('customer.pricelist', string="Customer Pricelist", store=False,
                                            compute='_compute_pricelist')
 
     def _compute_pricelist(self):

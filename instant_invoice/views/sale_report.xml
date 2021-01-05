@@ -10,5 +10,29 @@
                 name="instant_invoice.report_quick_saleorder"
                 print_report_name="(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or 'Order - %s' % (object.name)"
         />
+        <report
+                string="Quick Sale - Product Labels"
+                id="quick_sale_product_label_report"
+                model="stock.picking"
+                report_type="qweb-pdf"
+                file="batch_delivery.report_product_label"
+                name="batch_delivery.report_product_label"
+                paperformat="batch_delivery.print_product_label_paperformat"
+                print_report_name="'Product labels - %s' % (object.name or '')"
+                menu="False"
+        />
+        <report
+            id="quick_sale_account_invoices"
+            model="account.invoice"
+            string="Quick sale Invoices"
+            report_type="qweb-pdf"
+            name="account.report_invoice_with_payments"
+            file="account.report_invoice_with_payments"
+            attachment="(object.state in ('open','in_payment','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"
+            print_report_name="(object._get_report_base_filename())"
+            groups="account.group_account_invoice"
+            menu="False"
+        />
+
     </data>
 </odoo>

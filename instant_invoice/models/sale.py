@@ -36,7 +36,8 @@ class SaleOrder(models.Model):
     @api.multi
     def action_print_invoice(self):
         invoice = self.invoice_ids
-        return invoice.invoice_print()
+        invoice.filtered(lambda inv: not inv.sent).write({'sent': True})
+        return self.env.ref('instant_invoice.quick_sale_account_invoices').report_action(invoice)
 
     @api.multi
     def action_print_picking_operation(self):

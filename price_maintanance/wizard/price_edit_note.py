@@ -25,7 +25,7 @@ class VendorPricelist(models.TransientModel):
     _description = 'Vendor price edit'
 
     edit_id = fields.Many2one('price.maintanace.edit', string='Price Maintanace Edit')
-    cost_change_id = fields.Many2one('cost.change', string='Cost Change')
+    cost_change_id = fields.Many2one('cost.change', string='Cost Change Source')
     price_filter = fields.Selection([('percentage', '%'), ('fixed', 'Fixed Amount')], string='Increase Cost by')
     run_date = fields.Date('Update Date')
     price_change = fields.Float(string='Cost Change')

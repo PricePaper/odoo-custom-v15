@@ -13,7 +13,7 @@ class SaleOrderHistory(models.Model):
     product_id = fields.Many2one('product.product', related='order_line_id.product_id', string='Product')
     uom_id = fields.Many2one('uom.uom', related='order_line_id.product_uom', string='UOM')
     order_id = fields.Many2one('sale.order', related='order_line_id.order_id', string='Order')
-    order_line_id = fields.Many2one('sale.order.line', string='Order')
+    order_line_id = fields.Many2one('sale.order.line', string='Order Line')
     order_date = fields.Datetime(string='Order Date', related='order_line_id.order_id.confirmation_date')
     active = fields.Boolean('Active', default=True, track_visibility=True)
 

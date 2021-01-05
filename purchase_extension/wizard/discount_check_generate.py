@@ -94,9 +94,9 @@ class VendorBillLines(models.TransientModel):
 
     total_amount = fields.Float(string='Total Amount')
     partner_id = fields.Many2one('res.partner', string='Vendor')
-    discount_amount = fields.Float('Amount After Discount')
+    discount_amount = fields.Float('Discount')
     discount_amount_pseudo = fields.Float('Amount After Discount')
-    invoice_id = fields.Many2one('account.invoice', string='Invoice')
+    invoice_id = fields.Many2one('account.invoice', string='Invoice Source')
     invoice_id_pseudo = fields.Many2one('account.invoice', string='Invoice')
     generate_check_id = fields.Many2one('generate.discount.check', string='Parent')
     date_invoice = fields.Date(string='Bill Date')

@@ -5,6 +5,7 @@ from odoo import fields, models
 
 class ZipDeliveryDay(models.Model):
     _name = 'zip.delivery.day'
+    _description = 'Zip Delivery Day'
     _rec_name = 'zip'
 
     zip = fields.Char(string='Zip')

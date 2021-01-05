@@ -13,7 +13,7 @@ class AddSaleHistoryPoLine(models.TransientModel):
 
     new_qty = fields.Float(string='New Qty')
     parent_id = fields.Many2one('add.sale.history.po', string="Parent Record")
-    product_id = fields.Many2one('product.product', string='Product')
+    product_id = fields.Many2one('product.product', string='Product Source')
     product_pseudo_id = fields.Many2one('product.product', string='Product')
     product_uom = fields.Many2one('uom.uom', related='product_id.uom_po_id', string="UOM")
     product_oh_qty = fields.Float(compute='_calc_qty_available', string='OH Qty')

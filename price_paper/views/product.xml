@@ -23,6 +23,50 @@
             </field>
         </record>
 
+        <record id="product_form_view_procurement_button_form_pricepaper_inherited" model="ir.ui.view">
+            <field name="name">product.product.purchase.button</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="stock.product_form_view_procurement_button"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//button[@name='%(stock.action_stock_level_forecast_report_product)d']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='%(stock.action_stock_level_forecast_report_product)d']" position="after">
+                    <button type="action"
+                        name="%(price_paper.act_product_2_sale_order_line)d"
+                        attrs="{'invisible':[('type', '!=', 'product')]}"
+                        class="oe_stat_button" icon="fa-building-o">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="virtual_available" widget="statinfo" nolabel="1"/>
+                                <span attrs="{'invisible': [('outgoing_qty', '=', 0), ('incoming_qty', '=', 0)]}" groups="base.group_no_one">
+                                    (-<field name="outgoing_qty" widget="statinfo" nolabel="1"/>+<field name="incoming_qty" widget="statinfo" nolabel="1"/>)
+                                </span>
+                                <field name="uom_name" class="ml4"/>
+                            </span>
+                            <span class="o_stat_text">Forecasted(sale)</span>
+                        </div>
+                    </button>
+                    <button type="action"
+                        name="%(price_paper.act_res_partner_2_purchase_order_line)d"
+                        attrs="{'invisible':[('type', '!=', 'product')]}"
+                        class="oe_stat_button" icon="fa-building-o">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="virtual_available" widget="statinfo" nolabel="1"/>
+                                <span attrs="{'invisible': [('outgoing_qty', '=', 0), ('incoming_qty', '=', 0)]}" groups="base.group_no_one">
+                                    (-<field name="outgoing_qty" widget="statinfo" nolabel="1"/>+<field name="incoming_qty" widget="statinfo" nolabel="1"/>)
+                                </span>
+                                <field name="uom_name" class="ml4"/>
+                            </span>
+                            <span class="o_stat_text">Forecasted(Purchase)</span>
+                        </div>
+                    </button>
+                </xpath>
+            </field>
+        </record>
+
         <record id="product_product_common_inherit_pricepaper" model="ir.ui.view">
             <field name="name">product.product.common.pricepaper</field>
             <field name="model">product.product</field>

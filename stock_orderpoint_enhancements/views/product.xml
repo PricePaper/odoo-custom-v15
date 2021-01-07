@@ -13,8 +13,13 @@
                     <button class="oe_stat_button" name="show_forecast" type="object" string="View Sales Forecast"
                             icon="fa-signal"/>
                 </xpath>
-                <button name="toggle_active" position="after">
+
+                <xpath expr="//button[@name='action_view_stock_move_lines']" position="after">
                     <xpath expr="//button[@name='%(stock.product_open_orderpoint)d']" position="move"/>
+                 </xpath>
+
+                <button name="toggle_active" position="after">
+                    <xpath expr="//button[@name='action_view_stock_move_lines']" position="move"/>
                     <xpath expr="//button[@name='%(stock.action_stock_rules_report)d']" position="move"/>
                 </button>
 
@@ -22,6 +27,7 @@
                     <button class="oe_stat_button" name="reset_orderpoint" type="object" string="Reset Orderpoint"
                             icon="fa-refresh"/>
                 </xpath>
+
                 <xpath expr="//field[@name='categ_id']" position="after">
                     <field name="forecast_days"/>
                     <field name="orderpoint_update_date"/>

@@ -43,6 +43,25 @@ class Product(models.Model):
             product.outgoing_qty -= product_qty
             product.transit_qty = product_qty
 
+    @api.multi
+    def get_quantity_in_sale(self):
+        self.ensure_one()
+        sale_lines = self.stock_move_ids.filtered(
+            lambda move: move.sale_line_id and move.state not in ['cancel', 'done'] and not move.is_transit)\
+            .mapped('sale_line_id').ids
+        action = self.env['ir.actions.act_window'].for_xml_id('price_paper', 'act_product_2_sale_order_line')
+        action['domain'] = [('id', 'in', sale_lines)]
+        return action
+
+    @api.multi
+    def get_quantity_in_purchase(self):
+        self.ensure_one()
+        purchase_lines = self.stock_move_ids.filtered(
+            lambda move: move.purchase_line_id and move.state not in ['cancel', 'done']).mapped('purchase_line_id').ids
+        action = self.env['ir.actions.act_window'].for_xml_id('price_paper', 'act_res_partner_2_purchase_order_line')
+        action['domain'] = [('id', 'in', purchase_lines)]
+        return action
+
 
 Product()
 

@@ -21,6 +21,37 @@
                         </div>
                     </button>
                 </xpath>
+
+                <xpath expr="//button[@name='%(stock.action_stock_level_forecast_report_product)d']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+                <xpath expr="//button[@name='%(stock.action_stock_level_forecast_report_product)d']" position="after">
+                    <button type="object"
+                        name="get_quantity_in_sale"
+                        attrs="{'invisible':[('type', '!=', 'product')]}"
+                        class="oe_stat_button" icon="fa-building-o">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="outgoing_qty" widget="statinfo" nolabel="1"/>
+                                <field name="uom_name" class="ml4"/>
+                            </span>
+                            <span class="o_stat_text">Qty In Sale</span>
+                        </div>
+                    </button>
+                    <button type="object"
+                        name="get_quantity_in_purchase"
+                        attrs="{'invisible':[('type', '!=', 'product')]}"
+                        class="oe_stat_button" icon="fa-building-o">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="incoming_qty" widget="statinfo" nolabel="1"/>
+                                <field name="uom_name" class="ml4"/>
+                            </span>
+                            <span class="o_stat_text">Qty In Purchase</span>
+                        </div>
+                    </button>
+                </xpath>
             </field>
         </record>
 

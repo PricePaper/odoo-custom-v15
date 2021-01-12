@@ -143,10 +143,13 @@ class ProductProduct(models.Model):
                             'new_price': vals.get('standard_price'),
                             'user_id': self.env.user.id,
                             'uom_id': product.uom_id.id,
+                            'price_from': 'manual',
                             'product_id': product.id
                             }
                 if self._context.get('user', False):
                     log_vals['user_id'] = self._context.get('user', False)
+                if self._context.get('cost_cron', False):
+                    log_vals['price_from'] = 'cost_cron'
                 self.env['product.price.log'].create(log_vals)
             if 'burden_percent' in vals:
                 log_vals = {'change_date': fields.Datetime.now(),
@@ -155,10 +158,13 @@ class ProductProduct(models.Model):
                             'new_price': vals.get('burden_percent'),
                             'user_id': self.env.user.id,
                             'uom_id': product.uom_id.id,
+                            'price_from': 'manual',
                             'product_id': product.id
                             }
                 if self._context.get('user', False):
                     log_vals['user_id'] = self._context.get('user', False)
+                if self._context.get('cost_cron', False):
+                    log_vals['price_from'] = 'cost_cron'
                 self.env['product.price.log'].create(log_vals)
             if 'active' in vals and not vals.get('active'):
                 if product.qty_available > 0:

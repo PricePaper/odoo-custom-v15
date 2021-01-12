@@ -11,6 +11,7 @@ from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import ValidationError, UserError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, float_compare
+from odoo.tools import float_round
 
 
 class SaleOrder(models.Model):
@@ -700,7 +701,8 @@ class SaleOrderLine(models.Model):
                 numer = self.price_unit * self.product_uom_qty
                 denom = (int(self.product_uom_qty / 1.0) + (
                         (self.product_uom_qty % 1) * (100 + self.product_id.categ_id.repacking_upcharge) / 100))
-                unit_price = round(numer / denom, 2)
+                unit_price = numer / denom
+            unit_price = float_round(unit_price, precision_digits=2)
 
             partner_history = self.env['sale.order.line'].search(
                 [('product_id', '=', self.product_id.id), ('shipping_id', '=', self.shipping_id.id),
@@ -739,7 +741,7 @@ class SaleOrderLine(models.Model):
 
             if self.price_from and self.price_from.pricelist_id.type != 'competitor':
                 if self.price_from.price < unit_price:
-                    self.price_from.price = unit_price
+                    self.price_from.with_context({'from_sale': True}).price = unit_price
                     self.manual_price = True
             else:
                 prices_all = self.env['customer.product.price']
@@ -761,7 +763,7 @@ class SaleOrderLine(models.Model):
                     break
                 if price_from:
                     if price_from.price < unit_price:
-                        price_from.price = unit_price
+                        price_from.with_context({'from_sale': True}).price = unit_price
                         self.manual_price = True
 
                 else:
@@ -783,10 +785,10 @@ class SaleOrderLine(models.Model):
                             lambda r: r.product_id.id == self.product_id.id and r.product_uom.id == self.product_uom.id)
                         if price_from:
                             if price_from.price < unit_price:
-                                price_from.price = unit_price
+                                price_from.with_context({'from_sale': True}).price = unit_price
                                 self.manual_price = True
                     if not price_from:
-                        price_from = self.env['customer.product.price'].create({
+                        price_from = self.env['customer.product.price'].with_context({'from_sale': True}).create({
                             'partner_id': self.order_id.partner_shipping_id.id,
                             'product_id': self.product_id.id,
                             'product_uom': self.product_uom.id,
@@ -938,8 +940,8 @@ class SaleOrderLine(models.Model):
                         numer = line.price_unit * line.product_uom_qty
                         denom = (int(line.product_uom_qty / 1.0) + ((line.product_uom_qty % 1) * (
                                 100 + line.product_id.categ_id.repacking_upcharge) / 100))
-                        line_price = round(numer / denom, 2)
-                    line.profit_margin = (line_price - product_price) * line.product_uom_qty
+                        line_price = numer / denom
+                    line.profit_margin = float_round((line_price - product_price) * line.product_uom_qty, precision_digits=2)
 
     @api.multi
     @api.onchange('product_id')
@@ -1081,7 +1083,7 @@ class SaleOrderLine(models.Model):
             product_price = ((int(self.product_uom_qty / 1) * product_price) + (
                     (self.product_uom_qty % 1) * product_price * (
                     (100 + self.product_id.categ_id.repacking_upcharge) / 100))) / self.product_uom_qty
-
+        product_price = float_round(product_price, precision_digits=2)
         return msg, product_price, price_from
 
 

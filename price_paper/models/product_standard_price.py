@@ -42,16 +42,22 @@ class ProductStandardPrice(models.Model):
         """
 
         if 'price' in vals:
+            price = float_round(vals.get('price'), precision_digits=2)
             log_vals = {'change_date': fields.Datetime.now(),
                         'type': 'std_price',
                         'old_price': self.price,
-                        'new_price': vals.get('price'),
+                        'new_price': price,
                         'user_id': self.env.user.id,
+                        'price_from': 'manual',
                         'uom_id': self.uom_id.id,
                         'product_id': self.product_id.id
                         }
             if self._context.get('user', False):
                 log_vals['user_id'] = self._context.get('user', False)
+            if self._context.get('from_standardprice_cron', False):
+                log_vals['price_from'] = 'standard'
+            if self._context.get('cost_cron', False):
+                log_vals['price_from'] = 'cost_cron'
             self.env['product.price.log'].create(log_vals)
         result = super(ProductStandardPrice, self).write(vals)
         return result
@@ -64,11 +70,14 @@ class ProductStandardPrice(models.Model):
                         'type': 'std_price',
                         'new_price': vals.get('price'),
                         'user_id': self.env.user.id,
+                        'price_from': 'manual',
                         'uom_id': res.uom_id.id,
                         'product_id': res.product_id.id
                         }
             if self._context.get('user', False):
                 log_vals['user_id'] = self._context.get('user', False)
+            if self._context.get('from_standardprice_cron', False):
+                log_vals['price_from'] = 'standard'
             self.env['product.price.log'].create(log_vals)
         return res
 

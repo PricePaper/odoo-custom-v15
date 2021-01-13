@@ -616,6 +616,12 @@ class SaleOrderLine(models.Model):
     gross_weight = fields.Float(string="Gross Weight", compute='_compute_gross_weight_volume')
     is_addon = fields.Boolean(string='Is Addon')
     update_pricelist = fields.Boolean(string="Update Pricelist", default=True, copy=False)
+    remaining_qty = fields.Float(string="Remaining Quantity", compute='_compute_remaining_qty')
+
+    @api.depends('product_uom_qty', 'qty_delivered')
+    def _compute_remaining_qty(self):
+        for line in self:
+            line.remaining_qty = line.product_uom_qty - line.qty_delivered
 
     @api.depends('product_id.volume', 'product_id.weight')
     def _compute_gross_weight_volume(self):

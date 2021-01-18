@@ -198,17 +198,18 @@ class ProductProduct(models.Model):
                     new_lst_price = self.get_price_from_competitor_or_categ
             else:
                 new_lst_price = self.get_price_from_competitor_or_categ(uom)
+            new_lst_price = float_round(new_lst_price, precision_digits=2)
             for product in product_list:
                 if uom in product.sale_uoms:
                     uom_rec = product.uom_standard_prices.filtered(lambda p: p.uom_id == uom)
                     if uom_rec:
                         if uom_rec.price != new_lst_price:
-                            uom_rec.price = new_lst_price
+                            uom_rec.with_context({'from_standardprice_cron': True}).price = new_lst_price
                     else:
                         vals = {'product_id': product.id,
                                 'uom_id': uom.id,
                                 'price': new_lst_price}
-                        self.env['product.standard.price'].create(vals)
+                        self.env['product.standard.price'].with_context({'from_standardprice_cron': True}).create(vals)
         return True
 
     def get_price_from_competitor_or_categ(self, uom):

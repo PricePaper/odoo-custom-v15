@@ -6,6 +6,7 @@ from dateutil.relativedelta import *
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
+from odoo.tools import float_round
 
 
 class GlobalPriceChange(models.Model):
@@ -113,8 +114,8 @@ class GlobalPriceChange(models.Model):
                 if price_list.pricelist_id and price_list.pricelist_id.price_lock and price_list.pricelist_id.lock_expiry_date > today:
                     continue
 
-                price_list.with_context({'user': rec.user_id and rec.user_id.id}).price = price_list.price * (
-                            (100 + rec.price_change) / 100)
+                price_list.with_context({'user': self.user_id and self.user_id.id, 'global_price_change': True}).price = float_round(price_list.price * (
+                            (100 + rec.price_change) / 100), precision_digits=2)
 
             rec.is_done = True
 

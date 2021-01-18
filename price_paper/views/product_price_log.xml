@@ -6,7 +6,10 @@
             <field name="arch" type="xml">
                 <tree string="Product Price Log" create="0" delete="0">
                     <field name="product_id"/>
+                    <field name="price_from"/>
+                    <field name="partner_ids" widget='many2many_tags'/>
                     <field name="type"/>
+                    <field name="pricelist_id"/>
                     <field name="old_price"/>
                     <field name="new_price"/>
                     <field name="change_date"/>
@@ -41,6 +44,8 @@
                                 <field name="type"/>
                                 <field name="change_date"/>
                                 <field name="user_id"/>
+                                <field name="price_from"/>
+                                <field name="partner_ids" widget='many2many_tags'/>
                             </group>
                             <group>
                                 <field name="pricelist_id"/>

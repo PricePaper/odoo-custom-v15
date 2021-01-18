@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
+from odoo.tools import float_round
 
 
 class CostChange(models.Model):
@@ -170,7 +171,9 @@ class CostChange(models.Model):
                         continue
 
                     new_price = rec.calculate_new_price(price_list_rec)
-                    price_list_rec.with_context({'user': rec.user_id and rec.user_id.id}).price = new_price
+                    new_price = float_round(new_price, precision_digits=2)
+                    if price_list_rec.price != new_price:
+                        price_list_rec.with_context({'user': self.user_id and self.user_id.id, 'cost_cron': True}).price = new_price
 
             # Update vendor pricelist
             if rec.update_vendor_pricelist and rec.item_filter == 'vendor':
@@ -185,21 +188,21 @@ class CostChange(models.Model):
                 if rec.price_filter == 'fixed':
                     supplier_info.write({'price': rec.price_change})
                 else:
-                    supplier_info.price = supplier_info.price * ((100 + rec.price_change) / 100)
+                    supplier_info.price = float_round(supplier_info.price * ((100 + rec.price_change) / 100), precision_digits=2)
 
             # Update Fixed Cost
             if rec.price_filter == 'fixed':
-                products_to_filter.with_context({'user': rec.user_id and rec.user_id.id}).write(
+                products_to_filter.with_context({'user': self.user_id and self.user_id.id, 'cost_cron': True}).write(
                     {'standard_price': rec.price_change})
             else:
                 for product in products_to_filter:
                     product.with_context(
-                        {'user': rec.user_id and rec.user_id.id}).standard_price = product.standard_price * (
-                                (100 + rec.price_change) / 100)
+                        {'user': self.user_id and self.user_id.id, 'cost_cron': True}).standard_price = float_round(product.standard_price * (
+                                (100 + rec.price_change) / 100), precision_digits=2)
             # Update burden%
             if rec.update_burden and rec.burden_change:
                 for product in products_to_filter:
-                    product.with_context({'user': rec.user_id and rec.user_id.id}).write(
+                    product.with_context({'user': self.user_id and self.user_id.id, 'cost_cron': True}).write(
                         {'burden_percent': rec.burden_change})
             rec.is_done = True
         return True
@@ -236,7 +239,9 @@ class CostChange(models.Model):
                                 (100 + product.categ_id.repacking_upcharge) / 100)) / (1 - margin)
                 else:
                     new_price = new_working_cost / (1 - margin)
-            rec.with_context({'user': self.user_id and self.user_id.id}).price = new_price
+            new_price = float_round(new_price, precision_digits=2)
+            if rec.price != new_price:
+                rec.with_context({'user': self.user_id and self.user_id.id, 'cost_cron': True}).price = new_price
 
     def calculate_new_price(self, pricelist=None):
 

@@ -194,7 +194,7 @@ class ProductProduct(models.Model):
                          partners])
 
                 except statistics.StatisticsError as e:
-                    _logger.error(f'Not enough data to find mean price for product_id: {self.id}.')
+                    _logger.error('Not enough data to find mean price for product_id: {}.'.format(self.id))
                     new_lst_price = self.get_price_from_competitor_or_categ
             else:
                 new_lst_price = self.get_price_from_competitor_or_categ(uom)

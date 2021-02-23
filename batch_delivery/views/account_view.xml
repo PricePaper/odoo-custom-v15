@@ -48,9 +48,12 @@
 
             </field>
         </record>
+        <menuitem action="account.action_account_type_form"
+          name="Account Type"
+          id="menu_action_account_type_form"
+          parent="account.account_account_menu"
+          groups="account.group_account_user"
+          sequence="2"/>
 
     </data>
 </odoo>
-
-
-

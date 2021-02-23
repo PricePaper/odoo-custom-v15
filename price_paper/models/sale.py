@@ -617,6 +617,36 @@ class SaleOrderLine(models.Model):
     is_addon = fields.Boolean(string='Is Addon')
     update_pricelist = fields.Boolean(string="Update Pricelist", default=True, copy=False)
     remaining_qty = fields.Float(string="Remaining Quantity", compute='_compute_remaining_qty')
+    similar_product_price = fields.Html(string='Similar Product Prices')
+
+    @api.onchange('product_uom_qty', 'product_uom', 'route_id')
+    def _onchange_product_id_check_availability(self):
+        res = super(SaleOrderLine, self)._onchange_product_id_check_availability()
+        if self.product_id and self.product_uom_qty and self.product_uom:
+            if self.product_id.type == 'product':
+                precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+                product = self.product_id.with_context(
+                    warehouse=self.order_id.warehouse_id.id,
+                    lang=self.order_id.partner_id.lang or self.env.user.lang or 'en_US'
+                )
+                product_qty = self.product_uom._compute_quantity(self.product_uom_qty, self.product_id.uom_id)
+                if float_compare(product.virtual_available, product_qty, precision_digits=precision) == -1:
+                    is_available = self._check_routing()
+                    if not is_available:
+                        products = product.same_product_ids + product.same_product_rel_ids
+                        if not products:
+                            return res
+                        similar_product_price = "<table style='width:400px'>\
+                                                <tr><th>Product</th><th>Price</th><th>UOM</th></tr>"
+                        product_unit_price = self.price_unit / (product.count_in_uom * self.product_uom.factor_inv)
+                        for item in products:
+                            if item.count_in_uom > 0:
+                                price = product_unit_price * item.uom_id.factor_inv * item.count_in_uom
+                                similar_product_price += "<tr><td>{}</td><td>{:.02f}</td><td>{}</td></tr>".format(item.name, price, item.uom_id.name)
+                        similar_product_price += "</table>"
+                        self.similar_product_price = similar_product_price
+        return res
+
 
     @api.depends('product_uom_qty', 'qty_delivered')
     def _compute_remaining_qty(self):

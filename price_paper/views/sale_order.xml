@@ -190,6 +190,9 @@
                                 <field name="note_type" widget='radio'
                                        attrs="{'invisible': [('display_type', '!=', False)]}"/>
                             </group>
+                            <group>
+                              <field name="similar_product_price" readonly="1" nolabel='1'/>
+                            </group>
                         </group>
                     </div>
                     <div attrs="{'invisible': ['|', ('state', 'in', ['sale', 'done', 'cancel']), ('display_type', '!=', False)]}">

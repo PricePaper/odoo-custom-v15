@@ -47,6 +47,11 @@ class ProductProduct(models.Model):
     need_sub_product = fields.Boolean(string='Need Sub-Products')
     similar_product_ids = fields.Many2many('product.product', 'product_similar_product_rel', 'product_id',
                                            'similar_product_id', string="Similar Product")
+    same_product_ids = fields.Many2many('product.product', 'product_same_product_rel', 'product_id',
+                                           'same_product_id', string="Similar Product")
+    count_in_uom = fields.Integer(string='Count in One Unit')
+    same_product_rel_ids = fields.Many2many('product.product', 'product_same_product_rel', 'same_product_id',
+                                           'product_id', string="Similar Product Reverse")
 
     @api.model
     def default_burden_percent(self):

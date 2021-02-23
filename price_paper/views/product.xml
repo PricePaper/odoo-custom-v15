@@ -145,8 +145,22 @@
                             </group>
                         </group>
                     </page>
+                    <page name='Similar Product price' string='Similar Product price'>
+                        <group>
+                            <group>
+                                <field name="count_in_uom"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Similar Products">
+                                <field name="same_product_ids" widget="many2many_tags"/>
+                            </group>
+                            <group>
+                                <field name="same_product_rel_ids" widget="many2many_tags"/>
+                            </group>
+                        </group>
+                    </page>
                 </xpath>
-
                 <xpath expr="//field[@name='lst_price']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>

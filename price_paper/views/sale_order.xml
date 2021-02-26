@@ -191,7 +191,7 @@
                                        attrs="{'invisible': [('display_type', '!=', False)]}"/>
                             </group>
                             <group>
-                              <field name="similar_product_price" readonly="1" nolabel='1'/>
+                              <field name="similar_product_price" readonly="1" nolabel='1' force_save="1"/>
                             </group>
                         </group>
                     </div>

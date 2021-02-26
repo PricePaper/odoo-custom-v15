@@ -46,12 +46,12 @@ class ProductProduct(models.Model):
                                            'addon_product_id', string="Addons Product")
     need_sub_product = fields.Boolean(string='Need Sub-Products')
     similar_product_ids = fields.Many2many('product.product', 'product_similar_product_rel', 'product_id',
-                                           'similar_product_id', string="Similar Product")
+                                           'similar_product_id', string="Similar Products")
     same_product_ids = fields.Many2many('product.product', 'product_same_product_rel', 'product_id',
-                                           'same_product_id', string="Similar Product")
+                                           'same_product_id', string="Alternative Product")
     count_in_uom = fields.Integer(string='Count in One Unit')
     same_product_rel_ids = fields.Many2many('product.product', 'product_same_product_rel', 'same_product_id',
-                                           'product_id', string="Similar Product Reverse")
+                                           'product_id', string="Alternative Product Reverse")
 
     @api.model
     def default_burden_percent(self):
@@ -144,7 +144,7 @@ class ProductProduct(models.Model):
             if 'standard_price' in vals:
                 log_vals = {'change_date': fields.Datetime.now(),
                             'type': 'cost',
-                            'old_price': self.standard_price,
+                            'old_price': product.standard_price,
                             'new_price': vals.get('standard_price'),
                             'user_id': self.env.user.id,
                             'uom_id': product.uom_id.id,
@@ -159,7 +159,7 @@ class ProductProduct(models.Model):
             if 'burden_percent' in vals:
                 log_vals = {'change_date': fields.Datetime.now(),
                             'type': 'burden',
-                            'old_price': self.burden_percent,
+                            'old_price': product.burden_percent,
                             'new_price': vals.get('burden_percent'),
                             'user_id': self.env.user.id,
                             'uom_id': product.uom_id.id,

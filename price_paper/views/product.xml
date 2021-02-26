@@ -145,18 +145,18 @@
                             </group>
                         </group>
                     </page>
-                    <page name='Similar Product price' string='Similar Product price'>
+                    <page name='Alternative Products' string='Alternative Products'>
                         <group>
                             <group>
                                 <field name="count_in_uom"/>
                             </group>
                         </group>
                         <group>
-                            <group string="Similar Products">
+                            <group string="Alternative Products">
                                 <field name="same_product_ids" widget="many2many_tags"/>
                             </group>
                             <group>
-                                <field name="same_product_rel_ids" widget="many2many_tags"/>
+                                <field name="same_product_rel_ids" widget="many2many_tags" invisible="1"/>
                             </group>
                         </group>
                     </page>

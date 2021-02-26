@@ -95,9 +95,15 @@ class SaleHistoryLinesWizard(models.TransientModel):
                                     "%s: %s %s\n" % (warehouse.name, quantity, self.order_line.product_id.uom_id.name))
 
             if message:
+                products = product.same_product_ids + product.same_product_rel_ids
+                alternatives = ''
+                if products:
+                    alternatives = 'Alternative Products:'
+                    for item in products:
+                        alternatives += '\n' + item.default_code
                 return {'warning': {
                     'title': _('Not enough inventory!'),
-                    'message': message
+                    'message': message+alternatives
                 }}
         return {}
 

@@ -635,14 +635,18 @@ class SaleOrderLine(models.Model):
                     if not is_available:
                         products = product.same_product_ids + product.same_product_rel_ids
                         if not products:
+                            self.similar_product_price = False
                             return res
                         similar_product_price = "<table style='width:400px'>\
-                                                <tr><th>Product</th><th>Price</th><th>UOM</th></tr>"
+                                                <tr><th>Alternative Products</th><th>Price</th><th>UOM</th></tr>"
                         product_unit_price = self.price_unit / (product.count_in_uom * self.product_uom.factor_inv)
                         for item in products:
                             if item.count_in_uom > 0:
+                                name = item.name
+                                if item.default_code:
+                                    name = '[' + item.default_code + ']' + name
                                 price = product_unit_price * item.uom_id.factor_inv * item.count_in_uom
-                                similar_product_price += "<tr><td>{}</td><td>{:.02f}</td><td>{}</td></tr>".format(item.name, price, item.uom_id.name)
+                                similar_product_price += "<tr><td>{}</td><td>{:.02f}</td><td>{}</td></tr>".format(name, price, item.uom_id.name)
                         similar_product_price += "</table>"
                         self.similar_product_price = similar_product_price
         return res

@@ -11,7 +11,7 @@ class ResPartner(models.Model):
     corp_name = fields.Char(string='Corporate name ')
     fax_number = fields.Char(string='Fax')
     customer_pricelist_ids = fields.One2many('customer.pricelist', 'partner_id', string="Customer Pricelists")
-    customer_code = fields.Char(string='Partner Code', copy=False, readonly=True)
+    customer_code = fields.Char(string='Partner Code', copy=False)
     established_date = fields.Date(string='Established Date', compute='_compute_estbl_date', store=True)
     last_sold_date = fields.Date(string='Last Sold Date', compute='_compute_last_date', store=False)
     last_paid_date = fields.Date(string='Last Paid Date', compute='_compute_last_date', store=False)

@@ -3,7 +3,7 @@
 from odoo import models, fields, registry, api, _
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, AccessError
 
 
 class PurchaseOrder(models.Model):
@@ -16,6 +16,48 @@ class PurchaseOrder(models.Model):
     total_qty = fields.Float(string="Total Order Quantity", compute='_compute_total_weight_volume')
     vendor_delay = fields.Integer(related='partner_id.delay', string="Vendor Lead Time", readonly=True)
     vendor_order_freq = fields.Integer(related='partner_id.order_freq', string="Vendor Order Frequency", readonly=True)
+
+    @api.multi
+    def _add_supplier_to_product(self):
+        # Add the partner in the supplier list of the product if the supplier is not registered for
+        # this product.
+        for line in self.order_line:
+            # Do not add a contact as a supplier
+            partner = self.partner_id if not self.partner_id.parent_id else self.partner_id.parent_id
+
+            vendor_prices =  line.product_id.seller_ids.filtered(
+                lambda r: r.name == self.partner_id and r.min_qty < line.product_qty)
+
+            # Convert the price in the right currency.
+            currency = partner.property_purchase_currency_id or self.env.user.company_id.currency_id
+            price = self.currency_id._convert(line.price_unit, currency, line.company_id, line.date_order or fields.Date.today(), round=False)
+            # Compute the price for the template's UoM, because the supplier's UoM is related to that UoM.
+            if line.product_id.product_tmpl_id.uom_po_id != line.product_uom:
+                default_uom = line.product_id.product_tmpl_id.uom_po_id
+                price = line.product_uom._compute_price(price, default_uom)
+
+            supplierinfo = {
+                'name': partner.id,
+                'sequence': max(line.product_id.seller_ids.mapped('sequence')) + 1 if line.product_id.seller_ids else 1,
+                'min_qty': 0.0,
+                'price': price,
+                'currency_id': currency.id,
+                'delay': 0,
+                'product_id': line.product_id.id
+            }
+
+            vals = {
+                'seller_ids': [(0, 0, supplierinfo)],
+            }
+            try:
+                if not vendor_prices:
+                    line.product_id.with_context({'user': self.user_id and self.user_id.id, 'from_purchase': True}).write(vals)
+                else:
+                    vendor_line = vendor_prices.sorted(key=lambda r: r.min_qty, reverse=True)[0]
+                    vendor_line.with_context({'user': self.user_id and self.user_id.id, 'from_purchase': True}).price = price
+
+            except AccessError:  # no write access rights -> just ignore
+                break
 
     @api.depends('order_line.product_id', 'order_line.product_qty')
     def _compute_total_weight_volume(self):
@@ -232,4 +274,3 @@ class PurchaseOrderLine(models.Model):
 PurchaseOrderLine()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-

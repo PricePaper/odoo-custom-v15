@@ -180,15 +180,15 @@ class CostChange(models.Model):
                 vendor_price_ids = self.env['product.supplierinfo'].search([('name', '=', rec.vendor_id.id)])
 
                 for vendor_price in vendor_price_ids:
-                    vendor_price.price = vendor_price.price * ((100 + rec.price_change) / 100)
+                    vendor_price.with_context({'user': self.user_id and self.user_id.id, 'cost_cron': True}).price = vendor_price.price * ((100 + rec.price_change) / 100)
 
             # Update vendor price for single product
             if rec.item_filter == 'product' and rec.vendor_id:
                 supplier_info = rec.product_id.seller_ids.filtered(lambda r: r.name == rec.vendor_id)
                 if rec.price_filter == 'fixed':
-                    supplier_info.write({'price': rec.price_change})
+                    supplier_info.with_context({'user': self.user_id and self.user_id.id, 'cost_cron': True}).write({'price': rec.price_change})
                 else:
-                    supplier_info.price = float_round(supplier_info.price * ((100 + rec.price_change) / 100), precision_digits=2)
+                    supplier_info.with_context({'user': self.user_id and self.user_id.id, 'cost_cron': True}).price = float_round(supplier_info.price * ((100 + rec.price_change) / 100), precision_digits=2)
 
             # Update Fixed Cost
             if rec.price_filter == 'fixed':

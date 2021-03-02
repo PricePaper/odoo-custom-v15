@@ -19,14 +19,17 @@ class ProductPriceLog(models.Model):
                                        ('manual', 'Manual'),
                                        ('standard', 'Standard Price Cron'),
                                        ('cost_cron', 'Cost Change Cron'),
-                                       ('global_price', 'Global Price Change')])
+                                       ('global_price', 'Global Price Change'),
+                                       ('purchase', 'Purchase Order')])
     uom_id = fields.Many2one('uom.uom', string='UOM')
     type = fields.Selection(string='Type',
                             selection=[('cost', 'Cost'),
                                        ('burden', 'Burden Percentage'),
                                        ('std_price', 'Standard Price'),
-                                       ('pricelist_price', 'Pricelist Price')])
+                                       ('pricelist_price', 'Pricelist Price'),
+                                       ('vendor_price', 'Vendor Price')])
     user_id = fields.Many2one('res.users', string='User')
+    min_qty = fields.Float(string='Min Qty')
 
 
 ProductPriceLog()

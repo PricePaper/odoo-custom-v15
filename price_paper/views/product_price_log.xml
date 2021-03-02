@@ -8,6 +8,7 @@
                     <field name="product_id"/>
                     <field name="price_from"/>
                     <field name="partner_ids" widget='many2many_tags'/>
+                    <field name="min_qty"/>
                     <field name="type"/>
                     <field name="pricelist_id"/>
                     <field name="old_price"/>
@@ -46,6 +47,7 @@
                                 <field name="user_id"/>
                                 <field name="price_from"/>
                                 <field name="partner_ids" widget='many2many_tags'/>
+                                <field name="min_qty"/>
                             </group>
                             <group>
                                 <field name="pricelist_id"/>

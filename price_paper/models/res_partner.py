@@ -38,6 +38,11 @@ class ResPartner(models.Model):
     seller_info_ids = fields.One2many('product.supplierinfo', 'name', string='Seller info')
     seller_partner_ids = fields.Many2many('res.partner', 'vendor_id', 'seller_partner_id', string='Purchaser')
     credit_limit = fields.Float(string='Credit Limit', default=lambda self: self.env.user.company_id.credit_limit)
+    property_account_payable_id = fields.Many2one('account.account', company_dependent=True,
+        string="Account Payable", oldname="property_account_payable",
+        domain="[('internal_type', '=', 'payable'), ('deprecated', '=', False)]",
+        help="This account will be used instead of the default one as the payable account for the current partner",
+        required=False)
 
     @api.depends('sale_order_ids.confirmation_date', 'invoice_ids.payment_ids.payment_date')
     def _compute_last_date(self):

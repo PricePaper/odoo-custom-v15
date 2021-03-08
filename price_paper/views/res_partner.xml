@@ -148,6 +148,7 @@
 
                 <field name="property_account_payable_id" position="attributes">
                     <attribute name="readonly">1</attribute>
+                    <attribute name="attrs">{'required': [('supplier', '=', True)]}</attribute>
                 </field>
 
                 <xpath expr="//group[@name='accounting_entries']" position="attributes">

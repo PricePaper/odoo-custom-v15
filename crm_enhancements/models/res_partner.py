@@ -134,6 +134,11 @@ class ResPartner(models.Model):
                 elif partner.business_freq == 'month':
                     partner.exp_mon_rev = partner.rev_per_trans
 
+    @api.multi
+    @api.returns('mail.message', lambda value: value.id)
+    def message_post(self, **kwargs):
+        return super(ResPartner, self.with_context(mail_post_autofollow=False)).message_post(**kwargs)
+
 
 ResPartner()
 

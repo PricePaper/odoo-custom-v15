@@ -50,6 +50,11 @@ class Lead(models.Model):
         result['sales_person_ids'] = [(6, 0, self.sales_person_ids.ids)]
         return result
 
+    @api.multi
+    @api.returns('mail.message', lambda value: value.id)
+    def message_post(self, **kwargs):
+        return super(Lead, self.with_context(mail_post_autofollow=False)).message_post(**kwargs)
+
 
 Lead()
 

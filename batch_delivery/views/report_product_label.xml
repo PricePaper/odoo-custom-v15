@@ -6,42 +6,58 @@
                 <div class="page">
                     <div class="col-xs-4" style="padding:0;">
                         <t t-foreach="range(0,int(line.product_uom_qty))" t-as="int(count)">
-                            <table style="width:384px;height:192px;border:2px solid black;" class="table">
-                                <tbody>
-                                    <tr style="border-bottom:hidden;height:30%;">
-                                        <td>
-                                            <t t-if="line.picking_id.partner_id.name">
-                                                <strong t-field="line.picking_id.partner_id.name"
-                                                        style="float:left;width:70%;font-size:16px;"/>
-                                                <strong t-field="line.picking_id.scheduled_date"
-                                                        style="float:right;width:30%;font-size:12px;"/>
-                                            </t>
-                                        </td>
-                                    </tr>
-                                    <t t-set="barcode" t-value="'%s-%s'%(line.sale_line_id.id, line.product_uom_qty)"/>
-                                    <tr style="border-top:hidden;border-bottom:hidden;height:40%;">
-                                        <td style="text-align:center; vertical-align:middle;" class="col-xs-5">
-                                            <img
-                                                    t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', barcode, 600, 150)"
-                                                    style="width:100%;height:20%;"/>
-                                            <span t-esc="barcode"/>
-                                        </td>
-                                    </tr>
-                                    <tr style="border-top:hidden;height:30%;">
-                                        <td>
-                                            <strong style="display:block;float:left;width:70%;font-size:12px;">
-                                                <t t-if="line.product_id.default_code">
-                                                    [<span t-field="line.product_id.default_code"/>]
-                                                </t>
-                                                <span t-field="line.product_id.name"/>
-                                                (<span t-field="line.product_uom.name"/>)
-                                            </strong>
-                                            <strong t-field="line.sale_line_id.order_id.name"
-                                                    style="float:right;width:30%;font-size:20px;"/>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                          <table style="width:384px;height:192px;" class="table">
+                              <tbody>
+                                  <tr style="border-top:hidden;border-bottom:hidden;height:15%;">
+                                      <td style="padding: 0px;">
+                                          <strong t-field="line.product_id.default_code"
+                                                      style="float: left;width: 33%;font-size: 14px;"/>
+                                          <strong t-field="line.product_uom"
+                                                      style="width: 33%;font-size: 14px;"/>
+                                          <strong t-field="line.product_id.property_stock_location.name"
+                                                      style="float: right;width: 33%;font-size: 14px;text-align: right;"/>
+                                      </td>
+                                  </tr>
+                                  <tr style="border-top:hidden;border-bottom:hidden;height:15%;">
+                                    <td style="padding: 0px;">
+                                        <strong t-field="line.picking_id.partner_id.name"
+                                                    style="float:left;width:70%;font-size:16px;"/>
+                                        <strong t-field="line.picking_id.partner_id.customer_code"
+                                                    style="float:right;width:30%;font-size:14px;text-align: right;"/>
+                                    </td>
+                                  </tr>
+                                  <tr style="border-top:hidden;border-bottom:hidden;height:15%;">
+                                    <td style="padding: 0px;max-width:80px;white-space:nowrap;overflow: hidden;">
+                                        <t t-if="line.picking_id.partner_id.street">
+                                            <span t-field="line.picking_id.partner_id.street"
+                                                      style="float:left;font-size:14px;"/>
+                                        </t>
+                                    </td>
+                                  </tr>
+                                  <tr style="border-top:hidden;border-bottom:hidden;height:20%;font-size:14px;">
+                                    <td style="padding: 0px;">
+                                        <span t-field="line.product_id.name"/>
+                                    </td>
+                                  </tr>
+                                  <t t-set="barcode" t-value="'%s'%(line.sale_line_id.id)"/>
+                                  <tr style="border-top:hidden;border-bottom:hidden;height:20%;">
+                                      <td style="text-align:center; vertical-align:middle;padding: 0px;" class="col-xs-5">
+                                          <img
+                                                  t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', barcode, 600, 150)"
+                                                  style="width:100%;height:20%;"/>
+                                          <span t-esc="barcode"/>
+                                      </td>
+                                  </tr>
+                                  <tr style="border-top:hidden;height:15%;padding: 0px;">
+                                      <td style="padding: 0px;">
+                                          <span t-field="line.sale_line_id.order_id.name"
+                                              style="display:block;float:left;width:70%;font-size:12px;" />
+                                          <span t-field="line.picking_id.scheduled_date" t-options='{"widget": "date"}'
+                                                  style="float:right;width:30%;font-size:12px;text-align: right;"/>
+                                      </td>
+                                  </tr>
+                              </tbody>
+                          </table>
                         </t>
                     </div>
                 </div>

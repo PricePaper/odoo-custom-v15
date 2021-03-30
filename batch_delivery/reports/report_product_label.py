@@ -21,10 +21,14 @@ class ReportBatchProductLabel(models.AbstractModel):
         for picking in pickings:
             for line in picking.move_lines:
                 location = line.product_id.property_stock_location and line.product_id.property_stock_location.name or '00-Location not assigned'
+                order = line.sale_line_id.order_id
+                sections = order.order_line.filtered(lambda rec: rec.display_type == 'line_section'
+                        and rec.sequence < line.sale_line_id.sequence).sorted(key=lambda b: b.sequence,reverse = True)
+                section = sections and sections[0] or False
                 if location_main.get(location, False):
-                    location_main.get(location, False).append(line)
+                    location_main.get(location, False).append((line, section))
                 else:
-                    location_main.update({location: [line]})
+                    location_main.update({location: [(line, section)]})
         locations = location_main.keys()
         location_list = []
         for location in sorted(locations):

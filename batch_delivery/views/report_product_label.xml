@@ -21,9 +21,9 @@
                                   <tr style="border-top:hidden;border-bottom:hidden;height:15%;">
                                     <td style="padding: 0px;">
                                         <strong t-field="line[0].picking_id.partner_id.name"
-                                                    style="float:left;width:70%;font-size:18px;"/>
+                                                    style="float:left;width:80%;font-size:24px;max-width:80%;white-space:nowrap;overflow: hidden;"/>
                                         <strong t-field="line[0].picking_id.partner_id.customer_code"
-                                                    style="float:right;width:30%;font-size:14px;text-align: right;"/>
+                                                    style="float:right;width:20%;font-size:14px;text-align: right;"/>
                                     </td>
                                   </tr>
                                   <tr style="border-top:hidden;border-bottom:hidden;height:15%;">

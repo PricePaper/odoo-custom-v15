@@ -52,6 +52,10 @@ class ProductProduct(models.Model):
     count_in_uom = fields.Integer(string='Count in One Unit')
     same_product_rel_ids = fields.Many2many('product.product', 'product_same_product_rel', 'same_product_id',
                                            'product_id', string="Alternative Product Reverse")
+    volume = fields.Float('Volume', help="The volume in m3.", copy=False)
+    weight = fields.Float(
+        'Weight', digits=dp.get_precision('Stock Weight'),
+        help="Weight of the product, packaging not included. The unit of measure can be changed in the general settings", copy=False)
 
     @api.model
     def default_burden_percent(self):

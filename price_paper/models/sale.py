@@ -151,6 +151,14 @@ class SaleOrder(models.Model):
         return self.invoice_ids.ids
 
     @api.multi
+    def action_create_order_line_xmlrpc(self, vals):
+        order_line = self.env['sale.order.line'].create(vals)
+        order_line.qty_delivered_method = 'manual'
+        order_line.qty_delivered_manual = vals.get('qty_delivered_manual')
+        order_line.qty_to_invoice = vals.get('qty_delivered_manual')
+        return order_line.id
+
+    @api.multi
     def action_create_storage_downpayment(self):
         """
         Create invoice for storage contract product down payment
@@ -924,11 +932,11 @@ class SaleOrderLine(models.Model):
                 reassign.action_assign()
         return True
 
+
     @api.model
     def create(self, vals):
 
         res = super(SaleOrderLine, self).create(vals)
-
         if res.product_id.need_sub_product and res.product_id.product_addons_list:
             for p in res.product_id.product_addons_list.filtered(
                     lambda rec: rec.id not in [res.order_id.order_line.mapped('product_id').ids]):

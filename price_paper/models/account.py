@@ -122,10 +122,15 @@ class AccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"
 
     profit_margin = fields.Monetary(compute='calculate_profit_margin', string="Profit Margin")
+    #comment the below 2 lines while running sale order line import scripts
     lst_price = fields.Float(string='Standard Price', digits=dp.get_precision('Product Price'), store=True,
                              compute='_compute_lst_cost_prices')
     working_cost = fields.Float(string='Working Cost', digits=dp.get_precision('Product Price'), store=True,
                                 compute='_compute_lst_cost_prices')
+
+    # Uncomment the below 2 lines while running sale order line import scripts
+    # lst_price = fields.Float(string='Standard Price', digits=dp.get_precision('Product Price'))
+    # working_cost = fields.Float(string='Working Cost', digits=dp.get_precision('Product Price'))
 
     @api.onchange('product_id')
     def _onchange_product_id(self):
@@ -153,6 +158,8 @@ class AccountInvoiceLine(models.Model):
         Calculate profit margin in account invoice
         """
         for line in self:
+            if line.product_id and line.product_id.default_code in ['misc', 'delivery_008'] and not line.sale_line_ids:
+                line.profit_margin = 0.0
             if line.product_id and line.quantity > 0 and line.uom_id:
                 if line.product_id == line.invoice_id.company_id.check_bounce_product:
                     line.profit_margin = 0

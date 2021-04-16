@@ -147,6 +147,12 @@ class SaleOrder(models.Model):
     @api.multi
     def import_draft_invoice(self, data):
 
+        if self.invoice_ids:
+            sale_amount = self.amount_total or 0
+            invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
+            res = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
+            return res
+
         picking_ids = self.picking_ids
         move_lines = self.picking_ids.mapped('move_line_ids')
         picking_ids.is_transit = True
@@ -155,8 +161,7 @@ class SaleOrder(models.Model):
             product_id = line.get('product_id')
             product_uom_qty = line.get('quantity_ordered')
             qty_done = line.get('quantity_shipped')
-            move_line = move_lines.filtered(lambda r: r.product_id.id == product_id and r.product_uom_qty == product_uom_qty)
-
+            move_line = move_lines.filtered(lambda r: r.product_id.id == product_id)
             move_line.qty_done = qty_done
             move_line.move_id.sale_line_id.qty_delivered = qty_done
         delivery_line = self.order_line.filtered(lambda r: r.product_id.default_code == 'misc')

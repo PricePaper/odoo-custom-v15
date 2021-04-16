@@ -1,0 +1,48 @@
+///
+/// This file regroups the variables that style odoo components.
+/// They are available in every asset bundle.
+///
+
+$o-brand-primary: #025069;
+$o-brand-optional: #4d8496;
+$o-brand-secondary: #8f8f8f;
+$o-brand-lightsecondary: #e2e2e0;
+
+$o-main-color-muted: #a8a8a8;
+$o-main-text-color: #666666;
+
+$o-view-background-color: #ffffff;
+$o-shadow-color: #303030;
+
+// $o-font-size-base: 0.813rem;
+$o-font-size-base-touch: 15px;
+
+$o-form-lightsecondary: lighten($o-brand-secondary, 25%);
+
+$o-list-footer-color: white;
+$o-list-footer-bg-color: $o-brand-primary;
+$o-list-footer-font-weight: normal;
+
+$o-tooltip-background-color: $o-view-background-color;
+$o-tooltip-color: $o-main-text-color;
+$o-tooltip-arrow-color: $o-main-text-color;
+
+// Layout
+$o-form-group-cols: 12;
+$o-form-spacing-unit: 5px;
+$o-horizontal-padding: 15px;
+$o-innergroup-rpadding: 45px;
+$o-dropdown-hpadding: 25px;
+
+$o-sheet-vpadding: 24px;
+
+$o-avatar-size: 90px;
+
+$o-statusbar-height: 33px;
+
+$o-statbutton-height: 48px;
+$o-statbutton-vpadding: 5px;
+$o-statbutton-spacing: 12px;
+
+$o-label-font-size-factor: 0.8;
+$o-navbar-height: 46px;

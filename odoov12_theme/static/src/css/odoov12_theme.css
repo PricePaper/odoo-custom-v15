@@ -1,0 +1,53 @@
+@charset "utf-8";
+
+.o_home_menu {
+    background-image: none;
+    background-color: #4d8496 !important;
+}
+
+.o_home_menu_background:not(.o_home_menu_background_custom) .o_main_navbar {
+    background-color: #025069;
+    border-color: #025069;
+}
+
+.o_main_navbar {
+    background-color: #025069;
+    border-color: #025069;
+}
+
+.o_list_view>tfoot>tr>td {
+    color: #ffffff !important;
+}
+
+.o_searchview .o_searchview_facet .o_searchview_facet_label {
+    background-color: #025069;
+}
+
+.o_mail_systray_item .o_notification_counter {
+    background: #4d8496 !important;
+}
+
+/* App Font */
+.o_app .o_caption {
+    font-weight: 400;
+}
+
+/* Loading */
+.o_loading {
+    background-color: #025069;
+}
+
+
+/* Tooltip */
+.o_tooltip {
+    border: 2px solid #025069 !important;
+}
+
+.o_tooltip.bottom::before {
+    border-bottom-color: #025069 !important;
+}
+
+
+.o_tooltip::after {
+    background: radial-gradient(#025069, #025069);
+}

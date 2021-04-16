@@ -1,0 +1,13 @@
+///
+/// This file regroups the variables that style odoo components.
+/// They are available in every asset bundle.
+///
+
+$o-webclient-background-color: $o-brand-secondary;
+$o-control-panel-background-color: white;
+$o-statusbar-arrow-width: $o-statusbar-height / 3;
+$o-statusbar-disabled-bg: lighten($o-brand-lightsecondary, 7%);
+
+$o-navbar-inverse-link-hover-bg: darken($o-brand-primary, 10%);
+
+$border-radius-base: 3px;

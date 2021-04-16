@@ -143,12 +143,37 @@ class SaleOrder(models.Model):
             data = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
             return self.invoice_ids.ids, data
 
-    @api.multi
-    def action_create_draft_invoice_xmlrpc(self):
 
-        self.action_invoice_create()
-        self.invoice_ids.write({'move_name': self.note})
-        return self.invoice_ids.ids
+    @api.multi
+    def import_draft_invoice(self, data):
+
+        picking_ids = self.picking_ids
+        move_lines = self.picking_ids.mapped('move_line_ids')
+        picking_ids.is_transit = True
+        picking_ids.move_ids_without_package.write({'is_transit': True})
+        for line in data['do_lines']:
+            product_id = line.get('product_id')
+            product_uom_qty = line.get('quantity_ordered')
+            qty_done = line.get('quantity_shipped')
+            move_line = move_lines.filtered(lambda r: r.product_id.id == product_id and r.product_uom_qty == product_uom_qty)
+
+            move_line.qty_done = qty_done
+            move_line.move_id.sale_line_id.qty_delivered = qty_done
+        delivery_line = self.order_line.filtered(lambda r: r.product_id.default_code == 'misc')
+        if delivery_line:
+            delivery_line.qty_delivered_method = 'manual'
+            delivery_line.qty_delivered_manual = 1
+
+        res = self.action_invoice_create(final=True)
+        invoice = self.env['account.invoice'].browse(res)
+        invoice.write({'move_name': data.get('name') , 'date_invoice': data.get('date')})
+        sale_amount = self.amount_total or 0
+        invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
+        res = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
+
+        return res
+
+
 
     @api.multi
     def action_create_order_line_xmlrpc(self, vals):
@@ -259,13 +284,14 @@ class SaleOrder(models.Model):
         """
 
         res = super(SaleOrder, self).write(vals)
-        self.check_payment_term()
-        for order in self:
-            if 'state' not in vals or 'state' in vals and vals['state'] != 'done':
-                if order.carrier_id:
-                    order.adjust_delivery_line()
-                else:
-                    order._remove_delivery_line()
+        if not self._context.get('from_import'):
+            self.check_payment_term()
+            for order in self:
+                if 'state' not in vals or 'state' in vals and vals['state'] != 'done':
+                    if order.carrier_id:
+                        order.adjust_delivery_line()
+                    else:
+                        order._remove_delivery_line()
         return res
 
     @api.multi

@@ -582,7 +582,7 @@ class SaleOrder(models.Model):
 
     @api.multi
     def import_action_confirm(self):
-        self = self.with_context(from_import=True)
+        self = self.with_context({'from_import':True})
         return self.action_confirm()
 
     @api.multi

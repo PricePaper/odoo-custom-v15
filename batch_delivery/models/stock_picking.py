@@ -57,6 +57,15 @@ class StockPicking(models.Model):
             pick.reserved_qty = sum(moves.mapped('reserved_availability'))
             pick.low_qty_alert = pick.item_count != pick.reserved_qty and pick.state != 'done'
 
+    @api.multi
+    def validate_multiple_delivery(self, records):
+        for rec in records:
+            if rec.state != 'in_transit':
+                raise UserError(_(
+                    "Some of the selected Delivery order is not in transit state"))
+            rec.button_validate()
+
+
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         if self.partner_id:

@@ -16,6 +16,7 @@ class StockMove(models.Model):
                               help="* Use \'Negative\' value if you want to Decrease the Reserved Qty.\n"
                                    "* Use \'Positive\' value if you want to Increase the Reserved Qty.")
     qty_available = fields.Float(String="Available Quantity", compute='_compute_qty_available')
+    partner_id = fields.Many2one(related="picking_id.partner_id", string="Partner", readonly=True)
 
     @api.depends('location_id', 'qty_update')
     def _compute_qty_available(self):

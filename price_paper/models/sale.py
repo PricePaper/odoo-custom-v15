@@ -172,6 +172,7 @@ class SaleOrder(models.Model):
         res = self.action_invoice_create(final=True)
         invoice = self.env['account.invoice'].browse(res)
         invoice.write({'move_name': data.get('name') , 'date_invoice': data.get('date')})
+        picking_ids.write({'is_invoiced': True})
         sale_amount = self.amount_total or 0
         invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
         res = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}

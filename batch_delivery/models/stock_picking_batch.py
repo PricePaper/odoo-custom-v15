@@ -213,7 +213,7 @@ class StockPickingBatch(models.Model):
                 if picking.sale_id and picking.sale_id.invoice_status == 'to invoice' or not picking.is_invoiced:
                     raise UserError(_('Please create invoices for delivery order %s, to continue.') % (picking.name))
 
-                picking.button_validate()
+                # picking.button_validate()
 
                 res.append((0, 0, {'partner_id': picking.partner_id.id}))
                 # if picking.state == 'done':
@@ -256,6 +256,20 @@ class StockPickingBatch(models.Model):
             'target': 'new',
             'url': url or ""
         }
+
+    @api.multi
+    def view_invoices(self):
+        pickings = self.picking_ids
+        invoices = pickings.mapped('sale_id').mapped('invoice_ids')
+        action = self.env.ref('account.action_invoice_tree1').read()[0]
+        if len(invoices) > 1:
+            action['domain'] = [('id', 'in', invoices.ids)]
+        elif len(invoices) == 1:
+            action['views'] = [(self.env.ref('account.invoice_form').id, 'form')]
+            action['res_id'] = invoices.ids[0]
+        else:
+            action = {'type': 'ir.actions.act_window_close'}
+        return action
 
     @api.multi
     def view_payments(self):

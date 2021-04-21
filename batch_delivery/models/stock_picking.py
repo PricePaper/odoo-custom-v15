@@ -49,6 +49,18 @@ class StockPicking(models.Model):
     low_qty_alert = fields.Boolean(string="Low Qty", compute='_compute_available_qty')
     sequence = fields.Integer(string='Order')
     is_invoiced = fields.Boolean(string="Invoiced", copy=False)
+    invoice_ref = fields.Char(string="Invoice Reference", compute='_compute_invoice_ref')
+    invoice_ids = fields.Many2many('account.invoice', compute='_compute_invoice_ids')
+
+    @api.depends('sale_id.invoice_ids')
+    def _compute_invoice_ids(self):
+        for rec in self:
+            rec.invoice_ids = rec.sale_id.invoice_ids
+
+    def _compute_invoice_ref(self):
+        for rec in self:
+            invoice = rec.sale_id.invoice_ids.filtered(lambda r: rec in r.picking_ids)
+            rec.invoice_ref = invoice.move_name
 
     @api.depends('move_ids_without_package.reserved_availability')
     def _compute_available_qty(self):
@@ -133,12 +145,18 @@ class StockPicking(models.Model):
     @api.multi
     def create_invoice(self):
         for picking in self:
-            if not picking.is_invoiced:
-                picking.sale_id.action_invoice_create(final=True)
-                picking.is_invoiced = True
-                if picking.batch_id:
-                    invoice = picking.sale_id.invoice_ids.filtered(lambda rec: picking in rec.picking_ids)
-                    invoice.write({'date_invoice': picking.batch_id.date})
+            picking.sale_id.action_invoice_create(final=True)
+            picking.is_invoiced = True
+            if picking.batch_id:
+                invoice = picking.sale_id.invoice_ids.filtered(lambda rec: picking in rec.picking_ids)
+                invoice.write({'date_invoice': picking.batch_id.date})
+            for inv in picking.sale_id.invoice_ids.filtered(lambda rec: rec.state == 'draft'):
+                if not inv.journal_id.sequence_id:
+                    raise UserError(_('Please define sequence on the journal related to this invoice.'))
+                new_name = inv.journal_id.sequence_id.with_context(ir_sequence_date=inv.date_invoice).next_by_id()
+                inv.number = new_name
+                inv.move_name = new_name
+                picking.invoice_ref = new_name
 
     @api.multi
     def write(self, vals):

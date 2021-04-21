@@ -212,6 +212,9 @@
                     <attribute name="attrs">{'readonly': [('is_transit', '=', True)]}</attribute>
                 </xpath>
 
+                 <xpath expr="//notebook/page[1]" position="before">
+                    <xpath expr="//notebook/page[2]" position="move"/>
+                </xpath>
 
             </field>
         </record>

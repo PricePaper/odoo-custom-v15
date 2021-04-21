@@ -25,6 +25,15 @@ class AccountInvoice(models.Model):
             action['res_id'] = pickings.id
         return action
 
+    @api.multi
+    def action_invoice_open(self):
+        res = super(AccountInvoice, self).action_invoice_open()
+        if not self:
+            return res
+        for picking in self.mapped('picking_ids').filtered(lambda pick: pick.state != 'done'):
+            picking.button_validate()
+        return res
+
 
 AccountInvoice()
 

@@ -70,7 +70,14 @@
                 </field>
 
                 <xpath expr="//div[1]" position="before">
+                    <field name="to_invoice" invisible="1"/>
                     <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button"
+                                name="view_invoices"
+                                icon="fa-pencil-square-o"
+                                attrs="{'invisible': [('to_invoice', '=', True)]}"
+                                type="object"
+                                string="Customer Invoices"/>
                         <button class="oe_stat_button"
                                 name="view_payments"
                                 icon="fa-pencil-square-o"
@@ -86,7 +93,7 @@
                 </xpath>
 
                 <xpath expr="//field[@name='picking_ids']" position="before">
-                    <field name="to_invoice" invisible="1"/>
+
                     <div class="oe_right">
                         <button name="create_batch_invoice" string="Create Invoice" type="object" class="oe_highlight"
                                 attrs="{'invisible': ['|', ('state', 'not in', ['in_progress']), ('to_invoice', '=', False)]}"/>
@@ -102,9 +109,11 @@
                 </xpath>
 
                 <xpath expr="//field[@name='picking_ids']/tree/field[@name='name']" position="attributes">
-                    <attribute name="readonly">True</attribute>
+                    <attribute name="invisible">True</attribute>
                 </xpath>
-
+                <xpath expr="//field[@name='picking_ids']/tree/field[@name='name']" position="after">
+                    <field name="invoice_ref" readonly="1"/>
+                </xpath>
                 <xpath expr="//field[@name='picking_ids']/tree/field[@name='backorder_id']" position="attributes">
                     <attribute name="readonly">True</attribute>
                 </xpath>
@@ -218,6 +227,14 @@
                     <sheet>
 
                         <div class="oe_button_box" name="button_box">
+                            <field name="to_invoice" invisible="1"/>
+                             <button class="oe_stat_button"
+                                name="view_invoices"
+                                icon="fa-pencil-square-o"
+                                type="object"
+                                     attrs="{'invisible': [('to_invoice', '=', True)]}"
+                                string="Customer Invoices"/>
+
                             <button name="view_batch_payments"
                                     type="object"
                                     class="oe_stat_button"

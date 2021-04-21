@@ -268,7 +268,7 @@
                                 <field name="payment_method_id" required="1"/>
                                 <field name="communication" attrs="{'required': [('is_communication', '=', True)]}"/>
                                 <field name="is_communication" invisible="1"/>
-                                <field name="amount"/>
+                                <field name="amount" sum="Total"/>
                             </tree>
                         </field>
                     </sheet>

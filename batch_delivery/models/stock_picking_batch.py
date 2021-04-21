@@ -388,15 +388,12 @@ class CashCollectedLines(models.Model):
             picking = line.batch_id.picking_ids.filtered(lambda pick: pick.partner_id.id == line.partner_id.id)
             sale = picking[0].sale_id if picking else False
             if sale:
-                line.partner_ids = sale.partner_id | sale.partner_invoice_id
+                line.partner_ids = sale.partner_id | sale.partner_invoice_id | sale.partner_shipping_id
 
-    # @api.onchange('invoice_id')
-    # def onchange_invoice_id(self):
-    #     return {
-    #         'domain': {
-    #             'invoice_id': [('partner_id', 'in', self.partner_ids.ids)]
-    #         }
-    #     }
+    @api.onchange('invoice_id')
+    def onchange_invoice_id(self):
+        if self.invoice_id:
+            self.amount = self.invoice_id.amount_total
 
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
@@ -427,6 +424,7 @@ class CashCollectedLines(models.Model):
                 'partner_id': line.partner_id.id,
                 'amount': line.amount,
                 'journal_id': line.journal_id.id,
+                'invoice_ids': [(6, 0, line.invoice_id.ids)],
                 'communication': line.communication,
                 'batch_id': line.batch_id.id
             })

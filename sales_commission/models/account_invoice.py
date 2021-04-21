@@ -21,7 +21,7 @@ class AccountInvoice(models.Model):
         for invoice in self:
             if invoice.check_bounce_invoice:
                 continue
-            rec = invoice.calculate_commission()
+            rec = invoice.sudo().calculate_commission()
         return res
 
     @api.multi
@@ -30,12 +30,12 @@ class AccountInvoice(models.Model):
         for invoice in self:
             if invoice.check_bounce_invoice:
                 continue
-            rec = invoice.calculate_commission()
+            rec = invoice.sudo().calculate_commission()
             if rec and invoice.state == 'paid':
-                rec.write({'is_paid': True})
+                rec.sudo().write({'is_paid': True})
                 if invoice.payment_ids:
-                    invoice.check_commission(rec)
-                    invoice.check_due_date(rec)
+                    invoice.sudo().check_commission(rec)
+                    invoice.sudo().check_due_date(rec)
         return res
 
     def check_commission(self, lines):

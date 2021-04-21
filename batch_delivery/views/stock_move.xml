@@ -33,6 +33,7 @@
                 <tree string="Moves" create="0" editable="top">
                     <field name="reference" readonly="1"/>
                     <field name="picking_type_id" invisible="1"/>
+                    <field name="partner_id"/>
                     <field name="product_id" readonly="1"/>
                     <field name="location_id" groups="stock.group_stock_multi_locations" string="From" readonly="1"/>
                     <field name="location_dest_id" groups="stock.group_stock_multi_locations" string="To" readonly="1"/>

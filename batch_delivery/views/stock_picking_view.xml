@@ -216,22 +216,14 @@
             </field>
         </record>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        <record model="ir.actions.server" id="action_validate_multiple_delivery">
+            <field name="name">Validate</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="binding_model_id" ref="stock.model_stock_picking"/>
+            <field name="state">code</field>
+            <field name="code">
+action = records.env['stock.picking'].validate_multiple_delivery(records)
+            </field>
+        </record>
     </data>
 </odoo>

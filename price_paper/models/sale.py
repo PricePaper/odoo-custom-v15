@@ -480,6 +480,8 @@ class SaleOrder(models.Model):
         """
         for order in self:
             order.ready_to_release = True
+            order.message_post(body="Order is approved")
+
 
     def check_credit_limit(self):
         """

@@ -203,8 +203,8 @@ class ProductProduct(models.Model):
                 if uom in product.sale_uoms:
                     uom_rec = product.uom_standard_prices.filtered(lambda p: p.uom_id == uom)
                     if uom_rec:
-                        if uom_rec.price != new_lst_price:
-                            uom_rec.with_context({'from_standardprice_cron': True}).price = new_lst_price
+                        if uom_rec[0].price != new_lst_price:
+                            uom_rec[0].with_context({'from_standardprice_cron': True}).price = new_lst_price
                     else:
                         vals = {'product_id': product.id,
                                 'uom_id': uom.id,

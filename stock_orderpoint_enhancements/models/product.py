@@ -75,7 +75,17 @@ class ProductProduct(models.Model):
             from_date, str(to_date), (",".join(str(x) for x in product_ids)))
 
         self.env.cr.execute(query)
-        result = self.env.cr.fetchall()
+
+        result = []
+        # result is too large for fetchall()
+        while True:
+            rows = self.env.cr.fetchmany()
+
+            if rows:
+                result.extend(rows)
+            else:
+                break
+
         if result:
             result = self.filler_to_append_zero_qty(result, to_date)
             date_to = (to_date + relativedelta(days=periods)).strftime('%Y-%m-%d')

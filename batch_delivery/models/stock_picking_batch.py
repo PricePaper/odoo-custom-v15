@@ -379,6 +379,24 @@ class CashCollectedLines(models.Model):
     payment_method_id = fields.Many2one('account.payment.method', domain=[('payment_type', '=', 'inbound')])
     is_communication = fields.Boolean(string='Is Communication')
     journal_id = fields.Many2one('account.journal', string='Journal', domain=[('type', 'in', ['bank', 'cash'])])
+    partner_ids = fields.Many2many('res.partner', compute='_compute_partner_ids')
+    invoice_id = fields.Many2one('account.invoice')
+
+
+    def _compute_partner_ids(self):
+        for line in self:
+            picking = line.batch_id.picking_ids.filtered(lambda pick: pick.partner_id.id == line.partner_id.id)
+            sale = picking[0].sale_id if picking else False
+            if sale:
+                line.partner_ids = sale.partner_id | sale.partner_invoice_id
+
+    # @api.onchange('invoice_id')
+    # def onchange_invoice_id(self):
+    #     return {
+    #         'domain': {
+    #             'invoice_id': [('partner_id', 'in', self.partner_ids.ids)]
+    #         }
+    #     }
 
     @api.onchange('partner_id')
     def _onchange_partner_id(self):

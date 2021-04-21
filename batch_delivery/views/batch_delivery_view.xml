@@ -262,6 +262,8 @@
                         <field name="cash_collected_lines" attrs="{'readonly': [('is_posted', '=', True)]}">
                             <tree editable="bottom">
                                 <field name="partner_id" domain="[('customer', '=', True)]"/>
+                                <field name="partner_ids" invisible="1"/>
+                                <field name="invoice_id" domain="[('partner_id', 'in', partner_ids), ('state', '=', 'open'), ('type', '=', 'out_invoice')]"/>
                                 <field name="journal_id" required="1"/>
                                 <field name="payment_method_id" required="1"/>
                                 <field name="communication" attrs="{'required': [('is_communication', '=', True)]}"/>

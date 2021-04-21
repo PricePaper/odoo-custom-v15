@@ -158,15 +158,15 @@ class StockPicking(models.Model):
                 inv.move_name = new_name
                 picking.invoice_ref = new_name
 
-    @api.model
-    def create(self, vals):
-        picking = super(StockPicking, self).create(vals)
-        if picking.origin:
-            sale = self.env['sale.order'].search([('name', '=', picking.origin)])
-            if sale:
-                picking.write({'partner_id': sale.partner_shipping_id.id})
-            picking.onchange_partner_id()
-        return picking
+    # @api.model
+    # def create(self, vals):
+    #     picking = super(StockPicking, self).create(vals)
+    #     if picking.origin:
+    #         sale = self.env['sale.order'].search([('name', '=', picking.origin)])
+    #         if sale:
+    #             picking.write({'partner_id': sale.partner_shipping_id.id})
+    #         picking.onchange_partner_id()
+    #     return picking
 
     @api.multi
     def write(self, vals):

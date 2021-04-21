@@ -157,6 +157,7 @@ class StockPicking(models.Model):
                 inv.number = new_name
                 inv.move_name = new_name
                 picking.invoice_ref = new_name
+
     @api.model
     def create(self, vals):
         picking = super(StockPicking, self).create(vals)

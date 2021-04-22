@@ -23,10 +23,10 @@ class StockMove(models.Model):
         for move in self:
             move.partner_id = move.sale_line_id.order_id.partner_shipping_id
 
-    @api.depends('location_id', 'qty_update')
     def _compute_qty_available(self):
+        quant = self.env['stock.quant']
         for move in self:
-            move.qty_available = move.product_id.with_context(location=move.location_id.id).qty_available
+            move.qty_available = quant._get_available_quantity(product_id=move.product_id, location_id=move.location_id)
 
     @api.multi
     def _compute_picking_state(self):

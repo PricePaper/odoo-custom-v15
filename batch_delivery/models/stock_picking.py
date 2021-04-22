@@ -60,7 +60,8 @@ class StockPicking(models.Model):
     def _compute_invoice_ref(self):
         for rec in self:
             invoice = rec.sale_id.invoice_ids.filtered(lambda r: rec in r.picking_ids)
-            rec.invoice_ref = invoice.move_name
+            if invoice:
+                rec.invoice_ref = invoice[-1].move_name
 
     @api.depends('move_ids_without_package.reserved_availability')
     def _compute_available_qty(self):

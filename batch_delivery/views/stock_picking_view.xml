@@ -169,14 +169,18 @@
 
 
                 <button name="button_validate" position="after">
+                    <field name="is_return" invisible="1"/>
                     <button name="action_make_transit" type="object" string="Mark as Transit"
-                            attrs="{'invisible': ['|', ('state', 'not in', ['assigned']), ('picking_type_code', '=', 'incoming')]}" class="oe_highlight"/>
+                            attrs="{'invisible': ['|', '|',  ('is_return', '=', True), ('state', 'not in', ['assigned']), ('picking_type_code', '=', 'incoming')]}" class="oe_highlight"/>
                     <button name="create_invoice" type="object" string="Create Invoice"
-                            attrs="{'invisible': ['|',('state', 'not in', ['in_transit']), ('is_invoiced', '=', True)]}" class="oe_highlight"/>
+                            attrs="{'invisible': ['|', '|',  ('is_return', '=', True), ('state', 'not in', ['in_transit']), ('is_invoiced', '=', True)]}" class="oe_highlight"/>
+
                     <button name="action_validate" type="object" string="Confirm Transfer"
                             attrs="{'invisible': ['|', ('is_transit', '=',False), ('is_invoiced', '=', False)]}" class="oe_highlight"/>
+                    <button name="action_validate" type="object" string="Confirm Transfer"
+                            attrs="{'invisible': ['|', ('state', '=', 'done'), ('is_return', '=', False)]}" class="oe_highlight"/>
                     <button name="%(action_view_picking_full_reeturn_wizard_form)d" type="action" string="Full Return"
-                            attrs="{'invisible': ['|', ('is_transit', '=', False), ('is_invoiced', '=', False)]}" class="oe_highlight"/>
+                            attrs="{'invisible': ['|', '|', ('is_return', '=', True), ('is_transit', '=', False), ('is_invoiced', '=', False)]}" class="oe_highlight"/>
                 </button>
                 <button name="button_validate" position="attributes">
                     <attribute name="attrs">{'invisible':['|', ('picking_type_code', '!=', 'incoming'), ('show_validate', '=', False)]}</attribute>
@@ -192,9 +196,10 @@
                     <field name="shipping_easiness" invisible="1" force_save="1"/>
                 </field>
                 <field name="origin" position="after">
-                    <field name="is_transit" invisible="1"/>
+                    <field name="is_transit" invisible="0"/>
+                    <field name="is_return" invisible="0"/>
                     <field name="route_id" invisible="1"/>
-                    <field name="is_invoiced" invisible="1"/>
+                    <field name="is_invoiced" invisible="0"/>
                 </field>
 
                 <xpath expr="//field[@name='move_ids_without_package']/tree/button[@name='action_show_details']" position="attributes">

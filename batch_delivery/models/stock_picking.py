@@ -51,6 +51,19 @@ class StockPicking(models.Model):
     is_invoiced = fields.Boolean(string="Invoiced", copy=False)
     invoice_ref = fields.Char(string="Invoice Reference", compute='_compute_invoice_ref')
     invoice_ids = fields.Many2many('account.invoice', compute='_compute_invoice_ids')
+    is_return = fields.Boolean(compute='_compute_state_flags')
+
+    def _compute_state_flags(self):
+        for pick in self:
+            if pick.move_lines.mapped('move_orig_ids').ids:
+                pick.is_return = True
+                pick.is_invoiced = True
+            else:
+                pick.is_return = False
+            if pick.sale_id.invoice_status in ['invoiced', 'no']:
+                pick.is_invoiced = True
+            else:
+                pick.is_invoiced = False
 
     @api.depends('sale_id.invoice_ids')
     def _compute_invoice_ids(self):

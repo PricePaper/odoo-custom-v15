@@ -238,6 +238,15 @@ class StockPicking(models.Model):
         return result
 
     @api.multi
+    def action_print_pick_ticket(self):
+        return self.env.ref('batch_delivery.batch_picking_active_report').report_action(self)
+
+    @api.multi
+    def action_print_product_label(self):
+
+        return self.env.ref('batch_delivery.product_label_report').report_action(self)
+
+    @api.multi
     def button_validate(self):
         """
         if there are movelines with reserved quantities

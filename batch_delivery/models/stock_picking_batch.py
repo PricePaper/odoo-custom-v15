@@ -47,7 +47,7 @@ class StockPickingBatch(models.Model):
             rec.batch_payment_count = len(rec.payment_ids.mapped('batch_payment_id'))
 
     @api.multi
-    @api.depends('picking_ids.state', 'picking_ids.move_lines.product_id', 'picking_ids.move_lines.quantity_done')
+    @api.depends('picking_ids', 'picking_ids.state', 'picking_ids.move_lines.product_id', 'picking_ids.move_lines.quantity_done')
     def _compute_gross_weight_volume(self):
         for batch in self:
             for line in batch.mapped('picking_ids').filtered(lambda rec: rec.state != 'cancel').mapped('move_lines'):
@@ -165,6 +165,13 @@ class StockPickingBatch(models.Model):
     @api.multi
     def print_driver_spreadsheet(self):
         return self.env.ref('batch_delivery.batch_driver_report').report_action(self, config=False)
+
+    @api.multi
+    def print_picking(self):
+        pickings = self.mapped('picking_ids')
+        if not pickings:
+            raise UserError(_('Nothing to print.'))
+        return self.env.ref('batch_delivery.batch_picking_all_report').report_action(self)
 
     @api.multi
     def confirm_picking(self):

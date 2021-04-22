@@ -33,6 +33,22 @@
             <field name="dpi">90</field>
         </record>
 
+        <record id="paperformat_batch_picking_ticket" model="report.paperformat">
+            <field name="name">Batch Pickin Ticket</field>
+            <field name="default" eval="False"/>
+            <field name="format">Letter</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">5</field>
+            <field name="margin_bottom">10</field>
+            <field name="margin_left">10</field>
+            <field name="margin_right">0</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
+
         <report
                 id="batch_delivery.report_master_pick_ticket"
                 string="Master Pick Ticket"
@@ -103,6 +119,30 @@
                 file="batch_delivery.report_product_label"
                 name="batch_delivery.report_batch_product_label"
                 paperformat="print_product_label_paperformat"
+                print_report_name="'Product labels - %s' % (object.name or '')"
+        />
+
+        <report
+                string="Batch Pick Ticket"
+                id="batch_picking_all_report"
+                model="stock.picking.batch"
+                report_type="qweb-pdf"
+                menu="False"
+                file="batch_delivery.report_batch_picking_all"
+                name="batch_delivery.report_batch_picking_all"
+                paperformat="paperformat_batch_picking_ticket"
+                print_report_name="'Product labels - %s' % (object.name or '')"
+        />
+
+        <report
+                string="Batch Pick Ticket (Active)"
+                id="batch_picking_active_report"
+                model="stock.picking"
+                report_type="qweb-pdf"
+                menu="False"
+                file="batch_delivery.report_batch_picking_active"
+                name="batch_delivery.report_batch_picking_active"
+                paperformat="paperformat_batch_picking_ticket"
                 print_report_name="'Product labels - %s' % (object.name or '')"
         />
 

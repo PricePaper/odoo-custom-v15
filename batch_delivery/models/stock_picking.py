@@ -146,8 +146,9 @@ class StockPicking(models.Model):
     @api.multi
     def create_invoice(self):
         for picking in self:
-            picking.sale_id.action_invoice_create(final=True)
-            picking.is_invoiced = True
+            if picking.sale_id.invoice_status == 'to invoice':
+                picking.sale_id.action_invoice_create(final=True)
+                picking.is_invoiced = True
             if picking.batch_id:
                 invoice = picking.sale_id.invoice_ids.filtered(lambda rec: picking in rec.picking_ids)
                 invoice.write({'date_invoice': picking.batch_id.date})

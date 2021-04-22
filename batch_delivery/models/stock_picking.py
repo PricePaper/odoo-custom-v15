@@ -134,7 +134,8 @@ class StockPicking(models.Model):
                 pick.move_ids_without_package.write({'is_transit': True})
                 for line in pick.move_line_ids:
                     line.qty_done = line.move_id.reserved_availability
-                    line.move_id.sale_line_id.qty_delivered = line.move_id.sale_line_id.pre_delivered_qty + line.move_id.reserved_availability
+                    if line.move_id.sale_line_id:
+                        line.move_id.sale_line_id.qty_delivered = line.move_id.sale_line_id.pre_delivered_qty + line.move_id.reserved_availability
                 if pick.batch_id:
                     pick.sale_id.write({'delivery_date': pick.batch_id.date})
 
@@ -146,6 +147,10 @@ class StockPicking(models.Model):
     @api.multi
     def create_invoice(self):
         for picking in self:
+            if not any([line.quantity_done for line in picking.move_ids_without_package]):
+                raise UserError(_('Please enter quantities before proceed..'))
+            if picking.sale_id.invoice_status == 'no':
+                raise UserError(_('Nothing to Invoice..'))
             if picking.sale_id.invoice_status == 'to invoice':
                 picking.sale_id.action_invoice_create(final=True)
                 picking.is_invoiced = True

@@ -9,17 +9,16 @@ class PickingFullReturnWizard(models.TransientModel):
 
     picking_id = fields.Many2one('stock.picking', string='Picking',
                                  default=lambda self: self.env['stock.picking'].browse(self._context.get('active_id')))
-    reason = fields.Text('Reason for Returning')
     sale_id = fields.Many2one(related='picking_id.sale_id', readonly=True)
 
     @api.multi
     def create_full_return(self):
         picking = self.picking_id
         sale = self.sale_id
+        picking.check_return_reason()
         StockReturn = self.env['stock.picking.return']
         StockReturn.create({
             'name': 'RETURN-' + picking.name,
-            'reason': self.reason,
             'picking_id': picking.id,
             'sale_id': sale.id,
             'sales_person_ids': [(6, 0, sale.sales_person_ids and sale.sales_person_ids.ids)],
@@ -27,6 +26,7 @@ class PickingFullReturnWizard(models.TransientModel):
                 'product_id': move.product_id.id,
                 'ordered_qty': move.product_uom_qty,
                 'delivered_qty': 0,
+                'reason_id': move.reason_id.id
             }) for move in picking.move_ids_without_package]
         })
         picking.write({'state': 'assigned', 'is_transit': False, 'batch_id': False})

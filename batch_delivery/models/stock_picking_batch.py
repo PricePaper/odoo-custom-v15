@@ -218,21 +218,9 @@ class StockPickingBatch(models.Model):
         for batch in self:
             res = []
             for picking in batch.picking_ids.filtered(lambda rec: rec.state not in ['done', 'cancel']):
-                if picking._check_backorder():
-                    raise UserError(_("""You have processed  delivery order %s with less products than the initial demand.\n
-                                      ➥ Create a backorder if you expect to process the remaining products later.
-                                      ➥ Do not create a backorder if you will not process the remaining products."""
-                                      ) % (picking.name))
-
                 if picking.sale_id and picking.sale_id.invoice_status == 'to invoice' or not picking.is_invoiced:
                     raise UserError(_('Please create invoices for delivery order %s, to continue.') % (picking.name))
-
-                # picking.button_validate()
-
                 res.append((0, 0, {'partner_id': picking.partner_id.id}))
-                # if picking.state == 'done':
-                # picking.deliver_products() # button_validate()
-
             batch.truck_driver_id.is_driver_available = True
             if batch.route_id:
                 batch.route_id.set_active = False

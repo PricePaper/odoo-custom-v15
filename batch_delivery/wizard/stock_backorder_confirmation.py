@@ -6,7 +6,7 @@ from odoo import api, fields, models
 class StockBackorderConfirmation(models.TransientModel):
     _inherit = 'stock.backorder.confirmation'
 
-    reason = fields.Text('Reason for Returning')
+
 
     @api.one
     def _process(self, cancel_backorder=False):
@@ -15,7 +15,6 @@ class StockBackorderConfirmation(models.TransientModel):
             if pick_id.sale_id:
                 StockReturn.create({
                     'name': 'RETURN-' + pick_id.name,
-                    'reason': self.reason,
                     'picking_id': pick_id.id,
                     'sale_id': pick_id.sale_id.id,
                     'sales_person_ids': [
@@ -26,6 +25,7 @@ class StockBackorderConfirmation(models.TransientModel):
                         'product_id': move.product_id.id,
                         'ordered_qty': move.product_uom_qty,
                         'delivered_qty': move.quantity_done if move.reserved_availability == move.product_uom_qty else move.reserved_availability,
+                        'reason_id': move.reason_id.id
                     }) for move in pick_id.move_ids_without_package if move.quantity_done != move.product_uom_qty]
                 })
 

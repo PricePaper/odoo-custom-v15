@@ -256,7 +256,7 @@
                              <button class="oe_stat_button"
                                 name="view_invoices"
                                 icon="fa-pencil-square-o"
-                                type="object" attrs="{'invisible': [('state', '=', 'done')]}"
+                                type="object" attrs="{'invisible': [('state', 'in', ['draft', 'in_progress'])]}"
                                 string="Customer Invoices"/>
 
                             <button name="view_batch_payments"

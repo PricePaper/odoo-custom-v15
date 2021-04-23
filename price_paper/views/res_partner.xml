@@ -25,6 +25,10 @@
                     <field name="destination_code"/>
                 </xpath>
 
+                <xpath expr="//field[@name='child_ids']/form/sheet/group/group[position()=2]/field[@name='name']" position="before">
+                    <field name="default_shipping" attrs="{'invisible': [('type', '!=', 'delivery')]}"/>
+                </xpath>
+
                 <field name='vat' position='attributes'>
                     <attribute name="groups">account.group_account_user</attribute>
                 </field>

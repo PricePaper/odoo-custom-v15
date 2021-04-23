@@ -38,6 +38,7 @@ class ResPartner(models.Model):
     seller_info_ids = fields.One2many('product.supplierinfo', 'name', string='Seller info')
     seller_partner_ids = fields.Many2many('res.partner', 'vendor_id', 'seller_partner_id', string='Purchaser')
     credit_limit = fields.Float(string='Credit Limit', default=lambda self: self.env.user.company_id.credit_limit)
+    default_shipping = fields.Boolean(string='Default', help="if checked this will be the default shipping address")
     property_account_payable_id = fields.Many2one('account.account', company_dependent=True,
         string="Account Payable", oldname="property_account_payable",
         domain="[('internal_type', '=', 'payable'), ('deprecated', '=', False)]",
@@ -139,6 +140,12 @@ class ResPartner(models.Model):
         result = super(ResPartner, self).create(vals)
         if result.customer and result.is_company:
             result.setup_pricelist_for_new_customer()
+
+        if result.parent_id and result.default_shipping:
+            existing_defaults = self.search([('parent_id','=',result.parent_id.id),('type','=',result.type),('id','!=',result.id),('default_shipping','=', True)])
+            if existing_defaults:
+                existing_defaults.write({'default_shipping':False})
+                result.default_shipping = True
         return result
 
     @api.multi
@@ -150,7 +157,17 @@ class ResPartner(models.Model):
                 rec.seller_info_ids.mapped('product_id').message_subscribe(partner_ids=seller.ids)
                 if removel_ids:
                     rec.seller_info_ids.mapped('product_id').message_unsubscribe(partner_ids=removel_ids.ids)
-        return super(ResPartner, self).write(vals)
+
+        res = super(ResPartner, self).write(vals)
+
+        if vals.get('default_shipping') or vals.get('type'):
+            for record in self:
+                if record.parent_id and record.default_shipping:
+                    existing_defaults = self.search([('parent_id','=',record.parent_id.id),('type','=',record.type),('id','!=',record.id),('default_shipping','=', True)])
+                    if existing_defaults:
+                        existing_defaults.write({'default_shipping':False})
+                        record.default_shipping = True
+        return res
 
     @api.model
     def setup_pricelist_for_new_customer(self):

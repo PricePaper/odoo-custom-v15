@@ -22,8 +22,11 @@ class SaleOrder(models.Model):
     customer_code = fields.Char(string='Partner Code', related='partner_id.customer_code')
     deliver_by = fields.Date(string="Deliver By", copy=False, default=lambda s: s.get_release_deliver_default_date())
     is_creditexceed = fields.Boolean(string="Credit limit exceeded", default=False, copy=False)
-    credit_warning = fields.Text(string='Warning Message', compute='compute_credit_warning', copy=False)
-    ready_to_release = fields.Boolean(string="Ready to release", default=False, copy=False)
+    is_low_price = fields.Boolean(string="Is Low Price", default=False, copy=False)
+    credit_warning = fields.Text(string='Credit Limit Warning Message', compute='compute_credit_warning', copy=False)
+    low_price_warning = fields.Text(string='Low Price Warning Message', compute='compute_credit_warning', copy=False)
+    ready_to_release = fields.Boolean(string="Ready to release credit hold", default=False, copy=False)
+    release_price_hold = fields.Boolean(string="Ready to release Price hold", default=False, copy=False)
     gross_profit = fields.Monetary(compute='calculate_gross_profit', string='Predicted Profit')
     is_quotation = fields.Boolean(string="Create as Quotation", default=False, copy=False)
     profit_final = fields.Monetary(string='Profit')
@@ -54,6 +57,20 @@ class SaleOrder(models.Model):
             order.total_volume = volume
             order.total_weight = weight
             order.total_qty = qty
+
+    @api.multi
+    def confirm_multiple_orders(self, records):
+        msg = ''
+        for rec in records:
+            if rec.state != 'draft':
+                raise UserError(_(
+                    "Some of the selected Orders are not in draft state"))
+            res = rec.action_confirm()
+            if res and res != True and res.get('context') and res.get('context').get('warning_message'):
+                msg = msg + '\n' +rec.name+'\n'+res.get('context').get('warning_message')
+        if msg:
+            msg = "Some of the selected Orders are on HOLD."+'\n'+msg
+            raise UserError(_(msg))
 
     @api.onchange('order_line')
     def onchange_order_line(self):
@@ -465,8 +482,9 @@ class SaleOrder(models.Model):
                 [('partner_id', '=', order.partner_id.id), ('full_reconcile_id', '=', False), ('debit', '!=', False),
                  ('date_maturity_grace', '<', date.today())], order='date_maturity_grace desc')
             msg = ''
+            msg1 = ''
             if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
-                msg = "Customer Credit limit Exceeded.\n%s's Credit limit is %s and due amount is %s\n" % (
+                msg = "\nCustomer Credit limit Exceeded.\n%s's Credit limit is %s and due amount is %s\n" % (
                     order.partner_id.name, order.partner_id.credit_limit,
                     (order.partner_id.credit + order.amount_total))
             if debit_due:
@@ -476,19 +494,35 @@ class SaleOrder(models.Model):
             for order_line in order.order_line:
                 if order_line.profit_margin < 0.0 and not (
                         'rebate_contract_id' in order_line and order_line.rebate_contract_id):
-                    msg = msg + '[%s]%s ' % (order_line.product_id.default_code,
+                    msg1 = '[%s]%s ' % (order_line.product_id.default_code,
                                              order_line.product_id.name) + "Unit Price is less than  Product Cost Price"
 
-            self.credit_warning = msg
+            order.credit_warning = msg
+            order.low_price_warning = msg1
 
     @api.multi
-    def action_ready_to_release(self):
+    def action_release_credit_hold(self):
         """
-        release the bolcked sale order.
+        release hold sale order for credit limit exceed.
         """
         for order in self:
-            order.ready_to_release = True
-            order.message_post(body="Order is approved")
+            order.write({'is_creditexceed': False, 'ready_to_release': True})
+            order.message_post(body="Credit Team Approved")
+            if order.release_price_hold:
+                order.action_confirm()
+
+
+
+    @api.multi
+    def action_release_price_hold(self):
+        """
+        release hold sale order for low price.
+        """
+        for order in self:
+            order.write({'is_low_price': False, 'release_price_hold': True})
+            order.message_post(body="Sale Team Approved")
+            if order.ready_to_release:
+                order.action_confirm()
 
 
     def check_credit_limit(self):
@@ -499,29 +533,46 @@ class SaleOrder(models.Model):
         """
         for order in self:
             msg = order.credit_warning and order.credit_warning or ''
-            message = ''
             if msg:
-                for order_line in order.order_line:
-                    if order_line.profit_margin < 0.0 and not (
-                            'rebate_contract_id' in order_line and order_line.rebate_contract_id):
-                        message = message + '[%s]%s ' % (order_line.product_id.default_code,
-                                                         order_line.product_id.name) + "Unit Price is less than  Product Cost Price\n"
-                if message:
-                    team = self.env['helpdesk.team'].search([('is_sales_team', '=', True)], limit=1)
-                    if team:
-                        vals = {'name': 'Sale order with Product below working cost',
-                                'team_id': team and team.id,
-                                'description': 'Order : ' + order.name + '\n' + message,
-                                }
-                        ticket = self.env['helpdesk.ticket'].create(vals)
+                team = self.env['helpdesk.team'].search([('is_credit_team', '=', True)], limit=1)
+                if team:
+                    vals = {'name': 'Sale order with Credit Limit exceeded partner or Partner has pending Invoice.',
+                            'team_id': team and team.id,
+                            'description': 'Order : ' + order.name + '\n' + msg,
+                            }
+                    ticket = self.env['helpdesk.ticket'].create(vals)
                 order.write({'is_creditexceed': True, 'ready_to_release': False})
                 order.message_post(body=msg)
-            else:
-                order.write({'is_creditexceed': False, 'ready_to_release': True})
-            if msg:
                 return msg
             else:
-                return {}
+                order.write({'is_creditexceed': False, 'ready_to_release': True})
+                return ''
+
+
+
+    def check_low_price(self):
+        """
+        wheather order contains low price line
+        block the sale order confirmation
+        and display warning message.
+        """
+        for order in self:
+            msg1 = order.low_price_warning and order.low_price_warning or ''
+            if msg1:
+                team = self.env['helpdesk.team'].search([('is_sales_team', '=', True)], limit=1)
+                if team:
+                    vals = {'name': 'Sale order with Product below working cost',
+                            'team_id': team and team.id,
+                            'description': 'Order : ' + order.name + '\n' + msg1,
+                            }
+                    ticket = self.env['helpdesk.ticket'].create(vals)
+                order.write({'is_low_price': True, 'release_price_hold': False})
+                order.message_post(body=msg1)
+                return msg1
+            else:
+                order.write({'is_low_price': False, 'release_price_hold': True})
+                return ''
+
 
     @api.onchange('payment_term_id')
     def onchange_payment_term(self):
@@ -557,21 +608,24 @@ class SaleOrder(models.Model):
         else:
             if not self.carrier_id:
                 raise ValidationError(_('Delivery method should be set before confirming an order'))
+            warning = ''
             if not self.ready_to_release:
-                warning = self.check_credit_limit()
-                if warning:
-                    context = {'warning_message': warning}
-                    view_id = self.env.ref('price_paper.view_sale_warning_wizard').id
-                    return {
-                        'name': _('Sale Warning'),
-                        'view_type': 'form',
-                        'view_mode': 'form',
-                        'res_model': 'sale.warning.wizard',
-                        'view_id': view_id,
-                        'type': 'ir.actions.act_window',
-                        'context': context,
-                        'target': 'new'
-                    }
+                warning += self.check_credit_limit()
+            if not self.release_price_hold:
+                warning = warning+self.check_low_price()
+            if warning:
+                context = {'warning_message': warning}
+                view_id = self.env.ref('price_paper.view_sale_warning_wizard').id
+                return {
+                    'name': _('Sale Warning'),
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'res_model': 'sale.warning.wizard',
+                    'view_id': view_id,
+                    'type': 'ir.actions.act_window',
+                    'context': context,
+                    'target': 'new'
+                }
 
             if any(line.product_id.is_storage_contract for line in self.order_line):
                 if not any(line.is_downpayment for line in self.order_line):

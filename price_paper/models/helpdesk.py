@@ -6,6 +6,7 @@ class HelpDeskTeam(models.Model):
     _inherit = 'helpdesk.team'
 
     is_sales_team = fields.Boolean(string='Sales Team')
+    is_credit_team = fields.Boolean(string='Sales Team')
 
 HelpDeskTeam()
 

@@ -68,6 +68,13 @@
                         <p attrs="{'invisible':[('is_creditexceed', '=', False)]}">
                             <b><field name='credit_warning'/></b>
                         </p>
+
+                    </div>
+                    <div class="oe_form_box_info oe_text_center"
+                         attrs="{'invisible':['|', ('is_low_price', '=', False), ('release_price_hold', '=', True)]}">
+                        <p attrs="{'invisible':[('is_low_price', '=', False)]}">
+                            <b><field name='low_price_warning'/></b>
+                        </p>
                     </div>
                 </sheet>
 
@@ -99,9 +106,12 @@
                 </field>
 
                 <button name="action_cancel" position="after">
-                    <button name="action_ready_to_release" type="object" string="Release"
+                    <button name="action_release_credit_hold" type="object" string="Release Credit Hold"
                             groups="price_paper.group_allow_more_than_credit_limit"
                             attrs="{'invisible': ['|', ('is_creditexceed', '=', False), ('ready_to_release', '=', True)]}"/>
+                    <button name="action_release_price_hold" type="object" string="Release Price Hold"
+                            groups="price_paper.group_allow_low_price_unit"
+                            attrs="{'invisible': ['|', ('is_low_price', '=', False), ('release_price_hold', '=', True)]}"/>
                 </button>
 
                 <button name="action_cancel" position="after">
@@ -122,6 +132,8 @@
                     <field name="release_date" required='1'/>
                     <field name="deliver_by" required='1'/>
                     <field name="is_creditexceed" invisible="1"/>
+                    <field name="is_low_price" invisible="1"/>
+                    <field name="release_price_hold" invisible="1"/>
                     <field name="ready_to_release" invisible="1"/>
                 </xpath>
 
@@ -258,8 +270,11 @@
                 <xpath expr="//filter[@name='draft']" position="after">
                     <separator/>
                     <filter string="Credit Exceeded" name="credit_exceeded" domain="[('is_creditexceed','=', True)]"/>
-                    <filter string="Waiting for release" name="ready_to_release"
+                    <filter string="Low Price" name="credit_exceeded" domain="[('is_low_price','=', True)]"/>
+                    <filter string="Credit limit Hold" name="ready_to_release"
                             domain="[('ready_to_release','=', False), ('is_creditexceed','=', True)]"/>
+                    <filter string="Price Low Hold" name="release_price_hold"
+                            domain="[('release_price_hold','=', False), ('is_low_price','=', True)]"/>
                 </xpath>
                 <xpath expr="//filter[@name='draft']" position="replace">
                     <filter string="Drafts" name="draft" domain="[('state','in',('draft', 'sent'))]"/>
@@ -274,7 +289,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="sale_order_view_search_credit_exceeded"/>
-            <field name="context">{"search_default_ready_to_release": 1}</field>
+            <field name="context">{"search_default_ready_to_release": 1, "search_default_release_price_hold": 1}</field>
             <field name="help" type="html">
                 <p>
                     No Sale Order Found.
@@ -372,6 +387,15 @@
 
         <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
             <field name="name">Drafts</field>
+        </record>
+        <record model="ir.actions.server" id="action_confirm_multiple_orders">
+            <field name="name">Confirm</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="state">code</field>
+            <field name="code">
+action = records.env['sale.order'].confirm_multiple_orders(records)
+            </field>
         </record>
 
     </data>

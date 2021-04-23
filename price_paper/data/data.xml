@@ -41,6 +41,10 @@
             <field name="name">Sales Team</field>
             <field name="is_sales_team" eval="True"/>
         </record>
+        <record id="credit_team_above_credit_limit" model="helpdesk.team">
+            <field name="name">Credit Team</field>
+            <field name="is_credit_team" eval="True"/>
+        </record>
 
         <record id="seq_res_partner_code" model="ir.sequence">
             <field name="name">Partner Code</field>

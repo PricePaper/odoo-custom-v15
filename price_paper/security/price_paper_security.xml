@@ -1,7 +1,13 @@
 <odoo>
     <data>
         <record id="group_allow_more_than_credit_limit" model="res.groups">
-            <field name="name">Release Locked Sales Order</field>
+            <field name="name">Release Sales Order Hold for Exceeding Credit Limit</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
+        <record id="group_allow_low_price_unit" model="res.groups">
+            <field name="name">Release Sales Order Hold For Low Unit Price </field>
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
             <field name="users" eval="[(4, ref('base.user_root'))]"/>
             <field name="category_id" ref="base.module_category_hidden"/>
@@ -12,6 +18,6 @@
             <field name="category_id" ref="base.module_category_hidden"/>
             <field name="comment">the user will have access to his own customers pricelists</field>
         </record>
-        
+
     </data>
 </odoo>

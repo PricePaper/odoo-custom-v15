@@ -8,11 +8,10 @@
                 <xpath expr="//field[@name='description']" position="after">
                     <group>
                         <field name="is_sales_team"/>
+                        <field name="is_credit_team"/>
                     </group>
                 </xpath>
             </field>
         </record>
     </data>
 </odoo>
-
-

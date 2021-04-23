@@ -33,6 +33,13 @@ class StockPickingBatch(models.Model):
     total_unit = fields.Float(string="Total Unit", compute='_compute_gross_weight_volume')
     batch_payment_count = fields.Integer(string='Batch Payment', compute='_compute_batch_payment_count')
     to_invoice = fields.Boolean(string='Need Invoice', compute='_compute_to_invoice_state')
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('in_progress', 'Running'),
+        ('done', 'Shipping Done'),
+        ('paid', 'Paid'),
+        ('cancel', 'Cancelled')], default='draft',
+        copy=False, track_visibility='onchange', required=True)
 
     @api.multi
     @api.depends('picking_ids.is_invoiced')
@@ -327,6 +334,8 @@ class StockPickingBatch(models.Model):
                 batch.create_driver_journal()
 
             batch.is_posted = True
+            batch.state = 'paid'
+
 
     @api.multi
     def create_driver_journal(self):

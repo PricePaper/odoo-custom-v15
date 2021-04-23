@@ -17,6 +17,7 @@ class StockMove(models.Model):
                                    "* Use \'Positive\' value if you want to Increase the Reserved Qty.")
     qty_available = fields.Float(String="Available Quantity", compute='_compute_qty_available')
     partner_id = fields.Many2one('res.partner', compute='_compute_partner_id', string="Partner", readonly=True)
+    reason_id = fields.Many2one('stock.picking.return.reason', string='Reason  For Return (Stock)')
 
     @api.depends('sale_line_id.order_id.partner_shipping_id')
     def _compute_partner_id(self):

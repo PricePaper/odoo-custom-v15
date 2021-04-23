@@ -11,7 +11,6 @@ class StockPickingReturn(models.Model):
     sales_person_ids = fields.Many2many('res.partner', string='Customer')
     picking_id = fields.Many2one('stock.picking', string='Picking')
     sale_id = fields.Many2one('sale.order', string='Sale Order')
-    reason = fields.Text('Reason for Returning')
     return_line_ids = fields.One2many('stock.picking.return.line', 'return_id')
 
     @api.model
@@ -38,6 +37,7 @@ class StockPickingReturnLine(models.Model):
     delivered_qty = fields.Float('Delivered Qty')
     returned_qty = fields.Float('Returned Qty', compute='_compute_returned_qty', store=True)
     return_id = fields.Many2one('stock.picking.return')
+    reason_id = fields.Many2one('stock.picking.return.reason', string='Reason For Return')
 
     @api.depends('ordered_qty', 'delivered_qty')
     def _compute_returned_qty(self):
@@ -46,5 +46,12 @@ class StockPickingReturnLine(models.Model):
 
 
 StockPickingReturnLine()
+
+
+class StockPickingReturnReason(models.Model):
+    _name = 'stock.picking.return.reason'
+    _description = 'Stock Picking Return Reason'
+
+    name = fields.Text(string='Reason')
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

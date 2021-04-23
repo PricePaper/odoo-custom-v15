@@ -5,19 +5,16 @@
             <field name="name">picking.full.return.wizard</field>
             <field name="model">picking.full.return.wizard</field>
             <field name="arch" type="xml">
-                <form string="Full Return">
-                    <sheet>
-                        <field name="picking_id" invisible="1"/>
-                         <field name="sale_id" invisible="1"/>
-                        <separator string="Reason"/>
-                        <field name="reason" required="1"/>
-                    </sheet>
-                    <footer>
-                        <button string="Return" type="object" name="create_full_return"/>
-                        or
-                        <button string="Cancel" class="oe_link" special="cancel"/>
-                    </footer>
-                </form>
+                <p>
+                    Are you sure you want to fully return this DO ?
+                </p>
+                <field name="picking_id" invisible="1"/>
+                    <field name="sale_id" invisible="1"/>
+                <footer>
+                    <button string="Return" type="object" name="create_full_return"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
             </field>
         </record>
 

@@ -239,8 +239,20 @@ class StockPicking(models.Model):
             pick.move_ids_without_package.write({'is_transit': False})
         return res
 
+    def check_return_reason(self):
+        if self._check_backorder():
+            move_info = self.move_ids_without_package.filtered(lambda m: m.quantity_done < m.product_uom_qty)
+            product_info = move_info.mapped('product_id')
+            if product_info and not all([m.reason_id for m in move_info]):
+                msg = '⚠ 𝐘𝐨𝐮 𝐧𝐞𝐞𝐝 𝐭𝐨 𝐞𝐧𝐭𝐞𝐫 𝐭𝐡𝐞 𝐬𝐭𝐨𝐜𝐤 𝐫𝐞𝐭𝐮𝐫𝐧 𝐫𝐞𝐚𝐬𝐨𝐧 𝐟𝐨𝐫 𝐏𝐫𝐨𝐝𝐮𝐜𝐭 \n'
+                for i, product in enumerate(product_info, 1):
+                    msg += '\t\t%d. %s\n' % (i, product.display_name)
+                raise UserError(_(msg))
+
     @api.multi
     def action_validate(self):
+        self.ensure_one()
+        self.check_return_reason()
         result = self.button_validate()
         return result
 

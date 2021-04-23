@@ -252,9 +252,10 @@ class StockPicking(models.Model):
     @api.multi
     def action_validate(self):
         self.ensure_one()
+        if self.picking_type_id.code == 'outgoing' and self.purchase_id:
+            return self.button_validate()
         self.check_return_reason()
-        result = self.button_validate()
-        return result
+        return self.button_validate()
 
     @api.multi
     def action_cancel(self):

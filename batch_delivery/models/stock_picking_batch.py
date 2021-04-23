@@ -262,7 +262,7 @@ class StockPickingBatch(models.Model):
     @api.multi
     def view_invoices(self):
         pickings = self.picking_ids
-        invoices = pickings.mapped('sale_id').mapped('invoice_ids')
+        invoices = pickings.mapped('invoice_ids')
         action = self.env.ref('account.action_invoice_tree1').read()[0]
         if len(invoices) > 1:
             action['domain'] = [('id', 'in', invoices.ids)]

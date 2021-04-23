@@ -252,12 +252,11 @@
                     <sheet>
 
                         <div class="oe_button_box" name="button_box">
-                            <field name="to_invoice" invisible="1"/>
+                            <field name="state" invisible="1"/>
                              <button class="oe_stat_button"
                                 name="view_invoices"
                                 icon="fa-pencil-square-o"
-                                type="object"
-                                     attrs="{'invisible': [('to_invoice', '=', True)]}"
+                                type="object" attrs="{'invisible': [('state', '=', 'done')]}"
                                 string="Customer Invoices"/>
 
                             <button name="view_batch_payments"

@@ -1155,12 +1155,9 @@ class SaleOrderLine(models.Model):
 
                 sale_history = self.env['sale.history'].search(
                     [('partner_id', '=', self.order_id and self.order_id.partner_id.id),
-                     ('product_id', '=', self.product_id and self.product_id.id)])
+                     ('product_id', '=', self.product_id and self.product_id.id)],
+                     order='order_date desc, id desc', limit=1)
                 if sale_history:
-                    if len(sale_history) > 1:
-                        orders = sale_history.mapped('order_id')
-                        last_date = max([rec.confirmation_date for rec in orders])
-                        sale_history = sale_history.filtered(lambda r: r.order_date == last_date)
                     self.product_uom = sale_history.uom_id
 
             msg, product_price, price_from = self.calculate_customer_price()

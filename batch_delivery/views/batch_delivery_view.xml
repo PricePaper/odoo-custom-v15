@@ -108,9 +108,26 @@
                     <attribute name="invisible">True</attribute>
                 </xpath>
 
-                <xpath expr="//field[@name='picking_ids']/tree/field[@name='name']" position="attributes">
-                    <attribute name="invisible">True</attribute>
+<!--                <xpath expr="//field[@name='picking_ids']/tree/field[@name='name']" position="attributes">-->
+<!--                    <attribute name="invisible">True</attribute>-->
+<!--                </xpath>-->
+
+                <xpath expr="//field[@name='picking_ids']/tree/field[@name='backorder_id']" position="attributes">
+                   <attribute name="invisible">True</attribute>
                 </xpath>
+
+                <xpath expr="//field[@name='picking_ids']/tree/field[@name='date']" position="attributes">
+                   <attribute name="invisible">True</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='picking_ids']/tree/field[@name='scheduled_date']" position="attributes">
+                   <attribute name="invisible">True</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='picking_ids']/tree/field[@name='origin']" position="after">
+                  <field name="deliver_by" readonly="True"/>
+                </xpath>
+
                 <xpath expr="//field[@name='picking_ids']/tree/field[@name='name']" position="after">
                     <field name="invoice_ref" readonly="1"/>
                 </xpath>

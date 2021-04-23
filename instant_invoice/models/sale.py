@@ -30,6 +30,7 @@ class SaleOrder(models.Model):
             rec.picking_ids.button_validate()
             rec.action_invoice_create()
             rec.invoice_ids.action_invoice_open()
+            rec.action_done()
             # rec.quick_sale = True
         return True
 

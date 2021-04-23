@@ -1,6 +1,5 @@
 <odoo>
     <data>
-
         <record id="release_sale_order_view" model="ir.ui.view">
             <field name="name">release.sale.order.form</field>
             <field name="model">release.sale.order</field>
@@ -18,13 +17,36 @@
                 </form>
             </field>
         </record>
+        <record id="release_price_hold_order_view" model="ir.ui.view">
+            <field name="name">release.price_hold.sale.order.form</field>
+            <field name="model">release.price.hold.sale.order</field>
+            <field name="arch" type="xml">
+                <form string="Confirm Draft Invoices">
+                    <p class="oe_grey">
+                        You are going to release the orders which were
+                        blocked.
+                    </p>
+                    <footer>
+                        <button string="Release Order" name="release_order" type="object" default_focus="1"
+                                class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
 
         <act_window id="action_sale_order_release"
                     multi="True"
-                    key2="client_action_multi" name="Release Sale Order"
+                    key2="client_action_multi" name="Release Credit Hold"
                     res_model="release.sale.order" src_model="sale.order"
                     view_mode="form" target="new" view_type="form"
                     groups="price_paper.group_allow_more_than_credit_limit"/>
+        <act_window id="action_price_hold_sale_order_release"
+                    multi="True"
+                    key2="client_action_multi" name="Release Low Price Hold"
+                    res_model="release.price.hold.sale.order" src_model="sale.order"
+                    view_mode="form" target="new" view_type="form"
+                    groups="price_paper.group_allow_low_price_unit"/>
 
     </data>
 </odoo>

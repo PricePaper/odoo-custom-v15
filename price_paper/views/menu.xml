@@ -11,10 +11,10 @@
                   parent="crm.crm_menu_report"
                   sequence="121"/>
         <menuitem id="menu_orders_credit_limit_exceeded"
-                  name="Credit limit exceeded orders"
+                  name="Hold Sale Orders"
                   action="action_orders_credit_limit_exceeded"
                   parent="sale.sale_order_menu"
-                  groups="price_paper.group_allow_more_than_credit_limit"
+                  groups="price_paper.group_allow_more_than_credit_limit,price_paper.group_allow_low_price_unit"
                   sequence="12"/>
         <menuitem id="menu_sale_history"
                   name="Sales History"

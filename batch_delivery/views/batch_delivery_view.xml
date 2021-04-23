@@ -231,6 +231,9 @@
                 <filter name="in_progress" position="attributes">
                     <attribute name="domain">[('state', 'in', ['draft', 'in_progress'])]</attribute>
                 </filter>
+                <filter name="in_progress" position="after">
+                      <filter name="not_paid" string="Draft Payment" domain="[('state', '=', 'done')]" help="Batch Payment in Draft state"/>
+                </filter>
             </field>
         </record>
 
@@ -308,8 +311,8 @@
             <field name="res_model">stock.picking.batch</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('state', '=', 'done')]</field>
-            <field name="context">{'create': False}</field>
+            <field name="domain">[('state', 'in', ('done', 'paid'))]</field>
+            <field name="context">{'create': False, 'search_default_not_paid' : True}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     The goal of the batch picking is to group operations that may

@@ -438,6 +438,9 @@ class SaleOrder(models.Model):
                 shipping_date = date.today() + relativedelta(days=day_diff)
             self.release_date = shipping_date
             self.deliver_by = shipping_date
+            shipping_addr = self.partner_id.child_ids.filtered(lambda rec: rec.type == 'delivery' and rec.default_shipping == True)
+            if shipping_addr:
+                self.partner_shipping_id = shipping_addr.id
         return res
 
     @api.depends('order_line.profit_margin')

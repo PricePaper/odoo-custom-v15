@@ -206,6 +206,14 @@ class SaleOrder(models.Model):
         order_line.qty_to_invoice = vals.get('qty_delivered_manual')
         return order_line.id
 
+
+    @api.multi
+    def fix_for_do(self):
+        self.action_cancel()
+        self.action_draft()
+        self.action_confirm()
+        return True
+
     @api.multi
     def action_create_storage_downpayment(self):
         """

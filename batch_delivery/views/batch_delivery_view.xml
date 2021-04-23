@@ -134,14 +134,18 @@
                     <attribute name="invisible">True</attribute>
                 </xpath>
 
-                <xpath expr="//field[@name='picking_ids']/tree/button[@name='action_cancel']" position="after">
-                    <button class="fa fa-trash-o" name="action_remove" type="object" aria-label="Remove row"
-                            attrs="{'invisible': [('parent.state', '=', 'done')]}"/>
-                </xpath>
-
                 <xpath expr="//field[@name='picking_ids']/tree/field[@name='scheduled_date']" position="after">
                     <field name="is_late_order" attrs="{'readonly':[('parent.state','=', 'done')]}"/>
                     <field name="low_qty_alert" invisible="1"/>
+                </xpath>
+
+                 <xpath expr="//field[@name='picking_ids']/tree/button[@name='action_cancel']" position="after">
+                    <button class="fa fa-fw fa-truck" name="action_print_pick_ticket" type="object" aria-label="Pick Ticket"
+                        attrs="{'invisible': [('is_late_order', '=', False)]}"/>
+                    <button class="fa fa-th-list" name="action_print_product_label" type="object" aria-label="Product Label"
+                        attrs="{'invisible': [('is_late_order', '=', False)]}"/>
+                    <button class="fa fa-trash-o" name="action_remove" type="object" aria-label="Remove row"
+                            attrs="{'invisible': [('parent.state', '=', 'done')]}"/>
                 </xpath>
 
                 <xpath expr="//field[@name='picking_ids']/tree" position="attributes">
@@ -268,7 +272,7 @@
                                 <field name="payment_method_id" required="1"/>
                                 <field name="communication" attrs="{'required': [('is_communication', '=', True)]}"/>
                                 <field name="is_communication" invisible="1"/>
-                                <field name="amount"/>
+                                <field name="amount" sum="Total"/>
                             </tree>
                         </field>
                     </sheet>

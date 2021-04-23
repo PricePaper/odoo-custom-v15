@@ -47,7 +47,7 @@ class StockPickingBatch(models.Model):
             rec.batch_payment_count = len(rec.payment_ids.mapped('batch_payment_id'))
 
     @api.multi
-    @api.depends('picking_ids.state', 'picking_ids.move_lines.product_id', 'picking_ids.move_lines.quantity_done')
+    @api.depends('picking_ids', 'picking_ids.state', 'picking_ids.move_lines.product_id', 'picking_ids.move_lines.quantity_done')
     def _compute_gross_weight_volume(self):
         for batch in self:
             for line in batch.mapped('picking_ids').filtered(lambda rec: rec.state != 'cancel').mapped('move_lines'):
@@ -165,6 +165,13 @@ class StockPickingBatch(models.Model):
     @api.multi
     def print_driver_spreadsheet(self):
         return self.env.ref('batch_delivery.batch_driver_report').report_action(self, config=False)
+
+    @api.multi
+    def print_picking(self):
+        pickings = self.mapped('picking_ids')
+        if not pickings:
+            raise UserError(_('Nothing to print.'))
+        return self.env.ref('batch_delivery.batch_picking_all_report').report_action(self)
 
     @api.multi
     def confirm_picking(self):
@@ -388,15 +395,12 @@ class CashCollectedLines(models.Model):
             picking = line.batch_id.picking_ids.filtered(lambda pick: pick.partner_id.id == line.partner_id.id)
             sale = picking[0].sale_id if picking else False
             if sale:
-                line.partner_ids = sale.partner_id | sale.partner_invoice_id
+                line.partner_ids = sale.partner_id | sale.partner_invoice_id | sale.partner_shipping_id
 
-    # @api.onchange('invoice_id')
-    # def onchange_invoice_id(self):
-    #     return {
-    #         'domain': {
-    #             'invoice_id': [('partner_id', 'in', self.partner_ids.ids)]
-    #         }
-    #     }
+    @api.onchange('invoice_id')
+    def onchange_invoice_id(self):
+        if self.invoice_id:
+            self.amount = self.invoice_id.amount_total
 
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
@@ -427,6 +431,7 @@ class CashCollectedLines(models.Model):
                 'partner_id': line.partner_id.id,
                 'amount': line.amount,
                 'journal_id': line.journal_id.id,
+                'invoice_ids': [(6, 0, line.invoice_id.ids)],
                 'communication': line.communication,
                 'batch_id': line.batch_id.id
             })

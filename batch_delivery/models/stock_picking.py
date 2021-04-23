@@ -51,6 +51,19 @@ class StockPicking(models.Model):
     is_invoiced = fields.Boolean(string="Invoiced", copy=False)
     invoice_ref = fields.Char(string="Invoice Reference", compute='_compute_invoice_ref')
     invoice_ids = fields.Many2many('account.invoice', compute='_compute_invoice_ids')
+    is_return = fields.Boolean(compute='_compute_state_flags')
+
+    def _compute_state_flags(self):
+        for pick in self:
+            if pick.move_lines.mapped('move_orig_ids').ids:
+                pick.is_return = True
+                pick.is_invoiced = True
+            else:
+                pick.is_return = False
+            if pick.sale_id.invoice_status in ['invoiced', 'no']:
+                pick.is_invoiced = True
+            else:
+                pick.is_invoiced = False
 
     @api.depends('sale_id.invoice_ids')
     def _compute_invoice_ids(self):
@@ -60,7 +73,8 @@ class StockPicking(models.Model):
     def _compute_invoice_ref(self):
         for rec in self:
             invoice = rec.sale_id.invoice_ids.filtered(lambda r: rec in r.picking_ids)
-            rec.invoice_ref = invoice.move_name
+            if invoice:
+                rec.invoice_ref = invoice[-1].move_name
 
     @api.depends('move_ids_without_package.reserved_availability')
     def _compute_available_qty(self):
@@ -133,7 +147,8 @@ class StockPicking(models.Model):
                 pick.move_ids_without_package.write({'is_transit': True})
                 for line in pick.move_line_ids:
                     line.qty_done = line.move_id.reserved_availability
-                    line.move_id.sale_line_id.qty_delivered = line.move_id.sale_line_id.pre_delivered_qty + line.move_id.reserved_availability
+                    if line.move_id.sale_line_id:
+                        line.move_id.sale_line_id.qty_delivered = line.move_id.sale_line_id.pre_delivered_qty + line.move_id.reserved_availability
                 if pick.batch_id:
                     pick.sale_id.write({'delivery_date': pick.batch_id.date})
 
@@ -145,8 +160,13 @@ class StockPicking(models.Model):
     @api.multi
     def create_invoice(self):
         for picking in self:
-            picking.sale_id.action_invoice_create(final=True)
-            picking.is_invoiced = True
+            if not any([line.quantity_done for line in picking.move_ids_without_package]):
+                raise UserError(_('Please enter quantities before proceed..'))
+            if picking.sale_id.invoice_status == 'no':
+                raise UserError(_('Nothing to Invoice..'))
+            if picking.sale_id.invoice_status == 'to invoice':
+                picking.sale_id.action_invoice_create(final=True)
+                picking.is_invoiced = True
             if picking.batch_id:
                 invoice = picking.sale_id.invoice_ids.filtered(lambda rec: picking in rec.picking_ids)
                 invoice.write({'date_invoice': picking.batch_id.date})
@@ -235,6 +255,15 @@ class StockPicking(models.Model):
     def action_remove(self):
         result = self.write({'batch_id': False, 'route_id': False, 'is_late_order': False})
         return result
+
+    @api.multi
+    def action_print_pick_ticket(self):
+        return self.env.ref('batch_delivery.batch_picking_active_report').report_action(self)
+
+    @api.multi
+    def action_print_product_label(self):
+
+        return self.env.ref('batch_delivery.product_label_report').report_action(self)
 
     @api.multi
     def button_validate(self):

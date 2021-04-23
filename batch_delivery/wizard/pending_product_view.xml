@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
-                        <field name="batch_ids">
+                        <field name="batch_ids" attrs="{'invisible': [('batch_ids', '=', [])]}">
                             <tree create="0" editable="top">
                                 <field name="name" readonly="1"/>
                                 <field name="date" readonly="1"/>
@@ -20,6 +20,7 @@
                                 <field name="state" readonly="1"/>
                             </tree>
                         </field>
+                        <field name="picking_ids" attrs="{'invisible': [('picking_ids', '=', [])]}" readonly="True"/>
                         <footer>
                             <button string="Generate Pending Lines" type="object" name="generate_move_lines"/>
                             or
@@ -33,10 +34,23 @@
 
 
         <act_window
-                id="action_pending_product_view"
+                id="action_pending_product_view1"
                 name="Pending Product View"
                 res_model="pending.product.view"
                 src_model="stock.picking.batch"
+                context="{'default_batch_ids': active_ids}"
+                view_mode="form"
+                multi="True"
+                target="new"
+                key2="client_action_multi"
+        />
+
+        <act_window
+                id="action_pending_product_view2"
+                name="Pending Product View"
+                res_model="pending.product.view"
+                src_model="stock.picking"
+                context="{'default_picking_ids': active_ids}"
                 view_mode="form"
                 multi="True"
                 target="new"

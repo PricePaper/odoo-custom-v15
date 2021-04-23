@@ -161,9 +161,9 @@ class StockPicking(models.Model):
     def create_invoice(self):
         for picking in self:
             if not any([line.quantity_done for line in picking.move_ids_without_package]):
-                raise UserError(_('Please enter quantities before proceed..'))
-            if picking.sale_id.invoice_status == 'no':
-                raise UserError(_('Nothing to Invoice..'))
+                raise UserError(_('Please enter quantities in %s before proceed..' % picking.name))
+            if picking.sale_id.invoice_status in ['no', 'invoiced']:
+                continue
             if picking.sale_id.invoice_status == 'to invoice':
                 picking.sale_id.action_invoice_create(final=True)
                 picking.is_invoiced = True

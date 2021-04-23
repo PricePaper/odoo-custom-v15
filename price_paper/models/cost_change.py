@@ -126,8 +126,8 @@ class CostChange(models.Model):
                 #                if rec.product_id:
                 #                    rec.price_change = rec.product_id.standard_price
                 if rec.product_id and rec.product_id.seller_ids:
-                    for seller in rec.product_id.seller_ids:
-                        rec.vendor_id = seller.name
+                    seller = rec.product_id.seller_ids.sorted(key=lambda x: x.sequence)[0]
+                    rec.vendor_id = seller.name
                 if rec.product_id and rec.product_id.categ_id:
                     rec.category_id = rec.product_id.categ_id
 

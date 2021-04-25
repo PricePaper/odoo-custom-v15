@@ -2,114 +2,153 @@
 <odoo>
     <data>
 
+        <template id="internal_layout">
+        <t t-if="not o" t-set="o" t-value="doc"/>
+
+        <t t-if="not company">
+            <!-- Multicompany -->
+            <t t-if="company_id">
+                <t t-set="company" t-value="company_id"/>
+            </t>
+            <t t-elif="o and 'company_id' in o">
+                <t t-set="company" t-value="o.company_id.sudo()"/>
+            </t>
+            <t t-else="else">
+                <t t-set="company" t-value="res_company"/>
+            </t>
+        </t>
+
+        <div class="header">
+            <div class="row">
+                <div class="col-3">
+                    <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>
+                </div>
+                <div class="col-2 offset-2 text-center">
+                    <span t-esc="company.name"/>
+                </div>
+                <div class="col-2 offset-3 text-right">
+                    <ul class="list-inline">
+                        <li class="list-inline-item"><span class="page"/></li>
+                        <li class="list-inline-item">/</li>
+                        <li class="list-inline-item"><span class="topage"/></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="article" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+          <t t-raw="0"/>
+        </div>
+    </template>
 
         <template id="report_picking_batch123">
             <t t-call="web.html_container">
-                <t t-call="web.basic_layout">
-
                         <t t-foreach="pickings" t-as="ob">
-                             <div class="page">
-                             <p style="page-break-after: always;"/>
-                            <table class="table">
-                                <tr>
-                                    <td style="text-align:right; font-weight: bolder; padding-bottom:10px;">
-                                        Delivery-address</td>
-                                    <td style="text-align:left;padding-left: 10px;  padding-bottom:10px;">
-                                        <span t-esc="ob.partner_id.name"/>
-                                        <span t-field="ob.partner_id"
-                                              t-options="{'widget': 'contact', 'fields': ['address'], 'no_marker': True}"/>
-                                    </td>
-                                    <td style="text-align:right; font-weight: bolder; padding-bottom:10px;">Delivery
-                                        Order</td>
-                                    <td style="text-align:left;padding-left: 10px;padding-bottom:10px;font-weight:bold">
-                                        <span t-esc="ob.name"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">Batch
-                                        Assignment/ Sequence</td>
-                                    <td style="text-align:left;padding-left: 10px;  padding-bottom:10px; font-weight:bold">
-                                        <span t-field="ob.batch_id"/>
-                                    </td>
-                                    <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">Delivery
-                                        Date</td>
-                                    <td style="text-align:left;padding-left: 10px;  padding-bottom:10px; font-weight:bold">
-                                        <span t-field="ob.date"/>
-                                    </td>
+                                <div class="header">
+                                    <div class="row" style="font-weight: bolder; padding-bottom:10px;">
+                                        <div class="col-2" style="text-align:left;">
+                                             Delivery-address
+                                        </div>
+                                        <div class="col-2" style="text-align:left;">
+                                            <span t-field="ob.partner_id.name"/>
+                                        </div>
+                                        <div class="col-5" style="text-align:right;">
+                                            Delivery Order
+                                        </div>
+                                        <div class="col-2" style="text-align:left;">
+                                            <span t-esc="ob.name"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="article" t-att-data-oe-model="ob and ob._name" t-att-data-oe-id="ob and ob.id" t-att-data-oe-lang="ob and ob.env.context.get('lang')">
+                                     <div class="page">
+                                        <p style="page-break-after: always;"/>
+                                        <table class="table">
+                                            <tr>
+                                                <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">Batch
+                                                    Assignment/ Sequence</td>
+                                                <td style="text-align:left;padding-left: 10px;  padding-bottom:10px; font-weight:bold">
+                                                    <span t-field="ob.batch_id"/>
+                                                </td>
+                                                <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">Delivery
+                                                    Date</td>
+                                                <td style="text-align:left;padding-left: 10px;  padding-bottom:10px; font-weight:bold">
+                                                    <span t-field="ob.date"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">Total
+                                                    Units</td>
+                                                <td style="text-align:left;padding-left: 10px;  padding-bottom:10px;">
+                                                    <span t-esc="'{0: 0.2f}'.format(sum(ob.move_lines.mapped('product_uom_qty')))"/>
+                                                </td>
+                                                <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">Total
+                                                    Weight</td>
+                                                <td style="text-align:left;padding-left: 10px;  padding-bottom:10px;">
+                                                    <span t-esc="'{0: 0.2f}'.format(sum(ob.move_lines.mapped(lambda m: m.product_uom_qty * m.product_id.weight)))"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">Total
+                                                    Volume</td>
+                                                <td style="text-align:left;padding-left: 10px;  padding-bottom:10px;">
+                                                    <span t-esc="'{0: 0.2f}'.format(sum(ob.move_lines.mapped(lambda m: m.product_uom_qty * m.product_id.volume)))"/>
+                                                </td>
+                                                <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">DO
+                                                    Barcode</td>
+                                                <td style="text-align:left;padding-left: 10px;  padding-bottom:10px;">
+                                                    <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', obname, 600, 100)"
+                                                         style="width:300px;height:50px" alt="Barcode"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <br/>
+                                        <table class="table table-sm o_main_table">
+                                            <tbody>
+                                                <t t-set="index" t-value="1"/>
+                                                <tr t-foreach="ob.move_lines" t-as="move"
+                                                    style="font-family: Roboto, Odoo Unicode Support Noto, sans-serif;font-size: 14px; font-weight: 500;">
+                                                    <td>
+                                                        <span t-esc="index"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="move.product_id.default_code"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="move.product_id.name"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="move.product_id.description_pickingout"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="move.product_uom_qty"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="move.product_uom"/>
+                                                    </td>
+                                                    <td style="padding-left: 20px;">
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="move.location_id"/>
+                                                    </td>
 
-                                </tr>
-                                <tr>
-                                    <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">Total
-                                        Units</td>
-                                    <td style="color:red;text-align:left;padding-left: 10px;  padding-bottom:10px;">
-                                        <span t-esc="sum(ob.move_lines.mapped('product_uom_qty'))"/>
-                                    </td>
-                                    <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">Total
-                                        Weight</td>
-                                    <td style="color:red;text-align:left;padding-left: 10px;  padding-bottom:10px;">
-                                        <span t-esc="sum(ob.move_lines.mapped(lambda m: m.product_uom_qty * m.product_id.weight))"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">Total
-                                        Volume</td>
-                                    <td style="color:red;text-align:left;padding-left: 10px;  padding-bottom:10px;">
-                                        <span t-esc="sum(ob.move_lines.mapped(lambda m: m.product_uom_qty * m.product_id.volume))"/>
-                                    </td>
-                                    <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">DO
-                                        Barcode</td>
-                                    <td style="text-align:left;padding-left: 10px;  padding-bottom:10px;">
-                                        <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', obname, 600, 100)"
-                                             style="width:300px;height:50px" alt="Barcode"/>
-                                    </td>
-                                </tr>
-                            </table>
-                            <br/>
-                            <table class="table table-sm o_main_table" style="page-break-inside: avoid;">
-                                <tbody>
-                                    <t t-set="index" t-value="1"/>
-                                    <tr t-foreach="ob.move_lines" t-as="move"
-                                        style="font-family: Roboto, Odoo Unicode Support Noto, sans-serif;font-size: 14px; font-weight: 500;">
-                                        <td>
-                                            <span t-esc="index"/>
-                                        </td>
-                                        <td>
-                                            <span t-field="move.product_id.default_code"/>
-                                        </td>
-                                        <td>
-                                            <span t-field="move.product_id.name"/>
-                                        </td>
-                                        <td>
-                                            <span t-field="move.product_id.description_pickingout"/>
-                                        </td>
-                                        <td>
-                                            <span t-field="move.product_uom_qty"/>
-                                        </td>
-                                        <td>
-                                            <span t-field="move.product_uom"/>
-                                        </td>
-                                        <td>
-                                            <span t-field="move.location_id"/>
-                                        </td>
-                                        <t t-set="index" t-value="index + 1"/>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-<!--                             <div class="footer o_clean_footer">-->
-<!--                                <div class="text-center" style="border-top: 1px solid black;">-->
-<!--                                    Batch <span t-field="ob.batch_id"/> Sequence <span t-field="ob.sequence"/> Partner <span t-esc="ob.partner_id.customer_code"/>-->
-<!--                                    <div t-if="report_type == 'pdf'" class="text-muted">-->
-<!--                                        Page: <span class="page"/> / <span class="topage"/>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                             </div>-->
-                            <p style="page-break-after: always;"/>
-
-                         </div>
+                                                    <t t-if="move">
+                                                        <t t-set="index" t-value="index + 1"/>
+                                                    </t>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                         <div class="footer">
+                                            <div class="text-center" style="border-top: 1px solid black;">
+                                                Batch <span t-field="ob.batch_id" style="padding-left: 10px;padding-right: 10px"/>
+                                                Sequence <span t-field="ob.name" style="padding-left: 10px;padding-right: 10px"/>
+                                                Partner <span t-esc="ob.partner_id.customer_code" style="padding-left: 10px;padding-right: 10px"/>
+                                                Page: <span class="page"/> / <span class="topage"/>
+                                            </div>
+                                         </div>
+                                        <p style="page-break-after: always;"/>
+                                    </div>
+                                </div>
                         </t>
-
-                </t>
             </t>
         </template>
 

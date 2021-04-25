@@ -131,7 +131,7 @@
                 file="batch_delivery.report_batch_picking_all"
                 name="batch_delivery.report_batch_picking_all"
                 paperformat="paperformat_batch_picking_ticket"
-                print_report_name="'Product labels - %s' % (object.name or '')"
+                print_report_name="'Batch Pick Tickets - %s' % (object.name or '')"
         />
 
         <report
@@ -143,7 +143,7 @@
                 file="batch_delivery.report_batch_picking_active"
                 name="batch_delivery.report_batch_picking_active"
                 paperformat="paperformat_batch_picking_ticket"
-                print_report_name="'Product labels - %s' % (object.name or '')"
+                print_report_name="'Batch Pick Ticket - %s' % (object.name or '')"
         />
 
     </data>

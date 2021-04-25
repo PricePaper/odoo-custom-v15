@@ -2,52 +2,11 @@
 <odoo>
     <data>
 
-        <template id="internal_layout">
-        <t t-if="not o" t-set="o" t-value="doc"/>
-
-        <t t-if="not company">
-            <!-- Multicompany -->
-            <t t-if="company_id">
-                <t t-set="company" t-value="company_id"/>
-            </t>
-            <t t-elif="o and 'company_id' in o">
-                <t t-set="company" t-value="o.company_id.sudo()"/>
-            </t>
-            <t t-else="else">
-                <t t-set="company" t-value="res_company"/>
-            </t>
-        </t>
-
-        <div class="header">
-            <div class="row">
-                <div class="col-3">
-                    <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>
-                </div>
-                <div class="col-2 offset-2 text-center">
-                    <span t-esc="company.name"/>
-                </div>
-                <div class="col-2 offset-3 text-right">
-                    <ul class="list-inline">
-                        <li class="list-inline-item"><span class="page"/></li>
-                        <li class="list-inline-item">/</li>
-                        <li class="list-inline-item"><span class="topage"/></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="article" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
-          <t t-raw="0"/>
-        </div>
-    </template>
-
         <template id="report_picking_batch123">
             <t t-call="web.html_container">
                         <t t-foreach="pickings" t-as="ob">
                                 <div class="header">
                                     <div class="row" style="font-weight: bolder; padding-bottom:10px;">
-                                        <div class="col-2" style="text-align:left;">
-                                             Delivery-address
-                                        </div>
                                         <div class="col-2" style="text-align:left;">
                                             <span t-field="ob.partner_id.name"/>
                                         </div>
@@ -62,16 +21,23 @@
                                 <div class="article" t-att-data-oe-model="ob and ob._name" t-att-data-oe-id="ob and ob.id" t-att-data-oe-lang="ob and ob.env.context.get('lang')">
                                      <div class="page">
                                         <p style="page-break-after: always;"/>
+                                         <style>
+                                            .o_main_table td {
+                                                padding: 0.75rem;
+                                                vertical-align: top;
+                                                border-top: 1px solid black;
+                                            }
+                                         </style>
                                         <table class="table">
                                             <tr>
                                                 <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">Batch
                                                     Assignment/ Sequence</td>
                                                 <td style="text-align:left;padding-left: 10px;  padding-bottom:10px; font-weight:bold">
-                                                    <span t-field="ob.batch_id"/>
+                                                    <span t-field="ob.batch_id"/> / <span t-esc=" ob.sequence + 1"/>
                                                 </td>
                                                 <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">Delivery
                                                     Date</td>
-                                                <td style="text-align:left;padding-left: 10px;  padding-bottom:10px; font-weight:bold">
+                                                <td style="text-align:left;padding-left: 10px;  padding-bottom:10px;">
                                                     <span t-field="ob.date"/>
                                                 </td>
                                             </tr>
@@ -125,7 +91,8 @@
                                                     <td>
                                                         <span t-field="move.product_uom"/>
                                                     </td>
-                                                    <td style="padding-left: 20px;">
+                                                    <td>
+                                                        <span>_____</span>
                                                     </td>
                                                     <td>
                                                         <span t-field="move.location_id"/>
@@ -140,8 +107,8 @@
                                          <div class="footer">
                                             <div class="text-center" style="border-top: 1px solid black;">
                                                 Batch <span t-field="ob.batch_id" style="padding-left: 10px;padding-right: 10px"/>
-                                                Sequence <span t-field="ob.name" style="padding-left: 10px;padding-right: 10px"/>
-                                                Partner <span t-esc="ob.partner_id.customer_code" style="padding-left: 10px;padding-right: 10px"/>
+                                                Sequence <span t-esc="ob.sequence + 1" style="padding-left: 10px;padding-right: 10px"/>
+                                                Partner: <span t-esc="ob.partner_id.customer_code" style="padding-left: 10px;padding-right: 10px"/>
                                                 Page: <span class="page"/> / <span class="topage"/>
                                             </div>
                                          </div>

@@ -230,4 +230,13 @@ class AccountInvoiceLine(models.Model):
 
 AccountInvoiceLine()
 
+
+class PaymentTerm(models.Model):
+    _inherit = 'account.payment.term'
+
+    set_to_default = fields.Boolean(string='Default')
+
+
+PaymentTerm()
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -67,9 +67,9 @@ class SaleOrder(models.Model):
                     "Some of the selected Orders are not in draft state"))
             res = rec.action_confirm()
             if res and res != True and res.get('context') and res.get('context').get('warning_message'):
-                msg = msg + '\n' +rec.name+'\n'+res.get('context').get('warning_message')
+                msg = msg + '\n' + rec.name + '\n' + res.get('context').get('warning_message')
         if msg:
-            msg = "Some of the selected Orders are on HOLD."+'\n'+msg
+            msg = "Some of the selected Orders are on HOLD." + '\n' + msg
             raise UserError(_(msg))
 
     @api.onchange('order_line')
@@ -160,7 +160,6 @@ class SaleOrder(models.Model):
             data = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
             return self.invoice_ids.ids, data
 
-
     @api.multi
     def import_draft_invoice(self, data):
 
@@ -188,15 +187,13 @@ class SaleOrder(models.Model):
 
         res = self.action_invoice_create(final=True)
         invoice = self.env['account.invoice'].browse(res)
-        invoice.write({'move_name': data.get('name') , 'date_invoice': data.get('date')})
+        invoice.write({'move_name': data.get('name'), 'date_invoice': data.get('date')})
         picking_ids.write({'is_invoiced': True})
         sale_amount = self.amount_total or 0
         invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
         res = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
 
         return res
-
-
 
     @api.multi
     def action_create_order_line_xmlrpc(self, vals):
@@ -205,7 +202,6 @@ class SaleOrder(models.Model):
         order_line.qty_delivered_manual = vals.get('qty_delivered_manual')
         order_line.qty_to_invoice = vals.get('qty_delivered_manual')
         return order_line.id
-
 
     @api.multi
     def fix_for_do(self):
@@ -438,7 +434,8 @@ class SaleOrder(models.Model):
                 shipping_date = date.today() + relativedelta(days=day_diff)
             self.release_date = shipping_date
             self.deliver_by = shipping_date
-            shipping_addr = self.partner_id.child_ids.filtered(lambda rec: rec.type == 'delivery' and rec.default_shipping == True)
+            shipping_addr = self.partner_id.child_ids.filtered(
+                lambda rec: rec.type == 'delivery' and rec.default_shipping == True)
             if shipping_addr:
                 self.partner_shipping_id = shipping_addr.id
         return res
@@ -498,7 +495,7 @@ class SaleOrder(models.Model):
                 if order_line.profit_margin < 0.0 and not (
                         'rebate_contract_id' in order_line and order_line.rebate_contract_id):
                     msg1 = '[%s]%s ' % (order_line.product_id.default_code,
-                                             order_line.product_id.name) + "Unit Price is less than  Product Cost Price"
+                                        order_line.product_id.name) + "Unit Price is less than  Product Cost Price"
 
             order.credit_warning = msg
             order.low_price_warning = msg1
@@ -514,8 +511,6 @@ class SaleOrder(models.Model):
             if order.release_price_hold:
                 order.action_confirm()
 
-
-
     @api.multi
     def action_release_price_hold(self):
         """
@@ -526,7 +521,6 @@ class SaleOrder(models.Model):
             order.message_post(body="Sale Team Approved")
             if order.ready_to_release:
                 order.action_confirm()
-
 
     def check_credit_limit(self):
         """
@@ -551,8 +545,6 @@ class SaleOrder(models.Model):
                 order.write({'is_creditexceed': False, 'ready_to_release': True})
                 return ''
 
-
-
     def check_low_price(self):
         """
         wheather order contains low price line
@@ -575,7 +567,6 @@ class SaleOrder(models.Model):
             else:
                 order.write({'is_low_price': False, 'release_price_hold': True})
                 return ''
-
 
     @api.onchange('payment_term_id')
     def onchange_payment_term(self):
@@ -615,7 +606,7 @@ class SaleOrder(models.Model):
             if not self.ready_to_release:
                 warning += self.check_credit_limit()
             if not self.release_price_hold:
-                warning = warning+self.check_low_price()
+                warning = warning + self.check_low_price()
             if warning:
                 context = {'warning_message': warning}
                 view_id = self.env.ref('price_paper.view_sale_warning_wizard').id
@@ -650,7 +641,7 @@ class SaleOrder(models.Model):
 
     @api.multi
     def import_action_confirm(self):
-        self = self.with_context({'from_import':True})
+        self = self.with_context({'from_import': True})
         return self.action_confirm()
 
     @api.multi
@@ -725,6 +716,15 @@ class SaleOrderLine(models.Model):
     update_pricelist = fields.Boolean(string="Update Pricelist", default=True, copy=False)
     remaining_qty = fields.Float(string="Remaining Quantity", compute='_compute_remaining_qty')
     similar_product_price = fields.Html(string='Similar Product Prices')
+    sale_uom_ids = fields.Many2many('uom.uom', compute='_compute_sale_uom_ids')
+
+    @api.depends('product_id.sale_uoms')
+    def _compute_sale_uom_ids(self):
+        for rec in self:
+            if rec.product_id:
+                rec.sale_uom_ids = rec.product_id.sale_uoms
+            else:
+                rec.sale_uom_ids = False
 
     @api.onchange('product_uom_qty', 'product_uom', 'route_id')
     def _onchange_product_id_check_availability(self):
@@ -757,7 +757,8 @@ class SaleOrderLine(models.Model):
 
                                 prices_all = self.env['customer.product.price']
                                 for rec in self.order_id.partner_id.customer_pricelist_ids:
-                                    if not rec.pricelist_id.expiry_date or rec.pricelist_id.expiry_date >= str(date.today()):
+                                    if not rec.pricelist_id.expiry_date or rec.pricelist_id.expiry_date >= str(
+                                            date.today()):
                                         prices_all |= rec.pricelist_id.customer_product_price_ids
 
                                 prices_all = prices_all.filtered(lambda r: r.product_id.id == item.id)
@@ -774,11 +775,12 @@ class SaleOrderLine(models.Model):
                                     price = price_rec.price
                                     uom = price_rec.product_uom.name
 
-                                similar_product_price += "<tr><td>{}</td><td>{:.02f}</td><td>{}</td></tr>".format(name, price, uom)
+                                similar_product_price += "<tr><td>{}</td><td>{:.02f}</td><td>{}</td></tr>".format(name,
+                                                                                                                  price,
+                                                                                                                  uom)
                         similar_product_price += "</table>"
                         self.similar_product_price = similar_product_price
         return res
-
 
     @api.depends('product_uom_qty', 'qty_delivered')
     def _compute_remaining_qty(self):
@@ -1109,7 +1111,8 @@ class SaleOrderLine(models.Model):
                         denom = (int(line.product_uom_qty / 1.0) + ((line.product_uom_qty % 1) * (
                                 100 + line.product_id.categ_id.repacking_upcharge) / 100))
                         line_price = numer / denom
-                    line.profit_margin = float_round((line_price - product_price) * line.product_uom_qty, precision_digits=2)
+                    line.profit_margin = float_round((line_price - product_price) * line.product_uom_qty,
+                                                     precision_digits=2)
 
     @api.multi
     @api.onchange('product_id')
@@ -1190,6 +1193,7 @@ class SaleOrderLine(models.Model):
         based on the pricelist.
         If there is no pricelist assign the standard price of product.
         """
+        print('PRODUCT UOM............................................................................')
         old_unit_price = self.price_unit
         res = super(SaleOrderLine, self).product_uom_change()
         warning, product_price, price_from = self.calculate_customer_price()
@@ -1205,6 +1209,11 @@ class SaleOrderLine(models.Model):
                 'message': _('You plan to sell Fractional Qty.')
             }
             res.update({'warning': warning_mess})
+        if self.product_id:
+            res.update({
+                'domain': {
+                    'product_uom': [('id', 'in', self.product_id.sale_uoms.ids)]
+                }})
         return res
 
     @api.multi

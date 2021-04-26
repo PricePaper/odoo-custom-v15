@@ -7,7 +7,7 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-                <data>
+
                     <xpath expr="//field[@name='payment_term_id']" position="after">
                         <field name="id" invisible="1"/>
                         <field name="available_carrier_ids" invisible="1"/>
@@ -43,7 +43,12 @@
                     <xpath expr="//field[@name='product_uom_qty']" position="after">
                         <field name="product_qty" invisible="1"/>
                     </xpath>
-
+                    <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="after">
+                        <field name="sale_uom_ids" invisible="1"/>
+                    </xpath>
+                    <xpath expr="//field[@name='order_line']/form//field[@name='product_uom']" position="attributes">
+                        <attribute name="domain">[('id', 'in', sale_uom_ids)]</attribute>
+                    </xpath>
                     <xpath expr="//group[hasclass('oe_subtotal_footer')]" position="before">
                         <group name="weight_volume">
                             <field name="total_volume"/>
@@ -51,7 +56,7 @@
                             <field name="total_qty"/>
                         </group>
                     </xpath>
-                </data>
+
             </field>
         </record>
 

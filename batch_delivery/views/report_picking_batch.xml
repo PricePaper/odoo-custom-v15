@@ -7,10 +7,10 @@
                         <t t-foreach="pickings" t-as="ob">
                                 <div class="header">
                                     <div class="row" style="font-weight: bolder; padding-bottom:10px;">
-                                        <div class="col-2" style="text-align:left;">
+                                        <div class="col-5" style="text-align:left;">
                                             <span t-field="ob.partner_id.name"/>
                                         </div>
-                                        <div class="col-5" style="text-align:right;">
+                                        <div class="col-3" style="text-align:right;">
                                             Delivery Order
                                         </div>
                                         <div class="col-2" style="text-align:left;">
@@ -27,12 +27,15 @@
                                                 vertical-align: top;
                                                 border-top: 1px solid black;
                                             }
+                                             .ppt_info td {
+                                             border: none;
+                                             }
                                          </style>
-                                        <table class="table">
+                                        <table class="table ppt_info">
                                             <tr>
                                                 <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">Batch
                                                     Assignment/ Sequence</td>
-                                                <td style="text-align:left;padding-left: 10px;  padding-bottom:10px; font-weight:bold">
+                                                <td style="text-align:left;padding-left: 10px;  padding-bottom:10px;">
                                                     <span t-field="ob.batch_id"/> / <span t-esc=" ob.sequence + 1"/>
                                                 </td>
                                                 <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">Delivery
@@ -62,7 +65,7 @@
                                                 <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">DO
                                                     Barcode</td>
                                                 <td style="text-align:left;padding-left: 10px;  padding-bottom:10px;">
-                                                    <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', obname, 600, 100)"
+                                                    <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', ob.name, 600, 100)"
                                                          style="width:300px;height:50px" alt="Barcode"/>
                                                 </td>
                                             </tr>
@@ -86,10 +89,10 @@
                                                         <span t-field="move.product_id.description_pickingout"/>
                                                     </td>
                                                     <td>
-                                                        <span t-field="move.product_uom_qty"/>
+                                                        <span t-field="move.product_uom"/>
                                                     </td>
                                                     <td>
-                                                        <span t-field="move.product_uom"/>
+                                                        <span t-field="move.product_uom_qty"/>
                                                     </td>
                                                     <td>
                                                         <span>_____</span>

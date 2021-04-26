@@ -170,6 +170,11 @@ class StockPickingBatch(models.Model):
         return self.env.ref('batch_delivery.batch_deliveryslip_report').report_action(self, config=False)
 
     @api.multi
+    def print_invoice_report(self):
+        self.ensure_one()
+        return self.env.ref('batch_delivery.ppt_account_invoices_report').report_action(docids=self.picking_ids.mapped('invoice_ids').ids, config=False)
+
+    @api.multi
     def print_driver_spreadsheet(self):
         return self.env.ref('batch_delivery.batch_driver_report').report_action(self, config=False)
 

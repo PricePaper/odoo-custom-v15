@@ -48,11 +48,12 @@ class StockPicking(models.Model):
     reserved_qty = fields.Float('Available Quantity', compute='_compute_available_qty')
     low_qty_alert = fields.Boolean(string="Low Qty", compute='_compute_available_qty')
     sequence = fields.Integer(string='Order')
-    is_invoiced = fields.Boolean(string="Invoiced", copy=False)
+    is_invoiced = fields.Boolean(string="Invoiced", compute='_compute_state_flags')
     invoice_ref = fields.Char(string="Invoice Reference", compute='_compute_invoice_ref')
     invoice_ids = fields.Many2many('account.invoice', compute='_compute_invoice_ids')
     is_return = fields.Boolean(compute='_compute_state_flags')
 
+    @api.depends('sale_id.invoice_status', 'invoice_ids', 'invoice_ids.state')
     def _compute_state_flags(self):
         for pick in self:
             if pick.move_lines.mapped('move_orig_ids').ids:

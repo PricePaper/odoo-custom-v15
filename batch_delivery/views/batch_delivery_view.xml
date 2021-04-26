@@ -19,11 +19,11 @@
                 </button>
 
                 <button name="print_picking" position="after">
-
+                    <field name="invoice_ids" invisible="1"/>
                     <button name="print_invoice_report"
                             string="Print Invoices" type="object"
                             class="oe_highlight"
-                            attrs="{'invisible': [('to_invoice', '=', True)]}"/>
+                            attrs="{'invisible': [('invoice_ids', '=', [])]}"/>
 
                     <button name="print_delivery_slip" string="Print Delivery Slip" type="object" class="oe_highlight"/>
                     <button name="print_driver_spreadsheet" string="Print Drivers Document" type="object"
@@ -79,7 +79,7 @@
                         <button class="oe_stat_button"
                                 name="view_invoices"
                                 icon="fa-pencil-square-o"
-                                attrs="{'invisible': [('to_invoice', '=', True)]}"
+                                attrs="{'invisible': [('invoice_ids', '=', [])]}"
                                 type="object"
                                 string="Customer Invoices"/>
                         <button class="oe_stat_button"
@@ -158,6 +158,7 @@
 
                 <xpath expr="//field[@name='picking_ids']/tree/field[@name='scheduled_date']" position="after">
                     <field name="is_late_order" attrs="{'readonly':[('parent.state','=', 'done')]}"/>
+                    <field name="is_invoiced" invisible="1"/>
                     <button class="fa fa-fw fa-truck" name="action_print_pick_ticket" type="object" aria-label="Pick Ticket"
                         attrs="{'invisible': [('is_late_order', '=', False)]}"/>
                     <button class="fa fa-th-list" name="action_print_product_label" type="object" aria-label="Product Label"

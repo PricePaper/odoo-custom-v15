@@ -33,6 +33,8 @@ class StockPickingBatch(models.Model):
     total_unit = fields.Float(string="Total Unit", compute='_compute_gross_weight_volume')
     batch_payment_count = fields.Integer(string='Batch Payment', compute='_compute_batch_payment_count')
     to_invoice = fields.Boolean(string='Need Invoice', compute='_compute_to_invoice_state')
+    invoice_ids = fields.Many2many('account.invoice', compute='_compute_invoice_ids')
+
     state = fields.Selection([
         ('draft', 'Draft'),
         ('in_progress', 'Running'),
@@ -41,8 +43,11 @@ class StockPickingBatch(models.Model):
         ('cancel', 'Cancelled')], default='draft',
         copy=False, track_visibility='onchange', required=True)
 
-    @api.multi
-    @api.depends('picking_ids.is_invoiced')
+    @api.depends('picking_ids.invoice_ids')
+    def _compute_invoice_ids(self):
+        for rec in self:
+            rec.invoice_ids = rec.picking_ids.mapped('invoice_ids')
+
     def _compute_to_invoice_state(self):
         for rec in self:
             rec.to_invoice = not all([pick.is_invoiced for pick in rec.picking_ids])
@@ -172,7 +177,10 @@ class StockPickingBatch(models.Model):
     @api.multi
     def print_invoice_report(self):
         self.ensure_one()
-        return self.env.ref('batch_delivery.ppt_account_invoices_report').report_action(docids=self.picking_ids.mapped('invoice_ids').ids, config=False)
+        invoices = self.mapped('invoice_ids').filtered(lambda r: r.state != 'cancel')
+        if not invoices:
+            raise UserError(_('Nothing to print.'))
+        return self.env.ref('batch_delivery.ppt_account_invoices_report').report_action(docids=invoices.ids, config=False)
 
     @api.multi
     def print_driver_spreadsheet(self):

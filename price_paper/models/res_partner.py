@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 
 class ResPartner(models.Model):
@@ -83,7 +83,7 @@ class ResPartner(models.Model):
         res = super(ResPartner, self).default_get(fields_list)
         if self.env.user.company_id:
             company = self.env.user.company_id
-            res.update({
+            res.update({   'property_payment_term_id': self.env['account.payment.term'].search([('set_to_default', '=', True)], limit=1).id,
                            'property_delivery_carrier_id': company.partner_delivery_method_id and company.partner_delivery_method_id.id or False,
                            'country_id': company.partner_country_id and company.partner_country_id.id or False,
                            'state_id': company.partner_state_id and company.partner_state_id.id or False})
@@ -150,6 +150,8 @@ class ResPartner(models.Model):
 
     @api.multi
     def write(self, vals):
+        if 'property_payment_term_id' in vals and not self.env.user.has_group('account.group_account_manager') and not self.env.user.has_group('account.group_account_user'):
+            raise UserError("You dont have the rights to change the payment terms of this customer.")
         if 'seller_partner_ids' in vals:
             seller = self.browse(vals.get('seller_partner_ids')[0][-1])
             for rec in self:

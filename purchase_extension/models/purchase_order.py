@@ -74,6 +74,13 @@ class PurchaseOrder(models.Model):
             order.total_qty = qty
 
     @api.multi
+    def create_new_po_from_import(self):
+        self.button_unlock()
+        self.button_cancel()
+        self.button_draft()
+        return True
+
+    @api.multi
     def add_sale_history_to_po_line(self):
         if not self.partner_id:
             return False

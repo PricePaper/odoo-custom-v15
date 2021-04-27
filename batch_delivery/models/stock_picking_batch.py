@@ -132,29 +132,11 @@ class StockPickingBatch(models.Model):
             result.append((batch.id, _('%s') % (batch.name)))
         return result
 
-    @api.multi
-    def view_pending_products(self):
-        for batch in self:
-            self.env['picking.pending.product'].search([('user_id', '=', self.env.uid)]).unlink()
 
-            for product in batch.picking_ids.mapped('move_ids_without_package').mapped('product_id'):
-                vals = {
-                    'product_id': product.id,
-                    'batch_id': batch.id,
-                    'user_id': self.env.uid
-                }
-                self.env['picking.pending.product'].create(vals)
-        view_id = self.env.ref('batch_delivery.view_picking_pending_product_tree').id
-        res = {
-            "type": "ir.actions.act_window",
-            "name": "Pending Product",
-            "res_model": "picking.pending.product",
-            "views": [[view_id, "tree"]],
-            "context": {},
-            "domain": [('user_id', '=', self.env.uid)],
-            "target": "current",
-        }
-        return res
+    def view_pending_products(self):
+        self.ensure_one()
+        pending_view = self.env['pending.product.view'].create({'batch_ids': [(6, 0, self.ids)]})
+        return pending_view.generate_move_lines()
 
     @api.multi
     def print_master_pickticket(self):

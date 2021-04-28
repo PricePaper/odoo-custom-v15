@@ -85,6 +85,7 @@
                     <page name='superseded' string='Superseded Products'>
                         <group>
                             <group string="Supersedes">
+                              <field name="new_products" invisible="1"/>
                                 <field name="superseded"
                                        attrs="{'invisible':[('active', '=', False)]}"
                                        context="{'default_product_child_id':id}"

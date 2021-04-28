@@ -23,6 +23,8 @@ class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     burden_percent = fields.Float(string='Burden %', default=lambda s: s.default_burden_percent())
+    new_products = fields.One2many(comodel_name='product.superseded', inverse_name='old_product',
+                                 string="New Product")
     superseded = fields.One2many(comodel_name='product.superseded', inverse_name='product_child_id',
                                  string="Supersedes")
     cost = fields.Float(compute='compute_sale_burden', string="Working Cost", digits=dp.get_precision('Product Price'))
@@ -63,6 +65,16 @@ class ProductProduct(models.Model):
         if self.env.user.company_id and self.env.user.company_id.burden_percent:
             return self.env.user.company_id.burden_percent
         return 0
+
+    @api.multi
+    def copy(self, default=None):
+
+        res = super(ProductProduct, self).copy(default)
+        #Duplicate price_list line
+        lines = self.env['customer.product.price'].search([('product_id', '=', self.id)])
+        default_1 = {'product_id': res.id}
+        new_lines = lines.copy(default=default_1)
+        return res
 
     @api.model
     def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):

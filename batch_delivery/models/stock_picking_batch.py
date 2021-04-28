@@ -33,6 +33,8 @@ class StockPickingBatch(models.Model):
     total_unit = fields.Float(string="Total Unit", compute='_compute_gross_weight_volume')
     batch_payment_count = fields.Integer(string='Batch Payment', compute='_compute_batch_payment_count')
     to_invoice = fields.Boolean(string='Need Invoice', compute='_compute_to_invoice_state')
+    invoice_ids = fields.Many2many('account.invoice', compute='_compute_invoice_ids')
+
     state = fields.Selection([
         ('draft', 'Draft'),
         ('in_progress', 'Running'),
@@ -41,8 +43,11 @@ class StockPickingBatch(models.Model):
         ('cancel', 'Cancelled')], default='draft',
         copy=False, track_visibility='onchange', required=True)
 
-    @api.multi
-    @api.depends('picking_ids.is_invoiced')
+    @api.depends('picking_ids.invoice_ids')
+    def _compute_invoice_ids(self):
+        for rec in self:
+            rec.invoice_ids = rec.picking_ids.mapped('invoice_ids')
+
     def _compute_to_invoice_state(self):
         for rec in self:
             rec.to_invoice = not all([pick.is_invoiced for pick in rec.picking_ids])
@@ -127,29 +132,11 @@ class StockPickingBatch(models.Model):
             result.append((batch.id, _('%s') % (batch.name)))
         return result
 
-    @api.multi
-    def view_pending_products(self):
-        for batch in self:
-            self.env['picking.pending.product'].search([('user_id', '=', self.env.uid)]).unlink()
 
-            for product in batch.picking_ids.mapped('move_ids_without_package').mapped('product_id'):
-                vals = {
-                    'product_id': product.id,
-                    'batch_id': batch.id,
-                    'user_id': self.env.uid
-                }
-                self.env['picking.pending.product'].create(vals)
-        view_id = self.env.ref('batch_delivery.view_picking_pending_product_tree').id
-        res = {
-            "type": "ir.actions.act_window",
-            "name": "Pending Product",
-            "res_model": "picking.pending.product",
-            "views": [[view_id, "tree"]],
-            "context": {},
-            "domain": [('user_id', '=', self.env.uid)],
-            "target": "current",
-        }
-        return res
+    def view_pending_products(self):
+        self.ensure_one()
+        pending_view = self.env['pending.product.view'].create({'batch_ids': [(6, 0, self.ids)]})
+        return pending_view.generate_move_lines()
 
     @api.multi
     def print_master_pickticket(self):
@@ -168,6 +155,14 @@ class StockPickingBatch(models.Model):
     @api.multi
     def print_delivery_slip(self):
         return self.env.ref('batch_delivery.batch_deliveryslip_report').report_action(self, config=False)
+
+    @api.multi
+    def print_invoice_report(self):
+        self.ensure_one()
+        invoices = self.mapped('invoice_ids').filtered(lambda r: r.state != 'cancel')
+        if not invoices:
+            raise UserError(_('Nothing to print.'))
+        return self.env.ref('batch_delivery.ppt_account_invoices_report').report_action(docids=invoices.ids, config=False)
 
     @api.multi
     def print_driver_spreadsheet(self):
@@ -262,7 +257,7 @@ class StockPickingBatch(models.Model):
     @api.multi
     def view_invoices(self):
         pickings = self.picking_ids
-        invoices = pickings.mapped('sale_id').mapped('invoice_ids')
+        invoices = pickings.mapped('invoice_ids')
         action = self.env.ref('account.action_invoice_tree1').read()[0]
         if len(invoices) > 1:
             action['domain'] = [('id', 'in', invoices.ids)]

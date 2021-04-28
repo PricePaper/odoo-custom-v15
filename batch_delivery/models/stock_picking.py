@@ -48,11 +48,12 @@ class StockPicking(models.Model):
     reserved_qty = fields.Float('Available Quantity', compute='_compute_available_qty')
     low_qty_alert = fields.Boolean(string="Low Qty", compute='_compute_available_qty')
     sequence = fields.Integer(string='Order')
-    is_invoiced = fields.Boolean(string="Invoiced", copy=False)
+    is_invoiced = fields.Boolean(string="Invoiced", compute='_compute_state_flags')
     invoice_ref = fields.Char(string="Invoice Reference", compute='_compute_invoice_ref')
     invoice_ids = fields.Many2many('account.invoice', compute='_compute_invoice_ids')
     is_return = fields.Boolean(compute='_compute_state_flags')
 
+    @api.depends('sale_id.invoice_status', 'invoice_ids', 'invoice_ids.state')
     def _compute_state_flags(self):
         for pick in self:
             if pick.move_lines.mapped('move_orig_ids').ids:
@@ -161,9 +162,9 @@ class StockPicking(models.Model):
     def create_invoice(self):
         for picking in self:
             if not any([line.quantity_done for line in picking.move_ids_without_package]):
-                raise UserError(_('Please enter quantities before proceed..'))
-            if picking.sale_id.invoice_status == 'no':
-                raise UserError(_('Nothing to Invoice..'))
+                raise UserError(_('Please enter quantities in %s before proceed..' % picking.name))
+            if picking.sale_id.invoice_status in ['no', 'invoiced']:
+                continue
             if picking.sale_id.invoice_status == 'to invoice':
                 picking.sale_id.action_invoice_create(final=True)
                 picking.is_invoiced = True
@@ -252,9 +253,10 @@ class StockPicking(models.Model):
     @api.multi
     def action_validate(self):
         self.ensure_one()
+        if self.picking_type_id.code == 'outgoing' and self.purchase_id:
+            return self.button_validate()
         self.check_return_reason()
-        result = self.button_validate()
-        return result
+        return self.button_validate()
 
     @api.multi
     def action_cancel(self):

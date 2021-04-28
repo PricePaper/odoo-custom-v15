@@ -13,7 +13,6 @@
                             <tr>
                                 <t t-set="colspan" t-value="6"/>
                                 <th class="text-left"><span>Description</span></th>
-                                <th class="text-right"><span>Required Quantity</span></th>
                                 <th class="text-right"><span>Unavailable Quantity</span></th>
                             </tr>
                         </thead>
@@ -23,11 +22,8 @@
                                 <tr>
                                     <td name="account_invoice_line_name"><span t-field="line.name"/></td>
                                     <td class="text-right">
-                                        <span t-field="line.product_uom_qty"/>
-                                        <span t-field="line.product_uom" groups="uom.group_uom"/>
-                                    </td>
-                                    <td class="text-right">
                                         <span t-esc="line.product_uom_qty - line.qty_delivered"/>
+                                        <span t-field="line.product_uom" groups="uom.group_uom"/>
                                     </td>
                                 </tr>
                             </t>

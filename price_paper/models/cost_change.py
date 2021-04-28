@@ -24,7 +24,7 @@ class CostChange(models.Model):
     price_change = fields.Float(string='Cost Change')
     is_done = fields.Boolean(string='Done', copy=False, default=False)
     run_date = fields.Date('Update Date', default=fields.Date.context_today)
-    update_customer_pricelist = fields.Boolean('Update Customer Pricelist')
+    update_customer_pricelist = fields.Boolean('Update Customer Pricelist', default=True)
     update_vendor_pricelist = fields.Boolean('Update Vendor Pricelist', default=True)
     update_standard_price = fields.Boolean('Update Standard Price', default=True)
     old_cost = fields.Float(compute='set_old_price', string='Old Cost', store=True)

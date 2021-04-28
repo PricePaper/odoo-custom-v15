@@ -77,7 +77,8 @@
             <field name="domain_force">['|', ('is_sales_person', '=', True),
                                         '|', '&amp;', ('create_uid', '=', user.id),
                                         ('sales_person_ids', '=', False), '|',
-                                        ('sales_person_ids.id', '=', user.partner_id.id),
+                                        ('sales_person_ids.id', '=', user.partner_id.id),'|',
+                                        ('parent_id.sales_person_ids.id', '=', user.partner_id.id),
                                         '|', ('id', '=', user.partner_id.id),
                                         ('id', '=', user.company_id.partner_id.id)]
             </field>

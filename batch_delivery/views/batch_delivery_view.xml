@@ -19,6 +19,8 @@
                 </button>
 
                 <button name="print_picking" position="after">
+                    <button name="print_product_labels" string="Print Product Labels" type="object"
+                            class="oe_highlight"/>
                     <field name="invoice_ids" invisible="1"/>
                     <button name="print_invoice_report"
                             string="Print Invoices" type="object"

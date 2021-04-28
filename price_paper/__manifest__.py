@@ -47,7 +47,7 @@ Custom module implemented for Price Paper.
         'views/menu.xml',
     ],
 
-    'depends': ['sale_stock', 'product', 'stock_account', 'purchase', 'account', 'sales_team', 'delivery', 'helpdesk'],
+    'depends': ['sale_stock', 'product', 'stock_account', 'purchase', 'purchase_stock', 'sale_purchase', 'account', 'sales_team', 'delivery', 'helpdesk'],
     'installable': True,
     'auto_install': False,
     'application': False,

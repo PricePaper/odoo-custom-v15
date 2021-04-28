@@ -16,6 +16,7 @@
                                 <field name='credit_limit'/>
                                 <field name='sale_history_months'/>
                                 <field name='standard_price_config_days'/>
+                                <field name='storage_product_id'/>
                             </group>
                         </group>
                         <group>

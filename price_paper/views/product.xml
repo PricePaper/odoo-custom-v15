@@ -209,6 +209,7 @@
                     <separator/>
                     <filter name="is_abv_max_qty" string="Above Max Qty" domain="[('is_abv_max_qty','=',True)]"/>
                     <filter name="is_bel_min_qty" string="Below Min Qty" domain="[('is_bel_min_qty','=',True)]"/>
+                    <filter name="is_bel_crit_qty" string="Critically Low" domain="[('is_bel_crit_qty','=',True)]"/>
                     <group expand="0" string="Group By">
                         <filter string="Vendor" name="groupby_vendor"
                                 domain="[]" context="{'group_by': 'vendor_id'}"/>

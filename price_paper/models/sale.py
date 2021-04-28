@@ -690,12 +690,12 @@ class SaleOrder(models.Model):
         for order in self:
             route = self.env.ref('purchase_stock.route_warehouse0_buy', raise_if_not_found=True)
             so_lines = order.order_line.filtered(lambda r: not r.display_type and not r.is_downpayment)
-            so_lines.sudo().write({'route_id': route.id})
+            so_lines.write({'route_id': route.id})
             errors = []
             for line in so_lines:
                 group_id = line.order_id.procurement_group_id
                 if not group_id:
-                    group_id = self.env['procurement.group'].sudo().create({
+                    group_id = self.env['procurement.group'].create({
                         'name': line.order_id.name,
                         'move_type': line.order_id.picking_policy,
                         'sale_id': line.order_id.id,
@@ -709,13 +709,13 @@ class SaleOrder(models.Model):
                     if group_id.move_type != line.order_id.picking_policy:
                         updated_vals.update({'move_type': line.order_id.picking_policy})
                     if updated_vals:
-                        group_id.sudo().write(updated_vals)
+                        group_id.write(updated_vals)
 
                 values = line._prepare_procurement_values(group_id=group_id)
                 product_qty = line.product_uom_qty
                 procurement_uom = line.product_uom
                 try:
-                    self.env['procurement.group'].sudo().run(
+                    self.env['procurement.group'].run(
                         line.product_id,
                         product_qty,
                         procurement_uom,
@@ -727,7 +727,7 @@ class SaleOrder(models.Model):
             if errors:
                 raise UserError('\n'.join(errors))
             else:
-                order.sudo().write({'state': 'released'})
+                order.write({'state': 'released'})
 
 SaleOrder()
 

@@ -245,7 +245,7 @@
             <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
             <field name="arch" type="xml">
                 <xpath expr="//filter[@name='my_quotation']" position="replace">
-                    <filter string="My Drafts" name="my_quotation" domain="[('state','in',('draft', 'sent'))]"/>
+                    <filter string="My Drafts" name="my_quotation" domain="[('user_id','=',uid),('state','in',('draft', 'sent'))]"/>
                 </xpath>
 
                 <xpath expr="//filter[@name='draft']" position="replace">

@@ -1266,9 +1266,10 @@ class SaleOrderLine(models.Model):
         if self.product_id and self.storage_contract_line_id:
             contract_line = self.storage_contract_line_id
             remaining_qty = contract_line.storage_remaining_qty
+            invoice_lines = self.storage_contract_line_id.order_id.mapped('order_line').mapped('invoice_lines')
             if remaining_qty <= self.selling_min_qty:
                 self.product_uom_qty = remaining_qty
-                if not any([l.is_downpayment for l in self.storage_contract_line_id.order_id.mapped('order_line')]):
+                if not any([inv_line.invoice_id.state == 'paid' for inv_line in invoice_lines]):
                     if self._context.get('quantity', False):
                         self.price_unit = old_unit_price
                     else:
@@ -1284,7 +1285,7 @@ class SaleOrderLine(models.Model):
                     }
                     self.product_uom_qty = 0
                     res.update({'warning': warning_mess})
-                if not any([l.is_downpayment for l in self.storage_contract_line_id.order_id.mapped('order_line')]):
+                if not any([inv_line.invoice_id.state == 'paid' for inv_line in invoice_lines]):
                     if self._context.get('quantity', False):
                         self.price_unit = old_unit_price
                     else:
@@ -1314,12 +1315,6 @@ class SaleOrderLine(models.Model):
                     'message': _('You plan to sell Fractional Qty.')
                 }
                 res.update({'warning': warning_mess})
-        # if self.product_id:
-        #     res.update({
-        #         'domain': {
-        #             'product_uom': [('id', 'in', self.product_id.sale_uoms.ids)]
-        #         }})
-
         return res
 
     @api.multi

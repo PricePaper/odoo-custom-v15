@@ -9,8 +9,8 @@
             <field name="arch" type="xml">
 
                 <button name="print_picking" position="before">
-                    <!-- <button name="view_pending_products"
-                            string="Pending Products" type="object" class="oe_highlight"/> -->
+                    <button name="view_pending_products"
+                            string="Pending Products" type="object" class="oe_highlight"/>
                     <button name="print_master_pickticket" string="Print Master PickTicket"
                             type="object" class="oe_highlight" attrs="{'invisible': [('state', '=', 'draft')]}"/>
                     <button name="print_master_late_order_pickticket" string="Print Master Late Order PickTicket"
@@ -19,7 +19,6 @@
                 </button>
 
                 <button name="print_picking" position="after">
-
                     <button name="print_product_labels" string="Print Product Labels" type="object"
                             class="oe_highlight"/>
                     <field name="invoice_ids" invisible="1"/>

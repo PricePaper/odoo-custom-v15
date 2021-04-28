@@ -23,6 +23,9 @@
                 <xpath expr="//field[@name='product_uom_qty']" position="after">
                     <field name="quantity_done"/>
                 </xpath>
+                <xpath expr="//field[@name='reference']" position="after">
+                    <field name="partner_id"/>
+                </xpath>
             </field>
         </record>
 

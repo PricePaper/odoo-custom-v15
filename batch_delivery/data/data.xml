@@ -1,5 +1,9 @@
 <odoo>
     <data>
+        <record id="default_stock_picking_return_reason" model="stock.picking.return.reason">
+            <field name="name">we're short inventory</field>
+        </record>
+
         <record id="batch_picking_driver_invoice" model="product.product">
             <field name="name">Truck Driver Batch Invoice</field>
             <field name="standard_price">0.0</field>

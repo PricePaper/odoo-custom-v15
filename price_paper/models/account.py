@@ -49,6 +49,14 @@ class AccountInvoice(models.Model):
     _inherit = "account.invoice"
 
     gross_profit = fields.Monetary(compute='calculate_gross_profit', string='Predicted Profit')
+    storage_down_payment = fields.Boolean()
+    is_released = fields.Boolean()
+
+    def storage_contract_release(self):
+        sale_order = self.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
+        self.write({'is_released': True})
+        sale_order.run_storage()
+        sale_order.message_post(body='Sale Order Released by : %s'%self.env.user.name)
 
     @api.multi
     def invoice_validate(self):

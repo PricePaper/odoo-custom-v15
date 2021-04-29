@@ -196,11 +196,13 @@ class SaleOrder(models.Model):
                     move_line.qty_done = qty_done
                     move_line.move_id.sale_line_id.qty_delivered = qty_done
                 else:
-                    missing_msg +=  'Invoice' + data.get('name') + 'product_id' + product_id
+                    missing_msg +=  'Invoice : ' + data.get('name') + ' Product_id : ' + str(product_id) + '\n'
         delivery_line = self.order_line.filtered(lambda r: r.product_id.default_code == 'misc')
         if delivery_line:
             delivery_line.qty_delivered_method = 'manual'
             delivery_line.qty_delivered_manual = 1
+        if missing_msg:
+            return {'missing_msg': missing_msg}
 
         res = self.action_invoice_create(final=True)
         invoice = self.env['account.invoice'].browse(res)

@@ -44,6 +44,12 @@ class SaleOrder(models.Model):
     total_weight = fields.Float(string="Total Order Weight", compute='_compute_total_weight_volume')
     total_qty = fields.Float(string="Total Order Quantity", compute='_compute_total_weight_volume')
     sc_payment_done = fields.Boolean()
+    hold_state = fields.Selection(
+                   [('credit_hold', 'Credit Hold'),
+                   ('price_hold', 'Price hold'),
+                   ('both_hold', 'Price, Credit Hold'),
+                   ('release', 'Order Released')],
+        string='Hold Status', default=False, copy=False)
 
     @api.depends('order_line.product_id', 'order_line.product_uom_qty')
     def _compute_total_weight_volume(self):
@@ -520,7 +526,12 @@ class SaleOrder(models.Model):
             order.write({'is_creditexceed': False, 'ready_to_release': True})
             order.message_post(body="Credit Team Approved")
             if order.release_price_hold:
+                order.hold_state = 'release'
                 order.action_confirm()
+            else:
+                order.hold_state = 'price_hold'
+
+
 
     @api.multi
     def action_release_price_hold(self):
@@ -531,7 +542,11 @@ class SaleOrder(models.Model):
             order.write({'is_low_price': False, 'release_price_hold': True})
             order.message_post(body="Sale Team Approved")
             if order.ready_to_release:
+                order.hold_state = 'release'
                 order.action_confirm()
+            else:
+                order.hold_state = 'credit_hold'
+
 
     def check_credit_limit(self):
         """
@@ -616,8 +631,15 @@ class SaleOrder(models.Model):
             warning = ''
             if not self.ready_to_release:
                 warning += self.check_credit_limit()
+                if warning:
+                    self.hold_state = 'credit_hold'
             if not self.release_price_hold:
-                warning = warning + self.check_low_price()
+                warning1 = self.check_low_price()
+                if warning1:
+                    self.hold_state = 'both_hold'
+                    if not warning:
+                        self.hold_state = 'price_hold'
+                    warning = warning + warning1
             if warning:
                 context = {'warning_message': warning}
                 view_id = self.env.ref('price_paper.view_sale_warning_wizard').id

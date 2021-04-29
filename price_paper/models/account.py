@@ -266,6 +266,7 @@ class account_abstract_payment(models.AbstractModel):
             if pay.payment_type == 'inbound':
                 pay.payment_difference_handling = 'reconcile'
                 pay.writeoff_label = ','.join(pay.invoice_ids.mapped('payment_term_id').mapped('name'))
+                pay.writeoff_account_id = self.env.user.company_id.discount_account_id
 
 
     @api.multi

@@ -7,6 +7,13 @@ from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import ValidationError
 
+MAP_INVOICE_TYPE_PAYMENT_SIGN = {
+    'out_invoice': 1,
+    'in_refund': -1,
+    'in_invoice': -1,
+    'out_refund': 1,
+}
+
 
 class AccountPaymentTermLine(models.Model):
     _inherit = "account.payment.term.line"
@@ -246,5 +253,66 @@ class PaymentTerm(models.Model):
 
 
 PaymentTerm()
+
+
+class account_abstract_payment(models.AbstractModel):
+    _inherit = "account.abstract.payment"
+
+    @api.depends('invoice_ids', 'amount', 'payment_date', 'currency_id')
+    def _compute_payment_difference(self):
+        for pay in self.filtered(lambda p: p.invoice_ids):
+            payment_amount = -pay.amount if pay.payment_type == 'outbound' else pay.amount
+            pay.payment_difference = pay.with_context(exclude_discount=True)._compute_payment_amount() - payment_amount
+            if pay.payment_type == 'inbound':
+                pay.payment_difference_handling = 'reconcile'
+                pay.writeoff_label = ','.join(pay.invoice_ids.mapped('payment_term_id').mapped('name'))
+
+
+    @api.multi
+    def _compute_payment_amount(self, invoices=None, currency=None):
+        # Get the payment invoices
+        if not invoices:
+            invoices = self.invoice_ids
+
+        # Get the payment currency
+        payment_currency = currency
+        if not payment_currency:
+            payment_currency = self.currency_id or self.journal_id.currency_id or self.journal_id.company_id.currency_id or invoices and \
+                               invoices[0].currency_id
+
+        # Avoid currency rounding issues by summing the amounts according to the company_currency_id before
+        invoice_datas = invoices.read_group(
+            [('id', 'in', invoices.ids)],
+            ['currency_id', 'type', 'residual_signed', 'residual_company_signed'],
+            ['currency_id', 'type'], lazy=False)
+
+        total = 0.0
+        for invoice_data in invoice_datas:
+            sign = MAP_INVOICE_TYPE_PAYMENT_SIGN[invoice_data['type']]
+            amount_total = sign * invoice_data['residual_signed']
+            amount_total_company_signed = sign * invoice_data['residual_company_signed']
+            invoice_currency = self.env['res.currency'].browse(invoice_data['currency_id'][0])
+            inv = self.env['account.invoice'].search(invoice_data['__domain'])
+            if payment_currency == invoice_currency:
+                days = (inv.date_invoice - fields.Date.context_today(inv)).days
+                if abs(days) < inv.payment_term_id.due_days and not self.env.context.get('exclude_discount', False) and inv.type == 'out_invoice':
+                    discount = inv.payment_term_id.discount_per
+                    amount_total = amount_total - (amount_total * (discount / 100))
+                total += amount_total
+            else:
+                amount_total_company_signed = self.journal_id.company_id.currency_id._convert(
+                    amount_total_company_signed,
+                    payment_currency,
+                    self.env.user.company_id,
+                    self.payment_date or fields.Date.today()
+                )
+                days = (inv.date_invoice - fields.Date.context_today(inv)).days
+                if abs(days) < inv.payment_term_id.due_days and not self.env.context.get('exclude_discount', False) and inv.type == 'out_invoice':
+                    discount = inv.payment_term_id.discount_per
+                    amount_total_company_signed = amount_total_company_signed - (amount_total_company_signed * (discount / 100))
+                total += amount_total_company_signed
+        return total
+
+account_abstract_payment()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

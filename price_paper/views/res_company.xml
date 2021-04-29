@@ -12,6 +12,7 @@
                     <page string='Others'>
                         <group>
                             <group>
+                                <field name="discount_account_id"/>
                                 <field name='burden_percent'/>
                                 <field name='credit_limit'/>
                                 <field name='sale_history_months'/>

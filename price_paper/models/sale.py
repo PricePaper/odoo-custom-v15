@@ -44,6 +44,13 @@ class SaleOrder(models.Model):
     total_weight = fields.Float(string="Total Order Weight", compute='_compute_total_weight_volume')
     total_qty = fields.Float(string="Total Order Quantity", compute='_compute_total_weight_volume')
     sc_payment_done = fields.Boolean()
+    show_contract_line = fields.Boolean(compute='_compute_show_contract_line')
+
+    @api.depends('partner_id')
+    def _compute_show_contract_line(self):
+        for order in self:
+            count = self.env['sale.order.line'].search_count([('order_partner_id', '=', order.partner_id.id), ('storage_remaining_qty', '>', 0)])
+            order.show_contract_line = bool(count)
 
     @api.depends('order_line.product_id', 'order_line.product_uom_qty')
     def _compute_total_weight_volume(self):

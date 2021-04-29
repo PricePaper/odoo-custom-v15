@@ -84,7 +84,8 @@
                 </sheet>
 
                 <xpath expr="//field[@name='validity_date']" position="after">
-                    <field name="storage_contract" invisible="1"/>
+                    <field name="storage_contract" invisible="0"/>
+                    <field name="show_contract_line" invisible="0"/>
                 </xpath>
 
                 <field name="partner_id" position="before">
@@ -149,7 +150,9 @@
                 </xpath>
 
                  <xpath expr="//field[@name='order_line']/form//label[@for='qty_delivered']" position="before">
-                     <field name="storage_contract_line_id" domain="[('order_id.storage_contract', '=', True), ('is_downpayment', '=', False), ('storage_remaining_qty', '&gt;', 0), ('order_id.partner_id', '=', parent.partner_id)]"/>
+                     <field name="storage_contract_line_id"
+                            attrs="{'invisible': [('parent.show_contract_line', '=', False)]}"
+                            domain="[('order_id.storage_contract', '=', True), ('is_downpayment', '=', False), ('storage_remaining_qty', '&gt;', 0), ('order_id.partner_id', '=', parent.partner_id)]"/>
                  </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="before">
                     <field name="lst_price" readonly="1"/>

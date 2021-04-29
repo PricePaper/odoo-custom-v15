@@ -380,6 +380,7 @@ class CashCollectedLines(models.Model):
     journal_id = fields.Many2one('account.journal', string='Journal', domain=[('type', 'in', ['bank', 'cash'])])
     partner_ids = fields.Many2many('res.partner', compute='_compute_partner_ids')
     invoice_id = fields.Many2one('account.invoice')
+    discount = fields.Float(string='Discount(%)')
 
 
     def _compute_partner_ids(self):
@@ -392,7 +393,18 @@ class CashCollectedLines(models.Model):
     @api.onchange('invoice_id')
     def onchange_invoice_id(self):
         if self.invoice_id:
-            self.amount = self.invoice_id.amount_total
+            self.amount = self.invoice_id.residual
+            days = (self.invoice_id.date_invoice - fields.Date.context_today(self)).days
+            if abs(days) < self.invoice_id.payment_term_id.due_days:
+                self.discount = self.invoice_id.payment_term_id.discount_per
+
+
+    @api.onchange('discount', 'invoice_id')
+    def onchange_discount(self):
+        if self.discount and self.invoice_id:
+            self.amount = self.invoice_id.residual - (self.invoice_id.residual * (self.discount / 100))
+        else:
+            self.amount = self.invoice_id.residual
 
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
@@ -413,6 +425,10 @@ class CashCollectedLines(models.Model):
         for line in self:
             if not line.amount:
                 continue
+            days = (line.invoice_id.date_invoice - fields.Date.context_today(line)).days
+            need_writeoff = True if abs(days) < line.invoice_id.payment_term_id.due_days else False
+            if need_writeoff and not self.env.user.company_id.discount_account_id:
+                raise UserError(_('Please set a discount account in company.'))
 
             batch_payment_info.setdefault(line.journal_id, {}). \
                 setdefault(line.payment_method_id, []). \
@@ -425,7 +441,11 @@ class CashCollectedLines(models.Model):
                 'journal_id': line.journal_id.id,
                 'invoice_ids': [(6, 0, line.invoice_id.ids)],
                 'communication': line.communication,
-                'batch_id': line.batch_id.id
+                'batch_id': line.batch_id.id,
+                'payment_difference': line.invoice_id.residual - line.amount,
+                'payment_difference_handlin': 'reconcile' if need_writeoff else False,
+                'writeoff_label': line.payment_method_id.name if need_writeoff else False,
+                'writeoff_account_id': self.env.user.company_id.discount_account_id.id if need_writeoff else False
             })
 
         AccountBatchPayment = self.env['account.batch.payment']

@@ -15,6 +15,7 @@ class ResCompany(models.Model):
     standard_price_config_days = fields.Integer(string='Standard price lock # days', default=60)
     credit_limit = fields.Integer(string='Credit Limit', default=4000)
     storage_product_id = fields.Many2one('product.product', string='Storage Product')
+    discount_account_id = fields.Many2one('account.account', domain=[('deprecated', '=', False)])
 
 
 ResCompany()

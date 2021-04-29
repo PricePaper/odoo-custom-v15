@@ -312,43 +312,25 @@ class SupplierInfo(models.Model):
     _inherit = 'product.supplierinfo'
 
     delay = fields.Integer(
-        string='Delivery Lead Time', required=True, default=0,
+        string='Delivery Lead Time', required=True, compute='_compute_delay', store=False,
         help="Lead time in days between the confirmation of the purchase order and the receipt of the products in your warehouse. Used by the scheduler for automatic computation of the purchase order planning.A value of zero (0) will tell the system to use the delay provided by the product vendor")
+    manual_delay = fields.Integer(string='Delivery Lead Time', default=0)
 
-    @api.model
-    def create(self, values):
-        """
-        Overriding create method to set delay
+    def _compute_delay(self):
+        for rec in self:
+            if rec.manual_delay == 0:
+                rec.delay = rec.name.delay
+            else:
+                rec.delay = rec.manual_delay
 
-        """
-        res = super(SupplierInfo, self).create(values)
-        if res.delay == 0:
-            res.delay = self.name.delay
-        return res
-
-    @api.multi
-    def write(self, values):
-        """
-        Overriding write method to track changes in delivery lead time and
-        reset orderpoint min/max qty according to delivery lead time
-        """
-        if 'delay' in values and values.get('delay', 0) == 0:
-            values['delay'] = self.name.delay
-        res = super(SupplierInfo, self).write(values)
-        if 'delay' in values:
-            product = self.product_id or self.env['product.product'].browse(
-                self.product_tmpl_id.product_variant_id[0].id)
-            self.reset_orderpoint(product)
-        return res
-
-    @api.multi
-    def reset_orderpoint(self, product):
-        """
-        Reset min_qty and max_quantity in orderpoints
-        based on the updated delivery lead time
-        """
-        self.ensure_one()
-        forecast = product.job_queue_forecast()
+    # @api.multi
+    # def reset_orderpoint(self, product):
+    #     """
+    #     Reset min_qty and max_quantity in orderpoints
+    #     based on the updated delivery lead time
+    #     """
+    #     self.ensure_one()
+    #     forecast = product.job_queue_forecast()
 
 
 SupplierInfo()

@@ -262,8 +262,15 @@ class account_abstract_payment(models.AbstractModel):
     def _compute_payment_difference(self):
         for pay in self.filtered(lambda p: p.invoice_ids):
             payment_amount = -pay.amount if pay.payment_type == 'outbound' else pay.amount
-            pay.payment_difference = pay.with_context(exclude_discount=True)._compute_payment_amount() - payment_amount
-            if pay.payment_type == 'inbound':
+            flag = False
+            for inv in pay.invoice_ids:
+                days = (inv.date_invoice - fields.Date.context_today(inv)).days
+                if abs(days) < inv.payment_term_id.due_days:
+                    flag = True
+                    break
+            currency = pay.currency_id
+            pay.payment_difference = pay.with_context(exclude_discount=False if flag else True)._compute_payment_amount(invoices=pay.invoice_ids, currency=currency) - payment_amount
+            if pay.payment_type == 'inbound' and flag:
                 pay.payment_difference_handling = 'reconcile'
                 pay.writeoff_label = ','.join(pay.invoice_ids.mapped('payment_term_id').mapped('name'))
                 pay.writeoff_account_id = self.env.user.company_id.discount_account_id
@@ -288,17 +295,22 @@ class account_abstract_payment(models.AbstractModel):
             ['currency_id', 'type'], lazy=False)
 
         total = 0.0
+
         for invoice_data in invoice_datas:
             sign = MAP_INVOICE_TYPE_PAYMENT_SIGN[invoice_data['type']]
             amount_total = sign * invoice_data['residual_signed']
             amount_total_company_signed = sign * invoice_data['residual_company_signed']
             invoice_currency = self.env['res.currency'].browse(invoice_data['currency_id'][0])
+
             inv = self.env['account.invoice'].search(invoice_data['__domain'])
+
             if payment_currency == invoice_currency:
-                days = (inv.date_invoice - fields.Date.context_today(inv)).days
-                if abs(days) < inv.payment_term_id.due_days and not self.env.context.get('exclude_discount', False) and inv.type == 'out_invoice':
-                    discount = inv.payment_term_id.discount_per
-                    amount_total = amount_total - (amount_total * (discount / 100))
+                if not self._context.get('exclude_discount', True):
+                    days = (inv.date_invoice - fields.Date.context_today(inv)).days
+                    if abs(days) < inv.payment_term_id.due_days and inv.type == 'out_invoice':
+                        discount = inv.payment_term_id.discount_per
+                        amount_total = amount_total - (amount_total * (discount / 100))
+
                 total += amount_total
             else:
                 amount_total_company_signed = self.journal_id.company_id.currency_id._convert(
@@ -307,11 +319,14 @@ class account_abstract_payment(models.AbstractModel):
                     self.env.user.company_id,
                     self.payment_date or fields.Date.today()
                 )
-                days = (inv.date_invoice - fields.Date.context_today(inv)).days
-                if abs(days) < inv.payment_term_id.due_days and not self.env.context.get('exclude_discount', False) and inv.type == 'out_invoice':
-                    discount = inv.payment_term_id.discount_per
-                    amount_total_company_signed = amount_total_company_signed - (amount_total_company_signed * (discount / 100))
+                if not self._context.get('exclude_discount', True):
+                    days = (inv.date_invoice - fields.Date.context_today(inv)).days
+                    if abs(days) < inv.payment_term_id.due_days and inv.type == 'out_invoice':
+                        discount = inv.payment_term_id.discount_per
+                        amount_total_company_signed = amount_total_company_signed - (amount_total_company_signed * (discount / 100))
+
                 total += amount_total_company_signed
+
         return total
 
 account_abstract_payment()

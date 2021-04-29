@@ -36,6 +36,27 @@
                 </xpath>
             </field>
         </record>
+
+        <record model="ir.ui.view" id="product_supplierinfo_form_view_inherit_price_paper">
+             <field name="model">product.supplierinfo</field>
+             <field name="inherit_id" ref="product.product_supplierinfo_form_view"/>
+             <field name="arch" type="xml">
+                  <xpath expr="//field[@name='product_code']" position="after">
+                    <label for="manual_delay"/>
+                    <div>
+                        <field name="manual_delay" class="oe_inline"/> days
+                    </div>
+                  </xpath>
+                  <xpath expr="//div[2]" position="attributes">
+                      <attribute name="invisible">1</attribute>
+                  </xpath>
+                  <xpath expr="//label[@for='delay']" position="attributes">
+                      <attribute name="invisible">1</attribute>
+                  </xpath>
+             </field>
+         </record>
+
+
         <record id="product_supplierinfo_tree_view_inherit_pricepaper" model="ir.ui.view">
             <field name="name">roduct.supplierinfo.form.view_inherit_pricepaper</field>
             <field name="model">product.supplierinfo</field>

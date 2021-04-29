@@ -119,11 +119,6 @@
                             attrs="{'invisible': ['|', ('is_low_price', '=', False), ('release_price_hold', '=', True)]}"/>
                 </button>
 
-                <button name="action_cancel" position="after">
-                    <button name="action_create_storage_downpayment" type="object" string="SC Payment"
-                            attrs="{'invisible': ['|', '|', ('invoice_count', '>', 0), ('storage_contract', '=', False), ('state', 'in', ['sale', 'done', 'cancel'])]}"/>
-                </button>
-
                 <button name="action_quotation_send" position="after">
                     <button name="action_fax_send" string="Send by Fax" type="object" states="draft,order,sent"
                             class="btn-primary"/>
@@ -153,7 +148,7 @@
                     <attribute name="decoration-success">profit_margin&gt;0</attribute>
                 </xpath>
 
-                 <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="before">
+                 <xpath expr="//field[@name='order_line']/form//label[@for='qty_delivered']" position="before">
                      <field name="storage_contract_line_id" domain="[('order_id.storage_contract', '=', True), ('is_downpayment', '=', False), ('storage_remaining_qty', '&gt;', 0), ('order_id.partner_id', '=', parent.partner_id)]"/>
                  </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="before">
@@ -569,15 +564,27 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                 </field>
             </record>
 
+        <record id="sale_order_view_search_storage_contract" model="ir.ui.view">
+            <field name="name">sale.order.search.inherit.storage.contract</field>
+            <field name="model">sale.order</field>
+            <field name="mode">primary</field>
+            <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='draft']" position="replace">
+                    <filter string="Drafts" name="draft" domain="[('state','=','draft')]"/>
+                    <filter string="Released" name="draft" domain="[('state','in',('draft', 'sent'))]"/>
+                </xpath>
+            </field>
+        </record>
+
          <record id="action_storage_contract" model="ir.actions.act_window">
             <field name="name">Storage Contract</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">sale.order</field>
-<!--            <field name="search_view_id" ref="sale_order_view_search_storage_contract"/>-->
-            <field name="domain">[('state', 'in', ('draft', 'sent', 'sale'))]</field>
+            <field name="search_view_id" ref="sale_order_view_search_storage_contract"/>
             <field name="context">{'default_storage_contract': 1}</field>
             <field name="view_type">form</field>
-             <field name="domain">[('storage_contract', '=', True)]</field>
+             <field name="domain">[('storage_contract', '=', True),('state', 'in', ('draft', 'sale', 'released'))]</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p>

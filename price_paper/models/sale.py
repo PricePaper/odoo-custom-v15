@@ -173,6 +173,8 @@ class SaleOrder(models.Model):
             res = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
             return res
 
+        missing_msg = ''
+
         picking_ids = self.picking_ids
         move_lines = self.picking_ids.mapped('move_line_ids')
         picking_ids.is_transit = True
@@ -181,9 +183,13 @@ class SaleOrder(models.Model):
             product_id = line.get('product_id')
             product_uom_qty = line.get('quantity_ordered')
             qty_done = line.get('quantity_shipped')
-            move_line = move_lines.filtered(lambda r: r.product_id.id == product_id)
-            move_line.qty_done = qty_done
-            move_line.move_id.sale_line_id.qty_delivered = qty_done
+            if qty_done != 0:
+                move_line = move_lines.filtered(lambda r: r.product_id.id == product_id)
+                if move_line:
+                    move_line.qty_done = qty_done
+                    move_line.move_id.sale_line_id.qty_delivered = qty_done
+                else:
+                    missing_msg +=  'Invoice' + data.get('name') + 'product_id' + product_id
         delivery_line = self.order_line.filtered(lambda r: r.product_id.default_code == 'misc')
         if delivery_line:
             delivery_line.qty_delivered_method = 'manual'
@@ -195,7 +201,7 @@ class SaleOrder(models.Model):
         picking_ids.write({'is_invoiced': True})
         sale_amount = self.amount_total or 0
         invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
-        res = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
+        res = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount, 'missing_msg': missing_msg}
 
         return res
 

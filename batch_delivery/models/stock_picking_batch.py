@@ -403,6 +403,8 @@ class CashCollectedLines(models.Model):
     def onchange_discount(self):
         if self.discount and self.invoice_id:
             self.amount = self.invoice_id.residual - (self.invoice_id.residual * (self.discount / 100))
+        else:
+            self.amount = self.invoice_id.residual
 
     @api.onchange('partner_id')
     def _onchange_partner_id(self):

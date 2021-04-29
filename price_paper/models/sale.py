@@ -45,6 +45,12 @@ class SaleOrder(models.Model):
     total_qty = fields.Float(string="Total Order Quantity", compute='_compute_total_weight_volume')
     sc_payment_done = fields.Boolean()
     show_contract_line = fields.Boolean(compute='_compute_show_contract_line')
+    hold_state = fields.Selection(
+                   [('credit_hold', 'Credit Hold'),
+                   ('price_hold', 'Price hold'),
+                   ('both_hold', 'Price, Credit Hold'),
+                   ('release', 'Order Released')],
+        string='Hold Status', default=False, copy=False)
 
     @api.depends('partner_id')
     def _compute_show_contract_line(self):
@@ -174,6 +180,8 @@ class SaleOrder(models.Model):
             res = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
             return res
 
+        missing_msg = ''
+
         picking_ids = self.picking_ids
         move_lines = self.picking_ids.mapped('move_line_ids')
         picking_ids.is_transit = True
@@ -182,9 +190,13 @@ class SaleOrder(models.Model):
             product_id = line.get('product_id')
             product_uom_qty = line.get('quantity_ordered')
             qty_done = line.get('quantity_shipped')
-            move_line = move_lines.filtered(lambda r: r.product_id.id == product_id)
-            move_line.qty_done = qty_done
-            move_line.move_id.sale_line_id.qty_delivered = qty_done
+            if qty_done != 0:
+                move_line = move_lines.filtered(lambda r: r.product_id.id == product_id)
+                if move_line:
+                    move_line.qty_done = qty_done
+                    move_line.move_id.sale_line_id.qty_delivered = qty_done
+                else:
+                    missing_msg +=  'Invoice' + data.get('name') + 'product_id' + product_id
         delivery_line = self.order_line.filtered(lambda r: r.product_id.default_code == 'misc')
         if delivery_line:
             delivery_line.qty_delivered_method = 'manual'
@@ -196,7 +208,7 @@ class SaleOrder(models.Model):
         picking_ids.write({'is_invoiced': True})
         sale_amount = self.amount_total or 0
         invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
-        res = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
+        res = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount, 'missing_msg': missing_msg}
 
         return res
 
@@ -527,7 +539,12 @@ class SaleOrder(models.Model):
             order.write({'is_creditexceed': False, 'ready_to_release': True})
             order.message_post(body="Credit Team Approved")
             if order.release_price_hold:
+                order.hold_state = 'release'
                 order.action_confirm()
+            else:
+                order.hold_state = 'price_hold'
+
+
 
     @api.multi
     def action_release_price_hold(self):
@@ -538,7 +555,11 @@ class SaleOrder(models.Model):
             order.write({'is_low_price': False, 'release_price_hold': True})
             order.message_post(body="Sale Team Approved")
             if order.ready_to_release:
+                order.hold_state = 'release'
                 order.action_confirm()
+            else:
+                order.hold_state = 'credit_hold'
+
 
     def check_credit_limit(self):
         """
@@ -623,8 +644,15 @@ class SaleOrder(models.Model):
             warning = ''
             if not self.ready_to_release:
                 warning += self.check_credit_limit()
+                if warning:
+                    self.hold_state = 'credit_hold'
             if not self.release_price_hold:
-                warning = warning + self.check_low_price()
+                warning1 = self.check_low_price()
+                if warning1:
+                    self.hold_state = 'both_hold'
+                    if not warning:
+                        self.hold_state = 'price_hold'
+                    warning = warning + warning1
             if warning:
                 context = {'warning_message': warning}
                 view_id = self.env.ref('price_paper.view_sale_warning_wizard').id

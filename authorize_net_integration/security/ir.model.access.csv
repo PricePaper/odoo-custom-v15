@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_authorize_net_api_user,authorizenet.api,model_authorizenet_api,account.group_account_invoice,1,1,1,0
+access_authorize_net_api_account_manager,authorizenet.api,model_authorizenet_api,account.group_account_manager,1,1,1,1
+access_authorize_net_api_salesman,authorizenet.api,model_authorizenet_api,sales_team.group_sale_salesman,1,1,0,0
+access_authorize_net_invoice_validate,account.reconcile,account.model_account_partial_reconcile,sales_team.group_sale_salesman,1,1,1,1
+access_account_move_line,account.move.line,account.model_account_move_line,sales_team.group_sale_salesman,1,1,1,1
+access_account_move,account.move,account.model_account_move,sales_team.group_sale_salesman,1,1,1,1
+access_error_box,access_error_box,model_error_box,sales_team.group_sale_salesman,1,1,1,0
+access_authorize_net_api_internal_user,authorizenet.api,model_authorizenet_api,base.group_user,1,1,1,1

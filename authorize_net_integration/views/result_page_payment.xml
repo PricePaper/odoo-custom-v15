@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="PaymentResultView">
+            <t t-call-assets="web.assets_common"/>
+            <t t-call-assets="web.assets_backend"/>
+            <t id="custom_title" name="change title" inherit_id="web.layout">
+                <xpath expr="//title" position="replace">
+                    <title>Confianz</title>
+                </xpath>
+            </t>
+            <t t-call="web.layout">
+                <t t-set="head">
+                    <title>Confianz</title>
+                    <link rel="stylesheet" href="/authorize_net_integration/static/src/css/payment.css"/>
+                    <link rel="shortcut icon" href="/authorize_net_integration/static/src/img/favicon.ico"
+                          type="image/x-icon"/>
+                    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                </t>
+                <div class='page'>
+                    <div class="ed_report_logo" >
+<!--                        <img src="/authorize_net_integration/static/src/img/ed_logo.png"/>-->
+                    </div>
+                    <div>
+                        <p class="oe_form_paragraph"></p>
+                        <div class="edi_container">
+                            <div class="oe_edi_paperbox">
+                                <h1 class="oe_edi_doc_title" style="color:#BA8144;">Confianz Payments</h1>
+                                <div class="approve_details">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-md-12">
+                                            <t t-if="status=='paid'">
+                                                <div style="text-align:center;">
+                                                    <img style="max-width:100%;height:auto;width:auto\9;"
+                                                         src="/authorize_net_integration/static/src/img/success.jpg"/>
+                                                </div>
+                                                <div style="text-align:center;">
+                                                    <h3 style="color:green;font-weight:bold;">Payment Successful</h3>
+                                                </div>
+                                            </t>
+                                            <t t-if="status=='already'">
+                                                <div style="text-align:center;">
+                                                    <img style="max-width:100%;height:auto;width:auto\9;"
+                                                         src="/authorize_net_integration/static/src/img/success.jpg"/>
+                                                </div>
+                                                <div style="text-align:center;">
+                                                    <h3 style="color:red;font-weight:bold;">Already Paid!!!!</h3>
+                                                </div>
+                                            </t>
+                                            <t t-if="error">
+                                                <div style="text-align:center;margin-top:3cm;margin-bottom:3cm">
+                                                    <h3 style="color:red">Some error occurred during transaction.</h3>
+                                                    <br/>
+                                                    <h3>Please contact Confianz</h3>
+                                                </div>
+                                            </t>
+                                            <t t-if="status=='expired'">
+                                                <div style="text-align:center;margin-top:3cm;margin-bottom:3cm">
+                                                    <h3 style="color:red">This link is already expired</h3>
+                                                    <br/>
+                                                    <h3>Please contact Confianz</h3>
+                                                </div>
+                                            </t>
+                                            <t t-if="status=='invoice-paid'">
+                                                <div style="text-align:center;margin-top:3cm;margin-bottom:3cm">
+                                                    <h3 style="color:red">This invoice is already paid/cancelled.If you have any
+                                                        questions please contact Confianz
+                                                    </h3>
+                                                    <br/>
+                                                </div>
+                                            </t>
+                                            <t t-if="status=='invoice-created'">
+                                                <div style="text-align:center;margin-top:3cm;margin-bottom:3cm">
+                                                    <h3 style="color:red">An invoice is already created for this particular sale order. Please cancel the invoice.                                                    </h3>
+                                                    <br/>
+                                                </div>
+                                            </t>
+                                            <t t-if="status=='not_exist'">
+                                                <div style="text-align:center;margin-top:3cm;margin-bottom:3cm">
+                                                    <h3 style="color:red;font-weight:bold;">URL DOES NOT EXIST!!!!</h3>
+                                                </div>
+                                            </t>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="oe_footer" id="oe_footer">
+                        <p class="oe_footer_powered address" style="text-align:center;">PO Box 7747 Charlotte, NC 28241
+                            <span>P) 877-332-3396</span>
+                            <span>F) 704.332.3267</span>
+                        </p>
+                        <p class="oe_footer_powered">
+                            <a class="ed_site_link" href="http://www.confianzit.com">www.confianzit.com</a>
+                            <span>info@confianzit.com</span>
+                        </p>
+                    </div>
+
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>
+

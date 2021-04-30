@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="InvoiceResultViewSuccess">
+            <t t-call-assets="web.assets_common"/>
+            <t t-call-assets="web.assets_backend"/>
+            <t id="custom_title" name="change title" inherit_id="web.layout">
+                <xpath expr="//title" position="replace">
+                    <title>Confianz</title>
+                </xpath>
+            </t>
+            <t t-call="web.layout">
+                <t t-set="head">
+                    <title>Confianz</title>
+                    <link rel="stylesheet" href="/authorize_net_integration/static/src/css/payment.css"/>
+                    <link rel="shortcut icon" href="/authorize_net_integration/static/src/img/favicon.ico"
+                          type="image/x-icon"/>
+                    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                </t>
+                <div class='page'>
+                    <div class="ed_report_logo" >
+<!--                        <img src="/authorize_net_integration/static/src/img/ed_logo.png"/>-->
+                    </div>
+                    <div>
+                        <p class="oe_form_paragraph"></p>
+                        <div class="edi_container receipt">
+                            <div class="oe_edi_paperbox receipt">
+                                <h1 style="color:#BA8144;" class="oe_edi_doc_title ">Payment Receipt</h1>
+                                <div class="container">
+
+                                    <div class="row">
+                                        <div class="well col-xs-12 col-sm-12 col-md-12 col-xs-offset-1 col-sm-offset-1 col-md-offset-3"
+                                             id="receipt">
+                                            <div class="row">
+                                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                                    <address>
+                                                        <strong>Confianz</strong>
+                                                        <br></br>
+                                                        PO Box 7747
+                                                        <br></br>
+                                                        Charlotte, NC 28241
+                                                        <br></br>
+
+                                                        <abbr title="Phone">P:</abbr>
+                                                        877-332-3396
+                                                        <br></br>
+                                                        <abbr title="Fax">F:</abbr>704-332-3267
+                                                    </address>
+                                                </div>
+                                                <div class="col-xs-6 col-sm-6 col-md-6 text-right">
+                                                    <p>
+                                                        <em>Date:
+                                                            <span t-esc="datetime.datetime.now().date()"></span>
+                                                        </em>
+                                                    </p>
+                                                    <p>
+                                                        <em>Transaction Id #:
+                                                            <span t-esc="invoice_ids[0].transaction_id"></span>
+                                                        </em>
+                                                    </p>
+                                                    <!--<p>-->
+                                                    <!--<em>Customer Type #:-->
+                                                    <!--<span t-esc="invoice_ids[0].partner_id.customertype_id.name"></span>-->
+                                                    <!--</em>-->
+                                                    <!--</p>-->
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <!--<div >-->
+                                                <!--<h4>Dear <span style="color:#707070;" t-esc="invoice_ids[0].partner_id.name"/> , </h4>-->
+                                                <!--</div>-->
+                                                <div class="col-12 col-md-7 m-auto text-center">
+                                                    <table class="invoice_table table table-condensed mb-4">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="text-align:left;">Invoice</th>
+<!--                                                                <th>Po Number</th>-->
+                                                                <th style="text-align:right;">Paid Amount</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <p class="mb-4">
+                                                            <h4>The Following are your paid invoices</h4>
+
+
+                                                        </p>
+
+                                                        <t t-foreach="invoice_ids" t-as="num">
+                                                            <tr>
+                                                                <td style="text-align:left;">
+                                                                    <t t-esc="num.number"></t>
+                                                                </td>
+<!--                                                                <td>-->
+<!--                                                                    <t t-esc="num.customer_po"></t>-->
+<!--                                                                </td>-->
+                                                                <td style="text-align:right;">
+                                                                    $
+                                                                    <t t-esc="amount"></t>
+                                                                </td>
+                                                            </tr>
+                                                        </t>
+                                                    </table>
+                                                    <t t-if="extra">
+                                                        <span>
+                                                            <h3>Extra Amount Paid: $
+                                                                <t t-esc="'%.2f'%(extra)"></t>
+                                                            </h3>
+                                                        </span>
+                                                    </t>
+                                                    <span>
+                                                        <h3>Total Amount Paid: $
+                                                            <t t-esc="amount"></t>
+                                                            <span t-if="type=='card'">(Including CreditCard Processing
+                                                                Fee)
+                                                            </span>
+                                                        </h3>
+                                                    </span>
+                                                    <div>
+                                                        <t t-if="extra">
+                                                            <h3>Note:
+                                                                <t t-esc="message"></t>
+                                                            </h3>
+                                                        </t>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="print col-12 col-md-6 m-auto">
+                                                    <h1 style="color:#BA8144;text-align:center;">
+                                                        Thank you for your payment.
+                                                    </h1>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row pt-4">
+                                        <div class="well m-auto">
+                                            <button type="button" id="print"
+                                                    class="btn btn-primary btn-md o_website_form_send">Print Receipt
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="oe_footer" id="oe_footer">
+                        <p class="oe_footer_powered address" style="text-align:center;">PO Box 7747 Charlotte, NC 28241
+                            <span>P) 877-332-3396</span>
+                            <span>F) 704.332.3267</span>
+                        </p>
+                        <p class="oe_footer_powered">
+                            <a class="ed_site_link" href="http://www.confianzit.com">www.confianzit.com</a>
+                            <span>info@confianzit.com</span>
+                        </p>
+                    </div>
+
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>
+

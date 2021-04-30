@@ -1,0 +1,15 @@
+.showcss{ display:block;
+color: #171515;}
+.hidecss{ display:none;}
+#ed-dialog .ed-ui-widget-content {
+    border: 1px solid #151313;
+    background: #d4d4d4 url(images/ui-bg_flat_75_ffffff_40x100.png) 50% 50% repeat-x;
+    color: #444444;
+}
+.ui-dialog-titlebar-close {
+  background: url("http://code.jquery.com/ui/1.10.3/themes/smoothness/images/ui-icons_888888_256x240.png") repeat scroll -93px -128px rgba(0, 0, 0, 0);
+  border: medium none;
+}
+.ui-dialog-titlebar-close:hover {
+  background: url("http://code.jquery.com/ui/1.10.3/themes/smoothness/images/ui-icons_222222_256x240.png") repeat scroll -93px -128px rgba(0, 0, 0, 0);
+}

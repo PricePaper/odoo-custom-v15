@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="PaymentResultViewSuccess">
+            <t t-call-assets="web.assets_common"/>
+            <t t-call-assets="web.assets_backend"/>
+            <t id="custom_title" name="change title" inherit_id="web.layout">
+                <xpath expr="//title" position="replace">
+                    <title>Confianz</title>
+                </xpath>
+            </t>
+            <t t-call="web.layout">
+                <t t-set="head">
+                    <title>Confianz</title>
+                    <link rel="stylesheet" href="/authorize_net_integration/static/src/css/payment.css"/>
+                    <link rel="shortcut icon" href="/authorize_net_integration/static/src/img/favicon.ico"
+                          type="image/x-icon"/>
+                    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                </t>
+                <div class='page'>
+                    <div class="ed_report_logo">
+<!--                        <img src="/authorize_net_integration/static/src/img/ed_logo.png"/>-->
+                    </div>
+                    <div>
+                        <p class="oe_form_paragraph"></p>
+                        <div class="edi_container receipt">
+                            <div class="oe_edi_paperbox">
+                                <h1 class="oe_edi_doc_title" style="color:#BA8144;">Payment Receipt</h1>
+                                <div class="container">
+                                    <div>
+                                        <div class="well"
+                                             id="receipt">
+                                            <div class="row">
+                                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                                    <address>
+                                                        <strong>Confianz</strong>
+                                                        <br></br>
+                                                        PO Box 7747
+                                                        <br></br>
+                                                        Charlotte, NC 28241
+                                                        <br></br>
+
+                                                        <abbr title="Phone">P:</abbr>
+                                                        877-332-3396
+                                                        <br></br>
+                                                        <abbr title="Fax">F:</abbr>
+                                                        704-332-3267
+                                                    </address>
+                                                </div>
+                                                <div class="col-xs-6 col-sm-6 col-md-6 text-right">
+                                                    <p>
+                                                        <em>Date:
+                                                            <span t-esc="datetime.datetime.now().date()"></span>
+                                                        </em>
+                                                    </p>
+                                                    <p>
+                                                        <em>Transaction Id #:
+                                                            <span t-esc="order_id.transaction_id"></span>
+                                                        </em>
+                                                    </p>
+                                                    <!--<p>-->
+                                                    <!--<em>Customer Type #:-->
+                                                    <!--<span t-esc="order_id.partner_id.customertype_id.name"></span>-->
+                                                    <!--</em>-->
+                                                    <!--</p>-->
+
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="text-center">
+                                                    <!--<img src="/authorize_net_integration/static/src/img/ed_logo.png" style="max-width:100%;height:auto;width:auto\9;"></img>-->
+                                                </div>
+                                                <div>
+                                                    <div>
+                                                        <h4 class="text-center">
+                                                            <span style="color:#707070;"
+                                                                  t-esc="invoice_id.partner_id.name"/>
+                                                        </h4>
+                                                    </div>
+<!--                                                    <t t-if="order_id.payment_status=='clear_production'">-->
+                                                        <p style="color:green;text-align:center;">You have succesfully
+                                                            paid $<span t-esc="'%.2f'%(amount)"></span>
+<!--                                                            [ <span-->
+<!--                                                                    t-esc="'%.2f'%(order_id.payment_term_id.pre_production_payment)"></span>%-->
+<!--                                                            of total payment amount $<span-->
+<!--                                                                    t-esc="'%.2f'%(order_id.amount_total)"></span>] as-->
+<!--                                                            Pre-->
+<!--                                                            Production amount for the order-->
+                                                            <span t-if="type=='card'">(including CreditCard Processing
+                                                                Fee )
+                                                            </span>
+                                                            <span t-esc="order_id.name"></span>
+<!--                                                            ( PO-->
+<!--                                                            <span t-esc="order_id.customer_po"/>-->
+<!--                                                            )-->
+                                                        </p>
+<!--                                                    </t>-->
+<!--                                                    <t t-if="order_id.payment_status=='clear_shipping'">-->
+<!--                                                        <p style="color:green;">You have Succesfully paid $<span-->
+<!--                                                                t-esc="'%.2f'%(amount)"></span> [ <span-->
+<!--                                                                t-esc="'%.2f'%(order_id.payment_term_id.pre_shiping_payment)"></span>%-->
+<!--                                                            of total payment amount $<span-->
+<!--                                                                    t-esc="'%.2f'%(order_id.amount_total)"></span>] as-->
+<!--                                                            Pre-->
+<!--                                                            Shipment amount for the order-->
+<!--                                                            <span t-if="type=='card'">(including CreditCard Processing-->
+<!--                                                                Fee )-->
+<!--                                                            </span>-->
+<!--                                                            <span t-esc="order_id.name"></span>-->
+<!--&lt;!&ndash;                                                            (PO&ndash;&gt;-->
+<!--&lt;!&ndash;                                                            <span t-esc="order_id.customer_po"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                                                            )&ndash;&gt;-->
+<!--                                                        </p>-->
+<!--                                                    </t>-->
+                                                </div>
+                                                <div>
+                                                    <h1 style="color:#BA8144;text-align:center;">
+                                                        Thank you for your payment.
+                                                    </h1>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="well m-auto mt-3">
+                                                <button type="button" id="print"
+                                                        class="btn btn-primary btn-md o_website_form_send mt-4">Print Receipt
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="oe_footer" id="oe_footer">
+                        <p class="oe_footer_powered address" style="text-align:center;">PO Box 7747 Charlotte, NC 28241
+                            <span>P) 877-332-3396</span>
+                            <span>F) 704.332.3267</span>
+                        </p>
+                        <p class="oe_footer_powered">
+                            <a class="ed_site_link" href="http://www.confianzit.com">www.confianzit.com</a>
+                            <span>info@confianzit.com</span>
+                        </p>
+                    </div>
+
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>

@@ -1,0 +1,608 @@
+/** EDI content **/
+.openerp .company_logo {
+    background-size: 180px 46px;
+}
+
+.invoice_open .o_main_navbar{
+    background-color: #ba8045;
+}
+.invoice_open .o_main_navbar > ul > li > a:hover{background-color:#707070;}
+.invoice_open .o_main_navbar .open .dropdown-toggle customer_details, .o_menu_systray .customer_details{
+background-color: #707070
+}
+.oe_edi_view {
+    width: 65%;
+    vertical-align: top;
+    padding: 0px 25px;
+    border-right: 1px solid #D2CFCF;
+    font-family:Verdana, Geneva, sans-serif;
+}
+.oe_edi_sidebar_container {
+    width: 35%;
+    padding: 0px 10px;
+    vertical-align: top;
+}
+
+button.oe_edi_action_print button.oe_edi_action_approve button.oe_edi_action_make_change{
+    margin-left: 35%;
+    margin-bottom: 20px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+button.oe_edi_action_print img, button.oe_edi_action_approve img, button.oe_edi_action_make_change img{
+	vertical-align:middle;
+    width: 40px;
+    height: 40px;
+    padding:8px;
+}
+
+.openerp input.invalid {
+    background-color: #F66 !important;
+    border: 1px solid #D00 !important;
+    color: #000;
+}
+/* following browse-specific hacks need to be separate rules, as browsers are
+   required to ignore rules with unknown selectors. At time of writing, there
+   is no standard way to style HTML5 placeholders */
+.openerp input.invalid:-moz-placeholder {
+    color: #FFF;
+}
+.openerp input.invalid::-webkit-input-placeholder {
+    color: #FFF;
+}
+
+/** EDI Sidebar **/
+.oe_edi_sidebar_title {
+    border-bottom: 1px solid #D2CFCF;
+    font-weight: bold;
+    font-size: 1em;
+    min-width: 10em;
+}
+.oe_edi_nested_block, .oe_edi_nested_block_import, .oe_edi_nested_block_pay {
+    margin: 0px 40px;
+    min-width: 10em;
+    display: none; /* made visible by click on parent input/label */
+}
+.oe_edi_right_top .oe_edi_nested_block label {
+    float: left;
+    text-align: right;
+    margin-right: 0.5em;
+    line-height: 180%;
+    font-weight: bold;
+    min-width: 5em;
+}
+.oe_edi_option {
+    padding-left: 5px;
+    line-height: 2em;
+}
+.oe_edi_option:hover {
+    background: #e8e8e8;
+}
+.oe_edi_import_button {
+    margin: 2px 10px;
+    white-space: nowrap;
+}
+.oe_edi_small, .oe_edi_small input {
+    font-size: 70%;
+}
+
+/** Sidebar bottom **/
+.oe_edi_paypal_button {
+    margin: 6px;
+}
+
+
+/** Paperbox, from http://www.sitepoint.com/pure-css3-paper-curl/ **/
+body {
+    background: #EEE; /* contrast with paper */
+}
+.oe_edi_paperbox {
+    position: relative;
+    padding: 30px;
+    padding-top: 2px; /* added Prabhu */
+    padding-bottom: 30px;
+    margin: 5px auto; /* 20 to 5 Prabhu */
+    background-color: #fff;
+    -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    font-family:Verdana, Geneva, sans-serif;
+     border: 1px solid #c8c8d3;
+}
+.oe_edi_paperbox:before, .oe_edi_paperbox:after {
+    position: absolute;
+    width: 40%;
+    height: 10px;
+    content: ' ';
+    left: 12px;
+    bottom: 15px;
+    background: transparent;
+    -webkit-transform: skew(-5deg) rotate(-5deg);
+    -moz-transform: skew(-5deg) rotate(-5deg);
+    -ms-transform: skew(-5deg) rotate(-5deg);
+    -o-transform: skew(-5deg) rotate(-5deg);
+    transform: skew(-5deg) rotate(-5deg);
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    z-index: -1;
+}
+.oe_edi_paperbox:after {
+    left: auto; right: 12px;
+    -webkit-transform: skew(5deg) rotate(5deg);
+    -moz-transform: skew(5deg) rotate(5deg);
+    -ms-transform: skew(5deg) rotate(5deg);
+    -o-transform: skew(5deg) rotate(5deg);
+    transform: skew(5deg) rotate(5deg);
+}
+
+/** Sale Order / Purchase Order Preview **/
+table.oe_edi_data, .oe_edi_doc_title {
+    border-bottom: 1px solid #ddd;
+    border-collapse: collapse;
+    clear: both;
+    font-size: 32px;
+    margin: 0 0 20px;
+    padding: 20px 0;
+    text-align: center;
+    font-weight: bold;
+}
+.oe_edi_data th {
+    white-space: nowrap;
+}
+.oe_edi_data .oe_edi_floor {
+    border-bottom: 1px solid black;
+}
+.oe_edi_data .oe_edi_ceiling {
+    border-top: 1px solid black;
+}
+.oe_edi_data .oe_edi_data_row {
+    border-bottom: 1px solid #D2CFCF;
+}
+.oe_edi_data_row td {
+    vertical-align: top;
+}
+.oe_edi_inner_note {
+    font-style: italic;
+    font-size: 75%;
+    padding-left: 10px;
+
+    /* prevent wide notes from disrupting layout due to <pre> styling */
+    white-space: pre-line;
+    width: 90%;
+}
+.oe_edi_data_row .oe_edi_inner_note {
+    /* prevent wide notes from disrupting layout due to <pre> styling */
+    width: 25em;
+}
+.oe_edi_shade {
+    background: #e8e8e8;
+}
+.oe_edi_company_name {
+    text-transform: uppercase;
+    font-weight: bold;
+}
+.oe_edi_address_from {
+    float: left;
+}
+.oe_edi_address_to {
+    float: right;
+    margin-top: 25px;
+    margin-bottom: 30px;
+}
+.oe_edi_company_block_title {
+    width: 375px;
+    margin: 0px;
+    padding: 2px 14px;
+    background-color: #252525;
+    border-top-left-radius: 5px 5px;
+    border-top-right-radius: 5px 5px;
+    background-repeat: repeat no-repeat;
+}
+.oe_edi_company_block_title .oe_edi_company_name {
+    margin: 0px;
+    font-size: 1em;
+    color: #FFF;
+}
+.oe_edi_company_block_body {
+    width: 375px;
+    margin: 0px;
+    padding: 5px 14px;
+    line-height: 16px;
+    background-color: rgb(242, 242, 242);
+}
+.oe_edi_company_block_body p {
+    color: #222;
+    margin: 5px 0px;
+}
+.oe_edi_summary_label {
+    float: left;
+}
+.oe_edi_summary_value {
+    float: right;
+}
+
+
+/** Python code highlighting **/
+/*  GeSHi (C) 2004 - 2007 Nigel McNie, 2007 - 2008 Benny Baumann
+    (http://qbnz.com/highlighter/ and http://geshi.org/) */
+.python .de1, .python .de2 {font: normal normal 1em/1.2em Verdana; margin:0; padding:0; background:none; vertical-align:top;}
+.python  {font-family:Verdana;}
+.python .imp {font-weight: bold; color: red;}
+.python li, .python .li1 {background: #ffffff; list-style: none;}
+.python .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
+.python .li2 {background: #f8f8f8;}
+.python .kw1 {color: #ff7700;font-weight:bold;}
+.python .kw2 {color: #008000;}
+.python .kw3 {color: #dc143c;}
+.python .kw4 {color: #0000cd;}
+.python .co1 {color: #808080; font-style: italic;}
+.python .coMULTI {color: #808080; font-style: italic;}
+.python .es0 {color: #000099; font-weight: bold;}
+.python .br0 {color: black;}
+.python .sy0 {color: #66cc66;}
+.python .st0 {color: #483d8b;}
+.python .nu0 {color: #ff4500;}
+.python .me1 {color: black;}
+.python span.xtra { display:block; }
+.python ol { padding: 0px; }
+
+/** eD Custom Style **/
+.ed_site_link{
+	padding:10px;
+}
+.ed_report_logo{
+	background-size: 183px 60px;
+	margin-top: 2px;
+    margin-left: 3px;
+    display: block;
+    width:185px;
+    height:62px;
+}
+/** ----------------------------------------------**/
+.edi_container {
+  margin: 12px auto;
+  max-width: 1430px;
+}
+.edi_container .approve_details h3 {
+    font-size: 18px;
+    margin: 7px 0;
+}
+.edi_container .approve_details h3 span:first-child {
+    display: inline-block;
+    font-size: 13px;
+    width: 140px;
+    font-weight: bold;
+}
+.edi_container .approve_details h3 span:last-child {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    padding-left: 12px;
+}
+.edi_container .info {
+     margin: 20px 0;
+}
+.edi_container .info h3 {
+    font-size: 19px;
+    font-weight: bold;
+
+}
+
+.edi_container .info_details li{
+	list-style:none;
+	margin-left: 20px;
+    text-indent: -21px;
+}
+.edi_container .info_details li:before {
+    color: #000;
+    content: "»";
+    margin: 0 12px 0 0;
+}
+.edi_container .info_details ul{  padding: 0 0 0 18px;}
+.btn_wrap{
+    display: block;
+    margin: 0 auto;
+    border-top: 1px solid #ddd;
+}
+.btn_wrap button {
+    margin: 20px 5px 0;
+    padding: 0 0 0 10px;
+}
+.oe_footer {
+  font-size: 12px;
+  margin: 12px;
+  text-align: center;
+}
+.oe_footer_powered span {
+    display: inline-block;
+}
+.oe_footer_powered.address span {
+    padding-left: 10px;
+}
+.ht-wrapper{
+    height: 70%;
+}
+.ht-wrapper h1{
+    padding-top: 10%;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.highlight td {background: #ece3d9;}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    opacity:1 !important;
+    font-size:13px;
+    co1or:#909090;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 320px;
+    background-color: #fff;
+    color: #0000;
+    border-radius: 6px;
+    border: 1px solid #cccaca;
+    padding: 12px;
+    position: absolute;
+    z-index: 1;
+    box-shadow: -2px 2px 4px #ddd;
+    right:0;
+}
+span.tooltiptext:before {
+    content: "";
+    width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 5px solid #9c9c9c;
+    position: absolute;
+    right: 10px;
+    top: -5px;
+    display:block;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+.current-invoice{
+    display: block;
+    background: #dadada;
+    padding: 10px;
+    text-transform: uppercase;
+    font-family: arial;
+    font-size: 13px;
+    letter-spacing: .01em;
+}
+.info{
+    font-size: 12px;
+    padding: 12px 2px;
+    color: #969595;
+    margin:0 !important;
+}
+.table-invoice th{
+    font-size: 13px;
+    text-transform: uppercase;
+    font-family: arial;
+    border-bottom: 1px solid #ddd!important;
+    padding: 11px 0!important;
+}
+ .table-invoice td{
+    padding: 11px 0!important;
+    font-size: 14px;
+    color: #696969;
+    max-width:230px;
+}
+.invoice-table-wrapper {
+    height: 480px;
+    overflow-y:scroll;
+}
+.table-invoice td {
+    height: 42px;
+}
+
+/*
+.table-invoice thead, .table-invoice tbody, .table-invoice tr, .table-invoice td, .table-invoice th { display: block; }
+
+.table-invoice tbody td, .table-invoice thead th {
+    width: 20%;
+    float: left;
+ }
+
+table.table-invoice {
+     width: 100%;
+}
+
+.table-invoice tr:after {
+        content: ' ';
+        display: block;
+        visibility: hidden;
+        clear: both;
+}
+
+.table-invoice thead th {
+      height: 40px;
+}
+.table-invoice tbody {
+      height: 448px;
+      overflow-y: auto;
+}*/
+.sort-focus {
+  color: #ba8144;
+  cursor: pointer;
+  font-weight: bold;
+}
+.selected-sort {
+    color:#ba8144;
+  font-weight: bold;
+}
+.asc:after {  content: "\25B2"; }
+.desc:after { content: "\25BC"; }
+.form-control input[type=number]::-webkit-outer-spin-button,
+.form-control input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance:textfield;
+}
+
+
+#credit_card_page .panel-heading {
+    color: #333333;
+    background-color: #c7c7c7;
+    border-color: #ddd;
+    text-align: center;
+    font-size: 20px;
+    padding: 16px 0;
+    font-weight: normal;
+    text-align: center;
+}
+#credit_card_page .panel-heading h3{
+    font-size: 16px;
+    margin: 0;
+}
+#credit_card_page label {
+    FONT-SIZE: 12PX;
+    color: #4e4e4e;
+    text-transform: uppercase;
+    font-family: arial;
+}
+#credit_card_page input, #credit_card_page .form-control{
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    height: 47px;
+    color: #797979;
+}
+#credit_card_page input.form-control:focus {
+    border-color: #dadada;
+    outline: 0;
+    box-shadow: none;
+    background: #fbf6f2;
+}
+#credit_card_page select{
+    border: none;
+}
+input.extra_amount {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 0 3px 0;
+}
+.form-control.extra_payments {
+    border: none!important;
+    padding: 0!important;
+    margin-bottom: 15px;
+}
+.form-control.extra_payments input {
+    padding:0 12px;
+}
+.total label {
+    font-size: 14px!important;
+}
+.total input{
+     border: 1px solid #ba8144 !important;
+ }
+
+ .surcharge input{
+     width: 80px !important;
+ }
+/** -----------------------media queries------------------------------**/
+
+@media (max-width: 1440px){
+    .edi_container {
+	    margin: 12px 3%;
+	    max-width: 97%;
+	}
+
+}
+@media (max-width: 1200px){
+    .table-invoice thead th,.table-invoice td{
+        height:30px;
+        font-size:10px;
+    }
+}
+@media (max-width: 1024px){
+
+    .table-invoice td input[type="checkbox"] {
+        margin: 0px 0 0;
+    }
+    table.table-invoice {
+        min-width: 560px;
+    }
+}
+
+
+
+@media (max-width: 768px){
+	.edi_container .oe_edi_doc_title {
+    	font-size: 22px;
+    }
+    .edi_container .approve_details h3 {
+    	font-size: 15px;
+	}
+	.edi_container .approve_details h3 span:first-child {
+	    font-size: 12px;
+	    width: 120px;
+    }
+    .edi_container .approve_details h3 span:last-child {
+	    font-size: 12px;
+	}
+	.edi_container .info h3 {
+    	font-size: 20px;
+    }
+    .ht-wrapper h1{
+    	font-size: 20px;
+    }
+}
+
+@media (max-width: 480px){
+    .edi_container .oe_edi_doc_title {
+        font-size: 18px;
+    }
+    .edi_container .approve_details h3 {
+        font-size: 12px;
+	}
+	.edi_container .approve_details h3 span:first-child {
+	    font-size: 11px;
+	    width: 95px !important;
+	}
+	.edi_container .approve_details h3 span:last-child {
+	    font-size: 10px;
+	    padding-left: 4px;
+	}
+	.edi_container .info h3 {
+	    font-size: 12px;
+	    line-height: 1.5;
+	}
+	.info_details h4{
+		font-size: 12px;
+	}
+	.edi_container .info_details ul {
+        padding: 0;
+    }
+    .edi_container .info_details li ,p{
+	    font-size: 12px;  line-height: 1.4;
+	}
+	.btn_wrap button {
+	    margin: 15px auto 0;
+	    padding: 0;
+	    width: 100%;
+	}
+}
+@media screen and (min-color-index:0) and(-webkit-min-device-pixel-ratio:0) { @media {
+    .btn_wrap button {
+	    margin: 15px auto 0;
+	    padding: 0px;
+	    width: 100%;
+	    height:50px;
+	    border-radius: 3px;
+	    background-color: #ddd;
+	}
+}}
+
+.invoice_table tr th, .invoice_table tr td{
+    text-align: center;
+}

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="ed_sale_order_inherited_form_view_for_authorize_net" model="ir.ui.view">
+            <field name="name">payment form view for sale order</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <notebook position="inside">
+                    <page string="Payment Gateway">
+<!--                        <group>-->
+<!--                            <field name="payment_status" attrs="{'invisible':[('payment_status','=', False)]}"/>-->
+<!--                        </group>-->
+                        <separator string="payment details"
+                                   attrs="{'invisible':[('transaction_date','=', False)]}"/>
+                        <group col="4" colspan="2">
+                            <field name="transaction_id" readonly="1"
+                                   attrs="{'invisible':[('transaction_id','=', False)]}"/>
+                            <field name='payment_id' readonly="1"
+                                   attrs="{'invisible':[('payment_id','=', False)]}"/>
+                            <field name="transaction_date" readonly="1"
+                                   attrs="{'invisible':[('transaction_date','=', False)]}"/>
+                        </group>
+
+                        <button name="%(payment_gateway_ui.action_make_payment_wizard)d"
+                                groups="payment_gateway_ui.group_invoice_correction" string="Authorize Payment"
+                                type="action" context="{'default_partner_id':partner_id}"
+                                attrs="{'invisible':['|',('state','!=','sale'),('invoice_status','!=','to invoice')]}"/>
+                        <button name="resend_link" string="Send Link" style="margin-left:.5cm;"
+                                help="If u send the payment link again the previous link will expire automatically if exists."
+                                type="object" class="btn-primary"
+                                attrs="{'invisible':['|',('state','!=','sale'),('invoice_status','!=','to invoice')]}"/>
+                    </page>
+                </notebook>
+
+            </field>
+        </record>
+
+
+        <!--inherited filter for adding transaction_id in filter-->
+        <record id="sale_filter_inherited_authorize" model="ir.ui.view">
+            <field name="name">sale.order.filter.inherit.authorize</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="transaction_id" string="Transaction ID"/>
+                </field>
+
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

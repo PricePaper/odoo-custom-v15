@@ -1,0 +1,25 @@
+#myInput {
+    width: 150px;
+    font-size: 13px;
+    padding: 2px 3px;
+    margin-bottom: 10px;
+    display: inline-block;
+    color:#909090;
+    background: transparent;
+}
+
+.search-bar-header{
+    text-align:right;
+}
+
+
+
+#myCredit tbody td,#myCredit thead th {
+width: 25%;
+float: left;
+ }
+.search_by{
+height:23px;
+text-transform: uppercase;
+width:100px;
+}

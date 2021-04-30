@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<!-- Groups -->
+    	<record id="group_invoice_correction" model="res.groups">
+        	<field name="name">External Gateway Payment</field>
+    	</record>
+
+    </data>
+</odoo>

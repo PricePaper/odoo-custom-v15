@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="0">
+
+
+<!--        <function name="write" model="ir.model.data">-->
+<!--            <function name="search" model="ir.model.data">-->
+<!--                <value-->
+<!--                        eval="[('module', '=', 'mail'), ('name', '=', 'mail_activity_data_todo')]"-->
+<!--                />-->
+<!--            </function>-->
+<!--            <value eval="{'noupdate': False}"/>-->
+<!--        </function>-->
+
+
+<!--                <record id="mail.mail_activity_data_todo" model="mail.activity.type">-->
+<!--                    <field name="name">To Do</field>-->
+<!--                    <field name="icon">fa-tasks</field>-->
+<!--                    <field name="delay_count">0</field>-->
+<!--                    <field name="sequence">12</field>-->
+<!--                </record>-->
+
+
+        <record id="email_invoice_online_link" model="mail.template">
+            <field name="name">Online Invoice Payment</field>
+            <field name="email_from"></field>
+            <field name="subject">${object.company_id.name} invoice ${object.number or 'n/a' }</field>
+            <field name="email_to">${object.partner_id.email or ''}</field>
+            <field name="model_id" ref="account.model_account_invoice"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="body_html"><![CDATA[
+				<div style="font-family: Verdana, Geneva, sans-serif; font-size: 13px; color: rgb(34, 34, 34); background-color: #FFF; ">
+
+				<p>Hello${object.partner_id.inv_contact and ' ' or ''}${object.partner_id.inv_contact or ''},</p>
+
+				<p style="margin-top: 20px;">A new invoice is available for ${object.partner_id.name}: </p>
+
+				<div style="border-width: 2px;border-left-style: solid;border-left-color:#BA8144;margin-left: 0px;margin-top: 20px;">
+				   &nbsp;&nbsp;<strong>REFERENCES</strong><br />
+				   &nbsp;&nbsp;Invoice number: <strong>${object.number or ''}</strong><br />
+				   &nbsp;&nbsp;Ship date:  ${object.date_invoice or ''}<br />
+				</div>
+
+				<p style="margin-top: 20px;">
+                Thank you for your business.You can pay your open invoices by this payment link ${object.gateway_type or ''}
+                		</p>
+                <p style="margin-top: 20px;">
+                You are requested to pay the invoices.
+                </p>
+                <div>
+                    <a style="display:block;margin-top: 20px; width: 280px; height:20px; margin-left: 0px; color: #DDD; font-family: Verdana, Geneva, sans-serif; font-size: 12px; font-weight: bold; text-align: center; text-decoration: none !important; line-height: 1; padding: 5px 0px 0px 0px; background-color:#21b799; border-radius: 5px 5px; background-repeat: repeat no-repeat;"
+                     href="${object.get_invoice_payment_url()}" target="new">Click Here to Make Payments</a>
+                 </div>
+				<br/>
+				<p style="margin-top: 20px;">If you have any questions, do not hesitate to contact us.</p>
+
+				<p style="margin-top: 20px;">Thank you for choosing ${object.company_id.name or 'us'}!</p>
+				<br/>
+				<div style="color: #BA8144; margin-top: 20px;">
+					${object.user_id.name}<br/>
+
+					% if object.user_id.email:
+						<a style="margin-top: 20px;" href="${object.user_id.email}">${object.user_id.email}</a> <br/>
+					%endif
+				</div>
+				<br/>
+				<div style="width: 375px; margin-top: 20px; margin: 0px; padding: 0px; background-color: #BA8144; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;">
+					<h3 style="margin: 0px;margin-top: 20px;  padding: 2px 14px; font-size: 13px; color: #DDD;">
+						<strong style="text-transform:uppercase;">${object.company_id.name}</strong></h3>
+				</div>
+				<div style="margin-top: 0px; width: 375px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;">
+					<span style="color: #222; margin-bottom: 2px; display: block; ">
+					% if object.company_id.street:
+						${object.company_id.street}<br/>
+					% endif
+					% if object.company_id.street2:
+						${object.company_id.street2}<br/>
+					% endif
+					% if object.company_id.city or object.company_id.zip:
+					   ${object.company_id.city}, ${object.company_id.state_id and ('%s' % object.company_id.state_id.code) or ''}  ${object.company_id.zip} <br/>
+					% endif
+					% if object.company_id.phone:
+						<div style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; ">
+							Phone:&nbsp; ${object.company_id.phone}
+						</div>
+					% endif
+					</span>
+					% if object.company_id.website:
+						<div>
+							Web :&nbsp;<a href="${object.company_id.website}">${object.company_id.website}</a>
+						</div>
+					%endif
+				</div>
+				</div>
+            ]]></field>
+
+        </record>
+
+        <record id="email_template_payment_notifications_inside_invoice" model="mail.template">
+            <field name="name">Payment Notification</field>
+            <field name="subject">Payment Received - ${object.number}</field>
+            <field name="email_to">shibi.thambi@confianzit.com</field>
+            <field name="model_id" ref="account.model_account_invoice"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.company_id.lang}</field>
+            <field name="body_html"><![CDATA[
+            <div style="font-family: Verdana, Geneva, sans-serif; font-size: 13px; color: rgb(34, 34, 34); background-color: #FFF; ">
+
+                <p>Hello,</p>
+                <p style="margin-top: 20px;">
+                ${object.partner_id.name or ''} has made a payment for the invoice ${object.number or ''}.  Please check the status of the invoice.<br/>
+                </p>
+                <br/>
+                <div style="border-width: 2px;border-left-style: solid;border-left-color:#BA8144;margin-left: 0px;margin-top: 20px;">
+           &nbsp;&nbsp;<strong>REFERENCES</strong><br />
+           &nbsp;&nbsp;Invoice number         : <strong>${object.number}</strong><br />
+           &nbsp;&nbsp;Invoice date           : ${object.date_invoice or ''}<br />
+        </div>
+            </div>
+            ]]>
+
+            </field>
+
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,44 @@
+#online_payment #popup_box {
+    display:none; /* Hide the DIV */
+    position:fixed;
+    _position:absolute; /* hack for internet explorer 6 */
+    height:500px;
+    width:500px;
+    background:#d4d4d4;
+    left: 400px;
+    top: 50px;
+    z-index:100; /* Layering ( on-top of others), if you have lots of layers: I just maximized, you can change it yourself */
+    margin-left: 25px;
+
+    /* additional features, can be omitted */
+    border:2px;
+    padding:15px;
+    font-size:15px;
+    -moz-box-shadow: 0 0 5px;
+    -webkit-box-shadow: 0 0 5px;
+    box-shadow: 0 0 5px;
+
+}
+
+#online_payment #container {
+display:none;
+    background:#d4d4d4; /*Sample*/
+    width:100%;
+    height:100%;
+}
+
+#online_payment a{
+cursor: pointer;
+text-decoration:none;
+}
+
+/* This is for the positioning of the Close Link */
+#online_payment #popupBoxClose {
+    font-size:20px;
+    line-height:15px;
+    right:5px;
+    top:5px;
+    position:absolute;
+    color:#6fa5e2;
+    font-weight:500;
+}

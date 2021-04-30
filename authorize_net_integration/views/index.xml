@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="assets_frontend" inherit_id="web.assets_backend" name="credit">
+        <xpath expr="." position="inside">
+            <!--<link rel="stylesheet" href="/authorize_net_integration/static/src/css/alert.css" />-->
+            <link rel="stylesheet" href="/authorize_net_integration/static/src/css/payment_credit.css"/>
+            <!--<link rel="stylesheet" href="/authorize_net_integration/static/src/css/error_message.css" />-->
+            <script type="text/javascript"
+                    src="/authorize_net_integration/static/src/js/credit_card_pop_up.js"></script>
+            <script type="text/javascript"
+                    src="/authorize_net_integration/static/src/js/group_invoice_payment.js"></script>
+            <script type="text/javascript" src="/authorize_net_integration/static/src/js/credit_memo.js"></script>
+            <script type="text/javascript" src="/authorize_net_integration/static/src/js/receipt.js"></script>
+            <script type="text/javascript" src="/authorize_net_integration/static/src/js/popover_invoice.js"></script>
+            <script type="text/javascript"
+                    src="/authorize_net_integration/static/src/js/invoice_form_submit.js"></script>
+            <!--<script type="text/javascript" src="/authorize_net_integration/static/src/js/ed_alert.js"></script>-->
+            <script type="text/javascript" src="/authorize_net_integration/static/src/js/my_cart_view.js"></script>
+            <script type="text/javascript"
+                    src="/authorize_net_integration/static/src/js/credits_auto_adjust.js"></script>
+            <script type="text/javascript" src="/authorize_net_integration/static/src/js/payment_method.js"></script>
+        </xpath>
+    </template>
+</odoo>

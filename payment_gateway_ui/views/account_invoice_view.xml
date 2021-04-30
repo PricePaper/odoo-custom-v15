@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- view inheritted for adding additional fields in account.invoice-->
+
+        <record id="view_account_invoice_inherited_form_view" model="ir.ui.view">
+            <field name="name">account.invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[2]" position='after'>
+                    <page string='Payment Gateway' groups="payment_gateway_ui.group_invoice_correction">
+                        <group col="4" colspan="2">
+                            <field name="transaction_id" string="Transaction ID" readonly="1"
+                                   attrs="{'invisible':[('transaction_id','=', False)]}"/>
+                            <field name="payment_id" string="Payment Profile ID" readonly="1"
+                                   attrs="{'invisible':[('payment_id','=', False)]}"/>
+                            <field name="transaction_date" readonly="1"
+                                   attrs="{'invisible':[('transaction_date','=', False)]}"/>
+                            <field name='parent_invoice_id' invisible="1"/>
+                            <field name='is_refund' readonly="1" attrs="{'invisible':[('is_refund','=', False)]}"/>
+                            <field name='transaction_id_refund' readonly="1"
+                                   attrs="{'invisible':[('transaction_id_refund','=', False)]}"/>
+                        </group>
+                        <button name="%(payment_gateway_ui.action_make_payment_wizard)d"
+                                groups="payment_gateway_ui.group_invoice_correction" string="Authorize Payment"
+                                type="action"
+                                attrs="{'invisible':['|', ('state','!=', 'open'),('type','=','out_refund')]}"
+                                context="{'default_partner_id':partner_id}"/>
+                        <button name="resend_link" style="margin-left:.5cm;" string="Send Link"
+                                type="object" class="btn-primary"
+                                attrs="{'invisible':['|',('state','!=', 'open'),('type','=','out_refund')]}"/>
+                    </page>
+                </xpath>
+                <xpath expr="//button[5]" position="attributes">
+                    <attribute name="context">{'refund_mode':True}</attribute>
+                </xpath>
+
+
+            </field>
+
+        </record>
+
+
+        <!--inherited filter for adding transaction_id, subscription id in filter-->
+        <record id="view_account_invoice_filter_inherited" model="ir.ui.view">
+            <field name="name">account.invoice.filter.inherit</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+            <field name="arch" type="xml">
+
+                <field name="partner_id" position="replace"/>
+                <field name="number" position="before">
+                    <field name="partner_id" operator="child_of"/>
+                </field>
+
+                <field name="number" position="after">
+                    <field name="transaction_id" string="Transaction ID"/>
+                </field>
+
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

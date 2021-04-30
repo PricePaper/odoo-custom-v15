@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="PaymentView">
+            <t t-call-assets="web.assets_common"/>
+            <t t-call-assets="web.assets_backend"/>
+            <t id="custom_title" name="change title" inherit_id="web.layout">
+                <xpath expr="//title" position="replace">
+                    <title>Confianz</title>
+                </xpath>
+            </t>
+            <script>
+            </script>
+            <t t-call="web.layout">
+                <t t-set="head">
+                    <title>Confianz</title>
+                    <link rel="stylesheet" href="/authorize_net_integration/static/src/css/payment.css"/>
+                    <!--<link rel="stylesheet" href="/authorize_net_integration/static/src/css/payment_of_card.css" />-->
+                    <link rel="shortcut icon" href="/authorize_net_integration/static/src/img/favicon.ico"
+                          type="image/x-icon"/>
+                    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                </t>
+                <div class='page'>
+                    <div class="ed_report_logo">
+<!--                        <img src="/authorize_net_integration/static/src/img/ed_logo.png"/>-->
+                    </div>
+                    <div>
+                        <p class="oe_form_paragraph"></p>
+                        <div class="edi_container online_production">
+                            <form action="/verification" method="post" id="online_payment">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="oe_edi_paperbox">
+                                    <h1 style="color:#BA8144;" class="oe_edi_doc_title">Confianz Payments</h1>
+                                    <div class="approve_details">
+                                        <t t-if="status=='draft'">
+                                            <div class="row">
+                                                <div id="credit_card_page" class="col-xs-12 col-md-4">
+                                                    <div class="panel panel-default">
+                                                        <div class="panel-heading" style="background-color:#c7c7c7;">
+                                                            <h3 class="panel-title text-center">
+                                                                Payment Details
+                                                            </h3>
+                                                        </div>
+                                                        <div class="panel-heading" style="background-color:#c7c7c7;">
+                                                            <div class="row">
+                                                                <input type="checkbox" name="selected_p_method"
+                                                                       checked="checked" t-att-value="card"
+                                                                       style="display:none;" id="selected_p_method"/>
+                                                                <div class="col-xs-6 col-md-6 pull-left">
+                                                                    <label for="card" class="payment_card_select">
+                                                                        Card Payment
+                                                                    </label>
+                                                                </div>
+                                                                <div class="col-xs-6 col-md-6 pull-left">
+                                                                    <label for="check" class="payment_check_select">
+                                                                        eCheck
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+
+                                                            <!--<select style="text-align-last:center;" id="payment_type"-->
+                                                            <!--required="required" name="payment_type"-->
+                                                            <!--class="panel-title text-center">-->
+                                                            <!--<option value="default_payment">Payment Method</option>-->
+                                                            <!--<option value="card_payment">Card Payment</option>-->
+                                                            <!--<option value="cheque_payment">eCheque</option>-->
+                                                            <!--</select>-->
+                                                        </div>
+                                                        <div class="panel-body card_payment_body">
+                                                            <div class="form-group">
+                                                                <label for="cardNumber">
+                                                                    CARD NUMBER
+                                                                </label>
+                                                                <input type="text" style="width:100%;"
+                                                                       class="form-control" maxlength="16" name="card"
+                                                                       id="cardNumber" placeholder="Valid Card Number"
+                                                                       required="required"/>
+                                                            </div>
+                                                            <div class="container_edr"
+                                                                 style="margin-top:2px;margin-bottom:7px;"
+                                                                 id="credit_cards">
+                                                                <img class="my_class_blur"
+                                                                     src="/authorize_net_integration/static/src/img/visa.png"
+                                                                     id="visa"></img>
+                                                                <img src="/authorize_net_integration/static/src/img/mastercard.png"
+                                                                     id="mastercard"></img>
+                                                                <img src="/authorize_net_integration/static/src/img/amex.png"
+                                                                     id="amex"></img>
+                                                                <img src="/authorize_net_integration/static/src/img/discover.png"
+                                                                     style="height:22px;" id="discover"></img>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xs-4 col-md-4 pull-right">
+                                                                    <div class="form-group">
+                                                                        <label for="cvCode">
+                                                                            CVV
+                                                                        </label>
+                                                                        <input type="password" class="form-control"
+                                                                               name="cvv" id="cvCode" placeholder="CVV"
+                                                                               required="required" maxlength="4"/>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-xs-4 col-md-4 pull-right">
+                                                                    <div class="form-group">
+                                                                        <label for="month">
+                                                                            Exp Month
+                                                                        </label>
+                                                                        <div class="form-control">
+                                                                            <select style="height:.89cm;"
+                                                                                    required="required" name="month"
+                                                                                    id="expiry_month"
+                                                                                    class="selectpicker">
+                                                                                <option value="">Select</option>
+                                                                                <option value="01">January</option>
+                                                                                <option value="02">February</option>
+                                                                                <option value="03">March</option>
+                                                                                <option value="04">April</option>
+                                                                                <option value="05">May</option>
+                                                                                <option value="06">June</option>
+                                                                                <option value="07">July</option>
+                                                                                <option value="08">August</option>
+                                                                                <option value="09">September</option>
+                                                                                <option value="10">October</option>
+                                                                                <option value="11">November</option>
+                                                                                <option value="12">December</option>
+                                                                            </select>
+                                                                        </div>
+
+
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-xs-4 col-md-4 pull-right">
+                                                                    <div class="form-group">
+                                                                        <label for="year">
+                                                                            Exp Year
+                                                                        </label>
+                                                                        <div class="form-control">
+                                                                            <select class="selectpicker"
+                                                                                    style="height:.89cm;" name="year">
+                                                                                <t t-foreach="range(datetime.datetime.now().year,(datetime.datetime.now().year)+11)"
+                                                                                   t-as="num">
+                                                                                    <option t-att-value="num">
+                                                                                        <t t-esc="num"/>
+                                                                                    </option>
+                                                                                </t>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xs-4 col-md-4 pull-right">
+                                                                    <div class="form-group">
+
+                                                                        <input type="hidden" class="form-control"
+                                                                               t-att-value="order_id.name" name="order"
+                                                                               id="order" readonly="True"/>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-xs-4 col-md-4 pull-right">
+                                                                    <div class="form-group">
+
+                                                                        <input type="hidden" class="form-control"
+                                                                               id="inv" t-att-value="invoice_id.id"
+                                                                               name="name" readonly="True"/>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-xs-4 col-md-4 pull-right">
+                                                                    <div class="form-group">
+
+                                                                        <input type="hidden" name="amount"
+                                                                               class="form-control" id="amount"
+                                                                               t-att-value="total_amount"
+                                                                               readonly="True"/>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+
+                                                        <div class="panel-body cheque_payment_body">
+
+                                                            <div class="form-group">
+                                                                <label for="chequeName">
+                                                                    Name
+                                                                </label>
+                                                                <input type="text" style="width:100%;"
+                                                                       class="form-control" maxlength="16"
+                                                                       name="account_name"
+                                                                       id="account_name"
+                                                                       placeholder="Valid Name"
+                                                                />
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="accountNumber">
+                                                                    Account NUMBER
+                                                                </label>
+                                                                <input type="text" style="width:100%;"
+                                                                       class="form-control" maxlength="16"
+                                                                       name="account_number"
+                                                                       id="account_number"
+                                                                       placeholder="Valid Account Number"
+                                                                />
+                                                            </div>
+
+                                                            <!-- <div class="row"> -->
+                                                            <div class="form-group">
+
+
+                                                                <div class="form-group">
+                                                                    <label for="routingNumber">
+                                                                        Routing NUMBER
+                                                                    </label>
+                                                                    <input type="text" style="width:100%;"
+                                                                           class="form-control" maxlength="16"
+                                                                           name="routing_number"
+                                                                           id="routing_number"
+                                                                           placeholder="Valid Routing Number"
+                                                                    />
+
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="bank_name">
+                                                                    Bank Name
+                                                                </label>
+                                                                <input type="text" name="bank_name"
+                                                                       class="form-control" id="bank_name"
+                                                                       placeholder="Valid Bank Name"
+                                                                />
+                                                            </div>
+
+
+                                                            <!-- </div> -->
+
+
+                                                        </div>
+
+
+                                                    </div>
+                                                    <div class="surcharge_box">
+
+                                                        <div class="total">
+                                                            <br></br>
+                                                            <h6>Order Total ($)</h6>
+                                                        </div>
+                                                        <div>
+                                                            <div class="form-group">
+
+                                                                <t t-set="invoice_total"
+                                                                   t-value="'%.2f'%(order_id.amount_total)"/>
+                                                                <input type="text" name="invoice_total"
+                                                                       class="form-control" t-att-value="invoice_total"
+                                                                       id="invoice_total"
+                                                                       readonly="True"/>
+
+
+                                                            </div>
+                                                        </div>
+                                                        <br></br>
+                                                        <div>
+<!--                                                            <t t-if="order_id.payment_status=='pre_production'">-->
+<!--                                                                <p style="color:#707070;">(<span-->
+<!--                                                                        t-esc="'%.2f'%(order_id.payment_term_id.pre_production_payment)"></span>%-->
+<!--                                                                    of total payment amount ($<span-->
+<!--                                                                            t-esc="'%.2f'%(order_id.amount_total)"></span>)-->
+<!--                                                                    as Pre-->
+<!--                                                                    Production amount)-->
+<!--                                                                </p>-->
+<!--                                                            </t>-->
+<!--                                                            <t t-if="order_id.payment_status=='pre_shipping'">-->
+<!--                                                                <p style="color:#707070;">(<span-->
+<!--                                                                        t-esc="'%.2f'%(order_id.payment_term_id.pre_shiping_payment)"></span>%-->
+<!--                                                                    of total payment amount ($<span-->
+<!--                                                                            t-esc="'%.2f'%(order_id.amount_total)"></span>)-->
+<!--                                                                    as Pre-->
+<!--                                                                    Shipping amount)-->
+<!--                                                                </p>-->
+<!--                                                            </t>-->
+                                                        </div>
+
+                                                        <!--<div class="col-xs-12 col-md-6 total">
+                                                            <br></br>
+                                                            <h8>
+                                                                <span class="hide_processing">Credit Card</span>
+                                                                Processing Fee ($)
+                                                            </h8>
+                                                        </div>
+                                                        <div class="col-xs-12 col-md-6">
+                                                            <div class="form-group">
+
+                                                                <t t-set="handling_fee"
+                                                                   t-value="'%.2f'%(handling_fee)"/>
+                                                                <input type="text" name="handling_fee"
+                                                                       class="form-control" t-att-value="handling_fee"
+                                                                       id="handling_fee"
+                                                                       readonly="True"/>
+
+
+                                                            </div>
+                                                        </div>-->
+                                                    </div>
+                                                    <div class="total">
+                                                        <br></br>
+                                                        <label for="total">Total Amount ($)</label>
+                                                    </div>
+                                                    <div class="total">
+                                                        <div class="form-group">
+
+                                                            <t t-set="production_amount"
+                                                               t-value="'%.2f'%(order_id.amount_total-order_id.down_payment_amount)"/>
+                                                            <input type="text" name="total" pattern="^[+-]?(\d*\.)?\d+$"
+                                                                   class="form-control" t-att-value="production_amount"
+                                                                   id="production_total"
+                                                                   required="required"/>
+
+
+                                                        </div>
+                                                    </div>
+                                                    <br/>
+                                                    <!--<div>-->
+                                                    <!--<t t-if="order_id.payment_status=='pre_production'">-->
+                                                    <!--<p style="color:#707070;">(<span-->
+                                                    <!--t-esc="'%.2f'%(order_id.payment_term_id.pre_production_payment)"></span>%-->
+                                                    <!--of total payment amount ($<span-->
+                                                    <!--t-esc="'%.2f'%(order_id.amount_total)"></span>)-->
+                                                    <!--as Pre-->
+                                                    <!--Production amount)-->
+                                                    <!--</p>-->
+                                                    <!--</t>-->
+                                                    <!--<t t-if="order_id.payment_status=='pre_shipping'">-->
+                                                    <!--<p style="color:#707070;">(<span-->
+                                                    <!--t-esc="'%.2f'%(order_id.payment_term_id.pre_shiping_payment)"></span>%-->
+                                                    <!--of total payment amount ($<span-->
+                                                    <!--t-esc="'%.2f'%(order_id.amount_total)"></span>)-->
+                                                    <!--as Pre-->
+                                                    <!--Shipping amount)-->
+                                                    <!--</p>-->
+                                                    <!--</t>-->
+                                                    <!--</div>-->
+                                                    <input type="submit" name="Payment" value="Payment"
+                                                           class="btn btn-success btn-lg btn-block"
+                                                           style="background-color:#ba8144; color:#fff;"></input>
+                                                </div>
+                                                <div class="col-xs-12 col-md-8"
+                                                     style="    height: 470px;    background: #f0f0f0;    padding: 15px 20px;">
+                                                    <div>
+                                                        <h3 style="color:#707070;font-style:italic;">
+                                                            <strong>Customer:</strong>
+                                                            <strong>
+                                                                <t t-esc="order_id.partner_id.name"></t>
+                                                            </strong>
+                                                        </h3>
+                                                    </div>
+
+<!--                                                    <div>-->
+<!--                                                        <h3 style="color:#707070;font-style:italic;">-->
+<!--                                                            <strong>PO Number:</strong>-->
+<!--                                                            <strong>-->
+<!--                                                                <t t-esc="order_id.customer_po"></t>-->
+<!--                                                            </strong>-->
+<!--                                                        </h3>-->
+<!--                                                    </div>-->
+                                                    <div>
+                                                        <h3 style="color:#707070;font-style:italic;">
+                                                            <strong>Order Number:</strong>
+                                                            <strong>
+                                                                <t t-esc="order_id.name"></t>
+                                                            </strong>
+                                                        </h3>
+                                                    </div>
+                                                    <div>
+                                                        <strong>Order Date:</strong>
+                                                        <strong>
+                                                            <span t-field="order_id.date_order"
+                                                                  t-field-options='{"format": "MM/dd/y"}'></span>
+                                                        </strong>
+                                                    </div>
+                                                    <div class="warning"
+                                                         style="color:red;margin-top:20px;padding-top:20px">
+                                                        <P>** This is a onetime Payment Link. Please make sure all
+                                                            fields are valid before payment.
+                                                        </P>
+                                                        <p>***This page will expire after Submission. In case of failure
+                                                            message you can contact Confianz.
+                                                        </p>
+                                                        <p>***Verify your final payment amount.</p>
+                                                        <P>*** If you receive an internal error please confirm with our
+                                                            office whether the payment went through before duplicated
+                                                            payments are made.
+                                                        </P>
+                                                    </div>
+                                                    <div style="color:red;text-align:center;">
+                                                        <t t-if="warning">
+                                                            <strong>
+                                                                <span t-esc="warning"/>
+                                                            </strong>
+                                                        </t>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </t>
+                                    </div>
+                                </div>
+                            </form>
+                            <!--my-->
+
+                            <!--my-->
+                        </div>
+                    </div>
+
+
+                    <div class="oe_footer" id="oe_footer">
+                        <p class="oe_footer_powered address">PO Box 7747 Charlotte, NC 28241
+                            <span>P) 877-332-3396</span>
+                            <span>F) 704.332.3267</span>
+                        </p>
+                        <p class="oe_footer_powered">
+                            <a class="ed_site_link" href="http://www.confianzit.com">www.confianzit.com</a>
+                            <span>info@confianzit.com</span>
+                        </p>
+                    </div>
+
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>
+
+

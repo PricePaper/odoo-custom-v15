@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+        <record model="ir.ui.view" id="make_payment_wizard_form">
+            <field name="name">make.payment.wizard.form</field>
+            <field name="model">make.payment</field>
+            <field name="arch" type="xml">
+                <form string="Make payment wizard">
+                    <p class="oe_grey">
+                        Payment will only be authorized here. The amount will be deducted from card holders account
+                        after
+                        completion of invoicing process.
+                    </p>
+                    <field name="partner_id" invisible="1"/>
+                    <field name='is_correction' invisible='1'/>
+                    <h3>
+                        <p attrs="{'invisible':[('is_correction', '=', False)]}">
+                            Please note that you are going to edit an Authorize Net payment!
+                        </p>
+                    </h3>
+
+                    <group>
+                        <field name='gateway_type' invisible="1" style="width:50%%"/>
+                    </group>
+                    <group col="4" colspan="2">
+                        <field name="card_no"/>
+                        <field name="card_code"/>
+                        <field name="exp_month"/>
+                        <field name="exp_year"/>
+                    </group>
+                    <footer>
+                        <button name="gateway_transaction" string="Authorize" type="object" class='oe_highlight'/>or
+                        <button string="Cancel" special="cancel" class="oe_link"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="payment_gateway_ui.action_make_payment_wizard" model="ir.actions.act_window">
+            <field name="name">Payment Gateway</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">make.payment</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="make_payment_wizard_form"/>
+            <field name="target">new</field>
+        </record>
+    </data>
+
+</odoo>

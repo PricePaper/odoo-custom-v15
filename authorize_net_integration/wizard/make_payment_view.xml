@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+        <record model="ir.ui.view" id="make_payment_authorize_wizard_form">
+            <field name="name">make.payment.wizard.form</field>
+            <field name="model">make.payment</field>
+            <field name="inherit_id" ref="payment_gateway_ui.make_payment_wizard_form"/>
+            <field name="arch" type="xml">
+
+                <field name="card_no" position="replace">
+                    <field name="card_no"
+                           attrs="{'required':[('payment_id', '=', False)], 'invisible':[('payment_id', '!=', False)]}"/>
+                </field>
+                <field name="card_code" position="replace">
+                    <field name="card_code"
+                           attrs="{'required':[('payment_id', '=', False)], 'invisible':[('payment_id', '!=', False)]}"/>
+                </field>
+                <field name="exp_month" position="replace">
+                    <field name="exp_month"
+                           attrs="{'required':[('payment_id', '=', False)], 'invisible':[('payment_id', '!=', False)]}"/>
+                </field>
+                <field name="exp_year" position="replace">
+                    <field name="exp_year"
+                           attrs="{'required':[('payment_id', '=', False)], 'invisible':[('payment_id', '!=', False)]}"/>
+                </field>
+                <field name="gateway_type" position="before">
+                    <field name='payment_id' attrs="{'invisible':[('payment_nos','=',0)]}"/>
+                    <field name='payment_nos' invisible="1"/>
+                </field>
+
+            </field>
+        </record>
+
+    </data>
+
+</odoo>

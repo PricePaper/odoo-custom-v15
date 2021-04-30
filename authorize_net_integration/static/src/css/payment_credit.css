@@ -1,0 +1,39 @@
+.my_class_blur {
+    filter: blur(1px) grayscale(1);
+    opacity: .4;
+}
+
+.buttonload {
+   background-color: #ba8144;
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    font-size: 16px;
+    margin-right: 649px;
+}
+
+.buttonload_invoice {
+    border: none;
+    color: #000000;
+    float: left;
+    padding: 6px 12px;
+    font-size: 12px;
+    float:left;
+   }
+button#invoices_view:before {
+    content: "<<";
+}
+button#print{
+    color: #fff;
+    background-color: #707070;
+    border-color: #707070;
+}
+
+.payment_card_select{
+cursor:pointer;
+}
+.payment_check_select{
+cursor:pointer;
+}
+
+

@@ -514,7 +514,7 @@ class SaleOrder(models.Model):
         for order in self:
             debit_due = self.env['account.move.line'].search(
                 [('partner_id', '=', order.partner_id.id), ('full_reconcile_id', '=', False), ('debit', '!=', False),
-                 ('date_maturity_grace', '<', date.today())], order='date_maturity_grace desc')
+                 ('date_maturity', '<', date.today())], order='date_maturity_grace desc')
             msg = ''
             msg1 = ''
             if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
@@ -522,9 +522,11 @@ class SaleOrder(models.Model):
                     order.partner_id.name, order.partner_id.credit_limit,
                     (order.partner_id.credit + order.amount_total))
             if debit_due:
-                msg = msg + 'Customer has pending invoices.'
-                for rec in debit_due:
-                    msg = msg + '\n%s' % (rec.invoice_id.number)
+                msg = msg + 'Customer has pending invoices.\n'
+                for rec in debit_due.mapped('invoice_id'):
+                    if rec.filtered(lambda r: r.date_due and r.date_due < date.today()) and rec.number:
+                        msg = msg + '%s, ' % (rec.number)
+
             for order_line in order.order_line:
                 if order_line.profit_margin < 0.0 and not (
                         'rebate_contract_id' in order_line and order_line.rebate_contract_id):

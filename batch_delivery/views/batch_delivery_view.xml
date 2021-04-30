@@ -254,6 +254,10 @@
                                 attrs="{'invisible': [('is_posted', '=', True)]}"
                         />
                     </header>
+                    <field name="show_warning" invisible="1"/>
+                    <div class="alert alert-warning" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('show_warning','=',False)]}">
+                        <bold>Customers who did not render payment must be deleted before being able to post payments.</bold>
+                    </div>
                     <sheet>
 
                         <div class="oe_button_box" name="button_box">

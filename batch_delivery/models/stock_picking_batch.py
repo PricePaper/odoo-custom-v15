@@ -34,6 +34,7 @@ class StockPickingBatch(models.Model):
     batch_payment_count = fields.Integer(string='Batch Payment', compute='_compute_batch_payment_count')
     to_invoice = fields.Boolean(string='Need Invoice', compute='_compute_to_invoice_state')
     invoice_ids = fields.Many2many('account.invoice', compute='_compute_invoice_ids')
+    show_warning = fields.Boolean(string='Pending Line Warning')
 
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -312,10 +313,11 @@ class StockPickingBatch(models.Model):
             if batch.cash_collected_lines and all(l.amount > 0 for l in batch.cash_collected_lines):
                 batch.cash_collected_lines.create_payment()
             else:
-                raise UserError(_('Please properly enter the cash collected breakup lines.'))
+                batch.show_warning = True
+                return
             if batch.pending_amount:
                 batch.create_driver_journal()
-
+            batch.show_warning = False
             batch.is_posted = True
             batch.state = 'paid'
 

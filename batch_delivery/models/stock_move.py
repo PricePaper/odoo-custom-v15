@@ -63,7 +63,14 @@ class StockMove(models.Model):
                     strict=False  # enable uom based quantity conversion
                 )
                 move._update_reserved_quantity(**query)
-                move.quantity_done = move.reserved_availability
+
+                if move.product_uom_qty < move.reserved_availability:
+                    raise UserError(_("Can't reserve more product than requested..!"))
+
+                move.qty_update = 0
+                if move.is_transit:
+                    move.quantity_done = move.reserved_availability
+
                 if not move.reserved_availability:
                     move.state = 'confirmed'
                 elif move.reserved_availability < move.product_uom_qty:

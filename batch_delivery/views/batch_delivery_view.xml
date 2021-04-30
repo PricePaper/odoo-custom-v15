@@ -292,7 +292,7 @@
                             <tree editable="bottom">
                                 <field name="partner_id" domain="[('customer', '=', True)]"/>
                                 <field name="partner_ids" invisible="1"/>
-                                <field name="invoice_id" domain="[('partner_id', 'in', partner_ids), ('state', '=', 'open'), ('type', '=', 'out_invoice')]"/>
+                                <field name="invoice_id" domain="[('partner_id', 'in', partner_ids), ('state', '=', 'open'), ('type', '=', 'out_invoice')]" context="{'from_batch_payment': True}"/>
                                 <field name="journal_id" required="1"/>
                                 <field name="payment_method_id" required="1"/>
                                 <field name="discount"/>

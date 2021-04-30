@@ -15,6 +15,15 @@ class AccountInvoice(models.Model):
             rec.picking_ids = rec.invoice_line_ids.mapped('stock_move_ids').mapped('picking_id')
 
     @api.multi
+    def name_get(self):
+        result = []
+        if self._context.get('from_batch_payment', False):
+            for invoice in self:
+                result.append((invoice.id, '%s ( %s )' % (invoice.number, invoice.residual)))
+            return result
+        return super(AccountInvoice, self).name_get()
+
+    @api.multi
     def action_view_picking(self):
         action = self.env.ref('stock.action_picking_tree_all').read()[0]
 

@@ -40,7 +40,7 @@
                                     </td>
                                   </tr>
                                   <!-- <t t-set="barcode" t-value="'%s'%(line[0].sale_line_id.id)"/> -->
-                                  <tr style="border: 2px solid black;height:20%;">
+                                  <tr style="border-top:hidden;height:20%;">
                                       <td style="text-align:center; vertical-align:middle;padding: 0px;" class="col-xs-5">
                                           <div style="width:100%;height:20%;"/>
                                           <!-- <img
@@ -49,7 +49,7 @@
                                           <span t-esc="barcode"/> -->
                                       </td>
                                   </tr>
-                                  <tr style="height:15%;padding: 0px;">
+                                  <tr style="border-top:hidden;height:15%;padding: 0px;">
                                       <td style="padding: 0px;">
                                           <span t-field="line[0].sale_line_id.order_id.name"
                                               style="display:block;float:left;width:40%;font-size:14px;" />

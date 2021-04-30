@@ -429,8 +429,11 @@ class CashCollectedLines(models.Model):
         for line in self:
             if not line.amount:
                 continue
+
             days = (line.invoice_id.date_invoice - fields.Date.context_today(line)).days
+
             need_writeoff = True if abs(days) < line.invoice_id.payment_term_id.due_days else False
+
             if need_writeoff and not self.env.user.company_id.discount_account_id:
                 raise UserError(_('Please set a discount account in company.'))
 
@@ -441,14 +444,13 @@ class CashCollectedLines(models.Model):
                 'partner_type': 'customer',
                 'payment_method_id': line.payment_method_id.id,
                 'partner_id': line.partner_id.id,
-                'amount': line.amount,
+                'amount': line.invoice_id.residual,
                 'journal_id': line.journal_id.id,
                 'invoice_ids': [(6, 0, line.invoice_id.ids)],
                 'communication': line.communication,
                 'batch_id': line.batch_id.id,
-                'payment_difference': line.invoice_id.residual - line.amount,
-                'payment_difference_handlin': 'reconcile' if need_writeoff else False,
-                'writeoff_label': line.payment_method_id.name if need_writeoff else False,
+                'payment_difference_handling': 'reconcile' if need_writeoff else False,
+                'writeoff_label': line.invoice_id.payment_term_id.name if need_writeoff else False,
                 'writeoff_account_id': self.env.user.company_id.discount_account_id.id if need_writeoff else False
             })
 
@@ -456,13 +458,13 @@ class CashCollectedLines(models.Model):
 
         for journal, batch_vals in batch_payment_info.items():
             for payment_method, payment_vals in batch_vals.items():
-                AccountBatchPayment.create({
+                ob = AccountBatchPayment.create({
                     'batch_type': 'inbound',
                     'journal_id': journal.id,
                     'payment_ids': [(0, 0, vals) for vals in payment_vals],
                     'payment_method_id': payment_method.id,
                 })
-
+                # ob.payment_ids.action_validate_invoice_payment()
 
 CashCollectedLines()
 

@@ -265,11 +265,11 @@ class account_abstract_payment(models.AbstractModel):
             flag = False
             for inv in pay.invoice_ids:
                 days = (inv.date_invoice - fields.Date.context_today(inv)).days
-                if abs(days) < inv.payment_term_id.due_days:
+                if abs(days) < inv.payment_term_id.due_days and inv.type == 'out_invoice':
                     flag = True
                     break
             currency = pay.currency_id
-            pay.payment_difference = pay.with_context(exclude_discount=False if flag else True)._compute_payment_amount(invoices=pay.invoice_ids, currency=currency) - payment_amount
+            pay.payment_difference = pay.with_context(exclude_discount=True)._compute_payment_amount(invoices=pay.invoice_ids, currency=currency) - payment_amount
             if pay.payment_type == 'inbound' and flag:
                 pay.payment_difference_handling = 'reconcile'
                 pay.writeoff_label = ','.join(pay.invoice_ids.mapped('payment_term_id').mapped('name'))
@@ -305,7 +305,7 @@ class account_abstract_payment(models.AbstractModel):
             inv = self.env['account.invoice'].search(invoice_data['__domain'])
 
             if payment_currency == invoice_currency:
-                if not self._context.get('exclude_discount', True):
+                if not self._context.get('exclude_discount', False):
                     days = (inv.date_invoice - fields.Date.context_today(inv)).days
                     if abs(days) < inv.payment_term_id.due_days and inv.type == 'out_invoice':
                         discount = inv.payment_term_id.discount_per
@@ -319,7 +319,7 @@ class account_abstract_payment(models.AbstractModel):
                     self.env.user.company_id,
                     self.payment_date or fields.Date.today()
                 )
-                if not self._context.get('exclude_discount', True):
+                if not self._context.get('exclude_discount', False):
                     days = (inv.date_invoice - fields.Date.context_today(inv)).days
                     if abs(days) < inv.payment_term_id.due_days and inv.type == 'out_invoice':
                         discount = inv.payment_term_id.discount_per

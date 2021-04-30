@@ -358,8 +358,10 @@ class SaleOrder(models.Model):
                                   count=False: value if count else value.ids)
     def search(self, args, offset=0, limit=None, order=None, count=False):
         records = super(SaleOrder, self).search(args, offset, limit, order, count)
+        user = self.env.user
         if self._context.get('my_draft'):
-            user = self.env.user
+            return records.filtered(lambda s: s.user_id == user or user.partner_id in s.sales_person_ids)
+        elif self._context.get('my_orders'):
             return records.filtered(lambda s: s.user_id == user or user.partner_id in s.sales_person_ids)
         return records
 

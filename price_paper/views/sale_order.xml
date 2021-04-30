@@ -251,6 +251,17 @@
             </field>
         </record>
 
+        <record id="view_sales_order_filter_price_paper" model="ir.ui.view">
+            <field name="name">sale.order.list.select.inherit.price.paper</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//filter[@name='my_sale_orders_filter']" position="attributes">
+                     <attribute name="domain">[('state', 'in', ['sale', 'done'])]</attribute>
+                     <attribute name="context">{'my_orders': True}</attribute>
+                </xpath>
+            </field>
+        </record>
         <record id="sale_order_view_search_price_paper" model="ir.ui.view">
             <field name="name">sale.order.search.inherit.price.paper</field>
             <field name="model">sale.order</field>

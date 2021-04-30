@@ -74,7 +74,7 @@
                                         <table class="table table-sm o_main_table">
                                             <tbody>
                                                 <t t-set="index" t-value="1"/>
-                                                <tr t-foreach="ob.move_lines" t-as="move"
+                                                <tr t-foreach="ob.move_lines.sorted(key=lambda r: r.location_id.display_name.split('/')[-1])" t-as="move"
                                                     style="font-family: Roboto, Odoo Unicode Support Noto, sans-serif;font-size: 14px; font-weight: 500;">
                                                     <td>
                                                         <span t-esc="index"/>

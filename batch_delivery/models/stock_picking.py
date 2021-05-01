@@ -290,6 +290,10 @@ class StockPicking(models.Model):
             raise UserError(_('Nothing to print.'))
         return self.env.ref('batch_delivery.ppt_account_invoices_report').report_action(docids=invoices.ids, config=False)
 
+    def receive_product_in_lines(self):
+        for line in self.move_ids_without_package:
+            line.quantity_done = line.product_uom_qty
+
     @api.multi
     def button_validate(self):
         """

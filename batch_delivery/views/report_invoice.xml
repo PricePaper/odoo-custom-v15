@@ -85,7 +85,7 @@
                 <xpath expr="//div[@id='informations']/div[@name='due_date']" position="move"/>
                 <div name="payment_term" class="col-auto mw-100 mb-2" t-if="o.payment_term_id">
                     <strong>Payment Terms:</strong>
-                        <p class="m-0" t-field="o.payment_term_id.name"/>
+                        <p class="m-0" t-field="o.payment_term_id.note"/>
                 </div>
             </xpath>
             <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[1]" position="before">
@@ -99,7 +99,7 @@
                 <span t-esc="sum([l.quantity for l in o.invoice_line_ids])"/>
             </xpath>
              <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[2]" position="after">
-                <th class="text-right"><span>UOM</span></th>
+                <th class="text-right"><span>Uom</span></th>
             </xpath>
             <xpath expr="//table/tbody/t[2]/tr/t[@name='account_invoice_line_accountable']/td[3]" position="before">
                 <td  class="text-right">
@@ -112,6 +112,7 @@
             <xpath expr="//div/h2/span[7]" position="replace">
                 <span t-field="o.move_name"/>
             </xpath>
+            <xpath expr="//t/div/p[3]" position="replace"/>
         </template>
 
         <template id="report_ppt_invoice">

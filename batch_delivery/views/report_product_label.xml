@@ -5,7 +5,7 @@
             <t t-call="web.basic_layout">
                 <div class="page">
                     <div class="col-xs-4" style="padding:0;">
-                        <t t-foreach="range(0,int(line[0].product_uom_qty))" t-as="int(count)">
+                        <t t-foreach="range(0,int(line[0].quantity_done))" t-as="int(count)">
                           <table style="width:384px;height:192px;" class="table">
                               <tbody>
                                   <tr style="border-top:hidden;border-bottom:hidden;height:15%;">
@@ -34,18 +34,19 @@
                                         </t>
                                     </td>
                                   </tr>
-                                  <tr style="border-top:hidden;border-bottom:hidden;height:20%;font-size:14px;">
+                                  <tr style="border-top:hidden;height:20%;font-size:14px;">
                                     <td style="padding: 0px;">
                                         <span t-field="line[0].product_id.name"/>
                                     </td>
                                   </tr>
-                                  <t t-set="barcode" t-value="'%s'%(line[0].sale_line_id.id)"/>
-                                  <tr style="border-top:hidden;border-bottom:hidden;height:20%;">
+                                  <!-- <t t-set="barcode" t-value="'%s'%(line[0].sale_line_id.id)"/> -->
+                                  <tr style="border-top:hidden;height:20%;">
                                       <td style="text-align:center; vertical-align:middle;padding: 0px;" class="col-xs-5">
-                                          <img
+                                          <div style="width:100%;height:20%;"/>
+                                          <!-- <img
                                                   t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', barcode, 600, 150)"
                                                   style="width:100%;height:20%;"/>
-                                          <span t-esc="barcode"/>
+                                          <span t-esc="barcode"/> -->
                                       </td>
                                   </tr>
                                   <tr style="border-top:hidden;height:15%;padding: 0px;">

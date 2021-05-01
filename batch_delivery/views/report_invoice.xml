@@ -112,7 +112,7 @@
             </xpath>
             <xpath expr="//t/div/p[1]" position="before">
                 <strong class="mr16">Total Units:</strong>
-                <span t-esc="sum([l.quantity for l in o.invoice_line_ids])"/>
+                <span t-esc="'{0:.02f}'.format(sum([l.quantity for l in o.invoice_line_ids]))"/>
             </xpath>
              <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[2]" position="after">
                 <th class="text-right"><span>Uom</span></th>

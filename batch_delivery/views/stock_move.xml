@@ -6,11 +6,6 @@
         <field name="model">stock.move</field>
         <field name="arch" type="xml">
             <form>
-                <script>
-                    $(document).ready(function(){
-                        $('.modal-dialog').css({'width': '30%', 'height': '30%'});
-                    });
-                </script>
                 <p class="text-muted" style="width:350px;">
                       &#10148; <b>Negative</b> value if you want to Decrease the Reserved Qty
                       &#10148; <b>Positive</b> value if you want to Increase the Reserved Qty

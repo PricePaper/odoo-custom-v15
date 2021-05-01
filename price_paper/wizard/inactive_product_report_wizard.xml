@@ -5,11 +5,6 @@
             <field name="model">inactive.product.report.wizard</field>
             <field name="arch" type="xml">
                 <form string="Inactive Product Report">
-                     <script>
-                    $(document).ready(function(){
-                        $('.modal-dialog').css({'width': '35%', 'height': '30%'});
-                    });
-                </script>
                     <sheet>
                         <group>
                             <group>

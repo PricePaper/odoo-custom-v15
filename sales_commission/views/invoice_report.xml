@@ -4,9 +4,7 @@
         <xpath expr="//div[@t-if='o.origin']" position="after">
             <div class="col-xs-2" t-if="o.sales_person_ids">
                 <strong>Salespersons:</strong>
-                <t t-foreach="o.sales_person_ids" t-as="s">
-                    <p t-esc="s.name"/>
-                </t>
+                    <p t-esc="','.join([str(s.id) for s in o.sales_person_ids])"/>
             </div>
         </xpath>
     </template>

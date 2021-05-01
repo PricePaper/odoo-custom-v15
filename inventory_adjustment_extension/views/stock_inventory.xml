@@ -8,6 +8,9 @@
                 <field name="date" position="after">
                     <field name="vendor_id" attrs="{'invisible': [('filter', 'not in','vendor')], 'required': [('filter', 'in', 'vendor')], 'readonly': [('state', '!=', 'draft')]}" options="{'no_create': True}" domain="[('supplier', '=', True)]" />
                 </field>
+                <xpath expr="//notebook/page[1]/field[@name='line_ids']/tree/field[@name='product_uom_id']" position="attributes">
+                    <attribute name="style">width:150px;</attribute>
+                </xpath>
             </field>
         </record>
     </data>

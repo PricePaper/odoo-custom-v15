@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from . import stock_inventory
 from . import account
 from . import cost_change
 from . import customer_pricelist

@@ -6,7 +6,9 @@
             <div class="page">
                 <div class="col-xs-6">
                     <strong>Driver :</strong>
-                    <span t-field="o.truck_driver_id"/>
+                    <span t-if="o.truck_driver_id">
+                        <t t-esc="o.truck_driver_id.name"/>
+                    </span>
                 </div>
                 <div class="col-xs-6">
                     <strong>Date :</strong>
@@ -20,7 +22,7 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th><strong>Deliver Order</strong></th>
+                            <th><strong>Invoice</strong></th>
                             <th><strong>Customer Name</strong></th>
                             <th><strong>Customer Code</strong></th>
                             <th><strong>Sales Order</strong></th>
@@ -32,8 +34,8 @@
                         <tr t-foreach="o.picking_ids" t-as="picking">
                             <t t-if="picking.state != 'cancel'">
                                 <td>
-                                    <span t-if="picking.name">
-                                        <t t-esc="picking.name"/>
+                                    <span t-if="picking.invoice_ref">
+                                        <t t-esc="picking.invoice_ref"/>
                                     </span>
                                 </td>
                                 <td>

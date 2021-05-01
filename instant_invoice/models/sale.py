@@ -57,6 +57,42 @@ class SaleOrder(models.Model):
                 .with_context(discard_logo_check=True).report_action(self)
         return super(SaleOrder, self).print_quotation()
 
+    @api.multi
+    def action_release_credit_hold(self):
+        """
+        release hold sale order for credit limit exceed.
+        """
+        for order in self:
+            order.write({'is_creditexceed': False, 'ready_to_release': True})
+            order.message_post(body="Credit Team Approved")
+            if order.release_price_hold:
+                order.hold_state = 'release'
+                if not self.quick_sale:
+                    order.action_confirm()
+                else:
+                    order.action_quick_sale()
+            else:
+                order.hold_state = 'price_hold'
+
+
+
+    @api.multi
+    def action_release_price_hold(self):
+        """
+        release hold sale order for low price.
+        """
+        for order in self:
+            order.write({'is_low_price': False, 'release_price_hold': True})
+            order.message_post(body="Sale Team Approved")
+            if order.ready_to_release:
+                order.hold_state = 'release'
+                if not self.quick_sale:
+                    order.action_confirm()
+                else:
+                    order.action_quick_sale()
+            else:
+                order.hold_state = 'credit_hold'
+
 
 SaleOrder()
 

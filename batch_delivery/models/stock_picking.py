@@ -280,8 +280,15 @@ class StockPicking(models.Model):
 
     @api.multi
     def action_print_product_label(self):
-
         return self.env.ref('batch_delivery.product_label_report').report_action(self)
+
+    @api.multi
+    def action_print_invoice(self):
+        self.ensure_one()
+        invoices = self.mapped('invoice_ids').filtered(lambda r: r.state != 'cancel')
+        if not invoices:
+            raise UserError(_('Nothing to print.'))
+        return self.env.ref('batch_delivery.ppt_account_invoices_report').report_action(docids=invoices.ids, config=False)
 
     @api.multi
     def button_validate(self):

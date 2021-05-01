@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
+        <template id="ppt_address_layoyt" inherit_id="web.address_layout">
+            <xpath expr="//t[2]/div/t" position="after">
+                 <t t-if="delivery_address">
+                     <t t-set="colclass" t-value="'col-3 offset-5'"/>
+                    <div name="delivery_address" t-att-class="colclass">
+                        <strong>Delivery Address :</strong>
+                        <t t-raw="delivery_address"/>
+                    </div>
+                </t>
+            </xpath>
+            <xpath expr="//div[@name='address']" position="replace">
+                <div name="address" class="col-3">
+                    <strong t-if="o._name == 'account.invoice'">Billing Address :</strong>
+                    <t t-raw="address"/>
+                </div>
+            </xpath>
+        </template>
 
         <template id="report_invoice_document_ppt_with_payments" inherit_id="account.report_invoice_document">
             <xpath expr="//table[@name='invoice_line_table']" position="after">
@@ -80,13 +97,12 @@
                 <attribute name="t-if">o.partner_id.bill_with_goods</attribute>
             </xpath>
             <xpath expr="//div[@id='informations']/div[@name='invoice_date']" position="replace"/>
-<!--            -->
             <xpath expr="//div[@id='informations']/div[@name='reference']" position="after">
-                <xpath expr="//div[@id='informations']/div[@name='due_date']" position="move"/>
                 <div name="payment_term" class="col-auto mw-100 mb-2" t-if="o.payment_term_id">
                     <strong>Payment Terms:</strong>
                         <p class="m-0" t-field="o.payment_term_id.note"/>
                 </div>
+                <xpath expr="//div[@id='informations']/div[@name='due_date']" position="move"/>
             </xpath>
             <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[1]" position="before">
                  <th class="text-left"><span>Product Code</span></th>
@@ -113,6 +129,11 @@
                 <span t-field="o.move_name"/>
             </xpath>
             <xpath expr="//t/div/p[3]" position="replace"/>
+            <xpath expr="//t/t[2]" position="before">
+                 <t t-set="delivery_address">
+                    <address t-field="o.partner_shipping_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                </t>
+            </xpath>
         </template>
 
         <template id="report_ppt_invoice">

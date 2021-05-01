@@ -8,28 +8,32 @@
             <field name="inherit_id" ref="stock_picking_batch.stock_picking_batch_form"/>
             <field name="arch" type="xml">
 
-                <button name="print_picking" position="before">
+                <button name="confirm_picking" position="before">
+
                     <button name="view_pending_products"
                             string="Pending Products" type="object" class="oe_highlight"/>
+                    <xpath expr="//button[@name='print_picking']" position="move"/>
                     <button name="print_master_pickticket" string="Print Master PickTicket"
                             type="object" class="oe_highlight" attrs="{'invisible': [('state', '=', 'draft')]}"/>
                     <button name="print_master_late_order_pickticket" string="Print Master Late Order PickTicket"
                             type="object" class="oe_highlight"
                             attrs="{'invisible': [('have_late_order', '=', False)]}"/>
-                </button>
-
-                <button name="print_picking" position="after">
                     <button name="print_product_labels" string="Print Product Labels" type="object"
                             class="oe_highlight"/>
+                </button>
+
+                <button name="confirm_picking" position="after">
+                    <button name="create_batch_invoice" string="Create Invoice"
+                            type="object" class="oe_highlight"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['in_progress']), ('to_invoice', '=', False)]}"/>
                     <field name="invoice_ids" invisible="1"/>
                     <button name="print_invoice_report"
                             string="Print Invoices" type="object"
                             class="oe_highlight"
                             attrs="{'invisible': [('invoice_ids', '=', [])]}"/>
-
-                    <button name="print_delivery_slip" string="Print Delivery Slip" type="object" class="oe_highlight"/>
                     <button name="print_driver_spreadsheet" string="Print Drivers Document" type="object"
-                            class="oe_highlight"/>
+                            class="oe_highlight"
+                            attrs="{'invisible': [('invoice_ids', '=', [])]}"/>
                 </button>
 
                 <button name="print_picking" position="attributes">
@@ -56,7 +60,7 @@
                             <field name="route_id"/>
                             <field name="truck_driver_id"
                                    domain="[('is_driver', '=', True), ('is_driver_available', '=', True)]"
-                                   attrs="{'readonly':[('state', 'in', ['done', 'cancel'])]}"
+                                   attrs="{'readonly':[('state', 'in', ['in_progress', 'done', 'cancel'])]}"
                                    context="{'default_is_driver': True}"/>
                         </group>
                         <group>
@@ -95,14 +99,6 @@
                                 icon="fa-globe"
                                 type="object"
                                 string="View Route Map"/>
-                    </div>
-                </xpath>
-
-                <xpath expr="//field[@name='picking_ids']" position="before">
-
-                    <div class="oe_right">
-                        <button name="create_batch_invoice" string="Create Invoice" type="object" class="oe_highlight"
-                                attrs="{'invisible': ['|', ('state', 'not in', ['in_progress']), ('to_invoice', '=', False)]}"/>
                     </div>
                 </xpath>
 

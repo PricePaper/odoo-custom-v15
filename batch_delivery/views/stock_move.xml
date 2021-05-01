@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="view_stock_move_rest_window" model="ir.ui.view">
+        <field name="name">stock.move.reset.logic.window</field>
+        <field name="model">stock.move</field>
+        <field name="arch" type="xml">
+            <form>
+                <script>
+                    $(document).ready(function(){
+                        $('.modal-dialog').css({'width': '30%', 'height': '30%'});
+                    });
+                </script>
+                <p class="text-muted" style="width:350px;">
+                      &#10148; <b>Negative</b> value if you want to Decrease the Reserved Qty
+                      &#10148; <b>Positive</b> value if you want to Increase the Reserved Qty
+                </p>
+                <group>
+                    <group>
+                        <field name="qty_update"/>
+                    </group>
+                </group>
+                <footer class="oe_edit_only">
+                        <button string="Reset" type="object" name="action_reset" class="oe_highlight"/>
+                        <button string="Discard" special="cancel"/>
+                </footer>
+            </form>
+         </field>
+     </record>
 
         <record id="view_stock_move_nosuggest_reson_for_return_operations" model="ir.ui.view">
             <field name="name">stock.move.operations.reason.for.return.form</field>
@@ -57,8 +83,8 @@
                     <field name="product_uom" options="{'no_open': True, 'no_create': True}" string="Unit of Measure"
                            groups="uom.group_uom" readonly="1"/>
                     <field name="reserved_availability" readonly="1"/>
-                    <field name="qty_update" string="Reset Logic"/>
-                    <button name="action_reset" string="Reset Reserve Qty" type="object" icon="fa-refresh text-success"
+                    <field name="qty_update" string="Reset Logic" invisible="1"/>
+                    <button name="action_show_reset_window" string="Reset Reserve Qty" type="object" icon="fa-refresh text-success"
                             attrs="{'invisible': [('state', 'not in', ['partially_available', 'assigned']), ('qty_update', '=', False)]}"/>
 
                     <field name="state" readonly="1"/>

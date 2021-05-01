@@ -78,6 +78,20 @@ class StockMove(models.Model):
                 else:
                     move.state = 'assigned'
 
+    @api.multi
+    def action_show_reset_window(self):
+        self.ensure_one()
+        return {
+            'name': 'Reset Logic',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'stock.move',
+            'res_id': self.id,
+            'view_id': self.env.ref('batch_delivery.view_stock_move_rest_window').id,
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+        }
+
     def _prepare_move_line_vals(self, quantity=None, reserved_quant=None):
         """updates the move line values
            with preferred lot id

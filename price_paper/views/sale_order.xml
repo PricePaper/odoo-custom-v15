@@ -161,8 +161,12 @@
                     <attribute name="decoration-success">profit_margin&gt;0</attribute>
                 </xpath>
 
+                <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="attributes">
+                    <attribute name="options">{"no_create": False}</attribute>
+                </xpath>
+
                  <xpath expr="//field[@name='order_line']/form//label[@for='qty_delivered']" position="before">
-                     <field name="storage_contract_line_id"
+                     <field name="storage_contract_line_id" options="{'no_create': False}"
                             attrs="{'invisible': [('parent.show_contract_line', '=', False)]}"
                             domain="[('order_id.storage_contract', '=', True), ('is_downpayment', '=', False), ('storage_remaining_qty', '&gt;', 0), ('order_id.partner_id', '=', parent.partner_id)]"/>
                  </xpath>

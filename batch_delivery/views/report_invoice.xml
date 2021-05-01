@@ -46,11 +46,14 @@
         />
 
         <template id="report_ppt_invoice_document" inherit_id="account.report_invoice_document" primary="True">
+
             <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[4]" position="attributes">
                 <attribute name="t-if">o.partner_id.bill_with_goods</attribute>
             </xpath>
+            <xpath expr="//table/tbody/t[2]/tr/t[@name='account_invoice_line_accountable']/td[3]/span[2]" position="replace">
+            </xpath>
             <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[5]" position="attributes">
-                <attribute name="t-if">o.partner_id.bill_with_goods</attribute>
+                <attribute name="invisible">True</attribute>
             </xpath>
             <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[6]" position="attributes">
                 <attribute name="t-if">o.partner_id.bill_with_goods</attribute>
@@ -62,7 +65,7 @@
                 <attribute name="t-if">o.partner_id.bill_with_goods</attribute>
             </xpath>
             <xpath expr="//tbody/t[2]/tr/t[@name='account_invoice_line_accountable']/td[5]" position="attributes">
-                <attribute name="t-if">o.partner_id.bill_with_goods</attribute>
+                <attribute name="invisible">True</attribute>
             </xpath>
             <xpath expr="//tbody/t[2]/tr/t[@name='account_invoice_line_accountable']/td[7]" position="attributes">
                 <attribute name="t-if">o.partner_id.bill_with_goods</attribute>
@@ -75,6 +78,39 @@
             </xpath>
             <xpath expr="//div[hasclass('clearfix')]" position="attributes">
                 <attribute name="t-if">o.partner_id.bill_with_goods</attribute>
+            </xpath>
+            <xpath expr="//div[@id='informations']/div[@name='invoice_date']" position="replace"/>
+<!--            -->
+            <xpath expr="//div[@id='informations']/div[@name='reference']" position="after">
+                <xpath expr="//div[@id='informations']/div[@name='due_date']" position="move"/>
+                <div name="payment_term" class="col-auto mw-100 mb-2" t-if="o.payment_term_id">
+                    <strong>Payment Terms:</strong>
+                        <p class="m-0" t-field="o.payment_term_id.name"/>
+                </div>
+            </xpath>
+            <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[1]" position="before">
+                 <th class="text-left"><span>Product Code</span></th>
+            </xpath>
+            <xpath expr="//tbody/t[2]/tr/t[@name='account_invoice_line_accountable']/td[1]" position="before">
+                <td name="product_code"><span t-field="line.product_id.default_code"/></td>
+            </xpath>
+            <xpath expr="//t/div/p[1]" position="before">
+                <strong class="mr16">Total Units:</strong>
+                <span t-esc="sum([l.quantity for l in o.invoice_line_ids])"/>
+            </xpath>
+             <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[2]" position="after">
+                <th class="text-right"><span>UOM</span></th>
+            </xpath>
+            <xpath expr="//table/tbody/t[2]/tr/t[@name='account_invoice_line_accountable']/td[3]" position="before">
+                <td  class="text-right">
+                     <span t-field="line.uom_id"  groups="uom.group_uom"/>
+                </td>
+            </xpath>
+            <xpath expr="//div/h2/span[2]" position="replace">
+                <span t-if="o.type == 'out_invoice' and o.state == 'draft'">Invoice</span>
+            </xpath>
+            <xpath expr="//div/h2/span[7]" position="replace">
+                <span t-field="o.move_name"/>
             </xpath>
         </template>
 

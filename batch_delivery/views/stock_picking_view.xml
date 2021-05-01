@@ -238,7 +238,7 @@ action = records.env['stock.picking'].validate_multiple_delivery(records)
             <field name="name">Pending Product</field>
             <field name="res_model">stock.picking</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('state','=', 'waiting', 'confirmed')], ('picking_type_code', '=', 'outgoing')]</field>
+            <field name="domain">[('state','in', ['waiting', 'confirmed']), ('picking_type_code', '=', 'outgoing')]</field>
         </record>
 
          <menuitem id="menu_pending_product"

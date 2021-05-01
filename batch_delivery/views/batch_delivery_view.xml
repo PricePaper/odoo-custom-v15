@@ -157,6 +157,7 @@
                 <xpath expr="//field[@name='picking_ids']/tree/field[@name='scheduled_date']" position="after">
                     <field name="is_late_order" attrs="{'readonly':[('parent.state','=', 'done')]}"/>
                     <field name="is_invoiced" invisible="1"/>
+                    <button class="fa fa-file-text mr8" name="action_print_invoice" type="object" aria-label="Invoice"/>
                     <button class="fa fa-fw fa-truck" name="action_print_pick_ticket" type="object" aria-label="Pick Ticket"/>
                     <button class="fa fa-th-list" name="action_print_product_label" type="object" aria-label="Product Label"/>
                     <field name="low_qty_alert" invisible="1"/>

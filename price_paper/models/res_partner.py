@@ -12,7 +12,10 @@ class ResPartner(models.Model):
     fax_number = fields.Char(string='Fax')
     customer_pricelist_ids = fields.One2many('customer.pricelist', 'partner_id', string="Customer Pricelists")
     customer_code = fields.Char(string='Partner Code', copy=False)
+    # comment the below line while running customer scripts
     established_date = fields.Date(string='Established Date', compute='_compute_estbl_date', store=True)
+    # Uncomment the below line while running customer import scripts
+    # established_date = fields.Date(string='Established Date')
     last_sold_date = fields.Date(string='Last Sold Date', compute='_compute_last_date', store=False)
     last_paid_date = fields.Date(string='Last Paid Date', compute='_compute_last_date', store=False)
     delivery_day_mon = fields.Boolean(string='Monday')

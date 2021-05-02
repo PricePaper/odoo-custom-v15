@@ -14,11 +14,11 @@
                         </div>
                         <table class="table table-bordered mb64">
                             <tr>
-                                <th style="width:33%;padding-left: 3px;padding-right: 3px;">Product</th>
+                                <th style="width:31%;padding-left: 3px;padding-right: 3px;">Product</th>
                                 <th style="width:20%;padding-left: 3px;padding-right: 3px;">Product Code</th>
                                 <th style="width:12%;padding-left: 3px;padding-right: 3px;">Onhand Qty</th>
                                 <th style="width:12%;padding-left: 3px;padding-right: 3px;">Pick UOM</th>
-                                <th style="width:11%;padding-left: 3px;padding-right: 3px;">Pick Qty</th>
+                                <th style="width:12%;padding-left: 3px;padding-right: 3px;">Pick Qty</th>
                                 <th style="width:12%;padding-left: 3px;padding-right: 3px;">Location</th>
                             </tr>
                             <t t-set="location_list" t-value="get_master_tickets(docs)"/>
@@ -33,7 +33,7 @@
                                                 <t t-esc="product.default_code"/>
                                             </td>
                                             <td>
-                                                <t t-esc="product.qty_available"/>
+                                                <span t-esc="'%.2f'% product.qty_available"/>
                                             </td>
                                             <td>
                                                 <t t-esc="uom.name"/>

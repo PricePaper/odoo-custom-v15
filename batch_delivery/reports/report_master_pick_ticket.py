@@ -17,18 +17,18 @@ class ReportMasterPickingTicket(models.AbstractModel):
                 picking_ids += doc.picking_ids
         product_main = {}
         for picking in picking_ids.filtered(lambda rec: rec.state != 'cancel'):
-            for line in picking.move_line_ids:
+            for line in picking.move_lines:
                 location = line.product_id.property_stock_location and line.product_id.property_stock_location.name or '00-Location not assigned'
                 if product_main.get(location, False):
                     if product_main.get(location, False).get(line.product_id, False):
-                        if line.product_uom_id in  product_main.get(location, False).get(line.product_id, False):
-                            product_main.get(location, False).get(line.product_id, False)[line.product_uom_id] = product_main.get(location, False).get(line.product_id, False).get(line.product_uom_id, 0)+line.qty_done
+                        if line.product_uom in  product_main.get(location, False).get(line.product_id, False):
+                            product_main.get(location, False).get(line.product_id, False)[line.product_uom] = product_main.get(location, False).get(line.product_id, False).get(line.product_uom, 0)+line.product_uom_qty
                         else:
-                            product_main.get(location, False).get(line.product_id, False)[line.product_uom_id] = line.qty_done
+                            product_main.get(location, False).get(line.product_id, False)[line.product_uom] = line.product_uom_qty
                     else:
-                        product_main.get(location, False)[line.product_id] = {line.product_uom_id:line.qty_done}
+                        product_main.get(location, False)[line.product_id] = {line.product_uom:line.product_uom_qty}
                 else:
-                    product_main.update({location: {line.product_id:{line.product_uom_id:line.qty_done}}})
+                    product_main.update({location: {line.product_id:{line.product_uom:line.product_uom_qty}}})
         locations = product_main.keys()
         location_list = []
         for location in sorted(locations):

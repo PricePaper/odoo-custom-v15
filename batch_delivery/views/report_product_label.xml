@@ -5,7 +5,7 @@
             <t t-call="web.basic_layout">
                 <div class="page">
                     <div class="col-xs-4" style="padding:0;">
-                        <t t-foreach="range(0,int(line[0].quantity_done))" t-as="int(count)">
+                        <t t-foreach="range(0,int(line[0].reserved_availability))" t-as="int(count)">
                           <table style="width:384px;height:192px;" class="table">
                               <tbody>
                                   <tr style="border-top:hidden;border-bottom:hidden;height:15%;">

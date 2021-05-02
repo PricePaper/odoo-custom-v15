@@ -31,6 +31,7 @@ class inactive_customer_wizard(models.TransientModel):
                 'search_view_id': action_id['search_view_id'],
                 'domain': [["id", "in", partner_ids]],
                 'help': action_id['help'],
+                'context': {'search_default_customer': 1}
             }
 
 

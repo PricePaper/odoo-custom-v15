@@ -202,6 +202,7 @@
                     <field name="is_invoiced" invisible="1"/>
                 </field>
                 <xpath expr="//form/sheet/notebook/page[2]/field[@name='move_ids_without_package']" position="before">
+                    <field name="purchase_id" invisible="1"/>
                     <button class="oe_highlight oe_right"
                             name="receive_product_in_lines"
                             type="object" string="Receive"

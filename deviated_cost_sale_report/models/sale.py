@@ -38,7 +38,7 @@ class SaleOrderLine(models.Model):
         contract_id = False
         for record in self:
             contract_ids = record.order_partner_id.deviated_contract_ids.filtered(
-                lambda rec: rec.expiration_date > str(datetime.now()))
+                lambda rec: rec.expiration_date > datetime.now())
             for contract in contract_ids:
                 contract_product_cost_id = contract.partner_product_ids.filtered(
                     lambda rec: rec.product_id.id == record.product_id.id)

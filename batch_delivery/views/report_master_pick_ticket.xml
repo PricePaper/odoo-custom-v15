@@ -33,7 +33,7 @@
                                                 <t t-esc="product.default_code"/>
                                             </td>
                                             <td>
-                                                <t t-esc="product.qty_available"/>
+                                                <t t-esc="'{0:.02f}'.format(product.qty_available)"/>
                                             </td>
                                             <td>
                                                 <t t-esc="uom.name"/>

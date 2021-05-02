@@ -96,7 +96,7 @@
             <xpath expr="//div[hasclass('clearfix')]" position="attributes">
                 <attribute name="t-if">o.partner_id.bill_with_goods</attribute>
             </xpath>
-            <xpath expr="//div[@id='informations']/div[@name='invoice_date']" position="replace"/>
+<!--            <xpath expr="//div[@id='informations']/div[@name='invoice_date']" position="replace"/>-->
             <xpath expr="//div[@id='informations']/div[@name='reference']" position="after">
                 <div name="payment_term" class="col-auto mw-100 mb-2" t-if="o.payment_term_id">
                     <strong>Payment Terms:</strong>

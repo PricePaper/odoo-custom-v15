@@ -284,7 +284,6 @@ class StockPicking(models.Model):
 
     @api.multi
     def action_print_invoice(self):
-        self.ensure_one()
         invoices = self.mapped('invoice_ids').filtered(lambda r: r.state != 'cancel')
         if not invoices:
             raise UserError(_('Nothing to print.'))
@@ -292,7 +291,8 @@ class StockPicking(models.Model):
 
     def receive_product_in_lines(self):
         for line in self.move_ids_without_package:
-            line.quantity_done = line.product_uom_qty
+            if not line.quantity_done:
+                line.quantity_done = line.product_uom_qty
 
     @api.multi
     def button_validate(self):

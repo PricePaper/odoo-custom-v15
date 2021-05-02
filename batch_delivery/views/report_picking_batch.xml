@@ -60,7 +60,7 @@
                                                 <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">Total
                                                     Volume</td>
                                                 <td style="text-align:left;padding-left: 10px;  padding-bottom:10px;">
-                                                    <span t-esc="'{0: 0.2f}'.format(sum(ob.move_lines.mapped(lambda m: m.product_uom_qty * m.product_id.volume)))"/>
+                                                    <span t-esc="'{0: 0.2f}'.format(sum(ob.move_ids_without_package.mapped(lambda m: m.product_uom_qty * m.product_id.volume)))"/>
                                                 </td>
                                                 <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">DO
                                                     Barcode</td>

@@ -323,6 +323,14 @@ class SaleOrder(models.Model):
         if self.carrier_id:
             self.get_delivery_price()
 
+    @api.model
+    def create(self, vals):
+        if vals.get('storage_contract'):
+            sequence = self.env.ref('price_paper.seq_sc_sale_order', raise_if_not_found=False)
+            if sequence:
+                vals['name'] = sequence._next()
+        return super(SaleOrder, self).create(vals)
+
     @api.multi
     def write(self, vals):
         """

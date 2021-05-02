@@ -17,23 +17,26 @@ class ReportBatchProductLabel(models.AbstractModel):
         return ordered_product_label
 
     def get_ordered_product_label(self, pickings):
-        location_main = {}
-        for picking in pickings:
+        picking_list = []
+        for picking in pickings.sorted('sequence'):
+            location_main = {}
             for line in picking.move_lines:
                 location = line.product_id.property_stock_location and line.product_id.property_stock_location.name or '00-Location not assigned'
-                order = line.sale_line_id.order_id
-                sections = order.order_line.filtered(lambda rec: rec.display_type == 'line_section'
-                        and rec.sequence < line.sale_line_id.sequence).sorted(key=lambda b: b.sequence,reverse = True)
-                section = sections and sections[0] or False
+
                 if location_main.get(location, False):
-                    location_main.get(location, False).append((line, section))
+                    location_main.get(location, False).append(line)
                 else:
-                    location_main.update({location: [(line, section)]})
-        locations = location_main.keys()
-        location_list = []
-        for location in sorted(locations):
-            location_list.append((location, location_main[location]))
-        return location_list
+                    location_main.update({location: [line]})
+
+            locations = location_main.keys()
+            location_list = []
+            for location in sorted(locations):
+                location_list.append((location, location_main[location]))
+
+            picking_list.append(location_list)
+        print(picking_list)
+
+        return picking_list
 
 
     @api.model

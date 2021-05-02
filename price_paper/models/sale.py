@@ -1372,7 +1372,7 @@ class SaleOrderLine(models.Model):
 
         prices_all = prices_all.filtered(
             lambda r: r.product_id.id == self.product_id.id and r.product_uom.id == self.product_uom.id and (
-                    not r.partner_id or r.partner_id.id == self.order_id.partner_shipping_id.id))
+                    not r.partner_id or r.partner_id.id == self.order_id.partner_shipping_id.id or r.partner_id.id == self.order_id.partner_id.id))
         product_price = 0.0
         price_from = False
         msg = ''

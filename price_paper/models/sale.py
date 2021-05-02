@@ -323,6 +323,14 @@ class SaleOrder(models.Model):
         if self.carrier_id:
             self.get_delivery_price()
 
+    @api.model
+    def create(self, vals):
+        if vals.get('storage_contract'):
+            sequence = self.env.ref('price_paper.seq_sc_sale_order', raise_if_not_found=False)
+            if sequence:
+                vals['name'] = sequence._next()
+        return super(SaleOrder, self).create(vals)
+
     @api.multi
     def write(self, vals):
         """
@@ -1372,7 +1380,7 @@ class SaleOrderLine(models.Model):
 
         prices_all = prices_all.filtered(
             lambda r: r.product_id.id == self.product_id.id and r.product_uom.id == self.product_uom.id and (
-                    not r.partner_id or r.partner_id.id == self.order_id.partner_shipping_id.id))
+                    not r.partner_id or r.partner_id.id == self.order_id.partner_shipping_id.id or r.partner_id.id == self.order_id.partner_id.id))
         product_price = 0.0
         price_from = False
         msg = ''

@@ -5,10 +5,6 @@
             <field name="model">inactive.customer.report.wizard</field>
             <field name="arch" type="xml">
                 <form string="Inactive Customer Report">
-                    <script>
-                        document.getElementsByClassName('modal-dialog modal-lg')[0].setAttribute('class', 'modal-dialog
-                        modal-sm');
-                    </script>
                     <sheet>
                         <group>
                             <group>

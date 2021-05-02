@@ -110,7 +110,7 @@
                 file="batch_delivery.report_product_label"
                 name="batch_delivery.report_product_label"
                 paperformat="print_product_label_paperformat"
-                print_report_name="'Product labels - %s' % (object.name or '')"
+                print_report_name="'Labels - %s - %s' % (object.batch_id.truck_driver_id and object.batch_id.truck_driver_id.name or '', object.batch_id.date)"
         />
 
         <report
@@ -121,7 +121,7 @@
                 file="batch_delivery.report_product_label"
                 name="batch_delivery.report_batch_product_label"
                 paperformat="print_product_label_paperformat"
-                print_report_name="'Product labels - %s' % (object.name or '')"
+                print_report_name="'Labels - %s - %s' % (object.truck_driver_id and object.truck_driver_id.name or '', object.date)"
         />
 
         <report
@@ -133,7 +133,7 @@
                 file="batch_delivery.report_batch_picking_all"
                 name="batch_delivery.report_batch_picking_all"
                 paperformat="paperformat_batch_picking_ticket"
-                print_report_name="'Batch Pick Tickets - %s' % (object.name or '')"
+                print_report_name="'Pick - %s - %s' % (object.truck_driver_id and  object.truck_driver_id.name or '', object.date)"
         />
 
         <report
@@ -145,7 +145,7 @@
                 file="batch_delivery.report_batch_picking_active"
                 name="batch_delivery.report_batch_picking_active"
                 paperformat="paperformat_batch_picking_ticket"
-                print_report_name="'Batch Pick Ticket - %s' % (object.name or '')"
+                print_report_name="'Pick - %s - %s' % (object.batch_id.truck_driver_id and  object.batch_id.truck_driver_id.name or '', object.batch_id.date)"
         />
 
     </data>

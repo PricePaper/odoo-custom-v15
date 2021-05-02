@@ -69,6 +69,13 @@
                                                          style="width:300px;height:50px" alt="Barcode"/>
                                                 </td>
                                             </tr>
+                                             <tr t-if="ob.batch_id.truck_driver_id">
+                                                <td style="text-align:right;  padding-bottom:10px; font-weight: bolder;">
+                                                    Driver</td>
+                                                <td style="text-align:left;padding-left: 10px;  padding-bottom:10px;">
+                                                    <span t-field="ob.batch_id.truck_driver_id.name"/>
+                                                </td>
+                                            </tr>
                                         </table>
                                         <br/>
                                         <table class="table table-sm o_main_table">

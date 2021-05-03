@@ -284,14 +284,17 @@
 
         <record id="sale.action_quotations" model="ir.actions.act_window">
             <field name="search_view_id" ref="price_paper.sale_order_view_search_price_paper"/>
+            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
         </record>
 
         <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
             <field name="search_view_id" ref="price_paper.sale_order_view_search_price_paper"/>
+            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
         </record>
 
         <record id="sale.action_quotations_salesteams" model="ir.actions.act_window">
             <field name="search_view_id" ref="price_paper.sale_order_view_search_price_paper"/>
+            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
         </record>
 
         <record id="sale_order_view_search_credit_exceeded" model="ir.ui.view">
@@ -415,13 +418,18 @@
         </record>
 
         <record id="sale.action_quotations" model="ir.actions.act_window">
-            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel'))]</field>
+            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
             <field name="context">{'default_is_quotation': 1}</field>
             <field name="name">Drafts</field>
         </record>
 
+        <record id="sale.action_orders" model="ir.actions.act_window">
+          <field name="domain">[('state', 'not in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
+        </record>
+
         <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
             <field name="name">Drafts</field>
+            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
         </record>
         <record model="ir.actions.server" id="action_confirm_multiple_orders">
             <field name="name">Confirm</field>

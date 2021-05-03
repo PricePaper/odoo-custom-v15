@@ -311,10 +311,6 @@ class StockPicking(models.Model):
     @api.multi
     def action_print_invoice(self):
         invoices = self.mapped('invoice_ids').filtered(lambda r: r.state != 'cancel')
-        for inv in invoices:
-            if not all([tl.line_number for tl in inv.invoice_line_ids]):
-                for ln, line in enumerate(inv.invoice_line_ids, 1):
-                    line.line_number = ln
         if not invoices:
             raise UserError(_('Nothing to print.'))
         return self.env.ref('batch_delivery.ppt_account_selected_invoices_report').report_action(docids=invoices.ids, config=False)

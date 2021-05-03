@@ -53,6 +53,32 @@ class StockPicking(models.Model):
     invoice_ids = fields.Many2many('account.invoice', compute='_compute_invoice_ids')
     is_return = fields.Boolean(compute='_compute_state_flags')
 
+
+    def action_generate_backorder_wizard(self):
+        view = self.env.ref('stock.view_backorder_confirmation')
+        view1 = self.env.ref('batch_delivery.view_backorder_confirmation_new')
+        wiz = self.env['stock.backorder.confirmation'].create({'pick_ids': [(4, p.id) for p in self]})
+
+        code = self.mapped('picking_type_code')
+        if isinstance(code, list) and len(code) > 0:
+            code = code[0]
+
+        if code == 'incoming':
+            return {
+                'name': _('Create Backorder?'),
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'stock.backorder.confirmation',
+                'views': [(view1.id, 'form')],
+                'view_id': view1.id,
+                'target': 'new',
+                'res_id': wiz.id,
+                'context': self.env.context,
+            }
+        else:
+            return super(StockPicking, self).action_generate_backorder_wizard()
+
     @api.depends('sale_id.invoice_status', 'invoice_ids', 'invoice_ids.state')
     def _compute_state_flags(self):
         for pick in self:

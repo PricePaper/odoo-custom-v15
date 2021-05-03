@@ -70,12 +70,12 @@
                                             <td><span t-esc="line.get('qty')"/></td>
                                             <td><span t-esc="line.get('unit_cost_purchased')"/></td>
                                             <td><span t-esc="line.get('unit_cost_sold')"/></td>
-                                            <td><span t-esc="line.get('deviated_cost')"/></td>
+                                            <td><span t-esc="'%.2f' % line.get('deviated_cost')"/></td>
                                         </tr>
                                     </t>
                                     <tr>
                                         <td colspan="6"><b style="padding-left:700px">Total</b></td>
-                                        <td><b><span t-esc="total_deviated_cost"/></b></td>
+                                        <td><b><span t-esc="'%.2f' % total_deviated_cost"/></b></td>
                                     </tr>
                                     <t t-set="grand_deviated_cost" t-value="grand_deviated_cost+total_deviated_cost"/>
                                 </t>
@@ -83,7 +83,7 @@
                                     <td colspan="7"
                                         style="border-left:hidden;border-right:hidden;border-bottom:hidden"><b
                                             style="padding-left:650px">Grand Total :
-                                        <span style="padding-left:20px" t-esc="grand_deviated_cost"/></b></td>
+                                        <span style="padding-left:20px" t-esc="'%.2f' % grand_deviated_cost"/></b></td>
                                 </tr>
                             </table>
                         </div>

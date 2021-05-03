@@ -61,18 +61,6 @@
             </xpath>
         </template>
 
-        <report
-                id="ppt_account_invoices_report"
-                model="account.invoice"
-                string="Invoices without Payment"
-                report_type="qweb-pdf"
-                menu="False"
-                name="batch_delivery.report_ppt_invoice"
-                file="batch_delivery.report_ppt_invoice"
-                attachment="(object.state in ('open','in_payment','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"
-                print_report_name="(object._get_report_base_filename())"
-        />
-
         <template id="report_ppt_invoice_document" inherit_id="account.report_invoice_document" primary="True">
 
             <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[4]" position="attributes">
@@ -150,7 +138,19 @@
             </xpath>
         </template>
 
-        <template id="report_ppt_invoice">
+        <template id="report_ppt_batch_invoice">
+            <t t-call="web.html_container">
+                <t t-foreach="docs.mapped('picking_ids').sorted(key=lambda p: p.sequence, reverse=True).mapped('invoice_ids').filtered(lambda r: r.state != 'cancel')" t-as="o">
+                    <t t-set="lang" t-value="o.user_id.sudo().lang if o.type in ('in_invoice', 'in_refund') else o.partner_id.lang"/>
+                     <t t-foreach="range(2)" t-as="iv">
+                         <t t-set="customer_info" t-value="o.partner_id.name + ' / ' + o.move_name"/>
+                         <t t-call="batch_delivery.report_ppt_invoice_document" t-lang="lang"/>
+                     </t>
+                </t>
+            </t>
+        </template>
+
+        <template id="report_ppt_selected_invoice">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">
                     <t t-set="lang" t-value="o.user_id.sudo().lang if o.type in ('in_invoice', 'in_refund') else o.partner_id.lang"/>
@@ -161,7 +161,5 @@
                 </t>
             </t>
         </template>
-
-
     </data>
 </odoo>

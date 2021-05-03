@@ -168,7 +168,7 @@ class StockPickingBatch(models.Model):
 
         if not invoices:
             raise UserError(_('Nothing to print.'))
-        return self.env.ref('batch_delivery.ppt_account_invoices_report').report_action(docids=invoices.ids, config=False)
+        return self.env.ref('batch_delivery.ppt_account_batch_invoices_report').report_action(self, config=False)
 
     @api.multi
     def print_driver_spreadsheet(self):

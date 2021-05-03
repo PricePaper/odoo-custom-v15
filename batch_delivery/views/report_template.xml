@@ -148,5 +148,28 @@
                 print_report_name="'Pick - %s - %s' % (object.batch_id.truck_driver_id and  object.batch_id.truck_driver_id.name or '', object.batch_id.date)"
         />
 
+                <report
+                id="ppt_account_batch_invoices_report"
+                model="stock.picking.batch"
+                string="Invoices without Payment"
+                report_type="qweb-pdf"
+                menu="False"
+                name="batch_delivery.report_ppt_batch_invoice"
+                file="batch_delivery.report_ppt_batch_invoice"
+                print_report_name="'Invoice - %s - %s' % (object.truck_driver_id and object.truck_driver_id.name or '', object.date)"
+        />
+
+        <report
+                id="ppt_account_selected_invoices_report"
+                model="account.invoice"
+                string="Invoices without Payment"
+                report_type="qweb-pdf"
+                menu="False"
+                name="batch_delivery.report_ppt_selected_invoice"
+                file="batch_delivery.report_ppt_selected_invoice"
+                print_report_name="'Invoice - %s - %s' % (object.picking_ids.mapped('batch_id').truck_driver_id and object.picking_ids.mapped('batch_id').truck_driver_id.name, object.picking_ids.mapped('batch_id').date)"
+        />
+
+
     </data>
 </odoo>

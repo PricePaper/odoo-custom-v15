@@ -66,7 +66,7 @@
             <field name="inherit_id" ref="sale.view_order_tree"/>
             <field name="arch" type="xml">
                 <field name="name" position="after">
-                    <field name="hold_state" invisible='1'/>
+                    <field name="hold_state"/>
                 </field>
             </field>
         </record>
@@ -316,7 +316,7 @@
         </record>
 
         <record id="action_orders_credit_limit_exceeded" model="ir.actions.act_window">
-            <field name="name">Credit Limit Exceeded Orders</field>
+            <field name="name">Orders On Hold</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">sale.order</field>
             <field name="view_type">form</field>
@@ -325,7 +325,7 @@
             <field name="context">{"search_default_ready_to_release": 1, "search_default_release_price_hold": 1}</field>
             <field name="help" type="html">
                 <p>
-                    No Sale Order Found.
+                    No Holded Sale Order Found.
                 </p>
             </field>
         </record>

@@ -62,6 +62,7 @@ class AccountInvoiceLine(models.Model):
     _inherit = 'account.invoice.line'
 
     stock_move_ids = fields.Many2many('stock.move', string="Stock Moves")
+    line_number = fields.Integer()
 
 
 AccountInvoiceLine()

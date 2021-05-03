@@ -18,6 +18,13 @@
                 </div>
             </xpath>
         </template>
+         <template id="ppt_external_layout_standard" inherit_id="web.external_layout_standard">
+             <xpath expr="//div[@name='company_address']" position="after">
+                  <div class="col-6 text-right" name="customer_info" t-if="o._name == 'account.invoice' and customer_info">
+                    <span t-esc="customer_info"/>
+                </div>
+             </xpath>
+         </template>
 
         <template id="report_invoice_document_ppt_with_payments" inherit_id="account.report_invoice_document">
             <xpath expr="//table[@name='invoice_line_table']" position="after">
@@ -29,14 +36,18 @@
                         <thead>
                             <tr>
                                 <t t-set="colspan" t-value="6"/>
+                                <th class="text-left"><span>No#</span></th>
                                 <th class="text-left"><span>Description</span></th>
                                 <th class="text-right"><span>Unavailable Quantity</span></th>
                             </tr>
                         </thead>
                         <tbody class="invoice_tbody">
+                            <t t-set="line_count" t-value="0"/>
                             <t t-foreach="SL"
                                t-as="line">
+                                <t t-set="line_count" t-value="line_count + 1"/>
                                 <tr>
+                                    <td name="account_invoice_line_name"><span t-esc="line_count"/></td>
                                     <td name="account_invoice_line_name"><span t-field="line.name"/></td>
                                     <td class="text-right">
                                         <span t-esc="line.product_uom_qty - line.qty_delivered"/>
@@ -67,7 +78,7 @@
             <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[4]" position="attributes">
                 <attribute name="t-if">o.partner_id.bill_with_goods</attribute>
             </xpath>
-            <xpath expr="//table/tbody/t[2]/tr/t[@name='account_invoice_line_accountable']/td[3]/span[2]" position="replace">
+            <xpath expr="//table/tbody//tr/t[@name='account_invoice_line_accountable']/td[3]/span[2]" position="replace">
             </xpath>
             <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[5]" position="attributes">
                 <attribute name="invisible">True</attribute>
@@ -78,19 +89,19 @@
             <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[7]" position="attributes">
                 <attribute name="t-if">o.partner_id.bill_with_goods</attribute>
             </xpath>
-            <xpath expr="//tbody/t[2]/tr/t[@name='account_invoice_line_accountable']/td[4]" position="attributes">
+            <xpath expr="//tbody//tr/t[@name='account_invoice_line_accountable']/td[4]" position="attributes">
                 <attribute name="t-if">o.partner_id.bill_with_goods</attribute>
             </xpath>
-            <xpath expr="//tbody/t[2]/tr/t[@name='account_invoice_line_accountable']/td[5]" position="attributes">
+            <xpath expr="//tbody//tr/t[@name='account_invoice_line_accountable']/td[5]" position="attributes">
                 <attribute name="invisible">True</attribute>
             </xpath>
-            <xpath expr="//tbody/t[2]/tr/t[@name='account_invoice_line_accountable']/td[7]" position="attributes">
+            <xpath expr="//tbody//tr/t[@name='account_invoice_line_accountable']/td[7]" position="attributes">
                 <attribute name="t-if">o.partner_id.bill_with_goods</attribute>
             </xpath>
             <xpath expr="//tr[hasclass('is-subtotal')]" position="attributes">
                 <attribute name="t-if">o.partner_id.bill_with_goods</attribute>
             </xpath>
-            <xpath expr="//tbody/t[2]/tr/t[@name='account_invoice_line_accountable']/td[6]" position="attributes">
+            <xpath expr="//tbody//tr/t[@name='account_invoice_line_accountable']/td[6]" position="attributes">
                 <attribute name="t-if">o.partner_id.bill_with_goods</attribute>
             </xpath>
             <xpath expr="//div[hasclass('clearfix')]" position="attributes">
@@ -105,9 +116,11 @@
                 <xpath expr="//div[@id='informations']/div[@name='due_date']" position="move"/>
             </xpath>
             <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[1]" position="before">
+                <th class="text-left"><span>No#</span></th>
                  <th class="text-left"><span>Product Code</span></th>
             </xpath>
-            <xpath expr="//tbody/t[2]/tr/t[@name='account_invoice_line_accountable']/td[1]" position="before">
+            <xpath expr="//tbody//tr/t[@name='account_invoice_line_accountable']/td[1]" position="before">
+                <td name="product_code"><span t-field="line.line_number"/></td>
                 <td name="product_code"><span t-field="line.product_id.default_code"/></td>
             </xpath>
             <xpath expr="//t/div/p[1]" position="before">
@@ -117,7 +130,7 @@
              <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[2]" position="after">
                 <th class="text-right"><span>Uom</span></th>
             </xpath>
-            <xpath expr="//table/tbody/t[2]/tr/t[@name='account_invoice_line_accountable']/td[3]" position="before">
+            <xpath expr="//table/tbody//tr/t[@name='account_invoice_line_accountable']/td[3]" position="before">
                 <td  class="text-right">
                      <span t-field="line.uom_id"  groups="uom.group_uom"/>
                 </td>
@@ -133,15 +146,18 @@
                  <t t-set="delivery_address">
                     <address t-field="o.partner_shipping_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
                 </t>
+
             </xpath>
         </template>
 
         <template id="report_ppt_invoice">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">
-                    <t t-set="lang"
-                       t-value="o.user_id.sudo().lang if o.type in ('in_invoice', 'in_refund') else o.partner_id.lang"/>
-                    <t t-call="batch_delivery.report_ppt_invoice_document" t-lang="lang"/>
+                    <t t-set="lang" t-value="o.user_id.sudo().lang if o.type in ('in_invoice', 'in_refund') else o.partner_id.lang"/>
+                     <t t-foreach="range(2)" t-as="iv">
+                         <t t-set="customer_info" t-value="o.partner_id.name + ' / ' + o.move_name"/>
+                         <t t-call="batch_delivery.report_ppt_invoice_document" t-lang="lang"/>
+                     </t>
                 </t>
             </t>
         </template>

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
         <record id="inactive_customer_report_wizard_view" model="ir.ui.view">

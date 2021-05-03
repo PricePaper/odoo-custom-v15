@@ -530,10 +530,11 @@ class SaleOrder(models.Model):
                     order.partner_id.name, order.partner_id.credit_limit,
                     (order.partner_id.credit + order.amount_total))
             if debit_due:
-                msg = msg + 'Customer has pending invoices.\n'
                 for rec in debit_due.mapped('invoice_id'):
-                    if rec.filtered(lambda r: r.date_due and r.date_due < date.today()) and rec.number:
+                    if rec.date_due and rec.date_due < date.today() and rec.number:
                         msg = msg + '%s, ' % (rec.number)
+                if msg:
+                    msg = 'Customer has pending invoices.\n' + msg
 
             for order_line in order.order_line:
                 if order_line.profit_margin < 0.0 and not (

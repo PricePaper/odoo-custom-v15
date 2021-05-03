@@ -3,6 +3,7 @@
 from datetime import datetime
 
 from odoo import models, fields, api
+from odoo.addons import decimal_precision as dp
 
 
 class SaleOrderLine(models.Model):
@@ -11,6 +12,7 @@ class SaleOrderLine(models.Model):
     vendor_id = fields.Many2one('res.partner', compute='compute_vendor', string="Vendor")
     rebate_contract_id = fields.Many2one('deviated.cost.contract', string="Rebate Contract Applicable",
                                          compute='compute_rebate_contract')
+    product_cost = fields.Float(string='Cost', digits=dp.get_precision('Product Price'))
 
     @api.depends('product_id')
     def compute_vendor(self):
@@ -79,6 +81,10 @@ class SaleOrderLine(models.Model):
         unit_price = self.calculate_unit_price_and_contract()[0]
         if unit_price:
             self.price_unit = unit_price
+            self.lst_price = unit_price
+            self.working_cost = unit_price
+        if self.product_id:
+            self.product_cost = self.product_id.standard_price
         return res
 
     @api.onchange('product_id')
@@ -91,7 +97,17 @@ class SaleOrderLine(models.Model):
         unit_price = self.calculate_unit_price_and_contract()[0]
         if unit_price:
             res.update({'value': {'price_unit': unit_price}})
+        if self.product_id:
+            self.product_cost = self.product_id.standard_price
         return res
+
+    @api.depends('product_id', 'product_uom')
+    def _compute_lst_cost_prices(self):
+        res = super(SaleOrderLine, self).product_id_change()
+        unit_price = self.calculate_unit_price_and_contract()[0]
+        if unit_price:
+            self.lst_price = unit_price
+            self.working_cost = unit_price
 
 
 SaleOrderLine()

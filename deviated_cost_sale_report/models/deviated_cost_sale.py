@@ -27,10 +27,10 @@ class ReportDeviatedCost(models.AbstractModel):
                 'date': line.order_id.confirmation_date,
                 'product': "[%s]%s" % (line.product_id.default_code, line.product_id.name),
                 'qty': line.product_uom_qty,
-                'unit_cost_purchased': 'purchase_price' in line and line.purchase_price,
+                'unit_cost_purchased': line.product_cost and line.product_cost or False,
                 'unit_cost_sold': line.price_unit,
-                'deviated_cost': 'purchase_price' in line and (
-                            line.product_uom_qty * (line.purchase_price - line.price_unit))
+                'deviated_cost': line.product_cost and
+                line.product_uom_qty * (line.product_cost - line.price_unit) or False
             }
             con_line = {'contract_id': line.rebate_contract_id,
                         'lines': [line_dict]
@@ -51,7 +51,7 @@ class ReportDeviatedCost(models.AbstractModel):
         return res
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         return {
             'doc_model': 'sale.order',
             'docs': self.env['account.invoice'],

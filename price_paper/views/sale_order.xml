@@ -284,14 +284,17 @@
 
         <record id="sale.action_quotations" model="ir.actions.act_window">
             <field name="search_view_id" ref="price_paper.sale_order_view_search_price_paper"/>
+            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
         </record>
 
         <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
             <field name="search_view_id" ref="price_paper.sale_order_view_search_price_paper"/>
+            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
         </record>
 
         <record id="sale.action_quotations_salesteams" model="ir.actions.act_window">
             <field name="search_view_id" ref="price_paper.sale_order_view_search_price_paper"/>
+            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
         </record>
 
         <record id="sale_order_view_search_credit_exceeded" model="ir.ui.view">
@@ -415,13 +418,18 @@
         </record>
 
         <record id="sale.action_quotations" model="ir.actions.act_window">
-            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel'))]</field>
+            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
             <field name="context">{'default_is_quotation': 1}</field>
             <field name="name">Drafts</field>
         </record>
 
+        <record id="sale.action_orders" model="ir.actions.act_window">
+          <field name="domain">[('state', 'not in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
+        </record>
+
         <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
             <field name="name">Drafts</field>
+            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
         </record>
         <record model="ir.actions.server" id="action_confirm_multiple_orders">
             <field name="name">Confirm</field>
@@ -506,9 +514,8 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                                         <field name="display_type" invisible="1"/>
                                         <field name="product_updatable" invisible="1"/>
                                         <field name="product_id"
-                                            domain="[('is_storage_contract', '=', True)]"
                                             attrs="{
-                                                'readonly': [('product_updatable', '=', False)],
+                                                'readonly': ['|', ('product_updatable', '=', False), ('state', 'in', ('sale','done', 'cancel'))],
                                                 'required': [('display_type', '=', False)],
                                             }"
                                             force_save="1"
@@ -524,10 +531,14 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                                         />
                                         <field name="product_custom_attribute_value_ids" invisible="1" />
                                         <field name="product_no_variant_attribute_value_ids" invisible="1" />
-                                        <field name="name" widget="section_and_note_text"/>
+                                        <field name="name" widget="section_and_note_text"
+                                          attrs="{
+                                              'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"/>
                                         <field
                                             name="product_uom_qty"
                                             string="OrderQty"
+                                            attrs="{
+                                                'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"
                                             context="{
                                                 'partner_id': parent.partner_id,
                                                 'quantity': product_uom_qty,
@@ -536,7 +547,7 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                                                 'company_id': parent.company_id
                                             }"
                                         />
-                                        <field name="selling_min_qty"/>
+                                        <field name="selling_min_qty" attrs="{'readonly': [('state', '=', 'cancel')]}"/>
                                         <field
                                             name="storage_remaining_qty"
                                             attrs="{
@@ -557,9 +568,11 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                                             options='{"no_open": True}'
                                         />
                                         <field
-                                            name="price_unit"
+                                            name="price_unit" attrs="{
+                                                'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"
                                         />
-                                        <field name="discount" groups="sale.group_discount_per_so_line"/>
+                                        <field name="discount" groups="sale.group_discount_per_so_line" attrs="{
+                                            'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"/>
                                         <field name="price_subtotal" widget="monetary" groups="account.group_show_line_subtotals_tax_excluded"/>
                                         <field name="price_total" widget="monetary" groups="account.group_show_line_subtotals_tax_included"/>
                                         <field name="state" invisible="1"/>

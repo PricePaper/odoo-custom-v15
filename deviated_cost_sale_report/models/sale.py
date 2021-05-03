@@ -108,12 +108,15 @@ class SaleOrderLine(models.Model):
     @api.depends('product_id', 'product_uom')
     def _compute_lst_cost_prices(self):
         res = super(SaleOrderLine, self)._compute_lst_cost_prices()
-        self.rebate_contract_id = self.compute_rebate_contract()
-        self.vendor_id = self.compute_vendor()
-        unit_price = self.calculate_unit_price_and_contract()[0]
-        if unit_price:
-            self.lst_price = unit_price
-            self.working_cost = unit_price
+        for line in self:
+            line.rebate_contract_id = line.compute_rebate_contract()
+            line.vendor_id = line.compute_vendor()
+            unit_price = line.calculate_unit_price_and_contract()[0]
+            if unit_price:
+                line.lst_price = unit_price
+                line.working_cost = unit_price
+        return res
+
 
 
 SaleOrderLine()

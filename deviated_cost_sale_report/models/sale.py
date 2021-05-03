@@ -103,7 +103,7 @@ class SaleOrderLine(models.Model):
             self.product_cost = self.product_id.standard_price
             self.rebate_contract_id = self.compute_rebate_contract()
             self.vendor_id = self.compute_vendor()
-    return res
+        return res
 
     @api.depends('product_id', 'product_uom')
     def _compute_lst_cost_prices(self):

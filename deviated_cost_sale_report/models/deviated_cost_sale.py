@@ -14,7 +14,7 @@ class ReportDeviatedCost(models.AbstractModel):
                   ('confirmation_date', '<=', data.get('to_date'))]
         sale_orders = self.env['sale.order'].search(domain)
         order_lines = sale_orders.mapped('order_line').filtered(
-            lambda rec: rec.vendor_id.id and rec.rebate_contract_id.id).sorted(
+            lambda rec: rec.vendor_id and rec.vendor_id.id and rec.rebate_contract_id and rec.rebate_contract_id.id).sorted(
             key=lambda l: (l.vendor_id.id, l.rebate_contract_id.id))
         if data.get('vendor_id'):
             order_lines = order_lines.filtered(lambda rec: rec.vendor_id.id == data.get('vendor_id'))

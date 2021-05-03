@@ -9,23 +9,25 @@ from odoo.addons import decimal_precision as dp
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
-    vendor_id = fields.Many2one('res.partner', compute='compute_vendor', string="Vendor")
-    rebate_contract_id = fields.Many2one('deviated.cost.contract', string="Rebate Contract Applicable",
-                                         compute='compute_rebate_contract')
+    vendor_id = fields.Many2one('res.partner', string="Vendor")
+    rebate_contract_id = fields.Many2one('deviated.cost.contract', string="Rebate Contract Applicable")
     product_cost = fields.Float(string='Cost', digits=dp.get_precision('Product Price'))
 
-    @api.depends('product_id')
+    @api.multi
     def compute_vendor(self):
         """
         Set the vendor of selected product in sale order line
         (for the purpose of sorting lines based on vendor
         when generating reports)
         """
-        for line in self:
-            if line.product_id and line.order_partner_id and bool(
-                    line.order_partner_id.mapped('deviated_contract_ids.partner_product_ids').filtered(
-                            lambda rec: rec.product_id.id == line.product_id.id)):
-                line.vendor_id = line.product_id.seller_ids and line.product_id.seller_ids[0].name.id or False
+
+        vendor_id = False
+        if self.product_id and self.order_partner_id and bool(
+                self.order_partner_id.mapped('deviated_contract_ids.partner_product_ids').filtered(
+                        lambda rec: rec.product_id.id == self.product_id.id)):
+            vendor_id = self.product_id.seller_ids and self.product_id.seller_ids[0].name.id or False
+        return vendor_id
+
 
     @api.multi
     def calculate_unit_price_and_contract(self):
@@ -60,16 +62,16 @@ class SaleOrderLine(models.Model):
             msg = "Unit price of this product is fetched from the contract '%s'" % (self.rebate_contract_id.name)
         return msg, product_price, price_from
 
-    @api.depends('product_id')
+    @api.multi
     def compute_rebate_contract(self):
         """
         Set the contract_id in sale order line
         (for the purpose of sorting lines based on contract
         when generating reports)
         """
-        for line in self:
-            contract_id = line.calculate_unit_price_and_contract()[1]
-            line.rebate_contract_id = contract_id if line.product_id else False
+        contract_id = self.calculate_unit_price_and_contract()[1]
+        rebate_contract_id = contract_id if self.product_id else False
+        return rebate_contract_id
 
     @api.onchange('product_uom', 'product_uom_qty')
     def product_uom_change(self):
@@ -99,11 +101,15 @@ class SaleOrderLine(models.Model):
             res.update({'value': {'price_unit': unit_price}})
         if self.product_id:
             self.product_cost = self.product_id.standard_price
-        return res
+            self.rebate_contract_id = self.compute_rebate_contract()
+            self.vendor_id = self.compute_vendor()
+    return res
 
     @api.depends('product_id', 'product_uom')
     def _compute_lst_cost_prices(self):
-        res = super(SaleOrderLine, self).product_id_change()
+        res = super(SaleOrderLine, self)._compute_lst_cost_prices()
+        self.rebate_contract_id = self.compute_rebate_contract()
+        self.vendor_id = self.compute_vendor()
         unit_price = self.calculate_unit_price_and_contract()[0]
         if unit_price:
             self.lst_price = unit_price

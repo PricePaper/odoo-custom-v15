@@ -311,9 +311,55 @@ class SaleOrder(models.Model):
     @api.onchange('partner_shipping_id')
     def onchange_partner_id_carrier_id(self):
         if self.partner_shipping_id:
-            self.carrier_id = self.partner_shipping_id and self.partner_shipping_id.property_delivery_carrier_id or self.partner_id and self.partner_id.property_delivery_carrier_id
+            shipping_date = date.today() + relativedelta(days=1)
+            day_list = []
+            if self.partner_shipping_id.change_delivery_days:
+                if self.partner_shipping_id.delivery_day_mon:
+                    day_list.append(0)
+                if self.partner_shipping_id.delivery_day_tue:
+                    day_list.append(1)
+                if self.partner_shipping_id.delivery_day_wed:
+                    day_list.append(2)
+                if self.partner_shipping_id.delivery_day_thu:
+                    day_list.append(3)
+                if self.partner_shipping_id.delivery_day_fri:
+                    day_list.append(4)
+                if self.partner_shipping_id.delivery_day_sat:
+                    day_list.append(5)
+                if self.partner_shipping_id.delivery_day_sun:
+                    day_list.append(6)
+            else:
+                if self.partner_shipping_id.zip_delivery_id:
+                    if self.partner_shipping_id.zip_delivery_day_mon:
+                        day_list.append(0)
+                    if self.partner_shipping_id.zip_delivery_day_tue:
+                        day_list.append(1)
+                    if self.partner_shipping_id.zip_delivery_day_wed:
+                        day_list.append(2)
+                    if self.partner_shipping_id.zip_delivery_day_thu:
+                        day_list.append(3)
+                    if self.partner_shipping_id.zip_delivery_day_fri:
+                        day_list.append(4)
+                    if self.partner_shipping_id.zip_delivery_day_sat:
+                        day_list.append(5)
+                    if self.partner_shipping_id.zip_delivery_day_sun:
+                        day_list.append(6)
+            weekday = date.today().weekday()
+            day_diff = 0
+            if day_list:
+                if any(weekday < i for i in day_list):
+                    for i in day_list:
+                        if weekday < i:
+                            day_diff = i - weekday
+                            break
+                else:
+                    day_diff = (6 - weekday) + day_list[0] + 1
+                shipping_date = date.today() + relativedelta(days=day_diff)
+            self.release_date = shipping_date
+            self.deliver_by = shipping_date
+            self.carrier_id = self.partner_shipping_id.property_delivery_carrier_id
         else:
-            self.partner_id and self.partner_id.property_delivery_carrier_id
+            self.carrier_id = self.partner_id and self.partner_id.property_delivery_carrier_id or False
 
     @api.onchange('carrier_id', 'order_line')
     def onchange_delivery_carrier_method(self):
@@ -430,56 +476,12 @@ class SaleOrder(models.Model):
     def onchange_partner_id(self):
         res = super(SaleOrder, self).onchange_partner_id()
         if self.partner_id:
-            shipping_date = date.today() + relativedelta(days=1)
-            day_list = []
-            if self.partner_id.change_delivery_days:
-                if self.partner_id.delivery_day_mon:
-                    day_list.append(0)
-                if self.partner_id.delivery_day_tue:
-                    day_list.append(1)
-                if self.partner_id.delivery_day_wed:
-                    day_list.append(2)
-                if self.partner_id.delivery_day_thu:
-                    day_list.append(3)
-                if self.partner_id.delivery_day_fri:
-                    day_list.append(4)
-                if self.partner_id.delivery_day_sat:
-                    day_list.append(5)
-                if self.partner_id.delivery_day_sun:
-                    day_list.append(6)
-            else:
-                if self.partner_id.zip_delivery_id:
-                    if self.partner_id.zip_delivery_day_mon:
-                        day_list.append(0)
-                    if self.partner_id.zip_delivery_day_tue:
-                        day_list.append(1)
-                    if self.partner_id.zip_delivery_day_wed:
-                        day_list.append(2)
-                    if self.partner_id.zip_delivery_day_thu:
-                        day_list.append(3)
-                    if self.partner_id.zip_delivery_day_fri:
-                        day_list.append(4)
-                    if self.partner_id.zip_delivery_day_sat:
-                        day_list.append(5)
-                    if self.partner_id.zip_delivery_day_sun:
-                        day_list.append(6)
-            weekday = date.today().weekday()
-            day_diff = 0
-            if day_list:
-                if any(weekday < i for i in day_list):
-                    for i in day_list:
-                        if weekday < i:
-                            day_diff = i - weekday
-                            break
-                else:
-                    day_diff = (6 - weekday) + day_list[0] + 1
-                shipping_date = date.today() + relativedelta(days=day_diff)
-            self.release_date = shipping_date
-            self.deliver_by = shipping_date
             shipping_addr = self.partner_id.child_ids.filtered(
                 lambda rec: rec.type == 'delivery' and rec.default_shipping == True)
             if shipping_addr:
                 self.partner_shipping_id = shipping_addr.id
+            else:
+                self.partner_shipping_id = self.partner_id.id
         return res
 
     @api.depends('order_line.profit_margin')

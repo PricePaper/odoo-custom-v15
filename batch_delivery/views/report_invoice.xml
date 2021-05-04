@@ -322,7 +322,7 @@
                     <t t-set="SL"
                        t-value="o.mapped('invoice_line_ids').mapped('sale_line_ids.order_id').mapped('order_line').filtered(lambda r: not r.is_delivery and r.product_uom_qty != r.qty_delivered)"/>
                     <t t-if="SL">
-                        <div style="font-weight: bolder; margin-top:100px;">Product ordered but not
+                        <div style="font-weight: bolder; margin-top:50px;">Product ordered but not
                             delivered</div>
                         <table class="table table-sm o_main_table">
                             <thead>
@@ -333,7 +333,7 @@
                                     <th class="text-right"><span>Unavailable Quantity</span></th>
                                 </tr>
                             </thead>
-                            <tbody class="invoice_tbody">
+                            <tbody class="invoice_tbody" style="font-size:13px;">
                                 <t t-set="line_count" t-value="0"/>
                                 <t t-foreach="SL"
                                    t-as="line">
@@ -436,8 +436,15 @@
                         <li t-if="company.vat" class="list-inline-item"><i class="fa fa-building-o" role="img" aria-label="Fiscal number"/>
                             <t t-esc="(company.country_id.vat_label or 'Tax ID').replace(' ','\N{NO-BREAK SPACE}')"/> : <span t-esc="company.vat.replace(' ','\N{NO-BREAK SPACE}')"/></li>
                     </ul>
-                    <div t-field="company.report_footer"/>
+                    <div t-field="company.report_footer" style="padding:0px;"/>
                     <div t-if="iv == 1">Customer Copy</div>
+                    <div style=" overflow-wrap: break-word;hyphens: auto;font-size:9px;padding-bottom:10px;">
+                        "All products are sold "as-is" without any warranty of merchantability or fitness for a particular purpose.
+                        All delivery shortages must be written on the delivery ticket or invoice and signed by a PPT team member.
+                        By accepting this delivery, you have verified that all products have been delivered.
+                        Products may be returned within 30 days if they are in a resellable condition and their original, undamaged packaging.
+                        Past due payments will incur 1.5% interest per month until paid in full. Balances placed for collection will incur a 30% service fee."
+                    </div>
                     <div t-if="report_type == 'pdf'" class="text-muted">
                         Page:
                         <span class="page"/>

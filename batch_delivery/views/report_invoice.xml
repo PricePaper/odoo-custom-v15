@@ -392,10 +392,10 @@
                         </div>
                     </div>
                     <strong class="mr16">Total Units:</strong>
-                    <span t-esc="'{0:.02f}'.format(sum([l.quantity for l in o.invoice_line_ids]))"/>
+                    <span t-esc="'{0:.02f}'.format(sum([l.quantity for l in o.invoice_line_ids.filtered(lambda r: r.product_id.type != 'service')]))"/>
                     <br/>
                     <strong class="mr16">Current Balance :</strong>
-                    <span t-esc="'${0:.02f}'.format(o.residual)"/> as of <t t-esc="time.strftime('%m/%d/%Y', time.localtime())"/>
+                    <span t-esc="'${0:.02f}'.format(o.residual)"/> as of <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%m/%d/%Y')"/>
                     <p t-if="o.reference">
                         Please use the following communication for your payment : <b><span t-field="o.reference"/></b>
                     </p>
@@ -436,7 +436,6 @@
                         <li t-if="company.vat" class="list-inline-item"><i class="fa fa-building-o" role="img" aria-label="Fiscal number"/>
                             <t t-esc="(company.country_id.vat_label or 'Tax ID').replace(' ','\N{NO-BREAK SPACE}')"/> : <span t-esc="company.vat.replace(' ','\N{NO-BREAK SPACE}')"/></li>
                     </ul>
-                    <div t-field="company.report_footer" style="padding:0px;"/>
                     <div t-if="iv == 1">Customer Copy</div>
                     <div style=" overflow-wrap: break-word;hyphens: auto;font-size:9px;padding-bottom:10px;">
                         "All products are sold "as-is" without any warranty of merchantability or fitness for a particular purpose.

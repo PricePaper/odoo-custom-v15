@@ -49,21 +49,6 @@
             <field name="dpi">90</field>
         </record>
 
-        <record id="paperformat_batch_picking_invoices_report" model="report.paperformat">
-            <field name="name">Batch Picking Invoice</field>
-            <field name="default" eval="False"/>
-            <field name="format">Letter</field>
-            <field name="page_height">0</field>
-            <field name="page_width">0</field>
-            <field name="orientation">Portrait</field>
-            <field name="margin_top">10</field>
-            <field name="margin_bottom">35</field>
-            <field name="margin_left">10</field>
-            <field name="margin_right">0</field>
-            <field name="header_line" eval="False"/>
-            <field name="header_spacing">10</field>
-            <field name="dpi">90</field>
-        </record>
 
         <report
                 id="batch_delivery.report_master_pick_ticket"
@@ -172,7 +157,6 @@
                 menu="False"
                 name="batch_delivery.report_ppt_batch_invoice"
                 file="batch_delivery.report_ppt_batch_invoice"
-                paperformat="paperformat_batch_picking_invoices_report"
                 print_report_name="'Invoice - %s - %s' % (object.truck_driver_id and object.truck_driver_id.name or '', object.date)"
         />
 
@@ -184,7 +168,6 @@
                 menu="False"
                 name="batch_delivery.report_ppt_selected_invoice"
                 file="batch_delivery.report_ppt_selected_invoice"
-                paperformat="paperformat_batch_picking_invoices_report"
                 print_report_name="'Invoice - %s - %s' % (object.picking_ids.mapped('batch_id').truck_driver_id and object.picking_ids.mapped('batch_id').truck_driver_id.name, object.picking_ids.mapped('batch_id').date)"
         />
 

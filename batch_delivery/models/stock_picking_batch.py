@@ -314,7 +314,10 @@ class StockPickingBatch(models.Model):
         for batch in self:
             if not batch.actual_returned:
                 raise UserError(_('Please properly enter the returned amount'))
-
+            if not all([ln.invoice_id for ln in batch.cash_collected_lines]):
+                raise UserError(_('Please properly set a invoice in cash collected line.'))
+            if not batch.cash_collected_lines:
+                raise UserError(_('Please add cash collected lines before proceeding.'))
             if batch.cash_collected_lines and all(l.amount > 0 for l in batch.cash_collected_lines):
                 batch.cash_collected_lines.create_payment()
             else:

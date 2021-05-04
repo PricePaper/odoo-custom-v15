@@ -31,7 +31,7 @@
                     </thead>
                     <tbody>
                         <t t-set="total" t-value="0"/>
-                        <tr t-foreach="o.picking_ids" t-as="picking">
+                        <tr t-foreach="o.picking_ids.sorted(lambda r:r.sequence)" t-as="picking">
                             <t t-if="picking.state != 'cancel'">
                                 <td>
                                     <span t-if="picking.invoice_ref">

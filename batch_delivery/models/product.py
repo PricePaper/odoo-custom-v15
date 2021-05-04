@@ -18,8 +18,8 @@ class Product(models.Model):
 
     transit_qty = fields.Float("Transit Qty", compute='_compute_quantities', store=True)
 
-    def action_open_quants(self):
-        return {}
+    # def action_open_quants(self):
+    #     return {}
 
     def action_open_transit_moves(self):
         action = self.env.ref('stock.stock_move_action').read()[0]

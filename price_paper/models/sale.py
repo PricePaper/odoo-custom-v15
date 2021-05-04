@@ -920,21 +920,21 @@ class SaleOrderLine(models.Model):
                     if line.product_id.cost:
                         line.working_cost = uom_price[0].cost
 
-    @api.multi
-    def _prepare_invoice_line(self, qty):
-        res = super(SaleOrderLine, self)._prepare_invoice_line(qty)
-        if self.is_downpayment and self.product_id.is_storage_contract:
-            account = self.product_id.storage_contract_account_id or self.product_id.property_account_income_id or self.product_id.categ_id.property_account_income_categ_id
-
-            if not account and self.product_id:
-                raise UserError(_('Please define storage contract account for this product: "%s" (id:%d)".') %
-                                (self.product_id.name, self.product_id.id))
-
-            fpos = self.order_id.fiscal_position_id or self.order_id.partner_id.property_account_position_id
-            if fpos and account:
-                account = fpos.map_account(account)
-            res.update({'account_id': account.id, 'product_id': False})
-        return res
+    # @api.multi
+    # def _prepare_invoice_line(self, qty):
+    #     res = super(SaleOrderLine, self)._prepare_invoice_line(qty)
+    #     if self.is_downpayment and self.product_id.is_storage_contract:
+    #         account = self.product_id.storage_contract_account_id or self.product_id.property_account_income_id or self.product_id.categ_id.property_account_income_categ_id
+    #
+    #         if not account and self.product_id:
+    #             raise UserError(_('Please define storage contract account for this product: "%s" (id:%d)".') %
+    #                             (self.product_id.name, self.product_id.id))
+    #
+    #         fpos = self.order_id.fiscal_position_id or self.order_id.partner_id.property_account_position_id
+    #         if fpos and account:
+    #             account = fpos.map_account(account)
+    #         res.update({'account_id': account.id, 'product_id': False})
+    #     return res
 
     @api.multi
     def unlink(self):

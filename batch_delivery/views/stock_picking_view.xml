@@ -171,7 +171,7 @@
                 <button name="button_validate" position="after">
                     <field name="is_return" invisible="1"/>
                     <button name="action_make_transit" type="object" string="Mark as Transit"
-                            attrs="{'invisible': ['|', '|',  ('is_return', '=', True), ('state', 'not in', ['assigned']), ('picking_type_code', '=', 'incoming')]}" class="oe_highlight"/>
+                            attrs="{'invisible': ['|', '|',  ('is_return', '=', True), ('state', 'not in', ['assigned']), ('picking_type_code', 'in', ['incoming', 'internal'])]}" class="oe_highlight"/>
                     <button name="create_invoice" type="object" string="Create Invoice"
                             attrs="{'invisible': ['|', '|',  ('is_return', '=', True), ('state', 'not in', ['in_transit']), ('is_invoiced', '=', True)]}" class="oe_highlight"/>
 
@@ -183,7 +183,7 @@
                             attrs="{'invisible': ['|', '|', ('is_return', '=', True), ('is_transit', '=', False), ('is_invoiced', '=', False)]}" class="oe_highlight"/>
                 </button>
                 <button name="button_validate" position="attributes">
-                    <attribute name="attrs">{'invisible':['|', ('picking_type_code', '!=', 'incoming'), ('show_validate', '=', False)]}</attribute>
+                    <attribute name="attrs">{'invisible':['|', ('picking_type_code', 'not in', ['incoming', 'internal']), ('show_validate', '=', False)]}</attribute>
                 </button>
                 <field name="state" position="attributes">
                     <attribute name="statusbar_visible">

@@ -184,7 +184,7 @@
         <report
                 id="ppt_account_selected_invoices_with_payment_report"
                 model="account.invoice"
-                string="Invoice(TEST)"
+                string="Invoice"
                 report_type="qweb-pdf"
                 menu="True"
                 name="batch_delivery.report_ppt_selected_invoice_with_payment"

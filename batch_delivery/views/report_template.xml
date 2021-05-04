@@ -130,7 +130,7 @@
                 id="batch_picking_all_report"
                 model="stock.picking.batch"
                 report_type="qweb-pdf"
-                menu="False"
+                menu="True"
                 file="batch_delivery.report_batch_picking_all"
                 name="batch_delivery.report_batch_picking_all"
                 paperformat="paperformat_batch_picking_ticket"
@@ -138,18 +138,18 @@
         />
 
         <report
-                string="Batch Pick Ticket (Active)"
+                string="Pick Ticket"
                 id="batch_picking_active_report"
                 model="stock.picking"
                 report_type="qweb-pdf"
-                menu="False"
+                menu="True"
                 file="batch_delivery.report_batch_picking_active"
                 name="batch_delivery.report_batch_picking_active"
                 paperformat="paperformat_batch_picking_ticket"
-                print_report_name="'Pick - %s - %s' % (object.batch_id.truck_driver_id and  object.batch_id.truck_driver_id.name or '', object.batch_id.date)"
+                print_report_name="object.batch_id and 'Pick - %s - %s' % (object.batch_id.truck_driver_id and  object.batch_id.truck_driver_id.name or '', object.batch_id.date) or ('Pick - %s - %s' % (object.partner_id and object.partner_id.name or '',object.name))"
         />
 
-                <report
+        <report
                 id="ppt_account_batch_invoices_report"
                 model="stock.picking.batch"
                 string="Invoices without Payment"
@@ -158,6 +158,16 @@
                 name="batch_delivery.report_ppt_batch_invoice"
                 file="batch_delivery.report_ppt_batch_invoice"
                 print_report_name="'Invoice - %s - %s' % (object.truck_driver_id and object.truck_driver_id.name or '', object.date)"
+        />
+        <report
+                id="ppt_account_selected_invoices_report_standard"
+                model="account.invoice"
+                string="Invoices without Payment"
+                report_type="qweb-pdf"
+                menu="True"
+                name="batch_delivery.report_ppt_selected_invoice_standard"
+                file="batch_delivery.report_ppt_selected_invoice_standard"
+                print_report_name="object.picking_ids.mapped('batch_id') and 'Invoice - %s - %s' % (object.picking_ids.mapped('batch_id').truck_driver_id and object.picking_ids.mapped('batch_id').truck_driver_id.name, object.picking_ids.mapped('batch_id').date) or (object._get_report_base_filename())"
         />
 
         <report
@@ -168,9 +178,54 @@
                 menu="False"
                 name="batch_delivery.report_ppt_selected_invoice"
                 file="batch_delivery.report_ppt_selected_invoice"
-                print_report_name="'Invoice - %s - %s' % (object.picking_ids.mapped('batch_id').truck_driver_id and object.picking_ids.mapped('batch_id').truck_driver_id.name, object.picking_ids.mapped('batch_id').date)"
+                print_report_name="object.picking_ids.mapped('batch_id') and 'Invoice - %s - %s' % (object.picking_ids.mapped('batch_id').truck_driver_id and object.picking_ids.mapped('batch_id').truck_driver_id.name, object.picking_ids.mapped('batch_id').date) or (object._get_report_base_filename())"
         />
 
+        <report
+                id="ppt_account_selected_invoices_with_payment_report"
+                model="account.invoice"
+                string="Invoice(TEST)"
+                report_type="qweb-pdf"
+                menu="True"
+                name="batch_delivery.report_ppt_selected_invoice_with_payment"
+                file="batch_delivery.report_ppt_selected_invoice_with_payment"
+                print_report_name="object.picking_ids.mapped('batch_id') and 'Invoice - %s - %s' % (object.picking_ids.mapped('batch_id').truck_driver_id and object.picking_ids.mapped('batch_id').truck_driver_id.name, object.picking_ids.mapped('batch_id').date) or (object._get_report_base_filename())"
+        />
 
+        <report
+            string="Picking Operations"
+            id="stock.action_report_picking"
+            model="stock.picking"
+            report_type="qweb-pdf"
+            menu="False"
+            name="stock.report_picking"
+            file="stock.report_picking_operations"
+            print_report_name="'Picking Operations - %s - %s' % (object.partner_id.name or '', object.name)"
+        />
+
+        <report
+            id="account.account_invoices"
+            model="account.invoice"
+            string="Invoices"
+            report_type="qweb-pdf"
+            menu="False"
+            name="account.report_invoice_with_payments"
+            file="account.report_invoice_with_payments"
+            attachment="(object.state in ('open','in_payment','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"
+            print_report_name="(object._get_report_base_filename())"
+            groups="account.group_account_invoice"
+        />
+
+        <report
+            id="account.account_invoices_without_payment"
+            model="account.invoice"
+            string="Invoices without Payment"
+            report_type="qweb-pdf"
+            menu="False"
+            name="account.report_invoice"
+            file="account.report_invoice"
+            attachment="(object.state in ('open','in_payment','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"
+            print_report_name="(object._get_report_base_filename())"
+        />
     </data>
 </odoo>

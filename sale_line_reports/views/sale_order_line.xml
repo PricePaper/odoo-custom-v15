@@ -30,6 +30,8 @@
                 <search string="Search Sales Order">
                     <filter name="to_invoice" string="To Invoice" domain="[('qty_to_invoice','!=', 0)]"
                             help="Sales Order Lines ready to be invoiced"/>
+                    <filter name="not_in_done" string="Open Order Lines" domain="[('order_id.state','not in', ('done', 'cancel'))]"
+                            help="Sales Order Lines Not in Done,Cancel state"/>
                     <separator/>
                     <filter name='salesman_orders' string="My Sales Order Lines" domain="[('salesman_id','=',uid)]"
                             help="Sales Order Lines related to a Sales Order of mine"/>
@@ -52,7 +54,7 @@
             <field name="res_model">sale.order.line</field>
             <field name="view_mode">tree</field>
             <field name="search_view_id" ref="sales_order_line_filter_report"/>
-            <field name="context">{'search_default_to_invoice': True}</field>
+            <field name="context">{'search_default_not_in_done': 1, 'search_default_group_by_order_id': 1}</field>
         </record>
 
         <record model="ir.actions.act_window.view" id="action_sale_line_reports_price_paper_tree">

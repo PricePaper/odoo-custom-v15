@@ -817,7 +817,7 @@ class SaleOrderLine(models.Model):
     remaining_qty = fields.Float(string="Remaining Quantity", compute='_compute_remaining_qty')
     similar_product_price = fields.Html(string='Similar Product Prices')
     sale_uom_ids = fields.Many2many('uom.uom', compute='_compute_sale_uom_ids')
-    storage_remaining_qty = fields.Float(string="Delivered qty", compute='_compute_storage_delivered_qty')
+    storage_remaining_qty = fields.Float(string="Remaining qty", compute='_compute_storage_delivered_qty', search='_search_storage_remaining_qty')
     storage_contract_line_id = fields.Many2one('sale.order.line', string='Contract Line')
     storage_contract_line_ids = fields.One2many('sale.order.line', 'storage_contract_line_id')
     selling_min_qty = fields.Float(string="Minimum Qty")
@@ -832,6 +832,16 @@ class SaleOrderLine(models.Model):
         for line in self:
             sale_lines = line.storage_contract_line_ids.filtered(lambda r: r.order_id.state != 'draft')
             line.storage_remaining_qty = line.product_uom_qty - sum(sale_lines.mapped('product_uom_qty'))
+
+    @api.multi
+    def _search_storage_remaining_qty(self, operator, value):
+        ids = []
+        if operator == '>':
+            lines = self.search([('order_id.storage_contract', '=', True), ('state', '=', 'released'), ('is_downpayment', '=', False)])
+            for sl in lines:
+                if (sl.product_uom_qty - sum(sl.storage_contract_line_ids.mapped('product_uom_qty'))) > value:
+                    ids.append(sl.id)
+        return [('id', 'in', ids)]
 
     @api.depends('product_id.sale_uoms')
     def _compute_sale_uom_ids(self):

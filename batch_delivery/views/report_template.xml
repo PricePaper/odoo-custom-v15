@@ -192,6 +192,18 @@
                 print_report_name="object.picking_ids.mapped('batch_id') and 'Invoice - %s - %s' % (object.picking_ids.mapped('batch_id').truck_driver_id and object.picking_ids.mapped('batch_id').truck_driver_id.name, object.picking_ids.mapped('batch_id').date) or (object._get_report_base_filename())"
         />
 
+         <report
+            id="account_invoices_quick_sale"
+            model="account.invoice"
+            string="Invoices (Quick Sale)"
+            report_type="qweb-pdf"
+            menu="True"
+            name="batch_delivery.report_ppt_selected_invoice_with_payment_quick_sale"
+            file="batch_delivery.report_ppt_selected_invoice_with_payment_quick_sale"
+            attachment="(object.state in ('open','in_payment','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"
+            print_report_name="(object._get_report_base_filename())"
+        />
+
         <report
             string="Picking Operations"
             id="stock.action_report_picking"

@@ -851,5 +851,42 @@
             </t>
         </template>
 
+        <template id="report_ppt_invoice_document_with_payments_quick_sale" inherit_id="batch_delivery.ppt_custom_invoice_template_standard" primary="True">
+            <xpath expr="//div[2]/t[7]/div[5]" position="replace"/>
+             <xpath expr="//div[@id='total']/div/table" position="inside">
+                <t t-set="payments_vals" t-value="o._get_payments_vals()"/>
+                <t t-foreach="payments_vals" t-as="payment_vals">
+                    <tr>
+                        <td>
+                            <i class="oe_form_field text-right oe_payment_label">Paid on <t t-esc="payment_vals['date']" t-options='{"widget": "date"}'/></i>
+                        </td>
+                        <td class="text-right">
+                            <span t-esc="payment_vals['amount']" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                        </td>
+                    </tr>
+                </t>
+                <t t-if="len(payments_vals) > 0">
+                    <tr class="border-black">
+                        <td><strong>Amount Due</strong></td>
+                        <td class="text-right">
+                             <span t-field="o.residual"/>
+                        </td>
+                    </tr>
+                </t>
+            </xpath>
+        </template>
+
+        <template id="report_ppt_selected_invoice_with_payment_quick_sale">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="company" t-value="o.company_id.sudo()"/>
+                    <t t-set="lang" t-value="o.user_id.sudo().lang if o.type in ('in_invoice', 'in_refund') else o.partner_id.lang"/>
+                    <t t-foreach="range(2)" t-as="iv">
+                         <t t-call="batch_delivery.report_ppt_invoice_document_with_payments_quick_sale" t-lang="lang"/>
+                    </t>
+                </t>
+            </t>
+        </template>
+
     </data>
 </odoo>

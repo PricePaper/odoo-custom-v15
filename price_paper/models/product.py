@@ -73,7 +73,8 @@ class ProductProduct(models.Model):
         #Duplicate price_list line
         lines = self.env['customer.product.price'].search([('product_id', '=', self.id)])
         default_1 = {'product_id': res.id}
-        new_lines = lines.copy(default=default_1)
+        for line in lines:
+            new_line = line.copy(default=default_1)
         return res
 
     @api.model

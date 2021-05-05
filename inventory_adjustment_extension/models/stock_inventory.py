@@ -72,6 +72,21 @@ class Inventory(models.Model):
             for void_field in [item[0] for item in product_data.items() if item[1] is None]:
                 product_data[void_field] = False
             product_data['theoretical_qty'] = product_data['product_qty']
+
+            product_rec = Product.browse(product_data['product_id'])
+
+            product_qty = 0
+            for move in product_rec.stock_move_ids.filtered(lambda rec: rec.is_transit and rec.state != 'cancel' and rec.location_id.id == product_data['location_id']):
+                if move.product_uom.id != product_rec.uom_id.id:
+                    product_qty += move.product_uom._compute_quantity(move.quantity_done, product_rec.uom_id,
+                                                                      rounding_method='HALF-UP')
+                else:
+                    product_qty += move.quantity_done
+            product_qty
+            theoretical_qty = product_data['product_qty'] - product_qty
+            product_data['theoretical_qty'] = theoretical_qty
+            product_data['product_qty'] = theoretical_qty
+
             if product_data['product_id']:
                 product_data['product_uom_id'] = Product.browse(product_data['product_id']).uom_id.id
                 quant_products |= Product.browse(product_data['product_id'])
@@ -92,4 +107,3 @@ class Inventory(models.Model):
 Inventory()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-

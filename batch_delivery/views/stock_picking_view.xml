@@ -170,20 +170,22 @@
 
                 <button name="button_validate" position="after">
                     <field name="is_return" invisible="1"/>
-                    <button name="action_make_transit" type="object" string="Mark as Transit"
+                    <button name="action_make_transit" type="object" string="Mark as Transit" groups="account.group_account_invoice"
                             attrs="{'invisible': ['|', '|',  ('is_return', '=', True), ('state', 'not in', ['assigned']), ('picking_type_code', 'in', ['incoming', 'internal'])]}" class="oe_highlight"/>
-                    <button name="create_invoice" type="object" string="Create Invoice"
+                    <button name="create_invoice" type="object" string="Create Invoice" groups="account.group_account_invoice"
                             attrs="{'invisible': ['|', '|',  ('is_return', '=', True), ('state', 'not in', ['in_transit']), ('is_invoiced', '=', True)]}" class="oe_highlight"/>
 
-                    <button name="action_validate" type="object" string="Confirm Transfer"
+                    <button name="action_validate" type="object" string="Confirm Transfer" groups="account.group_account_invoice"
                             attrs="{'invisible': ['|', ('is_transit', '=',False), ('is_invoiced', '=', False)]}" class="oe_highlight"/>
-                    <button name="action_validate" type="object" string="Confirm Transfer"
+                    <button name="action_validate" type="object" string="Confirm Transfer" groups="account.group_account_invoice"
                             attrs="{'invisible': ['|', ('state', '=', 'done'), ('is_return', '=', False)]}" class="oe_highlight"/>
                     <button name="%(action_view_picking_full_reeturn_wizard_form)d" type="action" string="Full Return"
                             attrs="{'invisible': ['|', '|', ('is_return', '=', True), ('is_transit', '=', False), ('is_invoiced', '=', False)]}" class="oe_highlight"/>
+                    <button name="action_validate_internal" attrs="{'invisible': ['|', '|', ('state', 'in', ('waiting','confirmed')), ('show_validate', '=', False), ('picking_type_code', '!=', 'internal')]}"
+                      string="Validate" type="object" class="oe_highlight" groups="stock.group_stock_user, account.group_account_invoice"/>
                 </button>
                 <button name="button_validate" position="attributes">
-                    <attribute name="attrs">{'invisible':['|', ('picking_type_code', 'not in', ['incoming', 'internal']), ('show_validate', '=', False)]}</attribute>
+                    <attribute name="attrs">{'invisible':['|', ('picking_type_code', '!=', 'incoming'), ('show_validate', '=', False)]}</attribute>
                 </button>
                 <field name="state" position="attributes">
                     <attribute name="statusbar_visible">

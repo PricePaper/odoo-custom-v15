@@ -170,8 +170,8 @@ class ResPartner(models.Model):
 
     @api.multi
     def write(self, vals):
-        if 'property_payment_term_id' in vals and not self.env.user.has_group('account.group_account_invoice'):
-            raise UserError("You dont have the rights to change the payment terms of this customer.")
+        # if 'property_payment_term_id' in vals and not self.env.user.has_group('account.group_account_invoice'):
+        #     raise UserError("You dont have the rights to change the payment terms of this customer.")
         if 'seller_partner_ids' in vals:
             seller = self.browse(vals.get('seller_partner_ids')[0][-1])
             for rec in self:

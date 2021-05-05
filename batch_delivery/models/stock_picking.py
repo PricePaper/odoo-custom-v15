@@ -47,7 +47,7 @@ class StockPicking(models.Model):
     is_late_order = fields.Boolean(string='Late Order', copy=False)
     reserved_qty = fields.Float('Available Quantity', compute='_compute_available_qty')
     low_qty_alert = fields.Boolean(string="Low Qty", compute='_compute_available_qty')
-    sequence = fields.Integer(string='Order')
+    sequence = fields.Integer(string='Order', default=1)
     is_invoiced = fields.Boolean(string="Invoiced", compute='_compute_state_flags')
     invoice_ref = fields.Char(string="Invoice Reference", compute='_compute_invoice_ref')
     invoice_ids = fields.Many2many('account.invoice', compute='_compute_invoice_ids')
@@ -99,9 +99,8 @@ class StockPicking(models.Model):
 
     def _compute_invoice_ref(self):
         for rec in self:
-            invoice = rec.sale_id.invoice_ids.filtered(lambda r: rec in r.picking_ids)
-            if invoice:
-                rec.invoice_ref = invoice[-1].move_name
+            if rec.invoice_ids:
+                rec.invoice_ref = rec.invoice_ids[-1].move_name
 
     @api.depends('move_ids_without_package.reserved_availability')
     def _compute_available_qty(self):
@@ -200,10 +199,7 @@ class StockPicking(models.Model):
             for inv in picking.sale_id.invoice_ids.filtered(lambda rec: rec.state == 'draft'):
                 if not inv.journal_id.sequence_id:
                     raise UserError(_('Please define sequence on the journal related to this invoice.'))
-                new_name = inv.journal_id.sequence_id.with_context(ir_sequence_date=inv.date_invoice).next_by_id()
-                inv.number = new_name
-                inv.move_name = new_name
-                picking.invoice_ref = new_name
+                picking.invoice_ref = inv.move_name or inv.number
 
     @api.multi
     def write(self, vals):

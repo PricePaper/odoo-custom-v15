@@ -187,8 +187,9 @@
                             <field name="pending_amount"/>
                         </group>
 
-                        <field name="cash_collected_lines" attrs="{'readonly':[('is_posted', '=', True)]}">
+                        <field name="cash_collected_lines" attrs="{'readonly': 1}">
                             <tree editable="bottom">
+                                <field name="sequence" widget="handle"/>
                                 <field name="partner_id" domain="[('customer', '=', True)]"/>
                                 <field name="communication"/>
                                 <field name="amount"/>
@@ -291,6 +292,7 @@
                         <field name="is_posted" invisible="1"/>
                         <field name="cash_collected_lines" attrs="{'readonly': [('is_posted', '=', True)]}">
                             <tree editable="bottom">
+                                <field name="sequence" widget="handle"/>
                                 <field name="partner_id" domain="[('customer', '=', True)]"/>
                                 <field name="partner_ids" invisible="1"/>
                                 <field name="invoice_id" domain="[('partner_id', 'in', partner_ids), ('state', '=', 'open'), ('type', '=', 'out_invoice')]" context="{'from_batch_payment': True}"/>

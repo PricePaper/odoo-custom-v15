@@ -232,11 +232,9 @@ class StockPickingBatch(models.Model):
 
     @api.multi
     def cancel_picking(self):
-        # result = super(StockPickingBatch, self).cancel_picking()
-
         self.mapped('truck_driver_id').write({'is_driver_available': True})
-        if self.route_id:
-            self.route_id.set_active = False
+        if self.mapped('route_id').ids:
+            self.mapped('route_id').write({'set_active': False})
         self.mapped('picking_ids').write({'batch_id': False, 'route_id': False, 'is_late_order': False})
         return self.write({'state': 'cancel'})
 

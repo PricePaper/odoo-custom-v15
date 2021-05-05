@@ -1286,7 +1286,7 @@ class SaleOrderLine(models.Model):
                 sale_history = self.env['sale.history'].search(
                     [('partner_id', '=', self.order_id and self.order_id.partner_id.id),
                      ('product_id', '=', self.product_id and self.product_id.id)],
-                     order='order_date desc, id desc', limit=1)
+                     order='order_date desc', limit=1)
                 if sale_history:
                     self.product_uom = sale_history.uom_id
 

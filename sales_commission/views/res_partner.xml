@@ -3,7 +3,7 @@
         <record id="res_partner_inherit_salescommission" model="ir.ui.view">
             <field name="name">res.partner.salecommission</field>
             <field name="model">res.partner</field>
-            <field name="inherit_id" ref="base.view_partner_form" />
+            <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
 
               <button name="toggle_active" position="before">
@@ -18,7 +18,7 @@
                     <field name='sales_person_ids' widget='many2many_tags' domain="[('is_sales_person', '=', True)]" options='{"always_reload": True}' context="{'default_is_sales_person':1}"/>
                 </field>
                 <field name='property_payment_term_id' position='after'>
-                    <field name='payment_method'/>
+                    <field name='payment_method' readonly="1"/>
                 </field>
                 <xpath expr="//notebook/page[@name='sales_purchases']/group/group/field[@name='user_id']" position="attributes">
                     <attribute name='invisible'>1</attribute>
@@ -48,6 +48,19 @@
 
             </field>
         </record>
+
+        <record id="res_partner_inherit_salescommission_payment_method_readonly" model="ir.ui.view">
+            <field name="name">res.partner.pricepaper.vat.readonly</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="res_partner_inherit_salescommission"/>
+            <field name="groups_id" eval="[(6, 0, [ref('account.group_account_manager')])]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_method']" position="attributes">
+                    <attribute name="readonly">False</attribute>
+                </xpath>
+            </field>
+        </record>
+
         <record id="res_partner_pricepaper_sales_commission_search" model="ir.ui.view">
             <field name="name">res.partner.pricepaper.search</field>
             <field name="model">res.partner</field>

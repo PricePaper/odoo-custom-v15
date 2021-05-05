@@ -30,6 +30,4 @@ class InventoryLine(models.Model):
             product_qty = self.product_id.uom_id._compute_quantity(product_qty, self.product_uom_id)
         self.theoretical_qty = theoretical_qty - product_qty
 
-    @api.onchange('product_id')
-    def _onchange_theoretical_qty(self):
-        self.product_qty = self.theoretical_qty
+InventoryLine()

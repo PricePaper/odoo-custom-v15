@@ -314,8 +314,6 @@ class StockPickingBatch(models.Model):
         for batch in self:
             if not batch.actual_returned:
                 raise UserError(_('Please properly enter the returned amount'))
-            if not all([ln.invoice_id for ln in batch.cash_collected_lines]):
-                raise UserError(_('Please properly set a invoice in cash collected line.'))
             if not batch.cash_collected_lines:
                 raise UserError(_('Please add cash collected lines before proceeding.'))
             if batch.cash_collected_lines and all(l.amount > 0 for l in batch.cash_collected_lines):
@@ -441,29 +439,42 @@ class CashCollectedLines(models.Model):
             if not line.amount:
                 continue
 
-            days = (line.invoice_id.date_invoice - fields.Date.context_today(line)).days
-
-            need_writeoff = True if abs(days) < line.invoice_id.payment_term_id.due_days else False
+            need_writeoff = True if line.discount else False
 
             if need_writeoff and not self.env.user.company_id.discount_account_id:
                 raise UserError(_('Please set a discount account in company.'))
-
-            batch_payment_info.setdefault(line.journal_id, {}). \
-                setdefault(line.payment_method_id, []). \
-                append({
-                'payment_type': 'inbound',
-                'partner_type': 'customer',
-                'payment_method_id': line.payment_method_id.id,
-                'partner_id': line.partner_id.id,
-                'amount': line.invoice_id.residual,
-                'journal_id': line.journal_id.id,
-                'invoice_ids': [(6, 0, line.invoice_id.ids)],
-                'communication': line.communication,
-                'batch_id': line.batch_id.id,
-                'payment_difference_handling': 'reconcile' if need_writeoff else False,
-                'writeoff_label': line.invoice_id.payment_term_id.name if need_writeoff else False,
-                'writeoff_account_id': self.env.user.company_id.discount_account_id.id if need_writeoff else False
-            })
+            if line.invoice_id:
+                batch_payment_info.setdefault(line.journal_id, {}). \
+                    setdefault(line.payment_method_id, []). \
+                    append({
+                    'payment_type': 'inbound',
+                    'partner_type': 'customer',
+                    'payment_method_id': line.payment_method_id.id,
+                    'partner_id': line.partner_id.id,
+                    'amount': line.amount,
+                    'journal_id': line.journal_id.id,
+                    'invoice_ids': [(6, 0, line.invoice_id.ids)],
+                    'communication': line.communication,
+                    'batch_id': line.batch_id.id,
+                    'payment_difference_handling': 'reconcile' if need_writeoff else False,
+                    'writeoff_label': line.invoice_id.payment_term_id.name if need_writeoff else False,
+                    'writeoff_account_id': self.env.user.company_id.discount_account_id.id if need_writeoff else False
+                })
+                if line.invoice_id:
+                    line.invoice_id.write({'discount_from_batch': line.discount})
+            else:
+                batch_payment_info.setdefault(line.journal_id, {}). \
+                    setdefault(line.payment_method_id, []). \
+                    append({
+                    'payment_type': 'inbound',
+                    'partner_type': 'customer',
+                    'payment_method_id': line.payment_method_id.id,
+                    'partner_id': line.partner_id.id,
+                    'amount': line.amount,
+                    'journal_id': line.journal_id.id,
+                    'communication': line.communication,
+                    'batch_id': line.batch_id.id,
+                })
 
         AccountBatchPayment = self.env['account.batch.payment']
 

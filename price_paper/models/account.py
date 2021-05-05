@@ -58,6 +58,7 @@ class AccountInvoice(models.Model):
     gross_profit = fields.Monetary(compute='calculate_gross_profit', string='Predicted Profit')
     storage_down_payment = fields.Boolean()
     is_released = fields.Boolean()
+    discount_from_batch = fields.Float('WriteOff Discount')
 
     def storage_contract_release(self):
         sale_order = self.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
@@ -268,7 +269,11 @@ class account_abstract_payment(models.AbstractModel):
                 if abs(days) < inv.payment_term_id.due_days and inv.type == 'out_invoice':
                     flag = True
                     break
+                elif inv.discount_from_batch:
+                    flag = True
+                    break
             currency = pay.currency_id
+
             pay.payment_difference = pay.with_context(exclude_discount=True)._compute_payment_amount(invoices=pay.invoice_ids, currency=currency) - payment_amount
             if pay.payment_type == 'inbound' and flag:
                 pay.payment_difference_handling = 'reconcile'
@@ -303,12 +308,17 @@ class account_abstract_payment(models.AbstractModel):
             invoice_currency = self.env['res.currency'].browse(invoice_data['currency_id'][0])
 
             inv = self.env['account.invoice'].search(invoice_data['__domain'])
+            flag = False
 
             if payment_currency == invoice_currency:
                 if not self._context.get('exclude_discount', False):
                     days = (inv.date_invoice - fields.Date.context_today(inv)).days
                     if abs(days) < inv.payment_term_id.due_days and inv.type == 'out_invoice':
                         discount = inv.payment_term_id.discount_per
+                        amount_total = amount_total - (amount_total * (discount / 100))
+                        flag = True
+                    elif inv.discount_from_batch and not flag:
+                        discount = inv.discount_from_batch
                         amount_total = amount_total - (amount_total * (discount / 100))
 
                 total += amount_total
@@ -319,10 +329,16 @@ class account_abstract_payment(models.AbstractModel):
                     self.env.user.company_id,
                     self.payment_date or fields.Date.today()
                 )
+
+                flag = False
                 if not self._context.get('exclude_discount', False):
                     days = (inv.date_invoice - fields.Date.context_today(inv)).days
                     if abs(days) < inv.payment_term_id.due_days and inv.type == 'out_invoice':
                         discount = inv.payment_term_id.discount_per
+                        amount_total_company_signed = amount_total_company_signed - (amount_total_company_signed * (discount / 100))
+                        flag = True
+                    elif inv.discount_from_batch and not flag:
+                        discount = inv.discount_from_batch
                         amount_total_company_signed = amount_total_company_signed - (amount_total_company_signed * (discount / 100))
 
                 total += amount_total_company_signed

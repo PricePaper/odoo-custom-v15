@@ -37,5 +37,49 @@ class ReportActivePickingBatch(models.AbstractModel):
                 'data': data,
             }
 
+class ReportActiveInvoiceWithOutPayment(models.AbstractModel):
+
+    _name = "report.batch_delivery.report_ppt_selected_invoice_standard"
+    _description = 'Invoice Report With Out Payment (Active)'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        docs = self.env['account.invoice'].browse(docids)
+        if not docs:
+            raise UserError(_('Nothing to print.'))
+        for invoice in docs:
+            if invoice.picking_ids:
+                drivers = invoice.picking_ids.mapped('batch_id.truck_driver_id')
+                if drivers and not all([d.firstname for d in drivers]):
+                    raise UserError(_('Missing firstname from driver: %s' % '\n'.join(
+                        [d.name for d in drivers if not d.firstname])))
+        return {'doc_ids': docs.ids,
+                'doc_model': 'account.invoice',
+                'docs': docs,
+                'data': data,
+                }
+
+
+
+class ReportActiveInvoiceWithPayment(models.AbstractModel):
+
+    _name = "report.batch_delivery.report_ppt_selected_invoice_with_payment"
+    _description = 'Invoice WithPayment Report (Active)'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        docs = self.env['account.invoice'].browse(docids)
+        if not docs:
+            raise UserError(_('Nothing to print.'))
+        for invoice in docs:
+            if invoice.picking_ids:
+                drivers = invoice.picking_ids.mapped('batch_id.truck_driver_id')
+                if drivers and not all([d.firstname for d in drivers]):
+                    raise UserError(_('Missing firstname from driver: %s' % '\n'.join([d.name for d in drivers if not d.firstname])))
+        return {'doc_ids': docs.ids,
+                'doc_model': 'account.invoice',
+                'docs': docs,
+                'data': data,
+            }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

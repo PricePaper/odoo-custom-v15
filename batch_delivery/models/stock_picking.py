@@ -314,6 +314,10 @@ class StockPicking(models.Model):
         invoices = self.mapped('invoice_ids').filtered(lambda r: r.state != 'cancel')
         if not invoices:
             raise UserError(_('Nothing to print.'))
+
+        if self.batch_id and self.batch_id.truck_driver_id and not self.batch_id.truck_driver_id.firstname:
+            raise UserError(_('Missing firstname from driver: %s' % self.batch_id.truck_driver_id.name))
+
         return self.env.ref('batch_delivery.ppt_account_selected_invoices_report').report_action(docids=invoices.ids, config=False)
 
     def receive_product_in_lines(self):

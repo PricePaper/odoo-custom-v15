@@ -161,13 +161,13 @@ class StockPickingBatch(models.Model):
     def print_invoice_report(self):
         self.ensure_one()
         invoices = self.mapped('invoice_ids').filtered(lambda r: r.state != 'cancel')
-        for inv in invoices:
-            if not all([l.line_number for l in inv.invoice_line_ids]):
-                for ln, line in enumerate(inv.invoice_line_ids, 1):
-                    line.line_number = ln
 
         if not invoices:
             raise UserError(_('Nothing to print.'))
+
+        if self.truck_driver_id and not self.truck_driver_id.firstname:
+            raise UserError(_('Missing firstname from driver: %s' % self.truck_driver_id.name))
+
         return self.env.ref('batch_delivery.ppt_account_batch_invoices_report').report_action(self, config=False)
 
     @api.multi

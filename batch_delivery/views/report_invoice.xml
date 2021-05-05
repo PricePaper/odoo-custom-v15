@@ -333,7 +333,7 @@
                             <thead>
                                 <tr>
                                     <t t-set="colspan" t-value="6"/>
-                                    <th class="text-left"><span>No#</span></th>
+                                    <th class="text-left"><span>Ln#</span></th>
                                     <th class="text-left"><span>Description</span></th>
                                     <th class="text-right"><span>Unavailable Quantity</span></th>
                                 </tr>
@@ -641,7 +641,7 @@
                             <thead>
                                 <tr>
                                     <t t-set="colspan" t-value="6"/>
-                                    <th class="text-left"><span>No#</span></th>
+                                    <th class="text-left"><span>Ln#</span></th>
                                     <th class="text-left"><span>Description</span></th>
                                     <th class="text-right"><span>Unavailable Quantity</span></th>
                                 </tr>

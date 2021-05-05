@@ -197,7 +197,7 @@
             model="account.invoice"
             string="Invoices (Quick Sale)"
             report_type="qweb-pdf"
-            menu="True"
+            menu="False"
             name="batch_delivery.report_ppt_selected_invoice_with_payment_quick_sale"
             file="batch_delivery.report_ppt_selected_invoice_with_payment_quick_sale"
             attachment="(object.state in ('open','in_payment','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"

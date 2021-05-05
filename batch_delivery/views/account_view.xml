@@ -24,7 +24,11 @@
                 <field name="type" position="after">
                     <field name="picking_ids" invisible="1"/>
                 </field>
-
+                <xpath expr="//form/sheet/h1/div[1]/label[2]" position="replace"/>
+                <xpath expr="//form/sheet/h1/div[1]/label[1]" position="replace"/>
+                 <xpath expr="//form/sheet//field[@name='number']" position="replace">
+                     <field name="number" readonly="1" class="oe_inline"/>
+                </xpath>
                 <xpath expr="//div[@name='button_box']" position="inside">
                     <button type="object"
                             name="action_view_picking"

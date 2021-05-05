@@ -54,6 +54,20 @@ class AccountInvoice(models.Model):
         wiz.process_cancel_backorder()
         return res
 
+    @api.model
+    def default_get(self,default_fields):
+        result = super(AccountInvoice, self).default_get(default_fields)
+        result['date_invoice'] = fields.Date.today()
+        return result
+
+    @api.model
+    def create(self, vals):
+        invoice = super(AccountInvoice, self).create(vals)
+        if not invoice.move_name or not invoice.number:
+            if invoice.journal_id and invoice.journal_id.sequence_id:
+                new_name = invoice.journal_id.sequence_id.with_context(ir_sequence_date=invoice.date_invoice or fields.Date.today()).next_by_id()
+                invoice.write({'number': new_name, 'move_name': new_name})
+        return invoice
 
 AccountInvoice()
 

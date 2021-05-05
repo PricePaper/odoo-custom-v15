@@ -7,6 +7,8 @@ import werkzeug
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
+from odoo.tools import float_round
+
 
 def urlplus(url, params):
     return werkzeug.Href(url)(params or None)
@@ -113,7 +115,7 @@ class StockPickingBatch(models.Model):
             real_collected = 0
             for cash_line in batch.cash_collected_lines:
                 real_collected += cash_line.amount
-            batch.pending_amount = batch.actual_returned - real_collected
+            batch.pending_amount = float_round(batch.actual_returned - real_collected, precision_digits=2)
 
     @api.multi
     def name_get(self):

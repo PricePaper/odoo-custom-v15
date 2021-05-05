@@ -285,6 +285,11 @@ class StockPicking(models.Model):
         return self.button_validate()
 
     @api.multi
+    def action_validate_internal(self):
+        self.ensure_one()
+        return self.button_validate()
+
+    @api.multi
     def action_cancel(self):
         res = super(StockPicking, self).action_cancel()
         self.mapped('move_ids_without_package').write({'is_transit': False})

@@ -54,7 +54,7 @@ class StockMove(models.Model):
             missing_reserved_quantity = move.product_uom._compute_quantity(missing_reserved_uom_quantity,
                                                                            move.product_id.uom_id,
                                                                            rounding_method='HALF-UP')
-            print(move.qty_update, missing_reserved_uom_quantity, missing_reserved_quantity, reserved_availability[move])
+
             if move.location_id.should_bypass_reservation() \
                     or move.product_id.type == 'consu':
                 # create the move line(s) but do not impact quants

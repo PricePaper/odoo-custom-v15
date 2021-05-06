@@ -69,6 +69,15 @@ class AccountInvoice(models.Model):
                 invoice.write({'number': new_name, 'move_name': new_name})
         return invoice
 
+    @api.multi
+    def action_invoice_sent(self):
+        self.ensure_one()
+        template = self.env.ref('account.email_template_edi_invoice', False)
+        report_template = self.env.ref('batch_delivery.ppt_account_selected_invoices_with_payment_report')
+        if template and report_template and template.report_template.id != report_template.id:
+            template.write({'report_template': report_template.id})
+        return super(AccountInvoice, self).action_invoice_sent()
+
 AccountInvoice()
 
 

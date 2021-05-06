@@ -35,8 +35,7 @@ class Product(models.Model):
             product_qty = 0
             for move in product.stock_move_ids.filtered(lambda rec: rec.is_transit and rec.state != 'cancel'):
                 if move.product_uom.id != product.uom_id.id:
-                    product_qty += move.product_uom._compute_quantity(move.quantity_done, product.uom_id,
-                                                                      rounding_method='HALF-UP')
+                    product_qty += move.product_uom._compute_quantity(move.quantity_done, product.uom_id,rounding_method='HALF-UP')
                 else:
                     product_qty += move.quantity_done
             product.qty_available -= product_qty

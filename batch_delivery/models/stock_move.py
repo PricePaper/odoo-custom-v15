@@ -27,7 +27,8 @@ class StockMove(models.Model):
     def _compute_qty_available(self):
         quant = self.env['stock.quant']
         for move in self:
-            move.qty_available = quant._get_available_quantity(product_id=move.product_id, location_id=move.location_id)
+            qty = quant._get_available_quantity(product_id=move.product_id, location_id=move.location_id)
+            move.qty_available = move.product_id.uom_id._compute_quantity(qty, move.product_uom, rounding_method='HALF-UP')
 
     @api.multi
     def _compute_picking_state(self):
@@ -41,10 +42,10 @@ class StockMove(models.Model):
         Negative value for decrease,
         Positive value for increase.
         """
-        quant = self.env['stock.quant']
-        for move in self:
-            available_qty = quant._get_available_quantity(product_id=move.product_id, location_id=move.location_id)
 
+        for move in self:
+            available_qty = move.qty_available
+            reset_val = move.product_uom._compute_quantity(move.qty_update, move.product_id.uom_id, rounding_method='HALF-UP')
             if available_qty <= 0 and move.qty_update > 0:
                 raise UserError(_(
                     'It is not possible to reserve more products of %s than you have in stock.') % move.product_id.display_name)
@@ -56,8 +57,9 @@ class StockMove(models.Model):
             elif move.qty_update < 0 and move.reserved_availability < abs(move.qty_update):
                 raise UserError(_('Not enough reserved quantity..!'))
             else:
+
                 query = dict(
-                    need=move.qty_update,  # reset logic (-ve or +ve) as per reset logic
+                    need=reset_val,  # reset logic (-ve or +ve) as per reset logic
                     available_quantity=available_qty,  # available product quantity from current location
                     location_id=move.location_id,  # location used in stock move
                     strict=False  # enable uom based quantity conversion

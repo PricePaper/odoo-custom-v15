@@ -683,6 +683,8 @@ class SaleOrder(models.Model):
                     'context': context,
                     'target': 'new'
                 }
+            if self.hold_state in ('credit_hold', 'price_hold', 'both_hold'):
+                self.hold_state = 'release'
 
             res = super(SaleOrder, self).action_confirm()
 

@@ -284,11 +284,13 @@
                         </div>
                         <group>
                             <group>
-                                <field name="actual_returned"/>
-                                <field name="pending_amount"/>
+                                <field name="truck_driver_id" readonly="1"/>
+                                <field name="actual_returned" attrs="{'readonly':[('state', '=', 'paid')]}"/>
+                                <field name="pending_amount" />
                             </group>
                             <group>
-                                <field name="truck_driver_id" readonly="1"/>
+                                <field name="cash_amount" attrs="{'readonly':[('state', '=', 'paid')]}"/>
+                                <field name="cheque_amount" attrs="{'readonly':[('state', '=', 'paid')]}"/>
                             </group>
                         </group>
                         <separator string="Cash Collected Lines"/>

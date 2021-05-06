@@ -21,7 +21,7 @@ class StockPickingBatch(models.Model):
     truck_driver_id = fields.Many2one('res.partner', string='Driver', track_visibility='onchange')
     date = fields.Date(string='Scheduled Date', default=date.today())
     payment_ids = fields.One2many('account.payment', 'batch_id', string='Payments')
-    actual_returned = fields.Float(string='Actual Amount Returned', help='Actual amount returned by the driver.')
+    actual_returned = fields.Float(string='Total Amount', help='Total amount returned by the driver.')
     cash_collected_lines = fields.One2many('cash.collected.lines', 'batch_id', string='Cash Collected Breakup')
     is_posted = fields.Boolean(string="Posted")
     pending_amount = fields.Float(string="Difference", compute='_calculate_pending_amount')
@@ -37,6 +37,8 @@ class StockPickingBatch(models.Model):
     to_invoice = fields.Boolean(string='Need Invoice', compute='_compute_to_invoice_state')
     invoice_ids = fields.Many2many('account.invoice', compute='_compute_invoice_ids')
     show_warning = fields.Boolean(string='Pending Line Warning')
+    cash_amount = fields.Float(string='Cash Amount')
+    cheque_amount = fields.Float(string='Check Amount')
 
     state = fields.Selection([
         ('draft', 'Draft'),

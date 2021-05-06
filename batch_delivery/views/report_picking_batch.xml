@@ -26,6 +26,7 @@
                                             }
                                              .ppt_info {
                                              padding-left:15px;
+                                             font-size:18px;
                                              }
                                              .ppt_info td {
                                              border: none;
@@ -110,7 +111,7 @@
                                             <tbody>
                                                 <t t-set="index" t-value="1"/>
                                                 <tr t-foreach="ob.move_ids_without_package.sorted(key=lambda r: r.location_id.display_name.split('/')[-1])" t-as="move"
-                                                    style="font-family: Roboto, Odoo Unicode Support Noto, sans-serif;font-size: 14px; font-weight: 500;">
+                                                    style="font-family: Roboto, Odoo Unicode Support Noto, sans-serif;font-size: 18px;">
                                                     <t t-set='seller' t-value="move.product_id.seller_ids.filtered(lambda s: s.name.id == ob.partner_id.id)"/>
                                                     <td>
                                                         <span t-esc="index"/>

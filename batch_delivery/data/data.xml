@@ -26,7 +26,7 @@
     <p style="margin: 0px; padding: 0px; font-size: 13px;">
        Stock Returned.
         <br/>
-        Reson <strong>${object.reason}</strong>
+        Reason <strong>${object.reason}</strong>
     </p>
 </div>
             </field>

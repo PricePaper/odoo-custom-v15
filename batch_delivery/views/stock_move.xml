@@ -7,8 +7,7 @@
         <field name="arch" type="xml">
             <form>
                 <p class="text-muted" style="width:350px;">
-                      &#10148; <b>Negative</b> value if you want to Decrease the Reserved Qty
-                      &#10148; <b>Positive</b> value if you want to Increase the Reserved Qty
+                      &#10148; Please enter the required quantities for reset.
                 </p>
                 <group>
                     <group>
@@ -79,9 +78,9 @@
                            groups="uom.group_uom" readonly="1"/>
                     <field name="reserved_availability" readonly="1"/>
                     <field name="qty_update" string="Reset Logic" invisible="1"/>
-                    <button name="action_show_reset_window" string="Reset Reserve Qty" type="object" icon="fa-refresh text-success"
+                    <button name="action_show_reset_window" string="Reset Reserve Qty" type="object" icon="fa-refresh text-success"/>
+                     <button name="action_reassign" string="Assign" type="object" icon="fa-check text-success"
                             attrs="{'invisible': [('state', 'not in', ['partially_available', 'assigned']), ('qty_update', '=', False)]}"/>
-
                     <field name="state" readonly="1"/>
                 </tree>
             </field>

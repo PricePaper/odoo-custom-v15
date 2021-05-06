@@ -44,7 +44,9 @@ class StockMove(models.Model):
         """
 
         for move in self:
+            #qty_available always shows the quanity in requested (UOM).
             available_qty = move.qty_available
+            #here we need to convert the quantity to product UOM qty.
             reset_val = move.product_uom._compute_quantity(move.qty_update, move.product_id.uom_id, rounding_method='HALF-UP')
             if available_qty <= 0 and move.qty_update > 0:
                 raise UserError(_(

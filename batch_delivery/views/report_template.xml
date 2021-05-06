@@ -141,7 +141,7 @@
                 string="Pick Ticket"
                 id="batch_picking_active_report"
                 model="stock.picking"
-                report_type="qweb-pdf"
+                report_type="qweb-html"
                 menu="True"
                 file="batch_delivery.report_batch_picking_active"
                 name="batch_delivery.report_batch_picking_active"

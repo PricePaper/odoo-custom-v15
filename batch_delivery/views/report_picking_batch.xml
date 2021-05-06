@@ -132,8 +132,7 @@
                                                     <td>
                                                         <span t-field="move.reserved_availability"/>
                                                     </td>
-                                                    <td>
-                                                        <span>_____</span>
+                                                    <td style="border-left: 1px solid black;border-right: 1px solid black;padding-right: 30px">
                                                     </td>
                                                     <td>
                                                         <span t-field="move.location_id"/>

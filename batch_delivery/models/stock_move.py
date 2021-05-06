@@ -182,11 +182,6 @@ class StockMove(models.Model):
         assigned_moves.write({'state': 'assigned'})
         self.mapped('picking_id')._check_entire_pack()
 
-    def action_reassign(self):
-        self.ensure_one()
-        self.qty_update = abs(self.qty_available + self.reserved_availability if self.product_uom_qty > self.qty_available else self.product_uom_qty)
-        self._action_assign_reset_qty()
-
     @api.multi
     def action_reset(self):
         """
@@ -209,6 +204,8 @@ class StockMove(models.Model):
                 raise UserError(_('Choose a value less than available quantity.'))
             elif move.qty_update < 0 and move.reserved_availability < abs(move.qty_update):
                 raise UserError(_('Not enough reserved quantity..!'))
+            elif move.product_uom_qty < move.qty_update:
+                raise UserError(_("Can't reserve more product than requested..!"))
             else:
                 move._action_assign_reset_qty()
                 if move.is_transit:

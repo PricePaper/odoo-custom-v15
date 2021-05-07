@@ -109,7 +109,7 @@ class AccountInvoice(models.Model):
             'line_ids': [(0, 0, {
                 'account_id': rev_line_account.id,
                 'company_currency_id': company_currency.id,
-                'credit': self.amount_total - (self.amount_total * (self.wrtoff_discount / 100)),
+                'credit': self.amount_total * (self.wrtoff_discount / 100),
                 'debit': 0,
                 'journal_id': self.journal_id.id,
                 'name': 'Discount',
@@ -118,7 +118,7 @@ class AccountInvoice(models.Model):
                 'account_id': wrtf_account.id,
                 'company_currency_id': company_currency.id,
                 'credit': 0,
-                'debit': self.amount_total - (self.amount_total * (self.wrtoff_discount / 100)),
+                'debit': self.amount_total * (self.wrtoff_discount / 100),
                 'journal_id': self.journal_id.id,
                 'name': 'Discount',
                 'partner_id': self.partner_id.id

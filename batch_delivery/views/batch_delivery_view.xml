@@ -327,7 +327,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="domain">[('state', 'in', ('done', 'paid'))]</field>
-            <field name="context">{'create': False, 'search_default_not_paid' : True}</field>
+            <field name="context">{'create': False, 'search_default_not_paid' : True, 'delete': False}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     The goal of the batch picking is to group operations that may

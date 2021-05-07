@@ -320,6 +320,11 @@ class StockPicking(models.Model):
 
         return self.env.ref('batch_delivery.ppt_account_selected_invoices_report').report_action(docids=invoices.ids, config=False)
 
+    @api.multi
+    def do_print_picking(self):
+        self.write({'printed': True})
+        return self.env.ref('batch_delivery.batch_picking_active_report').report_action(self)
+
     def receive_product_in_lines(self):
         for line in self.move_ids_without_package:
             if not line.quantity_done:

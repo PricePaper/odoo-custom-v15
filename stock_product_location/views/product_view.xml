@@ -6,9 +6,8 @@
             <field name="name">view.product.normal.stock.loc.form</field>
             <field name="model">product.product</field>
             <field name="inherit_id" ref="product.product_normal_form_view"/>
-            <field name="type">form</field>
             <field name="arch" type="xml">
-                <xpath expr="//group[@name='group_lots_and_weight']" position="inside">
+                <xpath expr="//field[@name='barcode']" position="after">
                     <field name="property_stock_location" string="Stock Location" domain="[('usage','=','internal')]"
                            attrs="{'invisible':[('type','=','service')]}"/>
                 </xpath>

@@ -24,7 +24,7 @@ class GenerateDiscountCheck(models.TransientModel):
 
             vendor_bills1 = self.env['account.invoice'].search([('type','=','in_invoice'), ('state', '=', 'open'), ('date_due', '>', self.start_date), ('date_due', '<', self.end_date), ('discount_due_date', '=', False)])
             vendor_bills |= vendor_bills1
-            self.wizard_invoice_ids.unlink()
+            self.wizard_invoice_ids = False
             lines=[]
             for bill in vendor_bills:
                 discount_total_amount = bill.amount_total * (100 - bill.payment_term_id.discount_per) /100

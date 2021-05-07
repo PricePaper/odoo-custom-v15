@@ -8,6 +8,7 @@ class AccountInvoice(models.Model):
     _inherit = "account.invoice"
 
     picking_ids = fields.Many2many('stock.picking', compute='_compute_picking_ids', string='Pickings')
+    wrtoff_discount = fields.Float(string='Discount')
 
     @api.depends('invoice_line_ids.stock_move_ids.picking_id')
     def _compute_picking_ids(self):
@@ -78,6 +79,54 @@ class AccountInvoice(models.Model):
             template.write({'report_template': report_template.id})
         return super(AccountInvoice, self).action_invoice_sent()
 
+    def action_show_discount_popup(self):
+        return {
+            'name': 'Discount',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'account.invoice',
+            'res_id': self.id,
+            'view_id': self.env.ref('batch_delivery.view_writeoff_discount_window_view_form').id,
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+        }
+    def create_discount_writeoff(self):
+
+        self.ensure_one()
+        rev_line_account = self.partner_id and self.partner_id.property_account_receivable_id
+        if not rev_line_account:
+            rev_line_account = self.env['ir.property'].\
+                with_context(force_company=self.company_id.id).get('property_account_receivable_id', 'res.partner')
+        wrtf_account = self.discount_account_id
+        company_currency = self.company_id.currency_id
+        if not wrtf_account:
+            raise UserError(_('Please set a discount account in company.'))
+        amobj = self.env['account.move'].create({
+            'company_id': self.company_id.id,
+            'date': fields.Date.today(),
+            'journal_id': self.journal_id.id,
+            'ref': self.reference,
+            'line_ids': [(0, 0, {
+                'account_id': rev_line_account.id,
+                'company_currency_id': company_currency.id,
+                'credit': self.amount_total - (self.amount_total * (self.wrtoff_discount / 100)),
+                'debit': 0,
+                'journal_id': self.journal_id.id,
+                'name': 'Discount',
+                'partner_id': self.partner_id.id
+            }),(0, 0, {
+                'account_id': wrtf_account.id,
+                'company_currency_id': company_currency.id,
+                'credit': 0,
+                'debit': self.amount_total - (self.amount_total * (self.wrtoff_discount / 100)),
+                'journal_id': self.journal_id.id,
+                'name': 'Discount',
+                'partner_id': self.partner_id.id
+             })]
+        })
+        rcv_lines = self.move_id.line_ids.filtered(lambda r: r.account_id.user_type_id.type == 'receivable')
+        rcv_wrtf = amobj.line_ids.filtered(lambda r: r.account_id.user_type_id.type == 'receivable')
+        (rcv_lines + rcv_wrtf).reconcile()
 AccountInvoice()
 
 

@@ -322,10 +322,10 @@ class account_abstract_payment(models.AbstractModel):
             for inv in self.invoice_ids:
                 days = (inv.date_invoice - fields.Date.context_today(inv)).days
                 if payment_currency == inv.currency_id:
-                    invoice_amount = inv.residual_signed
+                    invoice_amount = inv.amount_total
                 else:
                     invoice_amount = self.journal_id.company_id.currency_id._convert(
-                        inv.residual_signed,
+                        inv.amount_total,
                         payment_currency,
                         self.env.user.company_id,
                         self.payment_date or fields.Date.today()
@@ -334,7 +334,6 @@ class account_abstract_payment(models.AbstractModel):
                 if abs(days) < inv.payment_term_id.due_days and inv.type == 'out_invoice':
                     discount = inv.payment_term_id.discount_per
                     total = total - (invoice_amount * (discount / 100))
-
 
         return total
 

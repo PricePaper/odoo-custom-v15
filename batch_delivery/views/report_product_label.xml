@@ -55,12 +55,12 @@
 
                             <div style="width:384px;height:15%;">
                                 <div t-field="line[0].sale_line_id.order_id.name" style="display:block;float:left;width:50px;font-size:14px;"/>
-                                <div style="float:left;font-size:14px;width:250px; text-align:center;white-space:nowrap;overflow: hidden;">
+                                <div style="float:left;font-size:14px;width:245px; text-align:center;white-space:nowrap;overflow: hidden;">
                                     <t t-if="line[1]">
                                         <span t-esc="line[1].name"/>
                                     </t>
                                 </div>
-                                <div t-field="line[0].picking_id.scheduled_date" t-options="{&quot;widget&quot;: &quot;date&quot;}" style="float:right;width:80px;font-size:14px;text-align: right;padding-left: 5px"/>
+                                <div t-field="line[0].picking_id.scheduled_date" t-options="{&quot;widget&quot;: &quot;date&quot;}" style="float:right;width:85px;font-size:14px;text-align: right;padding-left: 5px"/>
                             </div>
                           </div>
                         </t>

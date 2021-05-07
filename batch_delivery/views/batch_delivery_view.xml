@@ -310,6 +310,20 @@
                                 <field name="is_communication" invisible="1"/>
                                 <field name="amount" sum="Total"/>
                             </tree>
+                            <form>
+                                <group>
+                                    <group>
+                                        <field name="partner_id"/>
+                                        <field name="journal_id"/>
+                                        <field name="payment_method_id"/>
+                                        <field name="communication"/>
+                                    </group>
+                                    <group>
+                                         <field name="amount"/>
+                                         <field name="discount"/>
+                                    </group>
+                                </group>
+                            </form>
                         </field>
                     </sheet>
                     <div class="oe_chatter">

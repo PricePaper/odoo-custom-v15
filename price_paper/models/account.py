@@ -98,37 +98,41 @@ class AccountInvoice(models.Model):
                 gross_profit -= invoice.amount_total * (invoice.payment_term_id.discount_per / 100)
             invoice.update({'gross_profit': round(gross_profit, 2)})
 
-    @api.multi
-    def finalize_invoice_move_lines(self, move_lines):
-        """
-        overriden to set extended the grace period for customer.
-        """
-        res = super(AccountInvoice, self).finalize_invoice_move_lines(move_lines)
-
-        credit_lines = []
-        debit_lines = []
-        payment_term = self.payment_term_id
-
-        if payment_term and isinstance(res, list):
-            for line in res:
-                vals = line[2]
-
-                # Seperate credit and debit lines. We only need to process debit lines.
-                if vals.get('credit', False):
-                    credit_lines.append(vals)
-                if vals.get('debit', False):
-                    debit_lines.append(vals)
-
-            for line, term in zip(debit_lines, payment_term.line_ids):
-                if line.get('date_maturity'):
-                    grace_period_due = str(
-                        datetime.datetime.strptime(line.get('date_maturity', ''), "%Y-%m-%d").date() + timedelta(
-                            days=term.grace_period))
-                    line.update({'date_maturity_grace': grace_period_due})
-
-            # Recreate the original list and return
-            res = [(0, 0, line) for line in credit_lines] + [(0, 0, line) for line in debit_lines]
-        return res
+    # @api.multi
+    # def finalize_invoice_move_lines(self, move_lines):
+    #     """
+    #     overriden to set extended the grace period for customer.
+    #     """
+    #     res = super(AccountInvoice, self).finalize_invoice_move_lines(move_lines)
+    #
+    #     credit_lines = []
+    #     debit_lines = []
+    #     debit_lines1 = []
+    #     payment_term = self.payment_term_id
+    #     if payment_term and isinstance(res, list):
+    #         for line in res:
+    #             vals = line[2]
+    #
+    #             # Seperate credit and debit lines. We only need to process debit lines.
+    #             if vals.get('credit', False):
+    #                 credit_lines.append(vals)
+    #             if vals.get('debit', False):
+    #                 print('QQ', vals)
+    #                 if vals.get('invoice_id', False):
+    #                     debit_lines.append(vals)
+    #                 else:
+    #                     debit_lines1.append(vals)
+    #
+    #         for line, term in zip(debit_lines, payment_term.line_ids):
+    #             if line.get('date_maturity'):
+    #                 grace_period_due = str(
+    #                     datetime.datetime.strptime(line.get('date_maturity', ''), "%Y-%m-%d").date() + timedelta(
+    #                         days=term.grace_period))
+    #                 line.update({'date_maturity_grace': grace_period_due})
+    #
+    #         # Recreate the original list and return
+    #         res = [(0, 0, line) for line in credit_lines] + [(0, 0, line) for line in debit_lines] + [(0, 0, line) for line in debit_lines1]
+    #     return res
 
 
 AccountInvoice()

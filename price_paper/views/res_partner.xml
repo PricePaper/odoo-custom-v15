@@ -307,6 +307,21 @@
                 </xpath>
             </field>
         </record>
+        <record id="view_partner_tree_search_more" model="ir.ui.view">
+            <field name="name">res.partner.inherit.tree</field>
+            <field name="model">res.partner</field>
+            <field eval="8" name="priority"/>
+            <field name="arch" type="xml">
+                <tree string="Partner">
+                    <field name="name"/>
+                    <field name="phone"/>
+                    <field name="street"/>
+                    <field name="city_id" readonly="1" invisible="1"/>
+                    <field name="city" />
+                    <field name="zip" />
+                </tree>
+            </field>
+        </record>
         <menuitem action="res_partner_pricepaper_vat_edit_permission_action"
                   id="res_partner_pricepaper_vat_readonly_action_menu"
                   groups="account.group_account_invoice"

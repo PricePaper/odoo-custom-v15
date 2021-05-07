@@ -398,7 +398,7 @@ class CashCollectedLines(models.Model):
     discount = fields.Float(string='Discount(%)')
     sequence = fields.Integer(string='Order')
 
-
+    @api.depends('partner_id')
     def _compute_partner_ids(self):
         for line in self:
             picking = line.batch_id.picking_ids.filtered(lambda pick: pick.partner_id.id == line.partner_id.id)

@@ -524,19 +524,23 @@ class SaleOrder(models.Model):
         for order in self:
             debit_due = self.env['account.move.line'].search(
                 [('partner_id', '=', order.partner_id.id), ('full_reconcile_id', '=', False), ('debit', '!=', False),
-                 ('date_maturity', '<', date.today())], order='date_maturity_grace desc')
+                 ('date_maturity', '<', date.today()), ('invoice_id', '!=', False)], order='date_maturity desc')
             msg = ''
             msg1 = ''
-            if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
-                msg = "\nCustomer Credit limit Exceeded.\n%s's Credit limit is %s and due amount is %s\n" % (
-                    order.partner_id.name, order.partner_id.credit_limit,
-                    (order.partner_id.credit + order.amount_total))
             if debit_due:
                 for rec in debit_due.mapped('invoice_id'):
-                    if rec.date_due and rec.date_due < date.today() and rec.number:
+                    term_line = rec.payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
+                    date_due = rec.date_due
+                    if term_line and term_line.grace_period:
+                        date_due = rec.date_due + timedelta(days=term_line.grace_period)
+                    if date_due and date_due < date.today() and rec.number:
                         msg = msg + '%s, ' % (rec.number)
                 if msg:
                     msg = 'Customer has pending invoices.\n' + msg
+            if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
+                msg += "\nCustomer Credit limit Exceeded.\n%s's Credit limit is %s and due amount is %s\n" % (
+                    order.partner_id.name, order.partner_id.credit_limit,
+                    (order.partner_id.credit + order.amount_total))
 
             for order_line in order.order_line:
                 if order_line.profit_margin < 0.0 and not (

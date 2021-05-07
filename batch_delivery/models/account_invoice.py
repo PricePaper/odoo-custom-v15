@@ -97,7 +97,7 @@ class AccountInvoice(models.Model):
         if not rev_line_account:
             rev_line_account = self.env['ir.property'].\
                 with_context(force_company=self.company_id.id).get('property_account_receivable_id', 'res.partner')
-        wrtf_account = self.discount_account_id
+        wrtf_account = self.company_id.discount_account_id
         company_currency = self.company_id.currency_id
         if not wrtf_account:
             raise UserError(_('Please set a discount account in company.'))

@@ -40,7 +40,9 @@
                             icon="fa-truck" attrs="{'invisible':[('picking_ids','=',[])]}"/>
                 </xpath>
                 <xpath expr="//form/sheet/notebook/page[1]/group" position="after">
-                     <button name='action_show_discount_popup' type='object' string='Discount' class="fa fa-pencil-square-o oe_right"/>
+                     <button name='action_show_discount_popup' type='object'
+                             string='Discount' class="fa fa-pencil-square-o oe_right"
+                             attrs="{'invisible': [('state', '!=', 'open')]}"/>
                 </xpath>
 
             </field>

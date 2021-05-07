@@ -8,7 +8,7 @@
             <field name="page_height">51</field>
             <field name="page_width">102</field>
             <field name="orientation">Portrait</field>
-            <field name="margin_top">5</field>
+            <field name="margin_top">0</field>
             <field name="margin_bottom">0</field>
             <field name="margin_left">5</field>
             <field name="margin_right">0</field>
@@ -111,7 +111,7 @@
                 file="batch_delivery.report_product_label"
                 name="batch_delivery.report_product_label"
                 paperformat="print_product_label_paperformat"
-                print_report_name="'Labels - %s - %s' % (object.batch_id.truck_driver_id and object.batch_id.truck_driver_id.name or '', object.batch_id.date)"
+                print_report_name="object.batch_id and 'Labels - %s - %s' % (object.batch_id.truck_driver_id and object.batch_id.truck_driver_id.name or '', object.batch_id.date) or ('Labels - %s - %s' % (object.partner_id and object.partner_id.name or '',object.name))"
         />
 
         <report

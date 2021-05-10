@@ -134,10 +134,9 @@ class CostChange(models.Model):
     @api.multi
     def cost_change_method(self):
 
-        recs = self.env['cost.change'].search([('is_done', '!=', 'True'), ('run_date', '<=', date.today())])
         product_obj = self.env['product.product']
         products_to_filter = self.env['product.product']
-        for rec in recs:
+        for rec in self:
             if rec.item_filter == 'product':
                 products_to_filter |= product_obj.search([('id', '=', rec.product_id.id)])
             elif rec.item_filter == 'vendor':

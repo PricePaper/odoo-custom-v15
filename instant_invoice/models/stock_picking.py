@@ -8,7 +8,7 @@ class StockPicking(models.Model):
 
     @api.multi
     def print_picking_operation(self):
-        return self.env.ref('stock.action_report_picking').report_action(self, config=False)
+        return self.env.ref('instant_invoice.quick_sale_batch_picking_active_report').report_action(self, config=False)
 
     @api.multi
     def print_product_label(self):

@@ -38,10 +38,10 @@ class SaleOrder(models.Model):
     def action_print_invoice(self):
         invoice = self.invoice_ids
         invoice.filtered(lambda inv: not inv.sent).write({'sent': True})
-        return self.env.ref('instant_invoice.quick_sale_account_invoices').report_action(invoice)
+        return self.env.ref('instant_invoice.account_invoices_quick_sale').report_action(invoice)
 
     @api.multi
-    def action_print_picking_operation(self):
+    def action_print_pick_ticket(self):
         picking = self.picking_ids
         return picking.print_picking_operation()
 

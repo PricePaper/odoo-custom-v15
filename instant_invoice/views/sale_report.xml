@@ -22,16 +22,27 @@
                 menu="False"
         />
         <report
-            id="quick_sale_account_invoices"
-            model="account.invoice"
-            string="Quick sale Invoices"
-            report_type="qweb-pdf"
-            name="account.report_invoice_with_payments"
-            file="account.report_invoice_with_payments"
-            attachment="(object.state in ('open','in_payment','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"
-            print_report_name="(object._get_report_base_filename())"
-            groups="account.group_account_invoice"
-            menu="False"
+           id="account_invoices_quick_sale"
+           model="account.invoice"
+           string="Invoices (Quick Sale)"
+           report_type="qweb-pdf"
+           menu="False"
+           name="batch_delivery.report_ppt_selected_invoice_with_payment_quick_sale"
+           file="batch_delivery.report_ppt_selected_invoice_with_payment_quick_sale"
+           attachment="(object.state in ('open','in_payment','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"
+           print_report_name="(object._get_report_base_filename())"
+        />
+
+        <report
+                string=" Quick sale Pick Ticket"
+                id="quick_sale_batch_picking_active_report"
+                model="stock.picking"
+                report_type="qweb-pdf"
+                file="batch_delivery.report_batch_picking_active"
+                name="batch_delivery.report_batch_picking_active"
+                paperformat="batch_delivery.paperformat_batch_picking_ticket"
+                print_report_name="object.batch_id and 'Pick - %s - %s' % (object.batch_id.truck_driver_id and  object.batch_id.truck_driver_id.name or '', object.batch_id.date) or ('Pick - %s - %s' % (object.partner_id and object.partner_id.name or '',object.name))"
+                menu="False"
         />
 
     </data>

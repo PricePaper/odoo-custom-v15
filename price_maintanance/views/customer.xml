@@ -4,7 +4,7 @@
             <field name="name">customer.price.maintanace.tree</field>
             <field name="model">res.partner</field>
             <field name="arch" type="xml">
-                <tree string="Customer Price Maintanance" create="0" delete="0" edit="0">
+                <tree string="Customer Price Maintenance" create="0" delete="0" edit="0">
                     <field name="name"/>
                     <field name="phone"/>
                 </tree>
@@ -125,7 +125,7 @@
 
 
         <record id="action_customer_price_maintanace" model="ir.actions.act_window">
-            <field name="name">Customer Price Maintanance</field>
+            <field name="name">Customer Price Maintenance</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">res.partner</field>
             <field name="domain">[('customer', '=', True), ('parent_id', '=', False)]</field>

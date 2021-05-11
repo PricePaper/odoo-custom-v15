@@ -268,8 +268,8 @@ class StockPicking(models.Model):
         return res
 
     def check_return_reason(self):
-        if self._check_backorder():
-            move_info = self.move_ids_without_package.filtered(lambda m: m.quantity_done < m.product_uom_qty)
+        move_info = self.move_ids_without_package.filtered(lambda m: m.quantity_done < m.product_uom_qty)
+        if move_info:
             default_reason = self.env.ref('batch_delivery.default_stock_picking_return_reason', raise_if_not_found=False)
             if default_reason:
                 move_info.write({'reason_id': default_reason.id})

@@ -13,6 +13,7 @@ class StockBackorderConfirmation(models.TransientModel):
         StockReturn = self.env['stock.picking.return']
         for pick_id in self.pick_ids:
             if pick_id.sale_id:
+                pick_id.check_return_reason()
                 StockReturn.create({
                     'name': 'RETURN-' + pick_id.name,
                     'picking_id': pick_id.id,

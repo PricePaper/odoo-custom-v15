@@ -8,7 +8,7 @@ class StockPickingReturn(models.Model):
     _description = 'Stock Picking Return'
 
     name = fields.Char('Name', readonly=True)
-    sales_person_ids = fields.Many2many('res.partner', string='Customer')
+    sales_person_ids = fields.Many2many('res.partner', string='Sales Person')
     picking_id = fields.Many2one('stock.picking', string='Picking')
     sale_id = fields.Many2one('sale.order', string='Sale Order')
     return_line_ids = fields.One2many('stock.picking.return.line', 'return_id')
@@ -20,8 +20,9 @@ class StockPickingReturn(models.Model):
         email_context = {}
         if record.sales_person_ids:
             email_context['partner_to'] = ','.join(map(str, record.sales_person_ids.ids))
-            template.with_context(email_context).send_mail(record.id, force_send=True,
-                                                           notif_layout="mail.mail_notification_light")
+            email_context['return_date'] = fields.Date.today()
+            template.with_context(email_context).send_mail(
+                record.id, force_send=True, notif_layout="mail.mail_notification_light")
         return record
 
 

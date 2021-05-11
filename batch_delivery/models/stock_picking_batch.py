@@ -222,7 +222,7 @@ class StockPickingBatch(models.Model):
     def done(self):
         for batch in self:
             res = []
-            for picking in batch.picking_ids.filtered(lambda rec: rec.state not in ['done', 'cancel']):
+            for picking in batch.picking_ids.filtered(lambda rec: rec.state not in ['cancel']):
                 if picking.sale_id and picking.sale_id.invoice_status == 'to invoice' or not picking.is_invoiced:
                     raise UserError(_('Please create invoices for delivery order %s, to continue.') % (picking.name))
                 res.append((0, 0, {'partner_id': picking.partner_id.id, 'sequence': picking.sequence or 0}))

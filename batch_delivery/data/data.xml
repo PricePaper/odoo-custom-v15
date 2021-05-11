@@ -24,13 +24,32 @@
             <field name="body_html" type="html">
 <div style="margin: 0px; padding: 0px;">
     <p style="margin: 0px; padding: 0px; font-size: 13px;">
-       Stock Returned.
+        <strong>Stock Returned!</strong>
         <br/>
-        Reason <strong>${object.reason}</strong>
+            <p style="margin: 0px;">
+                <span>Customer: ${object.picking_id.partner_id.name}</span><br/>
+                <span style="margin-top: 8px;">SO: ${object.sale_id.name}</span><br/>
+                <span style="margin-top: 8px;">Date: ${ctx['return_date']}</span><br/>
+            </p>
+        <br/>
+        <table style="font-size:11px;">
+            <tbody>
+                <tr>
+                    <th style="width:135px;text-align:left">Product</th>
+                    <th style="width: 85px;text-align:center">Return Reason</th>
+                </tr>
+                % for row in object.return_line_ids:
+                    <tr>
+                        <td> ${row.product_id.display_name}</td>
+                        <td> ${row.reason_id.name}</td>
+                    </tr>
+                %endfor
+            </tbody>
+        </table>
     </p>
 </div>
             </field>
-            <field name="auto_delete" eval="True"/>
+            <field name="auto_delete" eval="False"/>
         </record>
 
     </data>

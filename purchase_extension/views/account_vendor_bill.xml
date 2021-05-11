@@ -26,5 +26,19 @@
                 </xpath>
             </field>
         </record>
+
+        <record id="invoice_supplier_tree_inherit_ppt" model="ir.ui.view">
+            <field name="name">account.invoice.supplier.tree.ppt</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_tree"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='reference']" position="after">
+                   <field name="discount_due_date"/>
+                </xpath>
+
+            </field>
+        </record>
+
     </data>
 </odoo>

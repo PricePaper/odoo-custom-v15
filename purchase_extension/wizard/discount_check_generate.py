@@ -68,20 +68,23 @@ class GenerateDiscountCheck(models.TransientModel):
                 partner_group[invoice.invoice_id.partner_id.id] = [invoice.discount_amount, [(4, invoice.invoice_id.id, 0)]]
 
         for partner in partner_group:
-            payment_vals = {
-                             'payment_type': 'outbound',
-                             'partner_type': 'supplier',
-                             'payment_method_id': payment_method.id,
-                             'partner_id': partner,
-                             'amount': partner_group[partner][0],
-                             'journal_id':bank_journal.id,
-                             'payment_difference_handling': 'reconcile',
-                             'writeoff_label':'Write-Off',
-                             'writeoff_account_id': purchase_writeoff_account.id,
-                             'invoice_ids': partner_group[partner][1],
-                            }
-            payment = self.env['account.payment'].create(payment_vals)
-            payment.post()
+            payments = self.env['account.payment']
+            for partner in partner_group:
+                payment_vals = {
+                    'payment_type': 'outbound',
+                    'partner_type': 'supplier',
+                    'payment_method_id': payment_method.id,
+                    'partner_id': partner,
+                    'amount': partner_group[partner][0],
+                    'journal_id': bank_journal.id,
+                    'payment_difference_handling': 'reconcile',
+                    'writeoff_label': 'Discount',
+                    'writeoff_account_id': purchase_writeoff_account.id,
+                    'invoice_ids': partner_group[partner][1],
+                }
+                payments |= payments.create(payment_vals)
+        action = self.env.ref('account.action_account_payments_payable').read()[0]
+        action['domain'] = [('id', 'in', payments.ids)]
 
 
 

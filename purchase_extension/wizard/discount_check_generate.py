@@ -85,6 +85,7 @@ class GenerateDiscountCheck(models.TransientModel):
                 payments |= payments.create(payment_vals)
         action = self.env.ref('account.action_account_payments_payable').read()[0]
         action['domain'] = [('id', 'in', payments.ids)]
+        return action
 
 
 

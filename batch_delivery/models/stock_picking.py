@@ -52,6 +52,11 @@ class StockPicking(models.Model):
     invoice_ref = fields.Char(string="Invoice Reference", compute='_compute_invoice_ref')
     invoice_ids = fields.Many2many('account.invoice', compute='_compute_invoice_ids')
     is_return = fields.Boolean(compute='_compute_state_flags')
+    carrier_id = fields.Many2one("delivery.carrier", string="Carrier", track_visibility='onchange')
+    batch_id = fields.Many2one(
+        'stock.picking.batch', string='Batch Picking', oldname="wave_id",
+        states={'done': [('readonly', True)], 'cancel': [('readonly', True)]},
+        help='Batch associated to this picking', copy=False, track_visibility='onchange')
 
 
     def action_generate_backorder_wizard(self):

@@ -67,8 +67,8 @@ class GenerateDiscountCheck(models.TransientModel):
             else:
                 partner_group[invoice.invoice_id.partner_id.id] = [invoice.discount_amount, [(4, invoice.invoice_id.id, 0)]]
 
+        payments = self.env['account.payment']
         for partner in partner_group:
-            payments = self.env['account.payment']
             for partner in partner_group:
                 payment_vals = {
                     'payment_type': 'outbound',

@@ -66,7 +66,7 @@ class GenerateDiscountCheck(models.TransientModel):
                 partner_group[invoice.invoice_id.partner_id.id][1].append((4, invoice.invoice_id.id, 0))
             else:
                 partner_group[invoice.invoice_id.partner_id.id] = [invoice.discount_amount, [(4, invoice.invoice_id.id, 0)]]
-        payments = self.env['account.payment']
+
         for partner in partner_group:
             payment_vals = {
                              'payment_type': 'outbound',
@@ -76,14 +76,13 @@ class GenerateDiscountCheck(models.TransientModel):
                              'amount': partner_group[partner][0],
                              'journal_id':bank_journal.id,
                              'payment_difference_handling': 'reconcile',
-                             'writeoff_label':'Discount',
+                             'writeoff_label':'Write-Off',
                              'writeoff_account_id': purchase_writeoff_account.id,
                              'invoice_ids': partner_group[partner][1],
                             }
-            payments |= payments.create(payment_vals)
-        action = self.env.ref('account.action_account_payments_payable').read()[0]
-        action['domain'] = [('id', 'in', payments.ids)]
-        return action
+            payment = self.env['account.payment'].create(payment_vals)
+            payment.post()
+
 
 
 GenerateDiscountCheck()

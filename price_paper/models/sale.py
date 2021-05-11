@@ -597,7 +597,7 @@ class SaleOrder(models.Model):
                             'team_id': team and team.id,
                             'description': 'Order : ' + order.name + '\n' + msg,
                             }
-                    ticket = self.env['helpdesk.ticket'].create(vals)
+                    # ticket = self.env['helpdesk.ticket'].create(vals)
                 order.write({'is_creditexceed': True, 'ready_to_release': False})
                 order.message_post(body=msg)
                 return msg
@@ -620,7 +620,7 @@ class SaleOrder(models.Model):
                             'team_id': team and team.id,
                             'description': 'Order : ' + order.name + '\n' + msg1,
                             }
-                    ticket = self.env['helpdesk.ticket'].create(vals)
+                    # ticket = self.env['helpdesk.ticket'].create(vals)
                 order.write({'is_low_price': True, 'release_price_hold': False})
                 order.message_post(body=msg1)
                 return msg1

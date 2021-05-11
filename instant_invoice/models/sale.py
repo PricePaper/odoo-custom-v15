@@ -25,9 +25,11 @@ class SaleOrder(models.Model):
             res = rec.action_confirm()
             if res and res != True and res.get('context') and res.get('context').get('warning_message'):
                 return res
-            rec.picking_ids.action_confirm()
-            rec.picking_ids.action_assign()
-            rec.picking_ids.button_validate()
+            picking_ids = rec.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done', 'in_transit'))
+            for picking in picking_ids:
+                picking_ids.action_confirm()
+                picking_ids.action_assign()
+                picking_ids.button_validate()
             rec.action_invoice_create()
             rec.invoice_ids.action_invoice_open()
             rec.action_done()

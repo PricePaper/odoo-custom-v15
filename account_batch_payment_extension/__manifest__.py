@@ -17,6 +17,7 @@ This module help to filter out the move lines from existing batch payments
     'data': [
         'views/assets.xml',
         'views/res_company.xml',
+        'views/account_batch_payment.xml'
     ],
     'demo': [],
     'installable': True,

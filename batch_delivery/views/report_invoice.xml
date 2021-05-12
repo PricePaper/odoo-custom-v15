@@ -24,14 +24,7 @@
                 </t>
             </xpath>
         </template>
-        <template id="ppt_external_layout_standard" inherit_id="web.external_layout_standard">
-            <xpath expr="//div[@name='company_address']" position="after">
-                <div class="col-6 text-right" name="customer_info"
-                     t-if="o._name == 'account.invoice' and customer_info">
-                    <span t-esc="customer_info"/>
-                </div>
-            </xpath>
-        </template>
+
 
 <!--        <template id="report_invoice_document_ppt_with_payments" inherit_id="account.report_invoice_document">-->
 <!--            <xpath expr="//table[@name='invoice_line_table']" position="after">-->

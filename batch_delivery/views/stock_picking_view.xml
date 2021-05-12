@@ -203,6 +203,15 @@
                     <field name="route_id" invisible="1"/>
                     <field name="is_invoiced" invisible="1"/>
                 </field>
+                <xpath expr="//form/sheet/notebook/page[2]/field[@name='move_ids_without_package']/tree/field[@name='location_id']" position="replace">
+                    <field name="location_id" attrs="{'column_invisible': [('parent.picking_type_code', '=', 'incoming')]}"/>
+                </xpath>
+                 <xpath expr="//form/sheet/notebook/page[2]/field[@name='move_ids_without_package']/tree/field[@name='location_dest_id']" position="replace">
+                     <field name="location_dest_id" attrs="{'column_invisible': [('parent.picking_type_code', '=', 'outgoing')]}" readonly="1"/>
+                 </xpath>
+                 <xpath expr="//form/sheet/notebook/page[2]/field[@name='move_ids_without_package']/tree/field[@name='location_id']" position="before">
+                     <xpath expr="//form/sheet/notebook/page[2]/field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="move"/>
+                 </xpath>
                 <xpath expr="//form/sheet/notebook/page[2]/field[@name='move_ids_without_package']" position="before">
                     <field name="purchase_id" invisible="1"/>
                     <button class="oe_highlight oe_right"
@@ -222,9 +231,10 @@
                        position="after">
                     <field name="pref_lot_id" domain="[('product_id', '=', product_id)]"/>
                 </xpath>
-                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="after">
-                    <field name="location_id"/>
-                </xpath>
+<!--                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="after">-->
+<!--                    <field name="location_id" attrs="{'column_invisible': [('parent.picking_type_code', '=', 'incoming')]}" string="Source Location"/>-->
+<!--                    <field name="location_dest_id" attrs="{'column_invisible': [('parent.picking_type_code', '=', 'outgoing')]}" string="Source Location"/>-->
+<!--                </xpath>-->
                 <xpath expr="//field[@name='move_ids_without_package']" position="attributes">
                     <attribute name="attrs">{'readonly': [('is_transit', '=', True)]}</attribute>
                 </xpath>

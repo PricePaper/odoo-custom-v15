@@ -19,10 +19,11 @@ class AssignRouteWizard(models.TransientModel):
         # group all potential pickings into a dictionary based on partner_id. this dictionary is later used to assign routes for pickings
         picking_dict = {}
         for picking in pickings:
-            if picking.partner_id.id in picking_dict.keys():
-                picking_dict[picking.partner_id.id].append(picking)
-            else:
-                picking_dict.update({picking.partner_id.id: [picking]})
+            if picking.carrier_id and picking.carrier_id.show_in_route:
+                if picking.partner_id.id in picking_dict.keys():
+                    picking_dict[picking.partner_id.id].append(picking)
+                else:
+                    picking_dict.update({picking.partner_id.id: [picking]})
 
         # the below loop assigns routes to the available pickings ready for delivery when route is assigned, batch is auto assigned based in the logic written in stock.picking model
         partners_assigned = []

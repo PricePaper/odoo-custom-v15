@@ -270,7 +270,7 @@ class account_abstract_payment(models.AbstractModel):
             flag = False
             for inv in pay.invoice_ids:
                 days = (inv.date_invoice - fields.Date.context_today(inv)).days
-                if abs(days) < inv.payment_term_id.due_days and inv.type == 'out_invoice':
+                if abs(days) < inv.payment_term_id.due_days and inv.type in ['out_invoice', 'in_invoice']:
                     flag = True
                     break
                 elif inv.discount_from_batch:
@@ -279,7 +279,7 @@ class account_abstract_payment(models.AbstractModel):
             currency = pay.currency_id
 
             pay.payment_difference = pay.with_context(exclude_discount=True)._compute_payment_amount(invoices=pay.invoice_ids, currency=currency) - payment_amount
-            if pay.payment_type == 'inbound' and flag:
+            if pay.payment_type in ['inbound', 'outbound'] and flag:
                 pay.payment_difference_handling = 'reconcile'
                 pay.writeoff_label = ','.join(pay.invoice_ids.mapped('payment_term_id').mapped('name'))
                 pay.writeoff_account_id = self.env.user.company_id.discount_account_id
@@ -335,10 +335,12 @@ class account_abstract_payment(models.AbstractModel):
                         self.payment_date or fields.Date.today()
                     )
 
-                if abs(days) < inv.payment_term_id.due_days and inv.type == 'out_invoice':
+                if abs(days) < inv.payment_term_id.due_days:
                     discount = inv.payment_term_id.discount_per
-                    total = total - (invoice_amount * (discount / 100))
-
+                    if inv.type == 'out_invoice':
+                        total = total - (invoice_amount * (discount / 100))
+                    elif inv.type == 'in_invoice':
+                        total = total + (invoice_amount * (discount / 100))
         return total
 
 account_abstract_payment()

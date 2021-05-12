@@ -82,7 +82,7 @@ class SaleOrderLine(models.Model):
         res = super(SaleOrderLine, self).product_uom_change()
         unit_price = self.calculate_unit_price_and_contract()[0]
         if unit_price:
-            self.price_unit = unit_price
+            # self.price_unit = unit_price
             self.lst_price = unit_price
             self.working_cost = unit_price
         if self.product_id:
@@ -97,8 +97,8 @@ class SaleOrderLine(models.Model):
         """
         res = super(SaleOrderLine, self).product_id_change()
         unit_price = self.calculate_unit_price_and_contract()[0]
-        if unit_price:
-            res.update({'value': {'price_unit': unit_price}})
+        # if unit_price:
+        #     res.update({'value': {'price_unit': unit_price}})
         if self.product_id:
             self.product_cost = self.product_id.standard_price
             self.rebate_contract_id = self.compute_rebate_contract()

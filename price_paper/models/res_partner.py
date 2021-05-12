@@ -121,14 +121,11 @@ class ResPartner(models.Model):
         res = super(ResPartner, self).name_get()
         result=[]
         for partner in res:
-            if self._context.get('show_partner_code'):
-                name = partner[1] or ''
-                partner_id = self.env['res.partner'].browse(partner[0])
-                if partner_id.customer_code:
-                    name = '['+partner_id.customer_code+']'+name
-                result.append((partner[0], name))
-            else:
-                result.append(partner)
+            name = partner[1] or ''
+            partner_id = self.env['res.partner'].browse(partner[0])
+            if partner_id.customer_code:
+                name = '['+partner_id.customer_code+']'+name
+            result.append((partner[0], name))
         return result
 
 

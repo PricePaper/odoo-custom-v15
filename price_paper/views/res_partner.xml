@@ -43,9 +43,7 @@
                                     attrs="{'readonly': True}"/>
                             </div>
                 </xpath>
-                <field name="name" position="replace">
-                     <field name="name" default_focus="1" placeholder="Name" attrs="{'required' : [('type', '=', 'contact')]}" readonly="1"/>
-                </field>
+
                 <field name="trust" position="attributes">
 
                 </field>
@@ -153,9 +151,7 @@
                                     attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}"/>
                             </div>
                 </xpath>
-                <field name="name" position="attributes">
-                    <attribute name="attrs">{'readonly': False}</attribute>
-                </field>
+
             </field>
         </record>
 

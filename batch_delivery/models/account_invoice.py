@@ -43,8 +43,8 @@ class AccountInvoice(models.Model):
             return res
         stock_picking = self.env['stock.picking']
         for pick in self.mapped('picking_ids').filtered(lambda pick: pick.state != 'done'):
-            if pick._check_backorder():
-                move_info = pick.move_ids_without_package.filtered(lambda m: m.quantity_done < m.product_uom_qty)
+            move_info = pick.move_ids_without_package.filtered(lambda m: m.quantity_done < m.product_uom_qty)
+            if move_info.ids:
                 default_reason = self.env.ref('batch_delivery.default_stock_picking_return_reason', raise_if_not_found=False)
                 if default_reason:
                     move_info.write({'reason_id': default_reason.id})

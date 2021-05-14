@@ -106,7 +106,7 @@
 
                 <field name="partner_id" position="attributes">
                     <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
-                    <attribute name="domain">[('type', '=', 'contact'), ('customer', '=', True)]</attribute>
+                    <attribute name="domain">[('type', '=', 'contact'), ('customer', '=', True), ('parent_id', '=', False)]</attribute>
                     <attribute name="context">{'search_default_customer': 1, 'show_address': 1, 'tree_view_ref': 'view_partner_tree_search_more',
                                                'address_inline': 1, 'show_partner_code': 1, 'show_vat': 0}</attribute>
                 </field>

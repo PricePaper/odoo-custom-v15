@@ -27,12 +27,8 @@ class SaleOrder(models.Model):
                 return res
             picking_ids = rec.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done', 'in_transit'))
             for picking in picking_ids:
-                picking_ids.action_confirm()
-                picking_ids.action_assign()
-                picking_ids.button_validate()
-            rec.action_invoice_create()
-            rec.invoice_ids.action_invoice_open()
-            rec.action_done()
+                picking.action_make_transit()
+                picking.create_invoice()
             # rec.quick_sale = True
         return True
 

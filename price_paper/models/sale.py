@@ -87,6 +87,18 @@ class SaleOrder(models.Model):
             msg = "Some of the selected Orders are on HOLD." + '\n' + msg
             raise UserError(_(msg))
 
+    @api.multi
+    def action_cancel(self):
+
+        for sale_order in self:
+            sale_order.is_creditexceed = False
+            sale_order.is_low_price = False
+            sale_order.ready_to_release = False
+            sale_order.release_price_hold = False
+            sale_order.hold_state = False
+
+        return super(SaleOrder, self).action_cancel()
+
 
     @api.multi
     def _create_storage_downpayment_invoice(self, order, so_lines):

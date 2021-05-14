@@ -9,9 +9,7 @@
                     <sheet>
                         <script>
                             $(document).ready(function(){
-                            $('.modal-dialog').css({'max-width':'95%'});
-                            $('.modal-content').css({'height': '95%'});
-                            $('.modal-body').css({'height': '95%'});
+                                $('.modal-dialog').css({'max-width':'90%'});
                             });
                         </script>
                         <style>

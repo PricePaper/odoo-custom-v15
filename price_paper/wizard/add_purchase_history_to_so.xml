@@ -7,6 +7,11 @@
             <field name="arch" type="xml">
                 <form string="Add Purchase history">
                     <sheet>
+                         <script>
+                            $(document).ready(function(){
+                                $('.modal-dialog').css({'max-width':'90%'});
+                            });
+                        </script>
                         <p>
                             <b>Please select atleast one line by picking a product from dropdown before pressing ADD
                                 LINE button.</b>

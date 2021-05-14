@@ -118,7 +118,7 @@ class AccountInvoice(models.Model):
                 'journal_id': self.journal_id.id,
                 'name': 'Discount',
                 'partner_id': self.partner_id.id
-            }),(0, 0, {
+            }), (0, 0, {
                 'account_id': wrtf_account.id,
                 'company_currency_id': company_currency.id,
                 'credit': 0,

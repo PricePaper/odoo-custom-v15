@@ -135,7 +135,8 @@
                                                     <td style="border-left: 1px solid black;border-right: 1px solid black;padding-right: 30px">
                                                     </td>
                                                     <td>
-                                                        <span t-field="move.location_id"/>
+                                                        <span t-field="move.location_id" t-if="move.picking_code == 'outgoing'"/>
+                                                        <span t-field="move.location_dest_id" t-if="move.picking_code == 'incoming'"/>
                                                     </td>
 
                                                     <t t-if="move">

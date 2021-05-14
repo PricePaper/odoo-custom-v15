@@ -16,15 +16,15 @@
         </record>
 
         <record id="stock_return_notification_mail" model="mail.template">
-            <field name="name">Stock Return: Notification</field>
+            <field name="name">Short Ship: Notification</field>
             <field name="model_id" ref="batch_delivery.model_stock_picking_return"/>
             <field name="email_from">${user.partner_id.email | safe}</field>
             <field name="partner_to">${ctx['partner_to']}</field>
-            <field name="subject">Stock Return!!</field>
+            <field name="subject">Short Ship!!</field>
             <field name="body_html" type="html">
 <div style="margin: 0px; padding: 0px;">
     <p style="margin: 0px; padding: 0px; font-size: 13px;">
-        <strong>Stock Returned!</strong>
+        <strong>Short Ship!</strong>
         <br/>
             <p style="margin: 0px;">
                 <span>Customer: ${object.picking_id.partner_id.name}</span><br/>

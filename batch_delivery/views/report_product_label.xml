@@ -17,8 +17,8 @@
                           <div style="width:384px;height:220px;overflow:hidden;">
                               <div style="width:384px;height:25px;"></div>
                             <div style="width:384px;">
-                                  <div t-field="line[0].product_id.default_code" style="float: left;width: 55%;font-size: 16px;max-width:50%;white-space:nowrap;overflow: hidden;font-weight: bold;"/>
-                                  <div t-field="line[0].product_uom" style="float: left;width: 20%;font-size: 16px;font-weight: bold;text-align: right;"/>
+                                  <div t-field="line[0].product_id.default_code" style="float: left;width: 50%;font-size: 16px;max-width:50%;white-space:nowrap;overflow: hidden;font-weight: bold;"/>
+                                  <div t-field="line[0].product_uom" style="float: left;width: 25%;font-size: 16px;font-weight: bold;text-align: right;max-width:25%;white-space:nowrap;overflow: hidden;"/>
                                   <div t-field="line[0].product_id.property_stock_location.name" style="float:left;width: 25%;font-size: 16px;text-align: right;padding-left: 5px;font-weight: bold;"/>
                             </div>
 

@@ -20,6 +20,10 @@
                     <field name="incoming_qty"/>
                     <field name="outgoing_qty"/>
                 </xpath>
+
+                <xpath expr="//field[@name='qty_available']" position="after">
+                    <field name="reordering_min_qty" string="Min Qty"/>
+                </xpath>
             </field>
         </record>
 

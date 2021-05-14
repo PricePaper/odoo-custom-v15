@@ -26,7 +26,7 @@ class PurchaseOrder(models.Model):
             partner = self.partner_id if not self.partner_id.parent_id else self.partner_id.parent_id
 
             vendor_prices =  line.product_id.seller_ids.filtered(
-                lambda r: r.name == self.partner_id and r.min_qty < line.product_qty)
+                lambda r: r.name == self.partner_id and r.min_qty <= line.product_qty)
 
             # Convert the price in the right currency.
             currency = partner.property_purchase_currency_id or self.env.user.company_id.currency_id

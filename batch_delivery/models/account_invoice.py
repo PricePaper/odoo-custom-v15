@@ -90,6 +90,7 @@ class AccountInvoice(models.Model):
             'type': 'ir.actions.act_window',
             'target': 'new',
         }
+
     def create_discount_writeoff(self):
 
         self.ensure_one()
@@ -97,10 +98,13 @@ class AccountInvoice(models.Model):
         if not rev_line_account:
             rev_line_account = self.env['ir.property'].\
                 with_context(force_company=self.company_id.id).get('property_account_receivable_id', 'res.partner')
-        wrtf_account = self.company_id.discount_account_id
+
+        wrtf_account = self.company_id.purchase_writeoff_account_id if self.type == 'in_invoice' else self.company_id.discount_account_id
         company_currency = self.company_id.currency_id
         if not wrtf_account:
             raise UserError(_('Please set a discount account in company.'))
+
+        discount = self.amount_total * (self.wrtoff_discount / 100)
         amobj = self.env['account.move'].create({
             'company_id': self.company_id.id,
             'date': fields.Date.today(),
@@ -109,7 +113,7 @@ class AccountInvoice(models.Model):
             'line_ids': [(0, 0, {
                 'account_id': rev_line_account.id,
                 'company_currency_id': company_currency.id,
-                'credit': self.amount_total * (self.wrtoff_discount / 100),
+                'credit': discount,
                 'debit': 0,
                 'journal_id': self.journal_id.id,
                 'name': 'Discount',
@@ -118,7 +122,7 @@ class AccountInvoice(models.Model):
                 'account_id': wrtf_account.id,
                 'company_currency_id': company_currency.id,
                 'credit': 0,
-                'debit': self.amount_total * (self.wrtoff_discount / 100),
+                'debit': discount,
                 'journal_id': self.journal_id.id,
                 'name': 'Discount',
                 'partner_id': self.partner_id.id
@@ -127,6 +131,8 @@ class AccountInvoice(models.Model):
         rcv_lines = self.move_id.line_ids.filtered(lambda r: r.account_id.user_type_id.type == 'receivable')
         rcv_wrtf = amobj.line_ids.filtered(lambda r: r.account_id.user_type_id.type == 'receivable')
         (rcv_lines + rcv_wrtf).reconcile()
+
+
 AccountInvoice()
 
 

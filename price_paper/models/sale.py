@@ -1019,36 +1019,40 @@ class SaleOrderLine(models.Model):
                 unit_price = numer / denom
             unit_price = float_round(unit_price, precision_digits=2)
 
-            partner_history = self.env['sale.order.line'].search(
-                [('product_id', '=', self.product_id.id), ('shipping_id', '=', self.shipping_id.id),
-                 ('is_last', '=', True), ('product_uom', '=', self.product_uom.id)])
-            partner_history and partner_history.write({'is_last': False})
-            self.write({'is_last': True})
-
             partner = self.order_id.partner_id.id
-            sale_history = self.env['sale.history'].search(
-                [('partner_id', '=', partner), ('product_id', '=', self.product_id.id),
-                 ('uom_id', '=', self.product_uom.id), '|', ('active', '=', True), ('active', '=', False)], limit=1)
-            if sale_history:
-                sale_history.order_line_id = self
-            else:
-                vals = {'order_line_id': self.id, 'partner_id': partner}
-                self.env['sale.history'].create(vals)
+            if not self.order_id.storage_contract:
 
-            sale_tax_history = self.env['sale.tax.history'].search(
-                [('partner_id', '=', self.order_id.partner_shipping_id.id), ('product_id', '=', self.product_id.id)],
-                limit=1)
-            is_tax = False
-            if self.tax_id:
-                is_tax = True
-            if sale_tax_history:
-                sale_tax_history.tax = is_tax
-            else:
-                vals = {'product_id': self.product_id.id,
-                        'partner_id': self.order_id.partner_shipping_id.id,
-                        'tax': is_tax
-                        }
-                self.env['sale.tax.history'].create(vals)
+
+                partner_history = self.env['sale.order.line'].search(
+                    [('product_id', '=', self.product_id.id), ('shipping_id', '=', self.shipping_id.id),
+                     ('is_last', '=', True), ('product_uom', '=', self.product_uom.id)])
+                partner_history and partner_history.write({'is_last': False})
+                self.write({'is_last': True})
+
+
+                sale_history = self.env['sale.history'].search(
+                    [('partner_id', '=', partner), ('product_id', '=', self.product_id.id),
+                     ('uom_id', '=', self.product_uom.id), '|', ('active', '=', True), ('active', '=', False)], limit=1)
+                if sale_history:
+                    sale_history.order_line_id = self
+                else:
+                    vals = {'order_line_id': self.id, 'partner_id': partner}
+                    self.env['sale.history'].create(vals)
+
+                sale_tax_history = self.env['sale.tax.history'].search(
+                    [('partner_id', '=', self.order_id.partner_shipping_id.id), ('product_id', '=', self.product_id.id)],
+                    limit=1)
+                is_tax = False
+                if self.tax_id:
+                    is_tax = True
+                if sale_tax_history:
+                    sale_tax_history.tax = is_tax
+                else:
+                    vals = {'product_id': self.product_id.id,
+                            'partner_id': self.order_id.partner_shipping_id.id,
+                            'tax': is_tax
+                            }
+                    self.env['sale.tax.history'].create(vals)
 
             # Create record in customer.product.price if not exist
             # if exist then check the price and update

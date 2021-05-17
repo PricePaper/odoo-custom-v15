@@ -5,5 +5,6 @@ from . import res_company
 from . import account_bank_statement
 from . import account_invoice
 from . import account_batch_payment
+from . import account_payment
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

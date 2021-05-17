@@ -19,8 +19,6 @@ class AccountBatchPayment(models.Model):
     def normalize_payments(self):
         # Since a batch payment has no confirmation step (it can be used to select payments in a bank reconciliation
         # as long as state != reconciled), its payments need to be posted
-        from pprint import pprint
-        pprint(self._context)
         if not self._context.get('prevent_post', False):
             self.payment_ids.filtered(lambda r: r.state == 'draft').post()
 

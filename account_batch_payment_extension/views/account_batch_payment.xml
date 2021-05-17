@@ -24,6 +24,17 @@
                     <button name="post_payments" class="oe_highlight" string="POST" type="object" attrs="{'invisible': [('is_posted', '=', True)]}"/>
                 </xpath>
 
+                <xpath expr="//field[@name='payment_ids']/tree" position="attributes">
+                    <attribute name="delete">0</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='payment_ids']/tree/field[@name='currency_id']" position="after">
+                    <button class="fa fa-trash-o"
+                            name="action_delete_from_db"
+                            type="object" aria-label="Remove row"
+                            style="float:right;"
+                            attrs="{'invisible': [('parent.state', '!=', 'draft')]}"/>
+                </xpath>
             </field>
         </record>
 

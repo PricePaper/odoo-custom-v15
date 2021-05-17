@@ -254,7 +254,15 @@
                         <button name="register_payments"
                                 confirm="All payments will be posted and this action can't be undone are you sure you want to proceed?"
                                 string="Register Payments" type="object" class="oe_highlight"
-                                attrs="{'invisible': [('is_posted', '=', True)]}"
+                                attrs="{'invisible': [('state', 'in', ('no_payment', 'paid'))]}"
+                        />
+                        <button name="action_no_payment"
+                                string="No Payment" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'done')]}"
+                        />
+                        <button name="action_to_shipping_done"
+                                string="Add Payment" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'no_payment')]}"
                         />
                     </header>
                     <field name="show_warning" invisible="1"/>
@@ -268,7 +276,7 @@
                              <button class="oe_stat_button"
                                 name="view_invoices"
                                 icon="fa-pencil-square-o"
-                                type="object" attrs="{'invisible': [('state', 'in', ['draft', 'in_progress'])]}"
+                                type="object" attrs="{'invisible': [('state', 'in', ['draft', 'in_progress', 'no_payment'])]}"
                                 string="Customer Invoices"/>
 
                             <button name="view_batch_payments"
@@ -285,19 +293,19 @@
                         <group>
                             <group>
                                 <field name="truck_driver_id" readonly="1"/>
-                                <field name="actual_returned" attrs="{'readonly':[('state', '=', 'paid')]}"/>
+                                <field name="actual_returned" attrs="{'readonly':[('state', 'in', ('no_payment', 'paid'))]}"/>
                                 <field name="pending_amount" />
                             </group>
                             <group>
-                                <field name="cash_amount" attrs="{'readonly':[('state', '=', 'paid')]}"/>
-                                <field name="cheque_amount" attrs="{'readonly':[('state', '=', 'paid')]}"/>
+                                <field name="cash_amount" attrs="{'readonly':[('state', 'in', ('no_payment', 'paid'))]}"/>
+                                <field name="cheque_amount" attrs="{'readonly':[('state', 'in', ('no_payment', 'paid'))]}"/>
                             </group>
                         </group>
                         <separator string="Cash Collected Lines"/>
                         <field name="picking_ids" invisible="1"/>
                         <field name="payment_ids" invisible="1"/>
                         <field name="is_posted" invisible="1"/>
-                        <field name="cash_collected_lines" attrs="{'readonly': [('is_posted', '=', True)]}">
+                        <field name="cash_collected_lines" attrs="{'readonly': [('state', 'in', ('no_payment', 'paid'))]}">
                             <tree editable="bottom">
                                 <field name="sequence" widget="handle"/>
                                 <field name="partner_id" domain="[('customer', '=', True)]"/>

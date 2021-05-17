@@ -44,6 +44,7 @@ class StockPickingBatch(models.Model):
         ('draft', 'Draft'),
         ('in_progress', 'Running'),
         ('done', 'Shipping Done'),
+        ('no_payment', 'No Payment'),
         ('paid', 'Paid'),
         ('cancel', 'Cancelled')], default='draft',
         copy=False, track_visibility='onchange', required=True)
@@ -335,6 +336,16 @@ class StockPickingBatch(models.Model):
             batch.state = 'paid'
 
 
+    @api.multi
+    def action_no_payment(self):
+        for batch in self:
+            batch.state = 'no_payment'
+
+    @api.multi
+    def action_to_shipping_done(self):
+        for batch in self:
+            batch.state = 'done'
+    
     @api.multi
     def create_driver_journal(self):
 

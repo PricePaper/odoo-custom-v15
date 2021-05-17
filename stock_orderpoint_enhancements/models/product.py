@@ -87,7 +87,7 @@ class ProductProduct(models.Model):
                 break
 
         if result:
-            result = self.filler_to_append_zero_qty(result, to_date)
+            result = self.filler_to_append_zero_qty(result, to_date, from_date)
             date_to = (to_date + relativedelta(days=periods)).strftime('%Y-%m-%d')
             try:
                 forecast = self.env['odoo_fbprophet.prophet.bridge'].run_prophet(result, from_date, date_to,
@@ -157,15 +157,16 @@ class ProductProduct(models.Model):
         return res
 
     @api.model
-    def filler_to_append_zero_qty(self, result, to_date):
+    def filler_to_append_zero_qty(self, result, to_date, from_date):
         """
         Process result of query by adding missing days
         with qty(0.0) between start_date and to_date
         Converts uom_qty into base uom_qty
         """
         res = []
-        start_date = result and result[0] and result[0][0]
-        start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+        # start_date = result and result[0] and result[0][0]
+        # start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+        start_date = datetime.datetime.strptime(from_date, "%Y-%m-%d").date()
 
         def _get_next_business_day(date):
 

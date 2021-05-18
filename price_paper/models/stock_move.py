@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
-
+from odoo import fields, models, api, _
+from odoo.exceptions import UserError
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
@@ -20,6 +20,23 @@ class StockMove(models.Model):
             ('printed', '=', False),
             ('state', 'in', ['draft', 'confirmed', 'waiting', 'partially_available', 'assigned'])], limit=1)
         return picking
+
+    @api.multi
+    def _get_accounting_data_for_valuation(self):
+        """ Over ride to Return the accounts for inventory adjustment. """
+        self.ensure_one()
+        res = super(StockMove, self)._get_accounting_data_for_valuation()
+        if self._context.get('from_inv_adj', False):
+            if self.product_id.categ_id.inv_adj_input_account_id:
+                acc_src = self.product_id.categ_id.inv_adj_input_account_id.id
+            if self.product_id.categ_id.inv_adj_output_account_id:
+                acc_dest = self.product_id.categ_id.inv_adj_output_account_id.id
+            if not acc_src:
+                raise UserError(_('Cannot find a Invenotry Adjustment stock input account for the product %s. You must define one on the product category, before processing this operation.') % (self.product_id.display_name))
+            if not acc_dest:
+                raise UserError(_('Cannot find a Invenotry Adjustment stock output account for the product %s. You must define one on the product category, before processing this operation.') % (self.product_id.display_name))
+            res = (res[0], acc_src, acc_dest, res[3])
+        return res
 
 
 StockMove()

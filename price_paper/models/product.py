@@ -286,6 +286,13 @@ class ProductCategory(models.Model):
     repacking_upcharge = fields.Float(string="Repacking Charge %")
     categ_code = fields.Char(string='Category Code')
     standard_price = fields.Float(string="Class Standard Price Percent", digits=dp.get_precision('Product Price'))
+    inv_adj_output_account_id = fields.Many2one('account.account', company_dependent=True,
+                                                  string="InventoryAdjustment Output Account",
+                                                  domain=[('deprecated', '=', False)])
+    inv_adj_input_account_id = fields.Many2one('account.account', company_dependent=True,
+                                                    string="InventoryAdjustment Input Account",
+                                                    domain=[('deprecated', '=', False)])
+
 
 
 ProductCategory()

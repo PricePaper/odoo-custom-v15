@@ -2,8 +2,18 @@
 
 from odoo import models, fields, api, _
 
+
+class StockInventory(models.Model):
+    _inherit = 'stock.inventory'
+
+    def action_validate(self):
+        return super(StockInventory, self.with_context(from_inv_adj = True)).action_validate()
+
+StockInventory()
+
 class InventoryLine(models.Model):
     _inherit = "stock.inventory.line"
+
 
     @api.one
     @api.depends('location_id', 'product_id', 'package_id', 'product_uom_id', 'company_id', 'prod_lot_id', 'partner_id')

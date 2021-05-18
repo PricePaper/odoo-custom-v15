@@ -192,6 +192,18 @@
             </field>
         </record>
 
+        <record id="product_category_account_inherit_pricepaper" model="ir.ui.view">
+            <field name="name">product.category.form.pricepaper</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="stock_account.view_category_property_form"/>
+            <field name="arch" type="xml">
+                  <field name="property_stock_account_output_categ_id" position='after'>
+                      <field name="inv_adj_input_account_id" required="1"/>
+                      <field name="inv_adj_output_account_id" required="1"/>
+                  </field>
+            </field>
+        </record>
+
         <record id="product_search_form_view_price_paper" model="ir.ui.view">
             <field name="name">product.product.search</field>
             <field name="model">product.product</field>

@@ -27,6 +27,8 @@ class StockMove(models.Model):
         self.ensure_one()
         res = super(StockMove, self)._get_accounting_data_for_valuation()
         if self._context.get('from_inv_adj', False):
+            acc_src = False
+            acc_dest = False
             if self.product_id.categ_id.inv_adj_input_account_id:
                 acc_src = self.product_id.categ_id.inv_adj_input_account_id.id
             if self.product_id.categ_id.inv_adj_output_account_id:

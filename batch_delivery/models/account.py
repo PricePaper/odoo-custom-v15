@@ -25,4 +25,16 @@ class AccountMove(models.Model):
         return super(AccountMove, self).button_cancel()
 
 
+class AccountBatchPayment(models.Model):
+    _name = 'account.batch.payment'
+    _inherit = ['account.batch.payment', 'mail.thread']
+
+    batch_picking_id = fields.Many2one('stock.picking.batch', compute='_compute_batch_picking_id')
+    state = fields.Selection([('draft', 'New'), ('sent', 'Sent'), ('reconciled', 'Reconciled')], readonly=True,
+                             default='draft', copy=False, track_visibility="onchange")
+
+    def _compute_batch_picking_id(self):
+        for rec in self:
+            rec.batch_picking_id = rec.payment_ids.mapped('batch_id')
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

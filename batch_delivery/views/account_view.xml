@@ -57,6 +57,29 @@
                 <xpath expr="//field[@name='journal_id']" position="attributes">
                     <attribute name="domain">[]</attribute>
                 </xpath>
+                 <xpath expr="//field[@name='payment_ids']" position="attributes">
+                    <attribute name="context">{'default_payment_type': batch_type, 'default_journal_id': journal_id, 'default_payment_method_id': payment_method_id, 'default_batch_payment_id': active_id}</attribute>
+                </xpath>
+                <xpath expr="//sheet" position="after">
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="view_batch_payment_tree_inherit_batch_delivery" model="ir.ui.view">
+            <field name="name">view.batch.payment.tree</field>
+            <field name="model">account.batch.payment</field>
+            <field name="inherit_id" ref="account_batch_payment.view_batch_payment_tree"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="batch_picking_id"/>
+                    <field name="payment_method_id"/>
+                </xpath>
 
             </field>
         </record>

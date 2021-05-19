@@ -11,6 +11,10 @@
                     <field name="inv_config_for" attrs="{'invisible': [('config_type', '!=', 'inventory')]}"/>
                     <field name="categ_id"
                            attrs="{'invisible': ['|', ('config_type', '!=', 'inventory'), ('inv_config_for', '!=', 'categ')]}"/>
+                    <field name="end_date"
+                            attrs="{'invisible': ['|', ('config_type', '!=', 'inventory'), ('inv_config_for', '!=', 'categ')]}"/>
+                    <field name="start_date"
+                                 attrs="{'invisible': ['|', ('config_type', '!=', 'inventory'), ('inv_config_for', '!=', 'categ')]}"/>
                     <field name="product_id"
                            attrs="{'invisible': ['|', ('config_type', '!=', 'inventory'), ('inv_config_for', '!=', 'product')]}"/>
                 </xpath>

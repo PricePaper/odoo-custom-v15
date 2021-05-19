@@ -4,10 +4,11 @@ import calendar
 import datetime
 import logging as server_log
 from math import ceil
+from odoo.exceptions import UserError
 
 from dateutil.relativedelta import *
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 from odoo.addons.queue_job.job import job
 
 to_date_hardcoded = datetime.datetime.strptime('2017-12-28', '%Y-%m-%d').date()
@@ -46,7 +47,7 @@ class ProductProduct(models.Model):
         return config
 
     @api.multi
-    def forecast_sales(self, periods=30, freq='d', to_date=str(datetime.date.today())):
+    def forecast_sales(self, config, from_date, periods=30, freq='d', to_date=str(datetime.date.today())):
         """
         Forecast the sale of a product in daily basis by collecting
         past 5 years sales details
@@ -60,8 +61,8 @@ class ProductProduct(models.Model):
             periods = month_last_date
 
         self.ensure_one()
-        config = self.get_fbprophet_config()
-        from_date = (to_date - relativedelta(days=self.past_days)).strftime('%Y-%m-%d')
+        config = config
+        from_date = from_date
         product_ids = [self.id]
         forecast = []
         if self.superseded:
@@ -125,8 +126,18 @@ class ProductProduct(models.Model):
         """
         to_date = datetime.date.today()
         self.ensure_one()
+        from_date = (to_date - relativedelta(days=self.past_days)).strftime('%Y-%m-%d')
         periods = self.forecast_days or 31
-        forecast = self.forecast_sales(periods=periods, freq='d', to_date=str(to_date))
+        config = self.get_fbprophet_config()
+        if not config:
+            raise UserError(_("FB prophet configuration not found"))
+        if config.inv_config_for == 'categ':
+            if config.end_date:
+                to_date = config.end_date
+            if config.start_date:
+                from_date = config.start_date
+
+        forecast = self.forecast_sales(config, str(from_date), periods=periods, freq='d', to_date=str(to_date))
         self.env['product.forecast'].search([]).unlink()
         flag = False
         count = 0
@@ -256,12 +267,20 @@ class ProductProduct(models.Model):
             to_date_plus_delay = to_date + relativedelta(days=delivery_lead_time)
             max_to_date_plus_delay = to_date + relativedelta(days=max_delivery_lead_time)
 
-            min_forecast = self.forecast_sales(periods=delivery_lead_time, freq='d', to_date=str(to_date))
+            from_date = (to_date - relativedelta(days=self.past_days))
+            config = self.get_fbprophet_config()
+            if config.inv_config_for == 'categ':
+                if config.end_date:
+                    to_date = config.end_date
+                if config.start_date:
+                    from_date = config.start_date
+
+            min_forecast = self.forecast_sales(config, str(from_date), periods=delivery_lead_time, freq='d', to_date=str(to_date))
             min_quantity = self.calculate_qty(min_forecast, to_date, to_date_plus_delay)
 
             max_quantity = min_quantity
             if delivery_lead_time != max_delivery_lead_time:
-                max_forecast = self.forecast_sales(periods=max_delivery_lead_time, freq='d', to_date=str(to_date))
+                max_forecast = self.forecast_sales(config, str(from_date), periods=max_delivery_lead_time, freq='d', to_date=str(to_date))
                 max_quantity = self.calculate_qty(max_forecast, to_date, max_to_date_plus_delay)
 
             orderpoint = self.orderpoint_ids and self.orderpoint_ids[0] or False

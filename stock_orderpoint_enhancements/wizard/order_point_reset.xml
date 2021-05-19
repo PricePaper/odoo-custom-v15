@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="reset_order_point_wizard" model="ir.ui.view">
+            <field name="name">reset.order.point</field>
+            <field name="model">order.point.reset</field>
+            <field name="arch" type="xml">
+                <form string="Reset Reordering Rule">
+                    <p class="oe_grey">
+                        You are going to Reset Reordering Rule.
+                    </p>
+                    <footer>
+                        <button string="Reset" name="reset_order_point" type="object" default_focus="1"
+                                class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
+        <act_window id="action_reset_order_point"
+                    multi="True"
+                    key2="client_action_multi" name="Reset Reordering Rule"
+                    res_model="order.point.reset" src_model="product.product"
+                    view_mode="form" target="new" view_type="form"
+                    groups="purchase.group_purchase_manager"/>
+
+
+    </data>
+</odoo>

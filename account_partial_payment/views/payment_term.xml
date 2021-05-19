@@ -1,0 +1,19 @@
+<odoo>
+    <data>
+        <record id="account_paymnet_term_inherit_price_paper" model="ir.ui.view">
+            <field name="name">account payment term</field>
+            <field name="model">account.payment.term</field>
+            <field name="inherit_id" ref="account.view_payment_term_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/group/group" position="after">
+                    <group name="discount">
+                        <field name="is_discount" widget="boolean_toggle"/>
+                        <field name="discount_days" attrs="{'invisible':[('is_discount', '=', False)]}"/>
+                        <field name="discount" attrs="{'invisible':[('is_discount', '=', False)]}"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

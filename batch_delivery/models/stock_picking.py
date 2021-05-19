@@ -3,6 +3,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from odoo.tools import float_compare
+from datetime import datetime
 
 
 class StockPicking(models.Model):
@@ -58,6 +59,14 @@ class StockPicking(models.Model):
         states={'done': [('readonly', True)], 'cancel': [('readonly', True)]},
         help='Batch associated to this picking', copy=False, track_visibility='onchange')
 
+    @api.one
+    @api.depends('move_lines.sale_line_id.order_id.release_date')
+    def _compute_scheduled_date(self):
+        release_date = self.move_lines.mapped('sale_line_id').mapped('order_id').mapped('release_date')
+        if self.move_type == 'direct':
+            self.scheduled_date = datetime.combine(min(release_date), datetime.min.time()) if release_date else min(self.move_lines.mapped('date_expected') or [fields.Datetime.now()])
+        else:
+            self.scheduled_date = datetime.combine(max(release_date), datetime.min.time()) if release_date else max(self.move_lines.mapped('date_expected') or [fields.Datetime.now()])
 
     def action_generate_backorder_wizard(self):
         view = self.env.ref('stock.view_backorder_confirmation')

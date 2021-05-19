@@ -1,19 +1,11 @@
-from odoo import models, api
+from odoo import models
 
 
 class AccountPayment(models.Model):
     _inherit = 'account.payment'
 
     def action_delete_from_db(self):
-        self.batch_payment_id.message_post(body='Payment line removed.')
         self.sudo().unlink()
-
-    @api.model
-    def create(self, vals):
-        record = super(AccountPayment, self).create(vals)
-        if record.batch_payment_id:
-            record.batch_payment_id.message_post(body='Payment line created.')
-        return record
 
 
 AccountPayment()

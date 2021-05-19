@@ -30,6 +30,8 @@ class AccountBatchPayment(models.Model):
     _inherit = ['account.batch.payment', 'mail.thread']
 
     batch_picking_id = fields.Many2one('stock.picking.batch', compute='_compute_batch_picking_id')
+    state = fields.Selection([('draft', 'New'), ('sent', 'Sent'), ('reconciled', 'Reconciled')], readonly=True,
+                             default='draft', copy=False, track_visibility="onchange")
 
     def _compute_batch_picking_id(self):
         for rec in self:

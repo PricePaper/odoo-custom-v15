@@ -12,6 +12,8 @@ class FbprophetConfig(models.Model):
         string='Inventory Config For')
     categ_id = fields.Many2one('product.category', string='Product Category')
     product_id = fields.Many2one('product.product', string='Product')
+    start_date = fields.Date('Start Date')
+    end_date = fields.Date('End Date')
 
 
 FbprophetConfig()

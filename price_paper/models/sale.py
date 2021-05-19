@@ -1019,36 +1019,40 @@ class SaleOrderLine(models.Model):
                 unit_price = numer / denom
             unit_price = float_round(unit_price, precision_digits=2)
 
-            partner_history = self.env['sale.order.line'].search(
-                [('product_id', '=', self.product_id.id), ('shipping_id', '=', self.shipping_id.id),
-                 ('is_last', '=', True), ('product_uom', '=', self.product_uom.id)])
-            partner_history and partner_history.write({'is_last': False})
-            self.write({'is_last': True})
-
             partner = self.order_id.partner_id.id
-            sale_history = self.env['sale.history'].search(
-                [('partner_id', '=', partner), ('product_id', '=', self.product_id.id),
-                 ('uom_id', '=', self.product_uom.id), '|', ('active', '=', True), ('active', '=', False)], limit=1)
-            if sale_history:
-                sale_history.order_line_id = self
-            else:
-                vals = {'order_line_id': self.id, 'partner_id': partner}
-                self.env['sale.history'].create(vals)
+            if not self.order_id.storage_contract:
 
-            sale_tax_history = self.env['sale.tax.history'].search(
-                [('partner_id', '=', self.order_id.partner_shipping_id.id), ('product_id', '=', self.product_id.id)],
-                limit=1)
-            is_tax = False
-            if self.tax_id:
-                is_tax = True
-            if sale_tax_history:
-                sale_tax_history.tax = is_tax
-            else:
-                vals = {'product_id': self.product_id.id,
-                        'partner_id': self.order_id.partner_shipping_id.id,
-                        'tax': is_tax
-                        }
-                self.env['sale.tax.history'].create(vals)
+
+                partner_history = self.env['sale.order.line'].search(
+                    [('product_id', '=', self.product_id.id), ('shipping_id', '=', self.shipping_id.id),
+                     ('is_last', '=', True), ('product_uom', '=', self.product_uom.id)])
+                partner_history and partner_history.write({'is_last': False})
+                self.write({'is_last': True})
+
+
+                sale_history = self.env['sale.history'].search(
+                    [('partner_id', '=', partner), ('product_id', '=', self.product_id.id),
+                     ('uom_id', '=', self.product_uom.id), '|', ('active', '=', True), ('active', '=', False)], limit=1)
+                if sale_history:
+                    sale_history.order_line_id = self
+                else:
+                    vals = {'order_line_id': self.id, 'partner_id': partner}
+                    self.env['sale.history'].create(vals)
+
+                sale_tax_history = self.env['sale.tax.history'].search(
+                    [('partner_id', '=', self.order_id.partner_shipping_id.id), ('product_id', '=', self.product_id.id)],
+                    limit=1)
+                is_tax = False
+                if self.tax_id:
+                    is_tax = True
+                if sale_tax_history:
+                    sale_tax_history.tax = is_tax
+                else:
+                    vals = {'product_id': self.product_id.id,
+                            'partner_id': self.order_id.partner_shipping_id.id,
+                            'tax': is_tax
+                            }
+                    self.env['sale.tax.history'].create(vals)
 
             # Create record in customer.product.price if not exist
             # if exist then check the price and update
@@ -1210,7 +1214,7 @@ class SaleOrderLine(models.Model):
                 note.notes = res.note
         return res
 
-    @api.depends('product_id')
+    @api.depends('product_id', 'product_uom')
     def compute_last_sale_detail(self):
         """
         compute last sale detail of the product by the partner.
@@ -1219,18 +1223,23 @@ class SaleOrderLine(models.Model):
             if not line.order_id.partner_id:
                 raise ValidationError(_('Please enter customer information first.'))
             line.last_sale = False
-            if line.product_id and line.order_id.partner_shipping_id:
-                last = self.env['sale.order.line'].sudo().search(
+            if line.product_id and line.order_id.partner_shipping_id and line.product_uom:
+                # last = self.env['sale.order.line'].sudo().search(
+                #     [('order_id.partner_shipping_id', '=', line.order_id.partner_shipping_id.id),
+                #      ('product_id', '=', line.product_id.id), ('product_uom', '=', line.product_uom.id),
+                #      ('is_last', '=', True)], limit=1)
+
+                last = self.env['sale.history'].sudo().search(
                     [('order_id.partner_shipping_id', '=', line.order_id.partner_shipping_id.id),
-                     ('product_id', '=', line.product_id.id), ('product_uom', '=', line.product_uom.id),
-                     ('is_last', '=', True)], limit=1)
+                     ('product_id', '=', line.product_id.id), ('uom_id', '=', line.product_uom.id),
+                     ], limit=1)
                 if last:
                     local = pytz.timezone(self.sudo().env.user.tz or "UTC")
                     last_date = datetime.strftime(pytz.utc.localize(
                         datetime.strptime(str(last.order_id.confirmation_date),
                                           DEFAULT_SERVER_DATETIME_FORMAT)).astimezone(local), "%m/%d/%Y %H:%M:%S")
                     line.last_sale = 'Order Date  - %s\nPrice Unit    - %s\nSale Order  - %s' % (
-                        last_date, last.price_unit, last.order_id.name)
+                        last_date, last.order_line_id.price_unit, last.order_id.name)
                 else:
                     line.last_sale = 'No Previous information Found'
             else:
@@ -1301,12 +1310,12 @@ class SaleOrderLine(models.Model):
                                                                                                        self.order_id.partner_shipping_id).ids
                     res.get('domain', {}).update({'tax_id': [('id', 'in', taxes_ids)]})
 
-                sale_history = self.env['sale.history'].search(
-                    [('partner_id', '=', self.order_id and self.order_id.partner_id.id),
-                     ('product_id', '=', self.product_id and self.product_id.id)],
-                     order='order_date desc', limit=1)
-                if sale_history:
-                    self.product_uom = sale_history.uom_id
+                # sale_history = self.env['sale.history'].search(
+                #     [('partner_id', '=', self.order_id and self.order_id.partner_id.id),
+                #      ('product_id', '=', self.product_id and self.product_id.id)],
+                #      order='order_date desc', limit=1)
+                # if sale_history:
+                #     self.product_uom = sale_history.uom_id
 
             msg, product_price, price_from = self.calculate_customer_price()
             warn_msg += msg and "\n\n{}".format(msg)

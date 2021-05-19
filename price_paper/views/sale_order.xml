@@ -119,8 +119,9 @@
 
                 <field name="partner_shipping_id" position="attributes">
                     <attribute name="domain">['|', ('id', '=', partner_id), ('parent_id', '=', partner_id)]</attribute>
-                    <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
-                    <attribute name="context">{'default_type': 'invoice', 'address_inline': 1, 'show_address': 1, 'tree_view_ref': 'view_partner_tree_search_more', 'show_partner_code': 1}</attribute>
+                    <attribute name="options">{"no_create": 1, "no_create_edit": 1, "always_reload": True}</attribute>
+                    <attribute name="context">{'default_type': 'invoice', 'show_address': 1, 'tree_view_ref': 'view_partner_tree_search_more', 'show_partner_code': 1}</attribute>
+
                 </field>
 
                 <button name="action_cancel" position="after">

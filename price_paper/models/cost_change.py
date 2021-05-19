@@ -23,7 +23,7 @@ class CostChange(models.Model):
     product_id = fields.Many2one('product.product', string="Product")
     price_change = fields.Float(string='Cost Change')
     is_done = fields.Boolean(string='Done', copy=False, default=False)
-    run_date = fields.Date('Update Date', default=fields.Date.context_today)
+    run_date = fields.Date('Update Date', default=fields.Date.context_today, copy=False)
     update_customer_pricelist = fields.Boolean('Update Customer Pricelist', default=True)
     update_vendor_pricelist = fields.Boolean('Update Vendor Pricelist', default=True)
     update_standard_price = fields.Boolean('Update Standard Price', default=True)

@@ -267,6 +267,16 @@
                 </xpath>
             </field>
         </record>
+        <record id="sale_order_view_search_price_paper_123" model="ir.ui.view">
+            <field name="name">sale.order.search.inherit.price.paper</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="before">
+                    <field name="customer_code" />
+                </xpath>
+            </field>
+        </record>
         <record id="sale_order_view_search_price_paper" model="ir.ui.view">
             <field name="name">sale.order.search.inherit.price.paper</field>
             <field name="model">sale.order</field>

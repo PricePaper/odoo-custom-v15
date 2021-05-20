@@ -226,7 +226,10 @@ class StockPickingBatch(models.Model):
             for picking in batch.picking_ids.filtered(lambda rec: rec.state not in ['cancel']):
                 if picking.sale_id and picking.sale_id.invoice_status == 'to invoice' or not picking.is_invoiced:
                     raise UserError(_('Please create invoices for delivery order %s, to continue.') % (picking.name))
-                res.append((0, 0, {'partner_id': picking.partner_id.id, 'sequence': picking.sequence or 0}))
+                partner_id = picking.partner_id.id
+                if picking.sale_id:
+                    partner_id = picking.sale_id.partner_invoice_id.id
+                res.append((0, 0, {'partner_id': partner_id, 'sequence': picking.sequence or 0}))
             batch.truck_driver_id.is_driver_available = True
             if batch.route_id:
                 batch.route_id.set_active = False
@@ -345,7 +348,7 @@ class StockPickingBatch(models.Model):
     def action_to_shipping_done(self):
         for batch in self:
             batch.state = 'done'
-    
+
     @api.multi
     def create_driver_journal(self):
 
@@ -408,6 +411,12 @@ class CashCollectedLines(models.Model):
     invoice_id = fields.Many2one('account.invoice')
     discount = fields.Float(string='Discount(%)')
     sequence = fields.Integer(string='Order')
+    available_payment_method_ids = fields.One2many(comodel_name='account.payment', compute='_compute_available_payment_method_ids')
+
+    @api.depends('journal_id')
+    def _compute_available_payment_method_ids(self):
+        for record in self:
+            record.available_payment_method_ids = record.journal_id.inbound_payment_method_ids.ids
 
     @api.depends('partner_id')
     def _compute_partner_ids(self):

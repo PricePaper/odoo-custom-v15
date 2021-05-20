@@ -421,7 +421,7 @@ class CashCollectedLines(models.Model):
     @api.depends('partner_id')
     def _compute_partner_ids(self):
         for line in self:
-            picking = line.batch_id.picking_ids.filtered(lambda pick: pick.partner_id.id == line.partner_id.id)
+            picking = line.batch_id.picking_ids.filtered(lambda pick: pick.sale_id.partner_invoice_id.id == line.partner_id.id)
             sale = picking[0].sale_id if picking else False
             if sale:
                 line.partner_ids = sale.partner_id | sale.partner_invoice_id | sale.partner_shipping_id

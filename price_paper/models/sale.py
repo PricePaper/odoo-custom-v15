@@ -541,12 +541,13 @@ class SaleOrder(models.Model):
             msg1 = ''
             if debit_due:
                 for rec in debit_due.mapped('invoice_id'):
-                    term_line = rec.payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
-                    date_due = rec.date_due
-                    if term_line and term_line.grace_period:
-                        date_due = rec.date_due + timedelta(days=term_line.grace_period)
-                    if date_due and date_due < date.today() and rec.number:
-                        msg = msg + '%s, ' % (rec.number)
+                    if rec.type == "out_invoice":
+                        term_line = rec.payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
+                        date_due = rec.date_due
+                        if term_line and term_line.grace_period:
+                            date_due = rec.date_due + timedelta(days=term_line.grace_period)
+                        if date_due and date_due < date.today() and rec.number:
+                            msg = msg + '%s, ' % (rec.number)
                 if msg:
                     msg = 'Customer has pending invoices.\n' + msg
             if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:

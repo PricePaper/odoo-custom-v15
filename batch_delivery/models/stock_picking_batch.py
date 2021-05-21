@@ -226,7 +226,10 @@ class StockPickingBatch(models.Model):
             for picking in batch.picking_ids.filtered(lambda rec: rec.state not in ['cancel']):
                 if picking.sale_id and picking.sale_id.invoice_status == 'to invoice' or not picking.is_invoiced:
                     raise UserError(_('Please create invoices for delivery order %s, to continue.') % (picking.name))
-                res.append((0, 0, {'partner_id': picking.partner_id.id, 'sequence': picking.sequence or 0}))
+                partner_id = picking.partner_id.id
+                if picking.sale_id:
+                    partner_id = picking.sale_id.partner_invoice_id.id
+                res.append((0, 0, {'partner_id': partner_id, 'sequence': picking.sequence or 0}))
             batch.truck_driver_id.is_driver_available = True
             if batch.route_id:
                 batch.route_id.set_active = False
@@ -345,7 +348,7 @@ class StockPickingBatch(models.Model):
     def action_to_shipping_done(self):
         for batch in self:
             batch.state = 'done'
-    
+
     @api.multi
     def create_driver_journal(self):
 
@@ -408,20 +411,17 @@ class CashCollectedLines(models.Model):
     invoice_id = fields.Many2one('account.invoice')
     discount = fields.Float(string='Discount(%)')
     sequence = fields.Integer(string='Order')
-    billable_partner_ids = fields.Many2many('res.partner', compute='_compute_billable_partner_ids')
+    available_payment_method_ids = fields.One2many(comodel_name='account.payment', compute='_compute_available_payment_method_ids')
 
-    @api.depends('batch_id')
-    def _compute_billable_partner_ids(self):
-        for rec in self:
-            partner = self.env['res.partner']
-            for sale in rec.batch_id.picking_ids.mapped('sale_id'):
-                partner |= sale.partner_id | sale.partner_invoice_id
-            rec.billable_partner_ids = partner
+    @api.depends('journal_id')
+    def _compute_available_payment_method_ids(self):
+        for record in self:
+            record.available_payment_method_ids = record.journal_id.inbound_payment_method_ids.ids
 
     @api.depends('partner_id')
     def _compute_partner_ids(self):
         for line in self:
-            picking = line.batch_id.picking_ids.filtered(lambda pick: pick.partner_id.id == line.partner_id.id)
+            picking = line.batch_id.picking_ids.filtered(lambda pick: pick.sale_id.partner_invoice_id.id == line.partner_id.id)
             sale = picking[0].sale_id if picking else False
             if sale:
                 line.partner_ids = sale.partner_id | sale.partner_invoice_id | sale.partner_shipping_id
@@ -445,6 +445,13 @@ class CashCollectedLines(models.Model):
             self.amount = self.invoice_id.amount_total
         else:
             self.amount = 0
+
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        if self.batch_id:
+            partner_list = self.batch_id.picking_ids.mapped('partner_id').ids
+            return {'domain': {'partner_id': [('id', 'in', partner_list)]}}
+        return {}
 
     @api.onchange('payment_method_id')
     def _onchange_payment_method_id(self):

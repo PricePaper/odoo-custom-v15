@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+    <template id="report_ppt_report_purchasequotation_document" inherit_id="purchase.report_purchasequotation_document">
+            <xpath expr="//table/thead/tr/th[1]" position="before">
+                <th><strong>Product Code</strong></th>
+            </xpath>
+            <xpath expr="//table/tbody/tr/td[1]" position="before">
+                <t t-set="product_code" t-value="order_line.product_id and order_line.product_id.seller_ids.filtered(lambda r: r.name.id == order_line.order_id.partner_id.id).mapped('product_code')"/>
+                <td>
+                    <span t-esc="product_code and product_code[-1]"/>
+                </td>
+            </xpath>
+        </template>
+
+        <template id="report_ppt_report_purchaseorder_document" inherit_id="purchase.report_purchaseorder_document">
+            <xpath expr="//table/thead/tr/th[1]" position="before">
+                <th><strong>Product Code</strong></th>
+            </xpath>
+            <xpath expr="//table/tbody/tr/td[1]" position="before">
+                <t t-set="product_code" t-value="line.product_id and line.product_id.seller_ids.filtered(lambda r: r.name.id == line.order_id.partner_id.id).mapped('product_code')"/>
+                <td>
+                    <span t-esc="product_code and product_code[-1]"/>
+                </td>
+            </xpath>
+        </template>
+
+    </data>
+</odoo>

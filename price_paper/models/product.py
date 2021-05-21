@@ -70,6 +70,7 @@ class ProductProduct(models.Model):
     def copy(self, default=None):
 
         res = super(ProductProduct, self).copy(default)
+        res.standard_price = self.standard_price
         #Duplicate price_list line
         lines = self.env['customer.product.price'].search([('product_id', '=', self.id)])
         default_1 = {'product_id': res.id}

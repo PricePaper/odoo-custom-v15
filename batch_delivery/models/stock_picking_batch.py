@@ -408,6 +408,15 @@ class CashCollectedLines(models.Model):
     invoice_id = fields.Many2one('account.invoice')
     discount = fields.Float(string='Discount(%)')
     sequence = fields.Integer(string='Order')
+    billable_partner_ids = fields.Many2many('res.partner', compute='_compute_billable_partner_ids')
+
+    @api.depends('batch_id')
+    def _compute_billable_partner_ids(self):
+        for rec in self:
+            partner = self.env['res.partner']
+            for sale in rec.batch_id.picking_ids.mapped('sale_id'):
+                partner |= sale.partner_id | sale.partner_invoice_id
+            rec.billable_partner_ids = partner
 
     @api.depends('partner_id')
     def _compute_partner_ids(self):
@@ -436,13 +445,6 @@ class CashCollectedLines(models.Model):
             self.amount = self.invoice_id.amount_total
         else:
             self.amount = 0
-
-    @api.onchange('partner_id')
-    def _onchange_partner_id(self):
-        if self.batch_id:
-            partner_list = self.batch_id.picking_ids.mapped('partner_id').ids
-            return {'domain': {'partner_id': [('id', 'in', partner_list)]}}
-        return {}
 
     @api.onchange('payment_method_id')
     def _onchange_payment_method_id(self):

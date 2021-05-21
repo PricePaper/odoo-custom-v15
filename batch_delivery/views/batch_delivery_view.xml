@@ -305,10 +305,12 @@
                         <field name="picking_ids" invisible="1"/>
                         <field name="payment_ids" invisible="1"/>
                         <field name="is_posted" invisible="1"/>
-                        <field name="cash_collected_lines" attrs="{'readonly': [('state', 'in', ('no_payment', 'paid'))]}">
+                        <field name="cash_collected_lines" attrs="{'readonly': [('state', 'in', ('no_payment', 'paid'))]}" context="{'default_batch_id': active_id}">
                             <tree editable="bottom">
                                 <field name="sequence" widget="handle"/>
-                                <field name="partner_id" domain="[('customer', '=', True)]"/>
+                                <field name="batch_id" invisible="1"/>
+                                <field name="billable_partner_ids" widget="many2many_tags" invisible="1"/>
+                                <field name="partner_id" domain="[('id', 'in', billable_partner_ids)]"/>
                                 <field name="partner_ids" invisible="1"/>
                                 <field name="invoice_id" domain="[('partner_id', 'in', partner_ids), ('state', '=', 'open'), ('type', '=', 'out_invoice')]" context="{'from_batch_payment': True}"/>
                                 <field name="journal_id" required="1"/>

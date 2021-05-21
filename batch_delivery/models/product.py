@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 
 class ProductTemplate(models.Model):
@@ -62,6 +63,14 @@ class Product(models.Model):
         action['domain'] = [('id', 'in', purchase_lines)]
         return action
 
+    @api.multi
+    @api.constrains('weight', 'volume')
+    def _check_weight_and_volume(self):
+        for rec in self:
+            if rec.weight <= 0:
+                raise ValidationError('Weight should be greater than Zero')
+            if rec.volume <= 0:
+                raise ValidationError('Volume should be greater than Zero')
 
 Product()
 

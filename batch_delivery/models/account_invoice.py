@@ -9,6 +9,24 @@ class AccountInvoice(models.Model):
 
     picking_ids = fields.Many2many('stock.picking', compute='_compute_picking_ids', string='Pickings')
     wrtoff_discount = fields.Float(string='Discount')
+    has_outstanding = fields.Boolean(compute='_get_outstanding_info_JSON', groups="account.group_account_invoice", search='_search_has_outstanding')
+
+    @api.multi
+    def _search_has_outstanding(self, operator, value):
+        ids = []
+        domain = [('reconciled', '=', False),
+                  ('move_id.state', '=', 'posted'),
+                  '|',
+                  '&', ('amount_residual_currency', '!=', 0.0), ('currency_id', '!=', None),
+                  '&', ('amount_residual_currency', '=', 0.0), '&', ('currency_id', '=', None),
+                  ('amount_residual', '!=', 0.0)]
+        if self._context.get('type') in ('out_invoice', 'in_refund'):
+            domain.extend([('credit', '>', 0), ('debit', '=', 0)])
+        else:
+            domain.extend([('credit', '=', 0), ('debit', '>', 0)])
+        ids = self.env['account.move.line'].search(domain).mapped('partner_id').ids
+        return [('partner_id', 'in', ids), ('state', 'in', ['open', 'in_payment'])]
+
 
     @api.depends('invoice_line_ids.stock_move_ids.picking_id')
     def _compute_picking_ids(self):

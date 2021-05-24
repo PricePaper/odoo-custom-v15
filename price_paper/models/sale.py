@@ -809,7 +809,7 @@ class SaleOrderLine(models.Model):
     profit_margin = fields.Monetary(compute='calculate_profit_margin', string="Profit")
     price_from = fields.Many2one('customer.product.price', string='Product Pricelist')
     last_sale = fields.Text(compute='compute_last_sale_detail', string='Last sale details', store=False)
-    product_onhand = fields.Float(string='Product Qty Available', related='product_id.virtual_available',
+    product_onhand = fields.Float(string='Product Qty Available', related='product_id.qty_available',
                                   digits=dp.get_precision('Product Unit of Measure'))
     new_product = fields.Boolean(string='New Product', copy=False)
     manual_price = fields.Boolean(string='Manual Price Change', copy=False)

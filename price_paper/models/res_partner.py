@@ -123,7 +123,7 @@ class ResPartner(models.Model):
         for partner in res:
             name = partner[1] or ''
             partner_id = self.env['res.partner'].browse(partner[0])
-            if partner_id.customer_code:
+            if partner_id.customer_code and partner_id.customer and partner_id.type in('invoice','contact') and not partner_id.user_ids: 
                 name = '['+partner_id.customer_code+']'+name
             result.append((partner[0], name))
         return result

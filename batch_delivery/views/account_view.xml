@@ -114,5 +114,15 @@
           groups="account.group_account_user"
           sequence="2"/>
 
+         <record id="view_account_invoice_filter_batch_delivery_ready_to_pay" model="ir.ui.view">
+            <field name="name">account.invoice.ready.to.pay</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='paid']" position="before">
+                    <filter name="ready_to_pay" string="Ready To Pay" domain="[('has_outstanding', '=', True)]" context="{'customer_iii': True}"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

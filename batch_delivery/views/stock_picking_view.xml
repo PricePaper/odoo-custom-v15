@@ -239,6 +239,10 @@
                     <attribute name="attrs">{'readonly': [('is_transit', '=', True)]}</attribute>
                 </xpath>
 
+                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='reserved_availability']" position="after">
+                    <button name="action_show_reset_window" string="Reset Reserve Qty" type="object" icon="fa-refresh text-success"/>
+                </xpath>
+
                  <xpath expr="//notebook/page[1]" position="before">
                     <xpath expr="//notebook/page[2]" position="move"/>
                 </xpath>

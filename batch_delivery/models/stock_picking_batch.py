@@ -412,6 +412,15 @@ class CashCollectedLines(models.Model):
     discount = fields.Float(string='Discount(%)')
     sequence = fields.Integer(string='Order')
     available_payment_method_ids = fields.One2many(comodel_name='account.payment', compute='_compute_available_payment_method_ids')
+    billable_partner_ids = fields.Many2many('res.partner', compute='_compute_billable_partner_ids')
+
+    @api.depends('batch_id')
+    def _compute_billable_partner_ids(self):
+        for rec in self:
+            partner = self.env['res.partner']
+            for sale in rec.batch_id.picking_ids.mapped('sale_id'):
+                partner |= sale.partner_id | sale.partner_invoice_id
+            rec.billable_partner_ids = partner
 
     @api.depends('journal_id')
     def _compute_available_payment_method_ids(self):

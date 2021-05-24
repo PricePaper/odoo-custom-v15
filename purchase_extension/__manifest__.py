@@ -25,6 +25,7 @@ Custom module implemented for Purchase extension.
         'views/sale_order.xml',
         'views/product_view.xml',
         'views/purchase_requisition_views.xml',
+        'views/purchase_report_template.xml'
     ],
     'depends': ['purchase_requisition', 'stock_orderpoint_enhancements'],
     'installable': True,

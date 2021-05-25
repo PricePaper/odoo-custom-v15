@@ -2,7 +2,8 @@
 
 from odoo import fields, models, api, _
 from odoo.exceptions import UserError
-
+from pprint import pprint
+import json
 
 class AccountInvoice(models.Model):
     _inherit = "account.invoice"
@@ -10,6 +11,13 @@ class AccountInvoice(models.Model):
     picking_ids = fields.Many2many('stock.picking', compute='_compute_picking_ids', string='Pickings')
     wrtoff_discount = fields.Float(string='Discount')
     has_outstanding = fields.Boolean(compute='_get_outstanding_info_JSON', groups="account.group_account_invoice", search='_search_has_outstanding')
+    out_standing_credit = fields.Float(compute='_compute_out_standing_credit', string="Out Standing")
+
+
+    def _compute_out_standing_credit(self):
+        for rec in self:
+            info = json.loads(rec.outstanding_credits_debits_widget)
+            rec.out_standing_credit = sum(list(map(lambda r: r['amount'], info['content']))) if info else 0
 
     @api.multi
     def _search_has_outstanding(self, operator, value):

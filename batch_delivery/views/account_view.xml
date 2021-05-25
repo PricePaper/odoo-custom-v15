@@ -124,5 +124,18 @@
                 </xpath>
             </field>
         </record>
+
+        <record id="invoice_tree_with_onboarding_inherit_ppt" model="ir.ui.view">
+            <field name="name">invoice.tree.with.onboarding.inherit.ppt</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_tree_with_onboarding"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='residual_signed']" position="after">
+                    <field name="out_standing_credit"/>
+                </xpath>
+
+            </field>
+        </record>
     </data>
 </odoo>

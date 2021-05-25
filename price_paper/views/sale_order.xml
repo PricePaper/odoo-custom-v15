@@ -220,7 +220,7 @@
                         <group>
                             <group>
                                 <field name="product_onhand" readonly='1'
-                                       attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                                       attrs="{'invisible': [('display_type', '!=', False)]}" help='Qty on hand'/>
                                 <field name="note" attrs="{'invisible': [('display_type', '!=', False)]}"/>
                                 <field name="note_type" widget='radio'
                                        attrs="{'invisible': [('display_type', '!=', False)]}"/>

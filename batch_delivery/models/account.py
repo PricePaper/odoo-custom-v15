@@ -37,4 +37,28 @@ class AccountBatchPayment(models.Model):
         for rec in self:
             rec.batch_picking_id = rec.payment_ids.mapped('batch_id')
 
+
+class AccountPayment(models.Model):
+    _inherit = 'account.payment'
+
+
+    @api.onchange('partner_type')
+    def _onchange_partner_type(self):
+        self.ensure_one()
+        res = super(AccountPayment, self)._onchange_partner_type()
+        # Set partner_id domain
+        if res and res.get('domain'):
+            if res.get('domain').get('partner_id'):
+                res['domain']['partner_id'].append(('type', 'in', ('invoice', 'contact')))
+            else:
+                res['domain']['partner_id'] = [('type', 'in', ('invoice', 'contact'))]
+
+        else:
+            res = {'domain': {'partner_id': [('type', 'in', ('invoice', 'contact'))]}}
+        return res
+
+AccountPayment()
+
+
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

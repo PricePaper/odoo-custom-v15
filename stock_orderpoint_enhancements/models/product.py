@@ -175,10 +175,10 @@ class ProductProduct(models.Model):
         Converts uom_qty into base uom_qty
         """
         res = []
-        # start_date = result and result[0] and result[0][0]
-        # start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
-        start_date = datetime.datetime.strptime(from_date, "%Y-%m-%d").date()
-
+        start_date = result and result[0] and result[0][0]
+        start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+        # start_date = datetime.datetime.strptime(from_date, "%Y-%m-%d").date()
+        
         def _get_next_business_day(date):
 
             exclude_days = (4, 5)

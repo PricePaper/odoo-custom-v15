@@ -8,6 +8,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
 from odoo.tools import float_round
+from odoo.exceptions import ValidationError
 
 
 def urlplus(url, params):
@@ -53,6 +54,12 @@ class StockPickingBatch(models.Model):
     def _compute_invoice_ids(self):
         for rec in self:
             rec.invoice_ids = rec.picking_ids.mapped('invoice_ids')
+
+    @api.constrains('cheque_amount', 'cash_amount', 'actual_returned')
+    def check_total_amount(self):
+
+        if self.cheque_amount + self.cash_amount != self.actual_returned:
+            raise ValidationError(_('Total amount and sum of Cash and Check does not match'))
 
     def _compute_to_invoice_state(self):
         for rec in self:

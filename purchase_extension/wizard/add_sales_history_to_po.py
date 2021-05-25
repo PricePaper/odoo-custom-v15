@@ -23,6 +23,7 @@ class AddSaleHistoryPoLine(models.TransientModel):
     op_min = fields.Float(string='Orderpoint Min', help='Order Point Minimum Quantity', compute="_compute_op_min_max_days")
     forecast_days_min = fields.Float(string='Forecast Days Min', help="Forecast days minimum", compute="_compute_op_min_max_days")
     forecast_days_max = fields.Float(string='Forecast Days Max', help="Forecast days maximum", compute="_compute_op_min_max_days")
+    product_ip_qty = fields.Float(compute='_calc_qty_available', string='IP Qty')
 
     month1 = fields.Float(string='Mnt1')
     month2 = fields.Float(string='Mnt2')
@@ -89,7 +90,9 @@ class AddSaleHistoryPoLine(models.TransientModel):
         for line in self:
             product_purchase_unit = line.product_id.uom_po_id
             changed_uom_qty = line.product_id.uom_id._compute_quantity(line.product_id.qty_available, product_purchase_unit)
+            changed_incoming_qty = line.product_id.uom_id._compute_quantity(line.product_id.incoming_qty, product_purchase_unit)
             line.product_oh_qty = changed_uom_qty
+            line.product_ip_qty = changed_incoming_qty
 
 
     @api.model

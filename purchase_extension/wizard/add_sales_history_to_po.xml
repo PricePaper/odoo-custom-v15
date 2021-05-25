@@ -40,6 +40,7 @@
                                 <field name="product_uom" readonly='1' tabindex="0" widget="selection"
                                        help="Unit of measure"/>
                                 <field name="product_oh_qty" readonly='1' tabindex="0" help="On hand quantity"/>
+                                <field name="product_ip_qty" readonly='1' tabindex="0" help="In Purchase quantity"/>
                                 <field name="product_price" readonly='1' tabindex="0"
                                        help="Price for which this product is ordered from this vendor"/>
                                 <field name="is_not_lowest_price" invisible="1"/>

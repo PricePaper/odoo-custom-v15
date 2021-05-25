@@ -36,12 +36,16 @@
             <tbody>
                 <tr>
                     <th style="width:135px;text-align:left">Product</th>
-                    <th style="width: 85px;text-align:center">Return Reason</th>
+                    <th style="width: 85px;text-align:center">Reason</th>
+                    <th style="width: 85px;text-align:center">Ordered</th>
+                    <th style="width: 85px;text-align:center">Shipped</th>
                 </tr>
                 % for row in object.return_line_ids:
                     <tr>
                         <td> ${row.product_id.display_name}</td>
                         <td> ${row.reason_id.name}</td>
+                        <td style="text-align:center"> ${row.ordered_qty}</td>
+                        <td style="text-align:center"> ${row.delivered_qty}</td>
                     </tr>
                 %endfor
             </tbody>

@@ -174,7 +174,7 @@ class AddPurchaseHistorySO(models.TransientModel):
                     'date_order': line.order_id.confirmation_date,
                     'order_line': line.order_line_id.id,
                     'qty_to_be': 0.0,
-                    'qty_available': line.product_id.qty_available,
+                    'qty_available': line.product_id.qty_available - line.product_id.outgoing_qty,
                     'price_unit': price,
                     'old_price': line.order_line_id.price_unit,
                     'product_uom_qty': line.order_line_id.product_uom_qty,

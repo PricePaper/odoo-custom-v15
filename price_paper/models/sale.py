@@ -809,8 +809,8 @@ class SaleOrderLine(models.Model):
     profit_margin = fields.Monetary(compute='calculate_profit_margin', string="Profit")
     price_from = fields.Many2one('customer.product.price', string='Product Pricelist')
     last_sale = fields.Text(compute='compute_last_sale_detail', string='Last sale details', store=False)
-    product_onhand = fields.Float(string='Product Qty Available', related='product_id.qty_available',
-                                  digits=dp.get_precision('Product Unit of Measure'))
+    product_onhand = fields.Float(string='Product Qty Available', compute='compute_available_qty',
+                                  digits=dp.get_precision('Product Unit of Measure'), store=False)
     new_product = fields.Boolean(string='New Product', copy=False)
     manual_price = fields.Boolean(string='Manual Price Change', copy=False)
     is_last = fields.Boolean(string='Is last Purchase', copy=False)
@@ -847,6 +847,11 @@ class SaleOrderLine(models.Model):
     def onchange_storage_contract_line_id(self):
         if self.storage_contract_line_id:
             self.product_id = self.storage_contract_line_id.product_id
+
+    @api.depends('product_id')
+    def compute_available_qty(self):
+        for line in self:
+            line.product_onhand = line.product_id.qty_available - line.product_id.outgoing_qty
 
     @api.depends('product_uom_qty', 'storage_contract_line_ids')
     def _compute_storage_delivered_qty(self):

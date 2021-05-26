@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
+import re
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
 
 class AccountBankStatementLine(models.Model):
     _inherit = "account.bank.statement.line"
@@ -11,8 +11,8 @@ class AccountBankStatementLine(models.Model):
         statement_line = counterpart_moves.mapped('line_ids').mapped('statement_line_id')
 
         for stmt in statement_line:
-            if stmt.name == 'DEPOSIT_RETURN':
-                cheque_no = stmt.ref and stmt.ref.split('CK#:')
+            if 'DEPOSITED ITEM RETURNED' in stmt.name:
+                cheque_no = stmt.name and stmt.name.split('CK#:')
                 if cheque_no and len(cheque_no) > 1:
                     cheque_no = cheque_no[1].split(' ', 1)[0]
                     cheque_no_strip = cheque_no.lstrip('0')

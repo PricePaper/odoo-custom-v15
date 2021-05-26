@@ -18,8 +18,9 @@ class StockPickingReturn(models.Model):
         record = super(StockPickingReturn, self).create(vals)
         template = self.env.ref('batch_delivery.stock_return_notification_mail')
         email_context = {}
-        if record.sales_person_ids:
-            email_context['partner_to'] = ','.join(map(str, record.sales_person_ids.ids))
+        mail_to = record.sales_person_ids.ids + record.picking_id.message_partner_ids.filtered(lambda r: r.id not in [1, 2]).ids
+        if mail_to:
+            email_context['partner_to'] = ','.join(map(str, set(mail_to)))
             email_context['return_date'] = fields.Date.today()
             template.with_context(email_context).send_mail(
                 record.id, force_send=True, notif_layout="mail.mail_notification_light")

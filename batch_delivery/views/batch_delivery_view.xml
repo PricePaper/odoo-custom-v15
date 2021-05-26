@@ -30,10 +30,10 @@
                     <button name="print_invoice_report"
                             string="Print Invoices" type="object"
                             class="oe_highlight"
-                            attrs="{'invisible': [('invoice_ids', '=', [])]}"/>
+                            attrs="{'invisible': ['|', ('invoice_ids', '=', []), ('state', 'in', ('draft', 'cancel'))]}"/>
                     <button name="print_driver_spreadsheet" string="Print Drivers Document" type="object"
                             class="oe_highlight"
-                            attrs="{'invisible': [('invoice_ids', '=', [])]}"/>
+                            attrs="{'invisible': ['|', ('invoice_ids', '=', []), ('state', 'in', ('draft', 'cancel'))]}"/>
                 </button>
 
                 <button name="print_picking" position="attributes">

@@ -212,7 +212,22 @@ class StockMove(models.Model):
                     move.quantity_done = move.reserved_availability
 
 
+    def action_cancel_move(self):
+        self._action_cancel()
+        return True
 
+    def action_cancel_popup(self):
+        return {
+            'name': 'Cancel Move',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'stock.move',
+            'res_id': self.id,
+            'view_id': self.env.ref('batch_delivery.view_stock_move_cancel_window').id,
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+        }
+    
     @api.multi
     def action_show_reset_window(self):
         self.ensure_one()

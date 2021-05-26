@@ -227,6 +227,7 @@ class StockMove(models.Model):
             'type': 'ir.actions.act_window',
             'target': 'new',
         }
+    
     @api.multi
     def action_show_reset_window(self):
         self.ensure_one()

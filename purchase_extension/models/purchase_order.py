@@ -87,12 +87,20 @@ class PurchaseOrder(models.Model):
         result_list = []
         all_supplier_info = self.env['product.supplierinfo'].search([('name', '=', self.partner_id.id)])
         all_vendor_products = []
+        existing_products = []
+        if self.order_line:
+            prdts = self.order_line.mapped('product_id')
+            existing_products = prdts and prdts.ids or []
         for rec in all_supplier_info:
             if rec.product_id:
+                if rec.product_id.id in existing_products:
+                    continue
                 all_vendor_products.append(rec.product_id.id)
             else:
                 prod_ids = rec.product_tmpl_id.product_variant_ids and rec.product_tmpl_id.product_variant_ids.ids or []
                 for prod in prod_ids:
+                    if prod in existing_products:
+                        continue
                     all_vendor_products.append(prod)
 
         product_ids = tuple(all_vendor_products) if len(all_vendor_products) > 1 else all_vendor_products and \

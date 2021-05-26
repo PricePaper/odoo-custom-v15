@@ -206,6 +206,9 @@
                 <xpath expr="//form/sheet/notebook/page[2]/field[@name='move_ids_without_package']/tree/field[@name='location_id']" position="replace">
                     <field name="location_id" attrs="{'column_invisible': [('parent.picking_type_code', '=', 'incoming')]}"/>
                 </xpath>
+                 <xpath expr="//form/sheet/notebook/page[2]/field[@name='move_ids_without_package']/tree/button[@name='action_show_details']" position="before">
+                    <button name="action_cancel_popup" string="Cancel" type="object" icon="fa-times-circle text-danger" attrs="{'invisible': ['|', ('state', 'in', ['cancel', 'done']), ('parent.picking_type_code', '=', 'outgoing')]}" options='{"warn": true}'/>
+                </xpath>
                  <xpath expr="//form/sheet/notebook/page[2]/field[@name='move_ids_without_package']/tree/field[@name='location_dest_id']" position="replace">
                      <field name="location_dest_id" attrs="{'column_invisible': [('parent.picking_type_code', '=', 'outgoing')]}" readonly="1"/>
                  </xpath>
@@ -240,7 +243,7 @@
                 </xpath>
 
                 <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='reserved_availability']" position="after">
-                    <button name="action_show_reset_window" string="Reset Reserve Qty" type="object" icon="fa-refresh text-success"/>
+                    <button name="action_show_reset_window" string="Reset Reserve Qty" type="object" icon="fa-refresh text-success" attrs="{'column_invisible': [('parent.picking_type_code', '=', 'incoming')]}"/>
                 </xpath>
 
                  <xpath expr="//notebook/page[1]" position="before">

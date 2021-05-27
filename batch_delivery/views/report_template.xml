@@ -146,7 +146,7 @@
                 file="batch_delivery.report_batch_picking_active"
                 name="batch_delivery.report_batch_picking_active"
                 paperformat="paperformat_batch_picking_ticket"
-                print_report_name="object.batch_id and 'Pick - %s - %s' % (object.batch_id.truck_driver_id and  object.batch_id.truck_driver_id.name or '', object.batch_id.date) or ('Pick - %s - %s' % (object.partner_id and object.partner_id.name or '',object.name))"
+                print_report_name="object.batch_id and 'Pick - %s - %s' % (object.batch_id.truck_driver_id and  object.batch_id.truck_driver_id.name or '', object.batch_id.date) or ('Pick - %s - %s' % (object.partner_id and object.partner_id.name or '',object.purchase_id and object.name + '-' +object.purchase_id.name or object.name))"
         />
 
         <report

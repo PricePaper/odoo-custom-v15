@@ -331,6 +331,7 @@
                                         <field name="communication"/>
                                     </group>
                                     <group>
+                                         <field name="invoice_id"/>
                                          <field name="amount"/>
                                          <field name="discount"/>
                                     </group>

@@ -9,7 +9,7 @@ class AccountInvoice(models.Model):
     _inherit = "account.invoice"
 
     picking_ids = fields.Many2many('stock.picking', compute='_compute_picking_ids', string='Pickings')
-    wrtoff_discount = fields.Float(string='Discount')
+    wrtoff_discount = fields.Float(string='Discount($)')
     has_outstanding = fields.Boolean(compute='_get_outstanding_info_JSON', groups="account.group_account_invoice", search='_search_has_outstanding')
     out_standing_credit = fields.Float(compute='_compute_out_standing_credit', string="Out Standing")
 
@@ -130,7 +130,7 @@ class AccountInvoice(models.Model):
         if not wrtf_account:
             raise UserError(_('Please set a discount account in company.'))
 
-        discount = self.amount_total * (self.wrtoff_discount / 100)
+        discount = self.wrtoff_discount
         amobj = self.env['account.move'].create({
             'company_id': self.company_id.id,
             'date': fields.Date.today(),

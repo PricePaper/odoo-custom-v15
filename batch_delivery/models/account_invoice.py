@@ -12,6 +12,7 @@ class AccountInvoice(models.Model):
     wrtoff_discount = fields.Float(string='Discount($)')
     has_outstanding = fields.Boolean(compute='_get_outstanding_info_JSON', groups="account.group_account_invoice", search='_search_has_outstanding')
     out_standing_credit = fields.Float(compute='_compute_out_standing_credit', string="Out Standing")
+    discount_type = fields.Selection([('percentage', 'Discount(%)'), ('amount', 'Discount($)')], default='percentage')
 
 
     def _compute_out_standing_credit(self):
@@ -107,7 +108,7 @@ class AccountInvoice(models.Model):
 
     def action_show_discount_popup(self):
         return {
-            'name': 'Discount',
+            'name': 'Customer Discount',
             'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'account.invoice',
@@ -130,7 +131,7 @@ class AccountInvoice(models.Model):
         if not wrtf_account:
             raise UserError(_('Please set a discount account in company.'))
 
-        discount = self.wrtoff_discount
+        discount = self.wrtoff_discount if self.discount_type == 'amount' else self.amount_total * (self.wrtoff_discount / 100)
         amobj = self.env['account.move'].create({
             'company_id': self.company_id.id,
             'date': fields.Date.today(),

@@ -525,23 +525,27 @@ class SaleOrder(models.Model):
         if not self.deliver_by:
             self.deliver_by = date.today() + timedelta(days=1)
 
-        if self.release_date and self.release_date > date.today() + timedelta(days=+6):
-            raise ValidationError(_('Earliest Delivery Date is greater than 1 week'))
-
         if self.release_date and self.release_date < date.today():
             raise ValidationError(_('Earliest Delivery Date should be greater than Current Date'))
+
+
+    @api.onchange('release_date')
+    def onchange_release_date_warning(self):
+        if self.release_date and self.release_date > date.today() + timedelta(days=+6):
+            msg = {'warning': {'title':_('Warning'), 'message':_('Earliest Delivery Date is greater than 1 week')}}
+            return msg
 
     def compute_credit_warning(self):
 
         for order in self:
             debit_due = self.env['account.move.line'].search(
-                [('partner_id', '=', order.partner_id.id), ('full_reconcile_id', '=', False), ('debit', '!=', False),
+                [('partner_id', '=', order.partner_id.id), ('full_reconcile_id', '=', False), ('amount_residual', '>', 0),
                  ('date_maturity', '<', date.today()), ('invoice_id', '!=', False)], order='date_maturity desc')
             msg = ''
             msg1 = ''
             if debit_due:
                 for rec in debit_due.mapped('invoice_id'):
-                    if rec.type == "out_invoice":
+                    if rec.type == "out_invoice" and rec.state not in ('paid', 'cancel'):
                         term_line = rec.payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
                         date_due = rec.date_due
                         if term_line and term_line.grace_period:

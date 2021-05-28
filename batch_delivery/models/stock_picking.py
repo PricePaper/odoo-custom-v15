@@ -58,6 +58,25 @@ class StockPicking(models.Model):
         'stock.picking.batch', string='Batch Picking', oldname="wave_id",
         states={'done': [('readonly', True)], 'cancel': [('readonly', True)]},
         help='Batch associated to this picking', copy=False, track_visibility='onchange')
+    location_id = fields.Many2one(
+        'stock.location', "Source Location",
+        default=lambda self: self.env['stock.picking.type'].browse(self._context.get('default_picking_type_id')).default_location_src_id,
+        readonly=True, required=False,
+        states={'draft': [('readonly', False)]})
+    location_dest_id = fields.Many2one(
+        'stock.location', "Destination Location",
+        default=lambda self: self.env['stock.picking.type'].browse(self._context.get('default_picking_type_id')).default_location_dest_id,
+        readonly=True, required=False,
+        states={'draft': [('readonly', False)]})
+    is_internal_transfer = fields.Boolean(string='Internal transfer')
+
+    @api.model
+    def create(self, vals):
+        if vals.get('is_internal_transfer'):
+            if vals.get('location_dest_id'):
+                vals['location_dest_id'] = False
+        res = super(StockPicking, self).create(vals)
+        return res
 
     @api.one
     @api.depends('move_lines.sale_line_id.order_id.release_date')
@@ -191,6 +210,20 @@ class StockPicking(models.Model):
                         line.move_id.sale_line_id.qty_delivered = line.move_id.sale_line_id.pre_delivered_qty + line.move_id.reserved_availability
                 if pick.batch_id:
                     pick.sale_id.write({'delivery_date': pick.batch_id.date})
+    @api.multi
+    def action_transfer_complete(self):
+        for pick in self:
+            pick.action_confirm()
+            pick.action_assign()
+
+    @api.model
+    def default_get(self, default_fields):
+        result = super(StockPicking, self).default_get(default_fields)
+        if self._context.get('from_internal_transfer_action'):
+            picking_type = self.env['stock.picking.type'].search([('code', '=', 'internal'), ('name', '=', 'Internal Transfers')], limit=1)
+            if picking_type:
+                result['picking_type_id'] = picking_type.id
+        return result
 
     @api.model
     def _read_group_route_ids(self, routes, domain, order):

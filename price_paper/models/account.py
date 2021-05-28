@@ -286,63 +286,63 @@ class account_abstract_payment(models.AbstractModel):
                 pay.writeoff_account_id = company.purchase_writeoff_account_id if pay.payment_type == 'outbound' else company.discount_account_id
 
 
-    @api.multi
-    def _compute_payment_amount(self, invoices=None, currency=None):
-        # Get the payment invoices
-        if not invoices:
-            invoices = self.mapped('invoice_ids')
-
-        # Get the payment currency
-        payment_currency = currency
-        if not payment_currency:
-            payment_currency = self.currency_id or self.journal_id.currency_id or self.journal_id.company_id.currency_id or invoices and \
-                               invoices[0].currency_id
-
-        # Avoid currency rounding issues by summing the amounts according to the company_currency_id before
-        invoice_datas = invoices.read_group(
-            [('id', 'in', invoices.ids)],
-            ['currency_id', 'type', 'residual_signed', 'residual_company_signed'],
-            ['currency_id', 'type'], lazy=False)
-
-        total = 0.0
-
-        for invoice_data in invoice_datas:
-            sign = MAP_INVOICE_TYPE_PAYMENT_SIGN[invoice_data['type']]
-            amount_total = sign * invoice_data['residual_signed']
-            amount_total_company_signed = sign * invoice_data['residual_company_signed']
-            invoice_currency = self.env['res.currency'].browse(invoice_data['currency_id'][0])
-
-            if payment_currency == invoice_currency:
-                total += amount_total
-            else:
-                amount_total_company_signed = self.journal_id.company_id.currency_id._convert(
-                    amount_total_company_signed,
-                    payment_currency,
-                    self.env.user.company_id,
-                    self.payment_date or fields.Date.today()
-                )
-                total += amount_total_company_signed
-
-        if not self._context.get('exclude_discount', False):
-            for inv in self.invoice_ids:
-                days = (inv.date_invoice - fields.Date.context_today(inv)).days
-                if payment_currency == inv.currency_id:
-                    invoice_amount = inv.amount_total
-                else:
-                    invoice_amount = self.journal_id.company_id.currency_id._convert(
-                        inv.amount_total,
-                        payment_currency,
-                        self.env.user.company_id,
-                        self.payment_date or fields.Date.today()
-                    )
-
-                if abs(days) < inv.payment_term_id.due_days:
-                    discount = inv.payment_term_id.discount_per
-                    if inv.type == 'out_invoice':
-                        total = total - (invoice_amount * (discount / 100))
-                    elif inv.type == 'in_invoice':
-                        total = total + (invoice_amount * (discount / 100))
-        return total
+    # @api.multi
+    # def _compute_payment_amount(self, invoices=None, currency=None):
+    #     # Get the payment invoices
+    #     if not invoices:
+    #         invoices = self.mapped('invoice_ids')
+    #
+    #     # Get the payment currency
+    #     payment_currency = currency
+    #     if not payment_currency:
+    #         payment_currency = self.currency_id or self.journal_id.currency_id or self.journal_id.company_id.currency_id or invoices and \
+    #                            invoices[0].currency_id
+    #
+    #     # Avoid currency rounding issues by summing the amounts according to the company_currency_id before
+    #     invoice_datas = invoices.read_group(
+    #         [('id', 'in', invoices.ids)],
+    #         ['currency_id', 'type', 'residual_signed', 'residual_company_signed'],
+    #         ['currency_id', 'type'], lazy=False)
+    #
+    #     total = 0.0
+    #
+    #     for invoice_data in invoice_datas:
+    #         sign = MAP_INVOICE_TYPE_PAYMENT_SIGN[invoice_data['type']]
+    #         amount_total = sign * invoice_data['residual_signed']
+    #         amount_total_company_signed = sign * invoice_data['residual_company_signed']
+    #         invoice_currency = self.env['res.currency'].browse(invoice_data['currency_id'][0])
+    #
+    #         if payment_currency == invoice_currency:
+    #             total += amount_total
+    #         else:
+    #             amount_total_company_signed = self.journal_id.company_id.currency_id._convert(
+    #                 amount_total_company_signed,
+    #                 payment_currency,
+    #                 self.env.user.company_id,
+    #                 self.payment_date or fields.Date.today()
+    #             )
+    #             total += amount_total_company_signed
+    #
+    #     if not self._context.get('exclude_discount', False):
+    #         for inv in self.invoice_ids:
+    #             days = (inv.date_invoice - fields.Date.context_today(inv)).days
+    #             if payment_currency == inv.currency_id:
+    #                 invoice_amount = inv.amount_total
+    #             else:
+    #                 invoice_amount = self.journal_id.company_id.currency_id._convert(
+    #                     inv.amount_total,
+    #                     payment_currency,
+    #                     self.env.user.company_id,
+    #                     self.payment_date or fields.Date.today()
+    #                 )
+    #
+    #             if abs(days) < inv.payment_term_id.due_days:
+    #                 discount = inv.payment_term_id.discount_per
+    #                 if inv.type == 'out_invoice':
+    #                     total = total - (invoice_amount * (discount / 100))
+    #                 elif inv.type == 'in_invoice':
+    #                     total = total + (invoice_amount * (discount / 100))
+    #     return total
 
 account_abstract_payment()
 

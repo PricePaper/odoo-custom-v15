@@ -22,6 +22,7 @@ class StockMoveLine(models.Model):
                     lambda rec: rec.invoice_id.state != 'cancel' and line.move_id in rec.stock_move_ids)
                 if invoice_lines:
                     invoice_lines.write({'quantity': vals.get('qty_done')})
+                    invoice_lines.mapped('invoice_id').compute_taxes()
                 sale_line.qty_delivered = sale_line.pre_delivered_qty + vals.get('qty_done')
 
             if 'picking_id' in vals:

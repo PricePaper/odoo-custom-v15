@@ -18,11 +18,37 @@ class StockMove(models.Model):
     qty_available = fields.Float(String="Available Quantity", compute='_compute_qty_available')
     partner_id = fields.Many2one('res.partner', compute='_compute_partner_id', string="Partner", readonly=True)
     reason_id = fields.Many2one('stock.picking.return.reason', string='Reason  For Return (Stock)')
+    qty_to_transfer = fields.Float(String="Qty in Location", compute='_compute_qty_to_transfer', store=False)
 
     @api.depends('sale_line_id.order_id.partner_shipping_id')
     def _compute_partner_id(self):
         for move in self:
             move.partner_id = move.sale_line_id.order_id.partner_shipping_id
+
+    @api.depends('product_id', 'picking_id.location_id')
+    def _compute_qty_to_transfer(self):
+        quant = self.env['stock.quant']
+        for move in self:
+            if move.product_id and move.picking_id and move.picking_id.location_id:
+                quant = quant.search([('product_id', '=', move.product_id.id), ('location_id', '=', move.picking_id.location_id.id)], limit=1)
+                if quant:
+                    qty = quant.quantity - quant.reserved_quantity
+                    move.qty_to_transfer = move.product_id.uom_id._compute_quantity(qty, move.product_uom, rounding_method='HALF-UP')
+                else:
+                    move.qty_to_transfer = 0
+            else:
+                move.qty_to_transfer = 0
+
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        res = super(StockMove, self).onchange_product_id()
+        if self.picking_id and self.picking_id.is_internal_transfer:
+            if self.product_id:
+                product_loc_id = self.product_id.property_stock_location.id or self.product_id.categ_id.property_stock_location.id or ''
+                self.location_dest_id = product_loc_id
+                self.location_id = self.picking_id.location_id and self.picking_id.location_id or False
+            else:
+                self.location_dest_id = False
 
     def _compute_qty_available(self):
         quant = self.env['stock.quant']
@@ -227,7 +253,7 @@ class StockMove(models.Model):
             'type': 'ir.actions.act_window',
             'target': 'new',
         }
-    
+
     @api.multi
     def action_show_reset_window(self):
         self.ensure_one()

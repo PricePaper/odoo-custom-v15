@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="ed_invoice_form" model="ir.ui.view">
+            <field name="name">ed.account.invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <field name="date_due" position="after">
+                    <field name="discount_date" readonly="1"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="ed_invoice_supplier_form" model="ir.ui.view">
+            <field name="name">ed.account.invoice.supplier.form</field>
+            <field name="model">account.invoice</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="account.invoice_supplier_form"/>
+            <field name="arch" type="xml">
+                <field name="payment_term_id" position="attributes">
+                    <attribute name="attrs"></attribute>
+                </field>
+            </field>
+        </record>
+
+
+        <record id="ed_account_invoice_filter2" model="ir.ui.view">
+            <field name="name">ed.account.invoice.filter</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+            <field name="arch" type="xml">
+                <filter name="late" position="after">
+                    <filter name="discountable_today" string='Discountable Today'
+                            domain="['&amp;',('discount_date','&gt;=',time.strftime('%Y-%m-%d')),('state','not in',['draft','cancel','paid'])]"/>
+                    <filter name="discountable_this_week" string='Discountable This Week' domain=
+                            "['&amp;','&amp;',('discount_date','&gt;=',time.strftime('%Y-%m-%d')),('discount_date','&lt;=',(context_today()+relativedelta(weeks=0, weekday=-3)).strftime('%Y-%m-%d')),('state','not in',['draft','cancel','paid'])]"/>
+                    <filter name="discountable_this_month" string='Discountable This Month' domain=
+                            "['&amp;','&amp;',('discount_date','&gt;=',time.strftime('%Y-%m-%d')),('discount_date','&lt;=',(context_today()+relativedelta(day=31)).strftime('%Y-%m-%d')),('state','not in',['draft','cancel','paid'])]"/>
+                </filter>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

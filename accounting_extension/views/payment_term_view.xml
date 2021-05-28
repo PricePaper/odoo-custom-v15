@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="accounting_extension_view_payment_term_form_inherited" model="ir.ui.view">
+            <field name="name">Payment Term Form</field>
+            <field name="model">account.payment.term</field>
+            <field name="inherit_id" ref="purchase_extension.account_paymnet_term_inherit_price_paper"/>
+            <field name="arch" type="xml">
+                <field name='order_type' position="after">
+                    <field name="is_discount" widget="boolean_toggle"/>
+                </field>
+                <xpath expr="//field[@name='due_days']" position="attributes">
+                    <attribute name="attrs">{'invisible':['|', ('is_discount', '=', False), ('order_type', '=', False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='discount_per']" position="attributes">
+                    <attribute name="attrs">{'invisible':['|', ('is_discount', '=', False), ('order_type', '=', False)]}</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
+ 

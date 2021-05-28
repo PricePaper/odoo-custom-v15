@@ -110,7 +110,7 @@
                                         <table class="table table-sm o_main_table">
                                             <tbody>
                                                 <t t-set="index" t-value="1"/>
-                                                <tr t-foreach="ob.move_ids_without_package.sorted(key=lambda r: r.location_id.display_name.split('/')[-1])" t-as="move"
+                                                <tr t-foreach="ob.move_ids_without_package.filtered(lambda r: r.state != 'cancel').sorted(key=lambda r: r.location_id.display_name.split('/')[-1])" t-as="move"
                                                     style="font-family: Roboto, Odoo Unicode Support Noto, sans-serif;font-size: 18px;">
                                                     <t t-set='seller' t-value="move.product_id.seller_ids.filtered(lambda s: s.name.id == ob.partner_id.id)"/>
                                                     <td>

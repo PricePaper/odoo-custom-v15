@@ -318,7 +318,7 @@ action = records.env['stock.picking'].validate_multiple_delivery(records)
                                   <field name="picking_type_id" attrs="{'readonly': [('state', '!=', 'draft')]}" domain="[('code', '=', 'internal')]" />
                                   <field name="partner_id" invisible="1"/>
                                   <field name="is_internal_transfer" invisible="1"/>
-                                  <field name="location_id" domain="['|', ('company_id', '=', company_id), ('company_id', '=', False)]" required='1' />
+                                  <field name="location_id" domain="[('usage', '=', 'internal'), '|', ('company_id', '=', company_id), ('company_id', '=', False)]" required='1' />
                                   <field name="location_dest_id" invisible='1' domain="['|', ('company_id', '=', company_id), ('company_id', '=', False)]" />
                                   <field name="backorder_id" readonly="1" attrs="{'invisible': [('backorder_id','=',False)]}"/>
                               </group>

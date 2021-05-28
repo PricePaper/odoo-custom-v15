@@ -535,13 +535,13 @@ class SaleOrder(models.Model):
 
         for order in self:
             debit_due = self.env['account.move.line'].search(
-                [('partner_id', '=', order.partner_id.id), ('full_reconcile_id', '=', False), ('debit', '!=', False),
+                [('partner_id', '=', order.partner_id.id), ('full_reconcile_id', '=', False), ('amount_residual', '>', 0),
                  ('date_maturity', '<', date.today()), ('invoice_id', '!=', False)], order='date_maturity desc')
             msg = ''
             msg1 = ''
             if debit_due:
                 for rec in debit_due.mapped('invoice_id'):
-                    if rec.type == "out_invoice":
+                    if rec.type == "out_invoice" and rec.state not in ('paid', 'cancel'):
                         term_line = rec.payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
                         date_due = rec.date_due
                         if term_line and term_line.grace_period:

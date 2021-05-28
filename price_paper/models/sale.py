@@ -525,11 +525,15 @@ class SaleOrder(models.Model):
         if not self.deliver_by:
             self.deliver_by = date.today() + timedelta(days=1)
 
-        if self.release_date and self.release_date > date.today() + timedelta(days=+6):
-            raise ValidationError(_('Earliest Delivery Date is greater than 1 week'))
-
         if self.release_date and self.release_date < date.today():
             raise ValidationError(_('Earliest Delivery Date should be greater than Current Date'))
+
+
+    @api.onchange('release_date')
+    def onchange_release_date_warning(self):
+        if self.release_date and self.release_date > date.today() + timedelta(days=+6):
+            msg = {'warning': {'title':_('Warning'), 'message':_('Earliest Delivery Date is greater than 1 week')}}
+            return msg
 
     def compute_credit_warning(self):
 

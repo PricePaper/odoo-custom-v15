@@ -96,7 +96,10 @@
                           });
                       </script>
                         <group>
-                            <field name="wrtoff_discount" required="1"/>
+                            <div class="row">
+                                <field name="discount_type" widget="selection_badge" class="col"/>
+                                <field name="wrtoff_discount" required="1"  class="col"/>
+                          </div>
                         </group>
                         <footer class="oe_edit_only">
                             <button string="Confirm" type="object" name="create_discount_writeoff" class="oe_highlight"/>

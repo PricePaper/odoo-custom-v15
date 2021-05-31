@@ -59,12 +59,23 @@ class AccountInvoice(models.Model):
     storage_down_payment = fields.Boolean()
     is_released = fields.Boolean()
     discount_from_batch = fields.Float('WriteOff Discount')
+    invoice_address_id = fields.Many2one('res.partner', string="Billing Address")
 
     def storage_contract_release(self):
         sale_order = self.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
         self.write({'is_released': True})
         sale_order.run_storage()
         sale_order.message_post(body='Sale Order Released by : %s'%self.env.user.name)
+
+    @api.onchange('partner_id', 'company_id')
+    def _onchange_partner_id(self):
+        res = super(AccountInvoice, self)._onchange_partner_id()
+        if self.partner_id:
+            addr = self.partner_id.address_get(['delivery', 'invoice'])
+            self.invoice_address_id = addr['invoice']
+        else:
+             self.invoice_address_id = False
+        return res
 
     @api.multi
     def invoice_validate(self):

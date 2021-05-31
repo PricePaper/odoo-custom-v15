@@ -51,6 +51,7 @@ class SaleOrder(models.Model):
                    ('both_hold', 'Price, Credit Hold'),
                    ('release', 'Order Released')],
         string='Hold Status', default=False, copy=False)
+    invoice_address_id = fields.Many2one('res.partner', string="Billing Address")
 
     @api.depends('partner_id')
     def _compute_show_contract_line(self):
@@ -488,12 +489,25 @@ class SaleOrder(models.Model):
     def onchange_partner_id(self):
         res = super(SaleOrder, self).onchange_partner_id()
         if self.partner_id:
+            addr = self.partner_id.address_get(['delivery', 'invoice'])
+            self.partner_invoice_id = self.partner_id.id
+            self.invoice_address_id = addr['invoice']
             shipping_addr = self.partner_id.child_ids.filtered(
                 lambda rec: rec.type == 'delivery' and rec.default_shipping == True)
             if shipping_addr:
                 self.partner_shipping_id = shipping_addr.id
             else:
                 self.partner_shipping_id = self.partner_id.id
+        else:
+            self.invoice_address_id = False
+        return res
+
+    @api.multi
+    def _prepare_invoice(self):
+        self.ensure_one()
+        res = super(SaleOrder, self)._prepare_invoice()
+        if res:
+            res['invoice_address_id'] = self.invoice_address_id.id
         return res
 
     @api.depends('order_line.profit_margin')

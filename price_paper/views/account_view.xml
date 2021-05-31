@@ -30,6 +30,9 @@
             <field name="type">form</field>
             <field name="inherit_id" ref="account.invoice_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="invoice_address_id"/>
+                </xpath>
                 <xpath expr="//tree[1]" position="attributes">
                     <attribute name="editable"/>
                     <attribute name="decoration-danger">profit_margin&lt;0</attribute>

@@ -30,9 +30,11 @@ class account_abstract_payment(models.AbstractModel):
                     break
             currency = pay.currency_id
 
-            pay.payment_difference = pay.with_context(exclude_discount=True if flag else False)._compute_payment_amount(invoices=pay.invoice_ids, currency=currency) - payment_amount
+            pay.payment_difference = pay.with_context(exclude_discount=True)._compute_payment_amount(invoices=pay.invoice_ids, currency=currency) - payment_amount
             if pay.payment_type in ['inbound', 'outbound'] and flag:
                 pay.writeoff_label = ','.join(pay.invoice_ids.mapped('payment_term_id').mapped('name'))
+            elif pay.payment_difference:
+                pay.writeoff_label = 'Discount'
 
 
     @api.multi
@@ -105,6 +107,16 @@ class AccountRegisterPayment(models.TransientModel):
     discount_total = fields.Float('Total', compute="_get_discount")
     payment_reference = fields.Char('Payment Reference')
 
+    @api.model
+    def _compute_payment_amount(self, invoices=None, currency=None):
+        if not self.payment_lines:
+            return super(AccountRegisterPayment, self)._compute_payment_amount(invoices, currency)
+
+        invoices = invoices or self.invoice_ids
+        amount = 0
+        for line in self.payment_lines.filtered(lambda rec: rec.invoice_id.id in invoices.ids):
+            amount += line.payment_amount
+        return amount
 
     @api.depends("payment_lines.discounted_total", "payment_lines.discount")
     def _get_discount(self):
@@ -352,7 +364,7 @@ class AccountPayment(models.Model):
                 # if all the invoices selected share the same currency, record the payment in that currency too
                 invoice_currency = self.invoice_ids[0].currency_id
             debit, credit, amount_currency, currency_id = aml_obj.with_context(
-                date=self.payment_date).compute_amount_fields(amount, self.currency_id, self.company_id.currency_id)
+                date=self.payment_date)._compute_amount_fields(amount, self.currency_id, self.company_id.currency_id)
 
             move = self.env['account.move'].create(self._get_move_vals())
             # Write line corresponding to invoice payment

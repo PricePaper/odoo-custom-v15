@@ -79,13 +79,13 @@ class StockPicking(models.Model):
         return res
 
     @api.one
-    @api.depends('move_lines.sale_line_id.order_id.release_date', 'move_lines.purchase_line_id.order_id.release_date')
+    @api.depends('move_lines.sale_line_id.order_id.release_date')
     def _compute_scheduled_date(self):
         release_date = []
         if self.move_lines.mapped('sale_line_id').mapped('order_id'):
             release_date = self.move_lines.mapped('sale_line_id').mapped('order_id').mapped('release_date')
-        elif self.move_lines.mapped('purchase_line_id').mapped('order_id'):
-            release_date = self.move_lines.mapped('purchase_line_id').mapped('order_id').mapped('release_date')
+        # elif self.move_lines.mapped('purchase_line_id').mapped('order_id'):
+        #     release_date = self.move_lines.mapped('purchase_line_id').mapped('order_id').mapped('release_date')
         if self.move_type == 'direct':
             if release_date and any(release_date):
                 self.scheduled_date = datetime.combine(min(release_date), datetime.min.time())

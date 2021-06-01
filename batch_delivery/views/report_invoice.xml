@@ -182,8 +182,8 @@
                     <address t-field="o.partner_shipping_id"
                              t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
                 </t>
-                <t t-set="SO" t-value="o.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')"/>
-                <t t-set="driver" t-value="o.picking_ids and o.picking_ids.mapped('batch_id') and o.picking_ids.mapped('batch_id')[-1].truck_driver_id or ''"/>
+<!--                <t t-set="SO" t-value="o.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')"/>-->
+<!--                <t t-set="driver" t-value="o.picking_ids and o.picking_ids.mapped('batch_id') and o.picking_ids.mapped('batch_id')[-1].truck_driver_id or ''"/>-->
 <!--                <t t-set="customer_extra_info">-->
 <!--                    <div t-if="o.partner_id.customer_code" class="mt4">-->
 <!--                        <strong>Partner Code: </strong><span t-field="o.partner_id.customer_code" style="padding-left:10px;"/>-->
@@ -486,9 +486,10 @@
                           t-options='{"widget": "contact", "fields": ["address"], "no_marker": true}'/>
                     <div style="color:grey;font-style: italic;" t-field="company.report_header" name="moto"/>
                 </div>
-                <div class="text-right" style="font-weight: bold;">
+                 <div class="text-right" style="font-weight: bold;">
                     <span>Invoice(DO) Number:</span> <span t-esc="o.move_name if o.partner_id.bill_with_goods else ','.join(o.picking_ids.mapped('name'))" style="padding-left:10px;"/><br/>
-                    <span>Date:</span><span t-field="o.date_invoice" style="padding-left:10px;"/>
+                    <span>Date:</span><span t-field="o.date_invoice" style="padding-left:10px;"/><br/>
+                    <span t-if="o.partner_id.customer_code">Partner Code: </span><span t-field="o.partner_id.customer_code" style="padding-left:10px;" t-if="o.partner_id.customer_code"/>
                 </div>
 
                 <div t-if="company.logo or company.report_header" class="row zero_min_height">
@@ -511,25 +512,25 @@
                     <address t-field="o.partner_shipping_id"
                              t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
                 </t>
-                <t t-set="SO" t-value="o.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')"/>
-                <t t-set="driver" t-value="o.picking_ids and o.picking_ids.mapped('batch_id') and o.picking_ids.mapped('batch_id')[-1].truck_driver_id or ''"/>
-                <t t-set="customer_extra_info">
-                    <div t-if="o.partner_id.customer_code" class="mt4">
-                        <strong>Partner Code: </strong><span t-field="o.partner_id.customer_code" style="padding-left:10px;"/>
-                    </div>
-                     <div t-if="o.partner_shipping_id.phone" class="mt4">
-                         <strong>Contact Phone: </strong><span t-field="o.partner_shipping_id.phone" style="padding-left:10px;"/>
-                    </div>
-                    <div t-if="o.partner_id.vat" class="mt4">
-                        <strong>Resale Number: </strong><span t-field="o.partner_id.vat" style="padding-left:10px;"/>
-                    </div>
-                    <div t-if="SO and SO.carrier_id" class="mt4">
-                        <strong>Shipping Method: </strong><span t-field="SO.carrier_id" style="padding-left:10px;"/>
-                    </div>
-                     <div t-if="driver" class="mt4">
-                       <strong>Driver: </strong><span t-esc="driver.firstname +' '+ (driver.lastname and driver.lastname[0] or '')" style="padding-left:10px;"/>
-                    </div>
-                </t>
+<!--                <t t-set="SO" t-value="o.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')"/>-->
+<!--                <t t-set="driver" t-value="o.picking_ids and o.picking_ids.mapped('batch_id') and o.picking_ids.mapped('batch_id')[-1].truck_driver_id or ''"/>-->
+<!--                <t t-set="customer_extra_info">-->
+<!--                    <div t-if="o.partner_id.customer_code" class="mt4">-->
+<!--                        <strong>Partner Code: </strong><span t-field="o.partner_id.customer_code" style="padding-left:10px;"/>-->
+<!--                    </div>-->
+<!--                     <div t-if="o.partner_shipping_id.phone" class="mt4">-->
+<!--                         <strong>Contact Phone: </strong><span t-field="o.partner_shipping_id.phone" style="padding-left:10px;"/>-->
+<!--                    </div>-->
+<!--                    <div t-if="o.partner_id.vat" class="mt4">-->
+<!--                        <strong>Resale Number: </strong><span t-field="o.partner_id.vat" style="padding-left:10px;"/>-->
+<!--                    </div>-->
+<!--                    <div t-if="SO and SO.carrier_id" class="mt4">-->
+<!--                        <strong>Shipping Method: </strong><span t-field="SO.carrier_id" style="padding-left:10px;"/>-->
+<!--                    </div>-->
+<!--                     <div t-if="driver" class="mt4">-->
+<!--                       <strong>Driver: </strong><span t-esc="driver.firstname +' '+ (driver.lastname and driver.lastname[0] or '')" style="padding-left:10px;"/>-->
+<!--                    </div>-->
+<!--                </t>-->
                 <t t-call="web.address_layout"/>
                 <div class="page">
                     <h2>
@@ -569,7 +570,24 @@
                             <strong>Due Date:</strong>
                             <p class="m-0" t-esc="max(line[0] for line in pterm_list)"/>
                         </div>
-
+                        <div class="col-auto mw-100 mb-2" t-if="o.partner_shipping_id.phone" name="description">
+                            <strong>Contact Phone:</strong>
+                            <p class="m-0" t-field="o.partner_shipping_id.phone"/>
+                        </div>
+                        <div class="col-auto mw-100 mb-2" t-if="o.partner_id.vat" name="description">
+                            <strong>Resale Number:</strong>
+                            <p class="m-0" t-field="o.partner_id.vat"/>
+                        </div>
+                        <t t-set="SO" t-value="o.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')"/>
+                        <t t-set="driver" t-value="o.picking_ids and o.picking_ids.mapped('batch_id') and o.picking_ids.mapped('batch_id')[-1].truck_driver_id or ''"/>
+                        <div class="col-auto mw-100 mb-2" t-if="SO and SO.carrier_id" name="description">
+                            <strong>Shipping Method:</strong>
+                            <p class="m-0" t-field="SO.carrier_id"/>
+                        </div>
+                        <div class="col-auto mw-100 mb-2" t-if="driver" name="description">
+                            <strong>Driver:</strong>
+                            <p class="m-0" t-esc="driver.firstname +' '+ (driver.lastname and driver.lastname[0] or '')" style="padding-left:10px;"/>
+                        </div>
                     </div>
 
                     <t t-set="display_discount" t-value="any([l.discount for l in o.invoice_line_ids])"/>

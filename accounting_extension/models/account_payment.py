@@ -154,6 +154,7 @@ class AccountRegisterPayment(models.TransientModel):
         discounted_total = 0
         flag = False
         invoices = self.env[context.get('active_model')].browse(context.get('active_ids'))
+        res['group_invoices'] = True if len(invoices) > 1 else False
         for invoice in invoices:
             # get discount account from Company
             if any(inv.commercial_partner_id != invoices[0].commercial_partner_id for inv in invoices):

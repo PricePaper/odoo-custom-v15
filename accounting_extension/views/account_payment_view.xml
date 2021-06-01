@@ -29,12 +29,15 @@
                     </group>
                 </xpath>
                 <field name="amount" position="after">
-                    <field name="writeoff_account_id" attrs="{'invisible':[('discount_amount','=',0)]}"/>
                     <field name="discount_total" invisible='1'/>
                 </field>
+                <xpath expr="//form/group/group[3]" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|', ('discount_amount', '!=', 0.0), ('payment_difference', '=', 0.0)]}</attribute>
+                </xpath>
                 <field name="communication" position="after">
                     <field name="payment_reference"/>
                     <field name="discount_amount" attrs="{'invisible':[('discount_amount','=',0)]}"/>
+                    <field name="writeoff_account_id" attrs="{'invisible':[('discount_amount','=',0)]}"/>
                 </field>
             </field>
         </record>

@@ -882,7 +882,7 @@
         </template>
 
         <template id="report_ppt_invoice_document_with_payments_quick_sale" inherit_id="batch_delivery.ppt_custom_invoice_template_standard" primary="True">
-            <xpath expr="//div[2]/t[7]/div[5]" position="replace"/>
+<!--            <xpath expr="//div[2]/t[7]/div[5]" position="replace"/>-->
              <xpath expr="//div[@id='total']/div/table" position="inside">
                 <t t-set="payments_vals" t-value="o._get_payments_vals()"/>
                 <t t-foreach="payments_vals" t-as="payment_vals">

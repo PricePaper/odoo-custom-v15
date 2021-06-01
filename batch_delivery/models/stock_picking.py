@@ -287,6 +287,9 @@ class StockPicking(models.Model):
             if 'route_id' in vals.keys() and not (
                     vals.get('route_id', False)) and picking.batch_id and picking.batch_id.state == 'draft':
                 vals.update({'batch_id': False})
+            if 'route_id' in vals.keys() and not vals.get('route_id', False):
+                picking.mapped('move_ids_without_package').write({'is_transit': False})
+                vals.update({'batch_id': False, 'is_late_order': False, 'is_transit': False})
         res = super(StockPicking, self).write(vals)
         return res
 
@@ -345,7 +348,8 @@ class StockPicking(models.Model):
 
     @api.multi
     def action_remove(self):
-        result = self.write({'batch_id': False, 'route_id': False, 'is_late_order': False})
+        self.mapped('move_ids_without_package').write({'is_transit': False})
+        result = self.write({'batch_id': False, 'route_id': False, 'is_late_order': False, 'is_transit': False})
         return result
 
     @api.multi

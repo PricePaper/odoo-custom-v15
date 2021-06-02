@@ -55,8 +55,8 @@ class SaleOrder(models.Model):
 
     @api.multi
     def make_done_orders(self):
-        orders = self.env['sale.order'].search([('state', '=', 'sale'), ('invoice_status', '=', 'invoiced')])
-        for order in orders:
+        # orders = self.env['sale.order'].search([('state', '=', 'sale'), ('invoice_status', '=', 'invoiced')])
+        for order in self:
             picking_status = order.picking_ids.mapped('state')
             invoice_state = order.invoice_ids.mapped('state')
             if picking_status and any(state not in ('done', 'cancel') for state in picking_status):

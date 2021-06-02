@@ -8,6 +8,9 @@ class AccountPayment(models.Model):
         self.batch_payment_id.message_post(body='Payment line removed.')
         self.sudo().unlink()
 
+    def action_remove_from_batch(self):
+        self.write({'batch_payment_id': False})
+
     @api.model
     def create(self, vals):
         record = super(AccountPayment, self).create(vals)

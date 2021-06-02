@@ -31,6 +31,11 @@
                 </xpath>
 
                 <xpath expr="//field[@name='payment_ids']/tree/field[@name='currency_id']" position="after">
+                  <button class="fa fa-trash-o"
+                          name="action_remove_from_batch"
+                          type="object" aria-label="Remove row"
+                          style="float:right;"
+                          attrs="{'invisible': [('parent.state', '!=', 'sent')]}"/>
                     <button class="fa fa-trash-o"
                             name="action_delete_from_db"
                             type="object" aria-label="Remove row"

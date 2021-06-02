@@ -53,6 +53,19 @@ class SaleOrder(models.Model):
         string='Hold Status', default=False, copy=False)
     invoice_address_id = fields.Many2one('res.partner', string="Billing Address")
 
+    @api.multi
+    def make_done_orders(self):
+        orders = self.env['sale.order'].search([('state', '=', 'sale'), ('invoice_status', '=', 'invoiced')])
+        for order in orders:
+            picking_status = order.picking_ids.mapped('state')
+            invoice_state = order.invoice_ids.mapped('state')
+            if picking_status and any(state not in ('done', 'cancel') for state in picking_status):
+                continue
+            if invoice_state and any(state in ('draft') for state in invoice_state):
+                continue
+            order.action_done()
+        return True
+
     @api.depends('partner_id')
     def _compute_show_contract_line(self):
         for order in self:

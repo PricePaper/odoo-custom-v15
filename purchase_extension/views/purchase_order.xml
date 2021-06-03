@@ -22,7 +22,7 @@
 
                 <xpath expr="//field[@name='order_line']" position="before">
                     <button type="object" name="add_sale_history_to_po_line"
-                            string="ADD ADDITIONAL PRODUCTS" icon="fa-history"/>
+                            string="ADD ADDITIONAL PRODUCTS" icon="fa-history" class="oe_edit_only oe_highlight"/>
                 </xpath>
 
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_subtotal']" position="before">

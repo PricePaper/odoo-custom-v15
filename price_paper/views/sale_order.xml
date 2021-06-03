@@ -247,7 +247,7 @@
 
                 <xpath expr="//field[@name='order_line']" position="before">
                     <button type="object" name="add_purchase_history_to_so_line" string="Browse History Lines"
-                            context="{'partner':partner_id}"/>
+                            context="{'partner':partner_id}" class="oe_edit_only oe_highlight"/>
                 </xpath>
 
                 <xpath expr="//field[@name='order_line']/form" position="inside">

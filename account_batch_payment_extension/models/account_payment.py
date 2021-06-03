@@ -9,7 +9,7 @@ class AccountPayment(models.Model):
         self.sudo().unlink()
 
     def action_remove_from_batch(self):
-        self.write({'batch_payment_id': False})
+        self.write({'batch_payment_id': False, 'state':'posted'})
 
     @api.model
     def create(self, vals):

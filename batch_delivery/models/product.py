@@ -34,6 +34,7 @@ class Product(models.Model):
     def _compute_quantities(self):
         super(Product, self)._compute_quantities()
         for product in self:
+
             product_qty = 0
             for move in product.stock_move_ids.filtered(lambda rec: rec.is_transit and rec.state != 'cancel'):
                 if move.product_uom.id != product.uom_id.id:
@@ -47,9 +48,14 @@ class Product(models.Model):
     @api.multi
     def get_quantity_in_sale(self):
         self.ensure_one()
-        sale_lines = self.stock_move_ids.filtered(
-            lambda move: move.sale_line_id and move.state not in ['cancel', 'done'] and not move.is_transit)\
-            .mapped('sale_line_id').ids
+        moves = self.env['stock.move']
+        move1 = self.stock_move_ids.filtered(
+            lambda move: move.sale_line_id and move.state not in ['cancel', 'done'] and not move.is_transit)
+        move2 = self.stock_move_ids.filtered(
+            lambda move: move.sale_line_id and move.state not in ['cancel', 'done'] and move.is_transit and move.product_uom_qty != move.quantity_done)
+        moves = move1 + move2
+        sale_lines = moves.mapped('sale_line_id').ids
+
         action = self.env['ir.actions.act_window'].for_xml_id('price_paper', 'act_product_2_sale_order_line')
         action['domain'] = [('id', 'in', sale_lines)]
         return action

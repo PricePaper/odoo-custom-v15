@@ -196,7 +196,12 @@
                     <attribute name="required">True</attribute>
                 </field>
                 <field name="location_dest_id" position="attributes">
-                    <attribute name="required">True</attribute>
+                    <attribute name="invisible">True</attribute>
+                </field>
+                <field name="picking_type_id" position="after">
+                    <field name="location_dest_id" groups="stock.group_stock_multi_locations" required='1'
+                      attrs="{'invisible': [('picking_type_code', '=', 'outgoing')]}"
+                      domain="['|', ('company_id', '=', company_id), ('company_id', '=', False)]" />
                 </field>
                 <field name="backorder_id" position="after">
                     <field name="shipping_easiness" invisible="1" force_save="1"/>

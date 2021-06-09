@@ -462,13 +462,6 @@ class CashCollectedLines(models.Model):
         else:
             self.amount = 0
 
-    @api.onchange('partner_id')
-    def _onchange_partner_id(self):
-        if self.batch_id:
-            partner_list = self.batch_id.picking_ids.mapped('partner_id').ids
-            return {'domain': {'partner_id': [('id', 'in', partner_list)]}}
-        return {}
-
     @api.onchange('payment_method_id')
     def _onchange_payment_method_id(self):
         self.is_communication = self.payment_method_id.code == 'check_printing'

@@ -45,7 +45,6 @@ class AccountReconcileModel(models.Model):
                 batch_payemnt['inbound'] |= p
             else:
                 batch_payemnt['outbound'] |= p
-
         for line in st_lines:
             line_residual = line.currency_id and line.amount_currency or line.amount
             if line_residual > 0:
@@ -68,7 +67,20 @@ class AccountReconcileModel(models.Model):
                     for aml in batch.mapped('payment_ids').mapped('move_line_ids').filtered(lambda r: r.account_id.id in journal_accounts):
                         if aml.credit:
                             res.get(line.id, {}).get('aml_ids', []).append(aml.id)
-
+            if len(res.get(line.id, {}).get('aml_ids')) < 1 and line_residual < 0 and 'CHECK #' in line.name:
+                memo = line.name.split('CHECK #', 1)
+                domain = [('state', 'in', ('posted', 'sent')),('payment_type', '=', 'outbound'), ('amount', '=', abs(line_residual))]
+                if len(memo) > 1:
+                    memo = memo[1].strip().split(' ', 1)[0]
+                    domain = [('state', 'in', ('posted', 'sent')),('payment_type', '=', 'outbound'), \
+                    '|', '|', ('communication', '=', memo), ('check_number', '=', memo), ('amount', '=', abs(line_residual))]
+                payment = self.env['account.payment'].search(domain)
+                journal_accounts = [
+                            payment.journal_id.default_debit_account_id.id,
+                            payment.journal_id.default_credit_account_id.id
+                        ]
+                aml = payment.mapped('move_line_ids').filtered(lambda r: r.account_id.id in journal_accounts and r.credit)
+                res.get(line.id, {}).get('aml_ids', []).extend(aml.ids)
         return res
 
 

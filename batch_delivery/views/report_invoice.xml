@@ -436,6 +436,10 @@
                                 correctly.</strong><br/>
                         </p>
                     </div>
+                    <strong t-if="o.partner_shipping_id.delivery_notes" class="mr16">Delvery Notes:</strong>
+                    <div t-if="o.partner_shipping_id.delivery_notes">
+                      <span t-field="o.partner_shipping_id.delivery_notes"/>
+                    </div>
 
                 </div>
             </div>

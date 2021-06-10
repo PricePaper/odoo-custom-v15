@@ -16,7 +16,7 @@ class SaleCommission(models.Model):
     is_cancelled = fields.Boolean(string='Cancelled', default=False)
     invoice_type = fields.Selection(
         selection=[('out_invoice', 'Invoice'), ('out_refund', 'Refund'), ('draw', 'Weekly Draw'),
-                   ('bounced_cheque', 'Cheque Bounce'), ('cancel', 'Invoice Cancelled')], string='Type')
+                   ('bounced_cheque', 'Cheque Bounce'), ('cancel', 'Invoice Cancelled'), ('aging', 'Commission Aging')], string='Type')
     invoice_amount = fields.Float(string='Amount')
     date_invoice = fields.Date(related='invoice_id.date_invoice', string="Invoice Date", readonly=True, store=True)
     sale_id = fields.Many2one('sale.order', string="Sale Order")
@@ -24,7 +24,17 @@ class SaleCommission(models.Model):
     is_removed = fields.Boolean(string='Removed')
     settlement_id = fields.Many2one('sale.commission.settlement', string='Settlement')
     commission_date = fields.Date('Date')
+    paid_date = fields.Date('Paid Date', compute='get_invoice_paid_date', store=True)
 
+    @api.depends('is_paid')
+    def get_invoice_paid_date(self):
+        for rec in self:
+            if rec.is_paid:
+                if rec.invoice_type in ('out_invoice', 'out_refund', 'aging'):
+                    payment_date_list = [payment.payment_date for payment in rec.invoice_id.payment_ids]
+                    rec.paid_date = max(payment_date_list) if payment_date_list else False
+                elif rec.invoice_type in ('draw', 'bounced_cheque', 'cancel'):
+                    rec.paid_date = rec.commission_date
     @api.multi
     def action_commission_remove(self):
         for rec in self:
@@ -55,7 +65,8 @@ class SaleCommission(models.Model):
                     'commission': -daily_amount,
                     'is_paid': True,
                     'invoice_type': 'draw',
-                    'commission_date': date.today()
+                    'commission_date': date.today(),
+                    'paid_date': date.today()
                 }
                 self.env['sale.commission'].create(vals)
 

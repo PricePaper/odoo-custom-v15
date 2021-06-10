@@ -28,7 +28,7 @@ class GenerateCommission(models.TransientModel):
             "name": "Sale commission",
             "res_model": "sale.commission",
             "views": [[view_id, "tree"]],
-            "context": {'group_by': ['sale_person_id', 'write_date:month']},
+            "context": {'default_search_is_paid': True, 'group_by': ['sale_person_id', 'write_date:month']},
             "domain": domain,
             "target": "current",
         }

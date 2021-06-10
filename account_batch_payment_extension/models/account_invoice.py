@@ -27,7 +27,8 @@ class Accountinvoice(models.Model):
                         'invoice_type': 'bounced_cheque',
                         'is_paid': True,
                         'invoice_amount': invoice.amount_total,
-                        'commission_date': date.today()
+                        'commission_date': date.today(),
+                        'paid_date': date.today(),
                     }
                     refund_rec = self.env['sale.commission'].create(vals1)
                     vals2 = {

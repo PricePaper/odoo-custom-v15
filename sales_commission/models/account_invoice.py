@@ -48,10 +48,10 @@ class AccountInvoice(models.Model):
                 days = self.payment_term_id.due_days
                 if payment_date and payment_date > self.date_invoice + relativedelta(days=days):
                     profit += self.amount_total * (self.payment_term_id.discount_per / 100)
-            if self.payment_ids[0].payment_method_id.code == 'electronic' and self.partner_id.payment_method == 'cash':
+            if self.payment_ids[0].payment_method_id.code == 'credit_card' and self.partner_id.payment_method != 'credit_card':
                 profit -= self.amount_total * 0.03
             if self.payment_ids[
-                0].payment_method_id.code == 'manual' and self.partner_id.payment_method == 'credit_card':
+                0].payment_method_id.code != 'credit_card' and self.partner_id.payment_method == 'credit_card':
                 profit += self.amount_total * 0.03
 
             rule_id = self.partner_id.commission_percentage_ids.filtered(
@@ -109,7 +109,7 @@ class AccountInvoice(models.Model):
                             'sale_id': line.sale_id and line.sale_id.id,
                             'commission': -commission,
                             'invoice_id': self.id,
-                            'invoice_type': self.type,
+                            'invoice_type': 'aging',
                             'is_paid': True,
                             'invoice_amount': self.amount_total,
                             'commission_date': self.date_invoice and self.date_invoice

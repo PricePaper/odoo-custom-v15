@@ -19,6 +19,20 @@ class StockMove(models.Model):
     partner_id = fields.Many2one('res.partner', compute='_compute_partner_id', string="Partner", readonly=True)
     reason_id = fields.Many2one('stock.picking.return.reason', string='Reason  For Return (Stock)')
     qty_to_transfer = fields.Float(String="Qty in Location", compute='_compute_qty_to_transfer', store=False)
+    unit_price = fields.Float(string="Unit Price", copy=False, compute='_compute_total_price', store=False)
+    total = fields.Float(string="Subtotal", copy=False, compute='_compute_total_price', store=False)
+
+    @api.depends('quantity_done')
+    def _compute_total_price(self):
+        for move in self:
+            if move.picking_id.picking_type_id.code == 'outgoing':
+                move.unit_price = -move.price_unit
+            elif move.picking_id.picking_type_id.code == 'incoming':
+                move.unit_price = move.price_unit
+            if move.picking_id.state in ('in_transit', 'done'):
+                move.total = move.unit_price * move.quantity_done
+            else:
+                move.total = move.unit_price * move.product_uom_qty
 
     @api.depends('sale_line_id.order_id.partner_shipping_id')
     def _compute_partner_id(self):

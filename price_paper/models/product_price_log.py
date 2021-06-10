@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields
+from odoo import models, fields, api
 from odoo.addons import decimal_precision as dp
 
 
@@ -30,6 +30,19 @@ class ProductPriceLog(models.Model):
                                        ('vendor_price', 'Vendor Price')])
     user_id = fields.Many2one('res.users', string='User')
     min_qty = fields.Float(string='Min Qty')
+    trace_log = fields.Text(String='Log')
+
+    @api.model
+    def create(self, vals):
+        try:
+            import traceback
+            trace = traceback.format_stack()
+            log = "\nUser\t%s\n Records\t %s\n Time\t %s\n vals = %s\n\nlog=%s\n\n\n" % (self.env.user.name,self.ids,fields.Datetime.now(),vals,str(trace))
+            if log:
+                vals['trace_log'] = log
+        except:
+            pass
+        return super(ProductPriceLog, self).create(vals)
 
 
 ProductPriceLog()

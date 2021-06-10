@@ -15,6 +15,7 @@ class SaleCommissionSettlement(models.Model):
     amount_paid = fields.Float(string="Amount", compute='_compute_total_amount', store=True)
     commission_ids = fields.One2many('sale.commission', 'settlement_id', string="Commission Lines", required=True)
     date_from = fields.Date(strong="Date From", readonly=True, required=True, states={'draft': [('readonly', False)]})
+    date_to = fields.Date(strong="Date From", readonly=True, required=True, states={'draft': [('readonly', False)]})
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
@@ -43,7 +44,9 @@ class SaleCommissionSettlement(models.Model):
             if rec.sales_person_id:
                 domain.append(('sale_person_id', '=', rec.sales_person_id.id))
             if rec.date_from:
-                domain.append(('date_invoice', '<=', rec.date_from))
+                domain.append(('paid_date', '>=', rec.date_from))
+            if rec.date_to:
+                domain.append(('paid_date', '<=', rec.date_to))
             if domain:
                 domain.extend([('is_paid', '=', True), ('is_settled', '=', False)])
                 commission_lines = self.env['sale.commission'].search(domain)

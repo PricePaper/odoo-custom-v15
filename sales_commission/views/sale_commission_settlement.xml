@@ -8,6 +8,7 @@
                     <field name="name"/>
                     <field name="sales_person_id"/>
                     <field name="date_from"/>
+                    <field name="date_to"/>
                     <field name="amount_paid"/>
                     <field name="state"/>
                 </tree>
@@ -39,11 +40,13 @@
                             </group>
                             <group>
                                 <field name="amount_paid"/>
+                                <field name="date_to"/>
                             </group>
                         </group>
-                        <field name="commission_ids" attrs="{'readonly': [('state', 'not in', ['draft', 'confirm'])]}" widget="many2many" options="{'not_delete': True}">
-                            <tree decoration-danger="is_removed == True">
+                        <field name="commission_ids" attrs="{'readonly': [('state', 'not in', ['draft', 'confirm'])]}" widget="many2many">
+                            <tree decoration-danger="is_removed == True" delete="0">
                                 <field name="sale_person_id"/>
+                                <field name="paid_date"/>
                                 <field name="sale_id"/>
                                 <field name="invoice_id"/>
                                 <field name="invoice_amount"/>

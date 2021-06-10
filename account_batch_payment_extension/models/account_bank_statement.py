@@ -75,12 +75,17 @@ class AccountReconcileModel(models.Model):
                     domain = [('state', 'in', ('posted', 'sent')),('payment_type', '=', 'outbound'), \
                     '|', '|', ('communication', '=', memo), ('check_number', '=', memo), ('amount', '=', abs(line_residual))]
                 payment = self.env['account.payment'].search(domain)
-                journal_accounts = [
-                            payment.journal_id.default_debit_account_id.id,
-                            payment.journal_id.default_credit_account_id.id
-                        ]
-                aml = payment.mapped('move_line_ids').filtered(lambda r: r.account_id.id in journal_accounts and r.credit)
-                res.get(line.id, {}).get('aml_ids', []).extend(aml.ids)
+                if payment:
+                    if len(payment) > 1:                    
+                        journal = payment[0].journal_id
+                    else:
+                        journal = payment.journal_id
+                    journal_accounts = [
+                                journal.default_debit_account_id.id,
+                                journal.default_credit_account_id.id
+                            ]
+                    aml = payment.mapped('move_line_ids').filtered(lambda r: r.account_id.id in journal_accounts and r.credit)
+                    res.get(line.id, {}).get('aml_ids', []).extend(aml.ids)
         return res
 
 

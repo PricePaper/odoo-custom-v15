@@ -60,7 +60,7 @@ class StockPickingBatch(models.Model):
     @api.constrains('cheque_amount', 'cash_amount', 'actual_returned')
     def check_total_amount(self):
 
-        if self.cheque_amount + self.cash_amount != self.actual_returned:
+        if float_round(self.cheque_amount + self.cash_amount, precision_digits=2) != self.actual_returned:
             raise ValidationError(_('Total amount and sum of Cash and Check does not match'))
 
     def _compute_to_invoice_state(self):

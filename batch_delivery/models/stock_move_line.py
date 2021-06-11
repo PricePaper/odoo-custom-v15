@@ -30,6 +30,18 @@ class StockMoveLine(models.Model):
 
         return result
 
+    @api.multi
+    def unlink(self):
+        for line in self:
+            sale_line = line.move_id.sale_line_id
+            if sale_line:
+                invoice_lines = sale_line.invoice_lines.filtered(
+                    lambda rec: rec.invoice_id.state != 'cancel' and line.move_id in rec.stock_move_ids)
+                if invoice_lines:
+                    invoice_lines.write({'quantity': 0})
+                    invoice_lines.mapped('invoice_id').compute_taxes()
+        result = super(StockMoveLine, self).unlink()
+        return result
 
 StockMoveLine()
 

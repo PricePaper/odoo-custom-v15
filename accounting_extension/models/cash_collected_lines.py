@@ -1,12 +1,14 @@
 from odoo import fields, models, api, _
 from odoo.exceptions import UserError
 
+from odoo.addons import decimal_precision as dp
+
 
 class CashCollectedLines(models.Model):
     _inherit = 'cash.collected.lines'
 
     discount = fields.Float(string='Discount(%)')
-    discount_amount = fields.Float(string='Discount')
+    discount_amount = fields.Float(string='Discount', digits=dp.get_precision('Product Price'))
 
     @api.onchange('invoice_id')
     def onchange_invoice_id(self):

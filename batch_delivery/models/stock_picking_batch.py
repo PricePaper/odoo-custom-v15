@@ -7,6 +7,8 @@ import werkzeug
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
+from odoo.addons import decimal_precision as dp
+
 from odoo.tools import float_round
 from odoo.exceptions import ValidationError
 
@@ -22,7 +24,7 @@ class StockPickingBatch(models.Model):
     truck_driver_id = fields.Many2one('res.partner', string='Driver', track_visibility='onchange')
     date = fields.Date(string='Scheduled Date', default=date.today())
     payment_ids = fields.One2many('account.payment', 'batch_id', string='Payments')
-    actual_returned = fields.Float(string='Total Amount', help='Total amount returned by the driver.')
+    actual_returned = fields.Float(string='Total Amount', help='Total amount returned by the driver.', digits=dp.get_precision('Product Price'))
     cash_collected_lines = fields.One2many('cash.collected.lines', 'batch_id', string='Cash Collected Breakup')
     is_posted = fields.Boolean(string="Posted")
     pending_amount = fields.Float(string="Difference", compute='_calculate_pending_amount')
@@ -38,8 +40,8 @@ class StockPickingBatch(models.Model):
     to_invoice = fields.Boolean(string='Need Invoice', compute='_compute_to_invoice_state')
     invoice_ids = fields.Many2many('account.invoice', compute='_compute_invoice_ids')
     show_warning = fields.Boolean(string='Pending Line Warning')
-    cash_amount = fields.Float(string='Cash Amount')
-    cheque_amount = fields.Float(string='Check Amount')
+    cash_amount = fields.Float(string='Cash Amount', digits=dp.get_precision('Product Price'))
+    cheque_amount = fields.Float(string='Check Amount', digits=dp.get_precision('Product Price'))
 
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -124,7 +126,7 @@ class StockPickingBatch(models.Model):
         for batch in self:
             real_collected = 0
             for cash_line in batch.cash_collected_lines:
-                real_collected += cash_line.amount
+                real_collected += float_round(cash_line.amount, precision_digits=2)
             batch.pending_amount = float_round(batch.actual_returned - real_collected, precision_digits=2)
 
     @api.multi
@@ -409,7 +411,7 @@ class CashCollectedLines(models.Model):
 
     batch_id = fields.Many2one('stock.picking.batch', string='Batch')
     partner_id = fields.Many2one('res.partner', string='Customer', required=True)
-    amount = fields.Float(string='Amount Collected')
+    amount = fields.Float(string='Amount Collected', digits=dp.get_precision('Product Price'))
     communication = fields.Char(string='Memo')
     payment_method_id = fields.Many2one('account.payment.method', domain=[('payment_type', '=', 'inbound')])
     is_communication = fields.Boolean(string='Is Communication')

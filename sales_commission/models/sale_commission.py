@@ -45,19 +45,28 @@ class SaleCommission(models.Model):
 
     def correct_commission_aging(self, partner_id=None):
         for invoice in self.env['account.invoice'].search([('state', '=', 'paid'), ('sale_commission_ids', '!=', None), ('type', '=', 'out_invoice')]):
-            print(invoice, invoice.sale_commission_ids)
+            # print(invoice, invoice.sale_commission_ids)
             if len(invoice.sale_commission_ids) > 1:
                 data = {}
                 for rec in invoice.sale_commission_ids:
                     if (rec.sale_person_id, rec.commission) in data.keys():
                         data[(rec.sale_person_id, rec.commission)] |=rec
                     else:
-                        data[(rec.sale_person_id, rec.commission)] = rec
+                        data[(rec.sale_person_id, rec.commission)] = rec                
                 for r in data:
                     if len(data[r])>1:
-                        data[r][:-1].unlink()
-                        invoice.check_due_date(data[r])
-                        print('*******', invoice)
+                        unlink_ids = data[r] - data[r][0]
+
+                        logging.error((data[r], unlink_ids))
+
+                        unlink_ids.unlink()
+                        data[r] -= unlink_ids                        
+                        try:
+                            invoice.check_due_date(data[r])
+                        except Exception as e:
+                            logging.error(('@@@@@@@@@@@@@@@@@@', e, invoice))                         
+                        logging.error(('*******', invoice))
+
 
 
 
@@ -78,26 +87,33 @@ class SaleCommission(models.Model):
         #         duplicate.unlink()
         #         rec.invoice_id.check_due_date(rec)
         # return True
+      
 
     def correct_delivery_charge(self, order_ids=[]):
         for order in self.env['sale.order'].browse(order_ids):
             if not order.order_line.filtered(lambda rec: rec.is_delivery is True):
                 order.adjust_delivery_line()
-            invoice = order.invoice_ids[:1]            
+            invoice = order.invoice_ids[:1]  
+                      
             if order.gross_profit != invoice.gross_profit and invoice.sale_commission_ids and invoice.state=='paid':
                 profit = order.gross_profit
                 # rule = rec.invoice_id.partner_id.commission_percentage_ids.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)
                 # sales_person_ids = rec.invoice_id.partner_id.sales_person_ids
-                for rec in invoice.sale_commission_ids:     
-                    if rec.sale_person_id.id not in invoice.partner_id.sales_person_ids.ids:
-                        rec.commission=0
-                        rec.is_cancelled=True
-                        continue             
+                for rec in invoice.sale_commission_ids:  
+                    rule = invoice.partner_id.commission_percentage_ids.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)   
+                    # if rec.sale_person_id.id not in invoice.partner_id.sales_person_ids.ids:
+                    #     rec.commission=0
+                    #     rec.is_cancelled=True
+                    #     continue             
                     if profit <= 0:
-                        rec.commission = 0                        
-                        continue
+                        if rule.rule_id.based_on == 'invoice' and rec.commission == 0:
+                            amount = invoice.amount_total
+                            commission = amount * (rule.rule_id.percentage / 100)
+                            rec.commission = commission  
+                            logging.error(('******************---------------->', invoice))                      
+                    continue
                     commission = 0
-                    rule = invoice.partner_id.commission_percentage_ids.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)
+                    
                     if rule.rule_id.based_on in ['profit', 'profit_delivery']:
                         commission = profit * (rule.rule_id.percentage / 100)                                                
                     if invoice.type == 'out_refund' and commission > 0:

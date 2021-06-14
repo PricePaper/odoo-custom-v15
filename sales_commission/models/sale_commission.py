@@ -33,12 +33,9 @@ class SaleCommission(models.Model):
             self = self.search([('sale_person_id', '=', partner_id), ('invoice_id', '!=', False)])
         else:
             self = self.search([('invoice_id', '!=', False)])
-        # print(self)
         for rec in self.filtered(lambda r: r.invoice_id):
-            # print(rec)
-            if rec.invoice_id:      
-                rule = rec.invoice_id.partner_id.commission_percentage_ids.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)   
-                # print(rule, rule.rule_id.based_on)                            
+            if rec.invoice_id:
+                rule = rec.invoice_id.partner_id.commission_percentage_ids.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)
                 if rule.rule_id.based_on not in ['profit', 'profit_delivery']:
                     continue
                 commission = rec.invoice_id.gross_profit * (rule.rule_id.percentage / 100)
@@ -52,16 +49,16 @@ class SaleCommission(models.Model):
                     inv = rec.invoice_id.sale_commission_ids.filtered(lambda r: r.id != rec.id)
                     if len(inv) > 1:
                         pending_ids.append(rec.id)
-                        continue                    
-                    payment_date = max([rec.payment_date for rec in inv.payment_ids])
-                    if payment_date > inv.date_due:
-                        extra_days = payment_date - inv.date_due
-                        if inv.partner_id.company_id.commission_ageing_ids:
-                            commission_ageing = inv.partner_id.company_id.commission_ageing_ids.filtered(
+                        continue
+                    payment_date = max([payment.payment_date for payment in rec.invoice_id.payment_ids])
+                    if payment_date > rec.invoice_id.date_due:
+                        extra_days = payment_date - rec.invoice_id.date_due
+                        if rec.invoice_id.partner_id.company_id.commission_ageing_ids:
+                            commission_ageing = rec.invoice_id.partner_id.company_id.commission_ageing_ids.filtered(
                                 lambda r: r.delay_days <= extra_days.days)
                             commission_ageing = commission_ageing.sorted(key=lambda r: r.delay_days, reverse=True)
                             if commission_ageing and commission_ageing[0].reduce_percentage:
-                                commission = commission_ageing[0].reduce_percentage * line.commission / 100
+                                commission = commission_ageing[0].reduce_percentage * inv.commission / 100
 
                                 rec.write({'commission': -commission})
                                 if inv.commission < 0:
@@ -69,10 +66,11 @@ class SaleCommission(models.Model):
                                     rec.is_cancelled = True
 
                 else:
-                    rec.invoice_id.with_context({'is_cancelled':True}).check_commission(rec)            
+                    rec.invoice_id.with_context({'is_cancelled':True}).check_commission(rec)
         logging.error('============================>error ids')
         logging.error(pending_ids)
-        
+        return True
+
     @api.depends('is_paid')
     def get_invoice_paid_date(self):
         for rec in self:

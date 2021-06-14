@@ -123,7 +123,7 @@ class ResPartner(models.Model):
         for partner in res:
             name = partner[1] or ''
             partner_id = self.env['res.partner'].browse(partner[0])
-            if partner_id.customer_code and partner_id.customer and partner_id.type in('invoice','contact') and not partner_id.user_ids: 
+            if partner_id.customer_code and partner_id.customer and partner_id.type in('invoice','contact') and not partner_id.user_ids:
                 name = '['+partner_id.customer_code+']'+name
             result.append((partner[0], name))
         return result
@@ -140,9 +140,10 @@ class ResPartner(models.Model):
 
         if vals.get('is_company', False):
             if not vals.get('customer_code', False):
+                prefix = vals.get('name').replace(" ", "")[0:3].upper()
                 if 'company_id' in vals:
                     while True:
-                        customer_code = vals.get('name')[0:3].upper() + self.env['ir.sequence'].with_context(
+                        customer_code = prefix + self.env['ir.sequence'].with_context(
                             force_company=vals['company_id']).next_by_code('res.partner')
                         if not self.search([('customer_code', '=ilike', customer_code)]):
                             vals['customer_code'] = customer_code
@@ -150,7 +151,7 @@ class ResPartner(models.Model):
 
                 else:
                     while True:
-                        customer_code = vals.get('name')[0:3].upper() + self.env['ir.sequence'].next_by_code(
+                        customer_code = prefix + self.env['ir.sequence'].next_by_code(
                             'res.partner')
                         if not self.search([('customer_code', '=ilike', customer_code)]):
                             vals['customer_code'] = customer_code

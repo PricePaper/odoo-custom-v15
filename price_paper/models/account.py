@@ -189,8 +189,11 @@ class AccountInvoiceLine(models.Model):
         Calculate profit margin in account invoice
         """
         for line in self:
-            if line.product_id and line.product_id.default_code in ['misc', 'delivery_008'] and not line.sale_line_ids:
+            if line.product_id and line.product_id.default_code in ['misc'] and not line.sale_line_ids:
                 line.profit_margin = 0.0
+            elif line.sale_line_ids and line.sale_line_ids.filtered(lambda rec: rec.is_delivery is True):
+                line.profit_margin = sum(line.sale_line_ids.mapped('profit_margin'))
+
             if line.product_id and line.quantity > 0 and line.uom_id:
                 if line.product_id == line.invoice_id.company_id.check_bounce_product:
                     line.profit_margin = 0

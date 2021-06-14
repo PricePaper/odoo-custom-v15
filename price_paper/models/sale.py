@@ -531,13 +531,15 @@ class SaleOrder(models.Model):
         for order in self:
             gross_profit = 0
             for line in order.order_line:
-                if line.is_delivery:
-                    if order.carrier_id:
-                        gross_profit += line.price_subtotal
-                        price_unit = order.carrier_id.rate_shipment(order)['price']
-                        gross_profit -= price_unit
-                else:
-                    gross_profit += line.profit_margin
+                gross_profit += line.profit_margin
+                # if line.is_delivery:
+                #     if order.carrier_id:
+                #         gross_profit += line.price_subtotal
+                #         price_unit = order.carrier_id.average_company_cost
+
+                #         gross_profit -= price_unit
+                # else:
+                #     gross_profit += line.profit_margin
             if order.partner_id.payment_method == 'credit_card':
                 gross_profit -= order.amount_total * 0.03
             if order.payment_term_id.discount_per > 0:
@@ -1292,7 +1294,7 @@ class SaleOrderLine(models.Model):
                 if line.is_delivery or line.is_downpayment:
                     line.profit_margin = 0.0
                     if line.is_delivery and line.order_id.carrier_id:
-                        price_unit = line.order_id.carrier_id.rate_shipment(line.order_id)['price']
+                        price_unit = line.order_id.carrier_id.average_company_cost
                         line.profit_margin = line.price_subtotal - price_unit
                 else:
                     product_price = line.working_cost or 0

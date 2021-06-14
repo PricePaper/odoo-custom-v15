@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import date
-
+import logging
 from odoo import fields, models, api
 
 
@@ -52,9 +52,7 @@ class SaleCommission(models.Model):
                     inv = rec.invoice_id.sale_commission_ids.filtered(lambda r: r.id != rec.id)
                     if len(inv) > 1:
                         pending_ids.append(rec.id)
-                        continue
-                    if inv.commission < 0:
-                        inv.is_cancelled = True
+                        continue                    
                     payment_date = max([rec.payment_date for rec in inv.payment_ids])
                     if payment_date > inv.date_due:
                         extra_days = payment_date - inv.date_due
@@ -66,9 +64,14 @@ class SaleCommission(models.Model):
                                 commission = commission_ageing[0].reduce_percentage * line.commission / 100
 
                                 rec.write({'commission': -commission})
+                                if inv.commission < 0:
+                                    inv.is_cancelled = True
+                                    rec.is_cancelled = True
 
                 else:
-                    rec.invoice_id.with_context({'is_cancelled':True}).check_commission(rec)
+                    rec.invoice_id.with_context({'is_cancelled':True}).check_commission(rec)            
+        logging.error('============================>error ids')
+        logging.error(pending_ids)
         
     @api.depends('is_paid')
     def get_invoice_paid_date(self):

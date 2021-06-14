@@ -105,12 +105,12 @@ class SaleCommission(models.Model):
                     #     rec.commission=0
                     #     rec.is_cancelled=True
                     #     continue             
-                    if profit <= 0:
-                        if rule.rule_id.based_on == 'invoice' and rec.commission == 0:
-                            amount = invoice.amount_total
-                            commission = amount * (rule.rule_id.percentage / 100)
-                            rec.commission = commission  
-                            logging.error(('******************---------------->', invoice))                      
+                    # if profit <= 0:
+                    if rule.rule_id.based_on == 'invoice' and rec.commission == 0:
+                        amount = invoice.amount_total
+                        commission = amount * (rule.rule_id.percentage / 100)
+                        rec.commission = commission  
+                        logging.error(('******************---------------->', invoice))                      
                     continue
                     commission = 0
                     

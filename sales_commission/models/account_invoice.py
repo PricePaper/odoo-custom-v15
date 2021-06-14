@@ -14,6 +14,7 @@ class AccountInvoice(models.Model):
     sales_person_ids = fields.Many2many('res.partner', related='partner_id.sales_person_ids',
                                         string='Associated Sales Persons')
     check_bounce_invoice = fields.Boolean(string='Check Bounce Invoice', default=False)
+    sale_commission_ids = fields.One2many('sale.commission', 'invoice_id', string='Commission')
 
     @api.multi
     def invoice_validate(self):
@@ -48,9 +49,9 @@ class AccountInvoice(models.Model):
                 days = self.payment_term_id.due_days
                 if payment_date and payment_date > self.date_invoice + relativedelta(days=days):
                     profit += self.amount_total * (self.payment_term_id.discount_per / 100)
-            if self.payment_ids[0].payment_method_id.code == 'credit_card' and self.partner_id.payment_method != 'credit_card':
+            if self.payment_ids and self.payment_ids[0].payment_method_id.code == 'credit_card' and self.partner_id.payment_method != 'credit_card':
                 profit -= self.amount_total * 0.03
-            if self.payment_ids[
+            if self.payment_ids and self.payment_ids[
                 0].payment_method_id.code != 'credit_card' and self.partner_id.payment_method == 'credit_card':
                 profit += self.amount_total * 0.03
 
@@ -63,6 +64,9 @@ class AccountInvoice(models.Model):
                     amount = self.amount_total
                     commission = amount * (rule_id.percentage / 100)
             line.write({'commission': commission})
+            if self._context.get('is_cancelled') and commission < 0:
+                line.is_cancelled = True
+
 
     @api.multi
     def action_cancel(self):

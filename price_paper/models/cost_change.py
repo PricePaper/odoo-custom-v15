@@ -291,7 +291,7 @@ class CostChange(models.Model):
     @api.one
     @api.constrains('price_change')
     def check_if_zero_cost(self):
-        if not self.price_change:
+        if not self.price_change and self.product_id and self.product_id.type != 'service':
             raise ValidationError('Cost change field cannot be 0.00')
 
 

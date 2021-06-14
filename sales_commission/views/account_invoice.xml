@@ -32,6 +32,11 @@
                 <field name="move_id" position="attributes">
                     <attribute name='groups'>base.group_user</attribute>
                 </field>
+                <page  name="other_info" position="after">
+                  <page string="Sales Commission" groups="base.group_no_one">
+                    <field name="sale_commission_ids"/>
+                  </page>
+                </page>
             </field>
         </record>
         <record id="view_account_invoice_filter_price_paper_bounce" model="ir.ui.view">

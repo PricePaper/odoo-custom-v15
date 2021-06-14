@@ -42,8 +42,8 @@ class SaleCommission(models.Model):
                 if rec.invoice_type == 'bounced_cheque':
                     commission = commission * -1
                     rec.write({'commission': commission})
-                    if commission < 0:
-                        rec.is_cancelled = True
+                    if rec.invoice_id.gross_profit <= 0:
+                        rec.write({'commission': 0})
 
                 elif rec.invoice_type == 'aging':
                     inv = rec.invoice_id.sale_commission_ids.filtered(lambda r: r.id != rec.id)
@@ -61,9 +61,10 @@ class SaleCommission(models.Model):
                                 commission = commission_ageing[0].reduce_percentage * inv.commission / 100
 
                                 rec.write({'commission': -commission})
-                                if inv.commission < 0:
-                                    inv.is_cancelled = True
-                                    rec.is_cancelled = True
+                                if rec.invoice_id.gross_profit <= 0:
+                                    rec.write({'commission': 0})
+                                    inv.write({'commission': 0})
+                                    # rec.is_cancelled = True
 
                 else:
                     rec.invoice_id.with_context({'is_cancelled':True}).check_commission(rec)

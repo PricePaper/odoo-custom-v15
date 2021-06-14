@@ -46,6 +46,7 @@ class AccountInvoice(models.Model):
             payment_date_list = [rec.payment_date for rec in self.payment_ids]
             payment_date = max(payment_date_list) if payment_date_list else False
             if profit <= 0:
+                line.write({'commission': 0})
                 continue
             if self.payment_term_id.due_days:
                 days = self.payment_term_id.due_days

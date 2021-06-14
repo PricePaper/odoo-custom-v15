@@ -31,7 +31,7 @@ class SaleCommission(models.Model):
         pending_ids = []
         if not len(self) and partner_id:
             self = self.search([('sale_person_id', '=', partner_id), ('invoice_id', '!=', False)])
-        else:
+        elif not len(self):
             self = self.search([('invoice_id', '!=', False)])
         for rec in self.filtered(lambda r: r.invoice_id):
             if rec.invoice_id:

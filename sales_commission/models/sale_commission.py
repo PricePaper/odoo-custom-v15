@@ -26,6 +26,49 @@ class SaleCommission(models.Model):
     commission_date = fields.Date('Date')
     paid_date = fields.Date('Paid Date', compute='get_invoice_paid_date', store=True)
 
+    def find_invoices(self, offset=0, limit=100):
+        print(limit)
+        no_delivery = []
+        unpaid = []
+        # print()
+        for order in self.env['sale.order'].search([('carrier_id', 'in', [40,42,]), ('create_date', '<', '2021-05-02'), ('invoice_status', '=', 'invoiced')], offset=offset, limit=limit):
+            # print(order)
+            if not order.order_line.filtered(lambda rec: rec.is_delivery is True):
+                if 'paid' in order.invoice_ids.mapped('state') and order.invoice_ids.mapped('sale_commission_ids'):
+                    no_delivery.append(order.id)
+                # else:
+                #     unpaid.append(order.id)
+        logging.error('================================>')
+        logging.error(no_delivery)
+        # logging.error('*********************************>')
+        # logging.error(unpaid)
+
+    def correct_delivery_charge(self, order_ids=[]):
+        for order in self.env['sale.order'].browse(order_ids):
+            if not order.order_line.filtered(lambda rec: rec.is_delivery is True):
+                order.adjust_delivery_line()
+            invoice = order.invoice_ids[:1]            
+            if order.gross_profit != invoice.gross_profit and invoice.sale_commission_ids and invoice.state=='paid':
+                profit = order.gross_profit
+                # rule = rec.invoice_id.partner_id.commission_percentage_ids.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)
+                # sales_person_ids = rec.invoice_id.partner_id.sales_person_ids
+                for rec in invoice.sale_commission_ids:     
+                    if rec.sale_person_id.id not in invoice.partner_id.sales_person_ids.ids:
+                        rec.commission=0
+                        rec.is_cancelled=True
+                        continue             
+                    if profit <= 0:
+                        rec.commission = 0                        
+                        continue
+                    commission = 0
+                    rule = invoice.partner_id.commission_percentage_ids.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)
+                    if rule.rule_id.based_on in ['profit', 'profit_delivery']:
+                        commission = profit * (rule.rule_id.percentage / 100)                                                
+                    if invoice.type == 'out_refund' and commission > 0:
+                        commission = -commission
+                    logging.error(('******************', order, order.gross_profit ,invoice, invoice.gross_profit, rec.commission, commission)
+                    rec.commission = round(commission, 2)
+
 
     def correct_commission(self, partner_id=None):
         pending_ids = []
@@ -35,7 +78,7 @@ class SaleCommission(models.Model):
             self = self.search([('invoice_id', '!=', False)])
         for rec in self.filtered(lambda r: r.invoice_id):
             if rec.invoice_id:
-                rule = rec.invoice_id.partner_id.commission_percentage_ids.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)
+                rule = rec.invoice_id.partner_id.commission_percentage_ids.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)                
                 if rule.rule_id.based_on not in ['profit', 'profit_delivery']:
                     continue
                 commission = rec.invoice_id.gross_profit * (rule.rule_id.percentage / 100)

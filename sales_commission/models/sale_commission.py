@@ -43,6 +43,42 @@ class SaleCommission(models.Model):
         # logging.error('*********************************>')
         # logging.error(unpaid)
 
+    def correct_commission_aging(self, partner_id=None):
+        for invoice in self.env['account.invoice'].search([('state', '=', 'paid'), ('sale_commission_ids', '!=', None), ('type', '=', 'out_invoice')]):
+            print(invoice, invoice.sale_commission_ids)
+            if len(invoice.sale_commission_ids) > 1:
+                data = {}
+                for rec in invoice.sale_commission_ids:
+                    if (rec.sale_person_id, rec.commission) in data.keys():
+                        data[(rec.sale_person_id, rec.commission)] |=rec
+                    else:
+                        data[(rec.sale_person_id, rec.commission)] = rec
+                for r in data:
+                    if len(data[r])>1:
+                        data[r][:-1].unlink()
+                        invoice.check_due_date(data[r])
+                        print('*******', invoice)
+
+
+
+
+
+
+
+        # pending_ids = []
+        # if not len(self) and partner_id:
+        #     commissions = self.search([('sale_person_id', '=', partner_id), ('invoice_id', '!=', False)])
+        # else:
+        #     commissions = self.search([('invoice_id', '!=', False)])
+        # commissions = commissions.filtered(lambda r: r.invoice_id and r.invoice_type == 'out_invoice' and r.is_paid == True and r.commission == rec.commission)
+        # for rec in commissions:
+        #     duplicate = commissions.filtered(lambda r: r.sale_person_id == rec.sale_person_id and
+        #      r.invoice_id == rec.invoice_id and r.paid_date == rec.paid_date and r.id != rec.id)
+        #     if duplicate:
+        #         duplicate.unlink()
+        #         rec.invoice_id.check_due_date(rec)
+        # return True
+
     def correct_delivery_charge(self, order_ids=[]):
         for order in self.env['sale.order'].browse(order_ids):
             if not order.order_line.filtered(lambda rec: rec.is_delivery is True):
@@ -66,7 +102,7 @@ class SaleCommission(models.Model):
                         commission = profit * (rule.rule_id.percentage / 100)                                                
                     if invoice.type == 'out_refund' and commission > 0:
                         commission = -commission
-                    logging.error(('******************', order, order.gross_profit ,invoice, invoice.gross_profit, rec.commission, commission)
+                    logging.error(('******************', order, order.gross_profit ,invoice, invoice.gross_profit, rec.commission, commission))
                     rec.commission = round(commission, 2)
 
 

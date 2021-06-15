@@ -3,6 +3,7 @@
 from datetime import date
 import logging
 from odoo import fields, models, api
+from datetime import datetime
 
 
 class SaleCommission(models.Model):
@@ -67,27 +68,63 @@ class SaleCommission(models.Model):
                             logging.error(('@@@@@@@@@@@@@@@@@@', e, invoice))                         
                         logging.error(('*******', invoice))
 
+    def compare_commission(self, invoice_ids=[]):
+        print(self, invoice_ids)
+        res = []
+        if not invoice_ids:
+            return []
+        date = datetime. strptime('2021-05-02 00:00:00', '%Y-%m-%d %H:%M:%S')
+        for invoice in self.env['account.invoice'].browse(invoice_ids):
+            rules = invoice.partner_id.commission_percentage_ids
+            if rules and not invoice.sale_commission_ids:
+                 res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'no commission'})
+                 continue
+            order = invoice.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
+            profit = invoice.gross_profit
+            print(order, order.create_date)
+            if order and order.create_date < date and order.carrier_id.id in [40,42,] and order.gross_profit != invoice.gross_profit:
+                if not order.order_line.filtered(lambda rec: rec.is_delivery is True):
+                    order.adjust_delivery_line()
+                profit = order.gross_profit
+            aging = {}
+            for rec in invoice.sale_commission_ids:
+                if rec.invoice_type not in ('out_invoice', 'out_refund', 'aging'): 
+                    res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': rec.invoice_type, 'commission':rec.id})
+                    continue                   
+                rule = rules.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)
+                commission = 0
+                if rule.rule_id.based_on in ['profit', 'profit_delivery']:
+                    commission = profit * (rule.rule_id.percentage / 100)
+                elif rule.rule_id.based_on == 'invoice':
+                    amount = invoice.amount_total
+                    commission = amount * (rule.rule_id.percentage / 100)
+                if invoice.type == 'out_refund':
+                    commission = -commission
+                if round(rec.commission, 2) != round(commission, 2) and rec.invoice_type != 'aging':
+                    res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'commission difference', 'commission':rec.id, 'commission_s':rec.commission, 'commission_o': commission})
+                    continue
+                if rec.invoice_type == 'aging':
+                    commission = 0
+                    if not invoice.payment_ids:
+                        res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'againg without payment', 'commission':rec.id})
+                        continue
+                    payment_date = max([r.payment_date for r in invoice.payment_ids])
+                    if payment_date > invoice.date_due:
+                        extra_days = payment_date - invoice.date_due
+                        if invoice.partner_id.company_id.commission_ageing_ids:
+                            commission_ageing = invoice.partner_id.company_id.commission_ageing_ids.filtered(
+                                lambda r: r.delay_days <= extra_days.days)
+                            commission_ageing = commission_ageing.sorted(key=lambda r: r.delay_days, reverse=True)
+                            if commission_ageing and commission_ageing[0].reduce_percentage:
+                                commission = commission_ageing[0].reduce_percentage * rec.commission / 100
+                    if round(rec.commission, 2) != round(commission, 2):
+                        res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'aging commission difference', 'commission':rec.id, 'commission_s':rec.commission, 'commission_o': commission})
+                        continue                           
+        return res
 
 
 
 
-
-
-
-        # pending_ids = []
-        # if not len(self) and partner_id:
-        #     commissions = self.search([('sale_person_id', '=', partner_id), ('invoice_id', '!=', False)])
-        # else:
-        #     commissions = self.search([('invoice_id', '!=', False)])
-        # commissions = commissions.filtered(lambda r: r.invoice_id and r.invoice_type == 'out_invoice' and r.is_paid == True and r.commission == rec.commission)
-        # for rec in commissions:
-        #     duplicate = commissions.filtered(lambda r: r.sale_person_id == rec.sale_person_id and
-        #      r.invoice_id == rec.invoice_id and r.paid_date == rec.paid_date and r.id != rec.id)
-        #     if duplicate:
-        #         duplicate.unlink()
-        #         rec.invoice_id.check_due_date(rec)
-        # return True
-      
 
     def correct_delivery_charge(self, order_ids=[]):
         for order in self.env['sale.order'].browse(order_ids):
@@ -101,19 +138,22 @@ class SaleCommission(models.Model):
                 # sales_person_ids = rec.invoice_id.partner_id.sales_person_ids
                 for rec in invoice.sale_commission_ids:  
                     rule = invoice.partner_id.commission_percentage_ids.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)   
-                    # if rec.sale_person_id.id not in invoice.partner_id.sales_person_ids.ids:
-                    #     rec.commission=0
-                    #     rec.is_cancelled=True
-                    #     continue             
-                    # if profit <= 0:
-                    if rule.rule_id.based_on == 'invoice' and rec.commission == 0:
-                        amount = invoice.amount_total
-                        commission = amount * (rule.rule_id.percentage / 100)
-                        rec.commission = commission  
-                        logging.error(('******************---------------->', invoice))                      
-                    continue
-                    commission = 0
-                    
+                    if not rule:
+                        rec.commission = 0
+                        continue
+                    if rec.sale_person_id.id not in invoice.partner_id.sales_person_ids.ids:
+                        rec.commission=0
+                        rec.is_cancelled=True
+                        continue             
+                    if profit <= 0:
+                        if rule.rule_id.based_on == 'invoice' and rec.commission == 0:
+                            amount = invoice.amount_total
+                            commission = amount * (rule.rule_id.percentage / 100)
+                            rec.commission = commission  
+                            logging.error(('******************---------------->', invoice))   
+                        else:
+                            rec.commission = 0                                   
+                    commission = 0                    
                     if rule.rule_id.based_on in ['profit', 'profit_delivery']:
                         commission = profit * (rule.rule_id.percentage / 100)                                                
                     if invoice.type == 'out_refund' and commission > 0:

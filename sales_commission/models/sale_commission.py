@@ -3,7 +3,8 @@
 from datetime import date
 import logging
 from odoo import fields, models, api
-from datetime import datetime
+from datetime import datetime, date
+from dateutil.relativedelta import relativedelta
 
 
 class SaleCommission(models.Model):
@@ -68,7 +69,7 @@ class SaleCommission(models.Model):
                             logging.error(('@@@@@@@@@@@@@@@@@@', e, invoice))                         
                         logging.error(('*******', invoice))
 
-    def compare_commission(self, invoice_ids=[]):
+    def compare_commission(self, invoice_ids=[], is_update=False):
         print(self, invoice_ids)
         res = []
         if not invoice_ids:
@@ -76,7 +77,7 @@ class SaleCommission(models.Model):
         date = datetime. strptime('2021-05-02 00:00:00', '%Y-%m-%d %H:%M:%S')
         for invoice in self.env['account.invoice'].browse(invoice_ids):
             rules = invoice.partner_id.commission_percentage_ids
-            if rules and not invoice.sale_commission_ids:
+            if not rules or not invoice.sale_commission_ids:
                  # res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'no commission'})
                  continue
             order = invoice.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
@@ -87,50 +88,84 @@ class SaleCommission(models.Model):
                     order.adjust_delivery_line()
                 profit = order.gross_profit
             aging = {}
+            amount = invoice.amount_total
+            payment_date_list = [r.payment_date for r in invoice.payment_ids]
+            payment_date = max(payment_date_list) if payment_date_list else False
+            if invoice.payment_term_id.due_days:
+                days = invoice.payment_term_id.due_days
+                if payment_date and payment_date > invoice.date_invoice + relativedelta(days=days):
+                    profit += invoice.amount_total * (invoice.payment_term_id.discount_per / 100)
+                elif payment_date and  payment_date < invoice.date_invoice + relativedelta(days=days):
+                    amount -= invoice.amount_total * (invoice.payment_term_id.discount_per / 100)
+            if invoice.payment_ids and invoice.payment_ids[0].payment_method_id.code == 'credit_card' and invoice.partner_id.payment_method != 'credit_card':
+                profit -= invoice.amount_total * 0.03
+            if invoice.payment_ids and invoice.payment_ids[0].payment_method_id.code == 'credit_card':
+                amount -= invoice.amount_total * 0.03
+            if invoice.payment_ids and invoice.payment_ids[0].payment_method_id.code != 'credit_card' and invoice.partner_id.payment_method == 'credit_card':
+                profit += invoice.amount_total * 0.03
             for rec in invoice.sale_commission_ids:
-                if rec.invoice_type not in ('out_invoice', 'out_refund', 'aging'): 
+                if rec.invoice_type not in ('out_invoice', 'out_refund'): 
                     res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': rec.invoice_type, 'commission':rec.id})
                     continue                   
                 rule = rules.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)
+                if not rule and is_update:
+                    res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'no rule', 'commission':rec.id})
+                    rec.write({'is_removed': True})
+                    continue
+                if rec.sale_person_id.id not in invoice.partner_id.sales_person_ids.ids and is_update:
+                    res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'sales person not configured', 'commission':rec.id})
+                    rec.write({'is_removed': True})
+                    continue
                 commission = 0
                 if rule.rule_id.based_on in ['profit', 'profit_delivery']:
                     commission = profit * (rule.rule_id.percentage / 100)
                 elif rule.rule_id.based_on == 'invoice':
-                    amount = invoice.amount_total
+                    # amount = invoice.amount_total
                     commission = amount * (rule.rule_id.percentage / 100)
                 if invoice.type == 'out_refund':
                     commission = -commission
-                if round(rec.commission, 2) != round(commission, 2) and rec.invoice_type != 'aging':
-                    # rec.write({'commission': commission})
-                    res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'commission difference', 'commission':rec.id, 'commission_s':rec.commission, 'commission_o': commission, 'profit':profit})
+                print(commission, rec.commission)
+                if round(rec.commission, 2) != round(commission, 2):                    
+                    res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'commission difference', 'commission':rec.id, 
+                        'commission_s':rec.commission, 'commission_o': commission, 'profit':profit, 'amount': amount})
+                    rec.write({'commission': commission})
                     continue
-                if rec.invoice_type == 'aging':
-                    commission = 0
-                    if not invoice.payment_ids:
-                        res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'againg without payment', 'commission':rec.id})
-                        continue
-                    line = invoice.sale_commission_ids.filtered(lambda r: r.id != rec.id and r.sale_person_id.id == rec.sale_person_id.id)
-                    if not line:
-                        res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'againg without main line', 'commission':rec.id})
-                        continue
-                    if len(line) > 1:
-                        line = line[0]
-                    payment_date = max([r.payment_date for r in invoice.payment_ids])
-                    if payment_date > invoice.date_due:
-                        extra_days = payment_date - invoice.date_due
-                        if invoice.partner_id.company_id.commission_ageing_ids:
-                            commission_ageing = invoice.partner_id.company_id.commission_ageing_ids.filtered(
-                                lambda r: r.delay_days <= extra_days.days)
-                            commission_ageing = commission_ageing.sorted(key=lambda r: r.delay_days, reverse=True)
-                            if commission_ageing and commission_ageing[0].reduce_percentage:
-                                commission = commission_ageing[0].reduce_percentage * line.commission / 100
-                    if round(rec.commission, 2) != round(commission, 2):
-                        # rec.write({'commission': commission})
-                        res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'aging commission difference', 'commission':rec.id, 'commission_s':rec.commission, 'commission_o': commission, 'profit':profit})
-                        continue                           
+                # if rec.invoice_type == 'aging':
+                #     commission = 0
+                #     if not invoice.payment_ids:
+                #         res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'againg without payment', 'commission':rec.id})
+                #         continue
+                #     line = invoice.sale_commission_ids.filtered(lambda r: r.id != rec.id and r.sale_person_id.id == rec.sale_person_id.id)
+                #     if not line:
+                #         res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'againg without main line', 'commission':rec.id})
+                #         continue
+                #     if len(line) > 1:
+                #         line = line[0]
+                #     payment_date = max([r.payment_date for r in invoice.payment_ids])
+                #     if payment_date > invoice.date_due:
+                #         extra_days = payment_date - invoice.date_due
+                #         if invoice.partner_id.company_id.commission_ageing_ids:
+                #             commission_ageing = invoice.partner_id.company_id.commission_ageing_ids.filtered(
+                #                 lambda r: r.delay_days <= extra_days.days)
+                #             commission_ageing = commission_ageing.sorted(key=lambda r: r.delay_days, reverse=True)
+                #             if commission_ageing and commission_ageing[0].reduce_percentage:
+                #                 commission = commission_ageing[0].reduce_percentage * line.commission / 100
+                #     if round(rec.commission, 2) != round(commission, 2):
+                #         # rec.write({'commission': commission})
+                #         res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'aging commission difference', 'commission':rec.id, 'commission_s':rec.commission, 'commission_o': commission, 'profit':profit})
+                #         continue                           
         return res
 
-
+    def correct_aging_com(self, invoice_ids=[]):
+        res = []
+        for invoice in self.env['account.invoice'].browse(invoice_ids):
+            print(invoice)
+            try:
+                invoice.sale_commission_ids.filtered(lambda r: r.invoice_type == 'aging').unlink()
+                invoice.check_due_date(invoice.sale_commission_ids)
+            except Exception as e:
+                res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': e})
+        return True
 
 
 

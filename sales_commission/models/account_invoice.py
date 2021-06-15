@@ -133,8 +133,8 @@ class AccountInvoice(models.Model):
             for rec in self.partner_id.commission_percentage_ids:
                 if not rec.rule_id:
                     raise UserError(_('Commission rule is not configured for %s.' % (rec.sale_person_id.name)))
-                if profit <= 0:
-                    continue
+                # if profit <= 0:
+                #     continue
                 commission = 0
                 if rec.rule_id.based_on in ['profit', 'profit_delivery']:
                     commission = profit * (rec.rule_id.percentage / 100)
@@ -145,6 +145,8 @@ class AccountInvoice(models.Model):
                     continue
                 if self.type == 'out_refund':
                     commission = -commission
+                if profit <= 0:
+                    commission =0
                 sale = self.invoice_line_ids.mapped('sale_line_ids')
                 vals = {
                     'sale_person_id': rec.sale_person_id.id,

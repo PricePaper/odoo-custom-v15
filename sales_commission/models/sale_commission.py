@@ -103,33 +103,60 @@ class SaleCommission(models.Model):
                 amount -= invoice.amount_total * 0.03
             if invoice.payment_ids and invoice.payment_ids[0].payment_method_id.code != 'credit_card' and invoice.partner_id.payment_method == 'credit_card':
                 profit += invoice.amount_total * 0.03
-            for rec in invoice.sale_commission_ids:
-                if rec.invoice_type not in ('out_invoice', 'out_refund'): 
-                    res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': rec.invoice_type, 'commission':rec.id})
-                    continue                   
-                rule = rules.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)
-                if not rule and is_update:
-                    res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'no rule', 'commission':rec.id})
-                    rec.write({'is_removed': True})
-                    continue
-                if rec.sale_person_id.id not in invoice.partner_id.sales_person_ids.ids and is_update:
-                    res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'sales person not configured', 'commission':rec.id})
-                    rec.write({'is_removed': True})
-                    continue
-                commission = 0
-                if rule.rule_id.based_on in ['profit', 'profit_delivery']:
-                    commission = profit * (rule.rule_id.percentage / 100)
-                elif rule.rule_id.based_on == 'invoice':
-                    # amount = invoice.amount_total
-                    commission = amount * (rule.rule_id.percentage / 100)
-                if invoice.type == 'out_refund':
-                    commission = -commission
-                print(commission, rec.commission)
-                if round(rec.commission, 2) != round(commission, 2):                    
-                    res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'commission difference', 'commission':rec.id, 
-                        'commission_s':rec.commission, 'commission_o': commission, 'profit':profit, 'amount': amount})
-                    rec.write({'commission': commission})
-                    continue
+            for user in invoice.sales_person_ids:
+                if user.id not in invoice.sale_commission_ids.mapped('sale_person_id').ids:
+                    rule = rules.filtered(lambda r: r.sale_person_id.id == user.id)
+                    commission = 0
+                    if rule.rule_id.based_on in ['profit', 'profit_delivery']:
+                        commission = profit * (rule.rule_id.percentage / 100)
+                    elif rule.rule_id.based_on == 'invoice':
+                        # amount = invoice.amount_total
+                        commission = amount * (rule.rule_id.percentage / 100)
+                    if invoice.type == 'out_refund':
+                        commission = -commission
+                    vals = {
+                        'sale_person_id': user.id,
+                        'sale_id': order and order.id,
+                        'commission': commission,
+                        'invoice_id': invoice.id,
+                        'invoice_type': invoice.type,
+                        'is_paid': True,
+                        'invoice_amount': invoice.amount_total,
+                        'commission_date': invoice.date_invoice and invoice.date_invoice
+                    }
+                    if is_update:
+                        commission_rec = self.env['sale.commission'].create(vals)
+                        res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'commission not added', 'commission':commission_rec.id})
+                    else:
+                        res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'commission not added',})
+            continue
+            # for rec in invoice.sale_commission_ids:
+            #     if rec.invoice_type not in ('out_invoice', 'out_refund'): 
+            #         res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': rec.invoice_type, 'commission':rec.id})
+            #         continue                   
+            #     rule = rules.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)
+            #     if not rule and is_update:
+            #         res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'no rule', 'commission':rec.id})
+            #         rec.write({'is_removed': True})
+            #         continue
+            #     if rec.sale_person_id.id not in invoice.partner_id.sales_person_ids.ids and is_update:
+            #         res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'sales person not configured', 'commission':rec.id})
+            #         rec.write({'is_removed': True})
+            #         continue
+            #     commission = 0
+            #     if rule.rule_id.based_on in ['profit', 'profit_delivery']:
+            #         commission = profit * (rule.rule_id.percentage / 100)
+            #     elif rule.rule_id.based_on == 'invoice':
+            #         # amount = invoice.amount_total
+            #         commission = amount * (rule.rule_id.percentage / 100)
+            #     if invoice.type == 'out_refund':
+            #         commission = -commission
+            #     print(commission, rec.commission)
+            #     if round(rec.commission, 2) != round(commission, 2):                    
+            #         res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'commission difference', 'commission':rec.id, 
+            #             'commission_s':rec.commission, 'commission_o': commission, 'profit':profit, 'amount': amount})
+            #         rec.write({'commission': commission})
+            #         continue
                 # if rec.invoice_type == 'aging':
                 #     commission = 0
                 #     if not invoice.payment_ids:

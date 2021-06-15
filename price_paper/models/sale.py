@@ -589,7 +589,7 @@ class SaleOrder(models.Model):
                     (order.partner_id.credit + order.amount_total))
 
             for order_line in order.order_line:
-                if order_line.profit_margin < 0.0 and not (
+                if order_line.price_unit < order_line.working_cost and not (
                         'rebate_contract_id' in order_line and order_line.rebate_contract_id):
                     msg1 = '[%s]%s ' % (order_line.product_id.default_code,
                                         order_line.product_id.name) + "Unit Price is less than  Product Cost Price"

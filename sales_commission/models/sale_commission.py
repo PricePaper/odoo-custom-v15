@@ -77,7 +77,7 @@ class SaleCommission(models.Model):
         for invoice in self.env['account.invoice'].browse(invoice_ids):
             rules = invoice.partner_id.commission_percentage_ids
             if rules and not invoice.sale_commission_ids:
-                 res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'no commission'})
+                 # res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'no commission'})
                  continue
             order = invoice.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
             profit = invoice.gross_profit
@@ -101,13 +101,20 @@ class SaleCommission(models.Model):
                 if invoice.type == 'out_refund':
                     commission = -commission
                 if round(rec.commission, 2) != round(commission, 2) and rec.invoice_type != 'aging':
-                    res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'commission difference', 'commission':rec.id, 'commission_s':rec.commission, 'commission_o': commission})
+                    # rec.write({'commission': commission})
+                    res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'commission difference', 'commission':rec.id, 'commission_s':rec.commission, 'commission_o': commission, 'profit':profit})
                     continue
                 if rec.invoice_type == 'aging':
                     commission = 0
                     if not invoice.payment_ids:
                         res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'againg without payment', 'commission':rec.id})
                         continue
+                    line = invoice.sale_commission_ids.filtered(lambda r: r.id != rec.id and r.sale_person_id.id == rec.sale_person_id.id)
+                    if not line:
+                        res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'againg without main line', 'commission':rec.id})
+                        continue
+                    if len(line) > 1:
+                        line = line[0]
                     payment_date = max([r.payment_date for r in invoice.payment_ids])
                     if payment_date > invoice.date_due:
                         extra_days = payment_date - invoice.date_due
@@ -116,9 +123,10 @@ class SaleCommission(models.Model):
                                 lambda r: r.delay_days <= extra_days.days)
                             commission_ageing = commission_ageing.sorted(key=lambda r: r.delay_days, reverse=True)
                             if commission_ageing and commission_ageing[0].reduce_percentage:
-                                commission = commission_ageing[0].reduce_percentage * rec.commission / 100
+                                commission = commission_ageing[0].reduce_percentage * line.commission / 100
                     if round(rec.commission, 2) != round(commission, 2):
-                        res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'aging commission difference', 'commission':rec.id, 'commission_s':rec.commission, 'commission_o': commission})
+                        # rec.write({'commission': commission})
+                        res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'aging commission difference', 'commission':rec.id, 'commission_s':rec.commission, 'commission_o': commission, 'profit':profit})
                         continue                           
         return res
 

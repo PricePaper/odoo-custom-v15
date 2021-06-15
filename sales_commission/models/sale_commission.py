@@ -165,7 +165,7 @@ class SaleCommission(models.Model):
                 invoice.check_due_date(invoice.sale_commission_ids)
             except Exception as e:
                 res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': e})
-        return True
+        return res
 
 
 

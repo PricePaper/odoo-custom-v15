@@ -23,7 +23,7 @@ class StockMoveLine(models.Model):
                 if invoice_lines:
                     invoice_lines.write({'quantity': vals.get('qty_done')})
                     invoice_lines.mapped('invoice_id').compute_taxes()
-                sale_line.qty_delivered = sale_line.pre_delivered_qty + vals.get('qty_done')
+                sale_line.qty_delivered = vals.get('qty_done')
 
             if 'picking_id' in vals:
                 sale_line.invoice_lines.filtered(lambda rec: line.move_id in rec.stock_move_ids).unlink()

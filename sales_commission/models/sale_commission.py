@@ -27,6 +27,7 @@ class SaleCommission(models.Model):
     settlement_id = fields.Many2one('sale.commission.settlement', string='Settlement')
     commission_date = fields.Date('Date')
     paid_date = fields.Date('Paid Date', compute='get_invoice_paid_date', store=True)
+    partner_id = fields.Many2one(related='invoice_id.partner_id', string="Customer")
 
     def find_invoices(self, offset=0, limit=100):
         print(limit)

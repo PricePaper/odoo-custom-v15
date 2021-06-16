@@ -46,6 +46,7 @@
                     <field name="commission_date" invisible="1"/>
                     <field name="paid_date" />
                     <field name="invoice_type" />
+                    <field name="partner_id"/>
                     <field name="sale_id"/>
                     <field name="invoice_id" />
                     <field name="invoice_amount"/>
@@ -67,14 +68,18 @@
           <field name="name">commission.sale.create.search</field>
           <field name="model">sale.commission</field>
           <field name="arch" type="xml">
-              <search string="Opportunities Analysis">
+              <search string="Sales Commission">
                     <filter string="Paid" name="is_paid"
                             domain="[('is_paid', '=', True)]"/>
                     <filter string="Pending" name="not_paid"
                             domain="[('is_paid', '=', False)]"/>
                     <filter string="Settled" name="is_settled"
                             domain="[('is_settled', '=', True)]"/>
+                    <separator/>
                     <field name="sale_person_id" string="Salesperson"/>
+                    <field name="invoice_id" string="Invoice"/>
+                    <filter string="Added" name="not_removed"
+                            domain="[('is_removed', '=', False)]"/>
                     <separator/>
                     <filter string="Type Invoice" name="invoice_type"
                             domain="[('invoice_type', '=', 'out_invoice')]"/>
@@ -114,6 +119,7 @@
                             <group>
                                 <field name="invoice_type"/>
                                 <field name="sale_id" readonly="1"/>
+                                <field name="partner_id" readonly="1"/>
                                 <field name="invoice_id" readonly="1"/>
                                 <field name="invoice_amount" readonly="1"/>
                                 <field name="commission" />

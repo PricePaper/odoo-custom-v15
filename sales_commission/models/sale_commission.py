@@ -79,7 +79,7 @@ class SaleCommission(models.Model):
                 weekly_draw = rec.sale_person_id.weekly_draw
                 if weekly_draw and weekly_draw > 0:
                     daily_amount = weekly_draw / 5
-                res.append({'invoice_id':rec.invoice_id.id, 'number': rec.invoice_id.number, 'exception': 'week day', 'commission_s': rec.commission, 'commission_o': -daily_amount})
+                res.append({'commission': rec.id, 'number': rec.invoice_id.number, 'exception': 'week day', 'commission_s': rec.commission, 'commission_o': -daily_amount})
                 rec.commission = -daily_amount
             else:
                 res.append({'invoice_id':rec.invoice_id.id, 'number': rec.invoice_id.number, 'exception': 'weekend day', 'commission_s': rec.commission,})

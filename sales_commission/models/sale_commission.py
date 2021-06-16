@@ -54,7 +54,7 @@ class SaleCommission(models.Model):
                     if (rec.sale_person_id, rec.commission) in data.keys():
                         data[(rec.sale_person_id, rec.commission)] |=rec
                     else:
-                        data[(rec.sale_person_id, rec.commission)] = rec                
+                        data[(rec.sale_person_id, rec.commission)] = rec
                 for r in data:
                     if len(data[r])>1:
                         unlink_ids = data[r] - data[r][0]
@@ -62,15 +62,15 @@ class SaleCommission(models.Model):
                         logging.error((data[r], unlink_ids))
 
                         unlink_ids.unlink()
-                        data[r] -= unlink_ids                        
+                        data[r] -= unlink_ids
                         try:
                             invoice.check_due_date(data[r])
                         except Exception as e:
-                            logging.error(('@@@@@@@@@@@@@@@@@@', e, invoice))                         
+                            logging.error(('@@@@@@@@@@@@@@@@@@', e, invoice))
                         logging.error(('*******', invoice))
 
     def correct_weekly_draw(self):
-        res = []        
+        res = []
         for rec in self.search([('invoice_type', '=', 'draw')], order='sale_person_id'):
             if not rec.commission_date:
                 res.append({'invoice_id':rec.invoice_id.id, 'number': rec.invoice_id.number, 'exception': 'no date', 'commission': rec.id,})
@@ -148,9 +148,9 @@ class SaleCommission(models.Model):
                         res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'commission not added',})
             continue
             # for rec in invoice.sale_commission_ids:
-            #     if rec.invoice_type not in ('out_invoice', 'out_refund'): 
+            #     if rec.invoice_type not in ('out_invoice', 'out_refund'):
             #         res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': rec.invoice_type, 'commission':rec.id})
-            #         continue                   
+            #         continue
             #     rule = rules.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)
             #     if not rule and is_update:
             #         res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'no rule', 'commission':rec.id})
@@ -169,8 +169,8 @@ class SaleCommission(models.Model):
             #     if invoice.type == 'out_refund':
             #         commission = -commission
             #     print(commission, rec.commission)
-            #     if round(rec.commission, 2) != round(commission, 2):                    
-            #         res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'commission difference', 'commission':rec.id, 
+            #     if round(rec.commission, 2) != round(commission, 2):
+            #         res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'commission difference', 'commission':rec.id,
             #             'commission_s':rec.commission, 'commission_o': commission, 'profit':profit, 'amount': amount})
             #         rec.write({'commission': commission})
             #         continue
@@ -197,7 +197,7 @@ class SaleCommission(models.Model):
                 #     if round(rec.commission, 2) != round(commission, 2):
                 #         # rec.write({'commission': commission})
                 #         res.append({'invoice_id':invoice.id, 'number': invoice.number, 'exception': 'aging commission difference', 'commission':rec.id, 'commission_s':rec.commission, 'commission_o': commission, 'profit':profit})
-                #         continue                           
+                #         continue
         return res
 
     def correct_aging_com(self, invoice_ids=[]):
@@ -217,32 +217,32 @@ class SaleCommission(models.Model):
         for order in self.env['sale.order'].browse(order_ids):
             if not order.order_line.filtered(lambda rec: rec.is_delivery is True):
                 order.adjust_delivery_line()
-            invoice = order.invoice_ids[:1]  
-                      
+            invoice = order.invoice_ids[:1]
+
             if order.gross_profit != invoice.gross_profit and invoice.sale_commission_ids and invoice.state=='paid':
                 profit = order.gross_profit
                 # rule = rec.invoice_id.partner_id.commission_percentage_ids.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)
                 # sales_person_ids = rec.invoice_id.partner_id.sales_person_ids
-                for rec in invoice.sale_commission_ids:  
-                    rule = invoice.partner_id.commission_percentage_ids.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)   
+                for rec in invoice.sale_commission_ids:
+                    rule = invoice.partner_id.commission_percentage_ids.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)
                     if not rule:
                         rec.commission = 0
                         continue
                     if rec.sale_person_id.id not in invoice.partner_id.sales_person_ids.ids:
                         rec.commission=0
                         rec.is_cancelled=True
-                        continue             
+                        continue
                     if profit <= 0:
                         if rule.rule_id.based_on == 'invoice' and rec.commission == 0:
                             amount = invoice.amount_total
                             commission = amount * (rule.rule_id.percentage / 100)
-                            rec.commission = commission  
-                            logging.error(('******************---------------->', invoice))   
+                            rec.commission = commission
+                            logging.error(('******************---------------->', invoice))
                         else:
-                            rec.commission = 0                                   
-                    commission = 0                    
+                            rec.commission = 0
+                    commission = 0
                     if rule.rule_id.based_on in ['profit', 'profit_delivery']:
-                        commission = profit * (rule.rule_id.percentage / 100)                                                
+                        commission = profit * (rule.rule_id.percentage / 100)
                     if invoice.type == 'out_refund' and commission > 0:
                         commission = -commission
                     logging.error(('******************', order, order.gross_profit ,invoice, invoice.gross_profit, rec.commission, commission))
@@ -257,7 +257,7 @@ class SaleCommission(models.Model):
             self = self.search([('invoice_id', '!=', False)])
         for rec in self.filtered(lambda r: r.invoice_id):
             if rec.invoice_id:
-                rule = rec.invoice_id.partner_id.commission_percentage_ids.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)                
+                rule = rec.invoice_id.partner_id.commission_percentage_ids.filtered(lambda r: r.sale_person_id.id == rec.sale_person_id.id)
                 if rule.rule_id.based_on not in ['profit', 'profit_delivery']:
                     continue
                 commission = rec.invoice_id.gross_profit * (rule.rule_id.percentage / 100)
@@ -323,20 +323,22 @@ class SaleCommission(models.Model):
 
     @api.model
     def create_weeekly_draw(self):
-        sales_persons = self.env['res.partner'].search([('is_sales_person', '=', True)])
-        for sales_person in sales_persons:
-            weekly_draw = sales_person.weekly_draw
-            if weekly_draw and weekly_draw > 0:
-                daily_amount = weekly_draw / 7
-                vals = {
-                    'sale_person_id': sales_person.id,
-                    'commission': -daily_amount,
-                    'is_paid': True,
-                    'invoice_type': 'draw',
-                    'commission_date': date.today(),
-                    'paid_date': date.today()
-                }
-                self.env['sale.commission'].create(vals)
+        draw_date = date.today()
+        if draw_date.weekday() < 5:
+            sales_persons = self.env['res.partner'].search([('is_sales_person', '=', True)])
+            for sales_person in sales_persons:
+                weekly_draw = sales_person.weekly_draw
+                if weekly_draw and weekly_draw > 0:
+                    daily_amount = weekly_draw / 5
+                    vals = {
+                        'sale_person_id': sales_person.id,
+                        'commission': -daily_amount,
+                        'is_paid': True,
+                        'invoice_type': 'draw',
+                        'commission_date': date.today(),
+                        'paid_date': date.today()
+                    }
+                    self.env['sale.commission'].create(vals)
 
 
 SaleCommission()

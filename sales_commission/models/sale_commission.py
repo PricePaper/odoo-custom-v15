@@ -69,6 +69,23 @@ class SaleCommission(models.Model):
                             logging.error(('@@@@@@@@@@@@@@@@@@', e, invoice))                         
                         logging.error(('*******', invoice))
 
+    def correct_weekly_draw(self):
+        res = []        
+        for rec in self.search([('invoice_type', '=', 'draw')], order='sale_person_id'):
+            if not rec.commission_date:
+                res.append({'invoice_id':rec.invoice_id.id, 'number': rec.invoice_id.number, 'exception': 'no date', 'commission': rec.id,})
+                continue
+            if rec.commission_date.weekday() < 5:
+                weekly_draw = rec.sale_person_id.weekly_draw
+                if weekly_draw and weekly_draw > 0:
+                    daily_amount = weekly_draw / 5
+                res.append({'invoice_id':rec.invoice_id.id, 'number': rec.invoice_id.number, 'exception': 'week day', 'commission_s': rec.commission, 'commission_o': -daily_amount})
+                rec.commission = -daily_amount
+            else:
+                res.append({'invoice_id':rec.invoice_id.id, 'number': rec.invoice_id.number, 'exception': 'weekend day', 'commission_s': rec.commission,})
+                rec.unlink()
+        return res
+
     def compare_commission(self, invoice_ids=[], is_update=False):
         print(self, invoice_ids)
         res = []

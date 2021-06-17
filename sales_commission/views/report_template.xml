@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="paperformat_commission_settlement" model="report.paperformat">
+            <field name="name">Commission Settlement</field>
+            <field name="default" eval="False"/>
+            <field name="format">Letter</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">10</field>
+            <field name="margin_bottom">0</field>
+            <field name="margin_left">10</field>
+            <field name="margin_right">0</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <report
+                string="Commission Settlement"
+                id="settlement_report"
+                model="sale.commission.settlement"
+                report_type="qweb-pdf"
+                file="sales_commission.report_commission_settlement"
+                name="sales_commission.report_commission_settlement"
+                paperformat="paperformat_commission_settlement"
+                print_report_name="'%s - %s %s' % (object.sales_person_id.name or '', object.date_from or '', object.name)"
+        />
+    </data>
+</odoo>

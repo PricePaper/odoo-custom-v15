@@ -5,6 +5,8 @@ import logging
 from odoo import fields, models, api
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
+from odoo.addons import decimal_precision as dp
+from odoo.tools import float_round
 
 
 class SaleCommission(models.Model):
@@ -12,7 +14,7 @@ class SaleCommission(models.Model):
     _description = 'Sale Commission'
 
     sale_person_id = fields.Many2one('res.partner', string='Sale Person')
-    commission = fields.Float(string='Commission')
+    commission = fields.Float(string='Commission', digits=dp.get_precision('Product Price'))
     invoice_id = fields.Many2one('account.invoice', string='Invoice')
     is_paid = fields.Boolean(string='Paid', default=False)
     is_cancelled = fields.Boolean(string='Cancelled', default=False)
@@ -330,7 +332,8 @@ class SaleCommission(models.Model):
             for sales_person in sales_persons:
                 weekly_draw = sales_person.weekly_draw
                 if weekly_draw and weekly_draw > 0:
-                    daily_amount = weekly_draw / 5
+
+                    daily_amount = float_round(weekly_draw / 5, precision_digits=2)
                     vals = {
                         'sale_person_id': sales_person.id,
                         'commission': -daily_amount,

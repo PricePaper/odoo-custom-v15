@@ -1098,7 +1098,7 @@ class SaleOrderLine(models.Model):
             # if shared price exists then do not proceed with record creation
 
             if self.price_from and self.price_from.pricelist_id.type != 'competitor':
-                if self.price_from.price < unit_price:
+                if self.price_from.price != unit_price:
                     self.price_from.with_context({'from_sale': True}).price = unit_price
                     self.manual_price = True
             else:

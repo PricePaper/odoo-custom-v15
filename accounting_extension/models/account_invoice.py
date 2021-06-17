@@ -21,12 +21,23 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def action_cancel_draft(self):
+        self.ensure_one()
         res = super(AccountInvoice, self).action_cancel_draft()
-        self.write({'discount_date': False})
+        vals = {'discount_date': False}
+        if self.move_name:
+            vals.update({'number': self.move_name})
+        self.write(vals)
+        return res
+
+    def action_invoice_draft(self):
+        self.ensure_one()
+        res = super(AccountInvoice, self).action_invoice_draft()
+        if self.move_name:
+            self.write({'number': self.move_name})
         return res
 
     @api.multi
-    def action_cancel(self):
+    def action_cancel_old(self):
         res = super(AccountInvoice, self).action_cancel()
         self.write({'move_name': False})
         return res

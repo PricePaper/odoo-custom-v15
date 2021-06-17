@@ -8,7 +8,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
 from odoo.addons import decimal_precision as dp
-
+import logging
 from odoo.tools import float_round
 from odoo.exceptions import ValidationError
 
@@ -61,6 +61,7 @@ class StockPickingBatch(models.Model):
     def check_total_amount(self):
 
         if float_round(self.cheque_amount + self.cash_amount, precision_digits=2) != self.actual_returned:
+            logging.error(('=============================>', float_round(self.cheque_amount + self.cash_amount, precision_digits=2), self.actual_returned, self))
             raise ValidationError(_('Total amount and sum of Cash and Check does not match'))
 
     def _compute_to_invoice_state(self):

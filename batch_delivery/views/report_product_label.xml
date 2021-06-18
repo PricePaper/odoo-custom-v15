@@ -55,8 +55,8 @@
                             </div>
 
                             <div style="width:384px;height:15%;">
-                                <div t-field="line[0].sale_line_id.order_id.name" style="display:block;float:left;width:55px;font-size:14px;"/>
-                                <div style="float:left;font-size:14px;width:240px; text-align:center;white-space:nowrap;overflow: hidden;">
+                                <div t-field="line[0].sale_line_id.order_id.name" style="display:block;float:left;width:60px;font-size:14px;"/>
+                                <div style="float:left;font-size:14px;width:235px; text-align:center;white-space:nowrap;overflow: hidden;">
                                     <t t-if="line[1]">
                                         <span t-esc="line[1].name"/>
                                     </t>

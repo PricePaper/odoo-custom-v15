@@ -762,7 +762,7 @@ class SaleOrder(models.Model):
         history_from = datetime.today() - relativedelta(months=self.env.user.company_id.sale_history_months)
         products = self.order_line.mapped('product_id').ids
         sales_history = self.env['sale.history'].search(
-            [('partner_id', '=', self.partner_id.id), ('order_id.confirmation_date', '>=', history_from),
+            [('partner_id', '=', self.partner_id.id),
              ('product_id', 'not in', products), ('product_id.sale_ok', '=', True)])
         # addons product filtering
         addons_products = sales_history.mapped('product_id').filtered(lambda rec: rec.need_sub_product).mapped(
@@ -1269,7 +1269,7 @@ class SaleOrderLine(models.Model):
                 #      ('is_last', '=', True)], limit=1)
 
                 last = self.env['sale.history'].sudo().search(
-                    [('order_id.partner_shipping_id', '=', line.order_id.partner_shipping_id.id),
+                    [('order_id.partner_id', '=', line.order_id.partner_id.id),
                      ('product_id', '=', line.product_id.id), ('uom_id', '=', line.product_uom.id),
                      ], limit=1)
                 if last:
@@ -1348,13 +1348,6 @@ class SaleOrderLine(models.Model):
                                                                                                        self.product_id,
                                                                                                        self.order_id.partner_shipping_id).ids
                     res.get('domain', {}).update({'tax_id': [('id', 'in', taxes_ids)]})
-
-                # sale_history = self.env['sale.history'].search(
-                #     [('partner_id', '=', self.order_id and self.order_id.partner_id.id),
-                #      ('product_id', '=', self.product_id and self.product_id.id)],
-                #      order='order_date desc', limit=1)
-                # if sale_history:
-                #     self.product_uom = sale_history.uom_id
 
             msg, product_price, price_from = self.calculate_customer_price()
             warn_msg += msg and "\n\n{}".format(msg)

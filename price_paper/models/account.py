@@ -163,6 +163,13 @@ class AccountInvoiceLine(models.Model):
     # lst_price = fields.Float(string='Standard Price', digits=dp.get_precision('Product Price'))
     # working_cost = fields.Float(string='Working Cost', digits=dp.get_precision('Product Price'))
 
+
+    def _get_anglo_saxon_price_unit(self):
+        price_unit = super(AccountInvoiceLine,self)._get_anglo_saxon_price_unit()
+        if self.product_id.invoice_policy == "delivery":
+            price_unit = self.uom_id._compute_price(price_unit, self.product_id.uom_id)
+        return price_unit
+
     @api.onchange('product_id')
     def _onchange_product_id(self):
         domain = {}

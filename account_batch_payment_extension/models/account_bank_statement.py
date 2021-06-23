@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import re
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
+
 
 class AccountBankStatementLine(models.Model):
     _inherit = "account.bank.statement.line"
@@ -8,8 +10,36 @@ class AccountBankStatementLine(models.Model):
     def process_reconciliation(self, counterpart_aml_dicts=None, payment_aml_rec=None, new_aml_dicts=None):
 
         counterpart_moves = super().process_reconciliation(counterpart_aml_dicts=counterpart_aml_dicts, payment_aml_rec=payment_aml_rec, new_aml_dicts=new_aml_dicts)
-        statement_line = counterpart_moves.mapped('line_ids').mapped('statement_line_id')
-
+        statement_line = counterpart_moves.mapped('line_ids').mapped('statement_line_id')        
+        if len(payment_aml_rec.mapped('journal_id')) == 1 and payment_aml_rec.mapped('journal_id').id != self.journal_id.id and payment_aml_rec.mapped('journal_id').type  == 'cash':
+            for aml in payment_aml_rec:
+                if aml.journal_id.type == 'cash' and aml.debit > 0:
+                    journal = self.env.ref('account_batch_payment_extension.account_journal_cash_to_bank')
+                    if not journal:
+                        raise UserError("Journal \"Cash to Bank\" is not configured")
+                    move_vals = {
+                        'date': self.date,
+                        'ref': 'Cash transfer to bank',
+                        'company_id': self.company_id.id,
+                        'journal_id': journal.id,
+                        'line_ids': [[0, 0, {
+                            'partner_id': self.partner_id.id or False,
+                            # 'move_id': move_id,
+                            'debit': 0,
+                            'credit': aml.debit,
+                            'journal_id': journal.id,
+                            'account_id': aml.account_id.id
+                            }],
+                            [0,0,{
+                            'partner_id': self.partner_id.id or False,
+                            # 'move_id': move_id,
+                            'debit': aml.debit,
+                            'credit': 0,
+                            'journal_id': journal.id,
+                            'account_id': journal.default_debit_account_id.id
+                            }]]
+                    }
+                    self.env['account.move'].create(move_vals).post()
         for stmt in statement_line:
             if 'DEPOSITED ITEM RETURNED' in stmt.name:
                 cheque_no = stmt.name and stmt.name.split('CK#:')

@@ -171,7 +171,7 @@
                 <button name="button_validate" position="after">
                     <field name="is_return" invisible="1"/>
                     <button name="action_make_transit" type="object" string="Mark as Transit" groups="account.group_account_invoice"
-                            attrs="{'invisible': ['|', '|',  ('is_return', '=', True), ('state', 'not in', ['assigned']), ('picking_type_code', 'in', ['incoming', 'internal'])]}" class="oe_highlight"/>
+                            attrs="{'invisible': ['|', '|',  '|',('is_return', '=', True), ('state', 'not in', ['assigned']), ('picking_type_code', 'in', ['incoming', 'internal']), '&amp;',('picking_type_code', '=', 'outgoing'), ('purchase_id', '!=', False)]}" class="oe_highlight"/>
                     <button name="create_invoice" type="object" string="Create Invoice" groups="account.group_account_invoice"
                             attrs="{'invisible': ['|', '|',  ('is_return', '=', True), ('state', 'not in', ['in_transit']), ('is_invoiced', '=', True)]}" class="oe_highlight"/>
 
@@ -185,7 +185,7 @@
                       string="Validate" type="object" class="oe_highlight" groups="stock.group_stock_user, account.group_account_invoice"/>
                 </button>
                 <button name="button_validate" position="attributes">
-                    <attribute name="attrs">{'invisible':['|', ('picking_type_code', '!=', 'incoming'), ('show_validate', '=', False)]}</attribute>
+                    <attribute name="attrs">{'invisible':['|', '|', '|', ('purchase_id', '=', False),('picking_type_code', '!=', 'incoming'),('state', 'in', ('waiting','confirmed', 'done', 'cancel')), ('show_validate', '=', False)]}</attribute>
                 </button>
                 <field name="state" position="attributes">
                     <attribute name="statusbar_visible">
@@ -238,7 +238,9 @@
                 <!-- <xpath expr="//field[@name='move_ids_without_package']/tree/button[@name='action_show_details']" position="attributes">
                     <attribute name="attrs">{'invisible':[('parent.state', '!=', 'in_transit')]}</attribute>
                 </xpath> -->
-
+                <xpath expr="//field[@name='origin']" position="after">
+                    <field name="transit_date" invisible="1"/>
+                </xpath>
                 <xpath expr="//field[@name='move_line_ids_without_package']/tree/field[@name='lot_id']"
                        position="after">
                     <field name="pref_lot_id" domain="[('product_id', '=', product_id)]"/>

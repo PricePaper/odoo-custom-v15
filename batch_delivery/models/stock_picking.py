@@ -69,6 +69,7 @@ class StockPicking(models.Model):
         readonly=True, required=False,
         states={'draft': [('readonly', False)]})
     is_internal_transfer = fields.Boolean(string='Internal transfer')
+    transit_date = fields.Date()
 
     @api.model
     def create(self, vals):
@@ -140,10 +141,10 @@ class StockPicking(models.Model):
             else:
                 pick.is_invoiced = False
 
-    @api.depends('sale_id.invoice_ids')
+    @api.depends('sale_id.invoice_ids', 'move_lines')
     def _compute_invoice_ids(self):
         for rec in self:
-            rec.invoice_ids = rec.sale_id.invoice_ids
+            rec.invoice_ids = rec.sale_id.invoice_ids.filtered(lambda r: rec in r.picking_ids)
 
     def _compute_invoice_ref(self):
         for rec in self:
@@ -218,6 +219,7 @@ class StockPicking(models.Model):
         for pick in self:
             if pick.state not in ['in_transit', 'done']:
                 pick.is_transit = True
+                pick.transit_date = fields.Date.context_today(pick)
                 pick.move_ids_without_package.write({'is_transit': True})
                 for line in pick.move_line_ids:
                     line.qty_done = line.move_id.reserved_availability
@@ -357,6 +359,11 @@ class StockPicking(models.Model):
 
     @api.multi
     def action_cancel(self):
+        for rec in self:
+            if self.mapped('invoice_ids').filtered(lambda r: rec in r.picking_ids and r.state in ['open', 'paid']):
+                raise UserError("Cannot perform this action, invoice not in draft state")
+            # TODO::should we need to cancel the invoice documents?
+            self.mapped('invoice_ids').filtered(lambda r: rec in r.picking_ids and r in r.picking_ids).sudo().action_cancel()
         res = super(StockPicking, self).action_cancel()
         self.mapped('move_ids_without_package').write({'is_transit': False})
         self.write({'batch_id': False, 'is_late_order': False})

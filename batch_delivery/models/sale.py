@@ -71,7 +71,7 @@ class SaleOrderLine(models.Model):
     def _prepare_invoice_line(self, qty):
         self.ensure_one()
         result = super(SaleOrderLine, self)._prepare_invoice_line(qty)
-        moves = self.move_ids.filtered(lambda rec: rec.state not in ['cancel'])
+        moves = self.mapped('move_ids').filtered(lambda rec: rec.state not in ['cancel'])
         if moves:
             result.update({'stock_move_ids': [(6, 0, moves.ids)]})
         return result

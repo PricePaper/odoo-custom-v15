@@ -22,6 +22,13 @@ class StockMove(models.Model):
     unit_price = fields.Float(string="Unit Price", copy=False, compute='_compute_total_price', store=False)
     total = fields.Float(string="Subtotal", copy=False, compute='_compute_total_price', store=False)
 
+    def _create_account_move_line(self, credit_account_id, debit_account_id, journal_id):
+        self.ensure_one()
+        if self.picking_id.transit_date:
+            super(StockMove, self.with_context(force_period_date=self.picking_id.transit_date))._create_account_move_line(credit_account_id, debit_account_id, journal_id)
+        else:
+            super(StockMove,self)._create_account_move_line(credit_account_id, debit_account_id, journal_id)
+
     @api.model
     def _run_fifo(self, move, quantity=None):
         """ Value `move` according to the FIFO rule, meaning we consume the

@@ -83,7 +83,19 @@ class GlobalPriceChange(models.Model):
 
             customer_price_lists = self.env['customer.pricelist'].search([
                 ('partner_id', 'in', partner_to_filter.ids)]).mapped('pricelist_id').filtered(
-                lambda r: r.type == 'customer')
+                lambda r: r.type != 'competitor')
+            filtered_pricelist = self.env['product.pricelist']
+            if rec.customer_ranking and partner_to_filter:
+                for price_list in customer_price_lists:
+                    if price_list.partner_ids and len(price_list.partner_ids) > 1:
+                        price_list_rank_list = price_list.partner_ids.mapped('rnk_lst_12_mon')
+                        pricelist_min_rank = min(price_list_rank_list)
+                        rec_ranking_list = rec.customer_ranking.split(',')
+                        rec_min_rank = min(rec_ranking_list)
+                        if rec_min_rank > pricelist_min_rank:
+                            continue
+                    filtered_pricelist += price_list
+                customer_price_lists = filtered_pricelist
             customer_price_lists = customer_price_lists.mapped('customer_product_price_ids')
 
             if rec.product_filter == 'vendor':
@@ -100,10 +112,10 @@ class GlobalPriceChange(models.Model):
             for price_list in customer_price_lists:
 
                 if rec.is_exclude and rec.exclude_date:
-                    partner = price_list.pricelist_id.partner_ids
-                    if not partner or len(partner) > 1:
-                        continue
-                    if partner.established_date and partner.established_date > rec.exclude_date:
+                    date_list = price_list.pricelist_id.partner_ids.filtered(lambda r: r.established_date).mapped('established_date')
+
+                    established_date = min(date_list) if date_list else False
+                    if established_date and established_date > rec.exclude_date:
                         continue
 
                 # skips the update pricelist if expiry lock is active and lock expiry date is set

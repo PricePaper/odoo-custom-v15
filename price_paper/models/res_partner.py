@@ -63,6 +63,11 @@ class ResPartner(models.Model):
                 rec.last_sold_date = sale_date
                 rec.established_date = min(sale_date_list) if sale_date_list else False
 
+    def xmlrpc_compute_estbl_date(self):
+        for rec in self:
+            rec._compute_estbl_date()
+        return True
+
     @api.depends('sale_order_ids.confirmation_date')
     def _compute_estbl_date(self):
         for rec in self:

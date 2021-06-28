@@ -402,8 +402,10 @@ class StockPicking(models.Model):
     def receive_product_in_lines(self):
         for line in self.move_ids_without_package:
             if not line.quantity_done and line.state != 'cancel':
-                line.quantity_done = line.product_uom_qty
-
+                if self.picking_type_code == 'incoming':
+                    line.quantity_done = line.product_uom_qty
+                elif self.picking_type_code == 'outgoing':
+                    line.quantity_done = line.reserved_availability
     @api.multi
     def button_validate(self):
         """

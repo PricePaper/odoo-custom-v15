@@ -401,7 +401,7 @@ class StockPicking(models.Model):
 
     def receive_product_in_lines(self):
         for line in self.move_ids_without_package:
-            if not line.quantity_done:
+            if not line.quantity_done and line.state != 'cancel':
                 line.quantity_done = line.product_uom_qty
 
     @api.multi

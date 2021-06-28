@@ -185,7 +185,7 @@
                       string="Validate" type="object" class="oe_highlight" groups="stock.group_stock_user, account.group_account_invoice"/>
                 </button>
                 <button name="button_validate" position="attributes">
-                    <attribute name="attrs">{'invisible':['|', '|', '|', ('purchase_id', '=', False),('picking_type_code', '!=', 'incoming'),('state', 'in', ('waiting','confirmed', 'done', 'cancel')), ('show_validate', '=', False)]}</attribute>
+                    <attribute name="attrs">{'invisible':['|', '|',('picking_type_code', '!=', 'incoming'),('state', 'in', ('waiting','confirmed', 'done', 'cancel')), ('show_validate', '=', False)]}</attribute>
                 </button>
                 <field name="state" position="attributes">
                     <attribute name="statusbar_visible">

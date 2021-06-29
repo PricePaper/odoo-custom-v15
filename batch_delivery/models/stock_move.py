@@ -121,7 +121,8 @@ class StockMove(models.Model):
                 move.unit_price = -move.price_unit
             elif move.picking_id.picking_type_id.code == 'incoming':
                 move.unit_price = move.price_unit
-            move.total = move.unit_price * move.quantity_done
+            if move.state != 'cancel':
+                move.total = move.unit_price * move.quantity_done
 
     @api.depends('sale_line_id.order_id.partner_shipping_id')
     def _compute_partner_id(self):

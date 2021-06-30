@@ -366,7 +366,7 @@ class StockPicking(models.Model):
             if self.mapped('invoice_ids').filtered(lambda r: rec in r.picking_ids and r.state in ['open', 'paid']):
                 raise UserError("Cannot perform this action, invoice not in draft state")
             # TODO::should we need to cancel the invoice documents?
-            self.mapped('invoice_ids').filtered(lambda r: rec in r.picking_ids and r in r.picking_ids).sudo().action_cancel()
+            self.mapped('invoice_ids').filtered(lambda r: rec in r.picking_ids).sudo().action_cancel()
         res = super(StockPicking, self).action_cancel()
         self.mapped('move_ids_without_package').write({'is_transit': False})
         self.write({'batch_id': False, 'is_late_order': False})

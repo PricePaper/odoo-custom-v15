@@ -277,6 +277,9 @@ class StockPicking(models.Model):
             #                route_id = historical_picking and historical_picking.route_id and historical_picking.route_id.id or False
             #                if route_id:
             #                    vals.update({'route_id': route_id})
+            if 'route_id' in vals.keys() and picking.batch_id and  picking.batch_id.state in ('done', 'no_payment', 'paid'):
+                error = "Batch is already in done state. You can not remove the picking"
+                raise UserError(_(error))
 
             route_id = vals.get('route_id', False)
             if route_id:

@@ -29,7 +29,7 @@ class AccountBatchPayment(models.Model):
     _name = 'account.batch.payment'
     _inherit = ['account.batch.payment', 'mail.thread']
 
-    batch_picking_id = fields.Many2one('stock.picking.batch', compute='_compute_batch_picking_id')
+    batch_picking_id = fields.Many2one('stock.picking.batch', compute='_compute_batch_picking_id', search='_search_batch_picking')
     state = fields.Selection([('draft', 'New'), ('sent', 'Sent'), ('reconciled', 'Reconciled')], readonly=True,
                              default='draft', copy=False, track_visibility="onchange")
 
@@ -37,6 +37,15 @@ class AccountBatchPayment(models.Model):
         for rec in self:
             rec.batch_picking_id = rec.payment_ids.mapped('batch_id')
 
+    @api.model
+    def _search_batch_picking(self, operator, value):
+        pay_obj = self.env['account.payment']
+        act_obj = self.env['account.batch.payment']
+        res = []
+        payments = pay_obj.search([('batch_id.name', operator, value)])
+        account_batch = act_obj.search([('payment_ids', 'in', payments.ids)])
+        res.append(('id', 'in', account_batch.ids))
+        return res
 
 class AccountPayment(models.Model):
     _inherit = 'account.payment'

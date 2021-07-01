@@ -444,6 +444,35 @@ class StockPicking(models.Model):
 
         return True
 
+    def _check_backorder(self):
+        """
+
+        override to remove canceled movelines
+
+        This method will loop over all the move lines of self and
+        check if creating a backorder is necessary. This method is
+        called during button_validate if the user has already processed
+        some quantities and in the immediate transfer wizard that is
+        displayed if the user has not processed any quantities.
+
+        :return: True if a backorder is necessary else False
+        """
+        quantity_todo = {}
+        quantity_done = {}
+        for move in self.mapped('move_lines').filtered(lambda x: x.state != 'cancel'):
+            quantity_todo.setdefault(move.product_id.id, 0)
+            quantity_done.setdefault(move.product_id.id, 0)
+            quantity_todo[move.product_id.id] += move.product_uom_qty
+            quantity_done[move.product_id.id] += move.quantity_done
+        for ops in self.mapped('move_line_ids').filtered(lambda x: x.package_id and not x.product_id and not x.move_id):
+            for quant in ops.package_id.quant_ids:
+                quantity_done.setdefault(quant.product_id.id, 0)
+                quantity_done[quant.product_id.id] += quant.qty
+        for pack in self.mapped('move_line_ids').filtered(lambda x: x.product_id and not x.move_id):
+            quantity_done.setdefault(pack.product_id.id, 0)
+            quantity_done[pack.product_id.id] += pack.product_uom_id._compute_quantity(pack.qty_done, pack.product_id.uom_id)
+        return any(quantity_done[x] < quantity_todo.get(x, 0) for x in quantity_done)
+
 
 StockPicking()
 

@@ -183,7 +183,9 @@ class AddSaleHistoryPO(models.TransientModel):
                 else:
                     line_taxes_id = fpos.map_tax(line.product_id.supplier_taxes_id)
 
-                seller = line.product_id.seller_ids.filtered(lambda l: l.name.id == po_id.partner_id.id)
+                seller = line.product_id.seller_ids.filtered(lambda l: l.name.id == po_id.partner_id.id).sorted(key=lambda r: r.sequence)
+                if seller:
+                    seller = seller[0]
                 date_planned = self.env['purchase.order.line']._get_date_planned(seller).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
                 po_line = {'product_id' : line.product_id.id,

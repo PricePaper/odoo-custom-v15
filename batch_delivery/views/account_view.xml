@@ -81,6 +81,9 @@
                  <xpath expr="//field[@name='payment_ids']/tree/field[@name='payment_method_id']" position="after">
                    <field name="state" readonly="1"/>
                 </xpath>
+                <xpath expr="//field[@name='payment_ids']/tree" position="attributes">
+                   <attribute name="decoration-muted">"state == 'cancelled'"</attribute>
+                </xpath>
                 <xpath expr="//sheet" position="after">
                     <div class="oe_chatter">
                         <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>

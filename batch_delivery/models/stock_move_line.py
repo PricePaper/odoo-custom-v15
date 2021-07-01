@@ -17,16 +17,41 @@ class StockMoveLine(models.Model):
         result = super(StockMoveLine, self).write(vals)
         for line in self:
             sale_line = line.move_id.sale_line_id
-            if vals.get('qty_done') and sale_line:
+
+            if 'qty_done' in vals and sale_line:
+                qty = vals['qty_done']
                 invoice_lines = sale_line.invoice_lines.filtered(
                     lambda rec: rec.invoice_id.state != 'cancel' and line.move_id in rec.stock_move_ids)
+                invoices = invoice_lines.mapped('invoice_id')
                 if invoice_lines:
-                    invoice_lines.write({'quantity': vals.get('qty_done')})
-                    invoice_lines.mapped('invoice_id').compute_taxes()
-                sale_line.qty_delivered = vals.get('qty_done')
+                    invoice_lines.write({'quantity': qty})
+                    if qty == 0:
+
+                        invoice_lines.sudo().unlink()
+                        invoices.compute_taxes()
+
+                        delivery_inv_lines = self.env['account.invoice.line']
+
+                        for invoice in invoices:
+                            if len(invoice.invoice_line_ids) == 1:
+                                if all(invoice.invoice_line_ids.mapped('sale_line_ids').mapped('is_delivery')):
+                                    delivery_inv_lines |= invoice.invoice_line_ids
+
+                        if delivery_inv_lines:
+                            delivery_inv_lines.sudo().unlink()
+
+                        amount = sum(invoices.mapped('amount_total'))
+
+                        if not amount:
+                            invoices.sudo().action_invoice_cancel()
+
+                    else:
+                        invoice_lines.mapped('invoice_id').compute_taxes()
+
+                sale_line.qty_delivered = qty
 
             if 'picking_id' in vals:
-                sale_line.invoice_lines.filtered(lambda rec: line.move_id in rec.stock_move_ids).unlink()
+                sale_line.invoice_lines.filtered(lambda rec: line.move_id in rec.stock_move_ids).sudo().unlink()
 
         return result
 
@@ -42,6 +67,7 @@ class StockMoveLine(models.Model):
                     invoice_lines.mapped('invoice_id').compute_taxes()
         result = super(StockMoveLine, self).unlink()
         return result
+
 
 StockMoveLine()
 

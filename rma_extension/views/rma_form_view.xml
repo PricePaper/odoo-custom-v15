@@ -19,7 +19,31 @@
                 <xpath expr="//field[@name='rma_sale_lines_ids']/tree/field[@name='product_id']" position="after">
                     <field name="so_line_id" invisible="1"/>
                 </xpath>
+                <xpath expr="//field[@name='rma_sale_lines_ids']/tree/field[@name='order_quantity']" position="after">
+                    <field name="product_uom" force_save="1"/>
+                </xpath>
+            </field>
+        </record>
 
+         <record id="view_rma_purchase_lines_form_inherit_ppt" model="ir.ui.view">
+            <field name="name">scs.rma.exchange.rma.ret.mer.auth.form.inherit.ppt</field>
+            <field name="model">rma.purchase.lines</field>
+            <field name="inherit_id" ref="scs_rma.view_rma_purchase_lines_form"/>
+            <field name="arch" type="xml">
+                <field name="product_id" position="after">
+                    <field name="product_uom" force_save="1"/>
+                </field>
+            </field>
+        </record>
+
+         <record id="view_rma_sale_lines_form_inherit_ppt" model="ir.ui.view">
+            <field name="name">scs.rma.exchange.rma.ret.mer.auth.form.inherit.ppt</field>
+            <field name="model">rma.sale.lines</field>
+            <field name="inherit_id" ref="scs_rma.view_rma_sale_lines_form"/>
+            <field name="arch" type="xml">
+                <field name="product_id" position="after">
+                    <field name="product_uom" force_save="1"/>
+                </field>
             </field>
         </record>
 
@@ -33,7 +57,9 @@
                  <xpath expr="//field[@name='product_id']" position="after">
                     <field name="po_line_id" invisible="1"/>
                 </xpath>
-
+                 <xpath expr="//field[@name='order_quantity']" position="after">
+                    <field name="product_uom" force_save="1"/>
+                </xpath>
             </field>
         </record>
     </data>

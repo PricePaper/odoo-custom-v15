@@ -26,7 +26,8 @@ class RMARetMerAuth(models.Model):
                              destination_location_id.id or False,
                 'type': 'return',
                 'tax_id': order_line.tax_id,
-                'so_line_id': order_line.id
+                'so_line_id': order_line.id,
+                'product_uom': order_line.product_uom.id
             })
             order_line_lst.append(rma_sale_line)
         self.rma_sale_lines_ids = [(5,)]
@@ -55,7 +56,8 @@ class RMARetMerAuth(models.Model):
                     False,
                 'type': 'return',
                 'tax_id': order_line.taxes_id,
-                'po_line_id': order_line.id
+                'po_line_id': order_line.id,
+                'product_uom': order_line.product_uom.id
             })
             po_line_lst.append(rma_purchase_line)
         self.rma_purchase_lines_ids = [(5,)]
@@ -85,11 +87,8 @@ class RMARetMerAuth(models.Model):
                         'origin': rma.name,
                         'product_uom_qty': rma_line.refund_qty or 0,
                         'location_id': rma_line.source_location_id.id or False,
-                        'location_dest_id':
-                        rma_line.destination_location_id.id or
-                        False,
-                        'product_uom': rma_line.product_id.uom_id and
-                        rma_line.product_id.uom_id.id or False,
+                        'location_dest_id':rma_line.destination_location_id.id or False,
+                        'product_uom': rma_line.product_uom and rma_line.product_uom.id or False,
                         'rma_id': rma.id,
                         'group_id': rma.sale_order_id.procurement_group_id.id,
                         'price_unit': rma_line.price_subtotal or 0,
@@ -121,6 +120,7 @@ class RMARetMerAuth(models.Model):
                         'name': rma_line.product_id and rma_line.
                         product_id.name or False,
                         'quantity': rma_line.refund_qty or 0,
+                        'uom_id': rma_line.product_uom and rma_line.product_uom.id or False,
                         'price_unit': prod_price or 0,
                         'currency_id': rma.currency_id.id or False,
                         'sale_line_ids': [(6, 0, [rma_line.so_line_id.id])]
@@ -303,12 +303,9 @@ class RMARetMerAuth(models.Model):
                         'origin': rma.name,
                         'group_id': rma.purchase_order_id.group_id.id,
                         'product_uom_qty': line.refund_qty or 0,
-                        'location_id': line.source_location_id.id or
-                        False,
-                        'location_dest_id': line.destination_location_id.id or
-                        False,
-                        'product_uom': line.product_id.uom_id and
-                        line.product_id.uom_id.id or False,
+                        'location_id': line.source_location_id.id or False,
+                        'location_dest_id': line.destination_location_id.id or False,
+                        'product_uom': line.product_uom and line.product_uom.id or False,
                         'rma_id': rma.id,
                         'price_unit': line.price_subtotal or 0,
                         'to_refund': True,
@@ -339,6 +336,7 @@ class RMARetMerAuth(models.Model):
                         'name': line.product_id and line.
                         product_id.name or False,
                         'quantity': line.refund_qty or 0,
+                        'uom_id': line.product_uom and line.product_uom.id or False,
                         'price_unit': prod_price or 0,
                         'currency_id': rma.currency_id.id or False,
                         'purchase_line_id': line.po_line_id.id
@@ -720,9 +718,11 @@ class RmaSaleLines(models.Model):
     _inherit = "rma.sale.lines"
 
     so_line_id = fields.Many2one('sale.order.line')
+    product_uom = fields.Many2one('uom.uom', readonly=True)
 
 
 class RmaPurchaseLines(models.Model):
     _inherit = "rma.purchase.lines"
 
     po_line_id = fields.Many2one('purchase.order.line')
+    product_uom = fields.Many2one('uom.uom', readonly=True)

@@ -95,9 +95,11 @@ class PurchaseOrder(models.Model):
             if rec.product_id:
                 if rec.product_id.id in existing_products:
                     continue
-                all_vendor_products.append(rec.product_id.id)
+                if rec.product_id.purchase_ok:
+                    all_vendor_products.append(rec.product_id.id)
             else:
-                prod_ids = rec.product_tmpl_id.product_variant_ids and rec.product_tmpl_id.product_variant_ids.ids or []
+                prod_ids = rec.product_tmpl_id.product_variant_ids and \
+                           rec.product_tmpl_id.product_variant_ids.filtered(lambda p: p.purchase_ok).ids or []
                 for prod in prod_ids:
                     if prod in existing_products:
                         continue
@@ -111,8 +113,12 @@ class PurchaseOrder(models.Model):
             first_day = current_date.replace(day=1)
             date_limit = str(first_day + relativedelta(months=-15))
             self._cr.execute(
-                "SELECT date_trunc('month', so.confirmation_date) AS cnf_date, sol.product_id, sol.product_uom, sum(sol.product_uom_qty) FROM sale_order_line sol JOIN sale_order so on so.id=sol.order_id WHERE so.state in ('sale', 'done') AND sol.product_id %s %s and so.confirmation_date >= '%s' GROUP BY sol.product_id, sol.product_uom, cnf_date ORDER BY sol.product_id, sol.product_uom, cnf_date desc" % (
-                operator, product_ids, str(date_limit)))
+                "SELECT date_trunc('month', so.confirmation_date) AS cnf_date, "
+                "sol.product_id, sol.product_uom, sum(sol.product_uom_qty) "
+                "FROM sale_order_line sol JOIN sale_order so on so.id=sol.order_id "
+                "WHERE so.state in ('sale', 'done') AND sol.product_id %s %s and so.confirmation_date >= '%s' "
+                "GROUP BY sol.product_id, sol.product_uom, cnf_date "
+                "ORDER BY sol.product_id, sol.product_uom, cnf_date desc" % (operator, product_ids, str(date_limit)))
 
             res = self._cr.dictfetchall()
             if not res:

@@ -13,6 +13,9 @@
                     <field name="old_cost"/>
                     <field name="price_change"/>
                     <field name="price_filter"/>
+                    <field name="update_standard_price"/>
+                    <field name="update_customer_pricelist"/>
+                    <field name="update_burden"/>
                 </tree>
             </field>
         </record>

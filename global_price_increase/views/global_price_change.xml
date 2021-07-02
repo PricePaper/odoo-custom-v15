@@ -45,7 +45,7 @@
                         </group>
                         <group>
                             <group>
-                                <field name="customer_ranking" attrs="{'readonly':[('is_done', '=', True)]}"/>
+                                <field name="customer_ranking" attrs="{'readonly':[('is_done', '=', True)]}" help="Comma separated values(A or A,B,C).Values should be A,B,C,D,E,F,Z"/>
                             </group>
                             <!-- <group>
                                 <field name="ranking_required" attrs="{'readonly':[('is_done', '=', True)],}"/>

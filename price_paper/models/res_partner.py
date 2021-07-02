@@ -89,12 +89,17 @@ class ResPartner(models.Model):
     @api.model
     def default_get(self, fields_list):
         res = super(ResPartner, self).default_get(fields_list)
+        res.update({
+            'lastname': self._context.get('lastname'),
+            'firstname': self._context.get('firstname')
+        })
         if self.env.user.company_id:
             company = self.env.user.company_id
-            res.update({   'property_payment_term_id': self.env['account.payment.term'].search([('set_to_default', '=', True)], limit=1).id,
-                           'property_delivery_carrier_id': company.partner_delivery_method_id and company.partner_delivery_method_id.id or False,
-                           'country_id': company.partner_country_id and company.partner_country_id.id or False,
-                           'state_id': company.partner_state_id and company.partner_state_id.id or False})
+            res.update({
+                'property_payment_term_id': self.env['account.payment.term'].search([('set_to_default', '=', True)], limit=1).id,
+                'property_delivery_carrier_id': company.partner_delivery_method_id and company.partner_delivery_method_id.id or False,
+                'country_id': company.partner_country_id and company.partner_country_id.id or False,
+                'state_id': company.partner_state_id and company.partner_state_id.id or False})
         return res
 
     @api.model

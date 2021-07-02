@@ -31,7 +31,8 @@ class StockMoveLine(models.Model):
                         invoices.compute_taxes()
 
                         delivery_inv_lines = self.env['account.invoice.line']
-
+                        # if a invoice have only one line we need to make sure it's not a delivery change.
+                        # if its a devlivery change, remove it from invoice  and cancel the entry.
                         for invoice in invoices:
                             if len(invoice.invoice_line_ids) == 1:
                                 if all(invoice.invoice_line_ids.mapped('sale_line_ids').mapped('is_delivery')):
@@ -62,9 +63,28 @@ class StockMoveLine(models.Model):
             if sale_line:
                 invoice_lines = sale_line.invoice_lines.filtered(
                     lambda rec: rec.invoice_id.state != 'cancel' and line.move_id in rec.stock_move_ids)
+
                 if invoice_lines:
-                    invoice_lines.write({'quantity': 0})
-                    invoice_lines.mapped('invoice_id').compute_taxes()
+                    invoices = invoice_lines.mapped('invoice_id')
+                    invoice_lines.sudo().unlink()
+                    invoices.compute_taxes()
+
+                    delivery_inv_lines = self.env['account.invoice.line']
+                    # if a invoice have only one line we need to make sure it's not a delivery change.
+                    # if its a devlivery change, remove it from invoice  and cancel the entry.
+                    for invoice in invoices:
+                        if len(invoice.invoice_line_ids) == 1:
+                            if all(invoice.invoice_line_ids.mapped('sale_line_ids').mapped('is_delivery')):
+                                delivery_inv_lines |= invoice.invoice_line_ids
+
+                    if delivery_inv_lines:
+                        delivery_inv_lines.sudo().unlink()
+
+                    amount = sum(invoices.mapped('amount_total'))
+
+                    if not amount:
+                        invoices.sudo().action_invoice_cancel()
+
         result = super(StockMoveLine, self).unlink()
         return result
 

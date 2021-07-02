@@ -17,7 +17,8 @@ class SaleOrderline(models.Model):
     class_margin = fields.Float(related='product_id.categ_id.class_margin')
     company_margin = fields.Float(related='company_id.company_margin')
     remark = fields.Char(string='RM', compute='_calculate_remark')
-
+    deliver_by = fields.Date(string="Deliver By", related='order_id.deliver_by')
+    
     @api.multi
     def _calculate_percent(self):
         for line in self:

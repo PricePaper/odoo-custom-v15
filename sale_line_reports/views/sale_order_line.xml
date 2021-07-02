@@ -9,6 +9,7 @@
                     <field name="order_partner_id" readonly="1" string="CUSTOMER NAME"/>
                     <field name="order_id" readonly="1" string="ORDER#"/>
                     <field name="date_order" readonly="1" string="ORDER DATE"/>
+                    <field name="deliver_by" readonly="1" string="Deliver By"/>
                     <field name="customer_po" readonly="1" string="CUST P/O #"/>
                     <field name="product_id" readonly="1" string="ITEM #"/>
                     <field name="is_taxed" readonly="1" string="TX"/>

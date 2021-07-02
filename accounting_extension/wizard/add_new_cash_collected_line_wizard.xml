@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_cash_collected_wizard" model="ir.ui.view">
+            <field name="name">add.cash.collected.wizard</field>
+            <field name="model">add.cash.collected.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Add Cash Collected Lines">
+                    <sheet>
+                         <script>
+                            $(document).ready(function(){
+                                $('.modal-dialog').css({'max-width':'90%'});
+                            });
+                        </script>
+                        <p>
+                            <b>Please Add Cash Collected Lines For Partners Not In Truck Batch.</b>
+                        </p>
+
+                        <separator string="Cash Collected Lines"/>
+                        <field name="cash_collected_line_ids" context="{'default_batch_id': active_id}">
+                            <tree editable="top">
+                                <!-- <field name="sequence" widget="handle"/> -->
+                                <field name="batch_id" invisible="1"/>
+                                <!-- <field name="partner_ids" invisible="0"/> -->
+                                <field name="partner_id" domain="[('parent_id', '=', False), ('customer', '=', True)]"/>
+                                <field name="invoice_id" domain="[('partner_id', '=', partner_id), ('state', '=', 'open'), ('type', '=', 'out_invoice')]" context="{'from_batch_payment': True}"/>
+                                <field name="journal_id" required="1"/>
+                                <field name="available_payment_method_ids" invisible="1"/>
+                                <field name="payment_method_id" domain="[('id','in',available_payment_method_ids)]"/>
+                                <field name="discount"/>
+                                <field name="discount_amount"/>
+                                <field name="communication" attrs="{'required': [('is_communication', '=', True)]}"/>
+                                <field name="is_communication" invisible="1"/>
+                                <field name="amount" sum="Total"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                    <footer>
+                        <button string="Add Line" type="object" name="add_cash_collected_lines"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

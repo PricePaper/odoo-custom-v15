@@ -65,24 +65,26 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def action_invoice_open(self):
+
+        if self:
+            stock_picking = self.env['stock.picking']
+            for pick in self.mapped('picking_ids').filtered(lambda pick: pick.state != 'done'):
+                move_info = pick.move_ids_without_package.filtered(lambda m: m.quantity_done < m.product_uom_qty)
+                if move_info.ids:
+                    stock_picking |= pick
+                else:
+                    pick.action_done()
+            wiz = self.env['stock.backorder.confirmation'].create({'pick_ids': [(4, p.id) for p in stock_picking]})
+            wiz.process_cancel_backorder()
+            orders = self.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
+            for order in orders:
+                picking = order.mapped('picking_ids')
+                pending_picking = picking.filtered(lambda r: r.state not in ('done', 'cancel'))
+                if not pending_picking:
+                    order.action_done()
         res = super(AccountInvoice, self).action_invoice_open()
         if not self:
             return res
-        stock_picking = self.env['stock.picking']
-        for pick in self.mapped('picking_ids').filtered(lambda pick: pick.state != 'done'):
-            move_info = pick.move_ids_without_package.filtered(lambda m: m.quantity_done < m.product_uom_qty)
-            if move_info.ids:
-                stock_picking |= pick
-            else:
-                pick.action_done()
-        wiz = self.env['stock.backorder.confirmation'].create({'pick_ids': [(4, p.id) for p in stock_picking]})
-        wiz.process_cancel_backorder()
-        orders = self.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
-        for order in orders:
-            picking = order.mapped('picking_ids')
-            pending_picking = picking.filtered(lambda r: r.state not in ('done', 'cancel'))
-            if not pending_picking:
-                order.action_done()
         return res
 
     @api.model

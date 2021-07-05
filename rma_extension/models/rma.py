@@ -719,6 +719,7 @@ class RmaSaleLines(models.Model):
 
     so_line_id = fields.Many2one('sale.order.line')
     product_uom = fields.Many2one('uom.uom', readonly=True)
+    refund_qty = fields.Float('Return Qty')
 
 
 class RmaPurchaseLines(models.Model):
@@ -726,3 +727,4 @@ class RmaPurchaseLines(models.Model):
 
     po_line_id = fields.Many2one('purchase.order.line')
     product_uom = fields.Many2one('uom.uom', readonly=True)
+    refund_qty = fields.Float('Return Qty')

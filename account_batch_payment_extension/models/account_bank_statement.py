@@ -70,7 +70,7 @@ class AccountReconcileModel(models.Model):
         re = self.env['account.account'].search(
             [('user_type_id', '=', self.env.ref('account.data_account_type_receivable').id)], limit=1)
 
-        for p in self.env['account.batch.payment'].search([('state', '!=', 'reconciled')]):
+        for p in self.env['account.batch.payment'].search([('state', '=', 'sent')]):
             if p.batch_type == 'inbound':
                 batch_payemnt['inbound'] |= p
             else:

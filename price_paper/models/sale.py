@@ -79,9 +79,10 @@ class SaleOrder(models.Model):
             weight = 0
             qty = 0
             for line in order.order_line:
-                volume += line.gross_volume
-                weight += line.gross_weight
-                qty += line.product_uom_qty
+                if not line.is_delivery:
+                    volume += line.gross_volume
+                    weight += line.gross_weight
+                    qty += line.product_uom_qty
 
             order.total_volume = volume
             order.total_weight = weight

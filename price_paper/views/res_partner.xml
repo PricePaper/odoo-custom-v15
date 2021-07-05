@@ -325,7 +325,7 @@
 
                 <xpath expr="//field[@name='property_account_position_id']" position="attributes">
                     <attribute name="readonly">0</attribute>
-                    <attribute name="attrs">{'required': ['|', ('customer', '=', True),'|', '&amp;', ('parent_id', '=', False), ('type', '=', 'contact'), ('type', '=', 'delivery')]}</attribute>
+                    <attribute name="attrs">{'required': ['|', ('customer', '=', True),'|', '&amp;', '&amp;', ('parent_id', '=', False), ('type', '=', 'contact'), ('supplier', '=', False), ('type', '=', 'delivery')]}</attribute>
                 </xpath>
 
                 <xpath expr="//field[@name='property_account_receivable_id']" position="attributes">

@@ -20,6 +20,7 @@ Custom module implemented for Price maintanance.
         'views/res_company.xml',
         'views/product.xml',
         'views/customer.xml',
+        'views/customer_product_price.xml',
     ],
 
     'depends': ['website_scraping', 'crm_enhancements', 'base_address_city'],

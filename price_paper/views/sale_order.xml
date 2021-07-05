@@ -323,6 +323,14 @@
             </field>
         </record>
 
+        <record id="sale.action_orders" model="ir.actions.act_window">
+            <field name="context">{'create': False}</field>
+        </record>
+
+        <record id="sale.act_res_partner_2_sale_order" model="ir.actions.act_window">
+            <field name="view_mode">tree,form,graph,pivot</field>
+        </record>
+
         <record id="action_orders_credit_limit_exceeded" model="ir.actions.act_window">
             <field name="name">Orders On Hold</field>
             <field name="type">ir.actions.act_window</field>

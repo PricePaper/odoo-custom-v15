@@ -42,6 +42,24 @@
             </field>
         </record>
 
+        <template id="message_user_assigned_inherit_accounting_extension" inherit_id="mail.message_user_assigned">
+            <xpath expr="//p[1]" position="before">
+                <p t-if="object._name == 'account.invoice' and object.type == 'out_invoice'">
+
+                     <table style="font-size:12px;text-align:left;margin-top:13px;margin-bottom:10px;" border="0">
+                        <tr>
+                            <td><b>Customer</b></td>
+                            <td><t t-esc="object.partner_id.name"/></td>
+                        </tr>
+                        <tr>
+                            <td><b>Invoice Number</b></td>
+                            <td><t t-esc="object.number"/></td>
+                        </tr>
+                    </table>
+
+                </p>
+            </xpath>
+        </template>
 
     </data>
 </odoo>

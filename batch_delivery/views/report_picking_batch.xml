@@ -121,6 +121,10 @@
                                                     </td>
                                                     <td>
                                                         <span t-field="move.product_id.name"/>
+                                                        <t t-if="move.sale_line_id and move.sale_line_id.note and move.sale_line_id.note != move.sale_line_id.name" >
+                                                          <br/>
+                                                          <span t-field="move.sale_line_id.note" />
+                                                        </t>
                                                     </td>
                                                     <td>
                                                         <span t-field="move.product_id.description_pickingout" t-if="not ob.purchase_id.id and ob.picking_type_code == 'outgoing'"/>

@@ -9,7 +9,7 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//field[@name='cash_collected_lines']" position="before">
-                    <button type="object" name="add_new_partner_line" string="New Line" class="oe_edit_only oe_highlight"/>
+                    <button type="object" name="add_new_partner_line" string="Add Customer" class="oe_edit_only oe_highlight"/>
                 </xpath>
                 <xpath expr="//field[@name='cash_collected_lines']//tree/field[@name='discount']" position="after">
                    <field name="discount_amount"/>

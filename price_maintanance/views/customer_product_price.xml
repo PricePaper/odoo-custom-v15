@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_customer_product_price_form_inherited" model="ir.ui.view">
+            <field name="name">customer.product.price.form</field>
+            <field name="model">customer.product.price</field>
+            <field name="inherit_id" ref="price_paper.view_customer_product_price_form"/>
+            <field name="arch" type="xml">
+                <field name="price_lock" position='before'>
+                  <field name="last_sale_date"/>
+                  <field name="lock_expiry_date"/>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</odoo>

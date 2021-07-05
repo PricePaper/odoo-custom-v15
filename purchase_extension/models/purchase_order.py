@@ -257,6 +257,7 @@ class PurchaseOrderLine(models.Model):
 
             except AccessError:  # no write access rights -> just ignore
                 pass
+        return res
 
 
     @api.depends('product_id.volume', 'product_id.weight')

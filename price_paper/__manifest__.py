@@ -26,6 +26,7 @@ Custom module implemented for Price Paper.
         'wizard/inactive_customer_report_wizard.xml',
         'wizard/add_purchase_history_to_so.xml',
         'wizard/create_sale_tax_history_wizard.xml',
+        'views/saleorder_report.xml',
         'views/res_company.xml',
         'views/stock_move.xml',
         'views/product_notes.xml',

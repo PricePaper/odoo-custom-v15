@@ -1399,7 +1399,7 @@ class SaleOrderLine(models.Model):
             if note:
                 self.note = note.notes
             else:
-                self.note = self.name
+                self.note = ''
 
         return res
 

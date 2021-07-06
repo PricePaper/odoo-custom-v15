@@ -282,7 +282,7 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="invoice_tbody" style="font-size:13px;">
+                        <tbody class="invoice_tbody" style="font-size:16px;">
                             <t t-set="current_subtotal" t-value="0"/>
                             <t t-set="line_count" t-value="0"/>
                             <t t-foreach="o.invoice_line_ids" t-as="line">
@@ -356,7 +356,7 @@
                                     <th class="text-right"><span>Unavailable Quantity</span></th>
                                 </tr>
                             </thead>
-                            <tbody class="invoice_tbody" style="font-size:13px;">
+                            <tbody class="invoice_tbody" style="font-size:16px;">
                                 <t t-set="line_count" t-value="0"/>
                                 <t t-foreach="SL"
                                    t-as="line">
@@ -625,7 +625,7 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="invoice_tbody" style="font-size:13px;">
+                        <tbody class="invoice_tbody" style="font-size:16px;">
                             <t t-set="current_subtotal" t-value="0"/>
                             <t t-set="line_count" t-value="0"/>
                             <t t-foreach="o.invoice_line_ids" t-as="line">
@@ -698,7 +698,7 @@
                                     <th class="text-right"><span>Unavailable Quantity</span></th>
                                 </tr>
                             </thead>
-                            <tbody class="invoice_tbody" style="font-size:13px;">
+                            <tbody class="invoice_tbody" style="font-size:16px;">
                                 <t t-set="line_count" t-value="0"/>
                                 <t t-foreach="SL"
                                    t-as="line">

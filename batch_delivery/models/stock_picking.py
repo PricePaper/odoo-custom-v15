@@ -331,6 +331,8 @@ class StockPicking(models.Model):
         for pick in self:
             pick.is_transit = False
             pick.move_ids_without_package.write({'is_transit': False})
+        for line in self.move_line_ids.filtered(lambda r: r.state == 'done'):
+            line.product_onhand_qty = line.product_id.qty_available
         return res
 
     def check_return_reason(self):

@@ -76,7 +76,7 @@ class AddSaleHistoryPoLine(models.TransientModel):
         lowest price for this product
         """
         for line in self:
-            for seller in line.product_id.seller_ids:
+            for seller in line.product_id.seller_ids.filtered(lambda r: not r.date_end or r.date_end and r.date_end >= date.today()):
                 if seller.price < line.product_price:
                     line.is_not_lowest_price = True
                     break

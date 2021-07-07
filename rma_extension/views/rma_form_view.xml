@@ -22,6 +22,194 @@
                 <xpath expr="//field[@name='rma_sale_lines_ids']/tree/field[@name='order_quantity']" position="after">
                     <field name="product_uom" force_save="1"/>
                 </xpath>
+                <xpath expr="//form/sheet/notebook/page[@name='order_lines']/field[@name='rma_sale_lines_ids']" position="attributes">
+                    <attribute name="mode">tree,kanban</attribute>
+                </xpath>
+                <xpath expr="//form/sheet/notebook/page[@name='order_lines']/field[@name='rma_sale_lines_ids']" position="inside">
+                     <kanban class="o_kanban_mobile" create="0">
+                        <field name="product_id"/>
+                        <field name="type"/>
+                        <field name="source_location_id"/>
+                        <field name="destination_location_id"/>
+                         <field name="order_quantity"/>
+                        <field name="delivered_quantity"/>
+                        <field name="refund_qty"/>
+                        <templates>
+                            <t t-name="kanban-box">
+                                <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <strong>
+                                                    <span>
+                                                        <t t-esc="record.product_id.value"/>
+                                                    </span>
+                                                </strong>
+                                            </div>
+                                            <div class="col-4">
+                                                <strong>
+                                                    <span class="float-right text-right badge badge-info">
+                                                        <t t-esc="record.type.value"/>
+                                                    </span>
+                                                </strong>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 text-muted">
+                                                <span>
+                                                    Ordered Qty:
+                                                    <t t-esc="record.order_quantity.value"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 text-muted">
+                                                <span>
+                                                    Delivered Qty:
+                                                    <t t-esc="record.delivered_quantity.value"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                     <div class="row">
+                                            <div class="col-12 text-muted">
+                                                <span>
+                                                    Returned Qty:
+                                                    <t t-esc="record.refund_qty.value"/>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                </div>
+                            </t>
+                        </templates>
+                    </kanban>
+                </xpath>
+
+                 <xpath expr="//form/sheet/notebook/page[@name='purchase_order_lines']/field[@name='rma_purchase_lines_ids']" position="attributes">
+                    <attribute name="mode">tree,kanban</attribute>
+                </xpath>
+                <xpath expr="//form/sheet/notebook/page[@name='purchase_order_lines']/field[@name='rma_purchase_lines_ids']" position="inside">
+                     <kanban class="o_kanban_mobile" create="0">
+                        <field name="product_id"/>
+                        <field name="type"/>
+                        <field name="source_location_id"/>
+                        <field name="destination_location_id"/>
+                         <field name="order_quantity"/>
+                        <field name="delivered_quantity"/>
+                        <field name="refund_qty"/>
+                        <templates>
+                            <t t-name="kanban-box">
+                                <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <strong>
+                                                    <span>
+                                                        <t t-esc="record.product_id.value"/>
+                                                    </span>
+                                                </strong>
+                                            </div>
+                                            <div class="col-4">
+                                                <strong>
+                                                    <span class="float-right text-right badge badge-info">
+                                                        <t t-esc="record.type.value"/>
+                                                    </span>
+                                                </strong>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 text-muted">
+                                                <span>
+                                                    Ordered Qty:
+                                                    <t t-esc="record.order_quantity.value"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 text-muted">
+                                                <span>
+                                                    Delivered Qty:
+                                                    <t t-esc="record.delivered_quantity.value"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                     <div class="row">
+                                            <div class="col-12 text-muted">
+                                                <span>
+                                                    Returned Qty:
+                                                    <t t-esc="record.refund_qty.value"/>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                </div>
+                            </t>
+                        </templates>
+                    </kanban>
+                </xpath>
+
+                 <xpath expr="//form/sheet/notebook/page[@name='order_lines']/field[@name='rma_picking_lines_ids']" position="attributes">
+                    <attribute name="mode">tree,kanban</attribute>
+                </xpath>
+                <xpath expr="//form/sheet/notebook/page[@name='order_lines']/field[@name='rma_picking_lines_ids']" position="inside">
+                     <kanban class="o_kanban_mobile" create="0">
+                        <field name="product_id"/>
+                        <field name="type"/>
+                        <field name="source_location_id"/>
+                        <field name="destination_location_id"/>
+                         <field name="order_quantity"/>
+                        <field name="delivered_quantity"/>
+                        <field name="refund_qty"/>
+                        <templates>
+                            <t t-name="kanban-box">
+                                <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <strong>
+                                                    <span>
+                                                        <t t-esc="record.product_id.value"/>
+                                                    </span>
+                                                </strong>
+                                            </div>
+                                            <div class="col-4">
+                                                <strong>
+                                                    <span class="float-right text-right badge badge-info">
+                                                        <t t-esc="record.type.value"/>
+                                                    </span>
+                                                </strong>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 text-muted">
+                                                <span>
+                                                    Ordered Qty:
+                                                    <t t-esc="record.order_quantity.value"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 text-muted">
+                                                <span>
+                                                    Delivered Qty:
+                                                    <t t-esc="record.delivered_quantity.value"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                     <div class="row">
+                                            <div class="col-12 text-muted">
+                                                <span>
+                                                    Returned Qty:
+                                                    <t t-esc="record.refund_qty.value"/>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                </div>
+                            </t>
+                        </templates>
+                    </kanban>
+                </xpath>
             </field>
         </record>
 

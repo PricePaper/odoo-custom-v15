@@ -10,7 +10,7 @@ class AccountBankStatementLine(models.Model):
     def process_reconciliation(self, counterpart_aml_dicts=None, payment_aml_rec=None, new_aml_dicts=None):
 
         counterpart_moves = super().process_reconciliation(counterpart_aml_dicts=counterpart_aml_dicts, payment_aml_rec=payment_aml_rec, new_aml_dicts=new_aml_dicts)
-        statement_line = counterpart_moves.mapped('line_ids').mapped('statement_line_id')        
+        statement_line = counterpart_moves.mapped('line_ids').mapped('statement_line_id')
         if len(payment_aml_rec.mapped('journal_id')) == 1 and payment_aml_rec.mapped('journal_id').id != self.journal_id.id and payment_aml_rec.mapped('journal_id').type  == 'cash':
             for aml in payment_aml_rec:
                 if aml.journal_id.type == 'cash' and aml.debit > 0:
@@ -53,7 +53,7 @@ class AccountBankStatementLine(models.Model):
                         reconcile_lines = (payment.move_line_ids | counterpart_moves.line_ids)
                         reconcile_lines = reconcile_lines.filtered(lambda r: not r.reconciled and r.account_id.internal_type in ('payable', 'receivable'))
                         reconcile_lines.reconcile()
-                        invoice.remove_sale_commission()
+                        invoice.remove_sale_commission(stmt.date)
         return counterpart_moves
 
 AccountBankStatementLine()
@@ -83,7 +83,7 @@ class AccountReconcileModel(models.Model):
                     journal_accounts = [
                             batch.journal_id.default_debit_account_id.id,
                             batch.journal_id.default_credit_account_id.id
-                        ]                
+                        ]
                     for aml in batch.mapped('payment_ids').mapped('move_line_ids').filtered(lambda r: r.account_id.id in journal_accounts):
                         if aml.debit:
                             res.get(line.id, {}).get('aml_ids', []).append(aml.id)
@@ -93,7 +93,7 @@ class AccountReconcileModel(models.Model):
                     journal_accounts = [
                             batch.journal_id.default_debit_account_id.id,
                             batch.journal_id.default_credit_account_id.id
-                        ] 
+                        ]
                     for aml in batch.mapped('payment_ids').mapped('move_line_ids').filtered(lambda r: r.account_id.id in journal_accounts):
                         if aml.credit:
                             res.get(line.id, {}).get('aml_ids', []).append(aml.id)
@@ -106,7 +106,7 @@ class AccountReconcileModel(models.Model):
                     '|', '|', ('communication', '=', memo), ('check_number', '=', memo), ('amount', '=', abs(line_residual))]
                 payment = self.env['account.payment'].search(domain)
                 if payment:
-                    if len(payment) > 1:                    
+                    if len(payment) > 1:
                         journal = payment[0].journal_id
                     else:
                         journal = payment.journal_id

@@ -7,5 +7,6 @@ from . import payment_term
 from . import purchase_order
 from . import sale_order
 from . import purchase_requisition
+from . import stock_move
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

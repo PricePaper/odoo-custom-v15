@@ -230,12 +230,12 @@ class PurchaseOrderLine(models.Model):
 
     @api.multi
     def write(self, vals):
+        res = super(PurchaseOrderLine, self.with_context({'from_purchase_write': True})).write(vals)
         for rec in self:
             if rec.order_id and rec.order_id.picking_ids:
                 for picking in rec.order_id.picking_ids.filtered(lambda r: r.state != 'done'):
                     for move in picking.move_lines:
                         move.price_unit = move._get_price_unit()
-        res = super(PurchaseOrderLine, self).write(vals)
         if vals.get('price_unit') and self.state == 'purchase':
             partner = self.order_id.partner_id if not self.order_id.partner_id.parent_id else self.order_id.partner_id.parent_id
 

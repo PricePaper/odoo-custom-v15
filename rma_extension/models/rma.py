@@ -720,6 +720,9 @@ class RmaSaleLines(models.Model):
     so_line_id = fields.Many2one('sale.order.line')
     product_uom = fields.Many2one('uom.uom', readonly=True)
     refund_qty = fields.Float('Return Qty')
+    order_quantity = fields.Float('Ordered Qty')
+    delivered_quantity = fields.Float('Delivered Qty')
+    total_qty = fields.Float(string='Total Qty', readonly=False)
 
 
 class RmaPurchaseLines(models.Model):
@@ -727,4 +730,17 @@ class RmaPurchaseLines(models.Model):
 
     po_line_id = fields.Many2one('purchase.order.line')
     product_uom = fields.Many2one('uom.uom', readonly=True)
+    refund_qty = fields.Float('Return Qty')
+    order_quantity = fields.Float('Ordered Qty')
+    delivered_quantity = fields.Float('Delivered Qty')
+    total_qty = fields.Float(string='Total Qty', readonly=False)
+
+
+class RmaPickingLines(models.Model):
+    _inherit = "rma.picking.lines"
+
+    total_qty = fields.Float(string='Total Qty', readonly=False)
+    order_quantity = fields.Float('Ordered Qty')
+    delivered_quantity = fields.Float('Delivered Qty')
+    price_unit = fields.Float('Unit Price')
     refund_qty = fields.Float('Return Qty')

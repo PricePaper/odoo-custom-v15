@@ -264,8 +264,6 @@ class SaleOrder(models.Model):
 
         sale_line_obj = self.env['sale.order.line']
         for order in self:
-
-            subtotal = sum(order.order_line.mapped('price_subtotal'))
             storage_pr = order.company_id.storage_product_id
             if not storage_pr:
                 raise UserError('Please set a storage product in company.')
@@ -275,10 +273,9 @@ class SaleOrder(models.Model):
             else:
                 tax_ids = taxes.ids
 
-            context = {'lang': order.partner_id.lang}
             so_lines = sale_line_obj.create({
                 'name': _('Advance: %s') % (time.strftime('%m %Y'),),
-                'price_unit': subtotal,
+                'price_unit': order.amount_total,
                 'product_uom_qty': 0.0,
                 'order_id': order.id,
                 'discount': 0.0,
@@ -287,7 +284,7 @@ class SaleOrder(models.Model):
                 'tax_id': [(6, 0, tax_ids)],
                 'is_downpayment': True,
             })
-            del context
+
             self._create_storage_downpayment_invoice(order, so_lines)
             order.sc_payment_done = True
         return True

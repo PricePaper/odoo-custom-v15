@@ -41,6 +41,8 @@ class AddSaleHistoryPoLine(models.TransientModel):
     month14 = fields.Float(string='Mnt14')
     month15 = fields.Float(string='Mnt15')
 
+    is_expired = fields.Boolean(compute ='_check_is_expired', string='Is expired')
+
 
 
     @api.depends('product_id')
@@ -70,13 +72,29 @@ class AddSaleHistoryPoLine(models.TransientModel):
 
 
     @api.depends('product_id')
+    def _check_is_expired(self):
+        """
+        check if this is the vendor price expired
+        """
+        if self._context.get('active_model', False) == 'purchase.order' and self._context.get('active_id', False):
+            vendor = self.env['purchase.order'].browse(self._context.get('active_id')).partner_id
+            for line in self:
+                seller_record = line.product_id.seller_ids.filtered(
+                lambda l: l.name.id == vendor.id and l.price == line.product_price and
+                (not l.date_end or (l.date_end and l.date_end >= date.today())))
+                if not seller_record:
+                    line.is_expired = True
+                else:
+                    line.is_expired = False
+
+    @api.depends('product_id')
     def _check_is_not_low_price(self):
         """
         check if this is the vendor with
         lowest price for this product
         """
         for line in self:
-            for seller in line.product_id.seller_ids:
+            for seller in line.product_id.seller_ids.filtered(lambda r: not r.date_end or r.date_end and r.date_end >= date.today()):
                 if seller.price < line.product_price:
                     line.is_not_lowest_price = True
                     break

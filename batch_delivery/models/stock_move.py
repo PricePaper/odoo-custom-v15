@@ -216,9 +216,9 @@ class StockMove(models.Model):
                         continue
                     # Reserve new quants and create move lines accordingly.
                     forced_package_id = move.package_level_id.package_id or None
-                    available_quantity = self.env['stock.quant']._get_available_quantity(move.product_id,
+                    available_quantity = float_round(self.env['stock.quant']._get_available_quantity(move.product_id,
                                                                                          move.location_id,
-                                                                                         package_id=forced_package_id)
+                                                                                         package_id=forced_package_id), precision_digits=2)
                     if available_quantity <= 0:
                         continue
                     taken_quantity = move._update_reserved_quantity(need, available_quantity, move.location_id,
@@ -229,6 +229,7 @@ class StockMove(models.Model):
                         assigned_moves |= move
                     else:
                         partially_available_moves |= move
+
                 else:
                     # Check what our parents brought and what our siblings took in order to
                     # determine what we can distribute.

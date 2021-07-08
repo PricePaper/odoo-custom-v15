@@ -30,6 +30,7 @@ class CustomerContract(models.Model):
     def action_reset(self):
         self.write({'state': 'draft'})
 
+
 CustomerContract()
 
 
@@ -59,5 +60,7 @@ class CustomerContractLine(models.Model):
             result.append((record.id, "%s (%s)" % (record.contract_id.name, record.product_id.default_code)))
         return result
 
+
+CustomerContractLine()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

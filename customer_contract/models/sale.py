@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
-
 from odoo import models, fields, api, _
-from odoo.addons import decimal_precision as dp
+
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -34,6 +32,10 @@ class SaleOrder(models.Model):
             ])
             lines.action_expire()
         return res
+
+
+SaleOrder()
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
@@ -68,10 +70,6 @@ class SaleOrderLine(models.Model):
                 self.product_uom_qty = 0
                 result.update({'warning': warning_mess})
         return result
-
-
-
-
 
 
 SaleOrderLine()

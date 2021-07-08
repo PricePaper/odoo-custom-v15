@@ -39,6 +39,20 @@
 
             </field>
         </record>
+        <record id="view_invoice_supplier_purchase_form_inherited" model="ir.ui.view">
+            <field name="name">account.invoice.supplier.purchase</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="purchase.view_invoice_supplier_purchase_form"/>
+            <field name="groups_id" eval="[(4,ref('purchase.group_purchase_user'))]"/>
+            <field name="arch" type="xml">
+                <field name="vendor_bill_purchase_id" position="after">
+                    <field name="vendor_bill_receipt_id" attrs="{'invisible': ['|', '|', ('state','not in',['draft']), ('state', '=', 'purchase'), ('type', '=', 'in_refund')]}"
+                        class="oe_edit_only" domain="[('partner_id','child_of',[partner_id]), ('state', '=', 'done'), ('picking_type_code', '=', 'incoming')]"
+                        placeholder="Select a receipt"
+                        options="{'no_create': True, 'no_open': True}"/>
+                </field>
+            </field>
+        </record>
 
     </data>
 </odoo>

@@ -8,7 +8,7 @@ from odoo.exceptions import UserError
 class Accountinvoice(models.Model):
     _inherit = "account.invoice"
 
-    def remove_sale_commission(self):
+    def remove_sale_commission(self, invoice_date):
 
         for invoice in self:
             commission_rec = self.env['sale.commission'].search([
@@ -64,10 +64,10 @@ class Accountinvoice(models.Model):
                 'quantity': 1.0,
                 'discount': 0.0,
             })]
-
             invoice_vals = {
                 'type': 'out_invoice',
                 'reference': False,
+                'date_invoice': invoice_date or date.today(),
                 'account_id': invoice.account_id.id,
                 'partner_id': invoice.partner_id.id,
                 'partner_shipping_id': invoice.partner_shipping_id.id,

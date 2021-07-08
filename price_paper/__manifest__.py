@@ -45,6 +45,7 @@ Custom module implemented for Price Paper.
         'views/account_view.xml',
         'views/delivery_carrier_view.xml',
         'views/helpdesk_team_view.xml',
+        'views/product_category.xml',
         'views/menu.xml',
     ],
 

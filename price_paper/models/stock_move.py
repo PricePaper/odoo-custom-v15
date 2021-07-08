@@ -7,6 +7,13 @@ class StockMove(models.Model):
     _inherit = 'stock.move'
 
     picking_partner_id = fields.Many2one('res.partner', related='picking_id.partner_id', string='Partner')
+    is_storage_contract = fields.Boolean(compute='_compute_is_storage_contract', store=True)
+
+    @api.depends('sale_line_id.storage_contract_line_id', 'sale_line_id.order_id.storage_contract')
+    def _compute_is_storage_contract(self):
+        for line in self:
+            if line.sale_line_id:
+                line.is_storage_contract = True if line.sale_line_id.storage_contract_line_id else True if line.sale_line_id.order_id.storage_contract else False
 
     def _search_picking_for_assignation(self):
         """

@@ -8,8 +8,10 @@
             <field name="inherit_id" ref="account.view_category_property_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//group[@name='account_property']/group[1]" position="after">
-                    <field name="sc_stock_valuation_account_id"/>
-                    <field name="sc_stock_liability_account_id"/>
+                    <group string="Storage Contract">
+                        <field name="sc_stock_valuation_account_id"/>
+                        <field name="sc_stock_liability_account_id"/>
+                    </group>
                 </xpath>
             </field>
         </record>

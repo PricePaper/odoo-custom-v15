@@ -1,0 +1,77 @@
+<odoo>
+    <data>
+        <record id="view_customer_contract_tree" model="ir.ui.view">
+            <field name="name">customer.contract.tree</field>
+            <field name="model">customer.contract</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="partner_id"/>
+                    <field name="expiration_date"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_deviated_cost_contract_form" model="ir.ui.view">
+            <field name="name">customer.contract.form</field>
+            <field name="model">customer.contract</field>
+            <field name="arch" type="xml">
+                <form string="Rebate Contract">
+                    <header>
+                        <button class="btn btn-primary" name="action_confirm" type="object" string="Confirm" states="draft"/>
+                        <button name="action_expire" type="object" string="Expire" states="confirmed"/>
+                        <button name="action_reset" type="object" string="Reset" states="expired"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group col="4">
+                            <field name="partner_id" required="1"/>
+                            <field name="expiration_date" required="1"/>
+                        </group>
+                        <group string="Products">
+                            <field name="product_line_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="product_id" required="1"/>
+                                    <field name="product_qty" required="1"/>
+                                    <field name="remaining_qty"/>
+                                    <field name="price" required="1"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_customer_contract_search" model="ir.ui.view">
+            <field name="name">customer.contract.search.view</field>
+            <field name="model">customer.contract</field>
+            <field name="arch" type="xml">
+                <search string="Search Contracts">
+                    <field name="expiration_date" string="Expiration Date"/>
+                    <filter string="Expiration Date Exceeded" name="is_exceded_expiry"
+                            domain="[('expiration_date','&lt;',((context_today()).strftime('%Y-%m-%d')+' '+'23:59:59'))]"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_customer_contract" model="ir.actions.act_window">
+            <field name="name">Customer Contracts</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">customer.contract</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_customer_contract_search"/>
+            <field name="help" type="html">
+                <p>
+                    Create New Contracts.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

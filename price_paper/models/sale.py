@@ -66,11 +66,12 @@ class SaleOrder(models.Model):
             order.action_done()
         return True
 
-    @api.depends('partner_id')
+
     def _compute_show_contract_line(self):
         for order in self:
-            count = self.env['sale.order.line'].search_count([('order_partner_id', '=', order.partner_id.id), ('storage_remaining_qty', '>', 0)])
-            order.show_contract_line = bool(count)
+            if order.partner_id:
+                count = self.env['sale.order.line'].search_count([('order_partner_id', '=', order.partner_id.id), ('storage_remaining_qty', '>', 0)])
+                order.show_contract_line = bool(count)
 
     @api.depends('order_line.product_id', 'order_line.product_uom_qty')
     def _compute_total_weight_volume(self):

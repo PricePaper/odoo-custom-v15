@@ -158,6 +158,23 @@ class AccountInvoiceLine(models.Model):
                              compute='_compute_lst_cost_prices')
     working_cost = fields.Float(string='Working Cost', digits=dp.get_precision('Product Price'), store=True,
                                 compute='_compute_lst_cost_prices')
+    is_storage_contract = fields.Boolean(compute='_compute_is_storage_contract', store=True)
+
+    @api.depends('sale_line_ids.storage_contract_line_id', 'sale_line_ids.order_id.storage_contract')
+    def _compute_is_storage_contract(self):
+        for line in self:
+            if line.sale_line_ids:
+                if len(line.sale_line_ids.mapped('storage_contract_line_id.id')):
+                    line.is_storage_contract = True
+                elif any(line.sale_line_ids.mapped('order_id.storage_contract')):
+                    line.is_storage_contract = True
+                else:
+                    line.is_storage_contract = False
+            elif line.purchase_line_id and line.purchase_line_id.sale_line_id:
+                if line.purchase_line_id.sale_line_id.storage_contract_line_id:
+                    line.is_storage_contract = True
+                else:
+                    line.is_storage_contract = False
 
     # Uncomment the below 2 lines while running sale order line import scripts
     # lst_price = fields.Float(string='Standard Price', digits=dp.get_precision('Product Price'))

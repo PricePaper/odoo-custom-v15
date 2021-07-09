@@ -60,7 +60,8 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//search/field[@name='journal_id']" position="before">
-                   <field name="batch_picking_id"/>
+                    <field name="name"/>
+                    <field name="batch_picking_id"/>
                 </xpath>
 
             </field>

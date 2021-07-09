@@ -78,7 +78,7 @@
                  <xpath expr="//field[@name='payment_ids']" position="attributes">
                     <attribute name="context">{'default_payment_type': batch_type, 'default_journal_id': journal_id, 'default_payment_method_id': payment_method_id, 'default_batch_payment_id': active_id}</attribute>
                 </xpath>
-                 <xpath expr="//field[@name='payment_ids']/form//field[@name='payment_method_id']" position="after">
+                 <xpath expr="//field[@name='payment_ids']/tree/field[@name='amount']" position="after">
                    <field name="state" readonly="1"/>
                 </xpath>
                 <xpath expr="//field[@name='payment_ids']/tree" position="attributes">

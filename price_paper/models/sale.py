@@ -1418,7 +1418,7 @@ class SaleOrderLine(models.Model):
             contract_line = self.storage_contract_line_id
             remaining_qty = contract_line.storage_remaining_qty
             invoice_lines = self.storage_contract_line_id.order_id.mapped('order_line').mapped('invoice_lines')
-            if remaining_qty <= self.selling_min_qty:
+            if remaining_qty <= contract_line.selling_min_qty:
                 self.product_uom_qty = remaining_qty
                 if not any([inv_line.invoice_id.state == 'paid' for inv_line in invoice_lines]):
                     if self._context.get('quantity', False):
@@ -1448,7 +1448,7 @@ class SaleOrderLine(models.Model):
                 warning_mess = {
                     'title': _('More than Storage contract'),
                     'message': _(
-                        'You are going to cell more than in storage contract.Only %s is remaining in this contract.' % (
+                        'You are going to Sell more than in storage contract.Only %s is remaining in this contract.' % (
                             remaining_qty))
                 }
                 self.product_uom_qty = 0

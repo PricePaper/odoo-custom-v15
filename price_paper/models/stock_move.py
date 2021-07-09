@@ -33,6 +33,14 @@ class StockMove(models.Model):
         """ Over ride to Return the accounts for inventory adjustment. """
         self.ensure_one()
         res = super(StockMove, self)._get_accounting_data_for_valuation()
+
+        if self.is_storage_contract:
+            valuation_account = self.product_id.categ_id.sc_stock_valuation_account_id
+            if not valuation_account:
+                raise UserError(_('Cannot find a SC Stock Valuation Account in product category: %s' % self.product_id.categ_id.name))
+
+            return (res[0], res[1], res[2], valuation_account.id)
+
         if self._context.get('from_inv_adj', False):
             acc_src = False
             acc_dest = False

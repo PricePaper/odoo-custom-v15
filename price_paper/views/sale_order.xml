@@ -624,6 +624,28 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                 </field>
             </record>
 
+        <record id="view_account_invoice_form_inherit_price_paper" model="ir.ui.view">
+            <field name="name">account.invoice.inherited.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//form/sheet/notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_subtotal']" position="before">
+                    <field name="is_storage_contract"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_account_invoice_supplier_form_form_inherit_price_paper_storage_contract" model="ir.ui.view">
+            <field name="name">account.invoice.inherited.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_form"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//form/sheet/notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_subtotal']" position="before">
+                    <field name="is_storage_contract"/>
+                </xpath>
+            </field>
+        </record>
+
         <record id="sale_order_view_search_storage_contract" model="ir.ui.view">
             <field name="name">sale.order.search.inherit.storage.contract</field>
             <field name="model">sale.order</field>

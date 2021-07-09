@@ -173,6 +173,8 @@ class AccountInvoiceLine(models.Model):
             elif line.purchase_line_id and line.purchase_line_id.sale_line_id:
                 if line.purchase_line_id.sale_line_id.storage_contract_line_id:
                     line.is_storage_contract = True
+                elif line.purchase_line_id.sale_line_id.order_id.storage_contract:
+                    line.is_storage_contract = True
                 else:
                     line.is_storage_contract = False
 

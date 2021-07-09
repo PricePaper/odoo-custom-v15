@@ -28,9 +28,9 @@ class ReportDeviatedCost(models.AbstractModel):
                 'product': "[%s]%s" % (line.product_id.default_code, line.product_id.name),
                 'qty': line.product_uom_qty,
                 'unit_cost_purchased': line.product_cost and line.product_cost or False,
-                'unit_cost_sold': line.price_unit,
+                'unit_cost_sold': line.working_cost,
                 'deviated_cost': line.product_cost and
-                line.product_uom_qty * (line.product_cost - line.price_unit) or False
+                line.product_uom_qty * (line.product_cost - line.working_cost) or False
             }
             con_line = {'contract_id': line.rebate_contract_id,
                         'lines': [line_dict]

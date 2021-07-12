@@ -173,6 +173,8 @@ class AccountInvoiceLine(models.Model):
             elif line.purchase_line_id and line.purchase_line_id.sale_line_id:
                 if line.purchase_line_id.sale_line_id.storage_contract_line_id:
                     line.is_storage_contract = True
+                elif line.purchase_line_id.sale_line_id.order_id.storage_contract:
+                    line.is_storage_contract = True
                 else:
                     line.is_storage_contract = False
 
@@ -296,6 +298,24 @@ class PaymentTerm(models.Model):
 
 
 PaymentTerm()
+
+
+class AccountPayment(models.Model):
+    _inherit = 'account.payment'
+
+    @api.model
+    def create(self, vals):
+        payments = super(AccountPayment, self).create(vals)
+        for payment in payments:
+            for invoice in payment.invoice_ids:
+                if any(invoice.invoice_line_ids.mapped('is_storage_contract')):
+                    sale_lines = invoice.invoice_line_ids.mapped('sale_line_ids.order_id').mapped('order_line').filtered(lambda l: not l.is_downpayment)
+                    sale_lines.write({
+                        'qty_delivered': sum(sale_lines.mapped('product_uom_qty'))
+                    })
+        return payments
+
+AccountPayment()
 
 
 class account_abstract_payment(models.AbstractModel):

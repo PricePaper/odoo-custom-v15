@@ -875,6 +875,15 @@ class SaleOrderLine(models.Model):
     storage_contract_line_ids = fields.One2many('sale.order.line', 'storage_contract_line_id')
     selling_min_qty = fields.Float(string="Minimum Qty")
 
+    @api.multi
+    @api.depends('qty_delivered_method', 'qty_delivered_manual', 'analytic_line_ids.so_line', 'analytic_line_ids.unit_amount', 'analytic_line_ids.product_uom_id')
+    def _compute_qty_delivered(self):
+        super(SaleOrderLine, self)._compute_qty_delivered()
+        for line in self:
+            if line.order_id.storage_contract:
+                if line.order_id.invoice_ids and all([inv.state == 'paid' for inv in line.order_id.invoice_ids]):
+                    line.qty_delivered = line.product_uom_qty
+
     @api.onchange('storage_contract_line_id')
     def onchange_storage_contract_line_id(self):
         if self.storage_contract_line_id:
@@ -908,6 +917,17 @@ class SaleOrderLine(models.Model):
                 rec.sale_uom_ids = rec.product_id.sale_uoms
             else:
                 rec.sale_uom_ids = False
+
+    @api.multi
+    def _prepare_invoice_line(self, qty):
+        self.ensure_one()
+        res = super(SaleOrderLine, self)._prepare_invoice_line(qty)
+        if self.order_id.storage_contract:
+            self.order_id.invoice_status
+            res.update({
+                'price_unit': 0
+            })
+        return res
 
     def product_id_check_availability(self):
         if not self.product_id or not self.product_uom_qty or not self.product_uom:

@@ -461,6 +461,10 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                     <form string="Sales Order" class="o_sale_order">
                     <header>
                         <field name="sc_payment_done" invisible="1"/>
+                        <field name="invoice_status" invisible="1"/>
+                        <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice"
+                            type="action" class="btn-primary"
+                            attrs="{'invisible': ['|', ('invoice_status', '!=', 'to invoice'), ('state', '=', 'released')]}"/>
                         <button name="action_storage_contract_confirm" type="object" string="Confirm" class="oe_highlight" states="draft"/>
                         <button name="action_create_storage_downpayment" type="object" string="SC Payment" class="oe_highlight" attrs="{'invisible': ['|', ('state', '=', 'draft'), ('sc_payment_done', '=', True)]}"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,sale"/>

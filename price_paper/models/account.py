@@ -300,6 +300,24 @@ class PaymentTerm(models.Model):
 PaymentTerm()
 
 
+class AccountPayment(models.Model):
+    _inherit = 'account.payment'
+
+    @api.model
+    def create(self, vals):
+        payments = super(AccountPayment, self).create(vals)
+        for payment in payments:
+            for invoice in payment.invoice_ids:
+                if any(invoice.invoice_line_ids.mapped('is_storage_contract')):
+                    sale_lines = invoice.invoice_line_ids.mapped('sale_line_ids.order_id').mapped('order_line').filtered(lambda l: not l.is_downpayment)
+                    sale_lines.write({
+                        'qty_delivered': sum(sale_lines.mapped('product_uom_qty'))
+                    })
+        return payments
+
+AccountPayment()
+
+
 class account_abstract_payment(models.AbstractModel):
     _inherit = "account.abstract.payment"
 

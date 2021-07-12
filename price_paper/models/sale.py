@@ -52,15 +52,7 @@ class SaleOrder(models.Model):
                    ('release', 'Order Released')],
         string='Hold Status', default=False, copy=False)
     invoice_address_id = fields.Many2one('res.partner', string="Billing Address")
-    # sc_main_invoice = fields.Boolean(compute='_compute_sc_main_invoice')
-    #
-    # @api.depends('invoice_ids', 'invoice_ids.state', 'storage_contract')
-    # def _compute_sc_main_invoice(self):
-    #     for order in self:
-    #         if order.storage_contract:
-    #             invoice = order.invoice_ids.filtered(lambda inv: not inv.storage_down_payment and inv.state != 'cancel')
-    #             order.sc_main_invoice = bool(len(invoice))
-    #
+
     @api.depends('state', 'order_line.invoice_status', 'order_line.invoice_lines')
     def _get_invoiced(self):
         super(SaleOrder, self)._get_invoiced()
@@ -72,14 +64,6 @@ class SaleOrder(models.Model):
                     order.invoice_status = 'invoiced'
                 else:
                     order.invoice_status = 'no'
-
-    # @api.multi
-    # def _prepare_invoice(self):
-    #     invoice_vals = super(SaleOrder, self)._prepare_invoice()
-    #     invoice_vals['incoterms_id'] = self.incoterm.id or False
-    #     if self.incoterm.id:
-    #         invoice_vals['incoterm_id'] = self.incoterm.id
-    #     return invoice_vals
 
     @api.multi
     def make_done_orders(self):
@@ -93,7 +77,6 @@ class SaleOrder(models.Model):
                 continue
             order.action_done()
         return True
-
 
     def _compute_show_contract_line(self):
         for order in self:

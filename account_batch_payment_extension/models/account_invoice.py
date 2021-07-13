@@ -88,7 +88,7 @@ Accountinvoice()
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
-    st_date = fields.Date(related='statement_line_id.date', readonly=True, store=True)
+    st_date = fields.Date(related='statement_line_id.date', readonly=True, store=True, string='Statement Date')
 
 
 AccountMoveLine()

@@ -10,7 +10,7 @@ from dateutil.relativedelta import relativedelta
 from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import ValidationError, UserError
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, float_compare
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, float_compare, float_is_zero
 from odoo.tools import float_round
 
 
@@ -39,11 +39,11 @@ class SaleOrder(models.Model):
         ('cancel', 'Cancelled'),
     ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', track_sequence=3,
         default='draft')
-    storage_contract = fields.Boolean(string="Storage Product", default=False, copy=True)
+    storage_contract = fields.Boolean(string="Storage Product", default=False, copy=False)
     total_volume = fields.Float(string="Total Order Volume", compute='_compute_total_weight_volume')
     total_weight = fields.Float(string="Total Order Weight", compute='_compute_total_weight_volume')
     total_qty = fields.Float(string="Total Order Quantity", compute='_compute_total_weight_volume')
-    sc_payment_done = fields.Boolean()
+    sc_payment_done = fields.Boolean(copy=False)
     show_contract_line = fields.Boolean(compute='_compute_show_contract_line')
     hold_state = fields.Selection(
                    [('credit_hold', 'Credit Hold'),
@@ -52,6 +52,18 @@ class SaleOrder(models.Model):
                    ('release', 'Order Released')],
         string='Hold Status', default=False, copy=False)
     invoice_address_id = fields.Many2one('res.partner', string="Billing Address")
+
+    @api.depends('state', 'order_line.invoice_status', 'order_line.invoice_lines')
+    def _get_invoiced(self):
+        super(SaleOrder, self)._get_invoiced()
+        for order in self:
+            if order.storage_contract and order.state == 'released':
+                if any([l.invoice_status == 'to invoice' for l in order.order_line if not l.is_downpayment]):
+                    order.invoice_status = 'to invoice'
+                elif all([l.invoice_status == 'invoiced' for l in order.order_line if not l.is_downpayment]):
+                    order.invoice_status = 'invoiced'
+                else:
+                    order.invoice_status = 'no'
 
     @api.multi
     def make_done_orders(self):
@@ -65,7 +77,6 @@ class SaleOrder(models.Model):
                 continue
             order.action_done()
         return True
-
 
     def _compute_show_contract_line(self):
         for order in self:
@@ -829,8 +840,7 @@ class SaleOrder(models.Model):
                     errors.append(error.name)
             if errors:
                 raise UserError('\n'.join(errors))
-            else:
-                order.write({'state': 'released'})
+
 
 SaleOrder()
 
@@ -875,14 +885,38 @@ class SaleOrderLine(models.Model):
     storage_contract_line_ids = fields.One2many('sale.order.line', 'storage_contract_line_id')
     selling_min_qty = fields.Float(string="Minimum Qty")
 
+    @api.depends('state', 'product_uom_qty', 'qty_delivered', 'qty_to_invoice', 'qty_invoiced', 'order_id.storage_contract')
+    def _compute_invoice_status(self):
+        super(SaleOrderLine, self)._compute_invoice_status()
+        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        for line in self:
+            if line.order_id.storage_contract:
+                if float_compare(line.qty_invoiced, line.product_uom_qty, precision_digits=precision) >= 0:
+                    line.invoice_status = 'invoiced'
+                elif line.state == 'released' and not line.is_downpayment:
+                    line.invoice_status = 'to invoice'
+                else:
+                    line.invoice_status = 'no'
+
+    @api.depends('qty_invoiced', 'qty_delivered', 'product_uom_qty', 'order_id.state')
+    def _get_to_invoice_qty(self):
+        super(SaleOrderLine, self)._get_to_invoice_qty()
+        for line in self:
+            if line.order_id.storage_contract and line.order_id.state == 'released':
+                if line.product_id.invoice_policy == 'order':
+                    line.qty_to_invoice = (line.product_uom_qty if not line.is_downpayment else 1) - line.qty_invoiced
+                else:
+                    line.qty_to_invoice = (line.qty_delivered if not line.is_downpayment else 1) - line.qty_invoiced
+
     @api.multi
     @api.depends('qty_delivered_method', 'qty_delivered_manual', 'analytic_line_ids.so_line', 'analytic_line_ids.unit_amount', 'analytic_line_ids.product_uom_id')
     def _compute_qty_delivered(self):
         super(SaleOrderLine, self)._compute_qty_delivered()
         for line in self:
-            if line.order_id.storage_contract:
-                if line.order_id.invoice_ids and all([inv.state == 'paid' for inv in line.order_id.invoice_ids]):
-                    line.qty_delivered = line.product_uom_qty
+            if line.order_id.storage_contract and line.order_id.invoice_ids:
+                for inv in line.order_id.invoice_ids:
+                    if inv.state in ('open', 'paid') and inv.storage_down_payment:
+                        line.qty_delivered = line.product_uom_qty
 
     @api.onchange('storage_contract_line_id')
     def onchange_storage_contract_line_id(self):

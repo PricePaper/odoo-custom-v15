@@ -56,8 +56,8 @@ class AccountInvoice(models.Model):
     _inherit = "account.invoice"
 
     gross_profit = fields.Monetary(compute='calculate_gross_profit', string='Predicted Profit')
-    storage_down_payment = fields.Boolean()
-    is_released = fields.Boolean()
+    storage_down_payment = fields.Boolean(copy=False)
+    is_released = fields.Boolean(copy=False)
     discount_from_batch = fields.Float('WriteOff Discount')
     invoice_address_id = fields.Many2one('res.partner', string="Billing Address")
 
@@ -83,6 +83,14 @@ class AccountInvoice(models.Model):
         for invoice in self:
             if not invoice.payment_term_id and invoice.type in ('out_invoice', 'in_invoice'):
                 raise ValidationError(_('Payment term is not set for invoice %s' % (invoice.number)))
+            sale_order = invoice.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
+            if sale_order and any(invoice.invoice_line_ids.mapped('is_storage_contract')) and invoice.storage_down_payment:
+                sale_order.write({'state': 'released'})
+                for line in sale_order.order_line.filtered(lambda r: not r.is_downpayment):
+                    line.qty_delivered = line.product_uom_qty
+
+            elif sale_order and any(invoice.invoice_line_ids.mapped('is_storage_contract')):
+                sale_order.action_done()
         res = super(AccountInvoice, self).invoice_validate()
         return res
 
@@ -298,24 +306,6 @@ class PaymentTerm(models.Model):
 
 
 PaymentTerm()
-
-
-class AccountPayment(models.Model):
-    _inherit = 'account.payment'
-
-    @api.model
-    def create(self, vals):
-        payments = super(AccountPayment, self).create(vals)
-        for payment in payments:
-            for invoice in payment.invoice_ids:
-                if any(invoice.invoice_line_ids.mapped('is_storage_contract')):
-                    sale_lines = invoice.invoice_line_ids.mapped('sale_line_ids.order_id').mapped('order_line').filtered(lambda l: not l.is_downpayment)
-                    sale_lines.write({
-                        'qty_delivered': sum(sale_lines.mapped('product_uom_qty'))
-                    })
-        return payments
-
-AccountPayment()
 
 
 class account_abstract_payment(models.AbstractModel):

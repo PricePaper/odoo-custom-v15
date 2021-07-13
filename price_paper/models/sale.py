@@ -57,7 +57,7 @@ class SaleOrder(models.Model):
     def _get_invoiced(self):
         super(SaleOrder, self)._get_invoiced()
         for order in self:
-            if order.storage_contract and order.state == 'released':
+            if order.storage_contract and order.state in ['done', 'released']:
                 if any([l.invoice_status == 'to invoice' for l in order.order_line if not l.is_downpayment]):
                     order.invoice_status = 'to invoice'
                 elif all([l.invoice_status == 'invoiced' for l in order.order_line if not l.is_downpayment]):
@@ -81,7 +81,10 @@ class SaleOrder(models.Model):
     def _compute_show_contract_line(self):
         for order in self:
             if order.partner_id:
-                count = self.env['sale.order.line'].search_count([('order_partner_id', '=', order.partner_id.id), ('storage_remaining_qty', '>', 0)])
+                count = self.env['sale.order.line'].search_count([
+                    ('order_partner_id', '=', order.partner_id.id),
+                    ('storage_remaining_qty', '>', 0),
+                    ('order_id.state', '=', 'released')])
                 order.show_contract_line = bool(count)
 
     @api.depends('order_line.product_id', 'order_line.product_uom_qty')
@@ -893,7 +896,7 @@ class SaleOrderLine(models.Model):
             if line.order_id.storage_contract:
                 if float_compare(line.qty_invoiced, line.product_uom_qty, precision_digits=precision) >= 0:
                     line.invoice_status = 'invoiced'
-                elif line.state == 'released' and not line.is_downpayment:
+                elif line.state in ['released', 'done'] and not line.is_downpayment:
                     line.invoice_status = 'to invoice'
                 else:
                     line.invoice_status = 'no'
@@ -902,7 +905,7 @@ class SaleOrderLine(models.Model):
     def _get_to_invoice_qty(self):
         super(SaleOrderLine, self)._get_to_invoice_qty()
         for line in self:
-            if line.order_id.storage_contract and line.order_id.state == 'released':
+            if line.order_id.storage_contract and line.order_id.state in ['done', 'released']:
                 if line.product_id.invoice_policy == 'order':
                     line.qty_to_invoice = (line.product_uom_qty if not line.is_downpayment else 1) - line.qty_invoiced
                 else:
@@ -957,7 +960,6 @@ class SaleOrderLine(models.Model):
         self.ensure_one()
         res = super(SaleOrderLine, self)._prepare_invoice_line(qty)
         if self.order_id.storage_contract:
-            self.order_id.invoice_status
             res.update({
                 'price_unit': 0
             })

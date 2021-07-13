@@ -22,6 +22,21 @@ class StockMove(models.Model):
     unit_price = fields.Float(string="Unit Price", copy=False, compute='_compute_total_price', store=False)
     total = fields.Float(string="Subtotal", copy=False, compute='_compute_total_price', store=False)
 
+
+    def receipt_move_price_fix_search(self):
+        picking_lines = self.env['stock.picking'].search(
+                [('picking_type_code', '=', 'incoming'), ('state', '!=', 'cancel')]).mapped(
+                'move_ids_without_package').filtered(
+                lambda r: r.purchase_line_id and r.purchase_line_id.price_unit != r.price_unit)
+        picking = picking_lines.mapped('picking_id')
+        return picking_lines.ids or False
+
+    def receipt_move_price_fix(self):
+        self.price_unit = self.purchase_line_id.price_unit
+        return True
+
+
+
     def _create_account_move_line(self, credit_account_id, debit_account_id, journal_id):
         self.ensure_one()
         if self.picking_id.transit_date:

@@ -68,6 +68,8 @@ class AccountInvoice(models.Model):
 
         if self:
             stock_picking = self.env['stock.picking']
+            if  self.mapped('picking_ids').filtered(lambda pick: pick.state == 'cancel'):
+                raise UserError(_('There is a Cancelled Picking linked to this invoice.'))
             for pick in self.mapped('picking_ids').filtered(lambda pick: pick.state != 'done'):
                 move_info = pick.move_ids_without_package.filtered(lambda m: m.quantity_done < m.product_uom_qty)
                 if move_info.ids:

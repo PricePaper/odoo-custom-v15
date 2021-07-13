@@ -287,19 +287,21 @@ class SaleOrder(models.Model):
                 tax_ids = order.fiscal_position_id.map_tax(taxes, storage_pr, order.partner_shipping_id).ids
             else:
                 tax_ids = taxes.ids
-
-            so_lines = sale_line_obj.create({
-                'name': _('Advance: %s') % (time.strftime('%m %Y'),),
-                'price_unit': order.amount_total,
-                'product_uom_qty': 0.0,
-                'order_id': order.id,
-                'discount': 0.0,
-                'product_uom': storage_pr.uom_id.id,
-                'product_id': storage_pr.id,
-                'tax_id': [(6, 0, tax_ids)],
-                'is_downpayment': True,
-            })
-
+            so_lines = order.order_line.filtered(lambda r: r.is_downpayment)
+            if not so_lines:
+                so_lines = sale_line_obj.create({
+                    'name': _('Advance: %s') % (time.strftime('%m %Y'),),
+                    'price_unit': order.amount_total,
+                    'product_uom_qty': 0.0,
+                    'order_id': order.id,
+                    'discount': 0.0,
+                    'product_uom': storage_pr.uom_id.id,
+                    'product_id': storage_pr.id,
+                    'tax_id': [(6, 0, tax_ids)],
+                    'is_downpayment': True,
+                })
+            else:
+                so_lines.write({'price_unit': order.amount_total})
             self._create_storage_downpayment_invoice(order, so_lines)
             order.sc_payment_done = True
         return True

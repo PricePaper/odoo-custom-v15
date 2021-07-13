@@ -125,10 +125,30 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def action_invoice_cancel(self):
-        if self.state == 'draft':
+        main = self.env['sale.order']
+        down = self.env['sale.order']
+        for invoice in self:
+            sale_order = invoice.mapped('invoice_line_ids').mapped('sale_line_ids').mapped('order_id')
+            if sale_order.storage_contract:
+                if invoice.storage_down_payment:
+                    if sale_order.state == 'released' and sale_order.invoice_status == 'invoiced':
+                        raise UserError('It is forbidden to modify a released order.')
+                    if sale_order.state == 'done' and sale_order.invoice_status == 'invoiced':
+                        raise UserError('It is forbidden to modify a released order.')
+                    down |= sale_order
+                else:
+                    main |= sale_order
+        if main:
+            main.write({'state': 'done'})
+        elif down:
+            down.write({'state': 'sale', 'sc_payment_done': False})
+
+        if all([inv.state == 'draft' for inv in self]):
             return super(AccountInvoice, self).action_invoice_cancel()
+
         if not self.env.user.has_group('account.group_account_manager'):
             raise ValidationError(_('You dont have permissions to cancel an invoice.'))
+
         return super(AccountInvoice, self).action_invoice_cancel()
 
     @api.depends('invoice_line_ids.profit_margin')

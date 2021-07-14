@@ -22,13 +22,18 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def _search_has_outstanding(self, operator, value):
-        ids = []
-        domain = [('reconciled', '=', False),
-                  ('move_id.state', '=', 'posted'),
-                  '|',
-                  '&', ('amount_residual_currency', '!=', 0.0), ('currency_id', '!=', None),
-                  '&', ('amount_residual_currency', '=', 0.0), '&', ('currency_id', '=', None),
-                  ('amount_residual', '!=', 0.0)]
+        if self._context.get('type') in ('out_invoice', 'in_refund'):
+            account = self.env.user.company_id.partner_id.property_account_receivable_id.id
+        else:
+            account = self.env.user.company_id.partner_id.property_account_payable_id.id
+        domain = [
+            ('account_id', '=', account),
+            ('reconciled', '=', False),
+            ('move_id.state', '=', 'posted'),
+            '|',
+            '&', ('amount_residual_currency', '!=', 0.0), ('currency_id', '!=', None),
+            '&', ('amount_residual_currency', '=', 0.0), '&', ('currency_id', '=', None),
+            ('amount_residual', '!=', 0.0)]
         if self._context.get('type') in ('out_invoice', 'in_refund'):
             domain.extend([('credit', '>', 0), ('debit', '=', 0)])
         else:

@@ -571,7 +571,7 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                                                 'column_invisible': [('parent.state', 'not in', ['sale', 'released'])],
                                             }"
                                         />
-                                        <field name="qty_delivered" attrs="{'column_invisible': [('parent.state', '!=', 'released')]}"/>
+                                        <field name="qty_delivered" attrs="{'column_invisible': [('parent.state', 'not in', ['done', 'released'])]}"/>
                                         <field name="sale_uom_ids" invisible="1"/>
                                         <field
                                             name="product_uom"

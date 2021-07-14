@@ -173,7 +173,7 @@
                  <xpath expr="//field[@name='order_line']/form//label[@for='qty_delivered']" position="before">
                      <field name="storage_contract_line_id" options="{'no_create': False}"
                             attrs="{'invisible': [('parent.show_contract_line', '=', False)]}"
-                            domain="[('order_id.storage_contract', '=', True), ('is_downpayment', '=', False), ('storage_remaining_qty', '&gt;', 0), ('order_id.partner_id', '=', parent.partner_id)]"/>
+                            domain="[('order_id.state', '=', 'released'), ('order_id.storage_contract', '=', True), ('is_downpayment', '=', False), ('storage_remaining_qty', '&gt;', 0), ('order_id.partner_id', '=', parent.partner_id)]"/>
                  </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="before">
                     <field name="lst_price" readonly="1"/>
@@ -464,7 +464,7 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                         <field name="invoice_status" invisible="1"/>
                         <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice"
                             type="action" class="btn-primary"
-                            attrs="{'invisible': ['|', ('invoice_status', '!=', 'to invoice'), ('state', 'not in', ['done', 'released'])]}"/>
+                            attrs="{'invisible': [('invoice_status', '!=', 'to invoice')]}"/>
                         <button name="action_storage_contract_confirm" type="object" string="Confirm" class="oe_highlight" states="draft"/>
                         <button name="action_create_storage_downpayment" type="object" string="SC Payment" class="oe_highlight" attrs="{'invisible': ['|', ('state', '=', 'draft'), ('sc_payment_done', '=', True)]}"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,sale"/>

@@ -5,7 +5,7 @@ from datetime import timedelta, date
 
 from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 MAP_INVOICE_TYPE_PAYMENT_SIGN = {
     'out_invoice': 1,
@@ -85,21 +85,70 @@ class AccountInvoice(models.Model):
                 raise ValidationError(_('Payment term is not set for invoice %s' % (invoice.number)))
             sale_order = invoice.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
             if sale_order and any(invoice.invoice_line_ids.mapped('is_storage_contract')) and invoice.storage_down_payment:
-                sale_order.write({'state': 'released'})
-                for line in sale_order.order_line.filtered(lambda r: not r.is_downpayment):
-                    line.qty_delivered = line.product_uom_qty
-
-            elif sale_order and any(invoice.invoice_line_ids.mapped('is_storage_contract')):
                 sale_order.action_done()
+                for line in sale_order.order_line.filtered(lambda r: not r.is_downpayment):
+                    print(line.product_uom_qty)
+                    line.qty_delivered = line.product_uom_qty
+            elif sale_order and any(invoice.invoice_line_ids.mapped('is_storage_contract')):
+                sale_order.write({'state': 'released'})
         res = super(AccountInvoice, self).invoice_validate()
         return res
 
+    @api.model
+    def _anglo_saxon_sale_move_lines(self, i_line):
+        """override for stock contract.
+        passing extra context value to identify the sc stock liability account.
+        """
+        inv = i_line.invoice_id
+        company_currency = inv.company_id.currency_id
+        price_unit = i_line._get_anglo_saxon_price_unit()
+        if inv.currency_id != company_currency:
+            currency = inv.currency_id
+            amount_currency = i_line._get_price(company_currency, price_unit)
+        else:
+            currency = False
+            amount_currency = False
+
+        product = i_line.product_id.with_context(force_company=self.company_id.id)
+        flag = False
+        if any([line.is_storage_contract for line in inv.invoice_line_ids]) and not inv.storage_down_payment:
+            flag = True
+        return self.env['product.product'].with_context({'sc_move':flag})._anglo_saxon_sale_move_lines(
+            i_line.name, product,
+            i_line.uom_id, i_line.quantity,
+            price_unit, currency=currency,
+            amount_currency=amount_currency,
+            fiscal_position=inv.fiscal_position_id,
+            account_analytic=i_line.account_analytic_id,
+            analytic_tags=i_line.analytic_tag_ids
+        )
+
     @api.multi
     def action_invoice_cancel(self):
-        if self.state == 'draft':
+        main = self.env['sale.order']
+        down = self.env['sale.order']
+        for invoice in self:
+            sale_order = invoice.mapped('invoice_line_ids').mapped('sale_line_ids').mapped('order_id')
+            if sale_order.storage_contract:
+                if invoice.storage_down_payment:
+                    if sale_order.state == 'released' and sale_order.invoice_status == 'invoiced':
+                        raise UserError('It is forbidden to modify a released order.')
+                    if sale_order.state == 'done' and sale_order.invoice_status == 'invoiced':
+                        raise UserError('It is forbidden to modify a released order.')
+                    down |= sale_order
+                else:
+                    main |= sale_order
+        if main:
+            main.write({'state': 'done'})
+        elif down:
+            down.write({'state': 'sale', 'sc_payment_done': False})
+
+        if all([inv.state == 'draft' for inv in self]):
             return super(AccountInvoice, self).action_invoice_cancel()
+
         if not self.env.user.has_group('account.group_account_manager'):
             raise ValidationError(_('You dont have permissions to cancel an invoice.'))
+
         return super(AccountInvoice, self).action_invoice_cancel()
 
     @api.depends('invoice_line_ids.profit_margin')

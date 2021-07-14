@@ -53,7 +53,7 @@
                     <field name="storage_down_payment" invisible="1"/>
                      <button name="storage_contract_release" type="object"
                              string="Create PO"
-                             attrs="{'invisible': ['|', ('storage_down_payment', '=', False), ('is_released', '=', True)]}"
+                             attrs="{'invisible': ['|', '|', ('state', '=', 'cancel'), ('storage_down_payment', '=', False), ('is_released', '=', True)]}"
                              class="oe_highlight o_invoice_validate"
                              groups="account.group_account_invoice"/>
                 </xpath>

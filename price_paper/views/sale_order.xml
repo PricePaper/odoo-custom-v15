@@ -589,6 +589,7 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                                             name="price_unit" attrs="{
                                                 'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"
                                         />
+                                        <field name="price_tax"/>
                                         <field name="discount" groups="sale.group_discount_per_so_line" attrs="{
                                             'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"/>
                                         <field name="price_subtotal" widget="monetary" groups="account.group_show_line_subtotals_tax_excluded"/>

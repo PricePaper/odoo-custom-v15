@@ -20,7 +20,8 @@ class SaleCommission(models.Model):
     is_cancelled = fields.Boolean(string='Cancelled', default=False)
     invoice_type = fields.Selection(
         selection=[('out_invoice', 'Invoice'), ('out_refund', 'Refund'), ('draw', 'Weekly Draw'),
-                   ('bounced_cheque', 'Cheque Bounce'), ('cancel', 'Invoice Cancelled'), ('aging', 'Commission Aging')], string='Type')
+                   ('bounced_cheque', 'Cheque Bounce'), ('cancel', 'Invoice Cancelled'),
+                   ('aging', 'Commission Aging'), ('unreconcile', 'Invoice Unreconciled')], string='Type')
     invoice_amount = fields.Float(string='Amount')
     date_invoice = fields.Date(related='invoice_id.date_invoice', string="Invoice Date", readonly=True, store=True)
     sale_id = fields.Many2one('sale.order', string="Sale Order")
@@ -304,7 +305,7 @@ class SaleCommission(models.Model):
                 if rec.invoice_type in ('out_invoice', 'out_refund', 'aging'):
                     payment_date_list = [payment.payment_date for payment in rec.invoice_id.payment_ids]
                     rec.paid_date = max(payment_date_list) if payment_date_list else False
-                elif rec.invoice_type in ('draw', 'bounced_cheque', 'cancel'):
+                elif rec.invoice_type in ('draw', 'bounced_cheque', 'cancel', 'unreconcile'):
                     rec.paid_date = rec.commission_date
     @api.multi
     def action_commission_remove(self):

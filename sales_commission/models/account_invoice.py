@@ -17,6 +17,33 @@ class AccountInvoice(models.Model):
     sale_commission_ids = fields.One2many('sale.commission', 'invoice_id', string='Commission')
 
     @api.multi
+    def action_invoice_re_open(self):
+        for invoice in self:
+            commission_rec = self.env['sale.commission'].search([('invoice_id', '=', invoice.id)])
+            print(commission_rec)
+            settled_rec = commission_rec.filtered(
+                lambda r: r.is_settled and r.invoice_type != 'unreconcile' and not r.is_cancelled)
+            for rec in settled_rec:
+                commission = rec.commission
+                vals = {
+                    'sale_person_id': rec.sale_person_id.id,
+                    'commission': -commission,
+                    'invoice_id': invoice.id,
+                    'invoice_type': 'unreconcile',
+                    'is_paid': True,
+                    'invoice_amount': self.amount_total,
+                    'commission_date': date.today(),
+                    'paid_date': date.today(),
+                }
+                self.env['sale.commission'].create(vals)
+                rec.is_cancelled = True
+
+            paid_rec = commission_rec.filtered(lambda r: not r.is_settled and r.invoice_type != 'unreconcile')
+            print(paid_rec, settled_rec)
+            paid_rec and paid_rec.unlink()
+        res = super(AccountInvoice, self).action_invoice_re_open()
+
+    @api.multi
     def invoice_validate(self):
         res = super(AccountInvoice, self).invoice_validate()
         for invoice in self:
@@ -86,7 +113,8 @@ class AccountInvoice(models.Model):
                     'invoice_type': 'cancel',
                     'is_paid': True,
                     'invoice_amount': self.amount_total,
-                    'commission_date': date.today()
+                    'commission_date': date.today(),
+                    'paid_date': date.today(),
                 }
                 self.env['sale.commission'].create(vals)
                 rec.is_cancelled = True

@@ -79,7 +79,6 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def invoice_validate(self):
-
         for invoice in self:
             if not invoice.payment_term_id and invoice.type in ('out_invoice', 'in_invoice'):
                 raise ValidationError(_('Payment term is not set for invoice %s' % (invoice.number)))
@@ -89,7 +88,7 @@ class AccountInvoice(models.Model):
                 for line in sale_order.order_line.filtered(lambda r: not r.is_downpayment):
                     print(line.product_uom_qty)
                     line.qty_delivered = line.product_uom_qty
-            elif sale_order and any(invoice.invoice_line_ids.mapped('is_storage_contract')):
+            elif sale_order and sale_order.storage_contract and any(invoice.invoice_line_ids.mapped('is_storage_contract')):
                 sale_order.write({'state': 'released'})
         res = super(AccountInvoice, self).invoice_validate()
         return res
@@ -111,8 +110,11 @@ class AccountInvoice(models.Model):
 
         product = i_line.product_id.with_context(force_company=self.company_id.id)
         flag = False
-        if any([line.is_storage_contract for line in inv.invoice_line_ids]) and not inv.storage_down_payment:
-            flag = True
+        if i_line.is_storage_contract and not inv.storage_down_payment:
+            if i_line.sale_line_ids.mapped('order_id').storage_contract:
+                flag = True
+            else:
+                return []
         return self.env['product.product'].with_context({'sc_move':flag})._anglo_saxon_sale_move_lines(
             i_line.name, product,
             i_line.uom_id, i_line.quantity,

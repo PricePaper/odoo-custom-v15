@@ -42,6 +42,7 @@ class AccountInvoice(models.Model):
             print(paid_rec, settled_rec)
             paid_rec and paid_rec.unlink()
         res = super(AccountInvoice, self).action_invoice_re_open()
+        return res
 
     @api.multi
     def invoice_validate(self):

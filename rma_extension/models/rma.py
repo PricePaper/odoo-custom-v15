@@ -178,8 +178,9 @@ class RMARetMerAuth(models.Model):
 
                             exchange_inv_line_vals.append(
                                 (0, 0, inv_line_vals_exchange))
+                PK_IN = self.env['stock.picking']
                 for move in stock_moves_vals:
-                    picking = self.env['stock.picking'].search([
+                    picking = PK_IN.search([
                         ('rma_id', '=', rma.id),
                         ('location_id', '=', move[2]['location_id']),
                         ('location_dest_id', '=',
@@ -206,16 +207,18 @@ class RMARetMerAuth(models.Model):
                             'location_dest_id': move[2]['location_dest_id'],
                             'rma_id': rma.id,
                         }
-                        picking_rec = self.env[
-                            'stock.picking'].create(picking_vals)
-                        picking_rec.action_confirm()
-                        picking_rec.action_assign()
-
+                        PK_IN = self.env['stock.picking'].create(picking_vals)
                     else:
                         move[2]['picking_id'] = picking.id
                         self.env['stock.move'].create(move[2])
+                else:
+                    PK_IN.action_confirm()
+                    if PK_IN.mapped('move_lines').filtered(lambda move: move.state not in ('draft', 'cancel', 'done')):
+                        PK_IN.action_assign()
+
+                PK_EXC = self.env['stock.picking']
                 for vals in exchange_move_vals:
-                    ex_picking = self.env['stock.picking'].search([
+                    ex_picking = PK_EXC.search([
                         ('rma_id', '=', rma.id),
                         ('location_id', '=', vals[2]['location_id']),
                         ('location_dest_id', '=', vals[2]['location_dest_id']),
@@ -241,13 +244,16 @@ class RMARetMerAuth(models.Model):
                             'location_dest_id': vals[2]['location_dest_id'],
                             'rma_id': rma.id,
                         }
-                        picking_rec_ex = self.env[
-                            'stock.picking'].create(exchange_picking_vals)
-                        picking_rec_ex.action_confirm()
-                        picking_rec_ex.action_assign()
+                        PK_EXC = self.env['stock.picking'].create(exchange_picking_vals)
+
                     else:
                         vals[2]['picking_id'] = ex_picking.id
                         self.env['stock.move'].create(vals[2])
+                else:
+                    PK_EXC.action_confirm()
+                    if PK_EXC.mapped('move_lines').filtered(lambda move: move.state not in ('draft', 'cancel', 'done')):
+                        PK_EXC.action_assign()
+
                 if invoice_line_vals:
                     inv_values = {
                         'type': 'out_refund',
@@ -390,8 +396,9 @@ class RMARetMerAuth(models.Model):
 
                             supp_inv_line_vals.append(
                                 (0, 0, inv_line_vals_supp))
+                PK_OUT = self.env['stock.picking']
                 for move in moves_vals:
-                    picking = self.env['stock.picking'].search([
+                    picking = PK_OUT.search([
                         ('rma_id', '=', rma.id),
                         ('location_id', '=', move[2]['location_id']),
                         ('location_dest_id', '=',
@@ -418,16 +425,18 @@ class RMARetMerAuth(models.Model):
                             'location_dest_id': move[2]['location_dest_id'],
                             'rma_id': rma.id,
                         }
-                        picking_rec_re = self.env[
-                            'stock.picking'].create(picking_re_vals)
-                        picking_rec_re.action_confirm()
-                        picking_rec_re.action_assign()
-
+                        PK_OUT = self.env['stock.picking'].create(picking_re_vals)
                     else:
                         move[2]['picking_id'] = picking.id
                         self.env['stock.move'].create(move[2])
+                else:
+                    PK_OUT.action_confirm()
+                    if PK_OUT.mapped('move_lines').filtered(lambda move: move.state not in ('draft', 'cancel', 'done')):
+                        PK_OUT.action_assign()
+
+                PK_OUT_EXC = self.env['stock.picking']
                 for vals in exchange_moves:
-                    ex_picking = self.env['stock.picking'].search([
+                    ex_picking = PK_OUT_EXC.search([
                         ('rma_id', '=', rma.id),
                         ('location_id', '=', vals[2]['location_id']),
                         ('location_dest_id', '=', vals[2]['location_dest_id']),
@@ -453,13 +462,15 @@ class RMARetMerAuth(models.Model):
                             'location_dest_id': vals[2]['location_dest_id'],
                             'rma_id': rma.id,
                         }
-                        picking_rec_exchange = self.env[
-                            'stock.picking'].create(exchange_vals)
-                        picking_rec_exchange.action_confirm()
-                        picking_rec_exchange.action_assign()
+                        PK_OUT_EXC = self.env['stock.picking'].create(exchange_vals)
                     else:
                         vals[2]['picking_id'] = ex_picking.id
                         self.env['stock.move'].create(vals[2])
+                else:
+                    PK_OUT_EXC.action_confirm()
+                    if PK_OUT_EXC.mapped('move_lines').filtered(lambda move: move.state not in ('draft', 'cancel', 'done')):
+                        PK_OUT_EXC.action_assign()
+
                 if invoice_vals:
                     inv_values = {
                         'type': 'in_refund',
@@ -599,8 +610,9 @@ class RMARetMerAuth(models.Model):
 
                             exchange_inv_line_vals.append(
                                 (0, 0, inv_line_vals_exchange))
+                PK_RES = self.env['stock.picking']
                 for move in stock_moves_vals:
-                    picking = self.env['stock.picking'].search([
+                    picking = PK_RES.search([
                         ('rma_id', '=', rma.id),
                         ('location_id', '=', move[2]['location_id']),
                         ('location_dest_id', '=',
@@ -628,16 +640,18 @@ class RMARetMerAuth(models.Model):
                             'location_dest_id': move[2]['location_dest_id'],
                             'rma_id': rma.id,
                         }
-                        picking_rec = self.env[
-                            'stock.picking'].create(picking_vals)
-                        picking_rec.action_confirm()
-                        picking_rec.action_assign()
-
+                        PK_RES = self.env['stock.picking'].create(picking_vals)
                     else:
                         move[2]['picking_id'] = picking.id
                         self.env['stock.move'].create(move[2])
+                else:
+                    PK_RES.action_confirm()
+                    if PK_RES.mapped('move_lines').filtered(lambda move: move.state not in ('draft', 'cancel', 'done')):
+                        PK_RES.action_assign()
+
+                PK_RES_EXC = self.env['stock.picking']
                 for vals in exchange_move_vals:
-                    ex_picking = self.env['stock.picking'].search([
+                    ex_picking = PK_RES_EXC.search([
                         ('rma_id', '=', rma.id),
                         ('location_id', '=', vals[2]['location_id']),
                         ('location_dest_id', '=', vals[2]['location_dest_id']),
@@ -664,13 +678,15 @@ class RMARetMerAuth(models.Model):
                             'location_dest_id': vals[2]['location_dest_id'],
                             'rma_id': rma.id,
                         }
-                        picking_rec_ex = self.env[
-                            'stock.picking'].create(exchange_picking_vals)
-                        picking_rec_ex.action_confirm()
-                        picking_rec_ex.action_assign()
+                        PK_RES_EXC = self.env['stock.picking'].create(exchange_picking_vals)
                     else:
                         vals[2]['picking_id'] = ex_picking.id
                         self.env['stock.move'].create(vals[2])
+                else:
+                    PK_RES_EXC.action_confirm()
+                    if PK_RES_EXC.mapped('move_lines').filtered(lambda move: move.state not in ('draft', 'cancel', 'done')):
+                        PK_RES_EXC.action_assign()
+
                 if invoice_line_vals:
                     inv_values = {
                         'type': 'out_refund',

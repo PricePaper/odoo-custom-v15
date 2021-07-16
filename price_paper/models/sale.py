@@ -39,12 +39,12 @@ class SaleOrder(models.Model):
         ('cancel', 'Cancelled'),
     ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', track_sequence=3,
         default='draft')
-    storage_contract = fields.Boolean(string="Storage Product", default=False, copy=False)
+    storage_contract = fields.Boolean(string="Storage Product", default=False, copy=True)
     total_volume = fields.Float(string="Total Order Volume", compute='_compute_total_weight_volume')
     total_weight = fields.Float(string="Total Order Weight", compute='_compute_total_weight_volume')
     total_qty = fields.Float(string="Total Order Quantity", compute='_compute_total_weight_volume')
     sc_payment_done = fields.Boolean(copy=False)
-    show_contract_line = fields.Boolean(compute='_compute_show_contract_line')
+    show_contract_line = fields.Boolean(compute='_compute_show_contract_line', store=False)
     hold_state = fields.Selection(
                    [('credit_hold', 'Credit Hold'),
                    ('price_hold', 'Price hold'),
@@ -78,6 +78,7 @@ class SaleOrder(models.Model):
             order.action_done()
         return True
 
+    @api.depends('partner_id')
     def _compute_show_contract_line(self):
         for order in self:
             if order.partner_id:

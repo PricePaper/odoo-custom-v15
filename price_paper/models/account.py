@@ -114,7 +114,7 @@ class AccountInvoice(models.Model):
             if i_line.sale_line_ids.mapped('order_id').storage_contract:
                 flag = True
             else:
-                return []
+                flag = 'sc_order'
         return self.env['product.product'].with_context({'sc_move':flag})._anglo_saxon_sale_move_lines(
             i_line.name, product,
             i_line.uom_id, i_line.quantity,

@@ -99,31 +99,13 @@ class AccountInvoice(models.Model):
         passing extra context value to identify the sc stock liability account.
         """
         inv = i_line.invoice_id
-        company_currency = inv.company_id.currency_id
-        price_unit = i_line._get_anglo_saxon_price_unit()
-        if inv.currency_id != company_currency:
-            currency = inv.currency_id
-            amount_currency = i_line._get_price(company_currency, price_unit)
-        else:
-            currency = False
-            amount_currency = False
-
-        product = i_line.product_id.with_context(force_company=self.company_id.id)
         flag = False
         if i_line.is_storage_contract and not inv.storage_down_payment:
             if i_line.sale_line_ids.mapped('order_id').storage_contract:
                 flag = True
             else:
                 return []
-        return self.env['product.product'].with_context({'sc_move':flag})._anglo_saxon_sale_move_lines(
-            i_line.name, product,
-            i_line.uom_id, i_line.quantity,
-            price_unit, currency=currency,
-            amount_currency=amount_currency,
-            fiscal_position=inv.fiscal_position_id,
-            account_analytic=i_line.account_analytic_id,
-            analytic_tags=i_line.analytic_tag_ids
-        )
+        return super(AccountInvoice, self.with_context({'sc_move': flag}))._anglo_saxon_sale_move_lines(i_line)
 
     @api.multi
     def action_invoice_cancel(self):

@@ -146,7 +146,7 @@ class ProductProduct(models.Model):
             cacc = accounts['expense'].id
             if self._context.get('sc_move', '') == 'sc_order':
                 #if it is storage order reverse the move lines
-                dacc = accounts['expense'].id                
+                dacc = accounts['stock_output'].id
                 cacc = accounts['sc_liability_out'].id
             if dacc and cacc:
                 return [

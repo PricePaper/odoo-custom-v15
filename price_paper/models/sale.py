@@ -604,7 +604,7 @@ class SaleOrder(models.Model):
                     order.partner_id.name, order.partner_id.credit_limit,
                     (order.partner_id.credit + order.amount_total))
 
-            for order_line in order.order_line:
+            for order_line in order.order_line.filtered(lambda r: not r.storage_contract_line_id):
                 if order_line.price_unit < order_line.working_cost and not (
                         'rebate_contract_id' in order_line and order_line.rebate_contract_id):
                     msg1 = '[%s]%s ' % (order_line.product_id.default_code,
@@ -1381,7 +1381,7 @@ class SaleOrderLine(models.Model):
         """
         for line in self:
             if line.product_id:
-                if line.is_delivery or line.is_downpayment:
+                if line.is_delivery or line.is_downpayment or line.storage_contract_line_id:
                     line.profit_margin = 0.0
                     if line.is_delivery and line.order_id.carrier_id:
                         price_unit = line.order_id.carrier_id.average_company_cost

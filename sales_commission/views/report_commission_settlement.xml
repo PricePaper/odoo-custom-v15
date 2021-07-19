@@ -12,7 +12,7 @@
                 </div>
                 <div class="col-xs-6">
                     <strong>Date :</strong>
-                    <span t-field="o.date_from"/> to 
+                    <span t-field="o.date_from"/> to
                     <span t-field="o.date_to"/>
                 </div>
                 <div class="col-xs-6">
@@ -27,6 +27,7 @@
                             <th><strong>Invoice Date</strong></th>
                             <th><strong>Paid Date</strong></th>
                             <th><strong>Invoice Amount</strong></th>
+                            <th><strong>Profit</strong></th>
                             <th><strong>Type</strong></th>
                             <th><strong>Commission</strong></th>
                         </tr>
@@ -45,7 +46,7 @@
                                 <td><t t-esc="'%.2f'% total"/></td>
                               </tr>
                               <tr>
-                                  <td colspan="6">
+                                  <td colspan="7">
                                     <span t-field="line.partner_id"/>
                                   </td>
                                   <t t-set="total" t-value="0"/>
@@ -72,12 +73,17 @@
                                     </td>
                                     <td>
                                         <span t-if="line.invoice_amount">
-                                            <t t-esc="line.invoice_amount"/>
+                                            <t t-esc="'%.2f'% line.invoice_amount"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span t-if="line.invoice_id">
+                                            <t t-esc="'%.2f'% line.invoice_id.gross_profit"/>
                                         </span>
                                     </td>
                                     <td>
                                         <span t-if="line.invoice_type">
-                                            <t t-esc="line.invoice_type"/>
+                                            <span t-field="line.invoice_type"/>
                                         </span>
                                     </td>
                                     <td>

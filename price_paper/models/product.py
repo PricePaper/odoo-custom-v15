@@ -132,7 +132,7 @@ class ProductProduct(models.Model):
                 name, product, uom, qty,
                 price_unit, currency, amount_currency,
                 fiscal_position, account_analytic, analytic_tags
-            )
+            )        
 
         if (product.valuation == 'real_time'
                 and (product.type == 'product' or (product.type == 'consu' and product._is_phantom_bom()))):
@@ -144,6 +144,10 @@ class ProductProduct(models.Model):
             dacc = accounts['sc_liability_out'].id
             # credit account cacc will be the expense account
             cacc = accounts['expense'].id
+            if self._context.get('sc_move', '') == 'sc_order':
+                #if it is storage order reverse the move lines
+                dacc = accounts['stock_output'].id
+                cacc = accounts['sc_liability_out'].id
             if dacc and cacc:
                 return [
                     {

@@ -22,6 +22,21 @@ class StockMove(models.Model):
     unit_price = fields.Float(string="Unit Price", copy=False, compute='_compute_total_price', store=False)
     total = fields.Float(string="Subtotal", copy=False, compute='_compute_total_price', store=False)
 
+
+    def receipt_move_price_fix_search(self):
+        picking_lines = self.env['stock.picking'].search(
+                [('picking_type_code', '=', 'incoming'), ('state', '!=', 'cancel')]).mapped(
+                'move_ids_without_package').filtered(
+                lambda r: r.purchase_line_id and r.purchase_line_id.price_unit != r.price_unit)
+        picking = picking_lines.mapped('picking_id')
+        return picking_lines.ids or False
+
+    def receipt_move_price_fix(self):
+        self.price_unit = self.purchase_line_id.price_unit
+        return True
+
+
+
     def _create_account_move_line(self, credit_account_id, debit_account_id, journal_id):
         self.ensure_one()
         if self.picking_id.transit_date:
@@ -52,6 +67,11 @@ class StockMove(models.Model):
         # Find back incoming stock moves (called candidates here) to value this move.
         qty_to_take_on_candidates = quantity or valued_quantity
         candidates = move.product_id._get_fifo_candidates_in_move_with_company(move.company_id.id)
+        if move.is_storage_contract:
+            candidates = move.sale_line_id and move.sale_line_id.storage_contract_line_id and \
+            move.sale_line_id.storage_contract_line_id.purchase_line_ids.mapped('move_ids')
+            if sum(candidates.mapped('remaining_qty')) <= 0:
+                raise UserError("There is no quantity remining in original order")
         new_standard_price = 0
         tmp_qty = 0
         tmp_value = 0  # to accumulate the value taken on the candidates

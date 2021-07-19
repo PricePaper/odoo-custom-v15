@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
 
+from odoo.tools import float_is_zero
+
 
 class StockMoveLine(models.Model):
     _inherit = "stock.move.line"
@@ -22,34 +24,32 @@ class StockMoveLine(models.Model):
                 qty = vals['qty_done']
                 invoice_lines = sale_line.invoice_lines.filtered(
                     lambda rec: rec.invoice_id.state != 'cancel' and line.move_id in rec.stock_move_ids)
-                invoices = invoice_lines.mapped('invoice_id')
+                sale_line.qty_delivered = qty
                 if invoice_lines:
                     invoice_lines.write({'quantity': qty})
-                    if qty == 0:
+                    invoice_lines.mapped('invoice_id').compute_taxes()
+                else:
+                    if len(line.move_id.picking_id.move_ids_without_package) != 1:
+                        other_invoice_lines = line.move_id.picking_id.move_ids_without_package.mapped('sale_line_id').mapped('invoice_lines')
+                        other_invoice_lines.filtered(
+                            lambda rec: rec.invoice_id.state == 'draft')
+                        if other_invoice_lines:
+                            other_invoice = False
+                            for ot_invoice_line in  other_invoice_lines:
+                                if line.move_id.picking_id.id in ot_invoice_line.stock_move_ids.mapped('picking_id').ids:
+                                    other_invoice = ot_invoice_line.mapped('invoice_id')
+                                    continue
+                            if other_invoice:
+                                precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+                                if float_is_zero(sale_line.qty_to_invoice, precision_digits=precision):
+                                    continue
 
-                        invoice_lines.sudo().unlink()
-                        invoices.compute_taxes()
-
-                        delivery_inv_lines = self.env['account.invoice.line']
-                        # if a invoice have only one line we need to make sure it's not a delivery change.
-                        # if its a devlivery change, remove it from invoice  and cancel the entry.
-                        for invoice in invoices:
-                            if len(invoice.invoice_line_ids) == 1:
-                                if all(invoice.invoice_line_ids.mapped('sale_line_ids').mapped('is_delivery')):
-                                    delivery_inv_lines |= invoice.invoice_line_ids
-
-                        if delivery_inv_lines:
-                            delivery_inv_lines.sudo().unlink()
-
-                        amount = sum(invoices.mapped('amount_total'))
-
-                        if not amount:
-                            invoices.sudo().action_invoice_cancel()
-
-                    else:
-                        invoice_lines.mapped('invoice_id').compute_taxes()
-
-                sale_line.qty_delivered = qty
+                                if sale_line.qty_to_invoice > 0:
+                                    inv_line = sale_line.invoice_line_create_vals(
+                                        other_invoice.id, sale_line.qty_to_invoice
+                                    )
+                                    self.env['account.invoice.line'].create(inv_line)
+                                other_invoice.compute_taxes()
 
             if 'picking_id' in vals:
                 sale_line.invoice_lines.filtered(lambda rec: line.move_id in rec.stock_move_ids).sudo().unlink()
@@ -66,24 +66,7 @@ class StockMoveLine(models.Model):
 
                 if invoice_lines:
                     invoices = invoice_lines.mapped('invoice_id')
-                    invoice_lines.sudo().unlink()
-                    invoices.compute_taxes()
-
-                    delivery_inv_lines = self.env['account.invoice.line']
-                    # if a invoice have only one line we need to make sure it's not a delivery change.
-                    # if its a devlivery change, remove it from invoice  and cancel the entry.
-                    for invoice in invoices:
-                        if len(invoice.invoice_line_ids) == 1:
-                            if all(invoice.invoice_line_ids.mapped('sale_line_ids').mapped('is_delivery')):
-                                delivery_inv_lines |= invoice.invoice_line_ids
-
-                    if delivery_inv_lines:
-                        delivery_inv_lines.sudo().unlink()
-
-                    amount = sum(invoices.mapped('amount_total'))
-
-                    if not amount:
-                        invoices.sudo().action_invoice_cancel()
+                    invoice_lines.write({'quantity': 0})
 
         result = super(StockMoveLine, self).unlink()
         return result

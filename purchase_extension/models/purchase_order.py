@@ -228,6 +228,14 @@ class PurchaseOrderLine(models.Model):
     gross_volume = fields.Float(string="Gross Volume", compute='_compute_gross_weight_volume')
     gross_weight = fields.Float(string="Gross Weight", compute='_compute_gross_weight_volume')
 
+
+    @api.model
+    def create(self, vals):
+        res = super(PurchaseOrderLine, self).create(vals)
+        if res.order_id and res.order_id.state == 'purchase':
+            res.order_id._add_supplier_to_product()
+        return res
+
     @api.multi
     def write(self, vals):
         res = super(PurchaseOrderLine, self.with_context({'from_purchase_write': True})).write(vals)
@@ -236,27 +244,9 @@ class PurchaseOrderLine(models.Model):
                 for picking in rec.order_id.picking_ids.filtered(lambda r: r.state != 'done'):
                     for move in picking.move_lines:
                         move.price_unit = move._get_price_unit()
-        if vals.get('price_unit') and self.state == 'purchase':
-            partner = self.order_id.partner_id if not self.order_id.partner_id.parent_id else self.order_id.partner_id.parent_id
-
-            vendor_prices =  self.product_id.seller_ids.filtered(
-                lambda r: r.name == self.partner_id and r.min_qty <= self.product_qty)
-
-            # Convert the price in the right currency.
-            currency = partner.property_purchase_currency_id or self.env.user.company_id.currency_id
-            price = self.currency_id._convert(self.price_unit, currency, self.company_id, self.date_order or fields.Date.today(), round=False)
-            # Compute the price for the template's UoM, because the supplier's UoM is related to that UoM.
-            if self.product_id.product_tmpl_id.uom_po_id != self.product_uom:
-                default_uom = self.product_id.product_tmpl_id.uom_po_id
-                price = self.product_uom._compute_price(price, default_uom)
-
-            try:
-                if vendor_prices:
-                    vendor_line = vendor_prices.sorted(key=lambda r: r.min_qty, reverse=True)[0]
-                    vendor_line.with_context({'user': self.order_id.user_id and self.order_id.user_id.id, 'from_purchase': True}).price = price
-
-            except AccessError:  # no write access rights -> just ignore
-                pass
+        if vals.get('price_unit'):
+            if self.order_id and self.order_id.state == 'purchase':
+                self.order_id._add_supplier_to_product()
         return res
 
 

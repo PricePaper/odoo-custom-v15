@@ -51,7 +51,7 @@
         <field name="model">stock.picking</field>
         <field name="arch" type="xml">
             <form>
-                <field name="move_ids_without_package">
+                <field name="move_ids_without_package" readonly="1">
                     <tree>
                         <field name="name" invisible="1"/>
                         <field name="date_expected" invisible="1"/>

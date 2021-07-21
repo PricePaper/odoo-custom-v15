@@ -43,7 +43,7 @@ class SaleOrder(models.Model):
     total_volume = fields.Float(string="Total Order Volume", compute='_compute_total_weight_volume')
     total_weight = fields.Float(string="Total Order Weight", compute='_compute_total_weight_volume')
     total_qty = fields.Float(string="Total Order Quantity", compute='_compute_total_weight_volume')
-    sc_payment_done = fields.Boolean(copy=False)
+    sc_po_done = fields.Boolean(copy=False)
     show_contract_line = fields.Boolean(compute='_compute_show_contract_line', store=False)
     hold_state = fields.Selection(
                    [('credit_hold', 'Credit Hold'),
@@ -62,6 +62,8 @@ class SaleOrder(models.Model):
                     order.invoice_status = 'to invoice'
                 elif all([l.invoice_status == 'invoiced' for l in order.order_line if not l.is_downpayment]):
                     order.invoice_status = 'invoiced'
+                elif all([l.invoice_status == 'upselling' for l in order.order_line if not l.is_downpayment]):
+                    order.invoice_status = 'upselling'
                 else:
                     order.invoice_status = 'no'
 
@@ -273,39 +275,47 @@ class SaleOrder(models.Model):
         return True
 
     @api.multi
-    def action_create_storage_downpayment(self):
+    def action_create_storage_do(self):
         """
-        Create invoice for storage contract product down payment
+        create purchase order for storage contract
         """
+        self.run_storage()
+        self.write({'sc_po_done': True})
 
-        sale_line_obj = self.env['sale.order.line']
-        for order in self:
-            storage_pr = order.company_id.storage_product_id
-            if not storage_pr:
-                raise UserError('Please set a storage product in company.')
-            taxes = storage_pr.taxes_id.filtered(lambda r: not order.company_id or r.company_id == order.company_id)
-            if order.fiscal_position_id and taxes:
-                tax_ids = order.fiscal_position_id.map_tax(taxes, storage_pr, order.partner_shipping_id).ids
-            else:
-                tax_ids = taxes.ids
-            so_lines = order.order_line.filtered(lambda r: r.is_downpayment)
-            if not so_lines:
-                so_lines = sale_line_obj.create({
-                    'name': _('Advance: %s') % (time.strftime('%m %Y'),),
-                    'price_unit': order.amount_total,
-                    'product_uom_qty': 0.0,
-                    'order_id': order.id,
-                    'discount': 0.0,
-                    'product_uom': storage_pr.uom_id.id,
-                    'product_id': storage_pr.id,
-                    'tax_id': [(6, 0, tax_ids)],
-                    'is_downpayment': True,
-                })
-            else:
-                so_lines.write({'price_unit': order.amount_total})
-            self._create_storage_downpayment_invoice(order, so_lines)
-            order.sc_payment_done = True
-        return True
+    # @api.multi
+    # def action_create_storage_downpayment(self):
+    #     """
+    #     Create invoice for storage contract product down payment
+    #     """
+    #
+    #     sale_line_obj = self.env['sale.order.line']
+    #     for order in self:
+    #         storage_pr = order.company_id.storage_product_id
+    #         if not storage_pr:
+    #             raise UserError('Please set a storage product in company.')
+    #         taxes = storage_pr.taxes_id.filtered(lambda r: not order.company_id or r.company_id == order.company_id)
+    #         if order.fiscal_position_id and taxes:
+    #             tax_ids = order.fiscal_position_id.map_tax(taxes, storage_pr, order.partner_shipping_id).ids
+    #         else:
+    #             tax_ids = taxes.ids
+    #         so_lines = order.order_line.filtered(lambda r: r.is_downpayment)
+    #         if not so_lines:
+    #             so_lines = sale_line_obj.create({
+    #                 'name': _('Advance: %s') % (time.strftime('%m %Y'),),
+    #                 'price_unit': order.amount_total,
+    #                 'product_uom_qty': 0.0,
+    #                 'order_id': order.id,
+    #                 'discount': 0.0,
+    #                 'product_uom': storage_pr.uom_id.id,
+    #                 'product_id': storage_pr.id,
+    #                 'tax_id': [(6, 0, tax_ids)],
+    #                 'is_downpayment': True,
+    #             })
+    #         else:
+    #             so_lines.write({'price_unit': order.amount_total})
+    #         self._create_storage_downpayment_invoice(order, so_lines)
+    #         order.sc_payment_done = True
+    #     return True
 
     @api.depends('picking_policy')
     def _compute_expected_date(self):
@@ -846,7 +856,7 @@ class SaleOrder(models.Model):
                     errors.append(error.name)
             if errors:
                 raise UserError('\n'.join(errors))
-
+            order.message_post(body='PO Created by : %s'%self.env.user.name)
 
 SaleOrder()
 
@@ -899,8 +909,10 @@ class SaleOrderLine(models.Model):
             if line.order_id.storage_contract:
                 if float_compare(line.qty_invoiced, line.product_uom_qty, precision_digits=precision) >= 0:
                     line.invoice_status = 'invoiced'
-                elif line.state in ['released', 'done'] and not line.is_downpayment:
+                elif float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) == 0:
                     line.invoice_status = 'to invoice'
+                elif float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) == 1:
+                    line.invoice_status = 'upselling'
                 else:
                     line.invoice_status = 'no'
 
@@ -919,10 +931,10 @@ class SaleOrderLine(models.Model):
     def _compute_qty_delivered(self):
         super(SaleOrderLine, self)._compute_qty_delivered()
         for line in self:
-            if line.order_id.storage_contract and line.order_id.invoice_ids:
-                for inv in line.order_id.invoice_ids:
-                    if inv.state in ('open', 'paid') and inv.storage_down_payment:
-                        line.qty_delivered = line.product_uom_qty
+            if line.order_id.storage_contract:
+                for po_line in line.purchase_line_ids:
+                    if po_line.state in ('purchase', 'done'):
+                        line.qty_delivered = sum(po_line.move_ids.mapped('quantity_done'))
 
     @api.onchange('storage_contract_line_id')
     def onchange_storage_contract_line_id(self):
@@ -959,15 +971,15 @@ class SaleOrderLine(models.Model):
             else:
                 rec.sale_uom_ids = False
 
-    @api.multi
-    def _prepare_invoice_line(self, qty):
-        self.ensure_one()
-        res = super(SaleOrderLine, self)._prepare_invoice_line(qty)
-        if self.order_id.storage_contract:
-            res.update({
-                'price_unit': 0
-            })
-        return res
+    # @api.multi
+    # def _prepare_invoice_line(self, qty):
+    #     self.ensure_one()
+    #     res = super(SaleOrderLine, self)._prepare_invoice_line(qty)
+    #     if self.order_id.storage_contract:
+    #         res.update({
+    #             'price_unit': 0
+    #         })
+    #     return res
 
     def product_id_check_availability(self):
         if not self.product_id or not self.product_uom_qty or not self.product_uom:

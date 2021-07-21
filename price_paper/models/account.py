@@ -57,15 +57,15 @@ class AccountInvoice(models.Model):
 
     gross_profit = fields.Monetary(compute='calculate_gross_profit', string='Predicted Profit')
     storage_down_payment = fields.Boolean(copy=False)
-    is_released = fields.Boolean(copy=False)
+    # is_released = fields.Boolean(copy=False)
     discount_from_batch = fields.Float('WriteOff Discount')
     invoice_address_id = fields.Many2one('res.partner', string="Billing Address")
 
-    def storage_contract_release(self):
-        sale_order = self.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
-        self.write({'is_released': True})
-        sale_order.run_storage()
-        sale_order.message_post(body='Sale Order Released by : %s'%self.env.user.name)
+    # def storage_contract_release(self):
+    #     sale_order = self.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
+    #     self.write({'is_released': True})
+    #     sale_order.run_storage()
+    #     sale_order.message_post(body='Sale Order Released by : %s'%self.env.user.name)
 
     @api.onchange('partner_id', 'company_id')
     def _onchange_partner_id(self):
@@ -83,12 +83,7 @@ class AccountInvoice(models.Model):
             if not invoice.payment_term_id and invoice.type in ('out_invoice', 'in_invoice'):
                 raise ValidationError(_('Payment term is not set for invoice %s' % (invoice.number)))
             sale_order = invoice.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
-            if sale_order and any(invoice.invoice_line_ids.mapped('is_storage_contract')) and invoice.storage_down_payment:
-                sale_order.action_done()
-                for line in sale_order.order_line.filtered(lambda r: not r.is_downpayment):
-                    print(line.product_uom_qty)
-                    line.qty_delivered = line.product_uom_qty
-            elif sale_order and sale_order.storage_contract and any(invoice.invoice_line_ids.mapped('is_storage_contract')):
+            if sale_order and sale_order.storage_contract and any(invoice.invoice_line_ids.mapped('is_storage_contract')):
                 sale_order.write({'state': 'released'})
         res = super(AccountInvoice, self).invoice_validate()
         return res
@@ -114,18 +109,16 @@ class AccountInvoice(models.Model):
         for invoice in self:
             sale_order = invoice.mapped('invoice_line_ids').mapped('sale_line_ids').mapped('order_id')
             if sale_order.storage_contract:
-                if invoice.storage_down_payment:
-                    if sale_order.state == 'released' and sale_order.invoice_status == 'invoiced':
-                        raise UserError('It is forbidden to modify a released order.')
-                    if sale_order.state == 'done' and sale_order.invoice_status == 'invoiced':
-                        raise UserError('It is forbidden to modify a released order.')
-                    down |= sale_order
-                else:
-                    main |= sale_order
+                # if invoice.storage_down_payment:
+                #     if sale_order.state == 'released' and sale_order.invoice_status == 'invoiced':
+                #         raise UserError('It is forbidden to modify a released order.')
+                #     if sale_order.state == 'done' and sale_order.invoice_status == 'invoiced':
+                #         raise UserError('It is forbidden to modify a released order.')
+                #     down |= sale_order
+                # else:
+                main |= sale_order
         if main:
             main.write({'state': 'done'})
-        elif down:
-            down.write({'state': 'sale', 'sc_payment_done': False})
 
         if all([inv.state == 'draft' for inv in self]):
             return super(AccountInvoice, self).action_invoice_cancel()

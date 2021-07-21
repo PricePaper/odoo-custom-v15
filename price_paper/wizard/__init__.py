@@ -8,5 +8,6 @@ from . import release_sale_order
 from . import sale_make_invoice_advanced
 from . import sale_warning
 from . import upload_pricelist_wizard
+from . import stock_overprocessed_transfer
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -8,6 +8,7 @@ class StockMove(models.Model):
 
     picking_partner_id = fields.Many2one('res.partner', related='picking_id.partner_id', string='Partner')
     is_storage_contract = fields.Boolean(compute='_compute_is_storage_contract', store=True)
+    po_original_qty = fields.Float(related="sale_line_id.product_uom_qty", string='Original Quantity (PO)', readonly=True)
 
     @api.depends('sale_line_id.storage_contract_line_id', 'sale_line_id.order_id.storage_contract')
     def _compute_is_storage_contract(self):

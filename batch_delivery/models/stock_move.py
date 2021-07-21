@@ -72,6 +72,9 @@ class StockMove(models.Model):
             move.sale_line_id.storage_contract_line_id.purchase_line_ids.mapped('move_ids')
             if sum(candidates.mapped('remaining_qty')) <= 0:
                 raise UserError("There is no quantity remaining in original order")
+        else:
+            remove = candidates.filtered(lambda rec: rec.is_storage_contract is True)
+            candidates -= remove
         new_standard_price = 0
         tmp_qty = 0
         tmp_value = 0  # to accumulate the value taken on the candidates

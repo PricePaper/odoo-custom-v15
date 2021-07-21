@@ -30,7 +30,7 @@ class SaleOrder(models.Model):
                 ('remaining_qty', '<=', 0.0),
                 ('state', '=', 'confirmed')
             ])
-            lines.action_expire()
+            lines.mapped('contract_id').action_expire()
         return res
 
 

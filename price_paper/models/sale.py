@@ -1428,7 +1428,7 @@ class SaleOrderLine(models.Model):
             res.update({'value': {'lst_price': lst_price, 'working_cost': working_cost}})
         if self.product_id:
             warn_msg = not self.product_id.purchase_ok and "This item can no longer be purchased from vendors" or ""
-            if sum([1 for line in self.order_id.order_line if line.product_id.id == self.product_id.id]) > 1:
+            if sum([1 for line in self.order_id.order_line if line.product_id.id == self.product_id.id and line != self]) > 1:
                 warn_msg += "\n{} is already in SO.".format(self.product_id.name)
 
             if self.order_id:

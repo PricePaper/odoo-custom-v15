@@ -1489,17 +1489,9 @@ class SaleOrderLine(models.Model):
         if self.product_id and self.storage_contract_line_id:
             contract_line = self.storage_contract_line_id
             remaining_qty = contract_line.storage_remaining_qty
-            invoice_lines = self.storage_contract_line_id.order_id.mapped('order_line').mapped('invoice_lines')
             if remaining_qty <= contract_line.selling_min_qty:
                 self.product_uom_qty = remaining_qty
-                if not any([inv_line.invoice_id.state == 'paid' for inv_line in invoice_lines]):
-                    if self._context.get('quantity', False):
-                        self.price_unit = old_unit_price
-                    else:
-                        self.price_unit = product_price
-                    self.price_from = price_from
-                else:
-                    self.price_unit = 0
+                self.price_unit = 0
             elif self.product_uom_qty <= remaining_qty:
                 if self.product_uom_qty < contract_line.selling_min_qty:
                     warning_mess = {
@@ -1508,12 +1500,6 @@ class SaleOrderLine(models.Model):
                     }
                     self.product_uom_qty = 0
                     res.update({'warning': warning_mess})
-                if not any([inv_line.invoice_id.state == 'paid' for inv_line in invoice_lines]):
-                    if self._context.get('quantity', False):
-                        self.price_unit = old_unit_price
-                    else:
-                        self.price_unit = product_price
-                    self.price_from = price_from
                 else:
                     self.price_unit = 0
             elif self.product_uom_qty > remaining_qty:

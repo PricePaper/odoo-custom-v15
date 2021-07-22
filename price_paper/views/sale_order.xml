@@ -251,7 +251,7 @@
                             context="{'partner':partner_id}" class="oe_edit_only oe_highlight"/>
                     <button type="action" name="%(action_sc_popup_windows)d" string="Browse Storage Contract"
                              context="{'default_partner_id':partner_id}" class="oe_edit_only oe_highlight"
-                    attrs="{'invisible': [('show_contract_line', '=', False)]}"/>
+                    />
 
                 </xpath>
 

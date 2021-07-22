@@ -15,7 +15,7 @@
                         </script>
 
                         <field name="partner_id" invisible="1"/>
-                        <field name="contract_line_id" placeholder="Select Constract Line" style="width: 391px;"
+                        <field name="contract_line_id" placeholder="Select Contract Line" style="width: 391px;"
                                domain="[('order_id.state', '=', 'released'), ('order_id.storage_contract', '=', True), ('is_downpayment', '=', False), ('storage_remaining_qty', '&gt;', 0), ('order_id.partner_id', '=', partner_id)]"/>
 
                     </sheet>

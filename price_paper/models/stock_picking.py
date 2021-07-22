@@ -43,7 +43,9 @@ class StockPicking(models.Model):
         self.ensure_one()
         result = super(StockPicking, self).button_validate()
         if self.picking_type_code == 'incoming':
-            for line in self.move_ids_without_package:
+            for line in self.move_lines:
+                # print(line.is_storage_contract , line.purchase_line_id)
+                # if input('dddddddd') == 'y':print(o)
                 if line.is_storage_contract and line.purchase_line_id:
                     line.sale_line_id.qty_delivered = line.quantity_done
         return result

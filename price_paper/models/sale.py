@@ -936,11 +936,11 @@ class SaleOrderLine(models.Model):
                     if po_line.state in ('purchase', 'done'):
                         line.qty_delivered = sum(po_line.move_ids.mapped('quantity_done'))
 
-    @api.onchange('storage_contract_line_id')
-    def onchange_storage_contract_line_id(self):
-        if self.storage_contract_line_id:
-            self.product_id = self.storage_contract_line_id.product_id
-            self.product_uom_qty = self.storage_contract_line_id.storage_remaining_qty if self.storage_contract_line_id.storage_remaining_qty < self.storage_contract_line_id.selling_min_qty else self.storage_contract_line_id.selling_min_qty
+    # @api.onchange('storage_contract_line_id')
+    # def onchange_storage_contract_line_id(self):
+    #     if self.storage_contract_line_id:
+    #         self.product_id = self.storage_contract_line_id.product_id
+    #         self.product_uom_qty = self.storage_contract_line_id.storage_remaining_qty if self.storage_contract_line_id.storage_remaining_qty < self.storage_contract_line_id.selling_min_qty else self.storage_contract_line_id.selling_min_qty
 
     @api.depends('product_id')
     def compute_available_qty(self):

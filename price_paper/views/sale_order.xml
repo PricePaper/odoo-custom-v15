@@ -173,7 +173,8 @@
                  <xpath expr="//field[@name='order_line']/form//label[@for='qty_delivered']" position="before">
                      <field name="storage_contract_line_id" options="{'no_create': False}"
                             attrs="{'invisible': [('parent.show_contract_line', '=', False)]}"
-                            domain="[('order_id.state', '=', 'released'), ('order_id.storage_contract', '=', True), ('is_downpayment', '=', False), ('storage_remaining_qty', '&gt;', 0), ('order_id.partner_id', '=', parent.partner_id)]"/>
+                            domain="[('order_id.state', '=', 'released'), ('order_id.storage_contract', '=', True), ('is_downpayment', '=', False), ('storage_remaining_qty', '&gt;', 0), ('order_id.partner_id', '=', parent.partner_id)]"
+                     invisible="1"/>
                  </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="before">
                     <field name="lst_price" readonly="1"/>
@@ -248,6 +249,10 @@
                 <xpath expr="//field[@name='order_line']" position="before">
                     <button type="object" name="add_purchase_history_to_so_line" string="Browse History Lines"
                             context="{'partner':partner_id}" class="oe_edit_only oe_highlight"/>
+                    <button type="action" name="%(action_sc_popup_windows)d" string="Browse Storage Contract"
+                             context="{'default_partner_id':partner_id}" class="oe_edit_only oe_highlight"
+                    attrs="{'invisible': [('show_contract_line', '=', False)]}"/>
+
                 </xpath>
 
                 <xpath expr="//field[@name='order_line']/form" position="inside">

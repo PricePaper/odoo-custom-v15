@@ -922,9 +922,9 @@ class SaleOrderLine(models.Model):
         for line in self:
             if line.order_id.storage_contract and line.order_id.state in ['done', 'released']:
                 if line.product_id.invoice_policy == 'order':
-                    line.qty_to_invoice = (line.product_uom_qty if not line.is_downpayment else 1) - line.qty_invoiced
+                    line.qty_to_invoice = (line.product_uom_qty if not line.is_downpayment else 0) - line.qty_invoiced
                 else:
-                    line.qty_to_invoice = (line.qty_delivered if not line.is_downpayment else 1) - line.qty_invoiced
+                    line.qty_to_invoice = (line.qty_delivered if not line.is_downpayment else 0) - line.qty_invoiced
 
     @api.multi
     @api.depends('qty_delivered_method', 'qty_delivered_manual', 'analytic_line_ids.so_line', 'analytic_line_ids.unit_amount', 'analytic_line_ids.product_uom_id')
@@ -1428,7 +1428,7 @@ class SaleOrderLine(models.Model):
             res.update({'value': {'lst_price': lst_price, 'working_cost': working_cost}})
         if self.product_id:
             warn_msg = not self.product_id.purchase_ok and "This item can no longer be purchased from vendors" or ""
-            if sum([1 for line in self.order_id.order_line if line.product_id.id == self.product_id.id and line != self]) > 1:
+            if not self.order_id.storage_contract and sum([1 for line in self.order_id.order_line if line.product_id.id == self.product_id.id]) > 1:
                 warn_msg += "\n{} is already in SO.".format(self.product_id.name)
 
             if self.order_id:

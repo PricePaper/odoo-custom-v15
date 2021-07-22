@@ -17,6 +17,10 @@ class StockPicking(models.Model):
                 line.purchase_line_id.product_qty = line.quantity_done
                 line.sale_line_id.write({'product_uom_qty': line.quantity_done, 'qty_delivered': line.quantity_done})
                 line.sale_line_id.order_id.action_done()
+        backorder_pick = self.env['stock.picking'].search([('backorder_id', '=', self.id), ('state', '!=', 'cancel')])
+        if backorder_pick:
+            backorder_pick.action_cancel()
+            self.message_post(body=_("Back order <em>%s</em> <b>cancelled</b>.") % (",".join([b.name or '' for b in backorder_pick])))
         self.over_processed = False
 
 

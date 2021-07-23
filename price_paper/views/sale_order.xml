@@ -493,6 +493,14 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                                groups="purchase.group_purchase_user">
                                <field name="purchase_order_count" widget="statinfo" string="Purchase Orders"/>
                            </button>
+                            <button class="oe_stat_button"
+                                type="object" name="view_sc_child_orders"
+                                groups="sales_team.group_sale_salesman"
+                                attrs="{'invisible': [('sc_child_order_count', '=', 0)]}"
+                                icon="fa-usd">
+                                <field string="Sales" name="sc_child_order_count" widget="statinfo"/>
+                            </button>
+
                         </div>
                         <div class="oe_title">
                             <h1>

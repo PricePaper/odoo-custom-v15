@@ -3,7 +3,7 @@
 import time
 from datetime import datetime, date
 from datetime import timedelta
-
+from collections import Counter
 import pytz
 from dateutil.relativedelta import relativedelta
 
@@ -46,12 +46,17 @@ class SaleOrder(models.Model):
     sc_po_done = fields.Boolean(copy=False)
     show_contract_line = fields.Boolean(compute='_compute_show_contract_line', store=False)
     hold_state = fields.Selection(
-                   [('credit_hold', 'Credit Hold'),
-                   ('price_hold', 'Price hold'),
-                   ('both_hold', 'Price, Credit Hold'),
-                   ('release', 'Order Released')],
+        [('credit_hold', 'Credit Hold'),
+         ('price_hold', 'Price hold'),
+         ('both_hold', 'Price, Credit Hold'),
+         ('release', 'Order Released')],
         string='Hold Status', default=False, copy=False)
     invoice_address_id = fields.Many2one('res.partner', string="Billing Address")
+    sc_child_order_count = fields.Integer(compute='_compute_sc_child_order_count')
+
+    def _compute_sc_child_order_count(self):
+        for order in self:
+            order.sc_child_order_count = len(order.order_line.mapped('storage_contract_line_ids.order_id'))
 
     @api.depends('state', 'order_line.invoice_status', 'order_line.invoice_lines')
     def _get_invoiced(self):
@@ -131,7 +136,6 @@ class SaleOrder(models.Model):
             sale_order.hold_state = False
 
         return super(SaleOrder, self).action_cancel()
-
 
     @api.multi
     def _create_storage_downpayment_invoice(self, order, so_lines):
@@ -241,7 +245,7 @@ class SaleOrder(models.Model):
                     move_line.qty_done = qty_done
                     move_line.move_id.sale_line_id.qty_delivered = qty_done
                 else:
-                    missing_msg +=  'Invoice : ' + data.get('name') + ' Product_id : ' + str(product_id) + '\n'
+                    missing_msg += 'Invoice : ' + data.get('name') + ' Product_id : ' + str(product_id) + '\n'
         delivery_line = self.order_line.filtered(lambda r: r.product_id.default_code == 'misc')
         if delivery_line:
             delivery_line.qty_delivered_method = 'manual'
@@ -587,18 +591,18 @@ class SaleOrder(models.Model):
         if self.release_date and self.release_date < date.today():
             raise ValidationError(_('Earliest Delivery Date should be greater than Current Date'))
 
-
     @api.onchange('release_date')
     def onchange_release_date_warning(self):
         if self.release_date and self.release_date > date.today() + timedelta(days=+6):
-            msg = {'warning': {'title':_('Warning'), 'message':_('Earliest Delivery Date is greater than 1 week')}}
+            msg = {'warning': {'title': _('Warning'), 'message': _('Earliest Delivery Date is greater than 1 week')}}
             return msg
 
     def compute_credit_warning(self):
 
         for order in self:
             debit_due = self.env['account.move.line'].search(
-                [('partner_id', '=', order.partner_id.id), ('full_reconcile_id', '=', False), ('amount_residual', '>', 0),
+                [('partner_id', '=', order.partner_id.id), ('full_reconcile_id', '=', False),
+                 ('amount_residual', '>', 0),
                  ('date_maturity', '<', date.today()), ('invoice_id', '!=', False)], order='date_maturity desc')
             msg = ''
             msg1 = ''
@@ -641,8 +645,6 @@ class SaleOrder(models.Model):
             else:
                 order.hold_state = 'price_hold'
 
-
-
     @api.multi
     def action_release_price_hold(self):
         """
@@ -656,7 +658,6 @@ class SaleOrder(models.Model):
                 order.action_confirm()
             else:
                 order.hold_state = 'credit_hold'
-
 
     def check_credit_limit(self):
         """
@@ -784,6 +785,20 @@ class SaleOrder(models.Model):
         return self.action_confirm()
 
     @api.multi
+    def view_sc_child_orders(self):
+        self.ensure_one()
+        action = self.env.ref('sale.action_orders').read()[0]
+        if action:
+            ids = self.order_line.mapped('storage_contract_line_ids.order_id').ids
+            action.update({
+                'domain': [
+                    ('id', 'in', ids),
+                    ('state', 'not in', ('sent', 'cancel')),
+                    ('storage_contract', '=', False)]
+            })
+            return action
+
+    @api.multi
     def add_purchase_history_to_so_line(self):
         """
         Return 'add purchase history to so wizard'
@@ -816,6 +831,7 @@ class SaleOrder(models.Model):
             'context': context,
             'target': 'new'
         }
+
     def action_storage_contract_confirm(self):
         self.write({'state': 'sale', 'confirmation_date': fields.Datetime.today()})
         return True
@@ -849,7 +865,7 @@ class SaleOrder(models.Model):
                 product_qty = line.product_uom_qty
                 procurement_uom = line.product_uom
                 try:
-                    self.env['procurement.group'].run(
+                    self.env['procurement.group'].with_context(storage_contract=True).run(
                         line.product_id,
                         product_qty,
                         procurement_uom,
@@ -860,7 +876,8 @@ class SaleOrder(models.Model):
                     errors.append(error.name)
             if errors:
                 raise UserError('\n'.join(errors))
-            order.message_post(body='PO Created by : %s'%self.env.user.name)
+            order.message_post(body='PO Created by : %s' % self.env.user.name)
+
 
 SaleOrder()
 
@@ -900,12 +917,14 @@ class SaleOrderLine(models.Model):
     remaining_qty = fields.Float(string="Remaining Quantity", compute='_compute_remaining_qty')
     similar_product_price = fields.Html(string='Similar Product Prices')
     sale_uom_ids = fields.Many2many('uom.uom', compute='_compute_sale_uom_ids')
-    storage_remaining_qty = fields.Float(string="Remaining qty", compute='_compute_storage_delivered_qty', search='_search_storage_remaining_qty')
+    storage_remaining_qty = fields.Float(string="Remaining qty", compute='_compute_storage_delivered_qty',
+                                         search='_search_storage_remaining_qty')
     storage_contract_line_id = fields.Many2one('sale.order.line', string='Contract Line')
     storage_contract_line_ids = fields.One2many('sale.order.line', 'storage_contract_line_id')
     selling_min_qty = fields.Float(string="Minimum Qty")
 
-    @api.depends('state', 'product_uom_qty', 'qty_delivered', 'qty_to_invoice', 'qty_invoiced', 'order_id.storage_contract')
+    @api.depends('state', 'product_uom_qty', 'qty_delivered', 'qty_to_invoice', 'qty_invoiced',
+                 'order_id.storage_contract')
     def _compute_invoice_status(self):
         super(SaleOrderLine, self)._compute_invoice_status()
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
@@ -931,7 +950,8 @@ class SaleOrderLine(models.Model):
                     line.qty_to_invoice = (line.qty_delivered if not line.is_downpayment else 0) - line.qty_invoiced
 
     @api.multi
-    @api.depends('qty_delivered_method', 'qty_delivered_manual', 'analytic_line_ids.so_line', 'analytic_line_ids.unit_amount', 'analytic_line_ids.product_uom_id')
+    @api.depends('qty_delivered_method', 'qty_delivered_manual', 'analytic_line_ids.so_line',
+                 'analytic_line_ids.unit_amount', 'analytic_line_ids.product_uom_id')
     def _compute_qty_delivered(self):
         super(SaleOrderLine, self)._compute_qty_delivered()
         for line in self:
@@ -961,7 +981,8 @@ class SaleOrderLine(models.Model):
     def _search_storage_remaining_qty(self, operator, value):
         ids = []
         if operator == '>':
-            lines = self.search([('order_id.storage_contract', '=', True), ('state', '=', 'released'), ('is_downpayment', '=', False)])
+            lines = self.search(
+                [('order_id.storage_contract', '=', True), ('state', '=', 'released'), ('is_downpayment', '=', False)])
             for sl in lines:
                 if (sl.product_uom_qty - sum(sl.storage_contract_line_ids.mapped('product_uom_qty'))) > value:
                     ids.append(sl.id)
@@ -996,22 +1017,29 @@ class SaleOrderLine(models.Model):
                 lang=self.order_id.partner_id.lang or self.env.user.lang or 'en_US'
             )
             product_qty = self.product_uom._compute_quantity(self.product_uom_qty, self.product_id.uom_id)
-            if float_compare(product.qty_available - product.outgoing_qty, product_qty, precision_digits=precision) == -1:
+            if float_compare(product.qty_available - product.outgoing_qty, product_qty,
+                             precision_digits=precision) == -1:
                 is_available = self._check_routing()
                 if not is_available:
-                    message =  _('You plan to sell %s %s of %s but you only have %s %s available in %s warehouse.') % \
-                            (self.product_uom_qty, self.product_uom.name, self.product_id.name, product.qty_available - product.outgoing_qty, product.uom_id.name, self.order_id.warehouse_id.name)
+                    message = _('You plan to sell %s %s of %s but you only have %s %s available in %s warehouse.') % \
+                              (self.product_uom_qty, self.product_uom.name, self.product_id.name,
+                               product.qty_available - product.outgoing_qty, product.uom_id.name,
+                               self.order_id.warehouse_id.name)
                     # We check if some products are available in other warehouses.
-                    if float_compare(product.qty_available - product.outgoing_qty, self.product_id.qty_available - self.product_id.outgoing_qty, precision_digits=precision) == -1:
+                    if float_compare(product.qty_available - product.outgoing_qty,
+                                     self.product_id.qty_available - self.product_id.outgoing_qty,
+                                     precision_digits=precision) == -1:
                         message += _('\nThere are %s %s available across all warehouses.\n\n') % \
-                                (self.product_id.qty_available - self.product_id.outgoing_qty, product.uom_id.name)
+                                   (self.product_id.qty_available - self.product_id.outgoing_qty, product.uom_id.name)
                         for warehouse in self.env['stock.warehouse'].search([]):
-                            quantity = self.product_id.with_context(warehouse=warehouse.id).qty_available - self.product_id.with_context(warehouse=warehouse.id).outgoing_qty
+                            quantity = self.product_id.with_context(
+                                warehouse=warehouse.id).qty_available - self.product_id.with_context(
+                                warehouse=warehouse.id).outgoing_qty
                             if quantity > 0:
                                 message += "%s: %s %s\n" % (warehouse.name, quantity, self.product_id.uom_id.name)
                     warning_mess = {
                         'title': _('Not enough inventory!'),
-                        'message' : message
+                        'message': message
                     }
                     return {'warning': warning_mess}
         return {}
@@ -1101,6 +1129,7 @@ class SaleOrderLine(models.Model):
                         line.lst_price = uom_price[0].price
                         if line.product_id.cost:
                             line.working_cost = uom_price[0].cost
+
     # @api.multi
     # def _prepare_invoice_line(self, qty):
     #     res = super(SaleOrderLine, self)._prepare_invoice_line(qty)
@@ -1154,7 +1183,8 @@ class SaleOrderLine(models.Model):
 
         result = []
         for line in self:
-            result.append((line.id, "%s - %s - %s - %s" % (line.order_id.name, line.name, line.product_uom.name, line.order_id.date_order)))
+            result.append((line.id, "%s - %s - %s - %s" % (
+            line.order_id.name, line.name, line.product_uom.name, line.order_id.date_order)))
         return result
 
     def update_price_list(self):
@@ -1173,13 +1203,11 @@ class SaleOrderLine(models.Model):
             partner = self.order_id.partner_id.id
             if not self.order_id.storage_contract:
 
-
                 partner_history = self.env['sale.order.line'].search(
                     [('product_id', '=', self.product_id.id), ('shipping_id', '=', self.shipping_id.id),
                      ('is_last', '=', True), ('product_uom', '=', self.product_uom.id)])
                 partner_history and partner_history.write({'is_last': False})
                 self.write({'is_last': True})
-
 
                 sale_history = self.env['sale.history'].search(
                     [('partner_id', '=', partner), ('product_id', '=', self.product_id.id),
@@ -1191,7 +1219,8 @@ class SaleOrderLine(models.Model):
                     self.env['sale.history'].create(vals)
 
                 sale_tax_history = self.env['sale.tax.history'].search(
-                    [('partner_id', '=', self.order_id.partner_shipping_id.id), ('product_id', '=', self.product_id.id)],
+                    [('partner_id', '=', self.order_id.partner_shipping_id.id),
+                     ('product_id', '=', self.product_id.id)],
                     limit=1)
                 is_tax = False
                 if self.tax_id:
@@ -1333,7 +1362,6 @@ class SaleOrderLine(models.Model):
                 reassign.action_assign()
         return True
 
-
     @api.model
     def create(self, vals):
 
@@ -1438,7 +1466,8 @@ class SaleOrderLine(models.Model):
             res.update({'value': {'lst_price': lst_price, 'working_cost': working_cost}})
         if self.product_id:
             warn_msg = not self.product_id.purchase_ok and "This item can no longer be purchased from vendors" or ""
-            if not self.order_id.storage_contract and sum([1 for line in self.order_id.order_line if line.product_id.id == self.product_id.id]) > 1:
+            if not self.order_id.storage_contract and sum(
+                    [1 for line in self.order_id.order_line if line.product_id.id == self.product_id.id]) > 1:
                 warn_msg += "\n{} is already in SO.".format(self.product_id.name)
 
             if self.order_id:

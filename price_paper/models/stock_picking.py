@@ -52,4 +52,18 @@ class StockPicking(models.Model):
 
 StockPicking()
 
+
+class StockRule(models.Model):
+    _inherit = 'stock.rule'
+
+    def _make_po_get_domain(self, values, partner):
+        domain = super(StockRule, self)._make_po_get_domain(values, partner)
+        storage_contract = self._context.get('storage_contract')
+        if storage_contract:
+            domain += (
+                ('storage_contract_po', '=', True),
+            )
+        return domain
+
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -1094,7 +1094,13 @@ class SaleOrderLine(models.Model):
                     line.lst_price = uom_price[0].price
                     if line.product_id.cost:
                         line.working_cost = uom_price[0].cost
-
+                else:
+                    line.product_id.job_queue_standard_price_update()
+                    uom_price = line.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == line.product_uom)
+                    if uom_price:
+                        line.lst_price = uom_price[0].price
+                        if line.product_id.cost:
+                            line.working_cost = uom_price[0].cost
     # @api.multi
     # def _prepare_invoice_line(self, qty):
     #     res = super(SaleOrderLine, self)._prepare_invoice_line(qty)

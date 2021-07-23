@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+         <template id="report_ppt_followup_filter_info_template_inherit" inherit_id="account_reports.followup_filter_info_template">
+            <xpath expr="//div/div/div" position="attributes">
+                <attribute name="class">col-5</attribute>
+            </xpath>
+        </template>
 
         <record id="account_payment_term_line_tree_pricepaper" model="ir.ui.view">
             <field name="name">account.payment.term.line.tree.pricepaper</field>

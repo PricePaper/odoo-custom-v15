@@ -65,5 +65,7 @@ class StockRule(models.Model):
             )
         return domain
 
+StockRule()
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

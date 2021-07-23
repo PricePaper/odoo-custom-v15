@@ -282,6 +282,10 @@ class SaleOrder(models.Model):
         self.run_storage()
         self.write({'sc_po_done': True})
 
+    @api.multi
+    def action_release(self):
+        self.write({'state': 'released'})
+
     # @api.multi
     # def action_create_storage_downpayment(self):
     #     """

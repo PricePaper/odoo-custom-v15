@@ -82,9 +82,6 @@ class AccountInvoice(models.Model):
         for invoice in self:
             if not invoice.payment_term_id and invoice.type in ('out_invoice', 'in_invoice'):
                 raise ValidationError(_('Payment term is not set for invoice %s' % (invoice.number)))
-            sale_order = invoice.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
-            if sale_order and sale_order.storage_contract and any(invoice.invoice_line_ids.mapped('is_storage_contract')):
-                sale_order.write({'state': 'released'})
         res = super(AccountInvoice, self).invoice_validate()
         return res
 

@@ -470,8 +470,10 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                         <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice"
                             type="action" class="btn-primary"
                             attrs="{'invisible': [('invoice_status', '!=', 'to invoice')]}"/>
+                        <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice" type="action" context="{'default_advance_payment_method': 'percentage'}" attrs="{'invisible': ['|',('invoice_status', '!=', 'no'), ('state', '!=', 'sale')]}"/>
                         <button name="action_storage_contract_confirm" type="object" string="Confirm" class="oe_highlight" states="draft"/>
                         <button name="action_create_storage_do" type="object" string="Create PO" class="oe_highlight" attrs="{'invisible': ['|', ('state', '=', 'draft'), ('sc_po_done', '=', True)]}"/>
+                        <button name="action_release" groups="account.group_account_manager" type="object" string="Release" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'done')]}"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,sale"/>
                     </header>
                     <sheet>
@@ -509,7 +511,6 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                                 <field name="currency_id" invisible="1"/>
                                 <field name="payment_term_id" options="{'no_create': True}" attrs="{'readonly': [('state', 'in', ('sale','done', 'cancel', 'released'))]}"/>
                                 <field name="pricelist_id" invisible="1"/>
-                                <field name="user_id" attrs="{'readonly': [('state', '=', 'released')]}"/>
                                 <field name="storage_contract" invisible="1"/>
                             </group>
                         </group>

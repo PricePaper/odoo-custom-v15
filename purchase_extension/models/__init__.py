@@ -9,5 +9,6 @@ from . import sale_order
 from . import purchase_requisition
 from . import stock_move
 from . import procurement_group
+from . import product
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -87,12 +87,13 @@ class ProductProduct(models.Model):
     def copy(self, default=None):
 
         res = super(ProductProduct, self).copy(default)
-        res.standard_price = self.standard_price
-        #Duplicate price_list line
-        lines = self.env['customer.product.price'].search([('product_id', '=', self.id)])
-        default_1 = {'product_id': res.id}
-        for line in lines:
-            new_line = line.copy(default=default_1)
+        if not self._context.get('from_change_uom'):
+            res.standard_price = self.standard_price
+            #Duplicate price_list line
+            lines = self.env['customer.product.price'].search([('product_id', '=', self.id)])
+            default_1 = {'product_id': res.id}
+            for line in lines:
+                new_line = line.copy(default=default_1)
         return res
 
     @api.model
@@ -132,7 +133,7 @@ class ProductProduct(models.Model):
                 name, product, uom, qty,
                 price_unit, currency, amount_currency,
                 fiscal_position, account_analytic, analytic_tags
-            )        
+            )
 
         if (product.valuation == 'real_time'
                 and (product.type == 'product' or (product.type == 'consu' and product._is_phantom_bom()))):

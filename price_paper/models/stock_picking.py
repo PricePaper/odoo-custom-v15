@@ -23,6 +23,13 @@ class StockPicking(models.Model):
             self.message_post(body=_("Back order <em>%s</em> <b>cancelled</b>.") % (",".join([b.name or '' for b in backorder_pick])))
         self.over_processed = False
 
+    @api.multi
+    def action_cancel(self):
+        res = super(StockPicking, self).action_cancel()
+        sale = self.mapped('move_lines').mapped('sale_line_id.order_id')
+        if all(sale.mapped('storage_contract')) and all([s.state == 'sale' for s in sale]):
+            sale.write({'state': 'sale'})
+        return res
 
     @api.multi
     def sync_over_processed(self):

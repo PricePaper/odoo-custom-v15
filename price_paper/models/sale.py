@@ -839,7 +839,7 @@ class SaleOrder(models.Model):
     def run_storage(self):
         for order in self:
             route = self.env.ref('purchase_stock.route_warehouse0_buy', raise_if_not_found=True)
-            so_lines = order.order_line.filtered(lambda r: not r.display_type and not r.is_downpayment)
+            so_lines = order.order_line.filtered(lambda r: r.product_id.type != 'service' and not r.display_type and not r.is_downpayment)
             so_lines.write({'route_id': route.id})
             errors = []
             for line in so_lines:
@@ -876,6 +876,43 @@ class SaleOrder(models.Model):
                     errors.append(error.name)
             if errors:
                 raise UserError('\n'.join(errors))
+
+            #service line update
+            purchase_orders = order.order_line.mapped('purchase_line_ids.order_id').filtered(lambda p: p.state == 'draft')
+            for sr_line in order.order_line.filtered(lambda r: r.product_id.type == 'service' and not r.display_type and not r.is_downpayment):
+                for po in purchase_orders:
+                    fpos = po.fiscal_position_id
+                    taxes = fpos.map_tax(
+                        sr_line.product_id.supplier_taxes_id) if fpos else sr_line.product_id.supplier_taxes_id
+                    if taxes:
+                        taxes = taxes.filtered(lambda t: t.company_id.id == self.company_id.id)
+                    price_unit = self.env['account.tax'].sudo()._fix_tax_included_price_company(
+                        sr_line.price_unit,
+                        sr_line.product_id.supplier_taxes_id,
+                        taxes,
+                        self.company_id
+                    )
+                    if po.currency_id and po.partner_id.currency_id != po.currency_id:
+                        price_unit = po.partner_id.currency_id.compute(price_unit, po.currency_id)
+                    product_in_supplier_lang = sr_line.product_id.with_context({
+                        'lang': po.partner_id.lang,
+                        'partner_id': po.partner_id.id,
+                    })
+                    name = '[%s] %s' % (sr_line.product_id.default_code, product_in_supplier_lang.display_name)
+                    if product_in_supplier_lang.description_purchase:
+                        name += '\n' + product_in_supplier_lang.description_purchase
+                    purchase_qty_uom = sr_line.product_uom._compute_quantity(sr_line.product_uom_qty, sr_line.product_id.uom_po_id)
+                    self.env['purchase.order.line'].create({
+                        'name': sr_line.name,
+                        'product_qty': purchase_qty_uom,
+                        'product_id': sr_line.product_id.id,
+                        'product_uom': sr_line.product_id.uom_po_id.id,
+                        'price_unit': price_unit,
+                        'date_planned': po.date_planned,
+                        'taxes_id': [(6, 0, taxes.ids)],
+                        'order_id': po.id,
+                        'sale_line_id': sr_line.id,
+                    })
             order.message_post(body='PO Created by : %s' % self.env.user.name)
 
 

@@ -135,6 +135,9 @@ class SaleOrder(models.Model):
             sale_order.release_price_hold = False
             sale_order.hold_state = False
 
+            if sale_order.storage_contract:
+                sale_order.order_line.mapped('purchase_line_ids.order_id').button_cancel()
+
         return super(SaleOrder, self).action_cancel()
 
     @api.multi
@@ -289,6 +292,10 @@ class SaleOrder(models.Model):
     @api.multi
     def action_release(self):
         self.write({'state': 'released'})
+
+    @api.multi
+    def action_restore(self):
+        return self.write({'state': 'done'})
 
     # @api.multi
     # def action_create_storage_downpayment(self):

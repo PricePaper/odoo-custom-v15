@@ -18,6 +18,32 @@
             <field name="dpi">90</field>
         </record>
 
+        <record id="paperformat_report_commission_audit" model="report.paperformat">
+            <field name="name">Commission Audit Report</field>
+            <field name="default" eval="False"/>
+            <field name="format">Letter</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">20</field>
+            <field name="margin_bottom">10</field>
+            <field name="margin_left">10</field>
+            <field name="margin_right">10</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">10</field>
+            <field name="dpi">90</field>
+        </record>
+        <report
+                string="commission Audit Report"
+                id="commission_audit_report"
+                model="generate.sales.commission"
+                report_type="qweb-pdf"
+                file="sales_commission.report_commission_audit"
+                name="sales_commission.report_commission_audit"
+                paperformat="paperformat_report_commission_audit"
+                print_report_name="'Sales Commission - %s' % (object.month)"
+        />
+
         <report
                 string="Commission Settlement"
                 id="settlement_report"

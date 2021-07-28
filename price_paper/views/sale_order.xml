@@ -96,7 +96,6 @@
 
                 <xpath expr="//field[@name='validity_date']" position="after">
                     <field name="storage_contract" invisible="1"/>
-                    <field name="show_contract_line" invisible="1"/>
                     <field name="hold_state" invisible='1'/>
                 </xpath>
 
@@ -247,9 +246,10 @@
                 </xpath>
 
                 <xpath expr="//field[@name='order_line']" position="before">
+                    <field name="show_contract_line" invisible="1"/>
                     <button type="object" name="add_purchase_history_to_so_line" string="Browse History Lines"
                             context="{'partner':partner_id}" class="oe_edit_only oe_highlight"/>
-                    <button type="action" name="%(action_sc_popup_windows)d" string="Browse Storage Contract"
+                    <button type="action" name="%(action_sc_popup_windows)d" string="Browse Storage Contract" attrs="{'invisible': [('show_contract_line', '=', False)]}"
                              context="{'default_partner_id':partner_id}" class="oe_edit_only oe_highlight"
                     />
 
@@ -473,7 +473,7 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                         <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice" type="action" context="{'default_advance_payment_method': 'percentage'}" attrs="{'invisible': ['|',('invoice_status', '!=', 'no'), ('state', '!=', 'sale')]}"/>
                         <button name="action_storage_contract_confirm" type="object" string="Confirm" class="oe_highlight" states="draft"/>
                         <button name="action_create_storage_do" type="object" string="Create PO" class="oe_highlight" attrs="{'invisible': ['|', ('state', 'in', ['draft', 'cancel']), ('sc_po_done', '=', True)]}"/>
-                        <button name="action_release" groups="account.group_account_manager" type="object" string="Release" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'done')]}"/>
+                        <button name="action_release" groups="account.group_account_manager" type="object" string="Release" class="oe_highlight" attrs="{'invisible': ['|', ('invoice_status', '!=', 'invoiced'), ('state', '!=', 'done'),]}"/>
                         <button name="action_restore" groups="account.group_account_manager" type="object" string="UnRelease" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'released')]}"/>
                         <button name="action_cancel" states="draft,sent,sale" type="object" string="Cancel"/>
                         <button name="action_draft" states="cancel" type="object" string="Set to Quotation"/>

@@ -23,6 +23,7 @@ Sales commission module implemented for Price Papers.
         'wizard/existing_user.xml',
         'wizard/sales_commission.xml',
         'views/report_template.xml',
+        'views/report_commission_audit.xml',
         'views/report_commission_settlement.xml',
         'views/sale_commission_settlement.xml',
         'views/sale_commission.xml',

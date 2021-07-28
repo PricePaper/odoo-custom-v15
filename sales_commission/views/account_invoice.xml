@@ -22,6 +22,9 @@
             <field name="type">form</field>
             <field name="inherit_id" ref="account.invoice_form" />
             <field name="arch" type="xml">
+              <field name="date_due" position="after">
+                  <field name="paid_date" readonly="1"/>
+              </field>
                 <field name="user_id" position="after">
                     <field name="sales_person_ids" widget='many2many_tags'/>
                     <field name="check_bounce_invoice" invisible='1'/>

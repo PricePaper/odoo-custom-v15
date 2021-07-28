@@ -227,7 +227,12 @@
                                        attrs="{'invisible': [('display_type', '!=', False)]}" help='Qty on hand'/>
                                 <field name="note" attrs="{'invisible': [('display_type', '!=', False)]}"/>
                                 <field name="note_type" widget='radio'
-                                       attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                                       attrs="{'invisible': [('display_type', '!=', False)]}"
+                                       />
+                                <field name="note_expiry_date"
+                                       attrs="{'invisible': ['|', ('note_type', '=', 'temporary'), ('display_type', '!=', False)],
+                                       'required': [('note_type', '=', 'permanant')]}"
+                                       />
                             </group>
                             <group>
                               <field name="similar_product_price" readonly="1" nolabel='1' force_save="1"/>

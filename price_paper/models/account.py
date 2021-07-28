@@ -67,6 +67,10 @@ class AccountInvoice(models.Model):
     #     sale_order.run_storage()
     #     sale_order.message_post(body='Sale Order Released by : %s'%self.env.user.name)
 
+    @api.model
+    def create(self, vals):
+        return super(AccountInvoice, self.with_context(tracking_disable=True)).create(vals)
+
     @api.onchange('partner_id', 'company_id')
     def _onchange_partner_id(self):
         res = super(AccountInvoice, self)._onchange_partner_id()

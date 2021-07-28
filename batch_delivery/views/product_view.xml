@@ -12,6 +12,14 @@
                  <field name='weight' position="attributes">
                     <attribute name="required">True</attribute>
                 </field>
+                 <xpath expr="//div[@name='update_cost_price']" position="inside">
+                        <div name="update_cost_price2" class="col-lg-2" groups="base.group_no_one,stock.group_stock_manager">
+                                <button string="Update Cost" type="action"
+                                name="%(stock_account.action_view_change_standard_price)d"
+                                attrs="{'invisible':[('valuation','!=', 'real_time')]}"
+                                class="oe_link oe_read_only" colspan="2"/>
+                            </div>
+                    </xpath>
             </field>
          </record>
 

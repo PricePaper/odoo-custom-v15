@@ -57,11 +57,11 @@ class StockPickingBatch(models.Model):
         for rec in self:
             rec.invoice_ids = rec.picking_ids.mapped('invoice_ids')
 
-    @api.constrains('cheque_amount', 'cash_amount', 'actual_returned')
-    def check_total_amount(self):
-
-        if float_round(self.cheque_amount + self.cash_amount, precision_digits=2) != float_round(self.actual_returned, precision_digits=2):
-            raise ValidationError(_('Total amount and sum of Cash and Check does not match'))
+    # @api.constrains('cheque_amount', 'cash_amount', 'actual_returned')
+    # def check_total_amount(self):
+    #
+    #     if float_round(self.cheque_amount + self.cash_amount, precision_digits=2) != float_round(self.actual_returned, precision_digits=2):
+    #         raise ValidationError(_('Total amount and sum of Cash and Check does not match'))
 
     def _compute_to_invoice_state(self):
         for rec in self:
@@ -332,6 +332,17 @@ class StockPickingBatch(models.Model):
     @api.multi
     def register_payments(self):
         for batch in self:
+            msg = ''
+            check_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_id.code in ('check_printing_in', 'batch_payment'))
+            if check_lines and sum(check_lines.mapped('amount')) != batch.cheque_amount:
+                msg += 'Check Amount mismatch.\n'
+            cash_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_id.code == 'manual')
+            if cash_lines and sum(cash_lines.mapped('amount')) != batch.cash_amount:
+                msg += 'Cash Amount mismatch.\n'
+            if msg:
+                raise UserError(_(msg))
+            if float_round(batch.cheque_amount + batch.cash_amount, precision_digits=2) != float_round(batch.actual_returned, precision_digits=2):
+                raise UserError(_('Total amount and sum of Cash,Check,Credit Card does not match'))
             if not batch.actual_returned:
                 raise UserError(_('Please properly enter the returned amount'))
             if not batch.cash_collected_lines:

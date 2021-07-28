@@ -51,6 +51,7 @@
                             <group>
                                 <field name="cash_amount" attrs="{'readonly':[('state', 'in', ('cancel', 'paid'))]}"/>
                                 <field name="cheque_amount" attrs="{'readonly':[('state', 'in', ('cancel', 'paid'))]}"/>
+                                <field name="card_amount" attrs="{'readonly':[('state', 'in', ('cancel', 'paid'))]}"/>
                             </group>
                         </group>
                         <separator string="Cash Collected Lines"/>

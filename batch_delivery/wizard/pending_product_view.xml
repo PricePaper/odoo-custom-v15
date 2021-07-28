@@ -33,6 +33,62 @@
         </record>
 
 
+
+        <record id="pending_product_email_view_form" model="ir.ui.view">
+            <field name="name">Pending Product</field>
+            <field name="model">pending.product.view</field>
+            <field name="arch" type="xml">
+                <form>
+                    <script>
+                            $(document).ready(function(){
+                                $('.modal-dialog').css({'max-width':'90%'});
+                            });
+                        </script>
+                    <sheet>
+                        <field name="batch_ids" invisible="1"/>
+                        <field name="picking_ids" invisible="1"/>
+                        <field name="pending_line_ids">
+                            <tree create="0" editable="top">
+                                <field name="picking_id" invisible="1"/>
+                                <field name="product_id" readonly="1" style="width: 300px;" force_save="1"/>
+                                <field name="product_uom_qty" readonly="1" force_save="1"/>
+                                <field name="reserved_available_qty" readonly="1" options="{'no_open': True}" style="width: 156px;" force_save="1"/>
+                                <field name="product_uom" readonly="1" options="{'no_open': True}" style="width: 156px;" force_save="1"/>
+                                <field name="followers" readonly="1" widget="many2many_tags" force_save="1" invisible="1"/>
+                                <field name="note"/>
+                            </tree>
+                        </field>
+                        <footer>
+                            <button string="Send Mail" type="object" name="generate_mails"/>
+                            or
+                            <button string="Cancel" class="oe_link" special="cancel"/>
+                        </footer>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <act_window
+                id="action_pending_product_email_view"
+                name="Pending Product (Email)"
+                res_model="pending.product.view"
+                src_model="stock.picking.batch"
+                context="{'default_batch_ids': active_ids, 'email_wizard': True}"
+                view_mode="form"
+                multi="True"
+                target="new"
+                key2="client_action_multi"
+        />
+
+         <record model="ir.actions.act_window.view" id="action_pending_product_email_view_form">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="batch_delivery.pending_product_email_view_form"/>
+            <field name="act_window_id" ref="action_pending_product_email_view"/>
+        </record>
+
         <act_window
                 id="action_pending_product_view1"
                 name="Pending Product View"
@@ -44,7 +100,12 @@
                 target="new"
                 key2="client_action_multi"
         />
-
+         <record model="ir.actions.act_window.view" id="action_pending_product_view1_form">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="batch_delivery.pending_product_view_form"/>
+            <field name="act_window_id" ref="action_pending_product_view1"/>
+        </record>
         <act_window
                 id="action_pending_product_view2"
                 name="Pending Product View"
@@ -56,7 +117,12 @@
                 target="new"
                 key2="client_action_multi"
         />
-
+         <record model="ir.actions.act_window.view" id="action_pending_product_view2_form">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="batch_delivery.pending_product_view_form"/>
+            <field name="act_window_id" ref="action_pending_product_view2"/>
+        </record>
 
     </data>
 </odoo>

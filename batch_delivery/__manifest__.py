@@ -45,7 +45,6 @@ This module sets up the batch delivery process for price paper.
         'security/ir.model.access.csv',
         "views/batch_payment_common.xml"
     ],
-
     'depends': [
         'price_paper',
         'stock_picking_batch',

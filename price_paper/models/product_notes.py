@@ -10,6 +10,7 @@ class ProductNotes(models.Model):
     product_id = fields.Many2one('product.product', string='Product')
     partner_id = fields.Many2one('res.partner', string='Customer')
     notes = fields.Text(string='Notes')
+    expiry_date = fields.Date('Valid Upto')
 
 
 ProductNotes()

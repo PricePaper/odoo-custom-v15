@@ -17,6 +17,16 @@ class CustomerProductPrice(models.Model):
                                              string='Competietor Price Entries')
     std_price = fields.Float(string='Standard Price', compute="_get_std_price", store=False)
     deviation = fields.Integer(string='Deviation%', compute="get_deviation", readonly=True)
+    lastsale_history_date = fields.Datetime(compute='_get_last_sale_date', string='Last Sale Date')
+
+    def _get_last_sale_date(self):
+        for record in self:
+            history = self.env['sale.history'].search([('product_id', '=', record.product_id.id),
+                ('uom_id', '=', record.product_uom.id),
+                ('partner_id', 'in', record.pricelist_id.partner_ids.ids)],
+                order="order_date desc", limit=1)
+            if history:
+                record.lastsale_history_date = history.order_date
 
     @api.depends('product_id', 'product_uom')
     def _get_std_price(self):

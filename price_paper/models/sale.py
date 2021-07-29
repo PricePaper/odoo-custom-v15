@@ -966,6 +966,7 @@ class SaleOrderLine(models.Model):
     storage_contract_line_id = fields.Many2one('sale.order.line', string='Contract Line')
     storage_contract_line_ids = fields.One2many('sale.order.line', 'storage_contract_line_id')
     selling_min_qty = fields.Float(string="Minimum Qty")
+    note_expiry_date = fields.Date('Note Valid Upto')
 
     @api.depends('state', 'product_uom_qty', 'qty_delivered', 'qty_to_invoice', 'qty_invoiced',
                  'order_id.storage_contract')
@@ -1427,14 +1428,17 @@ class SaleOrderLine(models.Model):
 
         if res.note_type == 'permanant':
             note = self.env['product.notes'].search(
-                [('product_id', '=', res.product_id.id), ('partner_id', '=', res.order_id.partner_id.id)], limit=1)
+                [('product_id', '=', res.product_id.id),
+                 ('partner_id', '=', res.order_id.partner_id.id), ('expiry_date', '>', date.today())], limit=1)
             if not note:
                 self.env['product.notes'].create({'product_id': res.product_id.id,
                                                   'partner_id': res.order_id.partner_id.id,
-                                                  'notes': res.note
+                                                  'notes': res.note,
+                                                  'expiry_date': res.note_expiry_date
                                                   })
             else:
                 note.notes = res.note
+                note.expiry_date = res.note_expiry_date
         return res
 
     @api.depends('product_id', 'product_uom')
@@ -1549,9 +1553,12 @@ class SaleOrderLine(models.Model):
 
             # get this customers last time sale description for this product and update it in the line
             note = self.env['product.notes'].search(
-                [('product_id', '=', self.product_id.id), ('partner_id', '=', self.order_id.partner_id.id)], limit=1)
+                [('product_id', '=', self.product_id.id),
+                ('partner_id', '=', self.order_id.partner_id.id),
+                ('expiry_date', '>', date.today())], limit=1)
             if note:
                 self.note = note.notes
+                self.note_expiry_date = note.expiry_date
             else:
                 self.note = ''
 

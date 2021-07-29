@@ -98,7 +98,7 @@
         <td style="width: 100%;">
             <table border="0" cellpadding="2" cellspacing="2" width="100%" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
                 <tr valign="top" style="font-size: 11px;font-style: italic;">
-                    <th style="border-bottom: 1px solid black;">Picking</th>
+                    <th style="border-bottom: 1px solid black;">Partner</th>
                     <th style="border-bottom: 1px solid black;">Product</th>
                     <th style="border-bottom: 1px solid black;">Order Qty</th>
                     <th style="border-bottom: 1px solid black;">Available Qty</th>
@@ -107,7 +107,7 @@
                 </tr>
                 % for line in ctx['summery_list']:
                     <tr valign="top" style="font-size: 11px;">
-                        <td>${line.picking_id.display_name}</td>
+                        <td>${line.picking_id.partner_id.display_name}</td>
                         <td>${line.product_id.display_name}</td>
                         <td>${line.product_uom_qty}</td>
                         <td>${line.reserved_available_qty}</td>

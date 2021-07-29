@@ -81,9 +81,7 @@ class AccountInvoice(models.Model):
             commission = line.commission
             payment_date_list = [rec.payment_date for rec in self.payment_ids]
             payment_date = max(payment_date_list) if payment_date_list else False
-            if profit <= 0:
-                line.write({'commission': 0})
-                continue
+
             if self.payment_term_id.due_days:
                 days = self.payment_term_id.due_days
                 if payment_date and payment_date > self.date_invoice + relativedelta(days=days):
@@ -98,6 +96,9 @@ class AccountInvoice(models.Model):
                 lambda r: r.sale_person_id == line.sale_person_id).mapped('rule_id')
             if rule_id:
                 if rule_id.based_on in ['profit', 'profit_delivery']:
+                    if profit <= 0:
+                        line.write({'commission': 0})
+                        continue
                     commission = profit * (rule_id.percentage / 100)
                 elif rule_id.based_on == 'invoice':
                     amount = self.amount_total
@@ -170,11 +171,11 @@ class AccountInvoice(models.Model):
             for rec in self.partner_id.commission_percentage_ids:
                 if not rec.rule_id:
                     raise UserError(_('Commission rule is not configured for %s.' % (rec.sale_person_id.name)))
-                # if profit <= 0:
-                #     continue
                 commission = 0
                 if rec.rule_id.based_on in ['profit', 'profit_delivery']:
                     commission = profit * (rec.rule_id.percentage / 100)
+                    if profit <= 0:
+                        commission =0
                 elif rec.rule_id.based_on == 'invoice':
                     amount = self.amount_total
                     commission = amount * (rec.rule_id.percentage / 100)
@@ -182,8 +183,6 @@ class AccountInvoice(models.Model):
                     continue
                 if self.type == 'out_refund':
                     commission = -commission
-                if profit <= 0:
-                    commission =0
                 sale = self.invoice_line_ids.mapped('sale_line_ids')
                 vals = {
                     'sale_person_id': rec.sale_person_id.id,

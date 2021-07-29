@@ -3,6 +3,7 @@
         <record id="default_stock_picking_return_reason" model="stock.picking.return.reason">
             <field name="name">we're short inventory</field>
         </record>
+        
         <record id="seq_batch_payment_common" model="ir.sequence">
             <field name="name">Batch Payment Common</field>
             <field name="code">batch.payment.common</field>

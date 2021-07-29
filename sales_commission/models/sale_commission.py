@@ -311,8 +311,7 @@ class SaleCommission(models.Model):
         for rec in self:
             if rec.is_paid:
                 if rec.invoice_type in ('out_invoice', 'out_refund', 'aging'):
-                    payment_date_list = [payment.payment_date for payment in rec.invoice_id.payment_ids]
-                    rec.paid_date = max(payment_date_list) if payment_date_list else False
+                    rec.paid_date = rec.invoice_id.paid_date and rec.invoice_id.paid_date
                 elif rec.invoice_type in ('draw', 'bounced_cheque', 'cancel', 'unreconcile'):
                     rec.paid_date = rec.commission_date
     @api.multi

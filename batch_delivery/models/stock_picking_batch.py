@@ -334,10 +334,10 @@ class StockPickingBatch(models.Model):
         for batch in self:
             msg = ''
             check_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_id.code in ('check_printing_in', 'batch_payment'))
-            if check_lines and sum(check_lines.mapped('amount')) != batch.cheque_amount:
+            if float_round(check_lines and sum(check_lines.mapped('amount')), precision_digits=2) != float_round(batch.cheque_amount, precision_digits=2):
                 msg += 'Check Amount mismatch.\n'
             cash_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_id.code == 'manual')
-            if cash_lines and sum(cash_lines.mapped('amount')) != batch.cash_amount:
+            if cash_lines and float_round(sum(cash_lines.mapped('amount')), precision_digits=2) != float_round(batch.cash_amount, precision_digits=2):
                 msg += 'Cash Amount mismatch.\n'
             if msg:
                 raise UserError(_(msg))

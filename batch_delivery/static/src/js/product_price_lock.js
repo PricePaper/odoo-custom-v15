@@ -44,16 +44,20 @@ var PriceLock = AbstractField.extend({
         var deferred = $.Deferred();
         var self = this;
         var priceFormId = parseInt($(event.target).attr('price-form'));
-        var dialog = new viewDialogs.FormViewDialog(self, {
-            res_model: 'customer.product.price',
-            res_id: priceFormId,
-            readonly: true,
-            title: "Customer Product Price",
-        }).open();
-        dialog.on('closed', self, function () {
-            deferred.resolve();
-        });
-
+        if (isNaN(priceFormId)){
+            this.do_notify("Alert!!", "Please save the line first in order to see the price form.", true);
+        }
+        else{
+            var dialog = new viewDialogs.FormViewDialog(self, {
+                res_model: 'customer.product.price',
+                res_id: priceFormId,
+                readonly: true,
+                title: "Customer Product Price",
+            }).open();
+            dialog.on('closed', self, function () {
+                deferred.resolve();
+            });
+        }
     },
 
 });

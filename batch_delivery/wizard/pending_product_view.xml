@@ -32,8 +32,6 @@
             </field>
         </record>
 
-
-
         <record id="pending_product_email_view_form" model="ir.ui.view">
             <field name="name">Pending Product</field>
             <field name="model">pending.product.view</field>
@@ -59,7 +57,7 @@
                             </tree>
                         </field>
                         <footer>
-                            <button string="Send Mail" type="object" name="generate_mails"/>
+                            <button string="Send Mail" type="object" name="generate_mails" class="oe_highlight"/>
                             or
                             <button string="Cancel" class="oe_link" special="cancel"/>
                         </footer>
@@ -69,9 +67,8 @@
             </field>
         </record>
 
-
         <act_window
-                id="action_pending_product_email_view"
+                id="action_pending_product_batch_email_view"
                 name="Pending Product (Email)"
                 res_model="pending.product.view"
                 src_model="stock.picking.batch"
@@ -82,11 +79,30 @@
                 key2="client_action_multi"
         />
 
-         <record model="ir.actions.act_window.view" id="action_pending_product_email_view_form">
+        <act_window
+                id="action_pending_product_picking_email_view"
+                name="Pending Product (Email)"
+                res_model="pending.product.view"
+                src_model="stock.picking"
+                context="{'default_picking_ids': active_ids, 'email_wizard': True}"
+                view_mode="form"
+                multi="True"
+                target="new"
+                key2="client_action_multi"
+        />
+
+        <record model="ir.actions.act_window.view" id="action_pending_product_picking_email_view_form">
             <field name="sequence" eval="1"/>
             <field name="view_mode">form</field>
             <field name="view_id" ref="batch_delivery.pending_product_email_view_form"/>
-            <field name="act_window_id" ref="action_pending_product_email_view"/>
+            <field name="act_window_id" ref="action_pending_product_picking_email_view"/>
+        </record>
+
+         <record model="ir.actions.act_window.view" id="action_pending_product_batch_email_view_form">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="batch_delivery.pending_product_email_view_form"/>
+            <field name="act_window_id" ref="action_pending_product_batch_email_view"/>
         </record>
 
         <act_window
@@ -100,12 +116,14 @@
                 target="new"
                 key2="client_action_multi"
         />
+
          <record model="ir.actions.act_window.view" id="action_pending_product_view1_form">
             <field name="sequence" eval="1"/>
             <field name="view_mode">form</field>
             <field name="view_id" ref="batch_delivery.pending_product_view_form"/>
             <field name="act_window_id" ref="action_pending_product_view1"/>
         </record>
+
         <act_window
                 id="action_pending_product_view2"
                 name="Pending Product View"
@@ -117,6 +135,7 @@
                 target="new"
                 key2="client_action_multi"
         />
+
          <record model="ir.actions.act_window.view" id="action_pending_product_view2_form">
             <field name="sequence" eval="1"/>
             <field name="view_mode">form</field>

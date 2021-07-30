@@ -71,12 +71,12 @@
             <field name="email_to">${ctx['partner_email']|safe}</field>
             <field name="body_html" type="html">
 <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;"><tr><td align="center">
-<table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
 <tbody>
     <!-- HEADER -->
     <tr>
         <td align="center" style="min-width: 590px;">
-            <table border="0" cellpadding="0" cellspacing="0" width="590" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
                 <tr><td valign="middle">
                     <span style="font-size: 20px;">Summery</span><br/>
                 </td><td valign="middle" align="right">
@@ -90,16 +90,17 @@
     </tr>
     <!-- CONTENT -->
     <tr>
-        <td colspan="99" style="padding-top: 25px; border-bottom: solid 1px;font-size:16px;">
+        <td colspan="99" style="padding: 25px; border-bottom: solid 1px;font-size:25px;">
             <strong>Pending Product</strong>
         </td>
     </tr>
     <tr>
         <td style="width: 100%;">
             <table border="0" cellpadding="2" cellspacing="2" width="100%" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
-                <tr valign="top" style="font-size: 11px;font-style: italic;">
+                <tr valign="top" style="font-size: 12px;">
                     <th style="border-bottom: 1px solid black;">Partner</th>
                     <th style="border-bottom: 1px solid black;">Product</th>
+                    <th style="border-bottom: 1px solid black;">Alternative Product</th>
                     <th style="border-bottom: 1px solid black;">Order Qty</th>
                     <th style="border-bottom: 1px solid black;">Available Qty</th>
                     <th style="border-bottom: 1px solid black;">Product UOM</th>
@@ -109,6 +110,13 @@
                     <tr valign="top" style="font-size: 11px;">
                         <td>${line.picking_id.partner_id.display_name}</td>
                         <td>${line.product_id.display_name}</td>
+                        <td>
+                            <ul>
+                            % for product in line.same_product_ids:
+                                <li>${product.display_name}</li>
+                            % endfor
+                            </ul>
+                        </td>
                         <td>${line.product_uom_qty}</td>
                         <td>${line.reserved_available_qty}</td>
                         <td>${line.product_uom.display_name}</td>

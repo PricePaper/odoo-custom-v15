@@ -52,8 +52,9 @@
                                 <field name="product_uom_qty" readonly="1" force_save="1"/>
                                 <field name="reserved_available_qty" readonly="1" options="{'no_open': True}" style="width: 156px;" force_save="1"/>
                                 <field name="product_uom" readonly="1" options="{'no_open': True}" style="width: 156px;" force_save="1"/>
+                                <field name="same_product_ids" readonly="1" widget="many2many_tags" force_save="1" invisible="0" style="width: 200px;"/>
                                 <field name="followers" readonly="1" widget="many2many_tags" force_save="1" invisible="1"/>
-                                <field name="note"/>
+                                <field name="note" style="width: 350px;"/>
                             </tree>
                         </field>
                         <footer>

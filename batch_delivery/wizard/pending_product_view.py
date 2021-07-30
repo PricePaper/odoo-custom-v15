@@ -56,7 +56,8 @@ class PendingProductView(models.TransientModel):
                 'reserved_available_qty': move.reserved_availability,
                 'product_uom': move.product_uom.id,
                 'picking_id': move.picking_id.id,
-                'followers': [(6, 0, move.sale_line_id.order_id.message_partner_ids.filtered(lambda u: u.user_ids).ids)]
+                'followers': [(6, 0, move.sale_line_id.order_id.message_partner_ids.filtered(lambda u: u.user_ids).ids)],
+                'same_product_ids': [(6, 0, move.product_id.same_product_ids.ids)]
             }) for move in records]
         return res
 
@@ -73,6 +74,7 @@ class PendingProductLineView(models.TransientModel):
     product_uom = fields.Many2one('uom.uom', string="Product UOM")
     note = fields.Text(string="Note")
     followers = fields.Many2many('res.partner', string="Followers")
+    same_product_ids = fields.Many2many('product.product', string="Alternative Products")
     wiz_id = fields.Many2one('pending.product.view')
     picking_id = fields.Many2one('stock.picking', string='Source')
 

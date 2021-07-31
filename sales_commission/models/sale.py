@@ -31,6 +31,15 @@ class SaleOrder_line(models.Model):
         order = self.env['sale.order']._search([('partner_id', 'in', partner.ids)])
         return[('order_id', 'in', order)]
 
+    def link_sc(self, sc_line_id=False, po_line_id=False):
+        sc_line = self.env['sale.order.line'].browse(sc_line_id)
+        po_line = self.env['purchase.order.line'].browse(po_line_id)
+        po_line.write({'sale_line_id': sc_line.id})
+        po_line.move_ids.write({'sale_line_id': sc_line.id, 'is_storage_contract': True})
+        po_line.invoice_lines.write({'is_storage_contract': True})
+        sc_line.order_id.write({'state': 'released', 'sc_po_done': True})
+        return True
+
 SaleOrder_line()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

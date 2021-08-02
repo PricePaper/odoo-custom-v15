@@ -1356,7 +1356,6 @@ class SaleOrderLine(models.Model):
     @api.multi
     def write(self, vals):
         res = super(SaleOrderLine, self).write(vals)
-        if input(vals) =='y': print(k)
         for line in self:
             if vals.get('price_unit') and line.order_id.state == 'sale':
                 line.update_price_list()

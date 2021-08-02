@@ -1004,6 +1004,16 @@ class SaleOrderLine(models.Model):
                 for po_line in line.purchase_line_ids:
                     if po_line.state in ('purchase', 'done'):
                         line.qty_delivered = sum(po_line.move_ids.mapped('quantity_done'))
+            else:
+                if line.qty_delivered_method == 'stock_move':
+                    qty = 0.0                    
+                    for move in line.move_ids.filtered(lambda r: r.state == 'done' or r.is_transit is True and not r.scrapped and line.product_id == r.product_id):
+                        if move.location_dest_id.usage == "customer":                            
+                            if not move.origin_returned_move_id or (move.origin_returned_move_id and move.to_refund):
+                                qty += move.product_uom._compute_quantity(move.quantity_done or move.reserved_availability, line.product_uom)                                
+                        elif move.location_dest_id.usage != "customer" and move.to_refund:
+                            qty -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)                    
+                    line.qty_delivered = qty
 
     # @api.onchange('storage_contract_line_id')
     # def onchange_storage_contract_line_id(self):
@@ -1346,6 +1356,7 @@ class SaleOrderLine(models.Model):
     @api.multi
     def write(self, vals):
         res = super(SaleOrderLine, self).write(vals)
+        if input(vals) =='y': print(k)
         for line in self:
             if vals.get('price_unit') and line.order_id.state == 'sale':
                 line.update_price_list()
@@ -1404,6 +1415,8 @@ class SaleOrderLine(models.Model):
             reassign = order.picking_ids.filtered(
                 lambda x: x.state == 'confirmed' or (x.state in ['waiting', 'assigned'] and not x.printed))
             if reassign:
+                msg = _("Extra line with %s ") % (line.product_id.display_name,)
+                reassign.message_post(body=msg)
                 reassign.action_assign()
         return True
 

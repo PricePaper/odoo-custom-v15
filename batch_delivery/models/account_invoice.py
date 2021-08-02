@@ -78,7 +78,7 @@ class AccountInvoice(models.Model):
                         line.sudo().unlink()
                 delivery_inv_lines = self.env['account.invoice.line']
                 # if a invoice have only one line we need to make sure it's not a delivery charge.
-                # if its a devlivery charge, remove it from invoice.
+                # if its a delivery charge, remove it from invoice.
                 if len(invoice.invoice_line_ids) == 1 and invoice.invoice_line_ids.mapped('sale_line_ids'):
                     if all(invoice.invoice_line_ids.mapped('sale_line_ids').mapped('is_delivery')):
                         delivery_inv_lines |= invoice.invoice_line_ids

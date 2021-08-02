@@ -1415,6 +1415,8 @@ class SaleOrderLine(models.Model):
             reassign = order.picking_ids.filtered(
                 lambda x: x.state == 'confirmed' or (x.state in ['waiting', 'assigned'] and not x.printed))
             if reassign:
+                msg = _("Extra line with %s ") % (line.product_id.display_name,)
+                reassign.message_post(body=msg)
                 reassign.action_assign()
         return True
 

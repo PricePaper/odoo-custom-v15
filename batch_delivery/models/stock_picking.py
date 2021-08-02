@@ -151,10 +151,10 @@ class StockPicking(models.Model):
             if rec.invoice_ids:
                 rec.invoice_ref = rec.invoice_ids[-1].move_name
 
-    @api.depends('move_ids_without_package.reserved_availability')
+    @api.depends('move_lines.reserved_availability')
     def _compute_available_qty(self):
         for pick in self:
-            moves = pick.mapped('move_ids_without_package').filtered(lambda move: move.state != 'cancel')
+            moves = pick.mapped('move_lines').filtered(lambda move: move.state != 'cancel')
             pick.reserved_qty = sum(moves.mapped('reserved_availability'))
             pick.low_qty_alert = pick.item_count != pick.reserved_qty and pick.state != 'done'
 
@@ -218,13 +218,15 @@ class StockPicking(models.Model):
     def action_make_transit(self):
         for pick in self:
             if pick.state not in ['in_transit', 'done']:
-                pick.is_transit = True
-                pick.transit_date = fields.Date.context_today(pick)
-                pick.move_ids_without_package.write({'is_transit': True})
-                for line in pick.move_line_ids:
-                    line.qty_done = line.move_id.reserved_availability
-                    if line.move_id.sale_line_id:
-                        line.move_id.sale_line_id.qty_delivered = line.move_id.reserved_availability
+                pick.write({
+                    'is_transit': True,
+                    'transit_date': fields.Date.context_today(pick)
+                    })
+                pick.move_lines.write({'is_transit': True})
+                for line in pick.move_lines:
+                    line.quantity_done = line.reserved_availability
+                    if line.sale_line_id:
+                        line.sale_line_id.qty_delivered = line.reserved_availability
                 if pick.batch_id:
                     pick.sale_id.write({'delivery_date': pick.batch_id.date})
     @api.multi
@@ -250,8 +252,8 @@ class StockPicking(models.Model):
     @api.multi
     def create_invoice(self):
         for picking in self:
-            if not any([line.quantity_done for line in picking.move_ids_without_package]):
-                raise UserError(_('Please enter quantities in %s before proceed..' % picking.name))
+            if not any([line.quantity_done for line in picking.move_lines]):
+                raise UserError(_('Please enter done quantities in %s before proceed..' % picking.name))
             if picking.sale_id.invoice_status in ['no', 'invoiced']:
                 continue
             if picking.sale_id.invoice_status == 'to invoice':
@@ -309,7 +311,7 @@ class StockPicking(models.Model):
                     vals.get('route_id', False)) and picking.batch_id and picking.batch_id.state == 'draft':
                 vals.update({'batch_id': False})
             if 'route_id' in vals.keys() and not vals.get('route_id', False):
-                picking.mapped('move_ids_without_package').write({'is_transit': False})
+                picking.mapped('move_lines').write({'is_transit': False})
                 vals.update({'batch_id': False, 'is_late_order': False, 'is_transit': False})
         res = super(StockPicking, self).write(vals)
         return res
@@ -330,13 +332,13 @@ class StockPicking(models.Model):
         res = super(StockPicking, self).action_done()
         for pick in self:
             pick.is_transit = False
-            pick.move_ids_without_package.write({'is_transit': False})
+            pick.move_lines.write({'is_transit': False})
         for line in self.move_line_ids.filtered(lambda r: r.state == 'done'):
             line.product_onhand_qty = line.product_id.qty_available
         return res
 
     def check_return_reason(self):
-        move_info = self.move_ids_without_package.filtered(lambda m: m.quantity_done < m.product_uom_qty and not m.reason_id)
+        move_info = self.move_lines.filtered(lambda m: m.quantity_done < m.product_uom_qty and not m.reason_id)
         if move_info:
             default_reason = self.env.ref('batch_delivery.default_stock_picking_return_reason', raise_if_not_found=False)
             if default_reason:
@@ -370,13 +372,13 @@ class StockPicking(models.Model):
             # TODO::should we need to cancel the invoice documents?
             self.mapped('invoice_ids').filtered(lambda r: rec in r.picking_ids).sudo().action_cancel()
         res = super(StockPicking, self).action_cancel()
-        self.mapped('move_ids_without_package').write({'is_transit': False})
+        self.mapped('move_lines').write({'is_transit': False})
         self.write({'batch_id': False, 'is_late_order': False})
         return res
 
     @api.multi
     def action_remove(self):
-        self.mapped('move_ids_without_package').write({'is_transit': False})
+        self.mapped('move_lines').write({'is_transit': False})
         result = self.write({'batch_id': False, 'route_id': False, 'is_late_order': False, 'is_transit': False})
         return result
 
@@ -405,7 +407,7 @@ class StockPicking(models.Model):
         return self.env.ref('batch_delivery.batch_picking_active_report').report_action(self)
 
     def receive_product_in_lines(self):
-        for line in self.move_ids_without_package:
+        for line in self.move_lines:
             if not line.quantity_done and line.state != 'cancel':
                 if self.picking_type_code == 'incoming':
                     line.quantity_done = line.product_uom_qty

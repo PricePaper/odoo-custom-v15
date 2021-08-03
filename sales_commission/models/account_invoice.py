@@ -28,7 +28,6 @@ class AccountInvoice(models.Model):
     def action_invoice_re_open(self):
         for invoice in self:
             commission_rec = self.env['sale.commission'].search([('invoice_id', '=', invoice.id)])
-            print(commission_rec)
             settled_rec = commission_rec.filtered(
                 lambda r: r.is_settled and r.invoice_type != 'unreconcile' and not r.is_cancelled)
             for rec in settled_rec:
@@ -47,7 +46,6 @@ class AccountInvoice(models.Model):
                 rec.is_cancelled = True
 
             paid_rec = commission_rec.filtered(lambda r: not r.is_settled and r.invoice_type != 'unreconcile')
-            print(paid_rec, settled_rec)
             paid_rec and paid_rec.unlink()
         res = super(AccountInvoice, self).action_invoice_re_open()
         return res

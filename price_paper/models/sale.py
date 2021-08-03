@@ -1006,13 +1006,13 @@ class SaleOrderLine(models.Model):
                         line.qty_delivered = sum(po_line.move_ids.mapped('quantity_done'))
             else:
                 if line.qty_delivered_method == 'stock_move':
-                    qty = 0.0
+                    qty = 0.0                    
                     for move in line.move_ids.filtered(lambda r: r.state == 'done' or r.is_transit is True and not r.scrapped and line.product_id == r.product_id):
-                        if move.location_dest_id.usage == "customer":
+                        if move.location_dest_id.usage == "customer":                            
                             if not move.origin_returned_move_id or (move.origin_returned_move_id and move.to_refund):
-                                qty += move.product_uom._compute_quantity(move.quantity_done or move.reserved_availability, line.product_uom)
+                                qty += move.product_uom._compute_quantity(move.quantity_done or move.reserved_availability, line.product_uom)                                
                         elif move.location_dest_id.usage != "customer" and move.to_refund:
-                            qty -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)
+                            qty -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)                    
                     line.qty_delivered = qty
 
     # @api.onchange('storage_contract_line_id')
@@ -1119,13 +1119,13 @@ class SaleOrderLine(models.Model):
                             return res
                         similar_product_price = "<table style='width:400px'>\
                                                 <tr><th>Alternative Products</th><th>Price</th><th>UOM</th></tr>"
-                        product_unit_price = self.price_unit / self.product_uom.factor_inv
+                        product_unit_price = self.price_unit / (product.count_in_uom * self.product_uom.factor_inv)
                         for item in products:
-                            # if item.count_in_uom > 0:
+                            if item.count_in_uom > 0:
                                 name = item.name
                                 if item.default_code:
                                     name = '[' + item.default_code + ']' + name
-                                price = product_unit_price * item.uom_id.factor_inv
+                                price = product_unit_price * item.uom_id.factor_inv * item.count_in_uom
                                 uom = item.uom_id.name
 
                                 prices_all = self.env['customer.product.price']
@@ -1402,9 +1402,13 @@ class SaleOrderLine(models.Model):
             procurement_uom = line.product_uom
 
             try:
-                self.env['procurement.group'].run(line.product_id, product_qty, procurement_uom,
-                                                  line.order_id.partner_shipping_id.property_stock_customer, line.name,
-                                                  line.order_id.name, values)
+                self.env['procurement.group'].run(
+                    line.product_id, product_qty,
+                    procurement_uom,
+                    line.order_id.partner_shipping_id.property_stock_customer,
+                    line.name,
+                    line.order_id.name,
+                    values)
             except UserError as error:
                 errors.append(error.name)
         if errors:
@@ -1414,8 +1418,6 @@ class SaleOrderLine(models.Model):
             reassign = order.picking_ids.filtered(
                 lambda x: x.state == 'confirmed' or (x.state in ['waiting', 'assigned'] and not x.printed))
             if reassign:
-                msg = _("Extra line with %s ") % (line.product_id.display_name,)
-                reassign.message_post(body=msg)
                 reassign.action_assign()
         return True
 
@@ -1423,6 +1425,9 @@ class SaleOrderLine(models.Model):
     def create(self, vals):
 
         res = super(SaleOrderLine, self).create(vals)
+        for line in res.filtered(lambda l: l.state == 'sale'):
+            msg = _("Extra line with %s ") % (line.product_id.display_name,)
+            line.move_ids.mapped('picking_id').message_post(body=msg)
         if res.product_id.need_sub_product and res.product_id.product_addons_list:
             for p in res.product_id.product_addons_list.filtered(
                     lambda rec: rec.id not in [res.order_id.order_line.mapped('product_id').ids]):
@@ -1439,15 +1444,18 @@ class SaleOrderLine(models.Model):
             res.update_price_list()
 
         if res.note_type == 'permanant':
-            note = self.env['product.notes'].search(
-                [('product_id', '=', res.product_id.id),
-                 ('partner_id', '=', res.order_id.partner_id.id), ('expiry_date', '>', date.today())], limit=1)
+            note = self.env['product.notes'].search([
+                ('product_id', '=', res.product_id.id),
+                 ('partner_id', '=', res.order_id.partner_id.id),
+                ('expiry_date', '>', date.today())
+            ], limit=1)
             if not note:
-                self.env['product.notes'].create({'product_id': res.product_id.id,
-                                                  'partner_id': res.order_id.partner_id.id,
-                                                  'notes': res.note,
-                                                  'expiry_date': res.note_expiry_date
-                                                  })
+                self.env['product.notes'].create({
+                    'product_id': res.product_id.id,
+                    'partner_id': res.order_id.partner_id.id,
+                    'notes': res.note,
+                    'expiry_date': res.note_expiry_date
+                })
             else:
                 note.notes = res.note
                 note.expiry_date = res.note_expiry_date

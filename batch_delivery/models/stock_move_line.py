@@ -36,7 +36,7 @@ class StockMoveLine(models.Model):
             ml_to_ignore |= in_transit_candidates
         return super(StockMoveLine, self)._free_reservation(product_id, location_id, quantity, lot_id=lot_id, package_id=package_id, owner_id=owner_id, ml_to_ignore=ml_to_ignore)
 
-        
+
     @api.multi
     def write(self, vals):
         result = super(StockMoveLine, self).write(vals)
@@ -75,7 +75,7 @@ class StockMoveLine(models.Model):
                                 other_invoice.compute_taxes()
 
             if 'picking_id' in vals:
-                sale_line.invoice_lines.filtered(lambda rec: line.move_id in rec.stock_move_ids).sudo().unlink()
+                sale_line.invoice_lines.filtered(lambda rec: line.move_id in rec.stock_move_ids and rec.invoice_id and rec.invoice_id.state != 'cancel').sudo().unlink()
 
         return result
 

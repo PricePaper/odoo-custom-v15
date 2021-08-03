@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+         <record id="email_template_customer_statement" model="mail.template">
+            <field name="name">Customer Statement</field>
+            <field name="subject">Customer Statement - ${object.name}</field>
+            <field name="email_to">${object.email | safe}</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.company_id.lang}</field>
+            <field name="body_html"><![CDATA[
+            <div style="font-family: Verdana, Geneva, sans-serif; font-size: 13px; color: rgb(34, 34, 34); background-color: #FFF; ">
+                <p>Dear Sir/Madam,</p>
+                <p style="margin-top: 20px;">
+                 Our records indicate that some payments on your account are still due. Please find details below.<br/>
+                 If the amount has already been paid, please disregard this notice. Otherwise, please forward us the total amount stated below.<br/>
+                 If you have any queries regarding your account, please contact us.<br/><br/>
+                 Thank you in advance for your cooperation.<br/>
+                 Best Regards,
+                </p>
+                <br/>
+            </div>
+            ]]>
+            </field>
+             <field name="report_template" ref="customer_statement_report.report_customer_statement_pdf"/>
+            <field name="report_name">${(object.name or '').replace('/','_')}</field>
+            <field name="lang">${object.lang}</field>
+        </record>
+
+    </data>
+</odoo>

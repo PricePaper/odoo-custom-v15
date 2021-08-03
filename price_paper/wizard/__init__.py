@@ -11,5 +11,6 @@ from . import upload_pricelist_wizard
 from . import stock_overprocessed_transfer
 from . import sc_popup_window
 from . import stock_backorder_confirmation
+from . import stock_picking_return
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

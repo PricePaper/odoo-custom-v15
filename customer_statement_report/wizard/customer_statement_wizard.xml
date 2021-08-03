@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="customer_statement_wizard_form_view" model="ir.ui.view">
+            <field name="name">customer.statement.wizard.form</field>
+            <field name="model">customer.statement.wizard</field>
+            <field name="arch" type="xml">
+                <form string="ModelTitle">
+                    <sheet>
+                        <script>
+                          $(document).ready(function(){
+                              $('.modal-dialog').css({'width': '500PX', 'height': '450PX'});
+                          });
+                      </script>
+                        <div class="oe_title">
+                            <span>
+                                <field name="date_from" placeholder="Start Date"/> 🠒 <field name="date_to" placeholder="End Date"/>
+                            </span>
+                        </div>
+                        <footer>
+                              <button string="Generate Statement" type="object" name="action_generate_statement" class="btn-primary" />
+                              <button string="Cancel" special="cancel" class="btn-secondary"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+       <act_window id="action_customer_statement_generator"
+            name="Customer Statement"
+            res_model="customer.statement.wizard"
+            view_mode="form" target="new" view_type="form"/>
+
+        <menuitem name="Customer Statement"
+                  id="customer_statement_wizard_menu"
+                  parent="sale.sale_order_menu"
+                  action="action_customer_statement_generator"
+                  sequence="8"/>
+
+    </data>
+</odoo>

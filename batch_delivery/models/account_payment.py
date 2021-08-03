@@ -14,7 +14,6 @@ class AccountPayment(models.Model):
     @api.multi
     def print_checks(self):
         self.set_check_amount_in_words()
-        self.state
         return super(AccountPayment, self).print_checks()
 
 

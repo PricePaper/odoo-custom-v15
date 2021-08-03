@@ -77,8 +77,9 @@ class AccountInvoice(models.Model):
         for line in lines:
             profit = self.gross_profit
             commission = line.commission
-            payment_date_list = [rec.payment_date for rec in self.payment_ids]
-            payment_date = max(payment_date_list) if payment_date_list else False
+            # payment_date_list = [rec.payment_date for rec in self.payment_ids]
+            # payment_date = max(payment_date_list) if payment_date_list else False
+            payment_date = self.paid_date
 
             if self.payment_term_id.due_days:
                 days = self.payment_term_id.due_days

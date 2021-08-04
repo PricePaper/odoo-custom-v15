@@ -87,6 +87,7 @@ class ProductProduct(models.Model):
     def copy(self, default=None):
 
         res = super(ProductProduct, self).copy(default)
+        res and res._check_weight_and_volume()
         if not self._context.get('from_change_uom'):
             res.standard_price = self.standard_price
             #Duplicate price_list line

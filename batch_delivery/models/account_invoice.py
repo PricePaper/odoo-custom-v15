@@ -154,7 +154,9 @@ class AccountInvoice(models.Model):
         company_currency = self.company_id.currency_id
         if not wrtf_account:
             raise UserError(_('Please set a discount account in company.'))
-
+        discount_limit = self.amount_total * (5 / 100)
+        if self.discount_type == 'amount' and self.wrtoff_discount > discount_limit or self.wrtoff_discount > 5:
+            raise UserError(_('Invoices can not be discounted that much. Create a credit memo instead.'))
         discount = self.wrtoff_discount if self.discount_type == 'amount' else self.amount_total * (self.wrtoff_discount / 100)
         amobj = self.env['account.move'].create({
             'company_id': self.company_id.id,

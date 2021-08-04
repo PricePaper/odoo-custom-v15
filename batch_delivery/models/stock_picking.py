@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, Warning
 from odoo.tools import float_compare
 from datetime import datetime
 
@@ -165,6 +165,34 @@ class StockPicking(models.Model):
                 raise UserError(_(
                     "Some of the selected Delivery order is not in transit state"))
             rec.button_validate()
+
+    @api.multi
+    def load_products(self):
+        res = {}
+        for rec in self:
+            rec.move_ids_without_package.unlink()
+            if not rec.location_id:
+                raise UserError(_(
+                    "Source location should be selected"))
+            else:
+                msg = ''
+                quant = self.env['stock.quant'].search([('location_id', '=', rec.location_id.id)])
+                products = quant.filtered(lambda r: r.quantity - r.reserved_quantity > 0).mapped('product_id')
+                for product in products:
+                    if not product.property_stock_location:
+                        msg += product.default_code and product.default_code or product.name
+                        msg += ', '
+                        continue
+                    vals = {'product_id': product.id,
+                            'picking_id': rec.id,
+                            'name': product.name,
+                            'location_id': rec.location_id.id,
+                            'product_uom': product.uom_id.id,
+                            'location_dest_id': product.property_stock_location.id
+                            }
+                    self.env['stock.move'].create(vals)
+                if msg:
+                    msg = 'Stock location not assigned for following Products.' + msg
 
 
     @api.onchange('partner_id')

@@ -19,6 +19,7 @@ Custom module implemented for Purchase extension.
         'wizard/add_sales_history_to_po.xml',
         'wizard/change_product_uom.xml',
         'views/res_company.xml',
+        'views/purchase_order_line.xml',
         'views/account_vendor_bill.xml',
         'views/payment_term.xml',
         'views/purchase_order.xml',

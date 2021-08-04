@@ -64,6 +64,9 @@
                 <field name="communication" position="after">
                     <field name="payment_reference" readonly="0"/>
                 </field>
+                 <xpath expr="//button[@name='cancel']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('state', 'in', ['cancelled'])]}</attribute>
+                </xpath>
                 <xpath expr="/form/sheet" position="inside">
                     <field name="has_payment_lines" invisible="1"/>
                     <field name="payment_lines" readonly="1" attrs="{'invisible':[('has_payment_lines','=',False)]}">

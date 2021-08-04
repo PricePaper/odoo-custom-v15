@@ -57,11 +57,23 @@ class StockPickingBatch(models.Model):
         for rec in self:
             rec.invoice_ids = rec.picking_ids.mapped('invoice_ids')
 
-    # @api.constrains('cheque_amount', 'cash_amount', 'actual_returned')
-    # def check_total_amount(self):
-    #
-    #     if float_round(self.cheque_amount + self.cash_amount, precision_digits=2) != float_round(self.actual_returned, precision_digits=2):
-    #         raise ValidationError(_('Total amount and sum of Cash and Check does not match'))
+    @api.constrains('cheque_amount', 'cash_amount', 'actual_returned')
+    def check_total_amount(self):
+
+        for batch in self:
+            msg = ''
+            check_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_id.code in ('check_printing_in', 'batch_payment'))
+            if check_lines and float_round(sum(check_lines.mapped('amount')), precision_digits=2) != float_round(batch.cheque_amount, precision_digits=2):
+                msg += 'Check Amount mismatch.\n'
+            cash_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_id.code == 'manual')
+            if cash_lines and float_round(sum(cash_lines.mapped('amount')), precision_digits=2) != float_round(batch.cash_amount, precision_digits=2):
+                msg += 'Cash Amount mismatch.\n'
+            if batch.pending_amount:
+                msg += 'Total Amount mismatch.\n'
+            if float_round(batch.cheque_amount + batch.cash_amount, precision_digits=2) != float_round(batch.actual_returned, precision_digits=2):
+                msg += 'Total amount and sum of Cash,Check does not match.\n'
+            if msg:
+                raise UserError(_(msg))
 
     def _compute_to_invoice_state(self):
         for rec in self:

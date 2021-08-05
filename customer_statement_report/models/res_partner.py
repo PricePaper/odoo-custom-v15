@@ -5,4 +5,4 @@ from odoo import fields, models
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    statement_method = fields.Selection([('email', 'Email'), ('pdf_report', 'Pdf')], default='email')
+    statement_method = fields.Selection([('email', 'Email'), ('pdf_report', 'Mail'), ('none', 'None')], default='email')

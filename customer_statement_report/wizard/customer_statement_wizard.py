@@ -13,6 +13,12 @@ class CustomerStatementWizard(models.TransientModel):
     date_to = fields.Date(string="End Date")
     partner_ids = fields.Many2many('res.partner', string="Recipients")
 
+    @api.model
+    def default_get(self, fields):
+        result = super(CustomerStatementWizard, self).default_get(fields)
+        result['date_from'] = self.env.user.company_id.last_statement_date
+        return result
+
     def mail_loop(self, customers, date_from, date_to, uid):
 
         with api.Environment.manage():
@@ -59,7 +65,7 @@ class CustomerStatementWizard(models.TransientModel):
 
         email_customer = partner_ids.filtered(lambda p: p.statement_method == 'email')
         pdf_customer = partner_ids.filtered(lambda p: p.statement_method == 'pdf')
-
+        self.env.user.company_id.write({'last_statement_date': self.date_to})
         if email_customer:
             t = threading.Thread(target=self.mail_loop, args=([email_customer, self.date_from, self.date_to, self.env.uid]))
             t.setName('CustomerStatement Email (Beta)')

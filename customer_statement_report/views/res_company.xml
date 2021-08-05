@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+         <record id="res_company_inherit_customer_statement_report" model="ir.ui.view">
+            <field name="name">res.company.customer.statement.report</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page/group/group[2]/field[@name='vat']" position="after">
+                   <field name="last_statement_date" readonly="1"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

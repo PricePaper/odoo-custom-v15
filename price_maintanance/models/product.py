@@ -163,7 +163,7 @@ class ProductProduct(models.Model):
             product.standard_price_date_lock = False
             name = product.default_code and product.default_code or product.name
             for prd in product.similar_product_ids:
-                name1 = product.default_code and product.default_code or product.name
+                name1 = prd.default_code and prd.default_code or prd.name
                 name = name + ', ' + name1
             name = 'Standard Price: '+ name
             product.with_delay(description=name, channel='root.standardprice').job_queue_standard_price_update()

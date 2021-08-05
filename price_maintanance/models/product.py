@@ -161,12 +161,18 @@ class ProductProduct(models.Model):
             if product.similar_product_ids:
                 similar_products += product.similar_product_ids.ids
             product.standard_price_date_lock = False
-            product.with_delay(channel='root.standardprice').job_queue_standard_price_update()
+            name = product.default_code and product.default_code or product.name
+            for prd in product.similar_product_ids:
+                name1 = prd.default_code and prd.default_code or prd.name
+                name = name + ', ' + name1
+            name = 'Standard Price: '+ name
+            product.with_delay(description=name, channel='root.standardprice').job_queue_standard_price_update()
 
     @job
     @api.multi
     def job_queue_standard_price_update(self):
 
+        price_from_msg = ''
         date_to = datetime.today() - relativedelta(months=self.env.user.company_id.product_lst_price_months or 0, day=1)
         product_list = self
         if self.similar_product_ids:
@@ -192,12 +198,14 @@ class ProductProduct(models.Model):
                     new_lst_price = statistics.median_high(
                         [lines.filtered(lambda l: l.order_id.partner_id == partner)[:1].price_unit for partner in
                          partners])
+                    price_from = uom.name + ' Price is from Sales History.\n'
 
                 except statistics.StatisticsError as e:
                     _logger.error('Not enough data to find mean price for product_id: {}.'.format(self.id))
-                    new_lst_price = self.get_price_from_competitor_or_categ
+                    new_lst_price, price_from = self.get_price_from_competitor_or_categ(uom)
             else:
-                new_lst_price = self.get_price_from_competitor_or_categ(uom)
+                new_lst_price, price_from = self.get_price_from_competitor_or_categ(uom)
+            price_from_msg += price_from
             new_lst_price = float_round(new_lst_price, precision_digits=2)
             for product in product_list:
                 if uom in product.sale_uoms:
@@ -210,7 +218,8 @@ class ProductProduct(models.Model):
                                 'uom_id': uom.id,
                                 'price': new_lst_price}
                         self.env['product.standard.price'].with_context({'from_standardprice_cron': True}).create(vals)
-        return True
+
+        return price_from_msg
 
     def get_price_from_competitor_or_categ(self, uom):
         new_lst_price = 0
@@ -218,14 +227,17 @@ class ProductProduct(models.Model):
         restaurant_id = self.env.ref('website_scraping.website_scraping_cofig_1').id
         webstaurant_id = self.env.ref('website_scraping.website_scraping_cofig_2').id
         new_lst_price = self.get_from_competitor(restaurant_id, uom)
+        price_from = uom.name + ' Price is from Competitor: Restaurant Depot.\n'
         if not new_lst_price:
+            price_from = uom.name + ' Price is from Competitor: Webstaurant Depot.\n'
             new_lst_price = self.get_from_competitor(webstaurant_id, uom)
         if not new_lst_price:
+            price_from = uom.name + ' Price is from Category.\n'
             if uom != self.uom_id:
                 uom_cost = float_round(self.uom_id._compute_price(cost, uom), precision_digits=2)
                 cost = float_round(uom_cost * (1 + (self.categ_id.repacking_upcharge / 100)), precision_digits=2)
             new_lst_price = margin.get_price(cost, self.categ_id.standard_price, percent=True)
-        return new_lst_price
+        return new_lst_price,price_from
 
     def get_from_competitor(self, competitor_id, uom):
         new_lst_price = 0

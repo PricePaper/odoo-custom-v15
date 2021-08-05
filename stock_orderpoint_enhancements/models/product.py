@@ -309,7 +309,7 @@ class ProductProduct(models.Model):
         """
 
         for product in self:
-            product.with_delay(channel='root.Product_Orderpoint').job_queue_forecast()
+            product.job_queue_forecast()
 
     @api.model
     def set_orderpoint_cron(self):

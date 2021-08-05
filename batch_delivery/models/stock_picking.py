@@ -176,9 +176,11 @@ class StockPicking(models.Model):
                     "Source location should be selected"))
             else:
                 msg = ''
-                quant = self.env['stock.quant'].search([('location_id', '=', rec.location_id.id)])
-                products = quant.filtered(lambda r: r.quantity - r.reserved_quantity > 0).mapped('product_id')
-                for product in products:
+                quants = self.env['stock.quant'].search([('location_id', '=', rec.location_id.id)])
+                quants = quants.filtered(lambda r: r.quantity - r.reserved_quantity > 0)
+                for quant in quants:
+                    product = quant.mapped('product_id')
+                    qty = quant.quantity - quant.reserved_quantity
                     if not product.property_stock_location:
                         msg += product.default_code and product.default_code or product.name
                         msg += ', '
@@ -188,7 +190,8 @@ class StockPicking(models.Model):
                             'name': product.name,
                             'location_id': rec.location_id.id,
                             'product_uom': product.uom_id.id,
-                            'location_dest_id': product.property_stock_location.id
+                            'location_dest_id': product.property_stock_location.id,
+                            'product_uom_qty': qty
                             }
                     self.env['stock.move'].create(vals)
                 if msg:

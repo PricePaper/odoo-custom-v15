@@ -15,7 +15,7 @@
                       </script>
                         <div class="oe_title">
                             <span>
-                                <field name="date_from" placeholder="Start Date"/> 🠒 <field name="date_to" placeholder="End Date"/>
+                                <field name="date_from" placeholder="Start Date"/><span style="padding:30px;">&#8594;</span> <field name="date_to" placeholder="End Date"/>
                             </span>
                         </div>
                         <footer>

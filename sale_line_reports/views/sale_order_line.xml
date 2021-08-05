@@ -20,6 +20,7 @@
                     <field name="price_unit" readonly="1" string="UNIT PRICE"/>
                     <field name="percent" string="PCT"/>
                     <field name="remark"/>
+                    <button name="action_view_sale_order" type="object" icon="fa-info-circle" aria-label="Sale Order" title="Sale Order"/>
                 </tree>
             </field>
         </record>

@@ -1,0 +1,61 @@
+<odoo>
+    <data>
+        <record id="purchase_line_price_paper_tree" model="ir.ui.view">
+            <field name="name">purchase.order.line.price.paper</field>
+            <field name="model">purchase.order.line</field>
+            <field name="priority">1000</field>
+            <field name="arch" type="xml">
+                <tree string="Purchase Order Lines" editable="top" create="0" edit="0">
+                    <field name="order_id" readonly="1" string="ORDER#"/>
+                    <field name="product_id" readonly="1" string="PRODUCT"/>
+                    <field name="partner_id" readonly="1" string="CUSTOMER NAME"/>
+                    <field name="date_order" readonly="1" string="ORDER DATE"/>
+                    <field name="price_unit" readonly="1" string="PRICE"/>
+                    <field name="product_qty" readonly="1" string="ORDERED QTY"/>
+                    <field name="qty_received" readonly="1" string="RECEIVED QTY"/>
+                    <field name="state" readonly="1" string="STATE"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="purchase_order_line_search_price_paper" model="ir.ui.view">
+            <field name="name">purchase.order.line.report</field>
+            <field name="model">purchase.order.line</field>
+            <field name="arch" type="xml">
+                <search string="Search purchase Order">
+                    <field name="order_id"/>
+                    <field name="partner_id" operator="child_of"/>
+                    <field name="product_id"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Product" name='group_by_product_id' context="{'group_by':'product_id'}"/>
+                        <filter string="Order" name='group_by_order_id' context="{'group_by':'order_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_purchase_line_price_paper" model="ir.actions.act_window">
+            <field name="name">Purchase Order Lines</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">purchase.order.line</field>
+            <field name="view_mode">tree</field>
+            <field name="search_view_id" ref="purchase_order_line_search_price_paper"/>
+            <field name="context">{}</field>
+        </record>
+
+        <record model="ir.actions.act_window.view" id="action_purchase_line_price_paper_tree">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="purchase_line_price_paper_tree"/>
+            <field name="act_window_id" ref="action_purchase_line_price_paper"/>
+        </record>
+
+        <menuitem id="menu_purchase_lines"
+                  name="Purchase Order Lines"
+                  action="action_purchase_line_price_paper"
+                  parent="purchase.menu_procurement_management"
+                  groups="purchase.group_purchase_manager"
+                  sequence="1000"
+        />
+    </data>
+</odoo>

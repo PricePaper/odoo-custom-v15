@@ -75,6 +75,14 @@ class ProductProduct(models.Model):
     weight = fields.Float(
         'Weight', digits=dp.get_precision('Stock Weight'),
         help="Weight of the product, packaging not included. The unit of measure can be changed in the general settings", copy=False)
+    lst_from_std_price = fields.Float(
+        'Sale Price', compute='_compute_lst_price_std_price',
+        digits=dp.get_precision('Product Price'))
+
+    def _compute_lst_price_std_price(self):
+        for product in self:
+            price = product.uom_standard_prices.filtered(lambda r: r.uom_id == product.uom_id)
+            product.lst_from_std_price = price and price[0].price or 0
 
     @api.model
     def default_burden_percent(self):

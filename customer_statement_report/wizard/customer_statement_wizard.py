@@ -64,7 +64,7 @@ class CustomerStatementWizard(models.TransientModel):
         ]).mapped('partner_id')
 
         email_customer = partner_ids.filtered(lambda p: p.statement_method == 'email')
-        pdf_customer = partner_ids.filtered(lambda p: p.statement_method == 'pdf')
+        pdf_customer = partner_ids.filtered(lambda p: p.statement_method == 'pdf_report')
         self.env.user.company_id.write({'last_statement_date': self.date_to})
         if email_customer:
             t = threading.Thread(target=self.mail_loop, args=([email_customer, self.date_from, self.date_to, self.env.uid]))

@@ -19,6 +19,25 @@ class SaleOrderline(models.Model):
     remark = fields.Char(string='RM', compute='_calculate_remark')
     deliver_by = fields.Date(string="Deliver By", related='order_id.deliver_by')
 
+    def action_view_sale_order(self):
+        self.ensure_one()
+        if self.order_id.storage_contract:
+            view = self.env.ref('price_paper.view_storage_contract_order_form')
+        else:
+            view = self.env.ref('sale.view_order_form')
+        return {
+            'name': 'Sale Order',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'sale.order',
+            'views': [(view.id, 'form')],
+            'view_id': view.id,
+            'target': 'current',
+            'res_id': self.order_id.id,
+            'context': self.env.context,
+        }
+
     @api.multi
     def _calculate_percent(self):
         for line in self:

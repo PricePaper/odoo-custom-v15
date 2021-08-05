@@ -167,7 +167,7 @@ class AddPurchaseHistorySO(models.TransientModel):
         sale_history = sale_history.filtered(lambda rec: rec.order_line_id.id not in history_lines)
 
         if sale_history:
-            for line in sale_history:
+            for line in sale_history.sorted(key=lambda l: l.product_id.categ_id.name):
                 warning, price, price_from = line.order_line_id.calculate_customer_price()
                 lines.append((0, 0, {
                     'product_uom': line.uom_id.id,

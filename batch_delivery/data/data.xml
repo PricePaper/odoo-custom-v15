@@ -99,6 +99,7 @@
             <table border="0" cellpadding="2" cellspacing="2" width="100%" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
                 <tr valign="top" style="font-size: 12px;">
                     <th style="border-bottom: 1px solid black;">Partner</th>
+                    <th style="border-bottom: 1px solid black;">Sale Order</th>
                     <th style="border-bottom: 1px solid black;">Product</th>
                     <th style="border-bottom: 1px solid black;">Alternative Product</th>
                     <th style="border-bottom: 1px solid black;">Order Qty</th>
@@ -109,6 +110,7 @@
                 % for line in ctx['summery_list']:
                     <tr valign="top" style="font-size: 11px;">
                         <td>${line.picking_id.partner_id.display_name}</td>
+                        <td>${line.picking_id.sale_id.display_name}</td>
                         <td>${line.product_id.display_name}</td>
                         <td>
                             <ul>

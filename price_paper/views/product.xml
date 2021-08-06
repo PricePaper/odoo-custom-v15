@@ -15,9 +15,13 @@
                 <xpath expr="//field[@name='name']" position="before">
                     <field name="categ_id"/>
                 </xpath>
+                <xpath expr="//field[@name='barcode']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
 
                 <xpath expr="//field[@name='barcode']" position="after">
                     <field name="vendor_id"/>
+                    <field name="property_stock_location"/>
                     <field name="stock_value" sum="Stock Valuation"
                            widget="monetary" string="Total Value"/>
                 </xpath>

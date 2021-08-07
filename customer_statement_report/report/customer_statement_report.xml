@@ -73,6 +73,7 @@
                                         <th name="th_name" class="text-left">Due Date</th>
                                         <th name="th_description" class="text-left">Original Amount</th>
                                         <th name="th_description" class="text-left">Amount Due</th>
+                                        <th name="th_description" class="text-left">Cumulative</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -82,9 +83,11 @@
                                             (Credits / Payments), Invoices</strong></td>
                                     </tr>
                                     <t t-set="line_count" t-value="0"/>
+                                    <t t-set="cumulative" t-value="0"/>
                                     <t t-if="'open_invoices' in data[str(doc.id)]">
                                         <t t-foreach="data[str(doc.id)]['open_invoices']" t-as="line">
                                             <t t-set="line_count" t-value="line_count + 1"/>
+                                            <t t-set="cumulative" t-value="cumulative + line['residual']"/>
                                             <tr style="font-size: 12px;">
                                                 <td><span t-esc="line_count"/></td>
                                                 <td><span t-esc="line['ref']"/></td>
@@ -92,12 +95,14 @@
                                                 <td><span t-esc="line['due_date']"/></td>
                                                 <td>$<span t-esc="'%.2f'%(line['amount_total'])"/></td>
                                                 <td>$<span t-esc="'%.2f'%(line['residual'])"/></td>
+                                                <td>$<span t-esc="'%.2f'%(cumulative)"/></td>
                                             </tr>
                                         </t>
                                     </t>
                                     <t t-if="'out_standing_credit' in data[str(doc.id)]">
                                         <t t-foreach="data[str(doc.id)]['out_standing_credit']" t-as="line">
                                             <t t-set="line_count" t-value="line_count + 1"/>
+                                            <t t-set="cumulative" t-value="cumulative - line['credit']"/>
                                             <tr style="font-size: 12px;">
                                                 <td><span t-esc="line_count"/></td>
                                                 <td><span t-esc="line['ref']"/></td>
@@ -105,6 +110,7 @@
                                                 <td></td>
                                                 <td>- $<span t-esc="'%.2f'%(line['credit'])"/></td>
                                                 <td>- $<span t-esc="'%.2f'%(line['credit'])"/></td>
+                                                <td>$<span t-esc="'%.2f'%(cumulative)"/></td>
                                             </tr>
                                         </t>
                                     </t>

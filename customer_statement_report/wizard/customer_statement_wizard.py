@@ -60,8 +60,8 @@ class CustomerStatementWizard(models.TransientModel):
             ('type', 'in', ['out_invoice', 'in_refund']),
             ('date_invoice', '>=', self.date_from),
             ('date_invoice', '<=', self.date_to),
-            ('state', 'in', ['open', 'in_payment', 'paid'])
-        ]).mapped('partner_id')
+            ('state', 'in', ['open', 'in_payment'])
+        ]).filtered(lambda r: r.has_outstanding).mapped('partner_id')
 
         email_customer = partner_ids.filtered(lambda p: p.statement_method == 'email')
         pdf_customer = partner_ids.filtered(lambda p: p.statement_method == 'pdf_report')

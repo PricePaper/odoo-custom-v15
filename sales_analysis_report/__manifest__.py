@@ -14,7 +14,7 @@ Sales Analysis Report
         'security/ir.model.access.csv',
         'report/sales_analysis_report.xml'
     ],
-    'depends': ['sale_management', 'account', 'sale_line_reports'],
+    'depends': ['sale_management', 'account', 'price_paper'],
     'installable': True,
     'application': False,
     'auto_install': False,

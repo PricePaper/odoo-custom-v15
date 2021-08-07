@@ -21,8 +21,7 @@ class PosSaleReport(models.Model):
     sales_dollars = fields.Float(string='Sales dollars', readonly=True)
     profit_dollars = fields.Float(string='Profit dollars', readonly=True)
     product_qty = fields.Float('Product Quantity', readonly=True)
-    analytic_account_id = fields.Many2one('account.analytic.account', 'Analytic Account', readonly=True)
-    team_id = fields.Many2one('crm.team', 'Sales Team', readonly=True)
+
 
     def _inv(self):
         so_str = """

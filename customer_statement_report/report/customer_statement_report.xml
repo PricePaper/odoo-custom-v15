@@ -120,6 +120,7 @@
                                         <td>
                                            $<span t-esc="'%.2f'%(data[str(doc.id)].get('total', 0) - data[str(doc.id)].get('total_credit', 0))"/>
                                         </td>
+                                        <td></td>
                                     </tr>
                                 </tbody>
                             </table>

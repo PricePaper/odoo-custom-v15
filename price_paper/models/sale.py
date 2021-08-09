@@ -1006,13 +1006,13 @@ class SaleOrderLine(models.Model):
                         line.qty_delivered = sum(po_line.move_ids.mapped('quantity_done'))
             else:
                 if line.qty_delivered_method == 'stock_move':
-                    qty = 0.0                    
+                    qty = 0.0
                     for move in line.move_ids.filtered(lambda r: r.state == 'done' or r.is_transit is True and not r.scrapped and line.product_id == r.product_id):
-                        if move.location_dest_id.usage == "customer":                            
+                        if move.location_dest_id.usage == "customer":
                             if not move.origin_returned_move_id or (move.origin_returned_move_id and move.to_refund):
-                                qty += move.product_uom._compute_quantity(move.quantity_done or move.reserved_availability, line.product_uom)                                
+                                qty += move.product_uom._compute_quantity(move.quantity_done or move.reserved_availability, line.product_uom)
                         elif move.location_dest_id.usage != "customer" and move.to_refund:
-                            qty -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)                    
+                            qty -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)
                     line.qty_delivered = qty
 
     # @api.onchange('storage_contract_line_id')
@@ -1355,6 +1355,15 @@ class SaleOrderLine(models.Model):
 
     @api.multi
     def write(self, vals):
+        for line in self:
+            if vals.get('price_unit') and line.order_id.state == 'sale':
+                if not self.env.user.has_group('sales_team.group_sale_manager') and line.product_id.type != 'service':
+                    if line.price_unit < line.working_cost and vals.get('price_unit') < line.price_unit:
+                        print(line.price_unit, line.working_cost, 'pppp', vals.get('price_unit'))
+                        raise ValidationError(_('You are not allowed to reduce price below product cost. Contact your sales Manager.'))
+                    if line.price_unit >= line.working_cost and vals.get('price_unit') < line.working_cost:
+                        print(line.price_unit, line.working_cost, vals.get('price_unit'))
+                        raise ValidationError(_('You are not allowed to reduce price below product cost. Contact your sales Manager.'))
         res = super(SaleOrderLine, self).write(vals)
         for line in self:
             if vals.get('price_unit') and line.order_id.state == 'sale':

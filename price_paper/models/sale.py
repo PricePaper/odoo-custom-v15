@@ -1359,10 +1359,8 @@ class SaleOrderLine(models.Model):
             if vals.get('price_unit') and line.order_id.state == 'sale':
                 if not self.env.user.has_group('sales_team.group_sale_manager') and line.product_id.type != 'service':
                     if line.price_unit < line.working_cost and vals.get('price_unit') < line.price_unit:
-                        print(line.price_unit, line.working_cost, 'pppp', vals.get('price_unit'))
                         raise ValidationError(_('You are not allowed to reduce price below product cost. Contact your sales Manager.'))
                     if line.price_unit >= line.working_cost and vals.get('price_unit') < line.working_cost:
-                        print(line.price_unit, line.working_cost, vals.get('price_unit'))
                         raise ValidationError(_('You are not allowed to reduce price below product cost. Contact your sales Manager.'))
         res = super(SaleOrderLine, self).write(vals)
         for line in self:

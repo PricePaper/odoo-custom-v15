@@ -9,7 +9,7 @@
                     <attribute name='domain'>[('order_type', '=', 'purchase')]</attribute>
                 </field>
                 <field name='date_order' position="after">
-                    <field name="release_date"/>
+                    <field name="release_date" string="Date Wanted"/>
                 </field>
 
                 <xpath expr="//group[hasclass('oe_subtotal_footer')]" position="before">
@@ -43,6 +43,10 @@
                 </xpath>
 
             </field>
+        </record>
+
+        <record id="purchase.purchase_rfq" model="ir.actions.act_window">
+            <field name="context">{'search_default_my_purchases':1, 'search_default_draft':1}</field>
         </record>
     </data>
 </odoo>

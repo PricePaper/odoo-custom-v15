@@ -76,7 +76,7 @@ class ProductProduct(models.Model):
         'Weight', digits=dp.get_precision('Stock Weight'),
         help="Weight of the product, packaging not included. The unit of measure can be changed in the general settings", copy=False)
     lst_from_std_price = fields.Float(
-        'Sale Price', compute='_compute_lst_price_std_price',
+        'Standard Price', compute='_compute_lst_price_std_price',
         digits=dp.get_precision('Product Price'))
 
     def _compute_lst_price_std_price(self):

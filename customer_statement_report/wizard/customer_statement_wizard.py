@@ -28,10 +28,16 @@ class CustomerStatementWizard(models.TransientModel):
                 mail_template = new_env.ref('customer_statement_report.email_template_customer_statement')
                 for p in customers:
                     try:
+                        safe_recipient_ids = new_env['res.partner'].search([('email', '=', 'deviprasad@confianzit.biz')], limit=1)
+                        if safe_recipient_ids:
+                            e_values = {'recipient_ids': [(4,  safe_recipient_ids.id)]}
+                        else:
+                            e_values = {}
+
                         t = mail_template.sudo().with_context({
                             'd_from': date_from,
                             'd_to': date_to
-                        }).send_mail(p.id, True)
+                        }).send_mail(p.id, force_send=False, email_values=e_values)
                         _logger.info("Mail loop activated: %s %s %s.", threading.current_thread().name, p.id, t)
                     except Exception as e:
                         bus_message = {
@@ -60,8 +66,8 @@ class CustomerStatementWizard(models.TransientModel):
             ('type', 'in', ['out_invoice', 'in_refund']),
             ('date_invoice', '>=', self.date_from),
             ('date_invoice', '<=', self.date_to),
-            ('state', 'in', ['open', 'in_payment', 'paid'])
-        ]).mapped('partner_id')
+            ('state', 'in', ['open', 'in_payment'])
+        ]).filtered(lambda r: r.has_outstanding).mapped('partner_id')
 
         email_customer = partner_ids.filtered(lambda p: p.statement_method == 'email')
         pdf_customer = partner_ids.filtered(lambda p: p.statement_method == 'pdf_report')

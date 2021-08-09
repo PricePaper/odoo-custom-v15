@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, registry, api, _
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
+
+from odoo import models, fields, registry, api, _
+from odoo.tools.float_utils import float_compare
 from odoo.exceptions import ValidationError, AccessError
 
 
@@ -16,6 +18,31 @@ class PurchaseOrder(models.Model):
     total_qty = fields.Float(string="Total Order Quantity", compute='_compute_total_weight_volume')
     vendor_delay = fields.Integer(related='partner_id.delay', string="Vendor Lead Time", readonly=True)
     vendor_order_freq = fields.Integer(related='partner_id.order_freq', string="Vendor Order Frequency", readonly=True)
+    state = fields.Selection(selection_add=[('received', 'Received')])
+
+    @api.depends('state', 'order_line.qty_invoiced', 'order_line.qty_received', 'order_line.product_qty')
+    def _get_invoiced(self):
+        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        for order in self:
+            if order.state not in ('purchase', 'done', 'received'):
+                order.invoice_status = 'no'
+                continue
+
+            if any(float_compare(line.qty_invoiced, line.product_qty if line.product_id.purchase_method == 'purchase' else line.qty_received, precision_digits=precision) == -1 for line in order.order_line):
+                order.invoice_status = 'to invoice'
+            elif all(float_compare(line.qty_invoiced, line.product_qty if line.product_id.purchase_method == 'purchase' else line.qty_received, precision_digits=precision) >= 0 for line in order.order_line) and order.invoice_ids:
+                order.invoice_status = 'invoiced'
+            else:
+                order.invoice_status = 'no'
+
+    @api.model
+    def create(self, vals):
+        vendor = vals.get('partner_id')
+        if vendor:
+            purchase_rep = self.env['res.partner'].browse(vendor).seller_partner_ids
+            purchase_rep = purchase_rep and purchase_rep[0].user_ids
+            vals['user_id'] = purchase_rep and purchase_rep[0].id or vals['user_id']
+        return super(PurchaseOrder, self).create(vals)
 
     @api.multi
     def _add_supplier_to_product(self):

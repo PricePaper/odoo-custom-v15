@@ -8,9 +8,21 @@
                 <field name='payment_term_id' position='attributes'>
                     <attribute name='domain'>[('order_type', '=', 'purchase')]</attribute>
                 </field>
+                <xpath expr="/form/sheet/group/group[2]" position="after">
+                    <xpath expr="//notebook/page[@name='purchase_delivery_invoice']/group/group[1]" position="move"/>
+                </xpath>
                 <field name='date_order' position="after">
                     <field name="release_date" string="Date Wanted"/>
                 </field>
+                <xpath expr="//button[@name='action_view_invoice']" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ('purchase', 'received', 'done')), ('invoice_status', 'in', ('no', 'invoiced'))]}</attribute>
+                </xpath>
+                 <xpath expr="//button[10]" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ('purchase', 'received', 'done')), ('invoice_status', 'in', ('no', 'invoiced'))]}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='button_done']" position="attributes">
+                    <attribute name="states">purchase,received</attribute>
+                </xpath>
 
                 <xpath expr="//group[hasclass('oe_subtotal_footer')]" position="before">
                     <group name="weight_volume">
@@ -48,5 +60,34 @@
         <record id="purchase.purchase_rfq" model="ir.actions.act_window">
             <field name="context">{'search_default_my_purchases':1, 'search_default_draft':1}</field>
         </record>
+
+         <record id="res_config_settings_view_form_purchase" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.purchase.inherit.purchase.extension</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="purchase.res_config_settings_view_form_purchase"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@data-string='Purchase']/div[3]/div" position="inside">
+                <br/>
+                <div class="o_setting_left_pane"/>
+                <div class="o_setting_right_pane">
+                <span class="o_form_label">Supplier Info</span>
+                <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>
+                <div class="text-muted">
+                    Supplier default start &amp; end date.
+                </div>
+                <div class="content-group">
+                    <div class="row mt16">
+                        <label string="Start Date" for="supplier_start_date" class="col-lg-3 o_light_label"/>
+                        <field name="supplier_start_date" placeholder="day/month/year example(08/11/2021)"/>
+                    </div>
+                    <div class="row">
+                        <label string="End Date" for="supplier_end_date" class="col-lg-3 o_light_label"/>
+                        <field name="supplier_end_date" placeholder="day/month/year example(08/11/2021)"/>
+                    </div>
+                </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
     </data>
 </odoo>

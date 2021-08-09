@@ -14,6 +14,15 @@ class AccountInvoice(models.Model):
         string='Autocomplete from Receipt'
     )
 
+
+    @api.multi
+    def action_invoice_open(self):
+        res = super(AccountInvoice, self).action_invoice_open()
+        for invoice in self:
+            if invoice.type == 'in_invoice':
+                invoice.invoice_line_ids.mapped('purchase_line_id.order_id').button_done()
+        return res
+
     @api.depends('payment_term_id.due_days', 'date_invoice')
     def compute_discount_due_date(self):
         for invoice in self:

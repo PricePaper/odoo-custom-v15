@@ -39,7 +39,7 @@ class ResPartner(models.Model):
     zip_shipping_easiness = fields.Selection(related='zip_delivery_id.shipping_easiness',
                                              string='Easiness of shipping.')
     seller_info_ids = fields.One2many('product.supplierinfo', 'name', string='Seller info')
-    seller_partner_ids = fields.Many2many('res.partner', 'vendor_id', 'seller_partner_id', string='Purchaser')
+    seller_partner_ids = fields.Many2many('res.partner', 'vendor_id', 'seller_partner_id', string='Purchaser', domain="[('user_ids', '!=', False)]")
     credit_limit = fields.Float(string='Credit Limit', default=lambda self: self.env.user.company_id.credit_limit)
     default_shipping = fields.Boolean(string='Default', help="if checked this will be the default shipping address")
     property_account_payable_id = fields.Many2one('account.account', company_dependent=True,

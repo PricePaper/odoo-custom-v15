@@ -66,8 +66,20 @@ class SupplierInfo(models.Model):
         return res
 
 
+    @api.model
+    def default_get(self, fields_list):
+        result = super(SupplierInfo, self).default_get(fields_list)
+        result['date_start'] = self.env['ir.config_parameter'].sudo().get_param('purchase_extension.supplier_start_date')
+        result['date_end'] = self.env['ir.config_parameter'].sudo().get_param('purchase_extension.supplier_end_date')
+        return result
 
 
 SupplierInfo()
+
+class ResConfigSettings(models.TransientModel):
+    _inherit = 'res.config.settings'
+
+    supplier_start_date = fields.Char(string='Supplier Start Date', config_parameter='purchase_extension.supplier_start_date')
+    supplier_end_date = fields.Char(string='Supplier End Date', config_parameter='purchase_extension.supplier_end_date')
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

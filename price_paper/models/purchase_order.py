@@ -23,7 +23,7 @@ class PurchaseOrder(models.Model):
     @api.multi
     def button_cancel(self):
         result = super(PurchaseOrder, self).button_cancel()
-        sale = self.mapped('order_line.sale_order_id').filtered(lambda s: s.storage_contract and s.state == 'done')
+        sale = self.mapped('order_line.sale_order_id').filtered(lambda s: s.storage_contract)
         if sale:
             sale.write({'sc_po_done': False, 'state': 'sale'})
         return result

@@ -106,17 +106,8 @@ class AccountInvoice(models.Model):
     @api.multi
     def action_invoice_cancel(self):
         main = self.env['sale.order']
-        down = self.env['sale.order']
-        for invoice in self:
-            sale_order = invoice.mapped('invoice_line_ids').mapped('sale_line_ids').mapped('order_id')
-            if sale_order.storage_contract:
-                # if invoice.storage_down_payment:
-                #     if sale_order.state == 'released' and sale_order.invoice_status == 'invoiced':
-                #         raise UserError('It is forbidden to modify a released order.')
-                #     if sale_order.state == 'done' and sale_order.invoice_status == 'invoiced':
-                #         raise UserError('It is forbidden to modify a released order.')
-                #     down |= sale_order
-                # else:
+        for sale_order in self.mapped('invoice_line_ids').mapped('sale_line_ids').mapped('order_id'):
+            if sale_order.storage_contract and sale_order.state == 'released':
                 main |= sale_order
         if main:
             main.write({'state': 'done'})

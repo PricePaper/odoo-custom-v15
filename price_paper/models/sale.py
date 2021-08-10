@@ -813,9 +813,12 @@ class SaleOrder(models.Model):
         view_id = self.env.ref('price_paper.view_purchase_history_add_so_wiz').id
         history_from = datetime.today() - relativedelta(months=self.env.user.company_id.sale_history_months)
         products = self.order_line.mapped('product_id').ids
+        # sales_history = self.env['sale.history'].search(
+        #     [('partner_id', '=', self.partner_id.id),
+        #      ('product_id', 'not in', products), ('product_id.sale_ok', '=', True)])
         sales_history = self.env['sale.history'].search(
-            [('partner_id', '=', self.partner_id.id),
-             ('product_id', 'not in', products), ('product_id.sale_ok', '=', True)])
+            ['|', ('active', '=', False), ('active', '=', True), ('partner_id', '=', self.partner_id.id),
+             ('product_id', 'not in', products)])
         # addons product filtering
         addons_products = sales_history.mapped('product_id').filtered(lambda rec: rec.need_sub_product).mapped(
             'product_addons_list')

@@ -25,6 +25,8 @@ class SaleHistoryLinesWizard(models.TransientModel):
     product_category = fields.Many2one('product.category', string='Product Category')
     search_wizard_temp_id = fields.Many2one('add.purchase.history.so', string='Parent Win')
     qty_available = fields.Float(string='Available Qty')
+    archived = fields.Boolean(string='Archived')
+    sale_ok = fields.Boolean(string='Can be sold')
 
     def _check_routing(self, order_id, product):
         is_available = False
@@ -180,7 +182,9 @@ class AddPurchaseHistorySO(models.TransientModel):
                     'old_price': line.order_line_id.price_unit,
                     'product_uom_qty': line.order_line_id.product_uom_qty,
                     'product_category': line.product_id.categ_id.id,
-                    'product_name': line.product_id.display_name
+                    'product_name': line.product_id.display_name,
+                    'archived': line.active,
+                    'sale_ok': line.product_id.sale_ok
                 }))
 
         self.purchase_history_ids = False

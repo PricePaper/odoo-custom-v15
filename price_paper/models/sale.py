@@ -1119,38 +1119,38 @@ class SaleOrderLine(models.Model):
                             return res
                         similar_product_price = "<table style='width:400px'>\
                                                 <tr><th>Alternative Products</th><th>Price</th><th>UOM</th></tr>"
-                        product_unit_price = self.price_unit / (product.count_in_uom * self.product_uom.factor_inv)
+                        product_unit_price = self.price_unit / self.product_uom.factor_inv
                         for item in products:
-                            if item.count_in_uom > 0:
-                                name = item.name
-                                if item.default_code:
-                                    name = '[' + item.default_code + ']' + name
-                                price = product_unit_price * item.uom_id.factor_inv * item.count_in_uom
-                                uom = item.uom_id.name
+                            # if item.count_in_uom > 0:
+                            name = item.name
+                            if item.default_code:
+                                name = '[' + item.default_code + ']' + name
+                            price = product_unit_price * item.uom_id.factor_inv
+                            uom = item.uom_id.name
 
-                                prices_all = self.env['customer.product.price']
-                                for rec in self.order_id.partner_id.customer_pricelist_ids:
-                                    if not rec.pricelist_id.expiry_date or rec.pricelist_id.expiry_date >= str(
-                                            date.today()):
-                                        prices_all |= rec.pricelist_id.customer_product_price_ids
+                            prices_all = self.env['customer.product.price']
+                            for rec in self.order_id.partner_id.customer_pricelist_ids:
+                                if not rec.pricelist_id.expiry_date or rec.pricelist_id.expiry_date >= str(
+                                        date.today()):
+                                    prices_all |= rec.pricelist_id.customer_product_price_ids
 
-                                prices_all = prices_all.filtered(lambda r: r.product_id.id == item.id)
-                                product_price_rec = self.env['customer.product.price']
-                                msg = ''
-                                for price_rec in prices_all:
-                                    if price_rec.pricelist_id.type == 'customer' and not price_rec.partner_id and prices_all.filtered(
-                                            lambda r: r.partner_id):
-                                        continue
+                            prices_all = prices_all.filtered(lambda r: r.product_id.id == item.id)
+                            product_price_rec = self.env['customer.product.price']
+                            msg = ''
+                            for price_rec in prices_all:
+                                if price_rec.pricelist_id.type == 'customer' and not price_rec.partner_id and prices_all.filtered(
+                                        lambda r: r.partner_id):
+                                    continue
 
-                                    product_price_rec = price_rec
-                                    break
-                                if product_price_rec:
-                                    price = price_rec.price
-                                    uom = price_rec.product_uom.name
+                                product_price_rec = price_rec
+                                break
+                            if product_price_rec:
+                                price = price_rec.price
+                                uom = price_rec.product_uom.name
 
-                                similar_product_price += "<tr><td>{}</td><td>{:.02f}</td><td>{}</td></tr>".format(name,
-                                                                                                                  price,
-                                                                                                                  uom)
+                            similar_product_price += "<tr><td>{}</td><td>{:.02f}</td><td>{}</td></tr>".format(name,
+                                                                                                              price,
+                                                                                                              uom)
                         similar_product_price += "</table>"
                         self.similar_product_price = similar_product_price
         return res

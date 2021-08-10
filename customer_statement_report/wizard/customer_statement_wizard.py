@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models, api, registry,SUPERUSER_ID, _
+from odoo.exceptions import UserError
 import threading
 import logging
 
@@ -28,16 +29,10 @@ class CustomerStatementWizard(models.TransientModel):
                 mail_template = new_env.ref('customer_statement_report.email_template_customer_statement')
                 for p in customers:
                     try:
-                        safe_recipient_ids = new_env['res.partner'].search([('email', '=', 'deviprasad@confianzit.biz')], limit=1)
-                        if safe_recipient_ids:
-                            e_values = {'recipient_ids': [(4,  safe_recipient_ids.id)]}
-                        else:
-                            e_values = {}
-
                         t = mail_template.sudo().with_context({
                             'd_from': date_from,
                             'd_to': date_to
-                        }).send_mail(p.id, force_send=False, email_values=e_values)
+                        }).send_mail(p.id, force_send=False, notif_layout='mail.mail_notification_light')
                         _logger.info("Mail loop activated: %s %s %s.", threading.current_thread().name, p.id, t)
                     except Exception as e:
                         bus_message = {
@@ -62,17 +57,48 @@ class CustomerStatementWizard(models.TransientModel):
         """
         process customer against with there invoices, payment with in a range of date.
         """
-        partner_ids = self.env['account.invoice'].search([
-            ('type', 'in', ['out_invoice', 'in_refund']),
-            ('date_invoice', '>=', self.date_from),
-            ('date_invoice', '<=', self.date_to),
-            ('state', 'in', ['open', 'in_payment'])
-        ]).filtered(lambda r: r.has_outstanding).mapped('partner_id')
+        domain = [
+                ('type', 'in', ['out_invoice', 'in_refund']),
+                ('date_invoice', '>=', self.date_from),
+                ('date_invoice', '<=', self.date_to),
+                ('state', 'in', ['open', 'in_payment'])
+            ]
+        if self._context.get('ppt_active_recipient'):
+            active_ids = self._context.get('active_ids')
+            domain.append(('partner_id', 'in', active_ids))
+
+        partner_ids = self.env['account.invoice'].search(domain).filtered(lambda r: r.has_outstanding).mapped('partner_id')
 
         email_customer = partner_ids.filtered(lambda p: p.statement_method == 'email')
         pdf_customer = partner_ids.filtered(lambda p: p.statement_method == 'pdf_report')
+        if not email_customer and not pdf_customer:
+            raise UserError(_('Nothing to process!!'))
         self.env.user.company_id.write({'last_statement_date': self.date_to})
         if email_customer:
+            if self._context.get('ppt_active_recipient'):
+                template_id = self.env.ref('customer_statement_report.email_template_customer_statement')
+                compose_form_id = self.env.ref('mail.email_compose_message_wizard_form')
+                ctx = {
+                    'default_model': 'res.partner',
+                    'default_res_id': self._context.get('active_id'),
+                    'default_use_template': bool(template_id.id),
+                    'default_template_id': template_id.id,
+                    'default_composition_mode': 'comment',
+                    'custom_layout': 'mail.mail_notification_light',
+                    'force_email': False,
+                    'd_from': self.date_from,
+                    'd_to': self.date_to
+                }
+                return {
+                    'type': 'ir.actions.act_window',
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'res_model': 'mail.compose.message',
+                    'views': [(compose_form_id.id, 'form')],
+                    'view_id': compose_form_id.id,
+                    'target': 'new',
+                    'context': ctx,
+                }
             t = threading.Thread(target=self.mail_loop, args=([email_customer, self.date_from, self.date_to, self.env.uid]))
             t.setName('CustomerStatement Email (Beta)')
             t.start()
@@ -84,33 +110,3 @@ class CustomerStatementWizard(models.TransientModel):
                     'd_to': self.date_to}
             })
 
-    def action_generate_email(self):
-        """
-        process customer against with there invoices, payment with in a range of date.
-        """
-        domain = [
-            ('type', 'in', ['out_invoice', 'in_refund']),
-            ('date_invoice', '>=', self.date_from),
-            ('date_invoice', '<=', self.date_to),
-            ('state', 'in', ['open', 'in_payment', 'paid'])]
-        if self.env.context.get('active_ids') and self.env.context.get('active_model')  == 'res.partner':
-            domain.append(('partner_id', 'in', self.env.context.get('active_ids')))
-        print(domain)
-        partner_ids = self.env['account.invoice'].search(domain).mapped('partner_id')
-
-        email_customer = partner_ids.filtered(lambda p: p.statement_method == 'email')
-        # pdf_customer = partner_ids.filtered(lambda p: p.statement_method == 'pdf_report')
-        self.env.user.company_id.write({'last_statement_date': self.date_to})
-        if email_customer:
-            self.mail_loop(email_customer, self.date_from, self.date_to, self.env.uid)
-        return partner_ids
-            # t = threading.Thread(target=self.mail_loop, args=([email_customer, self.date_from, self.date_to, self.env.uid]))
-            # t.setName('CustomerStatement Email (Beta)')
-            # t.start()
-        # if pdf_customer:
-        #     report = self.env.ref('customer_statement_report.report_customer_statement_pdf')
-        #     return report.report_action(pdf_customer, data={
-        #         'date_range': {
-        #             'd_from': self.date_from,
-        #             'd_to': self.date_to}
-        #     })

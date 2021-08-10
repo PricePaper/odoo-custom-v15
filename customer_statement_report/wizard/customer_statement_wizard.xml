@@ -20,7 +20,6 @@
                         </div>
                         <footer>
                               <button string="Generate Statement" type="object" name="action_generate_statement" class="btn-primary" />
-                              <button string="Generate Email" type="object" name="action_generate_email" />
                               <button string="Cancel" special="cancel" class="btn-secondary"/>
                         </footer>
                     </sheet>
@@ -28,15 +27,18 @@
             </field>
         </record>
 
+        <act_window id="action_active_customer_statement_generator"
+                    name="Customer Statement"
+                    src_model="res.partner"
+                    res_model="customer.statement.wizard"
+                    view_mode="form"
+                    view_type="form"
+                    context="{'ppt_active_recipient': True}"
+                    target="new"
+                    />
 
        <act_window id="action_customer_statement_generator"
             name="Customer Statement"
-            res_model="customer.statement.wizard"
-            view_mode="form" target="new" view_type="form"/>
-
-        <act_window id="action_customer_statement_generator_test"
-            name="Customer Statement"
-            src_model="res.partner"
             res_model="customer.statement.wizard"
             view_mode="form" target="new" view_type="form"/>
 

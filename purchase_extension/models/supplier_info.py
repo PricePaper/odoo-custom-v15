@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from dateutil.relativedelta import relativedelta
+
 from odoo import fields, models, api, _
 
 
@@ -13,7 +15,7 @@ class SupplierInfo(models.Model):
         """
         overriden to log price change
         """
-
+        months = self.env['ir.config_parameter'].sudo().get_param('purchase_extension.supplier_month_increment')
         for line in self:
             if 'price' in vals:
                 log_vals = {'change_date': fields.Datetime.now(),
@@ -34,6 +36,10 @@ class SupplierInfo(models.Model):
                 if self._context.get('from_purchase', False):
                     log_vals['price_from'] = 'purchase'
                 self.env['product.price.log'].create(log_vals)
+            if 'price' in vals:
+                if line.price != vals['price']:
+                    vals['date_start'] = fields.Date.today()
+                    vals['date_end'] = fields.Date.today() + relativedelta(months=int(months))
 
         result = super(SupplierInfo, self).write(vals)
         return result
@@ -69,8 +75,9 @@ class SupplierInfo(models.Model):
     @api.model
     def default_get(self, fields_list):
         result = super(SupplierInfo, self).default_get(fields_list)
-        result['date_start'] = self.env['ir.config_parameter'].sudo().get_param('purchase_extension.supplier_start_date')
-        result['date_end'] = self.env['ir.config_parameter'].sudo().get_param('purchase_extension.supplier_end_date')
+        months = self.env['ir.config_parameter'].sudo().get_param('purchase_extension.supplier_month_increment')
+        result['date_start'] = fields.Date.today()
+        result['date_end'] = fields.Date.today() + relativedelta(months=int(months))
         return result
 
 
@@ -79,7 +86,7 @@ SupplierInfo()
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
-    supplier_start_date = fields.Char(string='Supplier Start Date', config_parameter='purchase_extension.supplier_start_date')
-    supplier_end_date = fields.Char(string='Supplier End Date', config_parameter='purchase_extension.supplier_end_date')
+    supplier_month_increment = fields.Integer(string='Number Of Months', config_parameter='purchase_extension.supplier_month_increment')
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

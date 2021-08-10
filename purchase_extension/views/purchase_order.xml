@@ -66,25 +66,23 @@
         <field name="model">res.config.settings</field>
         <field name="inherit_id" ref="purchase.res_config_settings_view_form_purchase"/>
         <field name="arch" type="xml">
-            <xpath expr="//div[@data-string='Purchase']/div[3]/div" position="inside">
-                <br/>
-                <div class="o_setting_left_pane"/>
-                <div class="o_setting_right_pane">
-                <span class="o_form_label">Supplier Info</span>
-                <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>
-                <div class="text-muted">
-                    Supplier default start &amp; end date.
-                </div>
-                <div class="content-group">
-                    <div class="row mt16">
-                        <label string="Start Date" for="supplier_start_date" class="col-lg-3 o_light_label"/>
-                        <field name="supplier_start_date" placeholder="day/month/year example(08/11/2021)"/>
+            <xpath expr="//div[@data-string='Purchase']/div[3]" position="after">
+                <h2>Supplier Info</h2>
+                <div class="row mt16 o_settings_container">
+                    <div class="col-12 col-lg-6 o_setting_box" title="Number of Months used to calculate supplier end date, these values are automatically updated to system parameters.">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <label for="supplier_month_increment"/>
+                            <div class="text-muted">
+                                Number of months used to calculate supplier end date.
+                            </div>
+                           <div class="content-group">
+                            <div class="row mt16">
+                                <field name="supplier_month_increment" placeholder="Number of months used to calculate End Date" style="width:300px;margin-left:10px;"/>
+                            </div>
+                        </div>
+                        </div>
                     </div>
-                    <div class="row">
-                        <label string="End Date" for="supplier_end_date" class="col-lg-3 o_light_label"/>
-                        <field name="supplier_end_date" placeholder="day/month/year example(08/11/2021)"/>
-                    </div>
-                </div>
                 </div>
             </xpath>
         </field>

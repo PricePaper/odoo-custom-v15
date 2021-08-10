@@ -4,6 +4,11 @@ from odoo.exceptions import ValidationError
 class RMARetMerAuth(models.Model):
     _inherit = 'rma.ret.mer.auth'
 
+    def button_dummy(self):
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
 
     @api.onchange('sale_order_id')
     def onchange_sale_order_id(self):

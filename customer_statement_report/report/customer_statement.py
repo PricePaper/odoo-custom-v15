@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import date, timedelta
+
 from odoo import models, api
 from itertools import groupby
 
@@ -71,6 +73,17 @@ class CustomerStatementPdfReport(models.AbstractModel):
                 'balance': i.residual,
                 'type': p_move.payment_id.payment_method_id.display_name
             } for i in inv for p_move in i.payment_move_line_ids])
+            past_due = False
+            for rec in inv:
+                if rec.state == 'open':
+                    term_line = rec.payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
+                    date_due = rec.date_due
+                    if term_line and term_line.grace_period:
+                        date_due = rec.date_due + timedelta(days=term_line.grace_period)
+                    if date_due < date.today():
+                        past_due = True
+                        break
+            datas[str(key[0].id)]['past_due'] = past_due
         else:
             data.update(datas)
         return {

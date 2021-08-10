@@ -89,7 +89,6 @@ class CustomerStatementWizard(models.TransientModel):
                     'default_use_template': bool(template_id.id),
                     'default_template_id': template_id.id,
                     'default_composition_mode': 'comment',
-                    'model_description': 'TEST',
                     'custom_layout': 'mail.mail_notification_light',
                     'force_email': False,
                     'd_from': self.date_from,

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models, api, registry,SUPERUSER_ID, _
+from odoo.exceptions import UserError
 import threading
 import logging
 
@@ -37,7 +38,7 @@ class CustomerStatementWizard(models.TransientModel):
                         t = mail_template.sudo().with_context({
                             'd_from': date_from,
                             'd_to': date_to
-                        }).send_mail(p.id, force_send=False, email_values=e_values)
+                        }).send_mail(p.id, force_send=False, email_values=e_values, notif_layout='mail.mail_notification_light')
                         _logger.info("Mail loop activated: %s %s %s.", threading.current_thread().name, p.id, t)
                     except Exception as e:
                         bus_message = {
@@ -62,17 +63,54 @@ class CustomerStatementWizard(models.TransientModel):
         """
         process customer against with there invoices, payment with in a range of date.
         """
-        partner_ids = self.env['account.invoice'].search([
-            ('type', 'in', ['out_invoice', 'in_refund']),
-            ('date_invoice', '>=', self.date_from),
-            ('date_invoice', '<=', self.date_to),
-            ('state', 'in', ['open', 'in_payment'])
-        ]).filtered(lambda r: r.has_outstanding).mapped('partner_id')
+        if self._context.get('ppt_test'):
+            partner_id = self._context.get('active_id')
+            partner_ids = self.env['account.invoice'].search([
+                ('partner_id', '=', partner_id),
+                ('type', 'in', ['out_invoice', 'in_refund']),
+                ('date_invoice', '>=', self.date_from),
+                ('date_invoice', '<=', self.date_to),
+                ('state', 'in', ['open', 'in_payment'])
+            ]).filtered(lambda r: r.has_outstanding).mapped('partner_id')
+        else:
+            partner_ids = self.env['account.invoice'].search([
+                ('type', 'in', ['out_invoice', 'in_refund']),
+                ('date_invoice', '>=', self.date_from),
+                ('date_invoice', '<=', self.date_to),
+                ('state', 'in', ['open', 'in_payment'])
+            ]).filtered(lambda r: r.has_outstanding).mapped('partner_id')
 
         email_customer = partner_ids.filtered(lambda p: p.statement_method == 'email')
         pdf_customer = partner_ids.filtered(lambda p: p.statement_method == 'pdf_report')
+        if not email_customer and not pdf_customer:
+            raise UserError(_('Nothing to process!!'))
         self.env.user.company_id.write({'last_statement_date': self.date_to})
         if email_customer:
+            if self._context.get('ppt_test'):
+                template_id = self.env.ref('customer_statement_report.email_template_customer_statement')
+                compose_form_id = self.env.ref('mail.email_compose_message_wizard_form')
+                ctx = {
+                    'default_model': 'res.partner',
+                    'default_res_id': self._context.get('active_id'),
+                    'default_use_template': bool(template_id.id),
+                    'default_template_id': template_id.id,
+                    'default_composition_mode': 'comment',
+                    'model_description': 'TEST',
+                    'custom_layout': 'mail.mail_notification_light',
+                    'force_email': False,
+                    'd_from': self.date_from,
+                    'd_to': self.date_to
+                }
+                return {
+                    'type': 'ir.actions.act_window',
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'res_model': 'mail.compose.message',
+                    'views': [(compose_form_id.id, 'form')],
+                    'view_id': compose_form_id.id,
+                    'target': 'new',
+                    'context': ctx,
+                }
             t = threading.Thread(target=self.mail_loop, args=([email_customer, self.date_from, self.date_to, self.env.uid]))
             t.setName('CustomerStatement Email (Beta)')
             t.start()

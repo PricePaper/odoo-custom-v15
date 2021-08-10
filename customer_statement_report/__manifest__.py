@@ -13,9 +13,9 @@ Customer Statement Report
     'data': [
         'report/customer_statement_report.xml',
         'data/mail_data.xml',
-        'views/res_partner_view.xml',
-        'views/res_company.xml',
         'wizard/customer_statement_wizard.xml',
+        'views/res_partner_view.xml',
+        'views/res_company.xml'
     ],
     'depends': ['sale_management', 'account'],
     'installable': True,

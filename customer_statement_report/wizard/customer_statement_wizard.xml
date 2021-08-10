@@ -27,6 +27,15 @@
             </field>
         </record>
 
+        <act_window id="action_active_customer_statement_generator"
+                    name="Customer Statement"
+                    src_model="res.partner"
+                    res_model="customer.statement.wizard"
+                    view_mode="form"
+                    view_type="form"
+                    context="{'ppt_test': True}"
+                    target="new"
+                    />
 
        <act_window id="action_customer_statement_generator"
             name="Customer Statement"

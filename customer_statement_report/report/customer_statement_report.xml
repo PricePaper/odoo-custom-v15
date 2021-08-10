@@ -64,6 +64,9 @@
                                           t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;], &quot;no_marker&quot;: True}"/>
                                 </div>
                             </div>
+                            <div class="text-center" t-if="data[str(doc.id)]['past_due']">
+                              <span style="font-weight: bold;font-size: xx-large;letter-spacing: 1px;">PAST DUE</span><br/>
+                            </div>
                             <table class="table table-sm o_main_table" style="page-break-inside: avoid;margin-top: 20px;" t-if="data[str(doc.id)]['open_invoices'] or 'out_standing_credit' in data[str(doc.id)]">
                                 <thead>
                                     <tr class="bg-dark" style="font-size: 11px; font-style: italic;">

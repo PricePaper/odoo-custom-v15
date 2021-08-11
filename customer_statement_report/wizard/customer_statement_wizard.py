@@ -61,16 +61,21 @@ class CustomerStatementWizard(models.TransientModel):
                 ('type', 'in', ['out_invoice', 'in_refund']),
                 ('date_invoice', '>=', self.date_from),
                 ('date_invoice', '<=', self.date_to),
-                ('state', 'in', ['open', 'in_payment', 'paid'])
+                ('state', 'not in', ['cancel'])
             ]
         if self._context.get('ppt_active_recipient'):
             active_ids = self._context.get('active_ids')
             domain.append(('partner_id', 'in', active_ids))
+        invoices = self.env['account.invoice'].search(domain)
+        invoices_open_with_credit = invoices.filtered(lambda r: r.has_outstanding and r.state in ['open', 'in_payment'])
+        invoices_paid = invoices.filtered(lambda r: r.state == 'paid')
+        partners = self.env['res.partner']
+        if invoices_open_with_credit or invoices_paid:
+            partners |= (invoices_open_with_credit | invoices_paid).mapped('partner_id').filtered(lambda p: p.credit > 0)
 
-        partner_ids = self.env['account.invoice'].search(domain).mapped('partner_id').filtered(lambda p: p.credit > 0)
+        email_customer = partners.filtered(lambda p: p.statement_method == 'email')
+        pdf_customer = partners.filtered(lambda p: p.statement_method == 'pdf_report')
 
-        email_customer = partner_ids.filtered(lambda p: p.statement_method == 'email')
-        pdf_customer = partner_ids.filtered(lambda p: p.statement_method == 'pdf_report')
         if not email_customer and not pdf_customer:
             raise UserError(_('Nothing to process!!'))
         self.env.user.company_id.write({'last_statement_date': self.date_to})

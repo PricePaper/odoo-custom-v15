@@ -67,7 +67,7 @@
                             <div class="text-center" t-if="data[str(doc.id)]['past_due']">
                               <span style="font-weight: bold;font-size: xx-large;letter-spacing: 1px;">PAST DUE</span><br/>
                             </div>
-                            <table class="table table-sm o_main_table" style="page-break-inside: avoid;margin-top: 20px;" t-if="data[str(doc.id)]['open_invoices'] or 'out_standing_credit' in data[str(doc.id)]">
+                            <table class="table table-sm o_main_table" style="page-break-inside: avoid;margin-top: 20px;" t-if="data[str(doc.id)]['open_invoices']">
                                 <thead>
                                     <tr class="bg-dark" style="font-size: 11px; font-style: italic;">
                                         <th name="th_quantity" class="text-left">Ln#</th>
@@ -105,7 +105,7 @@
                                     <t t-if="'out_standing_credit' in data[str(doc.id)]">
                                         <t t-foreach="data[str(doc.id)]['out_standing_credit']" t-as="line">
                                             <t t-set="line_count" t-value="line_count + 1"/>
-                                            <t t-set="cumulative" t-value="cumulative - abs(line['credit'])"/>
+                                            <t t-set="cumulative" t-value="cumulative - abs(line['balance'])"/>
                                             <tr style="font-size: 12px;">
                                                 <td><span t-esc="line_count"/></td>
                                                 <td><span t-esc="line['ref']"/></td>

@@ -26,8 +26,11 @@ class CustomerStatementPdfReport(models.AbstractModel):
             ('type', 'in', ['out_invoice', 'in_refund']),
             ('date_invoice', '>=', d_from),
             ('date_invoice', '<=', d_to),
-            ('state', 'in', ['open', 'in_payment', 'paid'])
+            ('state', 'not in', ['cancel'])
         ])
+        invoices_open_with_credit = invoice_ids.filtered(lambda r: r.has_outstanding and r.state in ['open', 'in_payment'])
+        invoices_paid = invoice_ids.filtered(lambda r: r.state == 'paid')
+        invoice_ids = invoices_open_with_credit | invoices_paid
         default_account = self.env['ir.property'].get('property_account_receivable_id', 'res.partner')
         credit_lines = self.env['account.move.line'].search_read([
             ('partner_id', 'in', invoice_ids.mapped('partner_id').ids),

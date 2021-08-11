@@ -32,7 +32,8 @@ class RMARetMerAuth(models.Model):
                 'type': 'return',
                 'tax_id': order_line.tax_id,
                 'so_line_id': order_line.id,
-                'product_uom': order_line.product_uom.id
+                'product_uom': order_line.product_uom.id,
+                'return_product_uom': order_line.product_uom.id
             })
             order_line_lst.append(rma_sale_line)
         self.rma_sale_lines_ids = [(5,)]
@@ -62,11 +63,69 @@ class RMARetMerAuth(models.Model):
                 'type': 'return',
                 'tax_id': order_line.taxes_id,
                 'po_line_id': order_line.id,
-                'product_uom': order_line.product_uom.id
+                'product_uom': order_line.product_uom.id,
+                'return_product_uom': order_line.product_uom.id
             })
             po_line_lst.append(rma_purchase_line)
         self.rma_purchase_lines_ids = [(5,)]
         self.rma_purchase_lines_ids = po_line_lst
+
+    @api.onchange('picking_rma_id')
+    def onchange_picking_rma_id(self):
+        order_line_lst = []
+        for order_line in self.picking_rma_id.move_ids_without_package:
+            if self.rma_type == 'picking':
+                move = self.env['stock.move'].search([
+                    ('picking_id', '=', self.picking_rma_id.id),
+                    ('product_id', '=', order_line.product_id.id)])
+                taxes = []
+                if move.picking_id.rma_id.rma_type == 'customer':
+                    line = self.env['rma.sale.lines'].search([
+                        ('exchange_product_id', '=', order_line.product_id.id),
+                        ('rma_id', '=', move.rma_id.id)])
+                    taxes = line.tax_id
+                if move.picking_id.rma_id.rma_type == 'supplier':
+                    line = self.env['rma.purchase.lines'].search([
+                        ('exchange_product_id', '=', order_line.product_id.id),
+                        ('rma_id', '=', move.rma_id.id)])
+                    taxes = line.tax_id
+            if self.rma_type == 'lot':
+                move = self.env['stock.move'].search([
+                    ('picking_id', '=', self.picking_rma_id.id),
+                    ('product_id', '=', order_line.product_id.id)])
+                taxes = []
+                if move.picking_id.rma_id.rma_type == 'customer':
+                    line = self.env['rma.sale.lines'].search(
+                        [('product_id', '=', order_line.product_id.id),
+                         ('rma_id', '=', move.rma_id.id)])
+                    taxes = line.tax_id
+                if move.picking_id.rma_id.rma_type == 'supplier':
+                    line = self.env['rma.purchase.lines'].search(
+                        [('product_id', '=', order_line.product_id.id),
+                         ('rma_id', '=', move.rma_id.id)])
+                    taxes = line.tax_id
+            rma_pick_line = (0, 0, {
+                'product_id': order_line.product_id and \
+                              order_line.product_id.id or False,
+                'product_uom': order_line.product_uom.id,
+                'return_product_uom': order_line.product_uom.id,
+                'total_qty': order_line.quantity_done or 0,
+                'delivered_quantity': order_line.quantity_done,
+                'order_quantity': order_line.product_uom_qty or 0,
+                'refund_qty': order_line.quantity_done,
+                'refund_price': order_line.product_id.lst_price,
+                'price_unit': order_line.product_id.lst_price or 0,
+                'source_location_id':
+                    self.env.user.company_id.source_location_id.id or
+                    False,
+                'destination_location_id': self.env.user.company_id.
+                             destination_location_id.id or False,
+                'type': 'return',
+                'tax_id': taxes or False
+            })
+            order_line_lst.append(rma_pick_line)
+        self.rma_picking_lines_ids = [(5,)]
+        self.rma_picking_lines_ids = order_line_lst
 
     @api.multi
     def create_receive_picking(self):
@@ -93,7 +152,7 @@ class RMARetMerAuth(models.Model):
                         'product_uom_qty': rma_line.refund_qty or 0,
                         'location_id': rma_line.source_location_id.id or False,
                         'location_dest_id':rma_line.destination_location_id.id or False,
-                        'product_uom': rma_line.product_uom and rma_line.product_uom.id or False,
+                        'product_uom': rma_line.return_product_uom and rma_line.return_product_uom.id or False,
                         'rma_id': rma.id,
                         'group_id': rma.sale_order_id.procurement_group_id.id,
                         'price_unit': rma_line.price_subtotal or 0,
@@ -125,7 +184,7 @@ class RMARetMerAuth(models.Model):
                         'name': rma_line.product_id and rma_line.
                         product_id.name or False,
                         'quantity': rma_line.refund_qty or 0,
-                        'uom_id': rma_line.product_uom and rma_line.product_uom.id or False,
+                        'uom_id': rma_line.return_product_uom and rma_line.return_product_uom.id or False,
                         'price_unit': prod_price or 0,
                         'currency_id': rma.currency_id.id or False,
                         'sale_line_ids': [(6, 0, [rma_line.so_line_id.id])]
@@ -316,7 +375,7 @@ class RMARetMerAuth(models.Model):
                         'product_uom_qty': line.refund_qty or 0,
                         'location_id': line.source_location_id.id or False,
                         'location_dest_id': line.destination_location_id.id or False,
-                        'product_uom': line.product_uom and line.product_uom.id or False,
+                        'product_uom': line.return_product_uom and line.return_product_uom.id or False,
                         'rma_id': rma.id,
                         'price_unit': line.price_subtotal or 0,
                         'to_refund': True,
@@ -347,7 +406,7 @@ class RMARetMerAuth(models.Model):
                         'name': line.product_id and line.
                         product_id.name or False,
                         'quantity': line.refund_qty or 0,
-                        'uom_id': line.product_uom and line.product_uom.id or False,
+                        'uom_id': line.return_product_uom and line.return_product_uom.id or False,
                         'price_unit': prod_price or 0,
                         'currency_id': rma.currency_id.id or False,
                         'purchase_line_id': line.po_line_id.id
@@ -531,8 +590,7 @@ class RMARetMerAuth(models.Model):
                         'location_dest_id':
                         rma_line.destination_location_id.id or
                         False,
-                        'product_uom': rma_line.product_id.uom_id and
-                        rma_line.product_id.uom_id.id or False,
+                        'product_uom': rma_line.return_product_uom and rma_line.return_product_uom.id or False,
                         'rma_id': rma.id,
                         'price_unit': rma_line.price_subtotal or 0,
                     }
@@ -557,6 +615,7 @@ class RMARetMerAuth(models.Model):
                     inv_line_values = {
                         'product_id': rma_line.product_id and rma_line.
                         product_id.id or False,
+                        'uom_id': rma_line.return_product_uom and rma_line.return_product_uom.id or False,
                         'account_id': inv_account_id or False,
                         'name': rma_line.product_id and rma_line.
                         product_id.name or False,
@@ -744,6 +803,8 @@ class RmaSaleLines(models.Model):
     order_quantity = fields.Float('Ordered Qty')
     delivered_quantity = fields.Float('Delivered Qty')
     total_qty = fields.Float(string='Total Qty', readonly=False)
+    dummy_product_uom = fields.Many2many(related="product_id.sale_uoms", readonly=True)
+    return_product_uom = fields.Many2one('uom.uom')
 
 
 class RmaPurchaseLines(models.Model):
@@ -755,6 +816,8 @@ class RmaPurchaseLines(models.Model):
     order_quantity = fields.Float('Ordered Qty')
     delivered_quantity = fields.Float('Delivered Qty')
     total_qty = fields.Float(string='Total Qty', readonly=False)
+    dummy_product_uom = fields.Many2many(related="product_id.sale_uoms", readonly=True)
+    return_product_uom = fields.Many2one('uom.uom')
 
 
 class RmaPickingLines(models.Model):
@@ -765,3 +828,6 @@ class RmaPickingLines(models.Model):
     delivered_quantity = fields.Float('Delivered Qty')
     price_unit = fields.Float('Unit Price')
     refund_qty = fields.Float('Return Qty')
+    product_uom = fields.Many2one('uom.uom', readonly=True)
+    dummy_product_uom = fields.Many2many(related="product_id.sale_uoms", readonly=True)
+    return_product_uom = fields.Many2one('uom.uom')

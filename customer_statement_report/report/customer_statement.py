@@ -26,7 +26,7 @@ class CustomerStatementPdfReport(models.AbstractModel):
             ('type', 'in', ['out_invoice', 'in_refund']),
             ('date_invoice', '>=', d_from),
             ('date_invoice', '<=', d_to),
-            ('state', 'in', ['open', 'in_payment'])
+            ('state', 'in', ['open', 'in_payment', 'paid'])
         ])
         default_account = self.env['ir.property'].get('property_account_receivable_id', 'res.partner')
         credit_lines = self.env['account.move.line'].search_read([
@@ -40,7 +40,7 @@ class CustomerStatementPdfReport(models.AbstractModel):
             ('amount_residual', '!=', 0.0),
             ('credit', '>', 0),
             ('debit', '=', 0)],
-            ['partner_id', 'payment_id', 'ref', 'credit', 'date'])
+            ['partner_id', 'payment_id', 'ref', 'credit', 'date', 'name', 'amount_residual'])
         datas = {}
         for key, inv in groupby(invoice_ids.sorted(key=lambda r: r.partner_id.id), key=lambda i: i.partner_id):
             inv = list(inv)
@@ -48,9 +48,10 @@ class CustomerStatementPdfReport(models.AbstractModel):
                 datas.setdefault(str(key.id), {}).\
                     setdefault('out_standing_credit', []).\
                     extend([{
-                    'ref': "%s (%s)" % (i['ref'], i['payment_id'] and i['payment_id'][1]) if i['ref'] else i['payment_id'] and i['payment_id'][1],
+                    'ref':  i['payment_id'] and i['payment_id'][1] or '',
                     'date': i['date'],
-                    'credit': i['credit']
+                    'credit': -i['credit'],
+                    'balance': i['amount_residual']
                 } for i in filter(lambda r: r['partner_id'] and r['partner_id'][0] == key.id, credit_lines)])
                 datas[str(key.id)]['total_credit'] = sum(list(map(lambda r: r['credit'], datas[str(key.id)]['out_standing_credit'])))
             datas.setdefault(str(key.id), {}).\
@@ -63,16 +64,21 @@ class CustomerStatementPdfReport(models.AbstractModel):
                 'residual': i.residual
             } for i in inv if i.state == 'open'])
             datas[str(key[0].id)]['total'] = sum(list(map(lambda r: r['residual'], datas[str(key.id)]['open_invoices'])))
+            payments = self.env['account.payment']
+            for rec in inv:
+                for p_move in rec.payment_move_line_ids:
+                    payments |= p_move.payment_id
             datas.setdefault(str(key.id), {}). \
                 setdefault('paid_invoices', []). \
                 extend([{
-                'ref': i.number,
-                'amount_paid': p_move.credit,
-                'invoice_date': p_move.date,
+                'ref': ','.join(payment.invoice_ids.mapped('number')),
+                'amount_paid': payment.amount,
+                'p_name': payment.name,
+                'payment_date': payment.payment_date,
                 'state': 'Posted',
-                'balance': i.residual,
-                'type': p_move.payment_id.payment_method_id.display_name
-            } for i in inv for p_move in i.payment_move_line_ids])
+                'balance': sum(payment.invoice_ids.mapped('payment_move_line_ids').filtered(lambda p: p.payment_id).mapped('amount_residual')),
+                'type': payment.payment_method_id.display_name
+            } for payment in payments])
             past_due = False
             for rec in inv:
                 if rec.state == 'open':

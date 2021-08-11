@@ -21,6 +21,8 @@
                 </xpath>
                 <xpath expr="//field[@name='rma_sale_lines_ids']/tree/field[@name='order_quantity']" position="after">
                     <field name="product_uom" force_save="1"/>
+                    <field name="dummy_product_uom" invisible="1"/>
+                    <field name="return_product_uom" force_save="1"/>
                 </xpath>
                 <xpath expr="//form/sheet/notebook/page[@name='order_lines']/field[@name='rma_sale_lines_ids']" position="attributes">
                     <attribute name="mode">tree,kanban</attribute>
@@ -147,7 +149,11 @@
                         </templates>
                     </kanban>
                 </xpath>
-
+                 <xpath expr="//form/sheet/notebook/page[@name='order_lines']/field[@name='rma_picking_lines_ids']/tree/field[@name='order_quantity']" position="after">
+                    <field name="product_uom" force_save="1"/>
+                     <field name="dummy_product_uom" invisible="1"/>
+                    <field name="return_product_uom" force_save="1"/>
+                </xpath>
                  <xpath expr="//form/sheet/notebook/page[@name='order_lines']/field[@name='rma_picking_lines_ids']" position="attributes">
                     <attribute name="mode">tree,kanban</attribute>
                 </xpath>
@@ -221,6 +227,10 @@
                 <field name="product_id" position="after">
                     <field name="product_uom" force_save="1"/>
                 </field>
+                <field name="refund_qty" position="before">
+                    <field name="dummy_product_uom" invisible="1"/>
+                    <field name="return_product_uom" force_save="1" domain="[('id', 'in', dummy_product_uom)]" required="1"/>
+                </field>
             </field>
         </record>
 
@@ -231,6 +241,25 @@
             <field name="arch" type="xml">
                 <field name="product_id" position="after">
                     <field name="product_uom" force_save="1"/>
+                </field>
+                <field name="refund_qty" position="before">
+                    <field name="dummy_product_uom" invisible="1"/>
+                    <field name="return_product_uom" force_save="1" domain="[('id', 'in', dummy_product_uom)]" required="1"/>
+                </field>
+            </field>
+        </record>
+
+         <record id="view_rma_picking_lines_form_inherit_ppt" model="ir.ui.view">
+            <field name="name">scs.rma.exchange.rma.ret.mer.auth.form.inherit.ppt</field>
+            <field name="model">rma.picking.lines</field>
+            <field name="inherit_id" ref="scs_rma.view_rma_picking_lines_form"/>
+            <field name="arch" type="xml">
+                <field name="product_id" position="after">
+                    <field name="product_uom" force_save="1"/>
+                </field>
+                <field name="refund_qty" position="before">
+                    <field name="dummy_product_uom" invisible="1"/>
+                    <field name="return_product_uom" force_save="1" domain="[('id', 'in', dummy_product_uom)]" required="1"/>
                 </field>
             </field>
         </record>
@@ -248,6 +277,10 @@
                  <xpath expr="//field[@name='order_quantity']" position="after">
                     <field name="product_uom" force_save="1"/>
                 </xpath>
+                <field name="refund_qty" position="before">
+                    <field name="dummy_product_uom" invisible="1"/>
+                    <field name="return_product_uom" force_save="1"/>
+                </field>
             </field>
         </record>
     </data>

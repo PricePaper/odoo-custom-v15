@@ -61,13 +61,13 @@ class CustomerStatementWizard(models.TransientModel):
                 ('type', 'in', ['out_invoice', 'in_refund']),
                 ('date_invoice', '>=', self.date_from),
                 ('date_invoice', '<=', self.date_to),
-                ('state', 'in', ['open', 'in_payment'])
+                ('state', 'in', ['open', 'in_payment', 'paid'])
             ]
         if self._context.get('ppt_active_recipient'):
             active_ids = self._context.get('active_ids')
             domain.append(('partner_id', 'in', active_ids))
 
-        partner_ids = self.env['account.invoice'].search(domain).filtered(lambda r: r.has_outstanding).mapped('partner_id')
+        partner_ids = self.env['account.invoice'].search(domain).mapped('partner_id').filtered(lambda p: p.credit > 0)
 
         email_customer = partner_ids.filtered(lambda p: p.statement_method == 'email')
         pdf_customer = partner_ids.filtered(lambda p: p.statement_method == 'pdf_report')

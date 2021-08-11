@@ -821,7 +821,7 @@ class SaleOrder(models.Model):
         #      ('product_id', 'not in', products), ('product_id.sale_ok', '=', True)])
         sales_history = self.env['sale.history'].search(
             ['|', ('active', '=', False), ('active', '=', True), ('partner_id', '=', self.partner_id.id),
-             ('product_id', 'not in', products)])
+             ('product_id', 'not in', products), ('product_id', '!=', False)])
         # addons product filtering
         addons_products = sales_history.mapped('product_id').filtered(lambda rec: rec.need_sub_product).mapped(
             'product_addons_list')

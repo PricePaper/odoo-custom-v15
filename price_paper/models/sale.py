@@ -89,11 +89,12 @@ class SaleOrder(models.Model):
     def _compute_show_contract_line(self):
         for order in self:
             if order.partner_id:
-                count = self.env['sale.order.line'].search_count([
-                    ('order_partner_id', '=', order.partner_id.id),
-                    ('storage_remaining_qty', '>', 0),
-                    ('order_id.state', '=', 'released')])
-                order.show_contract_line = bool(count)
+                sc_order = self.env['sale.order'].with_context(sc=True).search([('state', '=', 'released'), ('partner_id', '=', order.partner_id.id)])
+                count = sc_order.mapped('order_line').filtered(lambda r: r.storage_remaining_qty > 0)
+                if len(count) > 0:
+                    order.show_contract_line = True
+                else:
+                    order.show_contract_line = False
 
     @api.depends('order_line.product_id', 'order_line.product_uom_qty')
     def _compute_total_weight_volume(self):
@@ -480,6 +481,8 @@ class SaleOrder(models.Model):
     def search(self, args, offset=0, limit=None, order=None, count=False):
         records = super(SaleOrder, self).search(args, offset, limit, order, count)
         user = self.env.user
+        if self._context.get('sc'):
+            return records
         if self._context.get('my_draft'):
             return records.filtered(lambda s: s.user_id == user or user.partner_id in s.sales_person_ids)
         elif self._context.get('my_orders'):
@@ -813,9 +816,12 @@ class SaleOrder(models.Model):
         view_id = self.env.ref('price_paper.view_purchase_history_add_so_wiz').id
         history_from = datetime.today() - relativedelta(months=self.env.user.company_id.sale_history_months)
         products = self.order_line.mapped('product_id').ids
+        # sales_history = self.env['sale.history'].search(
+        #     [('partner_id', '=', self.partner_id.id),
+        #      ('product_id', 'not in', products), ('product_id.sale_ok', '=', True)])
         sales_history = self.env['sale.history'].search(
-            [('partner_id', '=', self.partner_id.id),
-             ('product_id', 'not in', products), ('product_id.sale_ok', '=', True)])
+            ['|', ('active', '=', False), ('active', '=', True), ('partner_id', '=', self.partner_id.id),
+             ('product_id', 'not in', products), ('product_id', '!=', False)])
         # addons product filtering
         addons_products = sales_history.mapped('product_id').filtered(lambda rec: rec.need_sub_product).mapped(
             'product_addons_list')

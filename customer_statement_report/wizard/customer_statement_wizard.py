@@ -61,7 +61,7 @@ class CustomerStatementWizard(models.TransientModel):
                 ('type', 'in', ['out_invoice', 'in_refund']),
                 ('date_invoice', '>=', self.date_from),
                 ('date_invoice', '<=', self.date_to),
-                ('state', 'not in', ['cancel'])
+                ('state', 'not in', ['draft', 'cancel'])
             ]
         if self._context.get('ppt_active_recipient'):
             active_ids = self._context.get('active_ids')

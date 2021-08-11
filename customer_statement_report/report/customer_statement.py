@@ -26,7 +26,7 @@ class CustomerStatementPdfReport(models.AbstractModel):
             ('type', 'in', ['out_invoice', 'in_refund']),
             ('date_invoice', '>=', d_from),
             ('date_invoice', '<=', d_to),
-            ('state', 'not in', ['cancel'])
+            ('state', 'not in', ['draft', 'cancel'])
         ])
         invoices_open_with_credit = invoice_ids.filtered(lambda r: r.has_outstanding and r.state in ['open', 'in_payment'])
         invoices_paid = invoice_ids.filtered(lambda r: r.state == 'paid')

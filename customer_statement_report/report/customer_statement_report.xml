@@ -105,14 +105,14 @@
                                     <t t-if="'out_standing_credit' in data[str(doc.id)]">
                                         <t t-foreach="data[str(doc.id)]['out_standing_credit']" t-as="line">
                                             <t t-set="line_count" t-value="line_count + 1"/>
-                                            <t t-set="cumulative" t-value="cumulative - line['credit']"/>
+                                            <t t-set="cumulative" t-value="cumulative - abs(line['credit'])"/>
                                             <tr style="font-size: 12px;">
                                                 <td><span t-esc="line_count"/></td>
                                                 <td><span t-esc="line['ref']"/></td>
                                                 <td><span t-esc="line['date']"/></td>
                                                 <td></td>
-                                                <td>- $<span t-esc="'%.2f'%(line['credit'])"/></td>
-                                                <td>- $<span t-esc="'%.2f'%(line['credit'])"/></td>
+                                                <td>$<span t-esc="'%.2f'%(line['credit'])"/></td>
+                                                <td>$<span t-esc="'%.2f'%(line['balance'])"/></td>
                                                 <td>$<span t-esc="'%.2f'%(cumulative)"/></td>
                                             </tr>
                                         </t>
@@ -132,6 +132,7 @@
                                 <thead>
                                     <tr class="bg-dark" style="font-size: 11px; font-style: italic;">
                                         <th name="th_quantity" class="text-left">Ln#</th>
+                                        <th name="th_name" class="text-left">Reference</th>
                                         <th name="th_name" class="text-left">Date Received</th>
                                         <th name="th_name" class="text-left">Amount</th>
                                         <th name="th_description" class="text-left">Type</th>
@@ -151,7 +152,8 @@
                                         <t t-set="line_count" t-value="line_count + 1"/>
                                         <tr style="font-size: 12px;">
                                             <td><span t-esc="line_count"/></td>
-                                            <td><span t-esc="line['invoice_date']"/></td>
+                                            <td><span t-esc="line['p_name']"/></td>
+                                            <td><span t-esc="line['payment_date']"/></td>
                                             <td>$<span t-esc="line['amount_paid']"/></td>
                                             <td><span t-esc="line['type']"/></td>
                                             <td><span t-esc="line['state']"/></td>

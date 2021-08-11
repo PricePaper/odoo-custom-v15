@@ -101,7 +101,6 @@ class CustomerStatementPdfReport(models.AbstractModel):
             'docs': partner,
             'data': data,
             'company_id': self.env.user.company_id,
-            'credit_lines': credit_lines,
             'report_date': '%s / %s' % (d_from, d_to)
             }
 

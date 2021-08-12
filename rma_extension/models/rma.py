@@ -1,6 +1,7 @@
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 
+
 class RMARetMerAuth(models.Model):
     _inherit = 'rma.ret.mer.auth'
 

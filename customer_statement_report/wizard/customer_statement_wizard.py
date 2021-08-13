@@ -69,20 +69,38 @@ class CustomerStatementWizard(models.TransientModel):
         invoices = self.env['account.invoice'].search(domain)
         invoices_open_with_credit = invoices.filtered(lambda r: r.has_outstanding and r.state in ['open', 'in_payment'])
         invoices_paid = invoices.filtered(lambda r: r.state == 'paid')
+        payment = self.env['account.payment'].search([
+            ('payment_date', '>=', self.date_from),
+            ('payment_date', '<=', self.date_to),
+            ('state', '!=', 'cancelled')
+        ])
+
         partners = self.env['res.partner']
-        if invoices_open_with_credit or invoices_paid:
-            partners |= (invoices_open_with_credit | invoices_paid).mapped('partner_id').filtered(lambda p: p.credit > 0)
+        if invoices_open_with_credit or invoices_paid or payment:
+            partners |= (invoices_open_with_credit | invoices_paid).mapped('partner_id')
+            partners |= payment.mapped('partner_id').filtered(lambda p: p.credit > 0)
 
         email_customer = partners.filtered(lambda p: p.statement_method == 'email')
         pdf_customer = partners.filtered(lambda p: p.statement_method == 'pdf_report')
 
         if not email_customer and not pdf_customer:
             raise UserError(_('Nothing to process!!'))
+
         self.env.user.company_id.write({'last_statement_date': self.date_to})
         if email_customer:
             if self._context.get('ppt_active_recipient'):
                 template_id = self.env.ref('customer_statement_report.email_template_customer_statement')
                 compose_form_id = self.env.ref('mail.email_compose_message_wizard_form')
+                context = dict(self._context)
+                context.update({
+                    'date_to': self.date_to.strftime('%Y-%m-%d'),
+                    'date_from': self.date_from.strftime('%Y-%m-%d'),
+                    'model': 'account.partner.ledger',
+                    'company_ids': self.env.user.company_id.ids,
+                    'state': 'posted',
+                    'strict_range': True
+                })
+
                 ctx = {
                     'default_model': 'res.partner',
                     'default_res_id': self._context.get('active_id'),

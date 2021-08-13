@@ -54,7 +54,7 @@ class CustomerStatementPdfReport(models.AbstractModel):
                             'ref': aml_id.payment_id.name if not aml_id.reconciled and aml_id.payment_id else line['columns'][2]['name'],
                             'date': line['name'],
                             'due_date': line['columns'][3]['name'],
-                            'amount': line['columns'][6]['name'] or line['columns'][8]['name'],
+                            'amount': line['columns'][6]['name'] or '-' + line['columns'][8]['name'],
                             'amount_due': line['columns'][5]['name'],
                             'running_balance': line['columns'][9]['name']
                         }

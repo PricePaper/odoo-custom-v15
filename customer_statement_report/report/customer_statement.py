@@ -39,8 +39,6 @@ class CustomerStatementPdfReport(models.AbstractModel):
             'strict_range': True
         })
         info = ledger_OBJ.with_context(**context)._get_lines(options)
-        from pprint import pprint
-        pprint(info)
 
         today = date.today()
         due_flag = False

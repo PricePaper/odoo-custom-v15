@@ -96,7 +96,7 @@
                                             <t t-if="'colspan' not in line" t-set="line_count" t-value="line_count + 1"/>
                                             <tr t-if="'colspan' not in line" style="font-size: 12px;">
                                                 <td><span t-esc="line_count"/></td>
-                                                <td><span t-esc="line['columns'][2]['name']"/></td>
+                                                <td><span t-esc="line.get('payment_name') or line['columns'][2]['name']"/></td>
                                                 <td><span t-esc="line['name']"/></td>
                                                 <td><span t-esc="line['columns'][3]['name']"/></td>
                                                 <td><span t-esc="line['columns'][6]['name'] or line['columns'][8]['name']"/></td>

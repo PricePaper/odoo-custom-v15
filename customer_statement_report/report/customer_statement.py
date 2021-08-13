@@ -39,14 +39,15 @@ class CustomerStatementPdfReport(models.AbstractModel):
             'strict_range': True
         })
         info = ledger_OBJ.with_context(**context)._get_lines(options)
-
         today = date.today()
         due_flag = False
         for line in info:
             if 'colspan' not in line:
                 if today > line['columns'][3]['name']:
                     due_flag = True
-                    break
+            if 'caret_options' in line and line['caret_options'] == 'account.payment':
+                aml_id = self.env['account.move.line'].browse(line['id'])
+                line['payment_name'] = aml_id and aml_id.payment_id and aml_id.payment_id.name or ''
 
         payments = self.env['account.payment'].search([
             ('partner_id', '=', partner.id),

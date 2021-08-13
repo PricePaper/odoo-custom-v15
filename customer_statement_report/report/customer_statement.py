@@ -45,9 +45,9 @@ class CustomerStatementPdfReport(models.AbstractModel):
             if 'colspan' not in line:
                 if today > line['columns'][3]['name']:
                     due_flag = True
-            if 'caret_options' in line and line['caret_options'] == 'account.payment':
-                aml_id = self.env['account.move.line'].browse(line['id'])
-                line['payment_name'] = aml_id and aml_id.payment_id and aml_id.payment_id.name or ''
+                if line['caret_options'] == 'account.payment':
+                    aml_id = self.env['account.move.line'].browse(line['id'])
+                    line['payment_name'] = aml_id and aml_id.payment_id and aml_id.payment_id.name or ''
 
         payments = self.env['account.payment'].search([
             ('partner_id', '=', partner.id),

@@ -56,4 +56,5 @@ Custom module implemented for Price Paper.
     'application': False,
 }
 
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

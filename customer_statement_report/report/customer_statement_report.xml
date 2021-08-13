@@ -64,11 +64,11 @@
                                           t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;], &quot;no_marker&quot;: True}"/>
                                 </div>
                             </div>
-                            <t t-set="ledger_date" t-value="get_data(doc, d_from, d_to)"/>
-                             <div class="text-center" t-if="ledger_date['past_due']">
+                            <t t-set="ledger_data" t-value="get_data(doc, d_from, d_to)"/>
+                            <div class="text-center" t-if="ledger_data['past_due']">
                               <span style="font-weight: bold;font-size: xx-large;letter-spacing: 1px;">PAST DUE</span><br/>
                             </div>
-                            <table class="table table-sm o_main_table" style="page-break-inside: avoid;margin-top: 20px;" t-if="ledger_date['open_credits']">
+                            <table class="table table-sm o_main_table" style="page-break-inside: avoid;margin-top: 20px;" t-if="ledger_data['open_credits']">
                                 <thead>
                                     <tr class="bg-dark" style="font-size: 11px; font-style: italic;">
                                         <th name="th_quantity" class="text-left">Ln#</th>
@@ -87,37 +87,30 @@
                                             (Credits / Payments), Invoices</strong></td>
                                     </tr>
                                     <t t-set="line_count" t-value="0"/>
-                                    <t t-set="cumulative" t-value="0"/>
-                                    <t t-if="ledger_date">
-                                        <t t-foreach="ledger_date['open_credits']" t-as="line">
-                                            <t t-if="'colspan' in line">
-                                                <t t-set="cumulative" t-value="line['columns'][4]['name']"/>
-                                            </t>
-                                            <t t-if="'colspan' not in line" t-set="line_count" t-value="line_count + 1"/>
-                                            <tr t-if="'colspan' not in line" style="font-size: 12px;">
-                                                <td><span t-esc="line_count"/></td>
-                                                <td><span t-esc="line.get('payment_name') or line['columns'][2]['name']"/></td>
-                                                <td><span t-esc="line['name']"/></td>
-                                                <td><span t-esc="line['columns'][3]['name']"/></td>
-                                                <td><span t-esc="line['columns'][6]['name'] or line['columns'][8]['name']"/></td>
-                                                <td><span t-esc="line['columns'][5]['name']"/></td>
-                                                <td><span t-esc="line['columns'][9]['name']"/></td>
-                                            </tr>
-
-                                        </t>
+                                    <t t-foreach="ledger_data['open_credits']" t-as="line">
+                                        <t t-set="line_count" t-value="line_count + 1"/>
+                                        <tr style="font-size: 12px;">
+                                            <td><span t-esc="line_count"/></td>
+                                            <td><span t-esc="line['ref']"/></td>
+                                            <td><span t-esc="line['date']"/></td>
+                                            <td><span t-esc="line['due_date']"/></td>
+                                            <td><span t-esc="line['amount']"/></td>
+                                            <td><span t-esc="line['amount_due']"/></td>
+                                            <td><span t-esc="line['running_balance']"/></td>
+                                        </tr>
                                     </t>
                                     <tr style="padding-top: 25px; border-top: solid 1px;font-size:13px;">
                                         <td></td><td></td><td></td><td></td>
                                         <td class="text-right"><strong>Total:</strong></td>
                                         <td>
-                                           <span t-esc="cumulative"/>
+                                           <span t-esc="ledger_data['cumulative']"/>
                                         </td>
                                         <td></td>
                                     </tr>
                                 </tbody>
                             </table>
                             <table class="table table-sm o_main_table wave" style="page-break-inside: avoid;margin-top: 20px;"
-                                   t-if="ledger_date['payments']">
+                                   t-if="ledger_data['payments']">
                                 <thead>
                                     <tr class="bg-dark" style="font-size: 11px; font-style: italic;">
                                         <th name="th_quantity" class="text-left">Ln#</th>
@@ -137,7 +130,7 @@
                                         </td>
                                     </tr>
                                     <t t-set="line_count" t-value="0"/>
-                                    <t t-foreach="ledger_date['payments']" t-as="line">
+                                    <t t-foreach="ledger_data['payments']" t-as="line">
                                         <t t-set="line_count" t-value="line_count + 1"/>
                                         <tr style="font-size: 12px;">
                                             <td><span t-esc="line_count"/></td>

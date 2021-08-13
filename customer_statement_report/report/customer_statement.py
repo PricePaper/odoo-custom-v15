@@ -14,7 +14,7 @@ class CustomerStatementPdfReport(models.AbstractModel):
         options = {
             'unposted_in_period': True,
             'unfolded_lines': [],
-            'unreconciled': True,
+            'unreconciled': False,
             'cash_basis': False,
             'all_entries': False,
             'analytic': None,
@@ -40,38 +40,39 @@ class CustomerStatementPdfReport(models.AbstractModel):
         })
         info = ledger_OBJ.with_context(**context)._get_lines(options)
         today = date.today()
-        due_flag = False
+        data = {'cumulative': 0, 'open_credits': [], 'payments': [], 'past_due': False}
         for line in info:
-            if 'colspan' not in line:
-                if today > line['columns'][3]['name']:
-                    due_flag = True
-                if line['caret_options'] == 'account.payment':
-                    aml_id = self.env['account.move.line'].browse(line['id'])
-                    line['payment_name'] = aml_id and aml_id.payment_id and aml_id.payment_id.name or ''
-
-        payments = self.env['account.payment'].search([
-            ('partner_id', '=', partner.id),
-            ('payment_date', '>=', date_from),
-            ('payment_date', '<=', date_to),
-            ('state', '!=', 'cancelled'),
-            ('invoice_ids', '!=', False)
-        ])
-        payment_list = []
-        for payment in payments:
-            payment_list.append({
-                'p_name': payment.name,
-                'payment_date': payment.payment_date,
-                'amount_paid': payment.amount,
-                'type': payment.payment_method_id.display_name,
-                'state': 'Posted',
-                'balance': sum(payment.invoice_ids.mapped('payment_move_line_ids').filtered(lambda p: p.payment_id).mapped('amount_residual')),
-                'ref': ','.join(payment.invoice_ids.mapped('number'))
-            })
-        return {
-            'open_credits': info,
-            'payments': payment_list,
-            'past_due': due_flag
-        }
+            if 'colspan' in line:
+                data['cumulative'] = line['columns'][4]['name']
+            elif 'colspan' not in line:
+                aml_id = self.env['account.move.line'].browse(line['id'])
+                if today > line['columns'][3]['name'] and not aml_id.reconciled:
+                    data['past_due'] = True
+                if not aml_id.reconciled and aml_id.payment_id or line['caret_options'] == 'account.invoice.out':
+                    data['open_credits'].append(
+                        {
+                            'ref': aml_id.payment_id.name if not aml_id.reconciled and aml_id.payment_id else line['columns'][2]['name'],
+                            'date': line['name'],
+                            'due_date': line['columns'][3]['name'],
+                            'amount': line['columns'][6]['name'] or line['columns'][8]['name'],
+                            'amount_due': line['columns'][5]['name'],
+                            'running_balance': line['columns'][9]['name']
+                        }
+                    )
+                elif line['caret_options'] == 'account.payment':
+                    payment = aml_id.payment_id
+                    data['payments'].append(
+                        {
+                            'p_name': payment.name,
+                            'payment_date': payment.payment_date,
+                            'amount_paid': payment.amount,
+                            'type': payment.payment_method_id.display_name,
+                            'state': 'Posted',
+                            'balance': sum(payment.invoice_ids.mapped('payment_move_line_ids').filtered(lambda p: p.payment_id).mapped('amount_residual')),
+                            'ref': ','.join(payment.invoice_ids.mapped('number'))
+                        }
+                    )
+        return data
 
     @api.model
     def _get_report_values(self, docids, data=None):

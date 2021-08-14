@@ -41,7 +41,8 @@ class PurchaseOrder(models.Model):
         if vendor:
             purchase_rep = self.env['res.partner'].browse(vendor).seller_partner_ids
             purchase_rep = purchase_rep and purchase_rep[0].user_ids
-            vals['user_id'] = purchase_rep and purchase_rep[0].id or vals['user_id']
+            if purchase_rep:
+                vals['user_id'] = purchase_rep[0].id
         return super(PurchaseOrder, self).create(vals)
 
     @api.multi

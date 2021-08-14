@@ -78,8 +78,9 @@ class CustomerStatementWizard(models.TransientModel):
         partners = self.env['res.partner']
         if invoices_open_with_credit or invoices_paid or payment:
             partners |= (invoices_open_with_credit | invoices_paid).mapped('partner_id')
-            partners |= payment.mapped('partner_id').filtered(lambda p: p.credit > 0)
+            partners |= payment.mapped('partner_id')
 
+        partners = partners.filtered(lambda p: p.credit > 0)
         email_customer = partners.filtered(lambda p: p.statement_method == 'email')
         pdf_customer = partners.filtered(lambda p: p.statement_method == 'pdf_report')
 

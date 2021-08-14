@@ -22,6 +22,47 @@ class StockMove(models.Model):
     unit_price = fields.Float(string="Unit Price", copy=False, compute='_compute_total_price', store=False)
     total = fields.Float(string="Subtotal", copy=False, compute='_compute_total_price', store=False)
 
+    @api.multi
+    def _run_valuation(self, quantity=None):
+        # Extend `_run_valuation` to make it work on return receipt moves.
+        self.ensure_one()
+        value_to_return = 0
+        if self._is_out() and self.picking_id.is_return:
+            origin_move = self.origin_returned_move_id
+            valued_move_lines = self.move_line_ids.filtered(lambda ml: ml.location_id._should_be_valued() and not ml.location_dest_id._should_be_valued() and not ml.owner_id)
+            valued_quantity = 0
+            for valued_move_line in valued_move_lines:
+                valued_quantity += valued_move_line.product_uom_id._compute_quantity(valued_move_line.qty_done, self.product_id.uom_id)
+
+            # Note: we always compute the fifo `remaining_value` and `remaining_qty` fields no
+            # matter which cost method is set, to ease the switching of cost method.
+            if origin_move.remaining_qty < valued_quantity:
+                value_to_return = super(StockMove, self)._run_valuation(quantity)
+            else:
+                vals = {}
+                price_unit = self._get_price_unit()
+                price_unit = -price_unit
+                value = price_unit * (quantity or valued_quantity)
+                value_to_return = value if quantity is None or not self.value else self.value
+                vals = {
+                    'price_unit': price_unit,
+                    'value': value_to_return,
+                }
+                if self.product_id.cost_method == 'standard':
+                    value = self.product_id.standard_price * (quantity or valued_quantity)
+                    value_to_return = value if quantity is None or not self.value else self.value
+                    vals.update({
+                        'price_unit': self.product_id.standard_price,
+                        'value': value_to_return,
+                    })
+                self.write(vals)
+                origin_move.write({
+                    'remaining_qty': origin_move.remaining_qty - valued_quantity,
+                    'remaining_value': origin_move.remaining_value + value_to_return
+                })
+        else:
+            value_to_return = super(StockMove, self)._run_valuation(quantity)
+        return value_to_return
 
     def receipt_move_price_fix_search(self):
         picking_lines = self.env['stock.picking'].search(

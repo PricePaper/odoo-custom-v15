@@ -3,6 +3,7 @@ import string
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 
+
 class BrowseLines(models.TransientModel):
     _name = 'browse.lines'
     _description = 'Browse Related Record Lines'
@@ -38,7 +39,7 @@ class BrowseLines(models.TransientModel):
                 'source_location_id': order_line.source_location_id and order_line.source_location_id.id,
                 'destination_location_id': order_line.destination_location_id and order_line.destination_location_id.id,
                 'type': order_line.type,
-                'tax_id': [(6, 0, order_line.sale_tax_ids.ids)],
+                'tax_id': [(6, 0, order_line.tax_id.ids)],
                 'so_line_id': order_line.so_line_id.id,
                 'product_uom': order_line.product_uom.id,
                 'reason_id': order_line.reason_id and order_line.reason_id.id or False,
@@ -65,7 +66,7 @@ class BrowseLines(models.TransientModel):
                 'source_location_id': order_line.source_location_id and order_line.source_location_id.id,
                 'destination_location_id': order_line.destination_location_id and order_line.destination_location_id.id,
                 'type': order_line.type,
-                'tax_id': [(6, 0, order_line.purchase_tax_ids.ids)],
+                'tax_id': [(6, 0, order_line.tax_id.ids)],
                 'po_line_id': order_line.po_line_id.id,
                 'product_uom': order_line.product_uom.id,
                 'reason_id': order_line.reason_id and order_line.reason_id.id or False,
@@ -125,7 +126,7 @@ class BrowseLines(models.TransientModel):
                 'source_location_id': order_line.source_location_id and order_line.source_location_id.id,
                 'destination_location_id': order_line.destination_location_id and order_line.destination_location_id.id,
                 'type': order_line.type,
-                'tax_id': [(6, 0, order_line.sale_tax_ids.ids or [])]
+                'tax_id': [(6, 0, order_line.tax_id.ids or [])]
             })
             order_line_lst.append(rma_pick_line)
         else:
@@ -136,26 +137,20 @@ class BrowseLinesSourceLine(models.TransientModel):
     _name = 'browse.lines.source.line'
     _description = 'Related Source Lines'
 
-    @api.depends('refund_qty', 'price_unit', 'purchase_tax_ids', 'sale_tax_ids')
+    @api.depends('refund_qty', 'price_unit', 'tax_id')
     def _compute_amount(self):
         """Compute the amounts of the SO line."""
         for line in self:
             refund_qty = line.refund_qty
             price = line.price_unit
-            if line.browse_id.rma_id.rma_type == 'supplier':
-                taxes = line.purchase_tax_ids.compute_all(
-                    price, line.browse_id.rma_id.currency_id,
-                    refund_qty,
-                    product=line.product_id,
-                    partner=line.browse_id.rma_id.partner_id
-                )
-            else:
-                taxes = line.sale_tax_ids.compute_all(
-                    price, line.browse_id.rma_id.currency_id,
-                    refund_qty,
-                    product=line.product_id,
-                    partner=line.browse_id.rma_id.partner_id
-                )
+
+            taxes = line.tax_id.compute_all(
+                price, line.browse_id.rma_id.currency_id,
+                refund_qty,
+                product=line.product_id,
+                partner=line.browse_id.rma_id.partner_id
+            )
+
             line.update({
                 'price_tax': taxes['total_included'] - taxes['total_excluded'],
                 'refund_price': refund_qty * price
@@ -170,6 +165,7 @@ class BrowseLinesSourceLine(models.TransientModel):
     def _get_destination_location(self):
         return self.env.user.company_id.destination_location_id or \
                self.env['stock.location']
+
     select = fields.Boolean(string=' ')
     so_line_id = fields.Many2one('sale.order.line')
     po_line_id = fields.Many2one('purchase.order.line')
@@ -187,35 +183,24 @@ class BrowseLinesSourceLine(models.TransientModel):
     delivered_quantity = fields.Float('Delivered Qty')
     price_unit = fields.Float('Unit Price')
     refund_qty = fields.Float('Return Qty')
-    refund_price = fields.Float(compute='_compute_amount',
-                                string='Refund Price', )
+    refund_price = fields.Float(compute='_compute_amount', string='Refund Price', )
     total_price = fields.Float(string='Total Price')
-    type = fields.Selection([('return', 'Return'), ('exchange', 'Exchange')],
-                            string='Action', default='return')
-    price_subtotal = fields.Float(compute='_compute_amount',
-                                  string='Subtotal', readonly=True,
-                                  store=True)
-    price_tax = fields.Float(compute='_compute_amount', string='Taxes',
-                             readonly=True, store=True)
-    price_total = fields.Float(compute='_compute_amount', string='Total',
-                               readonly=True, store=True)
-    source_location_id = fields.Many2one('stock.location',
-                                         'Source Location',
-                                         default=_get_source_location
-                                         )
+    type = fields.Selection([('return', 'Return'), ('exchange', 'Exchange')], string='Action', default='return')
+    price_subtotal = fields.Float(compute='_compute_amount', string='Subtotal', readonly=True)
+    price_tax = fields.Float(compute='_compute_amount', string='Taxes', readonly=True)
+    price_total = fields.Float(compute='_compute_amount', string='Total', readonly=True)
+    source_location_id = fields.Many2one('stock.location','Source Location', default=_get_source_location)
     destination_location_id = fields.Many2one(
         'stock.location',
         'Destination Location',
         default=_get_destination_location
     )
-    exchange_product_id = fields.Many2one(
-        'product.product', 'Exchange Product')
+    exchange_product_id = fields.Many2one('product.product', 'Exchange Product')
     browse_id = fields.Many2one('browse.lines')
     product_uom = fields.Many2one('uom.uom', readonly=True)
     dummy_product_uom = fields.Many2many('uom.uom', readonly=True)
     return_product_uom = fields.Many2one('uom.uom')
-    sale_tax_ids = fields.Many2many('account.tax', string='SaleTaxes')
-    purchase_tax_ids = fields.Many2many('account.tax', string='PurchaseTaxes')
+    tax_id = fields.Many2many('account.tax', string='Taxes')
 
 
     @api.onchange('refund_qty', 'total_qty')
@@ -237,5 +222,6 @@ class BrowseLinesSourceLine(models.TransientModel):
                 order.refund_price = total_qty_amt
             else:
                 if order.product_id and order.product_id.id:
-                    order.refund_price = order.product_id.lst_price * \
-                                         order.refund_qty
+                    order.refund_price = order.product_id.lst_price * order.refund_qty
+        else:
+            return {}

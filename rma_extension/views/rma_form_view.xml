@@ -12,7 +12,7 @@
                             class="oe_edit_only oe_highlight oe_right"/>
                 </xpath>
                 <xpath expr="//field[@name='sale_order_id']" position="attributes">
-                    <attribute name="domain">[('partner_id', '=', partner_id)]</attribute>
+                    <attribute name="domain">[('partner_id', '=', partner_id), ('state', '=', 'done')]</attribute>
 
                 </xpath>
 

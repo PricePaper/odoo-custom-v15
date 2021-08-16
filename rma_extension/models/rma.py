@@ -37,7 +37,7 @@ class RMARetMerAuth(models.Model):
 
     def _extract_sale_line_info(self):
         order_line_lst = []
-        for order_line in self.sale_order_id.order_line.filtered(lambda l: l.product_id.id not in self.rma_sale_lines_ids.mapped('product_id').ids):
+        for order_line in self.sale_order_id.order_line.filtered(lambda l: l.state == 'done' and l.product_id.id not in self.rma_sale_lines_ids.mapped('product_id').ids):
             rma_sale_line = (0, 0, {
                 'product_id': order_line.product_id and
                               order_line.product_id.id or False,
@@ -53,7 +53,7 @@ class RMARetMerAuth(models.Model):
                     False,
                 'destination_location_id': self.env.user.company_id.destination_location_id.id or False,
                 'type': 'return',
-                'sale_tax_ids': [(6, 0, order_line.tax_id.ids)],
+                'tax_id': [(6, 0, order_line.tax_id.ids)],
                 'so_line_id': order_line.id,
                 'product_uom': order_line.product_uom.id,
                 'return_product_uom': order_line.product_uom.id,
@@ -74,7 +74,7 @@ class RMARetMerAuth(models.Model):
                 'refund_qty': order_line.qty_received or 0,
                 'refund_price': order_line.price_unit,
                 'order_quantity': order_line.product_qty or 0,
-                'delivered_quantity': order_line.qty_received,
+                'received_quantity': order_line.qty_received,
                 'total_price': order_line.price_total,
                 'price_unit': order_line.price_unit or 0,
                 'source_location_id':
@@ -84,7 +84,7 @@ class RMARetMerAuth(models.Model):
                                            self.env.user.company_id.destination_location_id.id or
                                            False,
                 'type': 'return',
-                'purchase_tax_ids': [(6, 0, order_line.taxes_id.ids)],
+                'tax_id': [(6, 0, order_line.taxes_id.ids)],
                 'po_line_id': order_line.id,
                 'product_uom': order_line.product_uom.id,
                 'return_product_uom': order_line.product_uom.id,
@@ -96,7 +96,7 @@ class RMARetMerAuth(models.Model):
 
     def _extract_picking_line_info(self):
         order_line_lst = []
-        for order_line in self.picking_rma_id.move_ids_without_package.filtered(lambda l: l.product_id.id not in self.rma_picking_lines_ids.mapped('product_id').ids):
+        for order_line in self.picking_rma_id.move_ids_without_package.filtered(lambda l: l.state == 'done' and l.product_id.id not in self.rma_picking_lines_ids.mapped('product_id').ids):
             if self.rma_type == 'picking':
                 move = self.env['stock.move'].search([
                     ('picking_id', '=', self.picking_rma_id.id),
@@ -142,7 +142,7 @@ class RMARetMerAuth(models.Model):
                 'source_location_id': self.env.user.company_id.source_location_id.id or False,
                 'destination_location_id': self.env.user.company_id.destination_location_id.id or False,
                 'type': 'return',
-                'sale_tax_ids': [(6, 0, taxes and taxes.ids or [])]
+                'tax_id': [(6, 0, taxes and taxes.ids or [])]
             })
             order_line_lst.append(rma_pick_line)
         else:
@@ -161,7 +161,8 @@ class RMARetMerAuth(models.Model):
             resource_list = self._extract_purchase_line_info()
         else:
             resource_list = self._extract_picking_line_info()
-
+        if not resource_list:
+            raise ValidationError('There is nothing to process.')
         context = {
             'default_line_ids': resource_list,
             'default_rma_id': self.id,

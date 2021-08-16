@@ -42,8 +42,7 @@
                                 <field name="return_product_uom" domain="[('id', 'in', dummy_product_uom)]" required="1" style="color:green"/>
                                 <field name="price_unit" readonly='1' force_save="1"/>
                                 <field name="reason_id" force_save="1"/>
-                                <field name="sale_tax_ids" widget="many2many_tags" domain="[('type_tax_use','=', 'sale')]" attrs="{'column_invisible': [('parent.rma_type', '=', 'supplier')]}" options="{'no_create': True, 'no_open': True}"/>
-                                <field name="purchase_tax_ids" widget="many2many_tags" domain="[('type_tax_use','=', 'purchase')]" attrs="{'column_invisible': [('parent.rma_type', 'in', ['customer', 'picking', 'lot'])]}" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="tax_id" widget="many2many_tags" options="{'no_create': True, 'no_open': True}" readonly="1"/>
                                 <field name="price_tax" readonly='1'/>
                                 <field name="refund_price" force_save="1"/>
                             </tree>

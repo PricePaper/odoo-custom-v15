@@ -92,16 +92,6 @@ class CustomerStatementWizard(models.TransientModel):
             if self._context.get('ppt_active_recipient'):
                 template_id = self.env.ref('customer_statement_report.email_template_customer_statement')
                 compose_form_id = self.env.ref('mail.email_compose_message_wizard_form')
-                context = dict(self._context)
-                context.update({
-                    'date_to': self.date_to.strftime('%Y-%m-%d'),
-                    'date_from': self.date_from.strftime('%Y-%m-%d'),
-                    'model': 'account.partner.ledger',
-                    'company_ids': self.env.user.company_id.ids,
-                    'state': 'posted',
-                    'strict_range': True
-                })
-
                 ctx = {
                     'default_model': 'res.partner',
                     'default_res_id': self._context.get('active_id'),

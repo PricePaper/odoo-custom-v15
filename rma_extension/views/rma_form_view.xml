@@ -7,7 +7,10 @@
             <field name="model">rma.ret.mer.auth</field>
             <field name="inherit_id" ref="scs_rma.exchange_rma_ret_mer_auth_form"/>
             <field name="arch" type="xml">
-
+                <xpath expr="//form/sheet/notebook" position="before">
+                    <button type="object" name="add_resource_lines" string="Browse Lines"
+                            class="oe_edit_only oe_highlight oe_right"/>
+                </xpath>
                 <xpath expr="//field[@name='sale_order_id']" position="attributes">
                     <attribute name="domain">[('partner_id', '=', partner_id)]</attribute>
 
@@ -245,6 +248,9 @@
                 <field name="refund_qty" position="before">
                     <field name="dummy_product_uom" invisible="1"/>
                     <field name="return_product_uom" force_save="1" domain="[('id', 'in', dummy_product_uom)]" required="1"/>
+                </field>
+                <field name="refund_qty" position="after">
+                     <field name="refund_price" required="1" force_save="1"/>
                 </field>
             </field>
         </record>

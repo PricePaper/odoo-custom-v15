@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_browse_lines_wiz" model="ir.ui.view">
+            <field name="name">view.browse.lines.wiz.form</field>
+            <field name="model">browse.lines</field>
+            <field name="arch" type="xml">
+                <form string="Add Resource Lines">
+                    <sheet>
+                         <script>
+                            $(document).ready(function(){
+                                $('.modal-dialog').css({'max-width':'90%'});
+                            });
+                        </script>
+                        <p>
+                            <b></b>
+                        </p>
+
+                        <separator string="Resource Lines"/>
+
+                        <field name="rma_id" force_save="1" invisible="1"/>
+                        <field name="sale_id" force_save="1" invisible="1"/>
+                        <field name="purchase_id" force_save="1" invisible="1"/>
+                        <field name="picking_id" force_save="1" invisible="1"/>
+                        <field name="rma_type" force_save="1" invisible="1"/>
+
+                        <field name="line_ids" mode="tree">
+                            <tree create="0" delete="0" editable="top" limit="10">
+                                <field name="so_line_id" invisible="1"/>
+                                <field name="po_line_id" invisible="1"/>
+                                <field name="select"/>
+                                <field name="product_id" style="color:blue" readonly='1' force_save="1"/>
+                                <field name="dummy_product_uom" widget="many2many_tags" force_save="1" invisible="1"/>
+                                <field name="type" readonly='1'/>
+                                <field name="source_location_id" readonly='1' invisible="1"/>
+                                <field name="destination_location_id" readonly='1' invisible="1"/>
+                                <field name="order_quantity"/>
+                                <field name="product_uom" readonly="1" force_save="1"/>
+                                <field name="delivered_quantity"/>
+                                <field name="refund_qty" sum="Total Quantity" style="color:green"/>
+                                <field name="return_product_uom" domain="[('id', 'in', dummy_product_uom)]" required="1" style="color:green"/>
+                                <field name="price_unit" readonly='1' force_save="1"/>
+                                <field name="reason_id" force_save="1"/>
+                                <field name="sale_tax_ids" widget="many2many_tags" domain="[('type_tax_use','=', 'sale')]" attrs="{'column_invisible': [('parent.rma_type', '=', 'supplier')]}" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="purchase_tax_ids" widget="many2many_tags" domain="[('type_tax_use','=', 'purchase')]" attrs="{'column_invisible': [('parent.rma_type', 'in', ['customer', 'picking', 'lot'])]}" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="price_tax" readonly='1'/>
+                                <field name="refund_price" force_save="1"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                    <footer>
+                        <button string="Add Line" type="object" name="add_lines"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                        <a string="" class="pull-right" onclick="$('main.modal-body').scrollTop(0);"><span
+                                aria-label="scroll-top" title='scrolltop'
+                                class="fa fa-arrow-circle-o-up fa-2x"></span></a>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

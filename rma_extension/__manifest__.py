@@ -22,8 +22,9 @@ Custom module implemented for RMA for Price Papers.
 
     'depends': ['scs_rma'],
     'data': [
+        'wizard/browse_lines_view.xml',
         'views/rma_form_view.xml',
-        'views/rma_report_enhancement.xml'
+        'views/rma_report_enhancement.xml',
     ],
     'installable': True,
     'auto_install': False,

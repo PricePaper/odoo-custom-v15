@@ -125,5 +125,16 @@
                 </p>
             </field>
         </record>
+
+        <record id="view_move_line_tree_inherit_price_paper" model="ir.ui.view">
+            <field name="name">stock.move.line.tree</field>
+            <field name="model">stock.move.line</field>
+            <field name="inherit_id" ref="stock.view_move_line_tree"/>
+            <field name="arch" type="xml">
+              <xpath expr="//field[@name='product_uom_id']" position="after">
+                  <field name="product_onhand_qty"/>
+              </xpath>
+           </field>
+        </record>
     </data>
 </odoo>

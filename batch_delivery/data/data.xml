@@ -96,7 +96,7 @@
     </tr>
     <tr>
         <td style="width: 100%;">
-            <table border="0" cellpadding="2" cellspacing="2" width="100%" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
+            <table border="0" cellpadding="2" cellspacing="2" width="100%" style="background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
                 <tr valign="top" style="font-size: 12px;">
                     <th style="border-bottom: 1px solid black;">Partner</th>
                     <th style="border-bottom: 1px solid black;">Sale Order</th>

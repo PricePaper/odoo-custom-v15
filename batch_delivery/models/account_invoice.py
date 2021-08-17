@@ -5,6 +5,9 @@ from odoo.exceptions import UserError
 from pprint import pprint
 import json
 
+from odoo.tools import float_compare
+
+
 class AccountInvoice(models.Model):
     _inherit = "account.invoice"
 
@@ -158,6 +161,8 @@ class AccountInvoice(models.Model):
         if self.discount_type == 'amount' and self.wrtoff_discount > discount_limit or self.wrtoff_discount > 5:
             raise UserError(_('Invoices can not be discounted that much. Create a credit memo instead.'))
         discount = self.wrtoff_discount if self.discount_type == 'amount' else self.amount_total * (self.wrtoff_discount / 100)
+        if float_compare(discount, self.residual, precision_digits=2) > 0:
+            raise UserError(_('Cannot add discount more than residual $ %.2f' % self.residual))
         amobj = self.env['account.move'].create({
             'company_id': self.company_id.id,
             'date': fields.Date.today(),

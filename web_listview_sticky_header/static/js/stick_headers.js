@@ -20,8 +20,7 @@ odoo.define('ks_odoo11_web_listview_sticky_header.stick_header', function (requi
             });
         }
 
-
-        if(this.$el.parents('.o_field_one2many').length===0){
+        if(this.$el.parents('.o_field_one2many') !== NaN){
                 sticky();
                 fix_body("fixed");
                 $(window).unbind('resize', sticky).bind('resize', sticky);

@@ -25,7 +25,7 @@
                         <tr>
                             <th><strong>Invoice</strong></th>
                             <th><strong>Invoice Date</strong></th>
-                            <th><strong>Paid Date</strong></th>
+                            <th><strong>Payment Date</strong></th>
                             <th><strong>Invoice Amount</strong></th>
                             <th><strong>Profit</strong></th>
                             <th><strong>Type</strong></th>
@@ -33,28 +33,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <t t-set="total" t-value="0"/>
-                        <t t-set="count" t-value="0"/>
-                        <t t-set="old_partner" t-value="0"/>
-                        <t t-set="partner_total" t-value="0"/>
-                        <t t-foreach="o.commission_ids.sorted(lambda r:r.partner_id)" t-as="line">
-                            <t t-if="(count == 0 and line.partner_id) or (count == 1 and old_partner != line.partner_id.id)">
-                              <t t-set="count" t-value="0"/>
-                              <tr>
-                                <td colspan="4"></td>
-                                <td class="text-left">Total</td>
-                                <td><t t-esc="'%.2f'% total"/></td>
-                              </tr>
-                              <tr>
-                                  <td colspan="7">
-                                    <span t-field="line.partner_id"/>
-                                  </td>
-                                  <t t-set="total" t-value="0"/>
-                              </tr>
-                              <t t-set="count" t-value="1"/>
-                            </t>
 
-                            <t t-if="count != 0 or not line.partner_id">
+                        <t t-set="partners" t-value="get_commission_lines(o)"/>
+                        <t t-foreach="partners" t-as="partner_id">
+                            <t t-set="total" t-value="0"/>
+                            <tr>
+                                <td colspan="7">
+                                <t t-if="partner_id">
+                                    <t t-esc="partner_id.name"/>
+                                </t>
+                                </td>
+                            </tr>
+                            <t t-set="commission" t-value="partners[partner_id]"/>
+                                <t t-foreach="commission" t-as="line">
+
                                 <tr>
                                     <td>
                                         <span t-if="line.invoice_id">
@@ -90,17 +82,19 @@
                                         <span t-if="line.commission">
                                             <t t-esc="'%.2f'% line.commission"/>
                                         </span>
+                                        <span t-if="not line.commission">
+                                            <t t-esc="0"/>
+                                        </span>
                                     </td>
                                 </tr>
+                                <t t-set="total" t-value="total + line.commission"/>
                             </t>
-                            <t t-set="old_partner" t-value="line.partner_id.id"/>
-                            <t t-set="total" t-value="total + line.commission"/>
+                            <tr>
+                              <td colspan="5"></td>
+                              <td class="text-left">Total</td>
+                              <td><t t-esc="'%.2f'% total"/></td>
+                            </tr>
                         </t>
-                        <tr>
-                          <td colspan="4"></td>
-                          <td class="text-left">Total</td>
-                          <td><t t-esc="'%.2f'% total"/></td>
-                        </tr>
                     </tbody>
                 </table>
             </div>

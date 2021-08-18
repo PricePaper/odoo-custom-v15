@@ -20,7 +20,7 @@ class CustomerStatementWizard(models.TransientModel):
         result['date_from'] = self.env.user.company_id.last_statement_date
         return result
 
-    def mail_loop(self, customers, date_from, date_to, uid):
+    def mail_loop(self, invoices, customers, date_from, date_to, uid):
 
         with api.Environment.manage():
             with registry(self.env.cr.dbname).cursor() as new_cr:
@@ -29,9 +29,14 @@ class CustomerStatementWizard(models.TransientModel):
                 mail_template = new_env.ref('customer_statement_report.email_template_customer_statement')
                 for p in customers:
                     try:
+                        past_due = False
+                        if invoices.filtered(lambda inv: inv.partner_id.id == p.id and inv.date_due < fields.Date.today()):
+                            past_due = True
                         t = mail_template.sudo().with_context({
                             'd_from': date_from,
-                            'd_to': date_to
+                            'd_to': date_to,
+                            'past_due': past_due,
+                            'subject': "Customer Statement [PAST DUE] - %s" %p.name if past_due else "Customer Statement - %s" %p.name
                         }).send_mail(p.id, force_send=False, notif_layout='mail.mail_notification_light')
                         _logger.info("Mail loop activated: %s %s %s.", threading.current_thread().name, p.id, t)
                     except Exception as e:
@@ -57,23 +62,29 @@ class CustomerStatementWizard(models.TransientModel):
         """
         process customer against with there invoices, payment with in a range of date.
         """
-        domain = [
+        inv_domain = [
                 ('type', 'in', ['out_invoice', 'in_refund']),
                 ('date_invoice', '>=', self.date_from),
                 ('date_invoice', '<=', self.date_to),
                 ('state', 'not in', ['draft', 'cancel'])
             ]
-        if self._context.get('ppt_active_recipient'):
-            active_ids = self._context.get('active_ids')
-            domain.append(('partner_id', 'in', active_ids))
-        invoices = self.env['account.invoice'].search(domain)
-        invoices_open_with_credit = invoices.filtered(lambda r: r.has_outstanding and r.state in ['open', 'in_payment'])
-        invoices_paid = invoices.filtered(lambda r: r.state == 'paid')
-        payment = self.env['account.payment'].search([
+
+        payment_domain = [
             ('payment_date', '>=', self.date_from),
             ('payment_date', '<=', self.date_to),
             ('state', '!=', 'cancelled')
-        ])
+        ]
+
+        if self._context.get('ppt_active_recipient'):
+            active_ids = self._context.get('active_ids')
+            inv_domain.append(('partner_id', 'in', active_ids))
+            payment_domain.append(('partner_id', 'in', active_ids))
+
+        invoices = self.env['account.invoice'].search(inv_domain)
+        invoices_open_with_credit = invoices.filtered(lambda r: r.has_outstanding and r.state in ['open', 'in_payment'])
+        invoices_paid = invoices.filtered(lambda r: r.state == 'paid')
+
+        payment = self.env['account.payment'].search(payment_domain)
 
         partners = self.env['res.partner']
         if invoices_open_with_credit or invoices_paid or payment:
@@ -90,6 +101,9 @@ class CustomerStatementWizard(models.TransientModel):
         self.env.user.company_id.write({'last_statement_date': self.date_to})
         if email_customer:
             if self._context.get('ppt_active_recipient'):
+                past_due = False
+                if invoices.filtered(lambda inv: inv.partner_id.id == email_customer.id and inv.date_due < fields.Date.today()):
+                    past_due = True
                 template_id = self.env.ref('customer_statement_report.email_template_customer_statement')
                 compose_form_id = self.env.ref('mail.email_compose_message_wizard_form')
                 ctx = {
@@ -101,7 +115,9 @@ class CustomerStatementWizard(models.TransientModel):
                     'custom_layout': 'mail.mail_notification_light',
                     'force_email': False,
                     'd_from': self.date_from,
-                    'd_to': self.date_to
+                    'd_to': self.date_to,
+                    'past_due': past_due,
+                    'subject': "Customer Statement [PAST DUE] - %s" % email_customer.name if past_due else "Customer Statement - %s" % email_customer.name
                 }
                 return {
                     'type': 'ir.actions.act_window',
@@ -113,7 +129,7 @@ class CustomerStatementWizard(models.TransientModel):
                     'target': 'new',
                     'context': ctx,
                 }
-            t = threading.Thread(target=self.mail_loop, args=([email_customer, self.date_from, self.date_to, self.env.uid]))
+            t = threading.Thread(target=self.mail_loop, args=([invoices, email_customer, self.date_from, self.date_to, self.env.uid]))
             t.setName('CustomerStatement Email (Beta)')
             t.start()
         if pdf_customer:

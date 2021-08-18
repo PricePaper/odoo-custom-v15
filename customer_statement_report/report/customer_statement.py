@@ -46,7 +46,7 @@ class CustomerStatementPdfReport(models.AbstractModel):
                 data['cumulative'] = line['columns'][4]['name']
             elif 'colspan' not in line:
                 aml_id = self.env['account.move.line'].browse(line['id'])
-                if today > line['columns'][3]['name'] and not aml_id.reconciled:
+                if today > line['columns'][3]['name'] and not aml_id.reconciled and not aml_id.payment_id:
                     data['past_due'] = True
                 if not aml_id.reconciled and aml_id.payment_id or line['caret_options'] == 'account.invoice.out':
                     data['open_credits'].append(

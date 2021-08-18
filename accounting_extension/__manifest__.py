@@ -26,6 +26,9 @@ User can choose invoice against payments
     'depends': ["account_voucher", 'purchase_extension', 'price_paper', 'batch_delivery', 'account_reports'],
     'installable': True,
     'application': False,
+    'qweb': [
+        "static/src/xml/account_payment.xml",
+    ],
 }
 
 

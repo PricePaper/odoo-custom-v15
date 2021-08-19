@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
+         <template id="assets_backend" name="account extension assets" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/rma_extension/static/src/js/browse_line_render.js"/>
+            </xpath>
+        </template>
         <record id="scs_rma_exchange_rma_ret_mer_auth_form_inherit_ppt" model="ir.ui.view">
             <field name="name">scs.rma.exchange.rma.ret.mer.auth.form.inherit.ppt</field>
             <field name="model">rma.ret.mer.auth</field>

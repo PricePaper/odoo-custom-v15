@@ -17,15 +17,24 @@ class BrowseLines(models.TransientModel):
 
     def add_lines(self):
         if self.sale_id:
-            return self.add_sale_line()
+            lines = self.line_ids.filtered(lambda r: r.select)
+            if not lines:
+                raise ValidationError('There is no selected lines for process.')
+            return self.add_sale_line(lines)
         elif self.purchase_id:
-            return self.add_purchase_line()
+            lines = self.line_ids.filtered(lambda r: r.select)
+            if not lines:
+                raise ValidationError('There is no selected lines for process.')
+            return self.add_purchase_line(lines)
         else:
-            return self.add_move_lines()
+            lines = self.line_ids.filtered(lambda r: r.select)
+            if not lines:
+                raise ValidationError('There is no selected lines for process.')
+            return self.add_move_lines(lines)
 
-    def add_sale_line(self):
+    def add_sale_line(self, lines):
         order_line_lst = []
-        for order_line in self.line_ids.filtered(lambda r: r.select):
+        for order_line in lines:
             rma_sale_line = (0, 0, {
                 'product_id': order_line.product_id and order_line.product_id.id or False,
                 'total_qty': order_line.total_qty or 0,
@@ -50,9 +59,9 @@ class BrowseLines(models.TransientModel):
         else:
             self.rma_id.write({'rma_sale_lines_ids': order_line_lst})
 
-    def add_purchase_line(self):
+    def add_purchase_line(self, lines):
         po_line_lst = []
-        for order_line in self.line_ids.filtered(lambda r: r.select):
+        for order_line in lines:
             rma_purchase_line = (0, 0, {
                 'product_id': order_line.product_id and order_line.product_id.id or False,
                 'total_qty': order_line.total_qty or 0,
@@ -77,9 +86,9 @@ class BrowseLines(models.TransientModel):
         else:
             self.rma_id.write({'rma_purchase_lines_ids': po_line_lst})
 
-    def add_move_lines(self):
+    def add_move_lines(self, lines):
         order_line_lst = []
-        for order_line in self.line_ids.filtered(lambda r: r.select):
+        for order_line in lines:
             if self.rma_type == 'picking':
                 move = self.env['stock.move'].search([
                     ('picking_id', '=', self.rma_id.id),

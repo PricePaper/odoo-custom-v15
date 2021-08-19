@@ -4,6 +4,7 @@
     <template id="report_driver_document">
         <t t-call="web.basic_layout">
             <div class="page">
+                <div>
                 <div class="col-xs-6">
                     <strong>Driver :</strong>
                     <span t-if="o.truck_driver_id">
@@ -14,6 +15,7 @@
                     <strong>Date :</strong>
                     <span t-field="o.date"/>
                 </div>
+              </div>
                 <div class="col-xs-6">
                     <strong>Route :</strong>
                     <span t-field="o.route_id"/>
@@ -23,10 +25,11 @@
                     <thead>
                         <tr>
                             <th><strong>Invoice</strong></th>
+                            <th><strong>Sales Order</strong></th>
                             <th><strong>Customer Name</strong></th>
                             <th><strong>Customer Code</strong></th>
-                            <th><strong>Sales Order</strong></th>
                             <th><strong>Amount Paid</strong></th>
+                            <th><strong>Check #</strong></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -39,6 +42,11 @@
                                     </span>
                                 </td>
                                 <td>
+                                    <span t-if="picking.sale_id and picking.sale_id.name">
+                                        <t t-esc="picking.sale_id.name"/>
+                                    </span>
+                                </td>
+                                <td>
                                     <span t-if="picking.partner_id">
                                         <t t-esc="picking.partner_id.name"/>
                                     </span>
@@ -48,19 +56,49 @@
                                         <t t-esc="picking.partner_id.customer_code"/>
                                     </span>
                                 </td>
-                                <td>
-                                    <span t-if="picking.sale_id and picking.sale_id.name">
-                                        <t t-esc="picking.sale_id.name"/>
-                                    </span>
-                                </td>
+
+                                <td></td>
                                 <td></td>
                             </t>
                         </tr>
                         <tr>
-                            <td colspan="4"></td>
-                            <td class="text-left">Total</td>
-                            <td></td>
-                            <td></td>
+                            <td colspan="2">Cash: </td>
+                            <td colspan="2">Check: </td>
+                            <td colspan="2" class="text-left">Total:________________</td>
+
+                        </tr>
+                        <tr>
+                          <td colspan="2">100 x ________ = ___________</td>
+                          <td colspan="2">______________   ______________</td>
+                        </tr>
+                        <tr>
+                          <td colspan="2">50  x _________ = ___________</td>
+                          <td colspan="2">______________   ______________</td>
+                        </tr>
+                        <tr>
+                          <td colspan="2">20  x _________ = ___________</td>
+                          <td colspan="2">______________   ______________</td>
+                        </tr>
+                        <tr>
+                          <td colspan="2">10  x _________ = ___________</td>
+                          <td colspan="2">______________   ______________</td>
+                        </tr>
+                        <tr>
+                          <td colspan="2">5   x __________ = ___________</td>
+                          <td colspan="2">______________   ______________</td>
+                        </tr>
+                        <tr>
+                          <td colspan="2">1   x __________ = ___________</td>
+                          <td colspan="2">______________   ______________</td>
+                        </tr>
+                        <tr>
+                          <td colspan="2">Coins = ____________</td>
+                          <td colspan="2">______________   ______________</td>
+                        </tr>
+                        <tr>
+                          <td colspan="2">Total Cash : ________________ + </td>
+                          <td colspan="2">Total Checks : _______________  = </td>
+                          <td colspan="2">Grand Total :____________</td>
                         </tr>
                     </tbody>
                 </table>

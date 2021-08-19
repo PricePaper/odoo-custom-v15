@@ -1,4 +1,4 @@
-odoo.define('rma_extension.payment_info', function (require) {
+odoo.define('rma_extension.list_render', function (require) {
 "use strict";
 
 var ListRenderer = require('web.ListRenderer');

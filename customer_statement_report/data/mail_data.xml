@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="0">
+    <data noupdate="1">
 
          <record id="email_template_customer_statement" model="mail.template">
             <field name="name">Customer Statement</field>

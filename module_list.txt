@@ -21,6 +21,7 @@ quick_create_disable
 rma_extension
 sale_line_reports
 saleperson_payment_collection
+sales_analysis_report
 sales_commission
 special_item_requests
 stock_orderpoint_enhancements

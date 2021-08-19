@@ -161,7 +161,7 @@ class StockPicking(models.Model):
     @api.multi
     def validate_multiple_delivery(self, records):
         for rec in records:
-            if rec.state != 'in_transit':
+            if rec.state != 'in_transit' and not rec.purchase_id:
                 raise UserError(_(
                     "Some of the selected Delivery order is not in transit state"))
             rec.button_validate()

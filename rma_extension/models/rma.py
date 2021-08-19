@@ -37,7 +37,7 @@ class RMARetMerAuth(models.Model):
 
     def _extract_sale_line_info(self):
         order_line_lst = []
-        for order_line in self.sale_order_id.order_line.filtered(lambda l: l.state == 'done' and l.product_id.id not in self.rma_sale_lines_ids.mapped('product_id').ids):
+        for order_line in self.sale_order_id.order_line.filtered(lambda l: l.state == 'done' and l.qty_delivered > 0 and l.product_id.id not in self.rma_sale_lines_ids.mapped('product_id').ids):
             rma_sale_line = (0, 0, {
                 'product_id': order_line.product_id and
                               order_line.product_id.id or False,
@@ -66,7 +66,7 @@ class RMARetMerAuth(models.Model):
     def _extract_purchase_line_info(self):
         po_line_lst = []
         dest_location = self.env['stock.location'].search([('usage', '=', 'supplier')], limit=1)
-        for order_line in self.purchase_order_id.order_line.filtered(lambda l: l.product_id.id not in self.rma_purchase_lines_ids.mapped('product_id').ids):
+        for order_line in self.purchase_order_id.order_line.filtered(lambda l: l.qty_received > 0 and l.product_id.id not in self.rma_purchase_lines_ids.mapped('product_id').ids):
             rma_purchase_line = (0, 0, {
                 'product_id': order_line.product_id and
                               order_line.product_id.id or False,
@@ -74,7 +74,7 @@ class RMARetMerAuth(models.Model):
                 'refund_qty': order_line.qty_received or 0,
                 'refund_price': order_line.price_unit,
                 'order_quantity': order_line.product_qty or 0,
-                'received_quantity': order_line.qty_received,
+                'delivered_quantity': order_line.qty_received,
                 'total_price': order_line.price_total,
                 'price_unit': order_line.price_unit or 0,
                 'source_location_id':

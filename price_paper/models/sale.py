@@ -1105,6 +1105,13 @@ class SaleOrderLine(models.Model):
                     return {'warning': warning_mess}
         return {}
 
+    @api.onchange('tax_id')
+    def _onchange_tax(self):
+        if not self.tax_id:
+            if self.product_id and self.order_id and self.order_id.partner_id \
+            and not self.order_id.partner_id.vat:
+                raise UserError(_('You can not remove Tax for this Partner.'))
+
     @api.onchange('product_uom_qty', 'product_uom', 'route_id')
     def _onchange_product_id_check_availability(self):
         res = self.product_id_check_availability()
@@ -1555,9 +1562,8 @@ class SaleOrderLine(models.Model):
                 partner_history = self.env['sale.tax.history'].search(
                     [('partner_id', '=', self.order_id and self.order_id.partner_shipping_id.id or False),
                      ('product_id', '=', self.product_id and self.product_id.id)])
-
-                # if self.order_id and self.order_id.partner_id.vat and partner_history and not partner_history.tax:
-                #     self.tax_id = [(5, _, _)] # clear all tax values, no Taxes to be used
+                if self.order_id.partner_id and not self.order_id.partner_id.vat:
+                    partner_history = False
                 if partner_history and not partner_history.tax:
                     self.tax_id = [(5, _, _)]
 

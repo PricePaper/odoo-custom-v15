@@ -17,7 +17,7 @@ odoo.define('price_maintanance.search_field_many_2_many', function (require) {
                     if(self.view.arch.tag == 'kanban' && self.$el.hasClass('o_field_x2many_kanban')){
                         var search = "<div style='display:flex;align-items:center;justify-content:space-between;' class='search_block'>" +
                                             "<div class='fa fa-search'/>" +
-                                           "<input type='text' class='oe_search_input mb-3 mt-2 ml-2 pl-2' style='width:100%;border-radius:10px;height:30px;border:1px solid #cc' placeholder='Search...'>" +
+                                           "<input type='text' class='oe_search_input mb-3 mt-2 ml-2 pl-2' style='width:100%;border-radius:10px;height:30px;border:2px solid #a79d9d;' placeholder='Search...'>" +
                                       "</div>";
                         self.$el.prepend($(search));
                     }

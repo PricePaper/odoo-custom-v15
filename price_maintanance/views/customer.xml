@@ -1,5 +1,10 @@
 <odoo>
     <data>
+        <template id="assets_backend" name="account extension assets" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/price_maintanance/static/src/js/one2manySearch.js"/>
+            </xpath>
+        </template>
         <record id="customer_price_maintanace_tree_view" model="ir.ui.view">
             <field name="name">customer.price.maintanace.tree</field>
             <field name="model">res.partner</field>
@@ -51,7 +56,7 @@
                             </group>
                         </group>
                         <group string="Customer Product Price">
-                            <field name="partner_pricelist_line_ids" nolabel="1" attrs="{'readonly': False}">
+                            <field name="partner_pricelist_line_ids" nolabel="1" attrs="{'readonly': False}" mode="tree,kanban" options="{'custom_search': True}">
                                 <tree decoration-danger="deviation&lt;0" decoration-info="deviation==0"
                                       decoration-success="deviation&gt;0">
                                     <field name="product_id" required="1"/>
@@ -64,6 +69,69 @@
                                     <field name="lock_expiry_date"
                                            attrs="{'invisible': [('price_lock', '=', False)], 'required': [('price_lock', '=', True)]}"/>
                                 </tree>
+                                <kanban class="o_kanban_mobile" limit="500">
+                                    <field name="product_id"/>
+                                    <field name="product_uom"/>
+                                    <field name="price"/>
+                                    <field name="std_price"/>
+                                     <field name="deviation"/>
+                                    <field name="price_last_updated"/>
+                                    <templates>
+                                        <t t-name="kanban-box">
+                                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                                    <div class="row">
+                                                        <div class="col-8">
+                                                            <strong>
+                                                                <span>
+                                                                    <t t-esc="record.product_id.value"/>
+                                                                </span>
+                                                            </strong>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <strong>
+                                                                <span class="float-right text-right badge badge-info">
+                                                                    <t t-esc="record.product_uom.value"/>
+                                                                </span>
+                                                            </strong>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12 text-muted">
+                                                            <span>
+                                                                Price:
+                                                                <t t-esc="record.price.value"/>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12 text-muted">
+                                                            <span>
+                                                                Standard Price:
+                                                                <t t-esc="record.std_price.value"/>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                 <div class="row">
+                                                        <div class="col-12 text-muted">
+                                                            <span>
+                                                                Deviation %:
+                                                                <t t-esc="record.deviation.value"/>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                <div class="row">
+                                                        <div class="col-12 text-muted">
+                                                            <span>
+                                                                Price Last Updated:
+                                                                <t t-esc="record.price_last_updated.value"/>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
                                 <form string="Detailed Info">
                                     <div class="oe_button_box" name="button_box">
                                         <button name="action_remove" string='Delete' type="object"

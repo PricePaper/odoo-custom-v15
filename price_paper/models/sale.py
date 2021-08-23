@@ -35,6 +35,9 @@ class SaleOrder(models.Model):
         ('sent', 'Draft Order Sent'),
         ('sale', 'Sales Order'),
         ('done', 'Locked'),
+        ('waiting', 'Waiting'),
+        ('ordered', 'Ordered'),
+        ('received', 'Received'),
         ('released', 'Released'),
         ('cancel', 'Cancelled'),
     ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', track_sequence=3,
@@ -890,8 +893,10 @@ class SaleOrder(models.Model):
             if errors:
                 raise UserError('\n'.join(errors))
 
+            order.write({'state': 'waiting'})
             #service line update
             purchase_orders = order.order_line.mapped('purchase_line_ids.order_id').filtered(lambda p: p.state == 'draft')
+
             for sr_line in order.order_line.filtered(lambda r: r.product_id.type == 'service' and not r.display_type and not r.is_downpayment):
                 for po in purchase_orders:
                     fpos = po.fiscal_position_id

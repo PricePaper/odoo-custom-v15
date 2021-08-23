@@ -73,9 +73,9 @@ class Product(models.Model):
     @api.constrains('weight', 'volume')
     def _check_weight_and_volume(self):
         for rec in self:
-            if rec.weight <= 0:
+            if rec.weight <= 0 and rec.type == 'product':
                 raise ValidationError('Weight should be greater than Zero')
-            if rec.volume <= 0:
+            if rec.volume <= 0 and rec.type == 'product':
                 raise ValidationError('Volume should be greater than Zero')
 
 Product()

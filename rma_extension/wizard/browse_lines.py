@@ -214,9 +214,6 @@ class BrowseLinesSourceLine(models.TransientModel):
     @api.onchange('refund_qty', 'total_qty')
     def onchange_refund_price(self):
         for order in self:
-            if order.total_qty != 0.0 and order.refund_qty > order.total_qty:
-                raise ValidationError(('Refund Quantity should not be greater \
-                      than Total Quantity.'))
             if order.refund_qty <= 0:
                 raise ValidationError(('Refund Quantity should be greater than\
                   Zero'))

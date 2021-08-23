@@ -871,6 +871,30 @@ class RmaSaleLines(models.Model):
     dummy_product_uom = fields.Many2many(related="product_id.sale_uoms", readonly=True)
     return_product_uom = fields.Many2one('uom.uom')
 
+    @api.multi
+    @api.constrains('total_qty', 'refund_qty')
+    def _check_rma_quantity(self):
+        for line in self:
+            if line.refund_qty > line.delivered_quantity:
+                raise ValidationError(('Refund Quantity should not greater \
+                  than Delivered Quantity.'))
+
+    @api.onchange('refund_qty', 'total_qty')
+    def onchange_refund_price(self):
+        for order in self:
+            if order.refund_qty > order.delivered_quantity:
+                raise ValidationError(('Refund Quantity should not be greater \
+                  than Delivered Quantity.'))
+            total_qty_amt = 0.0
+            if order.total_price and order.total_qty:
+                total_qty_amt = (order.total_price /
+                                 order.total_qty) * float(order.refund_qty)
+                order.refund_price = total_qty_amt
+            else:
+                if order.product_id and order.product_id.id:
+                    order.refund_price = order.product_id.lst_price * \
+                                         order.refund_qty
+
 
 class RmaPurchaseLines(models.Model):
     _inherit = "rma.purchase.lines"
@@ -884,6 +908,29 @@ class RmaPurchaseLines(models.Model):
     dummy_product_uom = fields.Many2many(related="product_id.sale_uoms", readonly=True)
     return_product_uom = fields.Many2one('uom.uom')
 
+    @api.multi
+    @api.constrains('total_qty', 'refund_qty')
+    def _check_rma_quantity(self):
+        for line in self:
+            if line.refund_qty > line.delivered_quantity:
+                raise ValidationError(('Refund Quantity should not greater \
+                  than Delivered Quantity.'))
+
+    @api.onchange('refund_qty', 'total_qty')
+    def onchange_refund_price(self):
+        for order in self:
+            if order.refund_qty > order.delivered_quantity:
+                raise ValidationError(('Refund Quantity should not greater \
+                  than Delivered Quantity.'))
+            total_qty_amt = 0.0
+            if order.total_price and order.total_qty:
+                total_qty_amt = (order.total_price /
+                                 order.total_qty) * float(order.refund_qty)
+                order.refund_price = total_qty_amt
+            else:
+                if order.product_id and order.product_id.id:
+                    order.refund_price = order.product_id.lst_price * order. \
+                        refund_qty
 
 class RmaPickingLines(models.Model):
     _inherit = "rma.picking.lines"
@@ -896,3 +943,27 @@ class RmaPickingLines(models.Model):
     product_uom = fields.Many2one('uom.uom', readonly=True)
     dummy_product_uom = fields.Many2many(related="product_id.sale_uoms", readonly=True)
     return_product_uom = fields.Many2one('uom.uom')
+
+    @api.multi
+    @api.constrains('total_qty', 'refund_qty')
+    def _check_rma_quantity(self):
+        for line in self:
+            if line.refund_qty > line.delivered_quantity:
+                raise ValidationError(('Refund Quantity should not be greater \
+                  than Delivered Quantity.'))
+
+    @api.onchange('refund_qty', 'total_qty')
+    def onchange_refund_price(self):
+        for order in self:
+            if order.refund_qty > order.delivered_quantity:
+                raise ValidationError(('Refund Quantity should not be greater \
+                  than Delivered Quantity.'))
+            total_qty_amt = 0.0
+            if order.total_price and order.total_qty:
+                total_qty_amt = (order.total_price /
+                                 order.total_qty) * float(order.refund_qty)
+                order.refund_price = total_qty_amt
+            else:
+                if order.product_id and order.product_id.id:
+                    order.refund_price = order.product_id.lst_price * \
+                                         order.refund_qty

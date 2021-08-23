@@ -19,10 +19,9 @@
             <field name="model_id" ref="model_sale_order"/>
             <field name="state">code</field>
             <field name="code">
-                for rec in records.filtered(lambda r: r.storage_contract) or model.search([('storage_contract', '=',
-                True)]):
-                if not any(rec.order_line.mapped(lambda l: l.storage_remaining_qty)):
-                rec.write({'active': False})
+for rec in records.filtered(lambda r: r.storage_contract) or model.search([('storage_contract', '=', True)]):
+  if not any(rec.order_line.mapped(lambda l: l.storage_remaining_qty)):
+    rec.write({'active': False})
             </field>
             <field eval="True" name="active"/>
             <field name="user_id" ref="base.user_root"/>

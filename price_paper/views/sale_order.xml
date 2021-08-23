@@ -475,7 +475,9 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                         <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice"
                             type="action" class="btn-primary"
                             attrs="{'invisible': [('invoice_status', '!=', 'to invoice')]}"/>
-                        <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice" type="action" context="{'default_advance_payment_method': 'percentage'}" attrs="{'invisible': ['|',('invoice_status', '!=', 'no'), ('state', '!=', 'sale')]}"/>
+                        <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice"
+                                type="action" context="{'default_advance_payment_method': 'percentage'}"
+                                attrs="{'invisible': ['|',('invoice_status', '!=', 'no'), ('state', 'not in', ['sale', 'waiting', 'ordered'])]}"/>
                         <button name="action_storage_contract_confirm" type="object" string="Confirm" class="oe_highlight" states="draft"/>
                         <button name="action_create_storage_do" type="object" string="Create PO" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'sale'), ('sc_po_done', '=', True)]}" groups="account.group_account_manager, purchase.group_purchase_manager"/>
                         <button name="action_release" groups="account.group_account_manager" type="object" string="Release" class="oe_highlight" attrs="{'invisible': ['|', ('invoice_status', '!=', 'invoiced'), ('state', '!=', 'done'),]}"/>
@@ -526,7 +528,7 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                                 <field name="confirmation_date" attrs="{'invisible': [('confirmation_date', '=', False)]}"/>
                                 <field name="currency_id" invisible="1"/>
                                 <field name="payment_term_id" options="{'no_create': True}"
-                                       attrs="{'readonly': [('state', '!=', 'draft')}"/>
+                                       attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                                 <field name="pricelist_id" invisible="1"/>
                                 <field name="storage_contract" invisible="1"/>
                             </group>
@@ -662,8 +664,7 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
             <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
             <field name="arch" type="xml">
                 <xpath expr="//filter[@name='draft']" position="replace">
-                    <filter string="Drafts" name="draft" domain="[('state','=','draft')]"/>
-                    <filter string="Released" name="draft" domain="[('state','in',('draft', 'sent'))]"/>
+                    <filter string="Todo" name="sc_todo" domain="[('state','not in',('released', 'done', 'cancel'))]"/>
                 </xpath>
             </field>
         </record>

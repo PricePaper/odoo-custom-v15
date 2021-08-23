@@ -65,7 +65,7 @@ class SaleOrder(models.Model):
     def _get_invoiced(self):
         super(SaleOrder, self)._get_invoiced()
         for order in self:
-            if order.storage_contract and order.state in ['done', 'released']:
+            if order.storage_contract and order.state in ['done', 'received', 'released']:
                 if any([l.invoice_status == 'to invoice' for l in order.order_line if not l.is_downpayment]):
                     order.invoice_status = 'to invoice'
                 elif all([l.invoice_status == 'invoiced' for l in order.order_line if not l.is_downpayment]):
@@ -672,6 +672,12 @@ class SaleOrder(models.Model):
             else:
                 order.hold_state = 'credit_hold'
 
+    @api.multi
+    def action_view_purchase(self):
+        res = super(SaleOrder, self).action_view_purchase()
+        res.pop('context')
+        return res
+
     def check_credit_limit(self):
         """
         wheather the partner's credit limit exceeded or
@@ -999,7 +1005,7 @@ class SaleOrderLine(models.Model):
     def _get_to_invoice_qty(self):
         super(SaleOrderLine, self)._get_to_invoice_qty()
         for line in self:
-            if line.order_id.storage_contract and line.order_id.state in ['done', 'released']:
+            if line.order_id.storage_contract and line.order_id.state in ['done', 'received', 'released']:
                 if line.product_id.invoice_policy == 'order':
                     line.qty_to_invoice = (line.product_uom_qty if not line.is_downpayment else 0) - line.qty_invoiced
                 else:

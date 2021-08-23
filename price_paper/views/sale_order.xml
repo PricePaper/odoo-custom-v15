@@ -539,7 +539,7 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                                     name="order_line"
                                     widget="section_and_note_one2many"
                                     mode="tree"
-                                    attrs="{'readonly': [('state', 'in', ('done','cancel'))]}"
+                                    attrs="{'readonly': [('state', 'in', (''waiting', 'ordered', 'received', 'done','cancel'))]}"
                                 >
                                     <tree
                                         string="Sales Order Lines"

@@ -526,7 +526,7 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                                 <field name="confirmation_date" attrs="{'invisible': [('confirmation_date', '=', False)]}"/>
                                 <field name="currency_id" invisible="1"/>
                                 <field name="payment_term_id" options="{'no_create': True}"
-                                       attrs="{'readonly': [('state', '!=', 'draft']}"/>
+                                       attrs="{'readonly': [('state', '!=', 'draft')}"/>
                                 <field name="pricelist_id" invisible="1"/>
                                 <field name="storage_contract" invisible="1"/>
                             </group>

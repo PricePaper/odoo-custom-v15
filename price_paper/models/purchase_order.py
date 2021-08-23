@@ -41,7 +41,7 @@ class PurchaseOrder(models.Model):
         """
         cancel all other RFQ under the same purchase agreement
         """
-        self.mapped('order_line.sale_order_id').action_done()
+        self.mapped('order_line.sale_order_id').write({'state': 'ordered'})
         return super(PurchaseOrder, self).button_confirm()
 
 

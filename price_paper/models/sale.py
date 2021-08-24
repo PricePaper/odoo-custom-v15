@@ -59,7 +59,7 @@ class SaleOrder(models.Model):
 
     def _compute_sc_child_order_count(self):
         for order in self:
-            order.sc_child_order_count = len(order.order_line.mapped('storage_contract_line_ids.order_id'))
+            order.sc_child_order_count = len(order.order_line.mapped('storage_contract_line_ids.order_id').filtered(lambda r: r.state not in ['sent', 'cancel']))
 
     @api.depends('state', 'order_line.invoice_status', 'order_line.invoice_lines')
     def _get_invoiced(self):
@@ -299,6 +299,10 @@ class SaleOrder(models.Model):
 
     @api.multi
     def action_restore(self):
+        for sc in self:
+            orders = sc.order_line.mapped('storage_contract_line_ids.order_id')
+            if any([order.state != 'cancel' for order in orders]):
+                raise ValidationError('Cannot UnRelease contract with active sale orders %s' % (', '.join(orders.mapped('name'))))
         return self.write({'state': 'done'})
 
     # @api.multi
@@ -744,6 +748,10 @@ class SaleOrder(models.Model):
         for order in self:
             if not order.payment_term_id:
                 raise ValidationError(_('Payment term is not set for this order please set to proceed.'))
+    @api.multi
+    def action_unlock(self):
+        self.filtered(lambda s: s.storage_contract and s.state == 'done').write({'state': 'received'})
+        self.filtered(lambda s: not s.storage_contract and s.state == 'done').write({'state': 'sale'})
 
     @api.multi
     def action_confirm(self):
@@ -992,9 +1000,10 @@ class SaleOrderLine(models.Model):
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
         for line in self:
             if line.order_id.storage_contract:
+                print(line.qty_invoiced, line.product_uom_qty, float_compare(line.qty_invoiced, line.product_uom_qty, precision_digits=precision))
                 if float_compare(line.qty_invoiced, line.product_uom_qty, precision_digits=precision) >= 0:
                     line.invoice_status = 'invoiced'
-                elif float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) == 0:
+                elif float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) <= 0 and line.state in ['received', 'done']:
                     line.invoice_status = 'to invoice'
                 elif float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) == 1:
                     line.invoice_status = 'upselling'

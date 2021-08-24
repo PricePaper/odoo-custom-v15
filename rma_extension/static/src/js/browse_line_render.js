@@ -22,7 +22,7 @@ ListRenderer.include({
 
      _onCellClick: function (event) {
        this._super(event);
-       if(this._isEditable()){
+       if(this._isEditable() && this.arch.attrs.quick_selection === 'active'){
             var $td = $(event.currentTarget);
             var $tr = $td.parent();
             var $checkbox = $tr.find('input[type=checkbox]');

@@ -26,7 +26,7 @@
                         <field name="rma_type" force_save="1" invisible="1"/>
 
                         <field name="line_ids" mode="tree">
-                            <tree create="0" delete="0" editable="top" limit="10">
+                            <tree create="0" delete="0" editable="top" limit="10" quick_selection="active">
                                 <field name="so_line_id" invisible="1"/>
                                 <field name="po_line_id" invisible="1"/>
                                 <field name="select" invisible="0" widget="boolean_toggle"/>

@@ -47,7 +47,7 @@ class BrowseLines(models.TransientModel):
                 'source_location_id': order_line.source_location_id and order_line.source_location_id.id,
                 'destination_location_id': order_line.destination_location_id and order_line.destination_location_id.id,
                 'type': order_line.type,
-                'tax_id': [(6, 0, order_line.tax_id.ids)],
+                'tax_id': [(6, 0, order_line.so_line_id.tax_id.ids)],
                 'so_line_id': order_line.so_line_id.id,
                 'product_uom': order_line.product_uom.id,
                 'reason_id': order_line.reason_id and order_line.reason_id.id or False,

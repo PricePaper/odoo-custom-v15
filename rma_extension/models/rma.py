@@ -1,5 +1,5 @@
 from odoo import fields, models, api
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 
 class RMARetMerAuth(models.Model):
@@ -870,6 +870,13 @@ class RmaSaleLines(models.Model):
     total_qty = fields.Float(string='Total Qty', readonly=False)
     dummy_product_uom = fields.Many2many(related="product_id.sale_uoms", readonly=True)
     return_product_uom = fields.Many2one('uom.uom')
+
+    @api.onchange('tax_id')
+    def _onchange_tax(self):
+        if not self.tax_id:
+            if self.product_id and self.rma_id and self.rma_id.partner_id \
+            and not self.rma_id.partner_id.vat:
+                raise UserError(('You can not remove Tax for this Partner.'))
 
     @api.multi
     @api.constrains('total_qty', 'refund_qty')

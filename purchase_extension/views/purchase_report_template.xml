@@ -14,6 +14,9 @@
                     <span t-esc="product_code and product_code[-1]"/>
                 </td>
             </xpath>
+            <xpath expr="//table/tbody/tr/td[2]/span" position="replace">
+                <span t-field="order_line.product_id"/>
+            </xpath>
             <xpath expr="//table/tbody/tr/td[3]" position="replace">
             </xpath>
         </template>

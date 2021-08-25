@@ -127,6 +127,7 @@ class AddPurchaseHistorySO(models.TransientModel):
                                                 string="Purchase History Temp")
     show_cart = fields.Boolean(string="Show Cart")
     sale_history_ids = fields.Many2many('sale.history')
+    archived = fields.Boolean(string='Archived')
 
     @api.model
     def default_sale_history(self):
@@ -134,7 +135,7 @@ class AddPurchaseHistorySO(models.TransientModel):
             return self.env.user.company_id.sale_history_months
         return 0
 
-    @api.onchange('sale_history_months', 'product_id')
+    @api.onchange('sale_history_months', 'product_id', 'archived')
     def onchange_select_month(self):
         sale_history = self.sale_history_ids
         history_from = datetime.today() - relativedelta(months=self.sale_history_months)
@@ -172,6 +173,11 @@ class AddPurchaseHistorySO(models.TransientModel):
         if sale_history:
             for line in sale_history.sorted(key=lambda l: l.product_id.categ_id.name):
                 warning, price, price_from = line.order_line_id.calculate_customer_price()
+                archived = False
+                if not line.active or not line.product_id.active:
+                    archived = True
+                if archived and not self.archived or not archived and self.archived:
+                    continue
                 lines.append((0, 0, {
                     'product_uom': line.uom_id.id,
                     'date_order': line.order_id.confirmation_date,
@@ -183,7 +189,7 @@ class AddPurchaseHistorySO(models.TransientModel):
                     'product_uom_qty': line.order_line_id.product_uom_qty,
                     'product_category': line.product_id.categ_id.id,
                     'product_name': line.product_id.display_name,
-                    'archived': line.active,
+                    'archived': archived,
                     'sale_ok': line.product_id.sale_ok
                 }))
 

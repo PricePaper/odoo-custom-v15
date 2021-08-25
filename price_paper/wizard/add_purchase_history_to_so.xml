@@ -21,13 +21,14 @@
                         <group>
                             <group>
                                 <field name="product_id"/>
+                                <field name="archived" widget="boolean_toggle"/>
                             </group>
                             <group>
                                 <field name="sale_history_months"/>
                             </group>
                         </group>
                         <field name="purchase_history_ids" mode="tree">
-                            <tree create="0" delete="0" editable="top" decoration-muted="archived==False or sale_ok==False" limit="10">
+                            <tree create="0" delete="0" editable="top" decoration-muted="archived==True or sale_ok==False" limit="10">
                                 <field name="qty_to_be" style="color:blue" sum="Total Quantity"/>
                                 <field name="product_name" readonly='1' tabindex="0"/>
                                 <field name="product_uom_qty" readonly='1' tabindex="0"/>

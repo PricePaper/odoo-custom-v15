@@ -13,7 +13,8 @@
             <field name="arch" type="xml">
                 <xpath expr="//form/sheet/notebook" position="before">
                     <button type="object" name="add_resource_lines" string="Browse Lines"
-                            class="oe_edit_only oe_highlight oe_right"/>
+                            class="oe_edit_only oe_highlight oe_right"
+                            attrs="{'invisible': [('state', 'not in', ['new', 'verification'])]}"/>
                 </xpath>
                 <xpath expr="//field[@name='sale_order_id']" position="attributes">
                     <attribute name="domain">[('partner_id', '=', partner_id), ('state', '=', 'done')]</attribute>

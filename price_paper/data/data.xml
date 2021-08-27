@@ -2,12 +2,30 @@
 <odoo>
     <data>
         <record forcecreate="True" id="ir_cron_cost_change" model="ir.cron">
-            <field name="name">Cost change: run scheduler</field>
+            <field name="name">Cost change</field>
             <field name="model_id" ref="model_cost_change"/>
             <field name="state">code</field>
             <field name="code">model.cost_change_cron()</field>
             <field eval="True" name="active"/>
             <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field eval="False" name="doall"/>
+        </record>
+
+        <record forcecreate="True" id="ir_cron_storage_contract_archive" model="ir.cron">
+            <field name="name">SC Archive</field>
+            <field name="model_id" ref="model_sale_order"/>
+            <field name="state">code</field>
+            <field name="code">
+for rec in records and records.filtered(lambda r: r.storage_contract) or model.search([('storage_contract', '=', True)]):
+  if not any(rec.order_line.mapped(lambda l: l.storage_remaining_qty)):
+    rec.write({'active': False})
+            </field>
+            <field eval="True" name="active"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="binding_model_id" ref="model_sale_order"/>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
             <field name="numbercall">-1</field>

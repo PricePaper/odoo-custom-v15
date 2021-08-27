@@ -19,3 +19,14 @@ class StockOverProcessedTransfer(models.TransientModel):
                     move.purchase_line_id.order_id.message_post(body='processed more than what was initially planned for the product %s'%move.product_id.display_name)
 
         return super(StockOverProcessedTransfer, self).action_confirm()
+
+class StockImmediateTransfer(models.TransientModel):
+    _inherit = 'stock.immediate.transfer'
+
+    @api.multi
+    def process(self):
+        res = super(StockImmediateTransfer, self).process()
+        storage_contract = self.pick_ids.mapped('purchase_id').mapped('order_line.sale_order_id').filtered(
+            lambda s: s.storage_contract)
+        storage_contract.write({'state': 'received'})
+        return res

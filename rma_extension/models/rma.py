@@ -35,6 +35,17 @@ class RMARetMerAuth(models.Model):
     def onchange_picking_rma_id(self):
         return {}
 
+    @api.multi
+    def rma_submit(self):
+        """Create Sequence for RMA and set state to verification."""
+        for rma in self:
+            if not any([rma.rma_sale_lines_ids, rma.rma_purchase_lines_ids, rma.rma_picking_lines_ids]):
+                raise ValidationError('There is no lines for process.')
+
+        sequence_val = self.env['ir.sequence'].next_by_code('rma.rma') or '/'
+        self.write({'state': 'verification', 'name': sequence_val})
+        return True
+
     def _extract_sale_line_info(self):
         order_line_lst = []
         for order_line in self.sale_order_id.order_line.filtered(lambda l: l.state == 'done' and l.qty_delivered > 0 and l.product_id.id not in self.rma_sale_lines_ids.mapped('product_id').ids):

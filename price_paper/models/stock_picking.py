@@ -12,11 +12,15 @@ class StockPicking(models.Model):
     def action_sc_sync_with_receipt(self):
         self.ensure_one()
         for line in self.move_ids_without_package:
+            done_flag = False
             if line.is_storage_contract:
-                line.sale_line_id.order_id.action_unlock()
+                if line.sale_line_id.order_id.state == 'done':
+                    done_flag = True
+                    line.sale_line_id.order_id.action_unlock()
                 line.purchase_line_id.product_qty = line.quantity_done
                 line.sale_line_id.write({'product_uom_qty': line.quantity_done, 'qty_delivered': line.quantity_done})
-                line.sale_line_id.order_id.action_done()
+                if done_flag:
+                    line.sale_line_id.order_id.action_done()
         backorder_pick = self.env['stock.picking'].search([('backorder_id', '=', self.id), ('state', '!=', 'cancel')])
         if backorder_pick:
             backorder_pick.action_cancel()

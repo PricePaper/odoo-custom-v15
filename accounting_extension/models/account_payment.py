@@ -4,6 +4,8 @@ from odoo import fields, models, api, _
 from datetime import datetime, date
 
 from odoo.exceptions import UserError
+from odoo.tools.misc import formatLang, format_date
+
 
 MAP_INVOICE_TYPE_PAYMENT_SIGN = {
     'out_invoice': 1,
@@ -520,6 +522,32 @@ class AccountPayment(models.Model):
 
             return move
 
+    def _check_build_page_info(self, i, p):
+        result = super(AccountPayment, self)._check_build_page_info(i, p)
+        result.update({'have_bills': self.payment_type == 'outbound'})
+        return result
+
+    def _check_make_stub_line(self, invoice):
+        """ Return the dict used to display an invoice/refund in the stub
+        """
+        result = super(AccountPayment, self)._check_make_stub_line(invoice)
+        discount = sum(self.env['account.payment.lines'].search([('invoice_id', '=', invoice.id)]).mapped('discount'))
+        result.update({'discount': formatLang(self.env, discount, currency_obj=invoice.currency_id)})
+        if discount:
+            if invoice.type in ['in_invoice', 'out_refund']:
+                invoice_sign = 1
+                invoice_payment_reconcile = invoice.move_id.line_ids.mapped('matched_debit_ids').filtered(lambda r: r.debit_move_id in self.move_line_ids)
+            else:
+                invoice_sign = -1
+                invoice_payment_reconcile = invoice.move_id.line_ids.mapped('matched_credit_ids').filtered(lambda r: r.credit_move_id in self.move_line_ids)
+
+            if self.currency_id != self.journal_id.company_id.currency_id:
+                amount_paid = abs(sum(invoice_payment_reconcile.mapped('amount_currency')))
+            else:
+                amount_paid = abs(sum(invoice_payment_reconcile.mapped('amount')))
+
+            result.update({'amount_paid': formatLang(self.env, (invoice_sign * amount_paid) - discount, currency_obj=invoice.currency_id)})
+        return result
 
 
 AccountPayment()

@@ -23,7 +23,7 @@ User can choose invoice against payments
             "views/account_invoice_view.xml",
             "views/stock_picking_batch.xml"
         ],
-    'depends': ["account_voucher", 'purchase_extension', 'price_paper', 'batch_delivery', 'account_reports'],
+    'depends': ["l10n_us_check_printing", "account_voucher", 'purchase_extension', 'price_paper', 'batch_delivery', 'account_reports'],
     'installable': True,
     'application': False,
     'qweb': [

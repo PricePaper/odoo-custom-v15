@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <template id="custom_ppt_vendor_ckus_stub" inherit_id="l10n_us_check_printing.ckus_stub">
+            <xpath expr="//table/thead/tr/th[4]" position="attributes">
+                <attribute name="t-if">not page['have_bills']</attribute>
+            </xpath>
+            <xpath expr="//table/thead/tr/th[4]" position="after">
+                 <th class="text-right" t-if="page['have_bills']">Discount Amount</th>
+            </xpath>
+            <xpath expr="//table/tbody//td[4]" position="attributes">
+                <attribute name="t-if">not page['have_bills']</attribute>
+            </xpath>
+            <xpath expr="//table/tbody//td[4]" position="after">
+                <td class="text-right" t-if="page['have_bills']">
+                    <t t-esc="stub_line['discount']"/>
+                </td>
+            </xpath>
+        </template>
         <record id="accounting_extension_view_account_payment_from_invoices" model="ir.ui.view">
             <field name="name">Register payment wizard</field>
             <field name="model">account.register.payments</field>

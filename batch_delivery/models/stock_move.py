@@ -109,7 +109,7 @@ class StockMove(models.Model):
         qty_to_take_on_candidates = quantity or valued_quantity
         candidates = move.product_id._get_fifo_candidates_in_move_with_company(move.company_id.id)
         if move.is_storage_contract and move.sale_line_id and move.sale_line_id.storage_contract_line_id and \
-        move.sale_line_id.storage_contract_line_id.order_id.id not in [99088,99087,99086,99085,99084,99083,99082,99081,99080,99079,99077,99076,99074,99073,99072,99071,99070]:
+        move.sale_line_id.storage_contract_line_id.order_id.id not in [99088,99087,99086,99085,99084,99083,99082,99081,99080,99079,99077,99076,99074,99073,99072,99071,99070,99075]:
             candidates = move.sale_line_id and move.sale_line_id.storage_contract_line_id and \
             move.sale_line_id.storage_contract_line_id.purchase_line_ids.mapped('move_ids')
             if sum(candidates.mapped('remaining_qty')) <= 0:

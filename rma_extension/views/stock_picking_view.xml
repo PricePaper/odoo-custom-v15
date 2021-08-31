@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_picking_form_inherit_rma_extension" model="ir.ui.view">
+            <field name="name">stock.picking.rma.extension</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                 <button name="button_validate" position="after">
+                     <field name="rma_id" invisible="1"/>
+                 </button>
+                <button name="button_validate" position="attributes">
+                    <attribute name="attrs">{'invisible':['|', '|', '&amp;', ('picking_type_code', '!=', 'incoming'), ('rma_id', '=', False), ('state', 'in', ('waiting','confirmed', 'done', 'cancel')), ('show_validate', '=', False)]}</attribute>
+                </button>
+            </field>
+        </record>
+    </data>
+</odoo>

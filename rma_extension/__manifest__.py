@@ -20,11 +20,12 @@ Custom module implemented for RMA for Price Papers.
     'website': 'http://confianzit.com',
     'images': [],
 
-    'depends': ['scs_rma'],
+    'depends': ['scs_rma', 'batch_delivery'],
     'data': [
         'wizard/browse_lines_view.xml',
         'views/rma_form_view.xml',
         'views/rma_report_enhancement.xml',
+        'views/stock_picking_view.xml'
     ],
     'installable': True,
     'auto_install': False,

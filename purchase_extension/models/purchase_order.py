@@ -25,8 +25,15 @@ class PurchaseOrder(models.Model):
     def onchange_partner_id(self):
         result = super(PurchaseOrder, self).onchange_partner_id()
         if self.partner_id:
-            addr = self.partner_id.address_get(['delivery'])
-            self.pickup_address_id = addr and addr.get('delivery')
+            addr = self.partner_id.child_ids.filtered(lambda r: r.type == 'delivery' and r.default_shipping)
+            if addr:
+                self.pickup_address_id = addr.id
+            elif not addr:
+                addr = self.partner_id.address_get(['delivery'])
+                self.pickup_address_id = addr and addr.get('delivery')
+            else:
+                self.pickup_address_id = self.partner_id.id
+
         return result
 
 

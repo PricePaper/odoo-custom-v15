@@ -8,12 +8,12 @@
                 <field name='payment_term_id' position='attributes'>
                     <attribute name='domain'>[('order_type', '=', 'purchase')]</attribute>
                 </field>
+                 <xpath expr="//notebook/page[@name='purchase_delivery_invoice']//label[@for='date_planned']" position="attributes">
+                    <attribute name="string">Date Wanted</attribute>
+                </xpath>
                 <xpath expr="/form/sheet/group/group[2]" position="after">
                     <xpath expr="//notebook/page[@name='purchase_delivery_invoice']/group/group[1]" position="move"/>
                 </xpath>
-                <field name='date_order' position="after">
-                    <field name="release_date" string="Date Wanted"/>
-                </field>
                 <xpath expr="//button[@name='action_view_invoice']" position="attributes">
                     <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ('purchase', 'received', 'done')), ('invoice_status', 'in', ('no', 'invoiced'))]}</attribute>
                 </xpath>
@@ -23,7 +23,15 @@
                 <xpath expr="//button[@name='button_done']" position="attributes">
                     <attribute name="states">purchase,received</attribute>
                 </xpath>
-
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="domain">[('supplier', '=', True), ('parent_id', '=', False)]</attribute>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="after">
+                     <field name="pickup_address_id"
+                            domain="[('parent_id','=', partner_id)]"
+                            context="{'default_type': 'invoice', 'show_address': 1, 'tree_view_ref': 'view_partner_tree_search_more', 'show_partner_code': 1}"
+                            options="{'no_create': 1, 'no_create_edit': 1, 'always_reload': True}"/>
+                </xpath>
                 <xpath expr="//group[hasclass('oe_subtotal_footer')]" position="before">
                     <group name="weight_volume">
                         <field name="total_volume"/>

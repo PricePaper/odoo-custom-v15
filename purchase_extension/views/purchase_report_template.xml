@@ -1,8 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+      <template id="ppt_po_address_layoyt" inherit_id="web.address_layout">
+            <xpath expr="//t[2]/div/t" position="after">
 
+                <t t-if="pickup_address">
+                    <t t-set="colclass" t-value="'col-3 offset-0'"/>
+                    <div name="pickup_address" t-att-class="colclass">
+                        <strong>PickUp Address :</strong>
+                        <t t-raw="pickup_address"/>
+                    </div>
+                </t>
+            </xpath>
+      </template>
     <template id="report_ppt_report_purchasequotation_document" inherit_id="purchase.report_purchasequotation_document">
+            <xpath expr="//t/t[@t-set='address']" position="replace">
+                    <t t-set="address">
+                        <div t-field="o.partner_id"
+                            t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
+                            <p t-if="o.partner_id.vat">
+                                <t t-esc="o.company_id.country_id.vat_label or 'Tax ID'"/>: <span t-field="o.partner_id.vat"/>
+                            </p>
+                    </t>
+                <t t-set="pickup_address">
+                    <div t-field="o.pickup_address_id"
+                            t-options='{"widget": "contact", "fields": ["address", "phone", "name"], "no_marker": True, "phone_icons": True}'/>
+
+                </t>
+
+            </xpath>
             <xpath expr="//table/thead/tr/th[1]" position="before">
                 <th><strong>Product Code</strong></th>
             </xpath>
@@ -22,11 +48,24 @@
         </template>
 
         <template id="report_ppt_report_purchaseorder_document" inherit_id="purchase.report_purchaseorder_document">
+             <xpath expr="//t/t[@t-set='address']" position="replace">
+                    <t t-set="address">
+                        <div t-field="o.partner_id"
+                            t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
+                            <p t-if="o.partner_id.vat">
+                                <t t-esc="o.company_id.country_id.vat_label or 'Tax ID'"/>: <span t-field="o.partner_id.vat"/>
+                            </p>
+                    </t>
+                <t t-set="pickup_address">
+                    <div t-field="o.pickup_address_id"
+                            t-options='{"widget": "contact", "fields": ["address", "phone", "name"], "no_marker": True, "phone_icons": True}'/>
 
+                </t>
+             </xpath>
             <xpath expr="//div[hasclass('page')]/div[@id='informations']/div[3]" position="after">
-                <div t-if="o.release_date" class="col-3 bm-2">
+                <div t-if="o.date_planned" class="col-3 bm-2">
                     <strong>Date Wanted:</strong>
-                    <p t-field="o.release_date" class="m-0"/>
+                    <p t-field="o.date_planned" class="m-0"/>
                 </div>
             </xpath>
              <xpath expr="//table/tbody/tr/td[1]/span" position="replace">

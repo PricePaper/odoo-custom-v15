@@ -19,6 +19,18 @@ class PurchaseOrder(models.Model):
     vendor_delay = fields.Integer(related='partner_id.delay', string="Vendor Lead Time", readonly=True)
     vendor_order_freq = fields.Integer(related='partner_id.order_freq', string="Vendor Order Frequency", readonly=True)
     state = fields.Selection(selection_add=[('received', 'Received')])
+    pickup_address_id = fields.Many2one('res.partner', string="PickUp Address")
+
+    @api.onchange('partner_id', 'company_id')
+    def onchange_partner_id(self):
+        result = super(PurchaseOrder, self).onchange_partner_id()
+        if self.partner_id:
+            addr = self.partner_id.address_get(['delivery'])
+            self.pickup_address_id = addr and addr.get('delivery')
+        return result
+
+
+
 
     @api.depends('state', 'order_line.qty_invoiced', 'order_line.qty_received', 'order_line.product_qty')
     def _get_invoiced(self):

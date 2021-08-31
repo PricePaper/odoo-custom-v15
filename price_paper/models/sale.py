@@ -852,7 +852,7 @@ class SaleOrder(models.Model):
         }
 
         return {
-            'name': _('Add purchase history to SO'),
+            'name': _('%s' % self.partner_id.display_name + ' #' + self.name),
             'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'add.purchase.history.so',

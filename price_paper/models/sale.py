@@ -134,8 +134,8 @@ class SaleOrder(models.Model):
 
         for sale_order in self:
             sale_order.is_creditexceed = False
-            sale_order.is_low_price = False
             sale_order.ready_to_release = False
+            sale_order.is_low_price = False
             sale_order.release_price_hold = False
             sale_order.hold_state = False
 
@@ -457,8 +457,20 @@ class SaleOrder(models.Model):
         """
         auto save the delivery line.
         """
-
+        amount={}
+        for order in self:
+            if order.state == 'sale':
+                amount[order.id] = order.amount_total
         res = super(SaleOrder, self).write(vals)
+        for order in self:
+            if order.id in amount and amount[order.id] < order.amount_total:
+                if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
+                    if order.picking_ids.filtered(lambda r: r.state == 'in_transit'):
+                        raise UserError(_('You can not add product to a Order which has a DO in transit state'))
+                    order.action_cancel()
+                    self.action_draft()
+                    self.action_confirm()
+
         if not self._context.get('from_import'):
             self.check_payment_term()
             for order in self:

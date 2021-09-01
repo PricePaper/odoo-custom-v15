@@ -14,9 +14,9 @@ class SaleOrderLine(models.Model):
         for line in self:
             if line.product_id:
                 query = """
-                        SELECT o.release_date from purchase_order o, purchase_order_line
-                        l WHERE o.release_date is not null AND o.id=l.order_id AND
-                        l.product_id = (%d) AND o.state IN ('purchase', 'done') ORDER BY o.release_date DESC limit 1;""" % (
+                        SELECT o.date_planned from purchase_order o, purchase_order_line
+                        l WHERE o.date_planned is not null AND o.id=l.order_id AND
+                        l.product_id = (%d) AND o.state IN ('purchase', 'done') ORDER BY o.date_planned DESC limit 1;""" % (
                     line.product_id.id)
                 self.env.cr.execute(query)
                 result = self.env.cr.fetchone()

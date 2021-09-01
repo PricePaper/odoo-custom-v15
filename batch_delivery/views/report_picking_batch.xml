@@ -7,12 +7,32 @@
                         <t t-foreach="pickings" t-as="ob">
                                  <div class="header">
                                     <div class="row col-12" style="font-weight: bolder; padding-bottom:10px;">
-                                        <div class="col-8" style="text-align:left;">
-                                            <span t-field="ob.partner_id.name"/> <span t-field="ob.partner_id.city" style="padding-left:10px;"/>
-                                        </div>
-                                        <div class="col-4 text-right">
-                                            <span t-esc="ob.name"/>
-                                        </div>
+                                        <t t-if="ob.purchase_id and ob.purchase_id.pickup_address_id">
+                                            <div class="col-8" style="text-align:left;">
+                                                <span t-field="ob.purchase_id.pickup_address_id.name"/>
+                                                <br/>
+                                                <span t-field="ob.purchase_id.pickup_address_id.street"/>
+                                                <span t-field="ob.purchase_id.pickup_address_id.street2"/>
+                                                <br/>
+                                                <span t-field="ob.purchase_id.pickup_address_id.city"/>
+                                                <span t-field="ob.purchase_id.pickup_address_id.state_id"/>
+                                                <span t-field="ob.purchase_id.pickup_address_id.zip"/>
+                                                <br/>
+                                                <span t-field="ob.purchase_id.pickup_address_id.phone"/>
+                                            </div>
+                                            <div class="col-4 text-right">
+                                                <span t-esc="ob.name"/>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="col-8" style="text-align:left;">
+                                                <span t-field="ob.partner_id.name"/> <span t-field="ob.partner_id.city" style="padding-left:10px;"/>
+                                            </div>
+                                            <div class="col-4 text-right">
+                                                <span t-esc="ob.name"/>
+                                            </div>
+                                        </t>
+
                                     </div>
                                 </div>
                                 <div class="article" t-att-data-oe-model="ob and ob._name" t-att-data-oe-id="ob and ob.id" t-att-data-oe-lang="ob and ob.env.context.get('lang')">
@@ -44,7 +64,7 @@
                                                     </td>
                                                     <td style="text-align:right;font-weight: bolder;padding-left: 50px;">Delivery Date</td>
                                                         <td style="text-align:left;padding-left: 10px; ">
-                                                         <span t-field="ob.date"/>
+                                                         <span t-field="ob.scheduled_date"/>
                                                     </td>
                                                 </t>
                                                 <t t-elif="ob.purchase_id and ob.picking_type_code in ['incoming', 'outgoing']">
@@ -149,6 +169,11 @@
                                                 </tr>
                                             </tbody>
                                         </table>
+                                         <p t-if="ob.purchase_id and ob.purchase_id.pickup_address_id and ob.purchase_id.pickup_address_id.delivery_notes">
+                                            <strong class="text-left" style="font-size:18px;">
+                                              <span t-field="ob.purchase_id.pickup_address_id.delivery_notes"/>
+                                            </strong><br/>
+                                        </p>
                                          <div class="footer">
                                             <div class="text-center" style="border-top: 1px solid black;">
                                                 Batch <span t-field="ob.batch_id" style="padding-left: 10px;padding-right: 10px"/>

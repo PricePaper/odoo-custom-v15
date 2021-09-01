@@ -53,7 +53,8 @@ This module sets up the batch delivery process for price paper.
         'website_customer',
         'account_reports',
         'stock_product_location',
-        'account_batch_payment'
+        'account_batch_payment',
+        'purchase_extension'
     ],
     'qweb': [
 

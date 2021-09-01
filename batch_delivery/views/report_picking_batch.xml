@@ -18,7 +18,7 @@
                                                 <span t-field="ob.purchase_id.pickup_address_id.state_id"/>
                                                 <span t-field="ob.purchase_id.pickup_address_id.zip"/>
                                                 <br/>
-                                                <span t-field="ob.purchase_id.pickup_address_id.phone"/>
+                                                <span t-if="ob.purchase_id.pickup_address_id.phone"><i class="fa fa-phone"/></span><span t-field="ob.purchase_id.pickup_address_id.phone" style="padding-left:4px;"/>
                                             </div>
                                             <div class="col-4 text-right">
                                                 <span t-esc="ob.name"/>

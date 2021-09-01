@@ -167,7 +167,9 @@
             <field name="inherit_id" ref="stock.view_picking_form"/>
             <field name="arch" type="xml">
 
-
+                <button name="%(stock.action_report_delivery)d" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </button>
                 <button name="button_validate" position="after">
                     <field name="is_return" invisible="1"/>
                     <button name="action_make_transit" type="object" string="Mark as Transit" groups="account.group_account_invoice"

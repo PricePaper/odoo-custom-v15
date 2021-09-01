@@ -82,7 +82,7 @@
             <field name="inherit_id" ref="sale.view_order_product_pivot"/>
             <field name="arch" type="xml">
                <field name="price_subtotal" position='replace'>
-                  <field name="qty_delivered" type="measure"/>
+                  <field name="product_uom_qty" type="measure"/>
                </field>
             </field>
         </record>
@@ -92,7 +92,7 @@
              <field name="inherit_id" ref="sale.view_order_product_graph"/>
              <field name="arch" type="xml">
                <field name="price_subtotal" position='replace'>
-                  <field name="qty_delivered" type="measure"/>
+                  <field name="product_uom_qty" type="measure"/>
                </field>
              </field>
         </record>

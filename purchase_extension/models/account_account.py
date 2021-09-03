@@ -71,7 +71,7 @@ class AccountInvoice(models.Model):
     def receipt_change(self):
         if not self.vendor_bill_receipt_id:
             return {}
-        self.receipt_change_bill(self.bill_receipt_id)
+        self.receipt_change_bill(self.vendor_bill_receipt_id)
         return{}
 
     def receipt_change_bill(self, receipt):

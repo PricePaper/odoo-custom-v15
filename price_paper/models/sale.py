@@ -1077,7 +1077,7 @@ class SaleOrderLine(models.Model):
             lines = self.search(
                 [('order_id.storage_contract', '=', True), ('state', '=', 'released'), ('is_downpayment', '=', False)])
             for sl in lines:
-                if (sl.product_uom_qty - sum(sl.storage_contract_line_ids.mapped('product_uom_qty'))) > value:
+                if (sl.qty_delivered - sum(sl.storage_contract_line_ids.mapped('product_uom_qty'))) > value:
                     ids.append(sl.id)
         return [('id', 'in', ids)]
 

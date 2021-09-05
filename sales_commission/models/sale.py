@@ -30,11 +30,12 @@ class SaleOrder(models.Model):
 
     @api.model
     def correct_sc_po(self):
+        pass
         # csvfile = open('scd_journal.csv', 'a+')
         # fs = ['sc', 'invoice', 'po', 'jrnl', 'name','note', 'accout','debit', 'credit']
         # writer = csv.DictWriter(csvfile, fieldnames=fs)
         # writer.writeheader()
-        for sc in self.search([('storage_contract', '=', True)]): #self.browse(103269):#.search([('storage_contract', '=', True)]):
+        # for sc in self.search([('storage_contract', '=', True)]): #self.browse(103269):#.search([('storage_contract', '=', True)]):
         #     res = {'sc':sc.name}        
         #     # writer.writerow({'sc':sc.name})
         #     stc = ch = 0
@@ -67,20 +68,20 @@ class SaleOrder(models.Model):
 
         #     print(sc.name, stc, ch)
         # csvfile.close()
-                    move = line.storage_contract_line_ids.mapped('move_ids').mapped('account_move_ids')
-                    if 683 not in move.mapped('line_ids').mapped('account_id').ids:
-                        aml = move.mapped('line_ids').filtered(lambda r: r.account_id.id == 687)
-                        aml.mapped('move_id').button_cancel()
-                        aml.write({'account_id': 683})
-                        aml.mapped('move_id').post()
-                if line.purchase_line_ids:
-                    move = line.purchase_line_ids.mapped('move_ids').mapped('account_move_ids')
-                    if 683 not in move.mapped('line_ids').mapped('account_id').ids:
-                        aml = move.mapped('line_ids').filtered(lambda r: r.account_id.id == 687)
-                        aml.mapped('move_id').button_cancel()
-                        aml.write({'account_id': 683})
-                        aml.mapped('move_id').post()
-        return False
+        #             move = line.storage_contract_line_ids.mapped('move_ids').mapped('account_move_ids')
+        #             if 683 not in move.mapped('line_ids').mapped('account_id').ids:
+        #                 aml = move.mapped('line_ids').filtered(lambda r: r.account_id.id == 687)
+        #                 aml.mapped('move_id').button_cancel()
+        #                 aml.write({'account_id': 683})
+        #                 aml.mapped('move_id').post()
+        #         if line.purchase_line_ids:
+        #             move = line.purchase_line_ids.mapped('move_ids').mapped('account_move_ids')
+        #             if 683 not in move.mapped('line_ids').mapped('account_id').ids:
+        #                 aml = move.mapped('line_ids').filtered(lambda r: r.account_id.id == 687)
+        #                 aml.mapped('move_id').button_cancel()
+        #                 aml.write({'account_id': 683})
+        #                 aml.mapped('move_id').post()
+        # return False
 
     @api.model
     def link_sc(self, sc_line_id=False, po_line_id=False):

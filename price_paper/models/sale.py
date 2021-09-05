@@ -1068,7 +1068,7 @@ class SaleOrderLine(models.Model):
     def _compute_storage_delivered_qty(self):
         for line in self:
             sale_lines = line.storage_contract_line_ids.filtered(lambda r: r.order_id.state != 'draft')
-            line.storage_remaining_qty = line.product_uom_qty - sum(sale_lines.mapped('product_uom_qty'))
+            line.storage_remaining_qty = line.qty_delivered - sum(sale_lines.mapped('product_uom_qty'))
 
     @api.multi
     def _search_storage_remaining_qty(self, operator, value):

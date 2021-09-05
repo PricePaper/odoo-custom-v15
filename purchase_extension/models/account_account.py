@@ -13,7 +13,10 @@ class AccountInvoice(models.Model):
         comodel_name='stock.picking',
         string='Autocomplete from Receipt'
     )
-
+    bill_receipt_id = fields.Many2one(
+        comodel_name='stock.picking',
+        string='Autocomplete From Receipt'
+    )
 
     @api.multi
     def action_invoice_open(self):
@@ -35,6 +38,9 @@ class AccountInvoice(models.Model):
         invoice_line_tax_ids = line.purchase_line_id.order_id.fiscal_position_id.map_tax(taxes, line.product_id, line.purchase_line_id.order_id.partner_id)
         invoice_line = self.env['account.invoice.line']
         date = self.date or self.date_invoice
+        price = line.price_unit
+        if self.type == 'in_refund':
+            price = -1 * price
         data = {
             'purchase_line_id': line.purchase_line_id.id,
             'name': line.picking_id.name + ': ' + line.product_id.name,
@@ -42,7 +48,7 @@ class AccountInvoice(models.Model):
             'uom_id': line.product_uom.id,
             'product_id': line.product_id.id,
             'account_id': invoice_line.with_context({'journal_id': self.journal_id.id, 'type': 'in_invoice'})._default_account(),
-            'price_unit': line.price_unit,
+            'price_unit': price,
             'quantity': line.quantity_done,
             'discount': 0.0,
             'account_analytic_id': line.purchase_line_id.account_analytic_id.id,
@@ -54,22 +60,33 @@ class AccountInvoice(models.Model):
             data['account_id'] = account.id
         return data
 
+    @api.onchange('bill_receipt_id')
+    def bill_receipt_change(self):
+        if not self.bill_receipt_id:
+            return {}
+        self.receipt_change_bill(self.bill_receipt_id)
+        return{}
+
     @api.onchange('vendor_bill_receipt_id')
     def receipt_change(self):
         if not self.vendor_bill_receipt_id:
             return {}
+        self.receipt_change_bill(self.vendor_bill_receipt_id)
+        return{}
+
+    def receipt_change_bill(self, receipt):
         if not self.partner_id:
-            self.partner_id = self.vendor_bill_receipt_id.partner_id.parent_id\
-                and self.vendor_bill_receipt_id.partner_id.parent_id.id\
-                or self.vendor_bill_receipt_id.partner_id.id
+            self.partner_id = receipt.partner_id.parent_id\
+                and receipt.partner_id.parent_id.id\
+                or receipt.partner_id.id
 
         if not self.invoice_line_ids:
             #as there's no invoice line yet, we keep the currency of the PO
-            self.currency_id = self.vendor_bill_receipt_id.mapped(
+            self.currency_id = receipt.mapped(
                 'move_ids_without_package').mapped('purchase_line_id').mapped('order_id').currency_id
 
         new_lines = self.env['account.invoice.line']
-        for line in self.vendor_bill_receipt_id.mapped('move_ids_without_package'):
+        for line in receipt.mapped('move_ids_without_package'):
             data = self._prepare_invoice_line_from_stock_move_line(line)
             new_line = new_lines.new(data)
             new_line._set_additional_fields(self)
@@ -77,7 +94,7 @@ class AccountInvoice(models.Model):
 
         self.invoice_line_ids += new_lines
         self.payment_term_id = self.partner_id.property_supplier_payment_term_id
-        # self.vendor_bill_receipt_id = False
+        # receipt = False
         return {}
 
 

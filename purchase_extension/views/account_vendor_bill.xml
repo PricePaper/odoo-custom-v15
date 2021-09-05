@@ -50,6 +50,10 @@
                         class="oe_edit_only" domain="[('partner_id','child_of',[partner_id]), ('state', '=', 'done'), ('picking_type_code', '=', 'incoming')]"
                         placeholder="Select a receipt"
                         options="{'no_create': True, 'no_open': True}"/>
+                    <field name="bill_receipt_id" attrs="{'invisible': ['|', '|', ('state','not in',['draft']), ('state', '=', 'purchase'), ('type', '=', 'in_invoice')]}"
+                        class="oe_edit_only" domain="[('partner_id','child_of',[partner_id]), ('state', '=', 'done'), ('picking_type_code', '=', 'outgoing'), ('move_ids_without_package.purchase_line_id', '!=', False)]"
+                        placeholder="Select a receipt"
+                        options="{'no_create': True, 'no_open': True}"/>
                 </field>
             </field>
         </record>

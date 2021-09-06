@@ -30,18 +30,31 @@ class SaleOrder(models.Model):
 
     @api.model
     def correct_sc_po(self):
-        pass
+        # pass
         # csvfile = open('scd_journal.csv', 'a+')
         # fs = ['sc', 'invoice', 'po', 'jrnl', 'name','note', 'accout','debit', 'credit']
         # writer = csv.DictWriter(csvfile, fieldnames=fs)
         # writer.writeheader()
-        # for sc in self.search([('storage_contract', '=', True)]): #self.browse(103269):#.search([('storage_contract', '=', True)]):
-        #     res = {'sc':sc.name}        
-        #     # writer.writerow({'sc':sc.name})
-        #     stc = ch = 0
-        #     for sc_line in sc.order_line:
-
-        #         if sc_line.storage_contract_line_ids:
+        for sc in self.search([('storage_contract', '=', True)]): #self.browse(103269):#.search([('storage_contract', '=', True)]):
+            #     res = {'sc':sc.name}        
+            #     # writer.writerow({'sc':sc.name})
+            #     stc = ch = 0
+            for line in sc.order_line:
+                if line.storage_contract_line_ids:
+                    move = line.storage_contract_line_ids.mapped('move_ids').mapped('account_move_ids')
+                    if 683 not in move.mapped('line_ids').mapped('account_id').ids:
+                        aml = move.mapped('line_ids').filtered(lambda r: r.account_id.id == 687)
+                        aml.mapped('move_id').button_cancel()
+                        aml.write({'account_id': 683})
+                        aml.mapped('move_id').post()
+                if line.purchase_line_ids:
+                    move = line.purchase_line_ids.mapped('move_ids').mapped('account_move_ids')
+                    if 683 not in move.mapped('line_ids').mapped('account_id').ids:
+                        aml = move.mapped('line_ids').filtered(lambda r: r.account_id.id == 687)
+                        aml.mapped('move_id').button_cancel()
+                        aml.write({'account_id': 683})
+                        aml.mapped('move_id').post()
+        return True
         #             move = sc_line.storage_contract_line_ids.mapped('move_ids').mapped('account_move_ids')
         #             for line in move.mapped('line_ids'):
         #                 # print(line.account_id.id)

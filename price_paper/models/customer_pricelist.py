@@ -9,8 +9,8 @@ class CustomerPricelist(models.Model):
     _rec_name = 'pricelist_id'
 
     sequence = fields.Integer(string='Sequence')
-    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist')
-    partner_id = fields.Many2one('res.partner', string='Customer')
+    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', ondelete='cascade',)
+    partner_id = fields.Many2one('res.partner', string='Customer', ondelete='cascade',)
 
 
 CustomerPricelist()

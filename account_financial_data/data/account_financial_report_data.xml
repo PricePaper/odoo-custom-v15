@@ -4,23 +4,329 @@
         <!--        Formula Changes         -->
        <record id="account_reports.account_financial_report_total_assets0" model="account.financial.html.report.line">
             <field name="formulas">balance = CA.balance + FA.balance + PNCA.balance + OA1.balance</field>
+            <field name="domain"></field>
         </record>
         <record id="account_reports.account_financial_report_current_liabilities0" model="account.financial.html.report.line">
             <field name="formulas">balance = CL1.balance + CL2.balance + CL3.balance</field>
+            <field name="domain"></field>
         </record>
          <record id="account_reports.account_financial_report_liabilities_view0" model="account.financial.html.report.line">
             <field name="formulas">balance = CL.balance + NL.balance + OCL.balance + LTL.balance</field>
-        </record>
-
-        <!--        Domain Changes           -->
+            <field name="domain"></field>
+         </record>
         <record id="account_reports.account_financial_report_current_liabilities1" model="account.financial.html.report.line">
             <field name="domain" eval="[('account_id.user_type_id', 'in', [ref('account.data_account_type_current_liabilities')])]"/>
+            <field name="formulas">balance = -sum.balance</field>
         </record>
         <record id="account_reports.account_financial_report_cost_sales0" model="account.financial.html.report.line">
-              <field name="domain" eval="[('account_id.user_type_id', 'in', [ref('account.data_account_type_direct_costs'), ref('__import__.data_account_type_cost_of_goods_sold')])]" />
+            <field name="domain" eval="[('account_id.user_type_id', 'in', [ref('account.data_account_type_direct_costs'), ref('__import__.data_account_type_cost_of_goods_sold')])]" />
+            <field name="formulas">balance = sum.balance</field>
         </record>
         <record id="account_reports.account_financial_report_current_assets0" model="account.financial.html.report.line">
             <field name="domain" eval="[('account_id.user_type_id', 'in', [ref('account.data_account_type_current_assets'), ref('__import__.data_account_type_other_current_asset')])]" />
+            <field name="formulas">balance = sum.balance</field>
         </record>
+        <record id="account_reports.account_financial_report_detailed_net_profit0" model="account.financial.html.report.line">
+            <field name="formulas">debit = sum.debit; credit = sum.credit</field>
+            <field name="domain" eval="[('account_id.user_type_id.include_initial_balance', '=', False)]" />
+        </record>
+        <record id="account_reports.account_financial_report_net_profit0" model="account.financial.html.report.line">
+            <field name="domain"></field>
+            <field name="formulas">balance = OPINC.balance + OIN.balance - COS.balance - EXP.balance - DEP.balance</field>
+        </record>
+
+        <record id="account_reports.account_financial_report_totalincome0" model="account.financial.html.report.line">
+            <field name="formulas">balance = OPINC.balance + OIN.balance</field>
+            <field name="domain"></field>
+        </record>
+
+        <record id="account_reports.account_financial_report_gross_profit0" model="account.financial.html.report.line">
+            <field name="formulas">balance = OPINC.balance - COS.balance</field>
+            <field name="domain"></field>
+        </record>
+
+        <record id="account_reports.account_financial_report_income0" model="account.financial.html.report.line">
+            <field name="formulas">balance = -sum.balance</field>
+            <field name="domain" eval="[('account_id.user_type_id', '=', ref('account.data_account_type_revenue'))]" />
+        </record>
+
+        <record id="account_reports.account_financial_report_other_income0" model="account.financial.html.report.line">
+            <field name="formulas">balance = -sum.balance</field>
+            <field name="domain" eval="[('account_id.user_type_id', '=', ref('account.data_account_type_other_income'))]" />
+        </record>
+
+        <record id="account_reports.account_financial_report_less_expenses0" model="account.financial.html.report.line">
+            <field name="formulas">balance = EXP.balance + DEP.balance</field>
+           <field name="domain"></field>
+        </record>
+        <record id="account_reports.account_financial_report_expense0" model="account.financial.html.report.line">
+            <field name="formulas">balance = sum.balance</field>
+            <field name="domain" eval="[('account_id.user_type_id', '=', ref('account.data_account_type_expenses'))]" />
+        </record>
+        <record id="account_reports.account_financial_report_depreciation0" model="account.financial.html.report.line">
+            <field name="formulas">balance = sum.balance</field>
+            <field name="domain" eval="[('account_id.user_type_id', '=', ref('account.data_account_type_depreciation'))]" />
+        </record>
+
+
+        <!-- BALANCE SHEET -->
+
+
+
+        <record id="account_reports.account_financial_report_current_assets_view0" model="account.financial.html.report.line">
+            <field name="domain"></field>
+            <field name="formulas">balance = BA.balance + REC.balance + CAS.balance + PRE.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_bank_view0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.user_type_id', '=', ref('account.data_account_type_liquidity'))]" />
+            <field name="formulas">balance = sum.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_receivable0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.user_type_id.type', '=', 'receivable')]" />
+            <field name="formulas">balance = sum.balance</field>
+        </record>
+
+        <record id="account_reports.account_financial_report_prepayements0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.user_type_id', '=', ref('account.data_account_type_prepayments'))]" />
+            <field name="formulas">balance = sum.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_fixed_assets_view0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.user_type_id', '=', ref('account.data_account_type_fixed_assets'))]" />
+            <field name="formulas">balance = sum.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_non_current_assets_view0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.user_type_id', '=', ref('account.data_account_type_non_current_assets'))]" />
+            <field name="formulas">balance = sum.balance</field>
+        </record>
+
+        <record id="account_reports.account_financial_report_current_liabilities_payable" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.user_type_id.type', '=', 'payable')]"/>
+            <field name="formulas">balance = -sum.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_non_current_liabilities0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.user_type_id', '=', ref('account.data_account_type_non_current_liabilities'))]" />
+            <field name="formulas">balance = -sum.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_net_assets0" model="account.financial.html.report.line">
+            <field name="formulas">balance = TA.balance - L.balance</field>
+            <field name="domain"></field>
+        </record>
+        <record id="account_reports.account_financial_report_equity0" model="account.financial.html.report.line">
+            <field name="formulas">balance = UNAFFECTED_EARNINGS.balance + RETAINED_EARNINGS.balance</field>
+            <field name="domain"></field>
+        </record>
+        <record id="account_reports.account_financial_unaffected_earnings0" model="account.financial.html.report.line">
+            <field name="domain">[]</field>
+            <field name="formulas">balance = CURR_YEAR_EARNINGS.balance + PREV_YEAR_EARNINGS.balance</field>
+        </record>
+        <record id="account_reports.account_financial_current_year_earnings0" model="account.financial.html.report.line">
+            <field name="formulas">balance = CURR_YEAR_EARNINGS_PNL.balance + CURR_YEAR_EARNINGS_ALLOC.balance</field>
+            <field name="domain"></field>
+        </record>
+        <record id="account_reports.account_financial_current_year_earnings_line_1" model="account.financial.html.report.line">
+            <field name="formulas">balance = -sum.balance</field>
+            <field name="domain"></field>
+        </record>
+        <record id="account_reports.account_financial_current_year_earnings_line_2" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.user_type_id', '=', ref('account.data_unaffected_earnings'))]" />
+            <field name="formulas">balance = -sum.balance</field>
+        </record>
+        <record id="account_reports.account_financial_previous_year_earnings0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.user_type_id', '=', ref('account.data_unaffected_earnings'))]" />
+            <field name="formulas">balance = NEP.balance - sum.balance - CURR_YEAR_EARNINGS.balance</field>
+        </record>
+        <record id="account_reports.account_financial_retained_earnings0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.user_type_id', '=', ref('account.data_account_type_equity'))]" />
+            <field name="formulas">balance = -sum.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_liabilities_and_equity_view0" model="account.financial.html.report.line">
+            <field name="formulas">balance = L.balance + EQ.balance</field>
+            <field name="domain"></field>
+        </record>
+
+
+        <!-- CASH SUMMARY -->
+
+
+        <record id="account_reports.account_financial_report_cashsummary_net_increase0" model="account.financial.html.report.line">
+            <field name="formulas">balance = OP.balance + FI.balance + IN.balance + UNC.balance + REGUL.balance</field>
+            <field name="domain"></field>
+        </record>
+
+        <record id="account_reports.account_financial_report_cashsummary_operating0" model="account.financial.html.report.line">
+            <field name="formulas">balance = PRECUS.balance + CACUS.balance + PRESUP.balance + LCP.balance</field>
+            <field name="domain"></field>
+        </record>
+        <record id="account_reports.account_financial_report_cashsummary_prepayments_received0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.internal_type', '=', 'receivable')]" />
+            <field name="formulas">balance = -sum.amount_residual</field>
+        </record>
+        <record id="account_reports.account_financial_report_cashsummary_cash_received0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('credit', '>', 0), ('account_id.tag_ids', '=', ref('account.account_tag_operating'))]" />
+            <field name="formulas">balance = -sum.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_cashsummary_cash_paid0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.internal_type', '=', 'payable')]" />
+            <field name="formulas">balance = -sum.amount_residual</field>
+        </record>
+        <record id="account_reports.account_financial_report_cashsummary_cash_spent0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('debit', '>', 0), ('account_id.tag_ids', '=', ref('account.account_tag_operating'))]" />
+            <field name="formulas">balance = -sum.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_cashsummary_investing0" model="account.financial.html.report.line">
+            <field name="formulas">balance = INV_IN.balance + INV_OUT.balance</field>
+            <field name="domain"></field>
+        </record>
+        <record id="account_reports.account_financial_report_cashsummary_investing_in0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('credit', '>', 0),('account_id.tag_ids', '=', ref('account.account_tag_investing'))]" />
+            <field name="formulas">balance = -sum.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_cashsummary_investing_out0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('debit', '>', 0), ('account_id.tag_ids', '=', ref('account.account_tag_investing'))]" />
+            <field name="formulas">balance = -sum.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_cashsummary_financing0" model="account.financial.html.report.line">
+            <field name="formulas">balance = FI_IN.balance + FI_OUT.balance</field>
+            <field name="domain"></field>
+        </record>
+        <record id="account_reports.account_financial_report_cashsummary_financing_in0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('credit', '>', 0), ('account_id.tag_ids', '=', ref('account.account_tag_financing'))]" />
+            <field name="formulas">balance = -sum.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_cashsummary_financing_out0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('debit', '>', 0), ('account_id.tag_ids', '=', ref('account.account_tag_financing'))]" />
+            <field name="formulas">balance = -sum.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_cashsummary_unclassified0" model="account.financial.html.report.line">
+            <field name="formulas">balance = UNC_IN.balance + UNC_OUT.balance</field>
+            <field name="domain"></field>
+        </record>
+        <record id="account_reports.account_financial_report_cashsummary_unclassified_in0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('credit', '>', 0), ('account_id.internal_type', 'not in', ('receivable', 'payable')), ('account_id.tag_ids', 'not in', [ref('account.account_tag_financing'), ref('account.account_tag_investing'), ref('account.account_tag_operating')])]" />
+            <field name="formulas">balance = -sum.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_cashsummary_unclassified_out0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('debit', '>', 0), ('account_id.internal_type', 'not in', ('receivable', 'payable')), ('account_id.tag_ids', 'not in', [ref('account.account_tag_financing'), ref('account.account_tag_investing'), ref('account.account_tag_operating')])]" />
+            <field name="formulas">balance = -sum.balance</field>
+        </record>
+
+        <!-- Computation Error: this line should never be displayed and serves as a control check for developpers -->
+        <record id="account_reports.account_financial_report_cashsummary_regulator0" model="account.financial.html.report.line">
+            <field name="formulas">balance = (CASHEND.balance - CASHSTART.balance) - (OP.balance + FI.balance + IN.balance + UNC.balance)</field>
+            <field name="domain"></field>
+        </record>
+
+        <record id="account_reports.account_financial_report_cashsummary_opening_balance0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.internal_type', '=', 'liquidity')]" />
+            <field name="formulas">balance = sum.balance</field>
+        </record>
+
+        <record id="account_reports.account_financial_report_cashsummary_closing_balance0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.internal_type', '=', 'liquidity')]" />
+            <field name="formulas">balance = sum.balance</field>
+        </record>
+
+        <!--
+            EXECUTIVE SUMMARY
+        -->
+
+         <record id="account_reports.account_financial_report_executivesummary_cash0" model="account.financial.html.report.line">
+            <field name="domain"></field>
+            <field name="formulas"></field>
+        </record>
+
+        <record id="account_reports.account_financial_report_executivesummary_cash_received0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.user_type_id.type', '=', 'liquidity')]" />
+            <field name="formulas">balance = sum.debit</field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_cash_spent0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.user_type_id.type', '=', 'liquidity')]" />
+            <field name="formulas">balance = -sum.credit</field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_cash_surplus0" model="account.financial.html.report.line">
+            <field name="formulas">balance = CR.balance + CS.balance</field>
+            <field name="domain"></field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_closing_bank_balance0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.internal_type', '=', 'liquidity')]" />
+            <field name="formulas">balance = sum.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_profitability0" model="account.financial.html.report.line">
+            <field name="domain"></field>
+            <field name="formulas"></field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_income0" model="account.financial.html.report.line">
+            <field name="domain"></field>
+            <field name="formulas">balance = INC.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_direct_costs0" model="account.financial.html.report.line">
+            <field name="domain"></field>
+            <field name="formulas">balance = COS.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_gross_profit0" model="account.financial.html.report.line">
+            <field name="domain"></field>
+            <field name="formulas">balance = GRP.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_expenses0" model="account.financial.html.report.line">
+            <field name="domain"></field>
+            <field name="formulas">balance = LEX.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_profit0" model="account.financial.html.report.line">
+            <field name="domain"></field>
+            <field name="formulas">balance = NEP.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_balancesheet0" model="account.financial.html.report.line">
+            <field name="domain"></field>
+            <field name="formulas"></field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_debtors0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.user_type_id.type', '=', 'receivable')]" />
+            <field name="formulas">balance = sum.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_creditors0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.user_type_id.type', '=', 'payable')]" />
+            <field name="formulas">balance = sum.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_net_assets0" model="account.financial.html.report.line">
+            <field name="domain"></field>
+            <field name="formulas">balance = NA.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_performance0" model="account.financial.html.report.line">
+            <field name="domain"></field>
+            <field name="formulas"></field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_gpmargin0" model="account.financial.html.report.line">
+            <field name="domain"></field>
+            <field name="formulas">balance = GRP.balance / OPINC.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_npmargin0" model="account.financial.html.report.line">
+            <field name="domain"></field>
+            <field name="formulas">balance = NEP.balance / INC.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_return_investment0" model="account.financial.html.report.line">
+            <field name="formulas">balance = NEP.balance / TA.balance</field>
+            <field name="domain"></field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_position0" model="account.financial.html.report.line">
+            <field name="domain"></field>
+            <field name="formulas"></field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_avdebt0" model="account.financial.html.report.line">
+            <field name="formulas">balance = DEB.balance / OPINC.balance * NDays</field>
+            <field name="domain"></field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_avgcre0" model="account.financial.html.report.line">
+            <field name="formulas">balance = -CRE.balance / OPINC.balance * NDays</field>
+            <field name="domain"></field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_st_cash_forecast0" model="account.financial.html.report.line">
+            <field name="formulas">balance = DEB.balance + CRE.balance</field>
+            <field name="domain"></field>
+        </record>
+        <record id="account_reports.account_financial_report_executivesummary_ca_to_l0" model="account.financial.html.report.line">
+            <field name="formulas">balance = CA.balance / CL.balance</field>
+            <field name="domain"></field>
+        </record>
+
     </data>
 </odoo>

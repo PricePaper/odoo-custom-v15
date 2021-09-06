@@ -6,7 +6,15 @@ from odoo import models, fields, api, _
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    over_processed = fields.Boolean(string='Over Processed', copy=False)
+    over_processed = fields.Boolean(string='Over Processed', compute='_compute_over_processed')
+
+    @api.depends('move_ids_without_package.po_original_qty')
+    def _compute_over_processed(self):
+        for record in self:
+            if any([move.po_original_qty < move.quantity_done for move in record.move_ids_without_package]):
+                record.over_processed = True
+            else:
+                record.over_processed = False
 
     @api.multi
     def action_sc_sync_with_receipt(self):

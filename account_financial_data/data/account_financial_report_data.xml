@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--        Formula Changes         -->
+       <record id="account_reports.account_financial_report_total_assets0" model="account.financial.html.report.line">
+            <field name="formulas">balance = CA.balance + FA.balance + PNCA.balance + OA1.balance</field>
+        </record>
+        <record id="account_reports.account_financial_report_current_liabilities0" model="account.financial.html.report.line">
+            <field name="formulas">balance = CL1.balance + CL2.balance + CL3.balance</field>
+        </record>
+         <record id="account_reports.account_financial_report_liabilities_view0" model="account.financial.html.report.line">
+            <field name="formulas">balance = CL.balance + NL.balance + OCL.balance + LTL.balance</field>
+        </record>
+
+        <!--        Domain Changes           -->
+        <record id="account_reports.account_financial_report_current_liabilities1" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.user_type_id', 'in', [ref('account.data_account_type_current_liabilities')])]"/>
+        </record>
+        <record id="account_reports.account_financial_report_cost_sales0" model="account.financial.html.report.line">
+              <field name="domain" eval="[('account_id.user_type_id', 'in', [ref('account.data_account_type_direct_costs'), ref('__import__.data_account_type_cost_of_goods_sold')])]" />
+        </record>
+        <record id="account_reports.account_financial_report_current_assets0" model="account.financial.html.report.line">
+            <field name="domain" eval="[('account_id.user_type_id', 'in', [ref('account.data_account_type_current_assets'), ref('__import__.data_account_type_other_current_asset')])]" />
+        </record>
+    </data>
+</odoo>

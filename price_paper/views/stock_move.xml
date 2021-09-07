@@ -40,7 +40,7 @@
                 <button name="button_validate" position="after">
                     <field name="over_processed" invisible="1"/>
                     <button name="sync_over_processed" type="object" string="Sync OverProcessed"
-                            attrs="{'invisible': [('over_processed', '=', False)]}" class="oe_highlight"/>
+                            attrs="{'invisible': [('over_processed', '=', False), ('state', '=', 'done')]}" class="oe_highlight"/>
                 </button>
 
             </field>

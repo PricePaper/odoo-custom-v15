@@ -1012,7 +1012,6 @@ class SaleOrderLine(models.Model):
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
         for line in self:
             if line.order_id.storage_contract:
-                print(line.qty_invoiced, line.product_uom_qty, float_compare(line.qty_invoiced, line.product_uom_qty, precision_digits=precision))
                 if float_compare(line.qty_invoiced, line.product_uom_qty, precision_digits=precision) >= 0:
                     line.invoice_status = 'invoiced'
                 elif float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) <= 0 and line.state in ['received', 'done']:

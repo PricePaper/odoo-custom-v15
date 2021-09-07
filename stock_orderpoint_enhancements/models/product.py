@@ -86,7 +86,6 @@ class ProductProduct(models.Model):
                 result.extend(rows)
             else:
                 break
-
         if result:
             result = self.filler_to_append_zero_qty(result, to_date, from_date)
             date_to = (to_date + relativedelta(days=periods)).strftime('%Y-%m-%d')
@@ -238,6 +237,7 @@ class ProductProduct(models.Model):
             for value in values:
                 if eval(str(quantity) + value[0]):
                     quantity = quantity * (1.0 + value[1])
+                    break
         return quantity
 
     @api.multi

@@ -68,6 +68,15 @@
                 <field name="name" position="after">
                     <field name="hold_state"/>
                 </field>
+                <field name="commitment_date" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="expected_date" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="expected_date" position="after">
+                    <field name="deliver_by"/>
+                </field>
             </field>
         </record>
 

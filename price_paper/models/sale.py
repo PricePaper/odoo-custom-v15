@@ -1039,9 +1039,11 @@ class SaleOrderLine(models.Model):
         super(SaleOrderLine, self)._compute_qty_delivered()
         for line in self:
             if line.order_id.storage_contract:
+                qty = 0.0
                 for po_line in line.purchase_line_ids:
-                    if po_line.state in ('purchase', 'done'):
-                        line.qty_delivered = sum(po_line.move_ids.mapped('quantity_done'))
+                    if po_line.state in ('purchase', 'done', 'received'):
+                        qty += sum(po_line.move_ids.filtered(lambda s: s.state != 'cancel').mapped('quantity_done'))
+                line.qty_delivered = qty
             else:
                 if line.qty_delivered_method == 'stock_move':
                     qty = 0.0
@@ -1068,17 +1070,28 @@ class SaleOrderLine(models.Model):
     def _compute_storage_delivered_qty(self):
         for line in self:
             sale_lines = line.storage_contract_line_ids.filtered(lambda r: r.order_id.state != 'draft')
-            line.storage_remaining_qty = line.product_uom_qty - sum(sale_lines.mapped('product_uom_qty'))
+            if not line.purchase_line_ids and line.state in ['released', 'done']:
+                line.storage_remaining_qty = line.product_uom_qty - sum(sale_lines.mapped('product_uom_qty'))
+            else:
+                line.storage_remaining_qty = line.qty_delivered - sum(sale_lines.mapped('product_uom_qty'))
 
     @api.multi
     def _search_storage_remaining_qty(self, operator, value):
         ids = []
         if operator == '>':
-            lines = self.search(
-                [('order_id.storage_contract', '=', True), ('state', '=', 'released'), ('is_downpayment', '=', False)])
+            lines = self.search([
+                ('product_id.type', '!=', 'service'),
+                ('order_id.storage_contract', '=', True),
+                ('state', '=', 'released'),
+                ('is_downpayment', '=', False)
+            ])
             for sl in lines:
-                if (sl.product_uom_qty - sum(sl.storage_contract_line_ids.mapped('product_uom_qty'))) > value:
-                    ids.append(sl.id)
+                if not sl.purchase_line_ids:
+                    if (sl.product_uom_qty - sum(sl.storage_contract_line_ids.mapped('product_uom_qty'))) > value:
+                        ids.append(sl.id)
+                else:
+                    if (sl.qty_delivered - sum(sl.storage_contract_line_ids.mapped('product_uom_qty'))) > value:
+                        ids.append(sl.id)
         return [('id', 'in', ids)]
 
     @api.depends('product_id.sale_uoms')

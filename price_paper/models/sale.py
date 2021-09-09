@@ -1069,7 +1069,7 @@ class SaleOrderLine(models.Model):
     def _compute_storage_delivered_qty(self):
         for line in self:
             sale_lines = line.storage_contract_line_ids.filtered(lambda r: r.order_id.state != 'draft')
-            if not line.purchase_line_ids and line.state in ['released', 'done']:
+            if not line.sudo().purchase_line_ids and line.state in ['released', 'done']:
                 line.storage_remaining_qty = line.product_uom_qty - sum(sale_lines.mapped('product_uom_qty'))
             else:
                 line.storage_remaining_qty = line.qty_delivered - sum(sale_lines.mapped('product_uom_qty'))
@@ -1085,7 +1085,7 @@ class SaleOrderLine(models.Model):
                 ('is_downpayment', '=', False)
             ])
             for sl in lines:
-                if not sl.purchase_line_ids:
+                if not sl.sudo().purchase_line_ids:
                     if (sl.product_uom_qty - sum(sl.storage_contract_line_ids.mapped('product_uom_qty'))) > value:
                         ids.append(sl.id)
                 else:

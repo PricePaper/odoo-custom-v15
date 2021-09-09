@@ -10,12 +10,12 @@
                       <button string="Generate Products" type="object" name="generate_products"/>
                       <button string="Generate Report Lines" type="object" name="generate_lines"/>
                       <button string="Print(pdf)" type="object" name="print_pdf"/>
-                      <!-- <button string="Print(xlxs)" type="object" name="print_xlxs"/> -->
+                      <button string="Print(xlsx)" type="object" name="print_xlxs"/>
                   </header>
                     <sheet>
                         <group>
                             <group>
-                                <field name="vendor_ids" widget="many2many_tags"/>
+                                <field name="vendor_ids" widget="many2many_tags" domain="[('supplier', '=', True)]"/>
                                 <field name="categ_ids" widget="many2many_tags"/>
                                 <field name="qty_selection" />
                             </group>

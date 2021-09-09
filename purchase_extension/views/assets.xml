@@ -4,7 +4,7 @@
 	<template id="assets_backend" name="account assets" inherit_id="web.assets_backend">
         <xpath expr="." position="inside">
             <script type="text/javascript" src="/purchase_extension/static/src/js/product_drilldown.js"></script>
+						<script type="text/javascript" src="/purchase_extension/static/src/js/action_manager.js"/>
         </xpath>
 	</template>
-
 </odoo>

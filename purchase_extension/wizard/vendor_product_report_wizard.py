@@ -1,7 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models, SUPERUSER_ID, _
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+
+import json
+import io
+from odoo.tools import date_utils
+try:
+    from odoo.tools.misc import xlsxwriter
+except ImportError:
+    import xlsxwriter
 
 class VendorProductLines(models.TransientModel):
 
@@ -57,6 +65,8 @@ class VendorProductReportWizard(models.TransientModel):
             raise UserError(_('There is no Product for the choosen criteria'))
         if not self.start_date or not self.end_date:
             raise UserError(_('Date Should be selected.'))
+        if self.start_date > self.end_date:
+            raise ValidationError('Start Date must be less than End Date')
         for rec in self:
             products = self.product_ids.ids + self.product_ids.mapped('superseded').mapped('old_product').ids
             if not products:
@@ -116,6 +126,56 @@ class VendorProductReportWizard(models.TransientModel):
         return self.env.ref('purchase_extension.vendor_product_report').report_action(self)
     @api.multi
     def print_xlxs(self):
-        pass
+
+        data = {'rec' : self.id}
+        return {
+            'type': 'ir_actions_xlsx_download',
+            'data': {'model': 'vedor.product.report.wizard',
+                     'options': json.dumps(data, default=date_utils.json_default),
+                     'output_format': 'xlsx',
+                     'report_name': 'Excel Report',
+                     },
+            'report_type': 'xlsx',
+            }
+
+    def get_xlsx_report(self, data, response):
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+        sheet = workbook.add_worksheet()
+        cell_format = workbook.add_format({'font_size': '12px'})
+        head = workbook.add_format({'align': 'center', 'bold': True,'font_size':'20px'})
+        txt = workbook.add_format({'font_size': '10px'})
+        row, col = 0,0
+        sheet.write(row, col, 'Product Code', cell_format)
+        col+=1
+        sheet.write(row, col, 'Product Name', cell_format)
+        col+=1
+        sheet.write(row, col, 'UOM', cell_format)
+        col+=1
+        sheet.write(row, col, 'Qty', cell_format)
+        col+=1
+
+
+        rec = self.env['vedor.product.report.wizard'].browse(data['rec'])
+        row += 1
+
+        for res in rec.report_lines:
+            col = 0
+            sheet.write(row, col, res.product_code, cell_format)
+            col += 1
+            sheet.write(row, col, res.product_name, cell_format)
+            col += 1
+            sheet.write(row, col, res.product_uom.name, cell_format)
+            col += 1
+            if rec.qty_selection == 'ordered':
+                sheet.write(row, col, res.ordered_qty, cell_format)
+            if rec.qty_selection == 'delivered':
+                rec.write(row, col, res.delivered_qty, cell_format)
+            col += 1
+            row += 1
+        workbook.close()
+        output.seek(0)
+        response.stream.write(output.read())
+        output.close()
 
 VendorProductReportWizard()

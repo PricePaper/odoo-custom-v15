@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <template id="report_pdf_vendor_product_template">
+        <t t-call="web.html_container">
+            <div class="page">
+               <style>
+                  .o_main_table td {
+                      padding: 0.25rem;
+                      vertical-align: top;
+                      border-top: 1px solid black;
+                      text-align: center;
+                  }
+               </style>
+              <table class="table table-sm o_main_table" style="width:100%">
+                <thead>
+                    <tr>
+                        <th><strong>Product Code</strong></th>
+                        <th><strong>Product Name</strong></th>
+                        <th><strong>UOM</strong></th>
+                        <t t-if="o.qty_selection == 'ordered'"><th><strong>Ordered QTY</strong></th></t>
+                        <t t-if="o.qty_selection == 'delivered'"><th><strong>Delivered QTY</strong></th></t>
+                    </tr>
+                </thead>
+                <tbody>
+                  <t t-foreach="o.report_lines" t-as="product">
+                    <tr>
+                        <td>
+                            <span>
+                            <t t-esc="product.product_code"/>
+                            </span>
+                        </td>
+                        <td>
+                            <span >
+                            <t t-esc="product.product_name"/>
+                            </span>
+                        </td>
+                        <td>
+                            <span>
+                            <t t-esc="product.product_uom.name"/>
+                            </span>
+                        </td>
+                        <t t-if="o.qty_selection == 'ordered'">
+                          <td>
+                            <span>
+                              <t t-esc="'%.2f'% product.ordered_qty"/>
+                            </span>
+                          </td>
+                        </t>
+                        <t t-if="o.qty_selection == 'delivered'">
+                          <td>
+                            <span>
+                              <t t-esc="'%.2f'% product.delivered_qty"/>
+                            </span>
+                          </td>
+                        </t>
+
+                    </tr>
+                </t>
+                </tbody>
+              </table>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_pdf_vendor_product">
+      <t t-foreach="docs" t-as="o">
+        <t t-call="purchase_extension.report_pdf_vendor_product_template"/>
+      </t>
+    </template>
+
+</odoo>

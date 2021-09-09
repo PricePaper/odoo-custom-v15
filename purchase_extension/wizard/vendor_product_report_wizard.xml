@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_vendor_product_report_wiz" model="ir.ui.view">
+            <field name="name">vedor.product.report.wizard</field>
+            <field name="model">vedor.product.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Vendor Product QTY Report">
+                  <header>
+                      <button string="Generate Products" type="object" name="generate_products"/>
+                      <button string="Generate Report Lines" type="object" name="generate_lines"/>
+                      <button string="Print(pdf)" type="object" name="print_pdf"/>
+                      <!-- <button string="Print(xlxs)" type="object" name="print_xlxs"/> -->
+                  </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="vendor_ids" widget="many2many_tags"/>
+                                <field name="categ_ids" widget="many2many_tags"/>
+                                <field name="qty_selection" />
+                            </group>
+                            <group>
+                                <field name="start_date"/>
+                                <field name="end_date"/>
+                            </group>
+                            <field name="product_ids" widget="many2many_tags"/>
+                        </group>
+                        <field name="report_lines">
+                            <tree>
+                                <field name="product_id" invisible='1'/>
+                                <field name="product_code"/>
+                                <field name="product_name"/>
+                                <field name="product_uom"/>
+                                <field name="ordered_qty" attrs="{'column_invisible': [('parent.qty_selection', '=', 'delivered')]}"/>
+                                <field name="delivered_qty" attrs="{'column_invisible': [('parent.qty_selection', '=', 'ordered')]}"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="action_vendor_product_report" model="ir.actions.act_window">
+            <field name="name">Vendor Product Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">vedor.product.report.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">current</field>
+        </record>
+        <menuitem id="menu_vendor_report"
+                  name="Vendor Report"
+                  action="action_vendor_product_report"
+                  parent="purchase.menu_procurement_management"
+                  groups="purchase.group_purchase_manager"
+        />
+    </data>
+</odoo>

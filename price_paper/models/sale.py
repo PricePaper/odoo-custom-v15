@@ -1039,7 +1039,7 @@ class SaleOrderLine(models.Model):
         for line in self:
             if line.order_id.storage_contract:
                 qty = 0.0
-                for po_line in line.purchase_line_ids:
+                for po_line in line.sudo().purchase_line_ids:
                     if po_line.state in ('purchase', 'done', 'received'):
                         qty += sum(po_line.move_ids.filtered(lambda s: s.state != 'cancel').mapped('quantity_done'))
                 line.qty_delivered = qty

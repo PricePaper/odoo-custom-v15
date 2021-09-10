@@ -49,6 +49,8 @@ class VendorProductReportWizard(models.TransientModel):
         if self.vendor_ids:
             res_prd = self.env['product.product']
             products = self.env['product.supplierinfo'].search([('name', 'in', self.vendor_ids.ids), '|', ('date_end', '=', False), ('date_end', '>', fields.Date.today())]).mapped('product_id')
+            if self.categ_ids:
+                products = products.filtered(lambda r: r.categ_id in self.categ_ids)
             for product in products:
                 vend_seq = product.seller_ids.filtered(lambda r: r.name in self.vendor_ids).mapped('sequence')
                 non_seq = product.seller_ids.filtered(lambda r: r.name not in self.vendor_ids and (not r.date_end or r.date_end > fields.Date.today())).mapped('sequence')

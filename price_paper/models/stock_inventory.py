@@ -7,13 +7,15 @@ class StockInventory(models.Model):
     _inherit = 'stock.inventory'
 
     def action_validate(self):
-        return super(StockInventory, self.with_context(from_inv_adj = True)).action_validate()
+        res = super(StockInventory, self.with_context(from_inv_adj = True)).action_validate()
+        for line in self.mapped('move_ids').mapped('move_line_ids'):
+            line.product_onhand_qty = line.product_id.qty_available + line.product_id.transit_qty
+        return res
 
 StockInventory()
 
 class InventoryLine(models.Model):
     _inherit = "stock.inventory.line"
-
 
     @api.one
     @api.depends('location_id', 'product_id', 'package_id', 'product_uom_id', 'company_id', 'prod_lot_id', 'partner_id')

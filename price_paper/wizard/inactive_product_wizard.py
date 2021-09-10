@@ -13,12 +13,15 @@ class inactive_product_wizard(models.TransientModel):
     def display_inactive_product_report(self):
         latest_sale_date = "%s 00:00:00" % (str(self.latest_sale_date))
 
-        self._cr.execute(
-            "select product.id from product_product product join product_template template ON (product.product_tmpl_id = template.id) where product.id not in (select sol.product_id from sale_order_line sol join sale_order so ON (so.id = sol.order_id) where so.confirmation_date > '%s' and so.state in ('sale', 'done')) and template.type != 'service' and template.sale_ok='t' and product.active='t'" % (
+        self.env.cr.execute(
+            "select sol.product_id from sale_order_line sol join sale_order so ON (so.id = sol.order_id) where so.confirmation_date > '%s' and so.state in ('sale', 'done')" % (
                 latest_sale_date))
 
         pro_ids = self._cr.fetchall()
+
         product_ids = [pro_id and pro_id[0] for pro_id in pro_ids]
+        products = self.env['product.product'].search([('sale_ok', '=', True),
+            ('type', '!=', 'service')]).filtered(lambda r : r.id not in product_ids)
 
         action_id = self.env.ref('product.product_normal_action_sell').read()[0]
         if action_id:
@@ -29,7 +32,7 @@ class inactive_product_wizard(models.TransientModel):
                 'view_type': action_id['view_type'],
                 'view_mode': 'tree,form',
                 'search_view_id': action_id['search_view_id'],
-                'domain': [["id", "in", product_ids]],
+                'domain': [["id", "in", products.ids]],
                 'help': action_id['help'],
             }
 

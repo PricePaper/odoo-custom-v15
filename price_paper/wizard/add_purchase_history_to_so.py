@@ -174,7 +174,7 @@ class AddPurchaseHistorySO(models.TransientModel):
             for line in sale_history.sorted(key=lambda l: l.product_id.categ_id.name):
                 warning, price, price_from = line.order_line_id.calculate_customer_price()
                 archived = False
-                if not line.active or not line.product_id.active:
+                if not line.active or not line.product_id.active or not line.product_id.sale_ok:
                     archived = True
                 if archived and not self.archived or not archived and self.archived:
                     continue

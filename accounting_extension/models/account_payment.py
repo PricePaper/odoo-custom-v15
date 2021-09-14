@@ -354,7 +354,7 @@ class AccountPayment(models.Model):
 
     def _create_payment_entry(self, amount):
 
-        """ 
+        """
             Override method to support partial payment and discount in lines
         """
 
@@ -422,7 +422,7 @@ class AccountPayment(models.Model):
                     debit_t, credit_t, amount_currency_t, currency_id_t = aml_obj.with_context(
                         date=self.payment_date)._compute_amount_fields(amount_t, self.currency_id,
                                                                       self.company_id.currency_id)
-                    # if ther is no full reconciled lines then assign the aamount to move lines                    
+                    # if ther is no full reconciled lines then assign the aamount to move lines
                     # else append the current amount to existing amount
                     if not flag and not amount_r:
                         flag = True
@@ -444,7 +444,7 @@ class AccountPayment(models.Model):
             aml_obj.create(liquidity_aml_dict)
             move.post()
             return move
-# 
+#
         # return super(AccountPayment, self)._create_payment_entry(amount)
         else:
             aml_obj = self.env['account.move.line'].with_context(check_move_validity=False)
@@ -532,6 +532,8 @@ class AccountPayment(models.Model):
         """
         result = super(AccountPayment, self)._check_make_stub_line(invoice)
         discount = sum(self.env['account.payment.lines'].search([('invoice_id', '=', invoice.id)]).mapped('discount'))
+        if not discount and self.discount_amount:
+            discount = self.discount_amount
         result.update({'discount': formatLang(self.env, discount, currency_obj=invoice.currency_id)})
         if discount:
             if invoice.type in ['in_invoice', 'out_refund']:

@@ -203,8 +203,9 @@ class ResPartner(models.Model):
 
     @api.model
     def setup_pricelist_for_new_customer(self):
+        name = self.customer_code + ' - ' + self.name
         pricelist = self.env['product.pricelist'].create({
-            'name': self.customer_code,
+            'name': name,
             'type': 'customer'})
         self.env['customer.pricelist'].create({'pricelist_id': pricelist.id,
                                                'sequence': 1,

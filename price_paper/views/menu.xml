@@ -85,5 +85,11 @@
         <record model="ir.ui.menu" id="purchase.product_product_menu">
             <field name="name">Products</field>
         </record>
+        <record model="ir.ui.menu" id="mrp.menu_mrp_product_form">
+              <field name="action" eval="False"/>
+        </record>
+        <record model="ir.ui.menu" id="mrp.product_variant_mrp">
+            <field name="name">Products</field>
+        </record>
     </data>
 </odoo>

@@ -8,7 +8,7 @@
             <field name="inherit_id" ref="stock.product_form_view_procurement_button"/>
             <field name="arch" type="xml">
               <button name="action_update_quantity_on_hand" position='after'>
-                 <button name="action_change_product_uom" string="Change Product UOM" type="object" attrs="{'invisible': [('type', '!=', 'product')]}"/>
+                 <button name="action_change_product_uom" string="Duplicate Product" type="object" attrs="{'invisible': [('type', '!=', 'product')]}"/>
               </button>
             </field>
         </record>

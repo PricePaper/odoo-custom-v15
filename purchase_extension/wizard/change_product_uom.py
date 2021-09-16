@@ -16,6 +16,9 @@ class ChangeProductUom(models.TransientModel):
     new_uom = fields.Many2one('uom.uom', string='New UOM')
     new_sale_uoms = fields.Many2many('uom.uom', 'change_product_uom_rel', 'change_id', 'uom_id', string='New Sale UOMS')
     new_cost = fields.Float(string='Cost', digits=dp.get_precision('Product Price'))
+    volume = fields.Float(string='Volume')
+    weight = fields.Float(string='Weight')
+    duplicate_pricelist = fields.Boolean(string='Copy Pricelist')
 
     def create_duplicate_product(self):
         default_vals = {'name': self.new_name,
@@ -23,28 +26,34 @@ class ChangeProductUom(models.TransientModel):
                         'standard_price': self.new_cost,
                         'uom_id': self.new_uom.id,
                         'uom_po_id': self.new_uom.id,
-                        'sale_ok': False}
+                        'sale_ok': False,
+                        'weight': self.weight,
+                        'volume': self.volume}
         res = self.product_id.with_context(from_change_uom=True).copy(default=default_vals)
         res.sale_uoms = [(5, _, _)]
         res.sale_uoms = self.new_sale_uoms
-        lines = self.env['customer.product.price'].search([('product_id', '=', self.product_id.id)])
-        default_1 = {'product_id': res.id}
-        for line in lines:
-            new_price = 0
-            product = line.product_id
-            old_working_cost = product.cost
-            old_list_price = line.price
-            if product.uom_id != line.product_uom:
-                old_working_cost = product.uom_id._compute_price(product.cost, line.product_uom) * (
-                            (100 + product.categ_id.repacking_upcharge) / 100)
-            margin = float_round((old_list_price - old_working_cost) / old_list_price, precision_digits=2)
-            new_working_cost = res.cost
-            if res.uom_id != line.product_uom:
-                new_working_cost = res.uom_id._compute_price(new_working_cost, line.product_uom) * (
-                            (100 + res.categ_id.repacking_upcharge) / 100)
-            new_price = float_round(new_working_cost / (1 - margin), precision_digits=2)
-            default_1['price'] = new_price
-            new_line = line.copy(default=default_1)
+        if self.duplicate_pricelist:
+            lines = self.env['customer.product.price'].search([('product_id', '=', self.product_id.id)])
+            default_1 = {'product_id': res.id}
+
+            for line in lines:
+                new_price = 0
+                product = line.product_id
+                old_working_cost = product.cost
+                old_list_price = line.price
+                if product.uom_id != line.product_uom:
+                    old_working_cost = product.uom_id._compute_price(product.cost, line.product_uom) * (
+                                (100 + product.categ_id.repacking_upcharge) / 100)
+                margin = (old_list_price - old_working_cost) / old_list_price
+                new_working_cost = res.cost
+
+                if res.uom_id != line.product_uom:
+                    new_working_cost = res.uom_id._compute_price(new_working_cost, line.product_uom) * (
+                                (100 + res.categ_id.repacking_upcharge) / 100)
+
+                new_price = float_round(new_working_cost / (1 - margin), precision_digits=2)
+                default_1['price'] = new_price
+                new_line = line.copy(default=default_1)
         return {
                 'name': 'Product Variants',
                 'type': 'ir.actions.act_window',

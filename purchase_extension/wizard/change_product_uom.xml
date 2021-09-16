@@ -5,8 +5,13 @@
             <field name="name">change.product.uom</field>
             <field name="model">change.product.uom</field>
             <field name="arch" type="xml">
-                <form string="Change Product UOM">
+                <form string="Duplicate Product">
                     <sheet>
+                        <group>
+                            <group>
+                                <field name="duplicate_pricelist" widget='boolean_toggle'/>
+                            </group>
+                        </group>
                         <group>
                             <group>
                                 <field name="product_id" readonly='1'/>
@@ -17,6 +22,8 @@
                               <field name="new_cost" required='1'/>
                               <field name="new_sale_uoms" widget="many2many_tags" required='1'/>
                               <field name="new_uom" required='1'/>
+                              <field name="volume" />
+                              <field name="weight" />
                             </group>
                         </group>
 

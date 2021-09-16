@@ -3,6 +3,7 @@
 from odoo import api, fields, models, _
 from odoo.addons import decimal_precision as dp
 from odoo.tools import float_round
+from odoo.exceptions import ValidationError
 
 class ChangeProductUom(models.TransientModel):
 
@@ -29,6 +30,9 @@ class ChangeProductUom(models.TransientModel):
                         'sale_ok': False,
                         'weight': self.weight,
                         'volume': self.volume}
+        if self.new_default_code:
+            if self.product_id.default_code and self.product_id.default_code == self.new_default_code:
+                raise ValidationError('Internal refernce is same as Old product')
         res = self.product_id.with_context(from_change_uom=True).copy(default=default_vals)
         res.sale_uoms = [(5, _, _)]
         res.sale_uoms = self.new_sale_uoms

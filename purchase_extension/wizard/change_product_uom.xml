@@ -9,12 +9,15 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="duplicate_pricelist" widget='boolean_toggle'/>
+                                <field name="duplicate_pricelist" widget='boolean_toggle' help="Duplicate customer product priclist lines with new product"/>
                             </group>
-                        </group>
-                        <group>
                             <group>
                                 <field name="product_id" readonly='1'/>
+                            </group>
+                        </group>
+                        <separator string="New Product Details"/>
+                        <group>
+                            <group>
                                 <field name="new_name" required='1'/>
                                 <field name="new_default_code" required='1'/>
                             </group>

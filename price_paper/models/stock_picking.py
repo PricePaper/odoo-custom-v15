@@ -8,10 +8,10 @@ class StockPicking(models.Model):
 
     over_processed = fields.Boolean(string='Over Processed', compute='_compute_over_processed')
 
-    @api.depends('move_ids_without_package.po_original_qty')
+    @api.depends('move_ids_without_package.po_original_qty', 'move_ids_without_package.is_storage_contract')
     def _compute_over_processed(self):
         for record in self:
-            if any([move.po_original_qty < move.quantity_done for move in record.move_ids_without_package]):
+            if any([move.po_original_qty < move.quantity_done for move in record.move_ids_without_package if move.is_storage_contract]):
                 record.over_processed = True
             else:
                 record.over_processed = False

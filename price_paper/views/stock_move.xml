@@ -39,7 +39,7 @@
 
                 <button name="button_validate" position="after">
                     <field name="over_processed" invisible="1"/>
-                    <button name="sync_over_processed" type="object" string="Sync OverProcessed" help="If move have over processed quantities then we have to manually sync done quantity to Purchase Order (order quantity)."
+                    <button name="sync_over_processed" type="object" string="Sync OverProcessed" help="If move have over processed quantities, then then have to manually sync done quantity to Purchase Order (order quantity)."
                             attrs="{'invisible': ['|', ('over_processed', '=', False), '&amp;', ('over_processed', '=', True), ('state', '!=', 'done')]}" class="oe_highlight"/>
                 </button>
 

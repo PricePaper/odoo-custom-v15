@@ -44,7 +44,8 @@
                 <xpath expr="//div[3]" position="before">
                     <div>
                         <separator string="Customer Product Price"/>
-                        <field name="customer_product_price_ids" mode="tree,kanban" options="{'custom_search': True}">
+<!--                        ADD these to customer_product_price_ids for custom search, options="{'custom_search': True}"-->
+                        <field name="customer_product_price_ids" mode="tree,kanban">
                             <tree editable="bottom">
                                 <field name="product_id" required='1'/>
                                 <field name="product_uom" required='1'/>

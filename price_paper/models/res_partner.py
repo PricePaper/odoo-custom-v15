@@ -158,13 +158,13 @@ class ResPartner(models.Model):
             if not vals.get('customer_code', False):
                 prefix = vals.get('name').replace(" ", "")[0:3].upper()
                 customer_codes = self.env['res.partner'].search([('customer_code', 'ilike', prefix)]).mapped('customer_code')
-                parner_codes = [code for code in customer_codes if code[0:3] == prefix and len(code) < 8]
+                partner_codes = [code for code in customer_codes if code[0:3] == prefix and len(code) < 8]
                 count = 1
                 while True:
                     suffix = str(count).zfill(3)
                     customer_code = prefix+suffix
-                    if not self.env['res.partner'].search([('customer_code', '=ilike', customer_code)]):
-                        vals['customer_code'] = prefix+suffix
+                    if customer_code not in customer_codes:
+                        vals['customer_code'] = customer_code
                         break
                     count+=1
         result = super(ResPartner, self).create(vals)

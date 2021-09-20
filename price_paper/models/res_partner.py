@@ -147,30 +147,29 @@ class ResPartner(models.Model):
 
     @api.model
     def create(self, vals):
+        """
+        Customer_code generation
+        Pricelist creation
+        if shiiping address is created as default uncheck
+        the previous default shipping address (if exists)
+        """
 
         if vals.get('is_company', False):
             if not vals.get('customer_code', False):
                 prefix = vals.get('name').replace(" ", "")[0:3].upper()
-                if 'company_id' in vals:
-                    while True:
-                        customer_code = prefix + self.env['ir.sequence'].with_context(
-                            force_company=vals['company_id']).next_by_code('res.partner')
-                        if not self.search([('customer_code', '=ilike', customer_code)]):
-                            vals['customer_code'] = customer_code
-                            break
-
-                else:
-                    while True:
-                        customer_code = prefix + self.env['ir.sequence'].next_by_code(
-                            'res.partner')
-                        if not self.search([('customer_code', '=ilike', customer_code)]):
-                            vals['customer_code'] = customer_code
-                            break
-
+                customer_codes = self.env['res.partner'].search([('customer_code', 'ilike', prefix)]).mapped('customer_code')
+                parner_codes = [code for code in customer_codes if code[0:3] == prefix and len(code) < 8]
+                count = 1
+                while True:
+                    suffix = str(count).zfill(3)
+                    customer_code = prefix+suffix
+                    if not self.env['res.partner'].search([('customer_code', '=ilike', customer_code)]):
+                        vals['customer_code'] = prefix+suffix
+                        break
+                    count+=1
         result = super(ResPartner, self).create(vals)
         if result.customer and result.is_company:
             result.setup_pricelist_for_new_customer()
-
         if result.parent_id and result.default_shipping:
             existing_defaults = self.search([('parent_id','=',result.parent_id.id),('type','=',result.type),('id','!=',result.id),('default_shipping','=', True)])
             if existing_defaults:

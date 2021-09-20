@@ -3,7 +3,7 @@
 from odoo import api, fields, models, SUPERUSER_ID, _
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
-from odoo.exceptions import UserError
+from odoo.exceptions import ValidationError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 class AddSaleHistoryPoLine(models.TransientModel):
@@ -44,6 +44,14 @@ class AddSaleHistoryPoLine(models.TransientModel):
     is_expired = fields.Boolean(compute ='_check_is_expired', string='Is expired')
 
 
+    @api.onchange('new_qty')
+    def _onchange_new_qty(self):
+        vendor = self.env['purchase.order'].browse(self._context.get('active_id')).partner_id
+        if vendor:
+            seller_record = self.product_id.seller_ids.filtered(lambda l: l.name.id == vendor.id)
+            if seller_record and self.new_qty < seller_record.min_qty:
+                raise ValidationError(_('In order to purchase this product from this vendor you need to add a quantity '
+                                        'greater than or equals to {0}'.format(seller_record.min_qty)))
 
     @api.depends('product_id')
     def _compute_op_min_max_days(self):

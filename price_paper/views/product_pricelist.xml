@@ -44,7 +44,8 @@
                 <xpath expr="//div[3]" position="before">
                     <div>
                         <separator string="Customer Product Price"/>
-                        <field name="customer_product_price_ids">
+<!--                        ADD these to customer_product_price_ids for custom search, options="{'custom_search': True}"-->
+                        <field name="customer_product_price_ids" mode="tree,kanban">
                             <tree editable="bottom">
                                 <field name="product_id" required='1'/>
                                 <field name="product_uom" required='1'/>
@@ -55,6 +56,54 @@
                                 <field name="lock_expiry_date"
                                        attrs="{'required': [('price_lock', '=', True)], 'invisible': [('price_lock', '=', False)]}"/>
                             </tree>
+                            <kanban class="o_kanban_mobile" limit="500">
+                                    <field name="product_id"/>
+                                    <field name="product_uom"/>
+                                    <field name="price"/>
+                                    <field name="price_lock"/>
+                                     <field name="lock_expiry_date"/>
+                                    <field name="price_last_updated"/>
+                                    <templates>
+                                        <t t-name="kanban-box">
+                                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                                    <div class="row">
+                                                        <div class="col-8">
+                                                            <strong>
+                                                                <span>
+                                                                    <t t-esc="record.product_id.value"/>
+                                                                </span>
+                                                            </strong>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <strong>
+                                                                <span class="float-right text-right badge badge-info">
+                                                                    <t t-esc="record.product_uom.value"/>
+                                                                </span>
+                                                            </strong>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12 text-muted">
+                                                            <span>
+                                                                Price:
+                                                                <t t-esc="record.price.value"/>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                            <div class="col-12 text-muted">
+                                                                <span>
+                                                                    Price Last Updated:
+                                                                    <t t-esc="record.price_last_updated.value"/>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
                         </field>
                     </div>
                 </xpath>

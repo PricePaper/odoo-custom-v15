@@ -144,7 +144,7 @@ class PurchaseOrder(models.Model):
                 action['views'] = [(self.env.ref('price_paper.view_storage_contract_order_form').id, 'form')]
                 action['res_id'] = orders.ids[0]
         else:
-            orders = self.order_line.mapped('move_dest_ids.sale_line_id.order_id')
+            orders = orders or self.order_line.mapped('move_dest_ids.sale_line_id.order_id')
             action = self.env.ref('sale.action_orders').read()[0]
             if len(orders) > 1:
                 action['domain'] = [('id', 'in', orders.ids)]

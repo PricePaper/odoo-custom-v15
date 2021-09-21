@@ -20,6 +20,13 @@ class PurchaseOrder(models.Model):
     vendor_order_freq = fields.Integer(related='partner_id.order_freq', string="Vendor Order Frequency", readonly=True)
     state = fields.Selection(selection_add=[('received', 'Received')])
     pickup_address_id = fields.Many2one('res.partner', string="Delivery Address")
+    sale_order_count = fields.Integer(string="Sale Order Count", readonly=True, compute='_compute_sale_order_count')
+
+    @api.multi
+    @api.depends('order_line.sale_order_id')
+    def _compute_sale_order_count(self):
+        for rec in self:
+            rec.sale_order_count = 1 #len(rec.order_line.mapped('sale_line_id.order_id').ids)
 
     # @api.onchange('partner_id', 'company_id')
     # def onchange_partner_id(self):
@@ -123,6 +130,28 @@ class PurchaseOrder(models.Model):
         self.button_cancel()
         self.button_draft()
         return True
+
+    @api.multi
+    def action_view_sale_orders(self):
+
+        orders = self.mapped('order_line.sale_order_id')
+        if orders and any(orders.mapped('storage_contract')):
+            action = self.env.ref('price_paper.action_storage_contract').read()[0]
+            action['context'] = {'create': False}
+            if len(orders) > 1:
+                action['domain'] = [('id', 'in', orders.ids)]
+            elif len(orders) == 1:
+                action['views'] = [(self.env.ref('price_paper.view_storage_contract_order_form').id, 'form')]
+                action['res_id'] = orders.ids[0]
+        else:
+            orders = self.order_line.mapped('move_dest_ids.sale_line_id.order_id')
+            action = self.env.ref('sale.action_orders').read()[0]
+            if len(orders) > 1:
+                action['domain'] = [('id', 'in', orders.ids)]
+            elif len(orders) == 1:
+                action['views'] = [(self.env.ref('sale.view_order_form').id, 'form')]
+                action['res_id'] = orders.ids[0]
+        return action
 
     @api.multi
     def add_sale_history_to_po_line(self):

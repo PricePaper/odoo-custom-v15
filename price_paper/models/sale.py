@@ -56,10 +56,17 @@ class SaleOrder(models.Model):
         string='Hold Status', default=False, copy=False)
     invoice_address_id = fields.Many2one('res.partner', string="Billing Address")
     sc_child_order_count = fields.Integer(compute='_compute_sc_child_order_count')
+    po_count = fields.Integer(compute='_compute_po_count', readonly=True)
+
+    @api.depends('order_line.move_ids.created_purchase_line_id')
+    def _compute_po_count(self):
+        for sale in self:
+            sale.po_count = len(sale.order_line.mapped('move_ids.created_purchase_line_id.order_id').ids)
 
     def _compute_sc_child_order_count(self):
         for order in self:
-            order.sc_child_order_count = len(order.order_line.mapped('storage_contract_line_ids.order_id').filtered(lambda r: r.state not in ['sent', 'cancel']))
+            order.sc_child_order_count = len(order.order_line.mapped('storage_contract_line_ids.order_id').filtered(
+                lambda r: r.state not in ['sent', 'cancel']))
 
     @api.depends('state', 'order_line.invoice_status', 'order_line.invoice_lines')
     def _get_invoiced(self):
@@ -92,7 +99,8 @@ class SaleOrder(models.Model):
     def _compute_show_contract_line(self):
         for order in self:
             if order.partner_id:
-                sc_order = self.env['sale.order'].with_context(sc=True).search([('state', '=', 'released'), ('partner_id', '=', order.partner_id.id)])
+                sc_order = self.env['sale.order'].with_context(sc=True).search(
+                    [('state', '=', 'released'), ('partner_id', '=', order.partner_id.id)])
                 count = sc_order.mapped('order_line').filtered(lambda r: r.storage_remaining_qty > 0)
                 if len(count) > 0:
                     order.show_contract_line = True
@@ -271,6 +279,18 @@ class SaleOrder(models.Model):
         return res
 
     @api.multi
+    def action_view_purchase_orders(self):
+        orders = self.order_line.mapped('move_ids.created_purchase_line_id.order_id')
+        action = self.env.ref('purchase.purchase_rfq').read()[0]
+        if len(orders) > 1:
+            action['domain'] = [('id', 'in', orders.ids)]
+        elif len(orders) == 1:
+            action['views'] = [(self.env.ref('purchase.purchase_order_form').id, 'form')]
+            action['res_id'] = orders.ids[0]
+        action['context'] = {'create': False}
+        return action
+
+    @api.multi
     def action_create_order_line_xmlrpc(self, vals):
         order_line = self.env['sale.order.line'].create(vals)
         order_line.qty_delivered_method = 'manual'
@@ -302,7 +322,8 @@ class SaleOrder(models.Model):
         for sc in self:
             orders = sc.order_line.mapped('storage_contract_line_ids.order_id')
             if any([order.state != 'cancel' for order in orders]):
-                raise ValidationError('Cannot UnRelease contract with active sale orders %s' % (', '.join(orders.mapped('name'))))
+                raise ValidationError(
+                    'Cannot UnRelease contract with active sale orders %s' % (', '.join(orders.mapped('name'))))
         return self.write({'state': 'done'})
 
     # @api.multi
@@ -457,7 +478,7 @@ class SaleOrder(models.Model):
         """
         auto save the delivery line.
         """
-        amount={}
+        amount = {}
         for order in self:
             if order.state == 'sale':
                 amount[order.id] = order.amount_total
@@ -760,6 +781,7 @@ class SaleOrder(models.Model):
         for order in self:
             if not order.payment_term_id:
                 raise ValidationError(_('Payment term is not set for this order please set to proceed.'))
+
     @api.multi
     def action_unlock(self):
         self.filtered(lambda s: s.storage_contract and s.state == 'done').write({'state': 'received'})
@@ -850,7 +872,8 @@ class SaleOrder(models.Model):
         #      ('product_id', 'not in', products), ('product_id.sale_ok', '=', True)])
         sales_history = self.env['sale.history'].search(
             ['|', ('active', '=', False), ('active', '=', True), ('partner_id', '=', self.partner_id.id),
-             ('product_id', 'not in', products), ('product_id', '!=', False)]).filtered(lambda r : not r.product_id.categ_id.is_storage_contract)
+             ('product_id', 'not in', products), ('product_id', '!=', False)]).filtered(
+            lambda r: not r.product_id.categ_id.is_storage_contract)
         # addons product filtering
         addons_products = sales_history.mapped('product_id').filtered(lambda rec: rec.need_sub_product).mapped(
             'product_addons_list')
@@ -881,7 +904,8 @@ class SaleOrder(models.Model):
     def run_storage(self):
         for order in self:
             route = self.env.ref('purchase_stock.route_warehouse0_buy', raise_if_not_found=True)
-            so_lines = order.order_line.filtered(lambda r: r.product_id.type != 'service' and not r.display_type and not r.is_downpayment)
+            so_lines = order.order_line.filtered(
+                lambda r: r.product_id.type != 'service' and not r.display_type and not r.is_downpayment)
             so_lines.write({'route_id': route.id})
             errors = []
             for line in so_lines:
@@ -920,10 +944,12 @@ class SaleOrder(models.Model):
                 raise UserError('\n'.join(errors))
 
             order.write({'state': 'waiting'})
-            #service line update
-            purchase_orders = order.order_line.mapped('purchase_line_ids.order_id').filtered(lambda p: p.state == 'draft')
+            # service line update
+            purchase_orders = order.order_line.mapped('purchase_line_ids.order_id').filtered(
+                lambda p: p.state == 'draft')
 
-            for sr_line in order.order_line.filtered(lambda r: r.product_id.type == 'service' and not r.display_type and not r.is_downpayment):
+            for sr_line in order.order_line.filtered(
+                    lambda r: r.product_id.type == 'service' and not r.display_type and not r.is_downpayment):
                 for po in purchase_orders:
                     fpos = po.fiscal_position_id
                     taxes = fpos.map_tax(
@@ -945,7 +971,8 @@ class SaleOrder(models.Model):
                     name = '[%s] %s' % (sr_line.product_id.default_code, product_in_supplier_lang.display_name)
                     if product_in_supplier_lang.description_purchase:
                         name += '\n' + product_in_supplier_lang.description_purchase
-                    purchase_qty_uom = sr_line.product_uom._compute_quantity(sr_line.product_uom_qty, sr_line.product_id.uom_po_id)
+                    purchase_qty_uom = sr_line.product_uom._compute_quantity(sr_line.product_uom_qty,
+                                                                             sr_line.product_id.uom_po_id)
                     self.env['purchase.order.line'].create({
                         'name': sr_line.name,
                         'product_qty': purchase_qty_uom,
@@ -1014,7 +1041,8 @@ class SaleOrderLine(models.Model):
             if line.order_id.storage_contract:
                 if float_compare(line.qty_invoiced, line.product_uom_qty, precision_digits=precision) >= 0:
                     line.invoice_status = 'invoiced'
-                elif float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) <= 0 and line.state in ['received', 'done']:
+                elif float_compare(line.qty_delivered, line.product_uom_qty,
+                                   precision_digits=precision) <= 0 and line.state in ['received', 'done']:
                     line.invoice_status = 'to invoice'
                 elif float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) == 1:
                     line.invoice_status = 'upselling'
@@ -1046,10 +1074,12 @@ class SaleOrderLine(models.Model):
             else:
                 if line.qty_delivered_method == 'stock_move':
                     qty = 0.0
-                    for move in line.move_ids.filtered(lambda r: r.state == 'done' or r.is_transit is True and not r.scrapped and line.product_id == r.product_id):
+                    for move in line.move_ids.filtered(
+                            lambda r: r.state == 'done' or r.is_transit is True and not r.scrapped and line.product_id == r.product_id):
                         if move.location_dest_id.usage == "customer":
                             if not move.origin_returned_move_id or (move.origin_returned_move_id and move.to_refund):
-                                qty += move.product_uom._compute_quantity(move.quantity_done or move.reserved_availability, line.product_uom)
+                                qty += move.product_uom._compute_quantity(
+                                    move.quantity_done or move.reserved_availability, line.product_uom)
                         elif move.location_dest_id.usage != "customer" and move.to_refund:
                             qty -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)
                     line.qty_delivered = qty
@@ -1153,7 +1183,7 @@ class SaleOrderLine(models.Model):
     def _onchange_tax(self):
         if not self.tax_id:
             if self.product_id and self.order_id and self.order_id.partner_id \
-            and not self.order_id.partner_id.vat:
+                    and not self.order_id.partner_id.vat:
                 raise UserError(_('You can not remove Tax for this Partner.'))
 
     @api.onchange('product_uom_qty', 'product_uom', 'route_id')
@@ -1296,7 +1326,7 @@ class SaleOrderLine(models.Model):
         result = []
         for line in self:
             result.append((line.id, "%s - %s - %s - %s" % (
-            line.order_id.name, line.name, line.product_uom.name, line.order_id.date_order)))
+                line.order_id.name, line.name, line.product_uom.name, line.order_id.date_order)))
         return result
 
     def update_price_list(self):
@@ -1416,9 +1446,11 @@ class SaleOrderLine(models.Model):
             if vals.get('price_unit') and line.order_id.state == 'sale':
                 if not self.env.user.has_group('sales_team.group_sale_manager') and line.product_id.type != 'service':
                     if line.price_unit < line.working_cost and vals.get('price_unit') < line.price_unit:
-                        raise ValidationError(_('You are not allowed to reduce price below product cost. Contact your sales Manager.'))
+                        raise ValidationError(
+                            _('You are not allowed to reduce price below product cost. Contact your sales Manager.'))
                     if line.price_unit >= line.working_cost and vals.get('price_unit') < line.working_cost:
-                        raise ValidationError(_('You are not allowed to reduce price below product cost. Contact your sales Manager.'))
+                        raise ValidationError(
+                            _('You are not allowed to reduce price below product cost. Contact your sales Manager.'))
         res = super(SaleOrderLine, self).write(vals)
         for line in self:
             if vals.get('price_unit') and line.order_id.state == 'sale':
@@ -1510,7 +1542,7 @@ class SaleOrderLine(models.Model):
         if res.note_type == 'permanant':
             note = self.env['product.notes'].search([
                 ('product_id', '=', res.product_id.id),
-                 ('partner_id', '=', res.order_id.partner_id.id),
+                ('partner_id', '=', res.order_id.partner_id.id),
                 ('expiry_date', '>', date.today())
             ], limit=1)
             if not note:
@@ -1637,8 +1669,8 @@ class SaleOrderLine(models.Model):
             # get this customers last time sale description for this product and update it in the line
             note = self.env['product.notes'].search(
                 [('product_id', '=', self.product_id.id),
-                ('partner_id', '=', self.order_id.partner_id.id),
-                ('expiry_date', '>', date.today())], limit=1)
+                 ('partner_id', '=', self.order_id.partner_id.id),
+                 ('expiry_date', '>', date.today())], limit=1)
             if note:
                 self.note = note.notes
                 self.note_expiry_date = note.expiry_date

@@ -103,6 +103,12 @@
                     </div>
                 </sheet>
 
+                 <xpath expr="//div[@name='button_box']" position="inside">
+                    <button type="object" name="action_view_purchase_orders" class="oe_stat_button" icon="fa-shopping-cart" attrs="{'invisible': [('po_count', '=', 0)]}" groups="purchase.group_purchase_user">
+                        <field name="po_count" widget="statinfo" string="Purchase Orders"/>
+                    </button>
+                </xpath>
+
                 <xpath expr="//field[@name='validity_date']" position="after">
                     <field name="storage_contract" invisible="1"/>
                     <field name="hold_state" invisible='1'/>

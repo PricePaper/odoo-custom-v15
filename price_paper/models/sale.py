@@ -59,6 +59,18 @@ class SaleOrder(models.Model):
     delivery_cost = fields.Float(string='Estimated Delivery Cost', readonly=True, copy=False)
     po_count = fields.Integer(compute='_compute_po_count', readonly=True)
 
+    @api.multi
+    def action_view_purchase_orders(self):
+        orders = self.order_line.mapped('move_ids.created_purchase_line_id.order_id')
+        action = self.env.ref('purchase.purchase_rfq').read()[0]
+        if len(orders) > 1:
+            action['domain'] = [('id', 'in', orders.ids)]
+        elif len(orders) == 1:
+            action['views'] = [(self.env.ref('purchase.purchase_order_form').id, 'form')]
+            action['res_id'] = orders.ids[0]
+        action['context'] = {'create': False}
+        return action
+
     @api.depends('order_line.move_ids.created_purchase_line_id')
     def _compute_po_count(self):
         for sale in self:

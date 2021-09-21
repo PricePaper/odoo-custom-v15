@@ -105,7 +105,7 @@
                 </sheet>
 
                  <xpath expr="//div[@name='button_box']" position="inside">
-                    <button type="object" name="action_view_purchase_orders" class="oe_stat_button" icon="fa-shopping-cart" attrs="{'invisible': [('po_count', '=', 0)]}" groups="purchase.group_purchase_user">
+                    <button type="object" name="action_view_purchase_orders" class="oe_stat_button" icon="fa-shopping-cart" attrs="{'invisible': [('po_count', '=', 0)]}" groups="sales_team.group_sale_manager">
                         <field name="po_count" widget="statinfo" string="Purchase Orders"/>
                     </button>
                 </xpath>

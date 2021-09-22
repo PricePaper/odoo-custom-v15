@@ -1040,6 +1040,8 @@ class SaleOrderLine(models.Model):
                     line.invoice_status = 'upselling'
                 else:
                     line.invoice_status = 'no'
+            else:
+                break
 
     @api.depends('qty_invoiced', 'qty_delivered', 'product_uom_qty', 'order_id.state')
     def _get_to_invoice_qty(self):
@@ -1050,7 +1052,8 @@ class SaleOrderLine(models.Model):
                     line.qty_to_invoice = (line.product_uom_qty if not line.is_downpayment else 0) - line.qty_invoiced
                 else:
                     line.qty_to_invoice = (line.qty_delivered if not line.is_downpayment else 0) - line.qty_invoiced
-
+            else:
+                break
     @api.multi
     @api.depends('qty_delivered_method', 'qty_delivered_manual', 'analytic_line_ids.so_line',
                  'analytic_line_ids.unit_amount', 'analytic_line_ids.product_uom_id')
@@ -1080,19 +1083,22 @@ class SaleOrderLine(models.Model):
     #         self.product_id = self.storage_contract_line_id.product_id
     #         self.product_uom_qty = self.storage_contract_line_id.storage_remaining_qty if self.storage_contract_line_id.storage_remaining_qty < self.storage_contract_line_id.selling_min_qty else self.storage_contract_line_id.selling_min_qty
 
-    @api.depends('product_id')
+    @api.depends('product_id.qty_available', 'product_id.outgoing_qty')
     def compute_available_qty(self):
         for line in self:
             line.product_onhand = line.product_id.qty_available - line.product_id.outgoing_qty
 
-    @api.depends('product_uom_qty', 'storage_contract_line_ids')
+    @api.depends('product_uom_qty', 'qty_delivered', 'storage_contract_line_ids')
     def _compute_storage_delivered_qty(self):
         for line in self:
-            sale_lines = line.storage_contract_line_ids.filtered(lambda r: r.order_id.state != 'draft')
-            if not line.sudo().purchase_line_ids and line.state in ['released', 'done']:
-                line.storage_remaining_qty = line.product_uom_qty - sum(sale_lines.mapped('product_uom_qty'))
+            if line.order_id.storage_contract:
+                sale_lines = line.storage_contract_line_ids.filtered(lambda r: r.order_id.state != 'draft')
+                if not line.sudo().purchase_line_ids and line.state in ['released', 'done']:
+                    line.storage_remaining_qty = line.product_uom_qty - sum(sale_lines.mapped('product_uom_qty'))
+                else:
+                    line.storage_remaining_qty = line.qty_delivered - sum(sale_lines.mapped('product_uom_qty'))
             else:
-                line.storage_remaining_qty = line.qty_delivered - sum(sale_lines.mapped('product_uom_qty'))
+                break
 
     @api.multi
     def _search_storage_remaining_qty(self, operator, value):
@@ -1545,36 +1551,37 @@ class SaleOrderLine(models.Model):
                 note.expiry_date = res.note_expiry_date
         return res
 
-    @api.depends('product_id', 'product_uom')
+    @api.depends('product_id', 'product_uom', 'order_id.partner_id')
     def compute_last_sale_detail(self):
         """
         compute last sale detail of the product by the partner.
         """
-        for line in self:
-            if not line.order_id.partner_id:
-                raise ValidationError(_('Please enter customer information first.'))
-            line.last_sale = False
-            if line.product_id and line.order_id.partner_shipping_id and line.product_uom:
-                # last = self.env['sale.order.line'].sudo().search(
-                #     [('order_id.partner_shipping_id', '=', line.order_id.partner_shipping_id.id),
-                #      ('product_id', '=', line.product_id.id), ('product_uom', '=', line.product_uom.id),
-                #      ('is_last', '=', True)], limit=1)
+        if self._context.get('partner_id'):
+            for line in self:
+                if not line.order_id.partner_id:
+                    raise ValidationError(_('Please enter customer information first.'))
+                line.last_sale = False
+                if line.product_id and line.product_uom:
+                    # last = self.env['sale.order.line'].sudo().search(
+                    #     [('order_id.partner_shipping_id', '=', line.order_id.partner_shipping_id.id),
+                    #      ('product_id', '=', line.product_id.id), ('product_uom', '=', line.product_uom.id),
+                    #      ('is_last', '=', True)], limit=1)
 
-                last = self.env['sale.history'].sudo().search(
-                    [('order_id.partner_id', '=', line.order_id.partner_id.id),
-                     ('product_id', '=', line.product_id.id), ('uom_id', '=', line.product_uom.id),
-                     ], limit=1)
-                if last:
-                    local = pytz.timezone(self.sudo().env.user.tz or "UTC")
-                    last_date = datetime.strftime(pytz.utc.localize(
-                        datetime.strptime(str(last.order_id.confirmation_date),
-                                          DEFAULT_SERVER_DATETIME_FORMAT)).astimezone(local), "%m/%d/%Y %H:%M:%S")
-                    line.last_sale = 'Order Date  - %s\nPrice Unit    - %s\nSale Order  - %s' % (
-                        last_date, last.order_line_id.price_unit, last.order_id.name)
+                    last = self.env['sale.history'].sudo().search(
+                        [('order_id.partner_id', '=', line.order_id.partner_id.id),
+                         ('product_id', '=', line.product_id.id),
+                         ('uom_id', '=', line.product_uom.id),], limit=1)
+                    if last:
+                        local = pytz.timezone(self.sudo().env.user.tz or "UTC")
+                        last_date = datetime.strftime(pytz.utc.localize(
+                            datetime.strptime(str(last.order_id.confirmation_date),
+                                              DEFAULT_SERVER_DATETIME_FORMAT)).astimezone(local), "%m/%d/%Y %H:%M:%S")
+                        line.last_sale = 'Order Date  - %s\nPrice Unit    - %s\nSale Order  - %s' % (
+                            last_date, last.order_line_id.price_unit, last.order_id.name)
+                    else:
+                        line.last_sale = 'No Previous information Found'
                 else:
                     line.last_sale = 'No Previous information Found'
-            else:
-                line.last_sale = 'No Previous information Found'
 
     @api.depends('product_id', 'product_uom_qty', 'price_unit')
     def calculate_profit_margin(self):

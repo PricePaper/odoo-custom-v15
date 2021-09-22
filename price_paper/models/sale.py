@@ -1028,21 +1028,20 @@ class SaleOrderLine(models.Model):
     @api.depends('state', 'product_uom_qty', 'qty_delivered', 'qty_to_invoice', 'qty_invoiced',
                  'order_id.storage_contract')
     def _compute_invoice_status(self):
-        if self._context.get('partner_id'):
-            super(SaleOrderLine, self)._compute_invoice_status()
-            precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-            for line in self:
-                if line.order_id.storage_contract:
-                    if float_compare(line.qty_invoiced, line.product_uom_qty, precision_digits=precision) >= 0:
-                        line.invoice_status = 'invoiced'
-                    elif float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) <= 0 and line.state in ['received', 'done']:
-                        line.invoice_status = 'to invoice'
-                    elif float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) == 1:
-                        line.invoice_status = 'upselling'
-                    else:
-                        line.invoice_status = 'no'
+        super(SaleOrderLine, self)._compute_invoice_status()
+        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        for line in self:
+            if line.order_id.storage_contract:
+                if float_compare(line.qty_invoiced, line.product_uom_qty, precision_digits=precision) >= 0:
+                    line.invoice_status = 'invoiced'
+                elif float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) <= 0 and line.state in ['received', 'done']:
+                    line.invoice_status = 'to invoice'
+                elif float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) == 1:
+                    line.invoice_status = 'upselling'
                 else:
-                    break
+                    line.invoice_status = 'no'
+            else:
+                break
 
     @api.depends('qty_invoiced', 'qty_delivered', 'product_uom_qty', 'order_id.state')
     def _get_to_invoice_qty(self):

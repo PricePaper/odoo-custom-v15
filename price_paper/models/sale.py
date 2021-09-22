@@ -1032,7 +1032,6 @@ class SaleOrderLine(models.Model):
             super(SaleOrderLine, self)._compute_invoice_status()
             precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
             for line in self:
-                print('IAMA IN ', self._context)
                 if line.order_id.storage_contract:
                     if float_compare(line.qty_invoiced, line.product_uom_qty, precision_digits=precision) >= 0:
                         line.invoice_status = 'invoiced'

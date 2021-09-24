@@ -249,6 +249,7 @@ class ProductProduct(models.Model):
         """
 
         to_date = datetime.date.today()
+        msg=''
 
         vendor = self.seller_ids.filtered(lambda seller: seller.is_available) and \
                  self.seller_ids.filtered(lambda seller: seller.is_available)[0]
@@ -299,7 +300,8 @@ class ProductProduct(models.Model):
                     'product_uom': self.uom_id.id,
                 })
             self.last_op_update_date = str(datetime.datetime.today())
-        return True
+            msg = 'Min qty: ' + str(ceil(min_quantity)) + '\n' + 'Max qty: ' +  str(ceil(max_quantity))
+        return msg
 
     @api.multi
     def reset_orderpoint(self):
@@ -317,12 +319,14 @@ class ProductProduct(models.Model):
         cron method to set the orderpoints(OP) for every products
         uses fbprophet based forecasting for the OP setup.
         """
-
+        name1 = 'Order Point: '
         products = self.env['product.product'].search(
             [('active', '=', True), ('type', '=', 'product'), ('dont_use_fbprophet', '=', False), ('purchase_ok', '=', True)],
             order='last_op_update_date')
         for product in products:
-            product.with_delay(channel='root.Product_Orderpoint').job_queue_forecast()
+            name = product.default_code and product.default_code or product.name
+            name = name1+name
+            product.with_delay(description=name, channel='root.Product_Orderpoint').job_queue_forecast()
 
 
 ProductProduct()

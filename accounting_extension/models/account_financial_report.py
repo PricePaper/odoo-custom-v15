@@ -45,8 +45,7 @@ class ReportAccountFinancialReport(models.Model):
         )._get_lines(self, currency_table, dummy, linesDicts)
 
         income = list(filter(lambda r: r['name'] == 'Operating Income' or r['id'] == 5, out))
-        from pprint import pprint
-        pprint(out)
+
         if income:
             t = income[0]['columns'][0].get('no_format_name') or income[0]['columns'][0].get('name')
             for l in res:

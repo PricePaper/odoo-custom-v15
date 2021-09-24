@@ -45,16 +45,19 @@ class ReportAccountFinancialReport(models.Model):
         )._get_lines(self, currency_table, dummy, linesDicts)
 
         income = list(filter(lambda r: r['name'] == 'Operating Income' or r['id'] == 5, out))
+        from pprint import pprint
+        pprint(out)
         if income:
-            t = income[0]['columns'][0]['no_format_name']
+            t = income[0]['columns'][0].get('no_format_name') or income[0]['columns'][0].get('name')
             for l in res:
                 if l.get('caret_options'):
-                    s = l['columns'][0]['no_format_name']
+                    s = l['columns'][0].get('no_format_name') or l['columns'][0].get('name')
                     p = (s / t) * 100
                     l['columns'].append({
-                        'name': '$ {0:0.2f}%'.format(p),
+                        'name': '{0:0.2f}%'.format(p),
                         'no_format_name': p,
-                        'class': 'number color-green' if p > 0 else 'number color-red'
+                        'class': 'number',
+                        'style': 'font-weight: bold;'
                     })
         return res
 

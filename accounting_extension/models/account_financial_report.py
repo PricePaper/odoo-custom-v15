@@ -55,8 +55,7 @@ class ReportAccountFinancialReport(models.Model):
                     l['columns'].append({
                         'name': '{0:0.2f}%'.format(p),
                         'no_format_name': p,
-                        'class': 'number',
-                        'style': 'font-weight: bold;'
+                        'class': 'number'
                     })
         return res
 

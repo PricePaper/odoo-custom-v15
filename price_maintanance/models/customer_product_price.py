@@ -71,7 +71,6 @@ class CustomerProductPrice(models.Model):
             'product_uom_qty': line.order_line_id.product_uom_qty
         } for line in sale_history]
         for record in self:
-            res = {}
             pr_id = record.product_id.id
             if not isinstance(pr_id, int):
                 history = list(filter(lambda r: r['id'] == record.id, record_read))

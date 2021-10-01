@@ -41,22 +41,23 @@ class CustomerStatementPdfReport(models.AbstractModel):
         info = ledger_OBJ.with_context(**context)._get_lines(options)
         today = date.today()
         data = {'cumulative': 0, 'open_credits': [], 'payments': [], 'past_due': False}
+        amount = 0
         for line in info:
-            if 'colspan' in line:
-                data['cumulative'] = line['columns'][4]['name']
-            elif 'colspan' not in line:
+            if 'colspan' not in line:
                 aml_id = self.env['account.move.line'].browse(line['id'])
                 if today > line['columns'][3]['name'] and not aml_id.reconciled and not aml_id.payment_id:
                     data['past_due'] = True
-                if not aml_id.reconciled and aml_id.payment_id or line['caret_options'] == 'account.invoice.out':
+                if not aml_id.reconciled and (aml_id.payment_id or line['caret_options'] == 'account.invoice.out'):
+                    amount += aml_id.invoice_id and aml_id.invoice_id.residual or aml_id.balance
+                    amount_due = aml_id.invoice_id and aml_id.invoice_id.residual
                     data['open_credits'].append(
                         {
                             'ref': aml_id.payment_id.name if not aml_id.reconciled and aml_id.payment_id else line['columns'][2]['name'],
                             'date': line['name'],
                             'due_date': line['columns'][3]['name'],
                             'amount': line['columns'][6]['name'] or '-' + line['columns'][8]['name'],
-                            'amount_due': line['columns'][5]['name'],
-                            'running_balance': line['columns'][9]['name']
+                            'amount_due': '$ ' + str(amount_due or 0.0),
+                            'running_balance': '$ ' + str(amount)
                         }
                     )
                 elif line['caret_options'] == 'account.payment':
@@ -72,6 +73,8 @@ class CustomerStatementPdfReport(models.AbstractModel):
                             'ref': ','.join(payment.invoice_ids.mapped('number'))
                         }
                     )
+        else:
+            data['cumulative'] = '$ ' + str(amount)
         return data
 
     @api.model

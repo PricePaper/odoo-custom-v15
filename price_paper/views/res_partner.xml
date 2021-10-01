@@ -191,13 +191,18 @@
             <field name="arch" type="xml">
                 <form string="Partner">
                    <sheet>
+                       <field name="type" invisible="1"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" default_focus="1" placeholder="Name" attrs="{'required' : [('type', '=', 'contact')]}"/>
+                            </h1>
+                        </div>
                         <group>
                             <group>
                                 <field name="is_company" invisible="1"/>
                                 <field name="commercial_partner_id" invisible="1"/>
                                 <field name="customer" invisible="1"/>
                                 <field name="parent_id" invisible="1"/>
-                                <field name="type" invisible="1"/>
                                 <field name="supplier" invisible="1"/>
                                 <field name="customer_code" readonly="1"/>
                                 <label for="street" string="Address"/>

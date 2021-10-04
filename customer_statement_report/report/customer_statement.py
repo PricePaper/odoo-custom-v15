@@ -2,7 +2,7 @@
 from datetime import date, timedelta
 
 from odoo import models, api
-from itertools import groupby
+from odoo.tools.float_utils import float_round
 
 class CustomerStatementPdfReport(models.AbstractModel):
 
@@ -48,16 +48,16 @@ class CustomerStatementPdfReport(models.AbstractModel):
                 if today > line['columns'][3]['name'] and not aml_id.reconciled and not aml_id.payment_id:
                     data['past_due'] = True
                 if not aml_id.reconciled and (aml_id.payment_id or line['caret_options'] == 'account.invoice.out'):
-                    amount += aml_id.invoice_id and aml_id.invoice_id.residual or aml_id.balance
-                    amount_due = aml_id.invoice_id and aml_id.invoice_id.residual
+                    amount += aml_id.balance
+                    amount_due = aml_id.balance
                     data['open_credits'].append(
                         {
                             'ref': aml_id.payment_id.name if not aml_id.reconciled and aml_id.payment_id else line['columns'][2]['name'],
                             'date': line['name'],
                             'due_date': line['columns'][3]['name'],
                             'amount': line['columns'][6]['name'] or '-' + line['columns'][8]['name'],
-                            'amount_due': '$ ' + str(amount_due or 0.0),
-                            'running_balance': '$ ' + str(amount)
+                            'amount_due': '$ ' + '{0: 0.2f}'.format(amount_due or 0.0),
+                            'running_balance': '$ ' + '{0: 0.2f}'.format(amount)
                         }
                     )
                 elif line['caret_options'] == 'account.payment':
@@ -74,7 +74,7 @@ class CustomerStatementPdfReport(models.AbstractModel):
                         }
                     )
         else:
-            data['cumulative'] = '$ ' + str(amount)
+            data['cumulative'] = '$ ' + str(float_round(amount, precision_digits=2))
         return data
 
     @api.model

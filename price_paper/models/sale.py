@@ -924,6 +924,7 @@ class SaleOrder(models.Model):
                         group_id.write(updated_vals)
 
                 values = line._prepare_procurement_values(group_id=group_id)
+                values['partner_id'] = self.company_id.partner_id.id
                 product_qty = line.product_uom_qty
                 procurement_uom = line.product_uom
                 try:

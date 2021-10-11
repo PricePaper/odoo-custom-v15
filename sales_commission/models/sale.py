@@ -2,12 +2,51 @@
 
 from odoo import models, fields, api
 import csv
-
+import logging
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     sales_person_ids = fields.Many2many('res.partner', string='Associated Sales Persons')
+
+    # -------------------------------------------------------------------------------
+    #          RPC METHOD FOR RELATED PARTNER FIX
+    # -------------------------------------------------------------------------------
+    @api.model
+    def restore_sales_persons_from_partner(self):
+        orders = self.env['sale.order'].search([])
+        scount = len(orders)
+
+        sql = 'INSERT INTO res_partner_sale_order_rel(sale_order_id, res_partner_id) VALUES '
+        for ip, sale in enumerate(orders, 1):
+            sales_person = sale.partner_id.sales_person_ids.ids
+            order = sale.id
+            for sp in sales_person:
+                sql += str((order, sp)) + ','
+            logging.info(f'sale order write  -> ORDER -> [%s] %d' %(order, ip))
+        else:
+            sql = sql[0:-1]
+            # self.env.cr.execute(sql)
+
+        iorders = self.env['account.invoice'].search([])
+        count = len(iorders)
+
+
+        sql = 'INSERT INTO account_invoice_res_partner_rel(account_invoice_id, res_partner_id) VALUES '
+        for ip, inv in enumerate(iorders, 1):
+            sales_person = inv.partner_id.sales_person_ids.ids
+            invoice = inv.id
+            for sp in sales_person:
+                sql += str((inv.id, sp)) + ','
+            logging.info(f'Account Invoice write  -> Invoice -> [%s] %d' %(invoice, ip))
+        else:
+            sql = sql[0:-1]
+            # self.env.cr.execute(sql)
+
+        logging.info('----SO----------> %d', scount)
+        logging.info('----INV----------> %d', count)
+
+        return True
 
     @api.multi
     @api.onchange('partner_id')
@@ -188,15 +227,13 @@ class SaleOrder_line(models.Model):
         for rec in self:
             rec.sales_person_ids = [(6, 0, rec.order_id.sales_person_ids.ids)]
 
-
     @api.multi
     def search_sales_persons(self, operator, value):
         commission = self.env['commission.percentage'].search([('sale_person_id', operator, value)])
         partner = commission.mapped('partner_id')
         order = self.env['sale.order']._search([('partner_id', 'in', partner.ids)])
-        return[('order_id', 'in', order)]
+        return [('order_id', 'in', order)]
 
-    
 
 SaleOrder_line()
 

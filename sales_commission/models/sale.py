@@ -7,7 +7,7 @@ import csv
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    sales_person_ids = fields.Many2many('res.partner', string='Associated Sales Persons')
+    sales_person_ids = fields.Many2many('res.partner', related="partner_id.sales_person_ids", string='Associated Sales Persons', readonly=True)
 
     @api.multi
     @api.onchange('partner_id')
@@ -183,10 +183,10 @@ class SaleOrder_line(models.Model):
     sales_person_ids = fields.Many2many('res.partner',  compute='get_sales_persons', string='Associated Sales Persons', search='search_sales_persons')
 
 
-    @api.depends('order_id.sales_person_ids')
+    @api.depends('order_id.partner_id', 'order_partner_id', 'order_partner_id.sales_person_ids')
     def get_sales_persons(self):
         for rec in self:
-            rec.sales_person_ids = [(6, 0, rec.order_id.sales_person_ids.ids)]
+            rec.sales_person_ids = [(6, 0, rec.order_partner_id.sales_person_ids.ids)]
 
 
     @api.multi

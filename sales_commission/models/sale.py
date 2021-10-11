@@ -7,24 +7,24 @@ import csv
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    sales_person_ids = fields.Many2many('res.partner', related="partner_id.sales_person_ids", string='Associated Sales Persons', readonly=True)
+    sales_person_ids = fields.Many2many('res.partner', string='Associated Sales Persons')
 
-    # @api.multi
-    # @api.onchange('partner_id')
-    # def onchange_partner_id(self):
-    #     res = super(SaleOrder, self).onchange_partner_id()
-    #     if self.partner_id and self.partner_id.sales_person_ids:
-    #         self.sales_person_ids = self.partner_id.sales_person_ids
-    #     return res
-    #
-    # @api.multi
-    # def _prepare_invoice(self):
-    #     res = super(SaleOrder, self)._prepare_invoice()
-    #     if self.sales_person_ids:
-    #         res.update({
-    #             'sales_person_ids': [(6, 0, self.sales_person_ids.ids)]
-    #         })
-    #     return res
+    @api.multi
+    @api.onchange('partner_id')
+    def onchange_partner_id(self):
+        res = super(SaleOrder, self).onchange_partner_id()
+        if self.partner_id and self.partner_id.sales_person_ids:
+            self.sales_person_ids = self.partner_id.sales_person_ids
+        return res
+
+    @api.multi
+    def _prepare_invoice(self):
+        res = super(SaleOrder, self)._prepare_invoice()
+        if self.sales_person_ids:
+            res.update({
+                'sales_person_ids': [(6, 0, self.sales_person_ids.ids)]
+            })
+        return res
 
     @api.model
     def correct_csb(self):
@@ -183,10 +183,10 @@ class SaleOrder_line(models.Model):
     sales_person_ids = fields.Many2many('res.partner',  compute='get_sales_persons', string='Associated Sales Persons', search='search_sales_persons')
 
 
-    @api.depends('order_id.partner_id', 'order_partner_id', 'order_partner_id.sales_person_ids')
+    @api.depends('order_id.sales_person_ids')
     def get_sales_persons(self):
         for rec in self:
-            rec.sales_person_ids = [(6, 0, rec.order_partner_id.sales_person_ids.ids)]
+            rec.sales_person_ids = [(6, 0, rec.order_id.sales_person_ids.ids)]
 
 
     @api.multi

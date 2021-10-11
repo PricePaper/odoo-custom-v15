@@ -16,12 +16,12 @@ class AccountInvoice(models.Model):
     sale_commission_ids = fields.One2many('sale.commission', 'invoice_id', string='Commission')
     paid_date = fields.Date(string='Paid_date', compute='_compute_paid_date')
 
-    # @api.onchange('partner_id', 'company_id')
-    # def _onchange_partner_id(self):
-    #     res = super(AccountInvoice, self)._onchange_partner_id()
-    #     if self.partner_id and self.partner_id.sales_person_ids:
-    #         self.sales_person_ids = self.partner_id.sales_person_ids
-    #     return res
+    @api.onchange('partner_id', 'company_id')
+    def _onchange_partner_id(self):
+        res = super(AccountInvoice, self)._onchange_partner_id()
+        if self.partner_id and self.partner_id.sales_person_ids:
+            self.sales_person_ids = self.partner_id.sales_person_ids
+        return res
 
     def _compute_paid_date(self):
         for rec in self:

@@ -66,6 +66,7 @@
                 <xpath expr="//field[@name='child_ids']/form/sheet/group/group[position()=2]/field[@name='name']" position="before">
                     <field name="default_shipping" attrs="{'invisible': [('type', '!=', 'delivery')]}"/>
                     <field name="property_delivery_carrier_id" attrs="{'invisible': [('type', '!=', 'delivery')]}"/>
+                    <field name="customer_code" readonly="1"/>
                 </xpath>
 
                 <field name='vat' position='attributes'>

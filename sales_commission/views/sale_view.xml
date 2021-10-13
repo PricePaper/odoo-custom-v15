@@ -32,7 +32,7 @@
             <field name="inherit_id" ref="sale.view_order_form" />
             <field name="arch" type="xml">
                 <field name='payment_term_id' position="before">
-                    <field name="sales_person_ids" widget="many2many_tags" readonly="1" force_save="1"/>
+                    <field name="sales_person_ids" widget="many2many_tags" attrs="{'readonly': [('state', 'not in', ['draft', 'sent'])]}" force_save="1"/>
                 </field>
             </field>
         </record>

@@ -1472,6 +1472,21 @@ class SaleOrderLine(models.Model):
         return res
 
     @api.multi
+    def _prepare_procurement_values(self, group_id=False):
+        """ Prepare specific key for moves or other components that will be created from a stock rule
+        comming from a sale order line. This method could be override in order to add other custom key that could
+        be used in move/po creation.
+        """
+        values = super(SaleOrderLine, self)._prepare_procurement_values(group_id)
+        self.ensure_one()
+        date_planned = self.order_id.release_date\
+            + timedelta(days=self.customer_lead or 0.0) - timedelta(days=self.order_id.company_id.security_lead)
+        values.update({
+            'date_planned': date_planned
+        })
+        return values
+
+    @api.multi
     def _action_launch_stock_rule(self):
         """
         Launch procurement group run method with required/custom fields genrated by a
@@ -1669,7 +1684,8 @@ class SaleOrderLine(models.Model):
 
             msg, product_price, price_from = self.calculate_customer_price()
             warn_msg += msg and "\n\n{}".format(msg)
-
+            if self.product_id.sale_delay > 0:
+                warn_msg += 'product: %s takes %d days, for getting product from vendor.' % (self.product_id.sale_delay, self.product_id.name)
             if warn_msg:
                 res.update({'warning': {'title': _('Warning!'), 'message': warn_msg}})
 

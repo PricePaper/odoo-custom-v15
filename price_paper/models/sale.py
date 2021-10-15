@@ -499,6 +499,9 @@ class SaleOrder(models.Model):
                         order.adjust_delivery_line()
                     else:
                         order._remove_delivery_line()
+
+        if 'sales_person_ids' in vals and vals['sales_person_ids']:
+            self.message_subscribe(partner_ids=vals['sales_person_ids'][0][-1])
         return res
 
     @api.multi

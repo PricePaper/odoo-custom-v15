@@ -1685,7 +1685,7 @@ class SaleOrderLine(models.Model):
             msg, product_price, price_from = self.calculate_customer_price()
             warn_msg += msg and "\n\n{}".format(msg)
             if self.product_id.sale_delay > 0:
-                warn_msg += 'product: %s takes %d days, for getting product from vendor.' % (self.product_id.sale_delay, self.product_id.name)
+                warn_msg += 'product: {} takes {} days to be procured.'.format(self.product_id.name, self.product_id.sale_delay)
             if warn_msg:
                 res.update({'warning': {'title': _('Warning!'), 'message': warn_msg}})
 

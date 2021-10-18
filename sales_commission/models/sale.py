@@ -14,7 +14,7 @@ class SaleOrder(models.Model):
     # -------------------------------------------------------------------------------
     @api.model
     def restore_sales_persons_from_partner(self):
-        orders = self.env['sale.order'].search([])
+        orders = self.env['sale.order'].search([('sales_person_ids', '=', False)])
         scount = len(orders)
 
         sql = 'INSERT INTO res_partner_sale_order_rel(sale_order_id, res_partner_id) VALUES '
@@ -28,7 +28,7 @@ class SaleOrder(models.Model):
             sql = sql[0:-1]
             self.env.cr.execute(sql)
 
-        iorders = self.env['account.invoice'].search([])
+        iorders = self.env['account.invoice'].search([('sales_person_ids', '=', False)])
         count = len(iorders)
 
 

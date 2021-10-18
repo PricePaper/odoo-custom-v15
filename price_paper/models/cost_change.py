@@ -164,7 +164,7 @@ class CostChange(models.Model):
                 if rec.price_filter == 'fixed':
                     rec.new_cost = rec.price_change
                 else:
-                    rec.new_cost = rec.product_id and rec.product_id.standard_price * (
+                    rec.new_cost = rec.old_cost and rec.old_cost * (
                                 (100 + rec.price_change) / 100) or 0
             else:
                 rec.new_cost == 0.00

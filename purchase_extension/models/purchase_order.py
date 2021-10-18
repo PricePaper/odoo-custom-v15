@@ -3,6 +3,7 @@
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo import models, fields, registry, api, _
 from odoo.tools.float_utils import float_compare
 from odoo.exceptions import ValidationError, AccessError
@@ -66,7 +67,32 @@ class PurchaseOrder(models.Model):
             purchase_rep = purchase_rep and purchase_rep[0].user_ids
             if purchase_rep:
                 vals['user_id'] = purchase_rep[0].id
-        return super(PurchaseOrder, self).create(vals)
+        purchase_order = super(PurchaseOrder, self).create(vals)
+        for order in purchase_order:
+            delay = order.vendor_delay
+            date_order = order.date_order
+            planned_date = (date_order + relativedelta(days=delay)).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            order.order_line.write({'date_planned': planned_date})
+        return purchase_order
+
+    @api.multi
+    def write(self, vals):
+        result = super(PurchaseOrder, self).write(vals)
+        for order in self:
+            if 'date_order' in vals:
+                delay = order.vendor_delay
+                date_order = order.date_order
+                planned_date = (date_order + relativedelta(days=delay)).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+                order.order_line.write({'date_planned': planned_date})
+        return result
+
+    @api.multi
+    def action_set_date_planned(self):
+        for order in self:
+            delay = order.vendor_delay
+            date_order = order.date_order
+            planned_date = (date_order + relativedelta(days=delay)).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            order.order_line.update({'date_planned': planned_date})
 
     @api.multi
     def _add_supplier_to_product(self):
@@ -301,6 +327,15 @@ class PurchaseOrderLine(models.Model):
     gross_volume = fields.Float(string="Gross Volume", compute='_compute_gross_weight_volume')
     gross_weight = fields.Float(string="Gross Weight", compute='_compute_gross_weight_volume')
 
+    @api.onchange('product_qty', 'product_uom')
+    def _onchange_quantity(self):
+        res = super(PurchaseOrderLine, self)._onchange_quantity()
+        date_order = self.order_id.date_order
+        delay = self.order_id.vendor_delay
+        if date_order and delay:
+            planned_date = date_order + relativedelta(days=delay)
+            self.date_planned = planned_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        return res
 
     @api.model
     def create(self, vals):

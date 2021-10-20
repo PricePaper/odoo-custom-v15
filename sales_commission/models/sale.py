@@ -14,7 +14,7 @@ class SaleOrder(models.Model):
     # -------------------------------------------------------------------------------
     @api.model
     def restore_sales_persons_from_partner(self):
-        orders = self.env['sale.order'].search([])
+        orders = self.env['sale.order'].search([('sales_person_ids', '=', False)])
         scount = len(orders)
 
         sql = 'INSERT INTO res_partner_sale_order_rel(sale_order_id, res_partner_id) VALUES '
@@ -26,9 +26,9 @@ class SaleOrder(models.Model):
             logging.info(f'sale order write  -> ORDER -> [%s] %d' %(order, ip))
         else:
             sql = sql[0:-1]
-            # self.env.cr.execute(sql)
+            self.env.cr.execute(sql)
 
-        iorders = self.env['account.invoice'].search([])
+        iorders = self.env['account.invoice'].search([('sales_person_ids', '=', False)])
         count = len(iorders)
 
 
@@ -41,7 +41,7 @@ class SaleOrder(models.Model):
             logging.info(f'Account Invoice write  -> Invoice -> [%s] %d' %(invoice, ip))
         else:
             sql = sql[0:-1]
-            # self.env.cr.execute(sql)
+            self.env.cr.execute(sql)
 
         logging.info('----SO----------> %d', scount)
         logging.info('----INV----------> %d', count)
@@ -91,7 +91,7 @@ class SaleOrder(models.Model):
         # writer = csv.DictWriter(csvfile, fieldnames=fs)
         # writer.writeheader()
         for sc in self.search([('storage_contract', '=', True)]): #self.browse(103269):#.search([('storage_contract', '=', True)]):
-            #     res = {'sc':sc.name}        
+            #     res = {'sc':sc.name}
             #     # writer.writerow({'sc':sc.name})
             #     stc = ch = 0
             for line in sc.order_line:
@@ -115,11 +115,11 @@ class SaleOrder(models.Model):
         #                 # print(line.account_id.id)
         #                 if line.account_id.id == 683:
         #                     # print(ch, line.account_id.id, line.credit , line.debit )
-        #                     ch += line.credit or line.debit                 
+        #                     ch += line.credit or line.debit
         #                 writer.writerow({'sc':sc.name, 'jrnl':line.move_id.name, 'name': line.name, 'note': 'sc child stock journal_id', 'accout': line.account_id.display_name, 'debit': line.debit, 'credit':line.credit})
-        #             inv = sc_line.storage_contract_line_ids.mapped('invoice_lines.invoice_id')                    
+        #             inv = sc_line.storage_contract_line_ids.mapped('invoice_lines.invoice_id')
         #             for i in inv:
-        #                 for line in i.move_id.line_ids:  
+        #                 for line in i.move_id.line_ids:
 
         #                     writer.writerow({'sc':sc.name, 'invoice': i.number,'jrnl':line.move_id.name, 'name': line.name, 'note': 'sc child  invoice journal_id', 'accout': line.account_id.display_name, 'debit': line.debit, 'credit':line.credit})
         #         if sc_line.purchase_line_ids:
@@ -165,7 +165,7 @@ class SaleOrder(models.Model):
     def correct_sc(self, order_ids=[]):
         if not order_ids:
             return
-        sc_inv = 0        
+        sc_inv = 0
         for order in self.browse(order_ids):
             line_ids = []
             order.action_storage_contract_confirm()
@@ -173,36 +173,36 @@ class SaleOrder(models.Model):
                 if line.product_uom_qty > line.product_id.qty_available:
                     line.product_uom_qty = line.product_id.qty_available
                 sc_inv = line.product_uom_qty * line.product_id.standard_price
-                line_ids.extend([[0,0, {                                
+                line_ids.extend([[0,0, {
                                 'debit': sc_inv,
                                 'credit': 0,
                                 'journal_id': 3,
-                                'name': "Storage contract inventory transfer %s" % line.product_id.name,                                
+                                'name': "Storage contract inventory transfer %s" % line.product_id.name,
                                 'account_id': 683,
                                 'date_maturity': "2021-4-30",
                             }],
-                            [0,0, {                                
+                            [0,0, {
                                 'debit': 0,
                                 'credit': sc_inv,
                                 'journal_id': 3,
                                 'name': "Storage contract inventory transfer %s" % line.product_id.name,
                                 'account_id': 687,
                                 'date_maturity': "2021-4-30",
-                            }],[0,0, {                                
+                            }],[0,0, {
                                 'debit': 0,
                                 'credit': sc_inv,
                                 'journal_id': 3,
                                 'name': "Storage contract cost transfer %s" % line.product_id.name,
                                 'account_id': 769,
                                 'date_maturity': "2021-4-30",
-                            }],[0,0, {                                
+                            }],[0,0, {
                                 'debit': sc_inv,
                                 'credit': 0,
                                 'journal_id': 3,
                                 'name': "Storage contract cost transfer %s" % line.product_id.name,
                                 'account_id': 29,
                                 'date_maturity': "2021-4-30",
-                            }],])        
+                            }],])
             move_id = self.env['account.move'].create({
                 'ref': "Storage contract imported order %s transfer" % order.name,
                 'line_ids': line_ids,

@@ -173,7 +173,8 @@ class AccountInvoice(models.Model):
         commission_rec = self.env['sale.commission'].search([('invoice_id', '=', self.id), ('is_paid', '=', False)])
         if not commission_rec and self.type in ['out_invoice', 'out_refund']:
             profit = self.gross_profit
-            for rec in self.partner_id.commission_percentage_ids:
+            commission_rule = self.partner_id.commission_percentage_ids.filtered(lambda r:r.sale_person_id and r.sale_person_id in self.sales_person_ids)
+            for rec in commission_rule:
                 if not rec.rule_id:
                     raise UserError(_('Commission rule is not configured for %s.' % (rec.sale_person_id.name)))
                 commission = 0

@@ -4,7 +4,7 @@ from odoo.exceptions import ValidationError, UserError
 
 class RMARetMerAuth(models.Model):
     _name = 'rma.ret.mer.auth'
-    _inherit = ['rma.ret.mer.auth', 'mail.thread']
+    _inherit = ['rma.ret.mer.auth', 'mail.thread', 'mail.activity.mixin']
 
     state = fields.Selection([
         ('new', 'New'), ('verification', 'Verification'),

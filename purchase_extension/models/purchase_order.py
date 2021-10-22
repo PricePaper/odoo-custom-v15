@@ -67,32 +67,14 @@ class PurchaseOrder(models.Model):
             purchase_rep = purchase_rep and purchase_rep[0].user_ids
             if purchase_rep:
                 vals['user_id'] = purchase_rep[0].id
-        purchase_order = super(PurchaseOrder, self).create(vals)
-        for order in purchase_order:
-            delay = order.vendor_delay
-            date_order = order.date_order
-            planned_date = (date_order + relativedelta(days=delay)).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-            order.order_line.write({'date_planned': planned_date})
-        return purchase_order
+        return super(PurchaseOrder, self).create(vals)
 
     @api.multi
     def write(self, vals):
         result = super(PurchaseOrder, self).write(vals)
-        for order in self:
-            if 'date_order' in vals:
-                delay = order.vendor_delay
-                date_order = order.date_order
-                planned_date = (date_order + relativedelta(days=delay)).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-                order.order_line.write({'date_planned': planned_date})
+        if 'date_planned' in vals and vals['date_planned']:
+            self.action_set_date_planned()
         return result
-
-    @api.multi
-    def action_set_date_planned(self):
-        for order in self:
-            delay = order.vendor_delay
-            date_order = order.date_order
-            planned_date = (date_order + relativedelta(days=delay)).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-            order.order_line.update({'date_planned': planned_date})
 
     @api.multi
     def _add_supplier_to_product(self):
@@ -239,7 +221,7 @@ class PurchaseOrder(models.Model):
                                                     })
             result_list = self.sanitize_uom(result_dict)
 
-        context = {'data': result_list}
+        context = {'data': result_list, 'default_vendor_id': self.partner_id.id}
         view_id = self.env.ref('purchase_extension.view_sale_history_add_po_wiz').id
         return {
             'name': _('Add sale history to PO'),

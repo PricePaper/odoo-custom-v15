@@ -74,7 +74,7 @@ class SaleOrder(models.Model):
     @api.depends('order_line.move_ids.created_purchase_line_id')
     def _compute_po_count(self):
         for sale in self:
-            sale.po_count = len(sale.order_line.mapped('move_ids.created_purchase_line_id.order_id').ids)
+            sale.po_count = len(sale.sudo().order_line.mapped('move_ids.created_purchase_line_id.order_id').ids)
 
     def _compute_sc_child_order_count(self):
         for order in self:

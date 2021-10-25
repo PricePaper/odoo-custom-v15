@@ -74,7 +74,7 @@ class SaleOrder(models.Model):
     @api.depends('order_line.move_ids.created_purchase_line_id')
     def _compute_po_count(self):
         for sale in self:
-            sale.po_count = len(sale.order_line.mapped('move_ids.created_purchase_line_id.order_id').ids)
+            sale.po_count = len(sale.sudo().order_line.mapped('move_ids.created_purchase_line_id.order_id').ids)
 
     def _compute_sc_child_order_count(self):
         for order in self:
@@ -1041,6 +1041,12 @@ class SaleOrderLine(models.Model):
     storage_contract_line_ids = fields.One2many('sale.order.line', 'storage_contract_line_id')
     selling_min_qty = fields.Float(string="Minimum Qty")
     note_expiry_date = fields.Date('Note Valid Upto')
+    scraped_qty = fields.Float(compute='_compute_scrape_qty', string='Quantity Scraped', store=False)
+
+    @api.depends('move_ids.picking_id.move_lines.scrapped')
+    def _compute_scrape_qty(self):
+        for so_line in self:
+            so_line.scraped_qty = sum(so_line.move_ids.mapped('picking_id').mapped('move_lines').filtered(lambda r: r.scrapped and r.product_id.id == so_line.product_id.id).mapped('quantity_done'))
 
     @api.depends('state', 'product_uom_qty', 'qty_delivered', 'qty_to_invoice', 'qty_invoiced',
                  'order_id.storage_contract')
@@ -1111,9 +1117,9 @@ class SaleOrderLine(models.Model):
             if line.order_id.storage_contract:
                 sale_lines = line.storage_contract_line_ids.filtered(lambda r: r.order_id.state not in ['draft', 'cancel'])
                 if not line.sudo().purchase_line_ids and line.state in ['released', 'done']:
-                    line.storage_remaining_qty = line.product_uom_qty - sum(sale_lines.mapped('qty_delivered'))
+                    line.storage_remaining_qty = line.product_uom_qty - sum(sale_lines.mapped('qty_delivered')) - sum(sale_lines.mapped('scraped_qty'))
                 else:
-                    line.storage_remaining_qty = line.qty_delivered - sum(sale_lines.mapped('qty_delivered'))
+                    line.storage_remaining_qty = line.qty_delivered - sum(sale_lines.mapped('qty_delivered')) - sum(sale_lines.mapped('scraped_qty'))
             else:
                 break
 
@@ -1128,11 +1134,12 @@ class SaleOrderLine(models.Model):
                 ('is_downpayment', '=', False)
             ])
             for sl in lines:
+                lines = sl.storage_contract_line_ids.filtered(lambda r: r.order_id.state not in ['draft', 'cancel'])
                 if not sl.sudo().purchase_line_ids:
-                    if (sl.product_uom_qty - sum(sl.storage_contract_line_ids.filtered(lambda r: r.order_id.state not in ['draft', 'cancel']).mapped('qty_delivered'))) > value:
+                    if (sl.product_uom_qty - sum(lines.mapped('qty_delivered')) - sum(lines.mapped('scraped_qty'))) > value:
                         ids.append(sl.id)
                 else:
-                    if (sl.qty_delivered - sum(sl.storage_contract_line_ids.filtered(lambda r: r.order_id.state not in ['draft', 'cancel']).mapped('qty_delivered'))) > value:
+                    if (sl.qty_delivered - sum(lines.mapped('qty_delivered')) - sum(lines.mapped('scraped_qty'))) > value:
                         ids.append(sl.id)
         return [('id', 'in', ids)]
 
@@ -1770,7 +1777,7 @@ class SaleOrderLine(models.Model):
         """
         prices_all = self.env['customer.product.price']
         for rec in self.order_id.partner_id.customer_pricelist_ids:
-            if not rec.pricelist_id.expiry_date or rec.pricelist_id.expiry_date >= str(date.today()):
+            if not rec.pricelist_id.expiry_date or rec.pricelist_id.expiry_date >= date.today():
                 prices_all |= rec.pricelist_id.customer_product_price_ids
 
         prices_all = prices_all.filtered(

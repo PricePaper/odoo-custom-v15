@@ -145,8 +145,8 @@ class AccountInvoice(models.Model):
             'target': 'new',
         }
 
-    def create_discount_writeoff(self, batch_discount=False):
-
+    def create_discount_writeoff(self):
+        batch_discount = self._context.get('batch_discount', False)
         self.ensure_one()
         rev_line_account = self.partner_id and self.partner_id.property_account_receivable_id
 
@@ -166,7 +166,7 @@ class AccountInvoice(models.Model):
         discount_limit = self.amount_total * (customer_discount_per / 100)
         writeoff_discount = self.discount_from_batch if batch_discount else self.wrtoff_discount
 
-        if self.discount_type == 'amount' and writeoff_discount > discount_limit or writeoff_discount > customer_discount_per and not batch_discount:
+        if self.discount_type == 'amount' and writeoff_discount > discount_limit or self.discount_type == 'percentage' and writeoff_discount > customer_discount_per and not batch_discount:
             raise UserError(_('Invoices can not be discounted that much. Create a credit memo instead.'))
 
         discount = writeoff_discount if self.discount_type == 'amount' or batch_discount else self.amount_total * (writeoff_discount / 100)

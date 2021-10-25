@@ -79,7 +79,7 @@ class CashCollectedLines(models.Model):
                 })
                 if line.invoice_id and line.discount_amount:
                     line.invoice_id.write({'discount_from_batch': line.discount_amount})
-                    line.invoice_id.create_discount_writeoff(batch_discount=True)
+                    line.invoice_id.with_context(batch_discount=True).create_discount_writeoff()
             else:
                 batch_payment_info.setdefault(line.journal_id, {}). \
                     setdefault(line.payment_method_id, []). \
@@ -134,7 +134,7 @@ class CashCollectedLines(models.Model):
                 })
                 if line.invoice_id and line.discount_amount:
                     line.invoice_id.write({'discount_from_batch': line.discount_amount})
-                    line.invoice_id.create_discount_writeoff(batch_discount=True)
+                    line.invoice_id.with_context(batch_discount=True).create_discount_writeoff()
             else:
                 batch_payment_info.setdefault(line.journal_id, {}). \
                     setdefault(line.payment_method_id, []). \

@@ -232,7 +232,7 @@ class AccountRegisterPayment(models.TransientModel):
                             'discount_amount': discount_amount,
                             })
                 line.invoice_id.write({'discount_from_batch': line.discount})
-                line.invoice_id.create_discount_writeoff(batch_discount=True)
+                line.invoice_id.with_context(batch_discount=True).create_discount_writeoff()
             if lines:
                 res.update({'payment_lines': lines})
         return result

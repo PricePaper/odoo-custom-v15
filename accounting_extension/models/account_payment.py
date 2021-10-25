@@ -226,13 +226,16 @@ class AccountRegisterPayment(models.TransientModel):
                     'is_full_reconcile': line.is_full_reconcile,
                     'amount_total': line.amount_total,
                 }))
-            res.update({'payment_reference': self.payment_reference, })
-            if discount_amount and self.writeoff_account_id:
-                res.update({'payment_difference_handling': 'open',
-                            'discount_amount': discount_amount,
-                            })
-                line.invoice_id.write({'discount_from_batch': line.discount})
-                line.invoice_id.with_context(batch_discount=True).create_discount_writeoff()
+                if line.discount:
+                    line.invoice_id.write({'discount_from_batch': line.discount})
+                    line.invoice_id.with_context(batch_discount=True).create_discount_writeoff()
+
+            res.update({
+                'payment_reference': self.payment_reference,
+                'payment_difference_handling': 'open',
+                'discount_amount': discount_amount
+            })
+
             if lines:
                 res.update({'payment_lines': lines})
         return result

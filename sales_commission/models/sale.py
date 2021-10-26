@@ -49,6 +49,43 @@ class SaleOrder(models.Model):
 
         return True
 
+    @api.model
+    def store_commission_rules_from_partner(self):
+        orders = self.env['sale.order'].search([('commission_rule_ids', '=', False)])
+        scount = len(orders)
+
+        sql = 'INSERT INTO commission_rules_sale_order_rel(sale_order_id, commission_rules_id) VALUES '
+        for ip, sale in enumerate(orders, 1):
+            rules = sale.mapped('sales_person_ids').mapped('default_commission_rule')
+            order = sale.id
+            for rule in rules:
+                sql += str((order, rule.id)) + ','
+            logging.info(f'sale order write  -> ORDER -> [%s] %d' %(order, ip))
+        else:
+            sql = sql[0:-1]
+            self.env.cr.execute(sql)
+        #
+        iorders = self.env['account.invoice'].search([('commission_rule_ids', '=', False)])
+        count = len(iorders)
+
+
+        sql = 'INSERT INTO account_invoice_commission_rules_rel(account_invoice_id, commission_rules_id) VALUES '
+        for ip, inv in enumerate(iorders, 1):
+            rules = inv.mapped('sales_person_ids').mapped('default_commission_rule')
+            invoice = inv.id
+            print(inv.mapped('sales_person_ids').mapped('name'))
+            for rule in rules:
+                sql += str((invoice, rule.id)) + ','
+            logging.info(f'Account Invoice write  -> Invoice -> [%s] %d' %(invoice, ip))
+        else:
+            sql = sql[0:-1]
+            self.env.cr.execute(sql)
+
+        logging.info('----SO----------> %d', scount)
+        logging.info('----INV----------> %d', count)
+
+        return True
+
     @api.multi
     @api.onchange('partner_id')
     def onchange_partner_id(self):

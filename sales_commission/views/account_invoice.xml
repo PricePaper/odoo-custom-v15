@@ -37,6 +37,7 @@
                 </field>
                 <page  name="other_info" position="after">
                   <page string="Sales Commission" groups="base.group_no_one">
+                    <field name="commission_rule_ids" invisible='1'/>
                     <field name="sale_commission_ids"/>
                   </page>
                 </page>

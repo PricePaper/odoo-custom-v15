@@ -15,6 +15,7 @@ class AccountInvoice(models.Model):
     check_bounce_invoice = fields.Boolean(string='Check Bounce Invoice', default=False)
     sale_commission_ids = fields.One2many('sale.commission', 'invoice_id', string='Commission')
     paid_date = fields.Date(string='Paid_date', compute='_compute_paid_date')
+    commission_rule_ids = fields.Many2many('commission.rules', string='Commission Rules')
 
     @api.onchange('partner_id', 'company_id')
     def _onchange_partner_id(self):

@@ -33,6 +33,23 @@ class AccountInvoice(models.Model):
             self.sales_person_ids = self.partner_id.sales_person_ids
         return res
 
+    @api.multi
+    @api.onchange('sales_person_ids')
+    def onchange_sales_person_ids(self):
+        if self.sales_person_ids:
+            rules = self.partner_id.mapped('commission_percentage_ids').filtered(lambda r:r.sale_person_id in self.sales_person_ids).mapped('rule_id')
+            if rules:
+                sale_rep = rules.mapped('sales_person_id')
+                non_sale_rep = self.sales_person_ids - sale_rep
+                for rep in non_sale_rep:
+                    rules |= rep.default_commission_rule
+            else:
+                for rep in self.sales_person_ids:
+                    rules |= rep.mapped('default_commission_rule')
+            self.commission_rule_ids = rules
+        else:
+            self.commission_rule_ids = False
+
     def _compute_paid_date(self):
         for rec in self:
             if rec.state == 'paid':

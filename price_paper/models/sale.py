@@ -920,6 +920,27 @@ class SaleOrder(models.Model):
         self.write({'state': 'sale', 'confirmation_date': fields.Datetime.today()})
         return True
 
+
+    def so_duplicate(self):
+        new_records = self.env['sale.order']
+        for rec in self:
+            new_records |= rec.copy()
+        action_rec = self.env.ref('sale.action_quotations_with_onboarding')
+        action = action_rec.read()[0]
+        if len(new_records) > 1:
+          action['domain'] = [('id', 'in', new_records.ids)]
+        elif len(new_records) == 1:
+          action['views'] = [(self.env.ref('sale.view_order_form').id, 'form')]
+          action['res_id'] = new_records.ids[0]
+        return action
+
+    @api.model
+    def sc_archive_cron(self):
+        records = self.env['sale.order'].search([('active', '=', True), ('storage_contract', '=', True), ('state', 'in', ['released', 'done'])])
+        for record in records:
+            if not any(record.order_line.mapped(lambda l: l.storage_remaining_qty)):
+                record.write({'active': False})
+
     def run_storage(self):
         for order in self:
             route = self.env.ref('purchase_stock.route_warehouse0_buy', raise_if_not_found=True)

@@ -548,13 +548,13 @@ class SaleOrder(models.Model):
                 order.delivery_rating_success = True
                 order.delivery_price = res['price']
                 order.delivery_message = res['warning_message']
-                if order.carrier_id.delivery_type not in ['fixed', 'based_on_rule']:
+                if order.carrier_id.delivery_type not in ['fixed', 'base_on_rule']:
                     order.delivery_cost = res['cost']
             else:
                 order.delivery_rating_success = False
                 order.delivery_price = 0.0
                 order.delivery_message = res['error_message']
-                if order.carrier_id.delivery_type not in ['fixed', 'based_on_rule']:
+                if order.carrier_id.delivery_type not in ['fixed', 'base_on_rule']:
                     order.delivery_cost = 0.0
 
     @api.multi
@@ -1298,7 +1298,7 @@ class SaleOrderLine(models.Model):
                         line.lst_price = uom_price[0].price
                         if line.product_id.cost:
                             line.working_cost = uom_price[0].cost
-            if line.is_delivery and line.order_id.carrier_id and line.order_id.carrier_id.delivery_type not in ['based_on_rule', 'fixed']:
+            if line.is_delivery and line.order_id.carrier_id and line.order_id.carrier_id.delivery_type not in ['base_on_rule', 'fixed']:
                 line.working_cost = line.order_id.delivery_cost
                 line.lst_price = line.order_id.delivery_price
 
@@ -1638,7 +1638,7 @@ class SaleOrderLine(models.Model):
                     line.profit_margin = 0.0
                     if line.is_delivery and line.order_id.carrier_id:
                         price_unit = line.order_id.carrier_id.average_company_cost
-                        if line.order_id.carrier_id.delivery_type not in ['fixed', 'based_on_rule']:
+                        if line.order_id.carrier_id.delivery_type not in ['fixed', 'base_on_rule']:
                             price_unit = line.order_id.delivery_cost
                         line.profit_margin = line.price_subtotal - price_unit
                 else:

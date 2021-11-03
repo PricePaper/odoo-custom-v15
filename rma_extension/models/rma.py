@@ -47,14 +47,6 @@ class RMARetMerAuth(models.Model):
         return {}
 
     @api.multi
-    def unlink(self):
-        for rma in self:
-            if rma.stock_picking_ids.filtered(lambda r: r.state != 'cancel') or rma.invoice_ids.filtered(lambda r: r.state != 'cancel'):
-                raise ValidationError('You can not delete RMA with pickings and invoices please cancel the records '
-                                      'first.')
-        return super(RMARetMerAuth, self).unlink()
-
-    @api.multi
     def action_cancel(self):
         for rma in self:
             rma.invoice_ids.action_invoice_cancel()

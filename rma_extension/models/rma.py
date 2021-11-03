@@ -10,7 +10,11 @@ class RMARetMerAuth(models.Model):
         ('new', 'New'), ('verification', 'Verification'),
         ('resolved', 'Waiting For Delivery'),
         ('approve', 'Approved'),
-        ('close', 'Done')], string='Status', default='new', track_visibility='onchange')
+        ('close', 'Done'),
+        ('cancel', 'Cancel')], string='Status', default='new', track_visibility='onchange')
+    shipping_address_id = fields.Many2one(related='sale_order_id.partner_shipping_id', readonly=True)
+    invoice_address_id = fields.Many2one(related='sale_order_id.partner_invoice_id', readonly=True)
+    pickup_address_id = fields.Many2one(related='purchase_order_id.pickup_address_id', readonly=True)
 
     def button_dummy(self):
         return {
@@ -41,6 +45,27 @@ class RMARetMerAuth(models.Model):
     @api.onchange('picking_rma_id')
     def onchange_picking_rma_id(self):
         return {}
+
+    @api.multi
+    def unlink(self):
+        for rma in self:
+            if rma.stock_picking_ids.filtered(lambda r: r.state != 'cancel') or rma.invoice_ids.filtered(lambda r: r.state != 'cancel'):
+                raise ValidationError('You can not delete RMA with pickings and invoices please cancel the records '
+                                      'first.')
+        return super(RMARetMerAuth, self).unlink()
+
+    @api.multi
+    def action_cancel(self):
+        for rma in self:
+            rma.invoice_ids.action_invoice_cancel()
+            rma.stock_picking_ids.action_cancel()
+        if self._context.get('skip_cancel', True):
+            self.write({'state': 'cancel'})
+
+    def rma_set_draft(self):
+        if not all([state == 'cancel' for state in self.mapped('state')]):
+            self.with_context(skip_cancel=False).action_cancel()
+        return super(RMARetMerAuth, self).rma_set_draft()
 
     @api.multi
     def rma_submit(self):
@@ -323,8 +348,8 @@ class RMARetMerAuth(models.Model):
                     picking = PK_IN.search([
                         ('rma_id', '=', rma.id),
                         ('location_id', '=', move[2]['location_id']),
-                        ('location_dest_id', '=',
-                         move[2]['location_dest_id'])])
+                        ('location_dest_id', '=', move[2]['location_dest_id']),
+                        ('state', '!=', 'cancel')])
                     if not picking:
                         picking_type_id = self.env[
                             'stock.picking.type'].search([
@@ -338,8 +363,8 @@ class RMARetMerAuth(models.Model):
                         picking_vals = {
                             'move_type': 'one',
                             'picking_type_id': picking_type_id or False,
-                            'partner_id': rma.partner_id and
-                                          rma.partner_id.id or
+                            'partner_id': rma.shipping_address_id and
+                                          rma.shipping_address_id.id or
                                           False,
                             'origin': rma.name,
                             'move_lines': [move],
@@ -362,7 +387,8 @@ class RMARetMerAuth(models.Model):
                         ('rma_id', '=', rma.id),
                         ('location_id', '=', vals[2]['location_id']),
                         ('location_dest_id', '=', vals[2]['location_dest_id']),
-                        ('picking_type_code', '=', 'outgoing')])
+                        ('picking_type_code', '=', 'outgoing'),
+                        ('state', '!=', 'cancel')])
                     if not ex_picking:
                         picking_type = self.env['stock.picking.type'].search([
                             ('code', '=', 'outgoing'),
@@ -375,8 +401,8 @@ class RMARetMerAuth(models.Model):
                         exchange_picking_vals = {
                             'move_type': 'one',
                             'picking_type_id': picking_type or False,
-                            'partner_id': rma.partner_id and
-                                          rma.partner_id.id or
+                            'partner_id': rma.shipping_address_id and
+                                          rma.shipping_address_id.id or
                                           False,
                             'origin': rma.name,
                             'move_lines': [vals],
@@ -400,11 +426,11 @@ class RMARetMerAuth(models.Model):
                         'origin': rma.name or '',
                         'name': rma.name or '',
                         'comment': rma.problem or '',
-                        'partner_id': rma.partner_id and
-                                      rma.partner_id.id or False,
+                        'partner_id': rma.invoice_address_id and
+                                      rma.invoice_address_id.id or False,
                         'account_id':
-                            rma.partner_id.property_account_receivable_id and
-                            rma.partner_id.property_account_receivable_id.id or
+                            rma.invoice_address_id.property_account_receivable_id and
+                            rma.invoice_address_id.property_account_receivable_id.id or
                             False,
                         'invoice_line_ids': invoice_line_vals,
                         'date_invoice': rma.rma_date or False,
@@ -418,8 +444,8 @@ class RMARetMerAuth(models.Model):
                         'comment': rma.problem or '',
                         'origin': rma.name or '',
                         'name': rma.name or '',
-                        'partner_id': rma.partner_id and
-                                      rma.partner_id.id or False,
+                        'partner_id': rma.invoice_address_id and
+                                      rma.invoice_address_id.id or False,
                         'account_id':
                             rma_line.exchange_product_id.
                                 property_account_expense_id and
@@ -543,8 +569,8 @@ class RMARetMerAuth(models.Model):
                     picking = PK_OUT.search([
                         ('rma_id', '=', rma.id),
                         ('location_id', '=', move[2]['location_id']),
-                        ('location_dest_id', '=',
-                         move[2]['location_dest_id'])])
+                        ('location_dest_id', '=', move[2]['location_dest_id']),
+                        ('state', '!=', 'cancel')])
                     if not picking:
                         picking_type_id = self.env[
                             'stock.picking.type'].search([
@@ -558,7 +584,7 @@ class RMARetMerAuth(models.Model):
                         picking_re_vals = {
                             'move_type': 'one',
                             'picking_type_id': picking_type_id or False,
-                            'partner_id': rma.supplier_id and
+                            'partner_id': rma.pickup_address_id and rma.pickup_address_id.id or rma.supplier_id and
                                           rma.supplier_id.id or
                                           False,
                             'origin': rma.name,
@@ -582,7 +608,8 @@ class RMARetMerAuth(models.Model):
                         ('rma_id', '=', rma.id),
                         ('location_id', '=', vals[2]['location_id']),
                         ('location_dest_id', '=', vals[2]['location_dest_id']),
-                        ('picking_type_code', '=', 'incoming')])
+                        ('picking_type_code', '=', 'incoming'),
+                        ('state', '!=', 'cancel')])
                     if not ex_picking:
                         picking_type = self.env['stock.picking.type'].search([
                             ('code', '=', 'incoming'),
@@ -595,7 +622,7 @@ class RMARetMerAuth(models.Model):
                         exchange_vals = {
                             'move_type': 'one',
                             'picking_type_id': picking_type or False,
-                            'partner_id': rma.supplier_id and
+                            'partner_id': rma.pickup_address_id and rma.pickup_address_id.id or rma.supplier_id and
                                           rma.supplier_id.id or
                                           False,
                             'origin': rma.name,
@@ -760,8 +787,8 @@ class RMARetMerAuth(models.Model):
                     picking = PK_RES.search([
                         ('rma_id', '=', rma.id),
                         ('location_id', '=', move[2]['location_id']),
-                        ('location_dest_id', '=',
-                         move[2]['location_dest_id'])])
+                        ('location_dest_id', '=', move[2]['location_dest_id']),
+                        ('state', '!=', 'cancel')])
                     if not picking:
                         picking_type_id = self.env[
                             'stock.picking.type'].search([
@@ -800,7 +827,8 @@ class RMARetMerAuth(models.Model):
                         ('rma_id', '=', rma.id),
                         ('location_id', '=', vals[2]['location_id']),
                         ('location_dest_id', '=', vals[2]['location_dest_id']),
-                        ('picking_type_code', '=', 'outgoing')])
+                        ('picking_type_code', '=', 'outgoing'),
+                        ('state', '!=', 'cancel')])
                     if not ex_picking:
                         picking_type = self.env['stock.picking.type'].search([
                             ('code', '=', 'outgoing'),

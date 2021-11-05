@@ -301,12 +301,12 @@ class PurchaseOrder(models.Model):
             for po in self:
                 for line in po.order_line:
                     product = line.product_id
-                    if line.product_id.cost != line.price_unit:
+                    if line.product_id.standard_price != line.price_unit:
                         tr += '''<tr>
                             <td><b>{}</b></td>
                             <td><b>${cost:.2f}</b></td>
                             <td style="color:red"><b>${price:.2f}</b></td>
-                        </tr>'''.format(product.display_name, cost=product.cost, price=line.price_unit)
+                        </tr>'''.format(product.display_name, cost=product.standard_price, price=line.price_unit)
             if tr:
                 note = '''
                 <table class="table table-bordered">

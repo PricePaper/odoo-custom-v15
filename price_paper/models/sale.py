@@ -1150,7 +1150,7 @@ class SaleOrderLine(models.Model):
                 else:
                     line.storage_remaining_qty = line.qty_delivered - sum(sale_lines.mapped('qty_delivered')) - sum(sale_lines.mapped('scraped_qty'))
             else:
-                break
+                pass
 
     @api.model
     def _search_storage_remaining_qty(self, operator, value):
@@ -1501,6 +1501,7 @@ class SaleOrderLine(models.Model):
                         raise ValidationError(_('You are not allowed to reduce price below product cost. Contact your sales Manager.'))
                     if line.price_unit >= line.working_cost and vals.get('price_unit') < line.working_cost:
                         raise ValidationError(_('You are not allowed to reduce price below product cost. Contact your sales Manager.'))
+
         res = super(SaleOrderLine, self).write(vals)
         for line in self:
             if vals.get('price_unit') and line.order_id.state == 'sale':

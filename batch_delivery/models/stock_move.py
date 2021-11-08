@@ -425,11 +425,13 @@ class StockMove(models.Model):
                 raise UserError(_("Can't reserve more product than requested..!"))
             else:
                 move._action_assign_reset_qty()
-                msg = "<ul><li>" + _("Quantity Reserved") + ": %s &#8594; %s </li></ul>" % (reserved_qty, move.qty_update,)
+                msg = "<ul><li>" + _("Quantity Reserved") + ": %s <span aria-label='Changed' class='fa fa-long-arrow-right' role='img' title='Changed'/> %s </li></ul>" % (reserved_qty, move.qty_update,)
                 move.message_post(
                 body=msg,
                 subtype_id=self.env.ref('mail.mt_note').id)
-
+                move.picking_id.message_post(
+                body=msg,
+                subtype_id=self.env.ref('mail.mt_note').id)
                 if move.is_transit:
                     move.quantity_done = move.reserved_availability
                 if move.is_transit:

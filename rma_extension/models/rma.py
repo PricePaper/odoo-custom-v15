@@ -428,6 +428,12 @@ class RMARetMerAuth(models.Model):
                         'date_invoice': rma.rma_date or False,
                         'rma_id': rma.id,
                     }
+                    salereps = rma.mapped('rma_sale_lines_ids').mapped('so_line_id').mapped('order_id').mapped('sales_person_ids')
+                    commission_rule_ids = rma.mapped('rma_sale_lines_ids').mapped('so_line_id').mapped('order_id').mapped('commission_rule_ids')
+                    if salereps:
+                        inv_values['sales_person_ids'] = [(6, 0, salereps.ids)]
+                    if commission_rule_ids:
+                        inv_values['commission_rule_ids'] = [(6, 0, commission_rule_ids.ids)]
                     self.env['account.invoice'].with_context(mail_create_nosubscribe=True).create(inv_values)
 
                 if exchange_inv_line_vals:

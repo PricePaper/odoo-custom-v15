@@ -79,7 +79,6 @@ class RMARetMerAuth(models.Model):
                 'total_qty': order_line.product_uom_qty or 0,
                 'delivered_quantity': order_line.qty_delivered,
                 'order_quantity': order_line.product_uom_qty or 0,
-                'refund_qty': order_line.qty_delivered,
                 'refund_price': order_line.price_unit,
                 'price_unit': order_line.price_unit or 0,
                 'price_subtotal': order_line.price_subtotal or 0,
@@ -106,7 +105,6 @@ class RMARetMerAuth(models.Model):
                 'product_id': order_line.product_id and
                               order_line.product_id.id or False,
                 'total_qty': order_line.product_uom_qty or 0,
-                'refund_qty': order_line.qty_received or 0,
                 'refund_price': order_line.price_unit,
                 'order_quantity': order_line.product_qty or 0,
                 'delivered_quantity': order_line.qty_received,
@@ -171,7 +169,6 @@ class RMARetMerAuth(models.Model):
                 'total_qty': order_line.quantity_done or 0,
                 'delivered_quantity': order_line.quantity_done,
                 'order_quantity': order_line.product_uom_qty or 0,
-                'refund_qty': order_line.quantity_done,
                 'refund_price': order_line.product_id.lst_price,
                 'price_unit': order_line.product_id.lst_price or 0,
                 'source_location_id': self.env.user.company_id.source_location_id.id or False,

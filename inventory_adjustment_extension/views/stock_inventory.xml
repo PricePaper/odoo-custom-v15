@@ -11,6 +11,9 @@
                 <xpath expr="//notebook/page[1]/field[@name='line_ids']/tree/field[@name='product_uom_id']" position="attributes">
                     <attribute name="style">width:150px;</attribute>
                 </xpath>
+                <xpath expr="//notebook/page[1]/field[@name='line_ids']/tree/field[@name='location_id']" position="attributes">
+                    <attribute name="style">width:150px;</attribute>
+                </xpath>
             </field>
         </record>
         <record id="view_inventory_form_inherit_pricepaper_activity" model="ir.ui.view">

@@ -4,7 +4,8 @@ from odoo import api, fields, models, _
 
 
 class Inventory(models.Model):
-    _inherit = "stock.inventory"
+    _name = 'stock.inventory'
+    _inherit = ['stock.inventory', 'mail.activity.mixin']
 
     vendor_id = fields.Many2one('res.partner', string='Vendor')
 

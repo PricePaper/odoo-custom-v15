@@ -95,6 +95,10 @@ class Inventory(models.Model):
         if self.exhausted:
             exhausted_vals = self._get_exhausted_inventory_line(products_to_filter, quant_products)
             vals.extend(exhausted_vals)
+        if self.product_id:
+            for line in vals:
+                loc = self.product_id.property_stock_location
+                line['location_id'] = loc.id
         return vals
 
     @api.onchange('filter')

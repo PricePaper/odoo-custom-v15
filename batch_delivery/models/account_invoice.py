@@ -39,7 +39,11 @@ class AccountInvoice(models.Model):
                         gross_profit -= invoice.wrtoff_discount
                 if invoice.discount_from_batch:
                     gross_profit -= invoice.discount_from_batch
+                if invoice.type == 'out_refund':
+                    if gross_profit < 0:
+                        gross_profit = 0
                 invoice.update({'gross_profit': round(gross_profit, 2)})
+
             else:
                 super(AccountInvoice, self).calculate_gross_profit()
 

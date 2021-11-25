@@ -126,6 +126,9 @@ class AccountInvoice(models.Model):
                 gross_profit -= invoice.amount_total * 0.03
             if invoice.payment_term_id.discount_per > 0:
                 gross_profit -= invoice.amount_total * (invoice.payment_term_id.discount_per / 100)
+            if invoice.type == 'out_refund':
+                if gross_profit < 0:
+                    gross_profit = 0
             invoice.update({'gross_profit': round(gross_profit, 2)})
 
     # @api.multi

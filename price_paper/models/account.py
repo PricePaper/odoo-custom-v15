@@ -274,7 +274,7 @@ class AccountInvoiceLine(models.Model):
         tax based on resale number and previous sale.
         """
         res = super(AccountInvoiceLine, self)._set_taxes()
-        if self.invoice_id.type == 'out_invoice':
+        if self.invoice_id.type in ('out_invoice', 'out_refund'):
             prices_all = self.env['customer.product.price']
             for rec in self.invoice_id.partner_id.customer_pricelist_ids:
                 if not rec.pricelist_id.expiry_date or rec.pricelist_id.expiry_date >= str(date.today()):

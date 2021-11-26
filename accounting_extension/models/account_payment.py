@@ -278,7 +278,7 @@ class AccountRegisterPaymentLines(models.TransientModel):
             if isinstance(customer_discount_per, str):
                 customer_discount_per = float(customer_discount_per)
             discount_amount_limit = round(self.invoice_id.residual_signed * (customer_discount_per / 100), 2)
-            if discount_amount_limit and discount_amount_limit < self.discount:
+            if discount_amount_limit and discount_amount_limit < self.discount and self.invoice_id.type == 'out_invoice':
                 raise UserError(_('Cannot add discount more than {}%.'.format(customer_discount_per)))
             if self.amount_total >= 0:
                 self.payment_amount = self.amount_total - self.discount
@@ -320,11 +320,15 @@ class AccountPayment(models.Model):
     payment_reference = fields.Char('Payment Reference')
 
     def action_validate_invoice_payment(self):
-        res = super(AccountPayment, self).action_validate_invoice_payment()
         for payment in self:
-            if len(payment.invoice_ids) == 1:
+            if len(payment.invoice_ids) == 1 and payment.discount_amount and not payment.has_payment_lines:
                 payment.invoice_ids.write({'discount_type': 'amount', 'wrtoff_discount': payment.discount_amount})
                 payment.invoice_ids.create_discount_writeoff()
+            else:
+                for line in payment.payment_lines:
+                    line.invoice_id.write({'discount_type': 'amount', 'wrtoff_discount': line.discount})
+                    line.invoice_id.create_discount_writeoff()
+        res = super(AccountPayment, self).action_validate_invoice_payment()
         return res
 
     @api.model

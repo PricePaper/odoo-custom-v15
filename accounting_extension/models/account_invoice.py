@@ -8,10 +8,20 @@ from datetime import datetime
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
+    @api.multi
+    def remove_move_reconcile(self):
+        for account_move_line in self:
+            for invoice in account_move_line.payment_id.invoice_ids:
+                disocunt_lines = invoice.payment_move_line_ids.filtered(lambda r: r.name and r.name.strip() == 'Discount')
+                disocunt_lines.remove_active_discount()
+        return super(AccountMoveLine, self).remove_move_reconcile()
+
+    @api.multi
     def remove_active_discount(self):
-        self.remove_move_reconcile()
-        self.move_id.button_cancel()
-        self.move_id.unlink()
+        for line in self:
+            line.remove_move_reconcile()
+            line.move_id.button_cancel()
+            line.move_id.unlink()
         return True
 
 

@@ -54,7 +54,7 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def action_invoice_cancel(self):
-        if all([inv.type in ('in_invoice', 'out_refund', 'in_refund') for inv in self]) and all([inv.state == 'draft' for inv in self]):
+        if all([inv.type in ('in_invoice', 'in_refund') for inv in self]) and all([inv.state == 'draft' for inv in self]):
             return super(AccountInvoice, self).action_invoice_cancel()
         for invoice in self:
             if invoice.mapped('picking_ids').filtered(lambda r:r.state in ('in_transit', 'done')):

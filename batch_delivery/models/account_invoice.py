@@ -54,6 +54,8 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def action_invoice_cancel(self):
+        if self._context.get('from_invoice_cancel_rpc', False):
+            return super(AccountInvoice, self).action_invoice_cancel()
         if all([inv.type in ('in_invoice', 'in_refund') for inv in self]) and all([inv.state == 'draft' for inv in self]):
             return super(AccountInvoice, self).action_invoice_cancel()
         for invoice in self:

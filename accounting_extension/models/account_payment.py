@@ -326,8 +326,9 @@ class AccountPayment(models.Model):
                 payment.invoice_ids.create_discount_writeoff()
             else:
                 for line in payment.payment_lines:
-                    line.invoice_id.write({'discount_type': 'amount', 'wrtoff_discount': line.discount})
-                    line.invoice_id.create_discount_writeoff()
+                    if line.discount:
+                        line.invoice_id.write({'discount_type': 'amount', 'wrtoff_discount': line.discount})
+                        line.invoice_id.create_discount_writeoff()
         res = super(AccountPayment, self).action_validate_invoice_payment()
         return res
 

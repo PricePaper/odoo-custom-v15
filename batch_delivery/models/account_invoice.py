@@ -39,7 +39,11 @@ class AccountInvoice(models.Model):
                         gross_profit -= invoice.wrtoff_discount
                 if invoice.discount_from_batch:
                     gross_profit -= invoice.discount_from_batch
+                if invoice.type == 'out_refund':
+                    if gross_profit < 0:
+                        gross_profit = 0
                 invoice.update({'gross_profit': round(gross_profit, 2)})
+
             else:
                 super(AccountInvoice, self).calculate_gross_profit()
 
@@ -50,7 +54,7 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def action_invoice_cancel(self):
-        if all([inv.type in ('in_invoice', 'out_refund', 'in_refund') for inv in self]) and all([inv.state == 'draft' for inv in self]):
+        if all([inv.type in ('in_invoice', 'in_refund') for inv in self]) and all([inv.state == 'draft' for inv in self]):
             return super(AccountInvoice, self).action_invoice_cancel()
         for invoice in self:
             if invoice.mapped('picking_ids').filtered(lambda r:r.state in ('in_transit', 'done')):

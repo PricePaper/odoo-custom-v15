@@ -102,12 +102,12 @@ class GenerateDiscountCheck(models.TransientModel):
             }
             if partner_group[partner][2]:
                 payment_vals.update({
-                    'payment_difference_handling': 'reconcile',
-                    'writeoff_label': 'Discount',
-                    'writeoff_account_id': purchase_writeoff_account.id,
                     'payment_lines': partner_group[partner][2]
                 })
-            payments |= payments.create(payment_vals)
+            payment = payments.create(payment_vals)
+            payment.action_validate_invoice_payment()
+            payments |= payment
+
         action = self.env.ref('account.action_account_payments_payable').read()[0]
         action['domain'] = [('id', 'in', payments.ids)]
         return action

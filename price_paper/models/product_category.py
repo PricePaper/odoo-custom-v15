@@ -17,4 +17,3 @@ class ProductCategory(models.Model):
     )
 
 
-ProductCategory()

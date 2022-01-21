@@ -15,8 +15,8 @@
     'website': 'http://confianzit.com',
 
     'category': 'CRM',
-    'version': '0.1',
-
+    'version': '15.0.0.1',
+    'license': 'LGPL-3',
     'depends': ['crm', 'sale', 'price_paper'],
 
     'data': [

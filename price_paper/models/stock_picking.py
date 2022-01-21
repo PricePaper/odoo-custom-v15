@@ -17,7 +17,7 @@ class StockPicking(models.Model):
             else:
                 record.over_processed = False
 
-    @api.multi
+
     def action_sc_sync_with_receipt(self):
         self.ensure_one()
         for line in self.move_ids_without_package:
@@ -36,7 +36,7 @@ class StockPicking(models.Model):
             self.message_post(body=_("Back order <em>%s</em> <b>cancelled</b>.") % (",".join([b.name or '' for b in backorder_pick])))
         self.over_processed = False
 
-    @api.multi
+
     def sync_over_processed(self):
         self.ensure_one()
         return {
@@ -50,7 +50,7 @@ class StockPicking(models.Model):
             'target': 'new',
         }
 
-    @api.multi
+
     def button_validate(self):
         self.ensure_one()
         result = super(StockPicking, self).button_validate()
@@ -62,7 +62,6 @@ class StockPicking(models.Model):
                     line.sale_line_id.qty_delivered = line.quantity_done
         return result
 
-StockPicking()
 
 
 class StockRule(models.Model):
@@ -77,7 +76,7 @@ class StockRule(models.Model):
             )
         return domain
 
-    @api.multi
+
     def _run_buy(self, product_id, product_qty, product_uom, location_id, name, origin, values):
         procurement_group = values.get('group_id', False)
         order_point = values.get('orderpoint_id', False)
@@ -132,7 +131,6 @@ class StockRule(models.Model):
             self.env['purchase.order.line'].sudo().create(vals)
 
 
-StockRule()
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

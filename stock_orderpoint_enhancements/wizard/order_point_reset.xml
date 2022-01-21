@@ -19,12 +19,14 @@
         </record>
 
 
-        <act_window id="action_reset_order_point"
-                    multi="True"
-                    key2="client_action_multi" name="Reset Reordering Rule"
-                    res_model="order.point.reset" src_model="product.product"
-                    view_mode="form" target="new" view_type="form"
-                    groups="purchase.group_purchase_manager"/>
+
+
+<!--        <act_window id="action_reset_order_point"-->
+<!--                    multi="True"-->
+<!--                    key2="client_action_multi" name="Reset Reordering Rule"-->
+<!--                    res_model="order.point.reset" src_model="product.product"-->
+<!--                    view_mode="form" target="new"-->
+<!--                    groups="purchase.group_purchase_manager"/>-->
 
 
     </data>

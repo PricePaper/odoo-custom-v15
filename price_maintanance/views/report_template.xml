@@ -16,15 +16,17 @@
             <field name="header_spacing">10</field>
             <field name="dpi">90</field>
         </record>
-        <report
-                string="Pricelist Report"
-                id="pricelist_report"
-                model="product.pricelist"
-                report_type="qweb-pdf"
-                file="price_maintanance.report_pricelist"
-                name="price_maintanance.report_pricelist"
-                paperformat="paperformat_pricelist_report"
-                print_report_name="'%s - Valid Until - %s' % (object.name, object.expiry_date or '')"
-        />
+
+         <record id="pricelist_report" model="ir.actions.report">
+            <field name="name">PriceList Report</field>
+            <field name="model">product.pricelist</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">price_maintanance.report_pricelist</field>
+            <field name="report_file">price_maintanance.report_pricelist</field>
+            <field name="print_report_name">'%s - Valid Until - %s' % (object.name, object.expiry_date or '')</field>
+             <field name="paperformat_id" ref="paperformat_pricelist_report"/>
+            <field name="binding_model_id" ref="product.model_product_pricelist"/>
+            <field name="binding_type">report</field>
+        </record>
     </data>
 </odoo>

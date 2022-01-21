@@ -18,7 +18,7 @@ class ProductProduct(models.Model):
                 'res_id': wiz.id,
                 'context': {'default_product_id': self.id}
             }
-ProductProduct()
+
 
 
 

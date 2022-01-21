@@ -3,6 +3,7 @@
 {
     'name': 'Global Price Change',
     'version': '1.0',
+    'license': 'LGPL-3',
     'category': 'Product Pricing',
     'summary': "Inventory",
     'description': """

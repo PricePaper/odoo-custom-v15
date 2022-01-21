@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_stock_move_rest_window" model="ir.ui.view">
+            <field name="name">stock.move.reset.logic.window</field>
+            <field name="model">stock.reset.quantity</field>
+            <field name="arch" type="xml">
+                <form>
+                    <p class="text-muted" style="width:350px;">
+                        &#10148; Please enter the required quantities for reset.
+                    </p>
+                    <group>
+                        <group>
+                            <field name="qty_update"/>
+                        </group>
+                    </group>
+                    <footer class="oe_edit_only">
+                        <button string="Reset" type="object" name="action_reset" class="oe_highlight"/>
+                        <button string="Discard" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

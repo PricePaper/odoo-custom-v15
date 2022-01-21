@@ -6,12 +6,13 @@ from odoo import fields, models
 class SaleAdvancePaymentInv(models.TransientModel):
     _inherit = "sale.advance.payment.inv"
 
-    advance_payment_method = fields.Selection([
-        ('delivered', 'Invoiceable lines'),
-        ('all', 'Invoiceable lines (deduct down payments)'),
-        ('percentage', 'Down payment (percentage)'),
-        ('fixed', 'Down payment (fixed amount)')
-    ], string='What do you want to invoice?', default='all', required=True)
+    advance_payment_method = fields.Selection(
+        selection_add=[('all', 'Invoiceable lines (deduct down payments)')],
+        string='What do you want to invoice?',
+        default='all',
+        required=True,
+        ondelete={'all': lambda recs: recs.write({'advance_payment_method': 'delivered'})}
+    )
 
 
 SaleAdvancePaymentInv()

@@ -3,6 +3,7 @@
 {
     'name': 'Account Financial Line Report Data',
     'version': '1.0',
+    'license': 'LGPL-3',
     'category': 'Account',
     'summary': "Account Report Customization",
     'description': """

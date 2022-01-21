@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import json
 import time
 from datetime import datetime, date
 from datetime import timedelta
@@ -8,7 +8,6 @@ import pytz
 from dateutil.relativedelta import relativedelta
 
 from odoo import models, fields, api, _
-from odoo.addons import decimal_precision as dp
 from odoo.exceptions import ValidationError, UserError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, float_compare, float_is_zero
 from odoo.tools import float_round
@@ -30,17 +29,12 @@ class SaleOrder(models.Model):
     gross_profit = fields.Monetary(compute='calculate_gross_profit', string='Predicted Profit')
     is_quotation = fields.Boolean(string="Create as Quotation", default=False, copy=False)
     profit_final = fields.Monetary(string='Profit')
-    state = fields.Selection([
-        ('draft', 'Draft'),
-        ('sent', 'Draft Order Sent'),
-        ('sale', 'Sales Order'),
-        ('done', 'Locked'),
+    state = fields.Selection(selection_add=[
         ('waiting', 'Waiting'),
         ('ordered', 'Ordered'),
         ('received', 'Received'),
-        ('released', 'Released'),
-        ('cancel', 'Cancelled'),
-    ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', track_sequence=3,
+        ('released', 'Released')
+    ], string='Status', readonly=True, copy=False, index=True, tracking=True, 
         default='draft')
     storage_contract = fields.Boolean(string="Storage Product", default=False, copy=True)
     total_volume = fields.Float(string="Total Order Volume", compute='_compute_total_weight_volume')
@@ -58,9 +52,25 @@ class SaleOrder(models.Model):
     sc_child_order_count = fields.Integer(compute='_compute_sc_child_order_count')
     delivery_cost = fields.Float(string='Estimated Delivery Cost', readonly=True, copy=False)
     po_count = fields.Integer(compute='_compute_po_count', readonly=True)
-    active = fields.Boolean(track_visibility='onchange')
+    active = fields.Boolean(tracking=True)
+    confirmation_date = fields.Datetime(string='Confirmation Date', readonly=True, index=True,
+                                        help="Date on which the sales order is confirmed.", copy=False)
+    sales_person_ids = fields.Many2many('res.partner', string='Associated Sales Persons')
+    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
+    # Remove this field from batch_delivery (sale)
+    have_prive_lock = fields.Boolean(compute='_compute_price_lock')
 
-    @api.multi
+    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
+    # Remove this function from batch_delivery (sale)
+    @api.depends('order_line.price_lock')
+    def _compute_price_lock(self):
+        for rec in self:
+            rec.have_prive_lock = any(rec.order_line.mapped('price_lock'))
+            print('Lock.......................................', rec.order_line.mapped('price_lock'))
+
+    def _valid_field_parameter(self, field, name):
+        return name in ['track_visibility', 'track_sequence'] or super()._valid_field_parameter(field, name)
+
     def action_view_purchase_orders(self):
         orders = self.order_line.mapped('move_ids.created_purchase_line_id.order_id')
         action = self.env.ref('purchase.purchase_rfq').read()[0]
@@ -96,7 +106,6 @@ class SaleOrder(models.Model):
                 else:
                     order.invoice_status = 'no'
 
-    @api.multi
     def make_done_orders(self):
         # orders = self.env['sale.order'].search([('state', '=', 'sale'), ('invoice_status', '=', 'invoiced')])
         for order in self:
@@ -112,13 +121,16 @@ class SaleOrder(models.Model):
     @api.depends('partner_id')
     def _compute_show_contract_line(self):
         for order in self:
+            show_contract_line = False
             if order.partner_id:
-                sc_order = self.env['sale.order'].with_context(sc=True).search([('state', '=', 'released'), ('partner_id', '=', order.partner_id.id)])
+                sc_order = self.env['sale.order'].with_context(sc=True).search(
+                    [('state', '=', 'released'), ('partner_id', '=', order.partner_id.id)])
                 count = sc_order.mapped('order_line').filtered(lambda r: r.storage_remaining_qty > 0)
                 if len(count) > 0:
-                    order.show_contract_line = True
+                    show_contract_line = True
                 else:
-                    order.show_contract_line = False
+                    show_contract_line = False
+            order.show_contract_line = show_contract_line
 
     @api.depends('order_line.product_id', 'order_line.product_uom_qty')
     def _compute_total_weight_volume(self):
@@ -136,7 +148,6 @@ class SaleOrder(models.Model):
             order.total_weight = weight
             order.total_qty = qty
 
-    @api.multi
     def confirm_multiple_orders(self, records):
         msg = ''
         for rec in records:
@@ -150,7 +161,6 @@ class SaleOrder(models.Model):
             msg = "Some of the selected Orders are on HOLD." + '\n' + msg
             raise UserError(_(msg))
 
-    @api.multi
     def action_cancel(self):
 
         for sale_order in self:
@@ -159,18 +169,28 @@ class SaleOrder(models.Model):
             sale_order.is_low_price = False
             sale_order.release_price_hold = False
             sale_order.hold_state = False
-
+            po_state = sale_order.sudo().order_line.mapped('move_ids.created_purchase_line_id.order_id.state')
+            if 'purchase' in po_state or 'done' in po_state or 'received' in po_state:
+                raise UserError(
+                    _('You can not cancel this order because there is a purchase order is already processed.'))
+            else:
+                sale_order.sudo().order_line.mapped('move_ids.created_purchase_line_id.order_id').button_cancel()
             if sale_order.storage_contract:
                 sale_order.order_line.mapped('purchase_line_ids.order_id').button_cancel()
             else:
                 for so_line in sale_order.order_line:
-                    for po_line in so_line.mapped('move_ids').filtered(lambda r: r.state != 'cancel').mapped('created_purchase_line_id'):
+                    for po_line in so_line.mapped('move_ids').filtered(lambda r: r.state != 'cancel').mapped(
+                            'created_purchase_line_id'):
                         if po_line.order_id.state in ['purchase', 'done', 'received']:
                             raise UserError(_('You cannot cancel this order.'))
                         else:
-                            if len(po_line.order_id.origin.split(',')) > 1 or len(po_line.order_id.origin.split(', ')) > 1:
+                            if len(po_line.order_id.origin.split(',')) > 1 or len(
+                                    po_line.order_id.origin.split(', ')) > 1:
                                 po_line.write({'product_qty': po_line.product_qty - so_line.product_uom_qty})
-                                po_line.order_id.message_post(body=_("sale order %s has been cancelled by the user %s." % (sale_order.name, self.env.user.name)), subtype_id=self.env.ref('mail.mt_note').id)
+                                po_line.order_id.message_post(body=_(
+                                    "sale order %s has been cancelled by the user %s." % (
+                                        sale_order.name, self.env.user.name)),
+                                    subtype_id=self.env.ref('mail.mt_note').id)
                             else:
                                 po_line.order_id.button_cancel()
 
@@ -179,133 +199,69 @@ class SaleOrder(models.Model):
             sc_having_lines.write({'product_uom_qty': 0})
         return super(SaleOrder, self).action_cancel()
 
-    @api.multi
-    def _create_storage_downpayment_invoice(self, order, so_lines):
-        """
-        Create invoice for storage contract product down payment
-        """
-
-        inv_obj = self.env['account.invoice']
-        ir_property_obj = self.env['ir.property']
-
-        context = {'lang': order.partner_id.lang}
-        name = _('Down Payment')
-        del context
-        invoice_line_ids = []
-        for line in so_lines:
-
-            taxes = line.product_id.taxes_id.filtered(
-                lambda r: not order.company_id or r.company_id == order.company_id)
-            if order.fiscal_position_id and taxes:
-                tax_ids = order.fiscal_position_id.map_tax(taxes, line.product_id, order.partner_shipping_id).ids
-            else:
-                tax_ids = taxes.ids
-            account_id = False
-            if line.product_id.id:
-                account_id = order.fiscal_position_id.map_account(line.product_id.storage_contract_account_id).id
-            if not account_id:
-                raise UserError(
-                    _(
-                        'There is no storage income account defined for this product: "%s". You may have to install a chart of account from Accounting app, settings menu.') %
-                    (line.product_id.name,))
-            invoice_line = (0, 0, {
-                'name': name,
-                'origin': order.name,
-                'account_id': account_id,
-                'price_unit': line.price_unit,
-                'quantity': 1.0,
-                'discount': 0.0,
-                'uom_id': line.product_id.uom_id.id,
-                'product_id': line.product_id.id,
-                'sale_line_ids': [(6, 0, [line.id])],
-                'invoice_line_tax_ids': [(6, 0, tax_ids)],
-                'analytic_tag_ids': [(6, 0, line.analytic_tag_ids.ids)],
-                'account_analytic_id': order.analytic_account_id.id or False,
-            })
-            invoice_line_ids.append(invoice_line)
-
-        invoice = inv_obj.create({
-            'name': order.client_order_ref or order.name,
-            'origin': order.name,
-            'type': 'out_invoice',
-            'reference': False,
-            'storage_down_payment': True,
-            'account_id': order.partner_id.property_account_receivable_id.id,
-            'partner_id': order.partner_invoice_id.id,
-            'partner_shipping_id': order.partner_shipping_id.id,
-            'invoice_line_ids': invoice_line_ids,
-            'currency_id': order.pricelist_id.currency_id.id,
-            'payment_term_id': order.payment_term_id.id,
-            'fiscal_position_id': order.fiscal_position_id.id or order.partner_id.property_account_position_id.id,
-            'team_id': order.team_id.id,
-            'user_id': order.user_id.id,
-            'comment': order.note,
-        })
-        invoice.compute_taxes()
-        invoice.message_post_with_view('mail.message_origin_link',
-                                       values={'self': invoice, 'origin': order},
-                                       subtype_id=self.env.ref('mail.mt_note').id)
-        return invoice
-
-    @api.multi
+    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
+    # TODO: re-implement for account logic
     def action_create_open_invoice_xmlrpc(self, invoice_date):
-        sale_amount = self.amount_total or 0
-        invoice_amount = round(sum(rec.amount_total_signed for rec in self.invoice_ids) or 0.0, 2)
-        data = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
-        if sale_amount == invoice_amount or sale_amount == -invoice_amount:
-            return self.invoice_ids and self.invoice_ids.ids or False, data
-        else:
-            self.action_invoice_create(final=True)
-            self.invoice_ids.write({'move_name': self.note, 'date_invoice': invoice_date or False})
-            self.invoice_ids.action_invoice_open()
-            invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
-            data = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
-            return self.invoice_ids.ids, data
+        # sale_amount = self.amount_total or 0
+        # invoice_amount = round(sum(rec.amount_total_signed for rec in self.invoice_ids) or 0.0, 2)
+        # data = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
+        # if sale_amount == invoice_amount or sale_amount == -invoice_amount:
+        #     return self.invoice_ids and self.invoice_ids.ids or False, data
+        # else:
+        #     self.action_invoice_create(final=True)
+        #     self.invoice_ids.write({'move_name': self.note, 'date_invoice': invoice_date or False})
+        #     self.invoice_ids.action_invoice_open()
+        #     invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
+        #     data = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
+        #     return self.invoice_ids.ids, data
 
-    @api.multi
+        data = {'sale_amount': 0.00, 'invoice_amount': 0.00}
+        return [], data
+
+    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
     def import_draft_invoice(self, data):
 
-        if self.invoice_ids:
-            sale_amount = self.amount_total or 0
-            invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
-            res = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
-            return res
+        # if self.invoice_ids:
+        #     sale_amount = self.amount_total or 0
+        #     invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
+        #     res = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
+        #     return res
+        #
+        # missing_msg = ''
+        #
+        # picking_ids = self.picking_ids
+        # move_lines = self.picking_ids.mapped('move_line_ids')
+        # picking_ids.is_transit = True
+        # picking_ids.move_ids_without_package.write({'is_transit': True})
+        # for line in data['do_lines']:
+        #     product_id = line.get('product_id')
+        #     product_uom_qty = line.get('quantity_ordered')
+        #     qty_done = line.get('quantity_shipped')
+        #     if qty_done != 0:
+        #         move_line = move_lines.filtered(lambda r: r.product_id.id == product_id)
+        #         if move_line:
+        #             move_line.qty_done = qty_done
+        #             move_line.move_id.sale_line_id.qty_delivered = qty_done
+        #         else:
+        #             missing_msg += 'Invoice : ' + data.get('name') + ' Product_id : ' + str(product_id) + '\n'
+        # delivery_line = self.order_line.filtered(lambda r: r.product_id.default_code == 'misc')
+        # if delivery_line:
+        #     delivery_line.qty_delivered_method = 'manual'
+        #     delivery_line.qty_delivered_manual = 1
+        # if missing_msg:
+        #     return {'missing_msg': missing_msg}
+        #
+        # res = self.action_invoice_create(final=True)
+        # invoice = self.env['account.invoice'].browse(res)
+        # invoice.write({'move_name': data.get('name'), 'date_invoice': data.get('date')})
+        # picking_ids.write({'is_invoiced': True})
+        # sale_amount = self.amount_total or 0
+        # invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
+        # res = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount, 'missing_msg': missing_msg}
 
-        missing_msg = ''
-
-        picking_ids = self.picking_ids
-        move_lines = self.picking_ids.mapped('move_line_ids')
-        picking_ids.is_transit = True
-        picking_ids.move_ids_without_package.write({'is_transit': True})
-        for line in data['do_lines']:
-            product_id = line.get('product_id')
-            product_uom_qty = line.get('quantity_ordered')
-            qty_done = line.get('quantity_shipped')
-            if qty_done != 0:
-                move_line = move_lines.filtered(lambda r: r.product_id.id == product_id)
-                if move_line:
-                    move_line.qty_done = qty_done
-                    move_line.move_id.sale_line_id.qty_delivered = qty_done
-                else:
-                    missing_msg += 'Invoice : ' + data.get('name') + ' Product_id : ' + str(product_id) + '\n'
-        delivery_line = self.order_line.filtered(lambda r: r.product_id.default_code == 'misc')
-        if delivery_line:
-            delivery_line.qty_delivered_method = 'manual'
-            delivery_line.qty_delivered_manual = 1
-        if missing_msg:
-            return {'missing_msg': missing_msg}
-
-        res = self.action_invoice_create(final=True)
-        invoice = self.env['account.invoice'].browse(res)
-        invoice.write({'move_name': data.get('name'), 'date_invoice': data.get('date')})
-        picking_ids.write({'is_invoiced': True})
-        sale_amount = self.amount_total or 0
-        invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
-        res = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount, 'missing_msg': missing_msg}
-
+        res = {'sale_amount': 0.00, 'invoice_amount': 0.00, 'missing_msg': 0.00}
         return res
 
-    @api.multi
     def action_create_order_line_xmlrpc(self, vals):
         order_line = self.env['sale.order.line'].create(vals)
         order_line.qty_delivered_method = 'manual'
@@ -313,14 +269,12 @@ class SaleOrder(models.Model):
         order_line.qty_to_invoice = vals.get('qty_delivered_manual')
         return order_line.id
 
-    @api.multi
     def fix_for_do(self):
         self.action_cancel()
         self.action_draft()
         self.action_confirm()
         return True
 
-    @api.multi
     def action_create_storage_do(self):
         """
         create purchase order for storage contract
@@ -328,52 +282,16 @@ class SaleOrder(models.Model):
         self.run_storage()
         self.write({'sc_po_done': True})
 
-    @api.multi
     def action_release(self):
         self.write({'state': 'released'})
 
-    @api.multi
     def action_restore(self):
         for sc in self:
             orders = sc.order_line.mapped('storage_contract_line_ids.order_id')
             if any([order.state != 'cancel' for order in orders]):
-                raise ValidationError('Cannot UnRelease contract with active sale orders %s' % (', '.join(orders.mapped('name'))))
+                raise ValidationError(
+                    'Cannot UnRelease contract with active sale orders %s' % (', '.join(orders.mapped('name'))))
         return self.write({'state': 'done'})
-
-    # @api.multi
-    # def action_create_storage_downpayment(self):
-    #     """
-    #     Create invoice for storage contract product down payment
-    #     """
-    #
-    #     sale_line_obj = self.env['sale.order.line']
-    #     for order in self:
-    #         storage_pr = order.company_id.storage_product_id
-    #         if not storage_pr:
-    #             raise UserError('Please set a storage product in company.')
-    #         taxes = storage_pr.taxes_id.filtered(lambda r: not order.company_id or r.company_id == order.company_id)
-    #         if order.fiscal_position_id and taxes:
-    #             tax_ids = order.fiscal_position_id.map_tax(taxes, storage_pr, order.partner_shipping_id).ids
-    #         else:
-    #             tax_ids = taxes.ids
-    #         so_lines = order.order_line.filtered(lambda r: r.is_downpayment)
-    #         if not so_lines:
-    #             so_lines = sale_line_obj.create({
-    #                 'name': _('Advance: %s') % (time.strftime('%m %Y'),),
-    #                 'price_unit': order.amount_total,
-    #                 'product_uom_qty': 0.0,
-    #                 'order_id': order.id,
-    #                 'discount': 0.0,
-    #                 'product_uom': storage_pr.uom_id.id,
-    #                 'product_id': storage_pr.id,
-    #                 'tax_id': [(6, 0, tax_ids)],
-    #                 'is_downpayment': True,
-    #             })
-    #         else:
-    #             so_lines.write({'price_unit': order.amount_total})
-    #         self._create_storage_downpayment_invoice(order, so_lines)
-    #         order.sc_payment_done = True
-    #     return True
 
     @api.depends('picking_policy')
     def _compute_expected_date(self):
@@ -389,7 +307,6 @@ class SaleOrder(models.Model):
                 expected_date = min(dates_list) if order.picking_policy == 'direct' else max(dates_list)
                 order.expected_date = fields.Datetime.to_string(expected_date)
 
-    @api.multi
     def action_fax_send(self):
         '''
         This function opens a window to compose an email, with the edi sale template message loaded by default
@@ -490,12 +407,11 @@ class SaleOrder(models.Model):
             order.message_subscribe(partner_ids=order.sales_person_ids.ids)
         return order
 
-    @api.multi
     def write(self, vals):
         """
         auto save the delivery line.
         """
-        amount={}
+        amount = {}
         for order in self:
             if order.state == 'sale':
                 amount[order.id] = order.amount_total
@@ -512,7 +428,7 @@ class SaleOrder(models.Model):
         if not self._context.get('from_import'):
             self.check_payment_term()
             for order in self:
-                if 'state' not in vals or 'state' in vals and vals['state'] != 'done':
+                if order.state != 'done' and ('state' not in vals or 'state' in vals and vals['state'] != 'done'):
                     if order.carrier_id:
                         order.adjust_delivery_line()
                     else:
@@ -522,7 +438,6 @@ class SaleOrder(models.Model):
             self.message_subscribe(partner_ids=vals['sales_person_ids'][0][-1])
         return res
 
-    @api.multi
     def copy(self, default=None):
         ctx = dict(self.env.context)
         self = self.with_context(ctx)
@@ -570,7 +485,6 @@ class SaleOrder(models.Model):
                 if order.carrier_id.delivery_type not in ['fixed', 'base_on_rule']:
                     order.delivery_cost = 0.0
 
-    @api.multi
     def adjust_delivery_line(self):
         """
         method written to adjust delivery charges line in order line
@@ -587,11 +501,11 @@ class SaleOrder(models.Model):
 
             if delivery_line:
                 # Apply fiscal position to get taxes to be applied
-                taxes = order.carrier_id.product_id.taxes_id.filtered(lambda t: t.company_id.id == order.company_id.id)
-                taxes_ids = taxes.ids
-                if order.partner_id and order.fiscal_position_id:
-                    taxes_ids = order.fiscal_position_id.map_tax(taxes, order.carrier_id.product_id,
-                                                                 order.partner_id).ids
+                # taxes = order.carrier_id.product_id.taxes_id.filtered(lambda t: t.company_id.id == order.company_id.id)
+                # taxes_ids = taxes.ids
+                # if order.partner_id and order.fiscal_position_id:
+                #     taxes_ids = order.fiscal_position_id.map_tax(taxes, order.carrier_id.product_id,
+                #                                                  order.partner_id).ids
 
                 # reset delivery line
                 delivery_line.product_id = order.carrier_id.product_id.id
@@ -604,7 +518,6 @@ class SaleOrder(models.Model):
 
         return True
 
-    @api.multi
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         res = super(SaleOrder, self).onchange_partner_id()
@@ -622,33 +535,26 @@ class SaleOrder(models.Model):
             self.invoice_address_id = False
         return res
 
-    @api.multi
-    def _prepare_invoice(self):
-        self.ensure_one()
-        res = super(SaleOrder, self)._prepare_invoice()
-        if res:
-            res['invoice_address_id'] = self.invoice_address_id.id
-        return res
+    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
+    # def _prepare_invoice(self):
+    #     self.ensure_one()
+    #     res = super(SaleOrder, self)._prepare_invoice()
+    #     if res:
+    #         res['invoice_address_id'] = self.invoice_address_id.id
+    #     return res
 
+    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
     @api.depends('order_line.profit_margin')
     def calculate_gross_profit(self):
         """
         Compute the gross profit of the SO.
         """
         for order in self:
-            gross_profit = 0
-            for line in order.order_line:
-                gross_profit += line.profit_margin
-                # if line.is_delivery:
-                #     if order.carrier_id:
-                #         gross_profit += line.price_subtotal
-                #         price_unit = order.carrier_id.average_company_cost
-
-                #         gross_profit -= price_unit
-                # else:
-                #     gross_profit += line.profit_margin
+            gross_profit = sum([line.profit_margin for line in order.order_line])
+            # TODO:: remove payment method field from sales_commission.
             if order.partner_id.payment_method == 'credit_card':
                 gross_profit -= order.amount_total * 0.03
+            # TODO:: remove discount_per,code,oder_type,due_date,is_discount,discount_per field from purchase_extension.
             if order.payment_term_id.discount_per > 0:
                 gross_profit -= order.amount_total * (order.payment_term_id.discount_per / 100)
             order.update({'gross_profit': round(gross_profit, 2)})
@@ -670,41 +576,41 @@ class SaleOrder(models.Model):
             msg = {'warning': {'title': _('Warning'), 'message': _('Earliest Delivery Date is greater than 1 week')}}
             return msg
 
+    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
     def compute_credit_warning(self):
 
         for order in self:
-            debit_due = self.env['account.move.line'].search(
-                [('partner_id', '=', order.partner_id.id), ('full_reconcile_id', '=', False),
-                 ('amount_residual', '>', 0),
-                 ('date_maturity', '<', date.today()), ('invoice_id', '!=', False)], order='date_maturity desc')
-            msg = ''
-            msg1 = ''
-            if debit_due:
-                for rec in debit_due.mapped('invoice_id'):
-                    if rec.type == "out_invoice" and rec.state not in ('paid', 'cancel'):
-                        term_line = rec.payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
-                        date_due = rec.date_due
-                        if term_line and term_line.grace_period:
-                            date_due = rec.date_due + timedelta(days=term_line.grace_period)
-                        if date_due and date_due < date.today() and rec.number:
-                            msg = msg + '%s, ' % (rec.number)
-                if msg:
-                    msg = 'Customer has pending invoices.\n' + msg
-            if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
-                msg += "\nCustomer Credit limit Exceeded.\n%s's Credit limit is %s and due amount is %s\n" % (
-                    order.partner_id.name, order.partner_id.credit_limit,
-                    (order.partner_id.credit + order.amount_total))
-
-            for order_line in order.order_line.filtered(lambda r: not r.storage_contract_line_id):
-                if order_line.price_unit < order_line.working_cost and not (
-                        'rebate_contract_id' in order_line and order_line.rebate_contract_id):
-                    msg1 = '[%s]%s ' % (order_line.product_id.default_code,
-                                        order_line.product_id.name) + "Unit Price is less than  Product Cost Price"
-
+            # debit_due = self.env['account.move.line'].search(
+            #     [('partner_id', '=', order.partner_id.id), ('full_reconcile_id', '=', False),
+            #      ('amount_residual', '>', 0),
+            #      ('date_maturity', '<', date.today()), ('invoice_id', '!=', False)], order='date_maturity desc')
+            # msg = ''
+            # msg1 = ''
+            # if debit_due:
+            #     for rec in debit_due.mapped('invoice_id'):
+            #         if rec.type == "out_invoice" and rec.state not in ('paid', 'cancel'):
+            #             term_line = rec.payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
+            #             date_due = rec.date_due
+            #             if term_line and term_line.grace_period:
+            #                 date_due = rec.date_due + timedelta(days=term_line.grace_period)
+            #             if date_due and date_due < date.today() and rec.number:
+            #                 msg = msg + '%s, ' % (rec.number)
+            #     if msg:
+            #         msg = 'Customer has pending invoices.\n' + msg
+            # if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
+            #     msg += "\nCustomer Credit limit Exceeded.\n%s's Credit limit is %s and due amount is %s\n" % (
+            #         order.partner_id.name, order.partner_id.credit_limit,
+            #         (order.partner_id.credit + order.amount_total))
+            #
+            # for order_line in order.order_line.filtered(lambda r: not r.storage_contract_line_id):
+            #     if order_line.price_unit < order_line.working_cost and not (
+            #             'rebate_contract_id' in order_line and order_line.rebate_contract_id):
+            #         msg1 = '[%s]%s ' % (order_line.product_id.default_code,
+            #                             order_line.product_id.name) + "Unit Price is less than  Product Cost Price"
+            msg = msg1 = 'TEST UNDER MIGRATION'
             order.credit_warning = msg
             order.low_price_warning = msg1
 
-    @api.multi
     def action_release_credit_hold(self):
         """
         release hold sale order for credit limit exceed.
@@ -718,7 +624,6 @@ class SaleOrder(models.Model):
             else:
                 order.hold_state = 'price_hold'
 
-    @api.multi
     def action_release_price_hold(self):
         """
         release hold sale order for low price.
@@ -732,11 +637,13 @@ class SaleOrder(models.Model):
             else:
                 order.hold_state = 'credit_hold'
 
-    @api.multi
+    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
+    # TODO : verify storage contract po button is working or not odoo15 doesn't have this funtion so we need to implement our own.
     def action_view_purchase(self):
-        res = super(SaleOrder, self).action_view_purchase()
-        res.pop('context')
-        return res
+        action = self.env.ref('purchase.purchase_rfq').read()[0]
+        action['domain'] = [('id', 'in', self.mapped('order_line.purchase_line_ids.order_id').ids)]
+        action.pop('context')
+        return action
 
     def check_credit_limit(self):
         """
@@ -795,7 +702,6 @@ class SaleOrder(models.Model):
                 return {'warning': {'title': _('Invalid Action!'),
                                     'message': "You dont have the rights to change the payment terms of this customer."}}
 
-    @api.multi
     def check_payment_term(self):
         """
         Can only proceed with order if payment term is set
@@ -804,12 +710,11 @@ class SaleOrder(models.Model):
         for order in self:
             if not order.payment_term_id:
                 raise ValidationError(_('Payment term is not set for this order please set to proceed.'))
-    @api.multi
+
     def action_unlock(self):
         self.filtered(lambda s: s.storage_contract and s.state == 'done').write({'state': 'received'})
         self.filtered(lambda s: not s.storage_contract and s.state == 'done').write({'state': 'sale'})
 
-    @api.multi
     def action_confirm(self):
         """
         create record in price history
@@ -820,50 +725,55 @@ class SaleOrder(models.Model):
         if self._context.get('from_import'):
             res = super(SaleOrder, self).action_confirm()
         else:
-            if not self.carrier_id:
-                raise ValidationError(_('Delivery method should be set before confirming an order'))
-            warning = ''
-            if not self.ready_to_release:
-                warning += self.check_credit_limit()
-                if warning:
-                    self.hold_state = 'credit_hold'
-            if not self.release_price_hold:
-                warning1 = self.check_low_price()
-                if warning1:
-                    self.hold_state = 'both_hold'
-                    if not warning:
-                        self.hold_state = 'price_hold'
-                    warning = warning + warning1
-            if warning:
-                context = {'warning_message': warning}
-                view_id = self.env.ref('price_paper.view_sale_warning_wizard').id
-                return {
-                    'name': _('Sale Warning'),
-                    'view_type': 'form',
-                    'view_mode': 'form',
-                    'res_model': 'sale.warning.wizard',
-                    'view_id': view_id,
-                    'type': 'ir.actions.act_window',
-                    'context': context,
-                    'target': 'new'
-                }
-            if self.hold_state in ('credit_hold', 'price_hold', 'both_hold'):
-                self.hold_state = 'release'
-
             for order in self:
+                if not order.carrier_id:
+                    raise ValidationError(_('Delivery method should be set before confirming an order'))
+                warning = ''
+                if not order.ready_to_release:
+                    warning += order.check_credit_limit()
+                    if warning:
+                        order.hold_state = 'credit_hold'
+                if not order.release_price_hold:
+                    warning1 = order.check_low_price()
+                    if warning1:
+                        order.hold_state = 'both_hold'
+                        if not warning:
+                            order.hold_state = 'price_hold'
+                        warning = warning + warning1
+                if warning:
+                    context = {'warning_message': warning}
+                    view_id = self.env.ref('price_paper.view_sale_warning_wizard').id
+                    return {
+                        'name': _('Sale Warning'),
+                        'view_type': 'form',
+                        'view_mode': 'form',
+                        'res_model': 'sale.warning.wizard',
+                        'view_id': view_id,
+                        'type': 'ir.actions.act_window',
+                        'context': context,
+                        'target': 'new'
+                    }
+                if order.hold_state in ('credit_hold', 'price_hold', 'both_hold'):
+                    order.hold_state = 'release'
+
                 sc_line = order.order_line.mapped('storage_contract_line_id')
                 sc_not_avl = sc_line.filtered(lambda r: r.storage_remaining_qty <= 0)
                 if sc_not_avl:
-                    raise ValidationError(_('There is no available quantity in Storage Contract : \n ➤ %s' % ','.join([name[:-22] for name in sc_not_avl.mapped('display_name')])))
+                    raise ValidationError(_('There is no available quantity in Storage Contract : \n ➤ %s' % ','.join(
+                        [name[:-22] for name in sc_not_avl.mapped('display_name')])))
 
                 for line in sc_line:
-                    qty = sum(line.storage_contract_line_ids.filtered(lambda r: r.id in order.order_line.ids).mapped('product_uom_qty'))
+                    qty = sum(line.storage_contract_line_ids.filtered(lambda r: r.id in order.order_line.ids).mapped(
+                        'product_uom_qty'))
                     if line.storage_remaining_qty < qty:
-                        raise ValidationError(_('You are planning to sell more than available qty in Storage Contract: \n ➤ {0} \n There is only {1:.2f} left.'.format(line.display_name[:-22], line.storage_remaining_qty)))
+                        raise ValidationError(
+                            _('You are planning to sell more than available qty in Storage Contract: \n ➤ {0} \n There is only {1:.2f} left.'.format(
+                                line.display_name[:-22], line.storage_remaining_qty)))
 
             res = super(SaleOrder, self).action_confirm()
 
             for order in self:
+                order.confirmation_date = fields.Datetime.now()
                 for order_line in order.order_line:
                     if order_line.is_delivery:
                         continue
@@ -873,12 +783,10 @@ class SaleOrder(models.Model):
 
         return res
 
-    @api.multi
     def import_action_confirm(self):
         self = self.with_context({'from_import': True})
         return self.action_confirm()
 
-    @api.multi
     def view_sc_child_orders(self):
         self.ensure_one()
         action = self.env.ref('sale.action_orders').read()[0]
@@ -892,20 +800,16 @@ class SaleOrder(models.Model):
             })
             return action
 
-    @api.multi
     def add_purchase_history_to_so_line(self):
         """
         Return 'add purchase history to so wizard'
         """
         view_id = self.env.ref('price_paper.view_purchase_history_add_so_wiz').id
-        history_from = datetime.today() - relativedelta(months=self.env.user.company_id.sale_history_months)
         products = self.order_line.mapped('product_id').ids
-        # sales_history = self.env['sale.history'].search(
-        #     [('partner_id', '=', self.partner_id.id),
-        #      ('product_id', 'not in', products), ('product_id.sale_ok', '=', True)])
         sales_history = self.env['sale.history'].search(
             ['|', ('active', '=', False), ('active', '=', True), ('partner_id', '=', self.partner_id.id),
-             ('product_id', 'not in', products), ('product_id', '!=', False)]).filtered(lambda r : not r.product_id.categ_id.is_storage_contract)
+             ('product_id', 'not in', products), ('product_id', '!=', False)]).filtered(
+            lambda r: not r.product_id.categ_id.is_storage_contract)
         # addons product filtering
         addons_products = sales_history.mapped('product_id').filtered(lambda rec: rec.need_sub_product).mapped(
             'product_addons_list')
@@ -933,7 +837,6 @@ class SaleOrder(models.Model):
         self.write({'state': 'sale', 'confirmation_date': fields.Datetime.today()})
         return True
 
-
     def so_duplicate(self):
         new_records = self.env['sale.order']
         for rec in self:
@@ -941,15 +844,16 @@ class SaleOrder(models.Model):
         action_rec = self.env.ref('sale.action_quotations_with_onboarding')
         action = action_rec.read()[0]
         if len(new_records) > 1:
-          action['domain'] = [('id', 'in', new_records.ids)]
+            action['domain'] = [('id', 'in', new_records.ids)]
         elif len(new_records) == 1:
-          action['views'] = [(self.env.ref('sale.view_order_form').id, 'form')]
-          action['res_id'] = new_records.ids[0]
+            action['views'] = [(self.env.ref('sale.view_order_form').id, 'form')]
+            action['res_id'] = new_records.ids[0]
         return action
 
     @api.model
     def sc_archive_cron(self):
-        records = self.env['sale.order'].search([('active', '=', True), ('storage_contract', '=', True), ('state', 'in', ['released', 'done'])])
+        records = self.env['sale.order'].search(
+            [('active', '=', True), ('storage_contract', '=', True), ('state', 'in', ['released', 'done'])])
         for record in records:
             if not any(record.order_line.mapped(lambda l: l.storage_remaining_qty)):
                 record.write({'active': False})
@@ -957,7 +861,8 @@ class SaleOrder(models.Model):
     def run_storage(self):
         for order in self:
             route = self.env.ref('purchase_stock.route_warehouse0_buy', raise_if_not_found=True)
-            so_lines = order.order_line.filtered(lambda r: r.product_id.type != 'service' and not r.display_type and not r.is_downpayment)
+            so_lines = order.order_line.filtered(
+                lambda r: r.product_id.type != 'service' and not r.display_type and not r.is_downpayment)
             so_lines.write({'route_id': route.id})
             errors = []
             for line in so_lines:
@@ -997,10 +902,12 @@ class SaleOrder(models.Model):
                 raise UserError('\n'.join(errors))
 
             order.write({'state': 'waiting'})
-            #service line update
-            purchase_orders = order.order_line.mapped('purchase_line_ids.order_id').filtered(lambda p: p.state == 'draft')
+            # service line update
+            purchase_orders = order.order_line.mapped('purchase_line_ids.order_id').filtered(
+                lambda p: p.state == 'draft')
 
-            for sr_line in order.order_line.filtered(lambda r: r.product_id.type == 'service' and not r.display_type and not r.is_downpayment):
+            for sr_line in order.order_line.filtered(
+                    lambda r: r.product_id.type == 'service' and not r.display_type and not r.is_downpayment):
                 for po in purchase_orders:
                     fpos = po.fiscal_position_id
                     taxes = fpos.map_tax(
@@ -1022,7 +929,8 @@ class SaleOrder(models.Model):
                     name = '[%s] %s' % (sr_line.product_id.default_code, product_in_supplier_lang.display_name)
                     if product_in_supplier_lang.description_purchase:
                         name += '\n' + product_in_supplier_lang.description_purchase
-                    purchase_qty_uom = sr_line.product_uom._compute_quantity(sr_line.product_uom_qty, sr_line.product_id.uom_po_id)
+                    purchase_qty_uom = sr_line.product_uom._compute_quantity(sr_line.product_uom_qty,
+                                                                             sr_line.product_id.uom_po_id)
                     self.env['purchase.order.line'].create({
                         'name': sr_line.name,
                         'product_qty': purchase_qty_uom,
@@ -1046,8 +954,8 @@ class SaleOrderLine(models.Model):
     profit_margin = fields.Monetary(compute='calculate_profit_margin', string="Profit")
     price_from = fields.Many2one('customer.product.price', string='Product Pricelist')
     last_sale = fields.Text(string='Last sale details')
-    product_onhand = fields.Float(string='Product Qty Available', compute='compute_available_qty',
-                                  digits=dp.get_precision('Product Unit of Measure'), store=False)
+    product_onhand = fields.Float(string='Product Qty Available', compute='compute_available_qty', store=False,
+                                  digits='Product Unit of Measure')
     new_product = fields.Boolean(string='New Product', copy=False)
     manual_price = fields.Boolean(string='Manual Price Change', copy=False)
     is_last = fields.Boolean(string='Is last Purchase', copy=False)
@@ -1060,14 +968,14 @@ class SaleOrderLine(models.Model):
     price_lock = fields.Boolean(related='price_from.price_lock', readonly=True)
 
     # comment the below 2 lines while running sale order line import scripts
-    lst_price = fields.Float(string='Standard Price', digits=dp.get_precision('Product Price'), store=True,
+    lst_price = fields.Float(string='Standard Price', digits='Product Price', store=True,
                              compute='_compute_lst_cost_prices')
-    working_cost = fields.Float(string='Working Cost', digits=dp.get_precision('Product Price'), store=True,
+    working_cost = fields.Float(string='Working Cost', digits='Product Price', store=True,
                                 compute='_compute_lst_cost_prices')
 
     # Uncomment the below 2 lines while running sale order line import scripts
-    # lst_price = fields.Float(string='Standard Price', digits=dp.get_precision('Product Price'))
-    # working_cost = fields.Float(string='Working Cost', digits=dp.get_precision('Product Price'))
+    # lst_price = fields.Float(string='Standard Price', digits='Product Price')
+    # working_cost = fields.Float(string='Working Cost', digits='Product Price')
     gross_volume = fields.Float(string="Gross Volume", compute='_compute_gross_weight_volume')
     gross_weight = fields.Float(string="Gross Weight", compute='_compute_gross_weight_volume')
     is_addon = fields.Boolean(string='Is Addon')
@@ -1083,11 +991,25 @@ class SaleOrderLine(models.Model):
     note_expiry_date = fields.Date('Note Valid Upto')
     scraped_qty = fields.Float(compute='_compute_scrape_qty', string='Quantity Scraped', store=False)
     date_planned = fields.Date(related='order_id.release_date', store=False, readonly=True, string='Date Planned')
+    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
+    # TODO :: Remove this field from batch delivery.
+    # info = fields.Char(compute='_get_price_lock_info_JSON')
+
+    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
+    # TODO :: Remove this compute function from batch_delivery.
+    # @api.depends('product_id')
+    # def _get_price_lock_info_JSON(self):
+    #     self.info = json.dumps(False)
+    #     if self.product_id and self.price_from and self.price_from.price_lock:
+    #         info = {'title': 'Price locked until ' + self.price_from.lock_expiry_date.strftime('%m/%d/%Y'),
+    #                 'record': self.price_from.id}
+    #         self.info = json.dumps(info)
 
     @api.depends('move_ids.picking_id.move_lines.scrapped')
     def _compute_scrape_qty(self):
         for so_line in self:
-            so_line.scraped_qty = sum(so_line.move_ids.mapped('picking_id').mapped('move_lines').filtered(lambda r: r.scrapped and r.product_id.id == so_line.product_id.id).mapped('quantity_done'))
+            so_line.scraped_qty = sum(so_line.move_ids.mapped('picking_id').mapped('move_lines').filtered(
+                lambda r: r.scrapped and r.product_id.id == so_line.product_id.id).mapped('quantity_done'))
 
     @api.depends('state', 'product_uom_qty', 'qty_delivered', 'qty_to_invoice', 'qty_invoiced',
                  'order_id.storage_contract')
@@ -1098,7 +1020,8 @@ class SaleOrderLine(models.Model):
             if line.order_id.storage_contract:
                 if float_compare(line.qty_invoiced, line.product_uom_qty, precision_digits=precision) >= 0:
                     line.invoice_status = 'invoiced'
-                elif float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) <= 0 and line.state in ['received', 'done']:
+                elif float_compare(line.qty_delivered, line.product_uom_qty,
+                                   precision_digits=precision) <= 0 and line.state in ['received', 'done']:
                     line.invoice_status = 'to invoice'
                 elif float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) == 1:
                     line.invoice_status = 'upselling'
@@ -1118,7 +1041,7 @@ class SaleOrderLine(models.Model):
                     line.qty_to_invoice = (line.qty_delivered if not line.is_downpayment else 0) - line.qty_invoiced
             else:
                 break
-    @api.multi
+
     @api.depends('qty_delivered_method', 'qty_delivered_manual', 'analytic_line_ids.so_line',
                  'analytic_line_ids.unit_amount', 'analytic_line_ids.product_uom_id')
     def _compute_qty_delivered(self):
@@ -1133,10 +1056,12 @@ class SaleOrderLine(models.Model):
             else:
                 if line.qty_delivered_method == 'stock_move':
                     qty = 0.0
-                    for move in line.move_ids.filtered(lambda r: r.state == 'done' or r.is_transit is True and not r.scrapped and line.product_id == r.product_id):
+                    for move in line.move_ids.filtered(
+                            lambda r: r.state == 'done' or r.is_transit is True and not r.scrapped and line.product_id == r.product_id):
                         if move.location_dest_id.usage == "customer":
                             if not move.origin_returned_move_id or (move.origin_returned_move_id and move.to_refund):
-                                qty += move.product_uom._compute_quantity(move.quantity_done or move.reserved_availability, line.product_uom)
+                                qty += move.product_uom._compute_quantity(
+                                    move.quantity_done or move.reserved_availability, line.product_uom)
                         elif move.location_dest_id.usage != "customer" and move.to_refund:
                             qty -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)
                     line.qty_delivered = qty
@@ -1150,17 +1075,23 @@ class SaleOrderLine(models.Model):
     @api.depends('product_id.qty_available', 'product_id.outgoing_qty')
     def compute_available_qty(self):
         for line in self:
-            line.product_onhand = line.product_id.qty_available - line.product_id.outgoing_qty
+            if line.product_id:
+                line.product_onhand = line.product_id.qty_available - line.product_id.outgoing_qty
+            else:
+                line.product_onhand = 0.00
 
     @api.depends('product_uom_qty', 'qty_delivered', 'storage_contract_line_ids.qty_delivered', 'state')
     def _compute_storage_delivered_qty(self):
         for line in self:
             if line.order_id.storage_contract:
-                sale_lines = line.storage_contract_line_ids.filtered(lambda r: r.order_id.state not in ['draft', 'cancel'])
+                sale_lines = line.storage_contract_line_ids.filtered(
+                    lambda r: r.order_id.state not in ['draft', 'cancel'])
                 if not line.sudo().purchase_line_ids and line.state in ['released', 'done']:
-                    line.storage_remaining_qty = line.product_uom_qty - sum(sale_lines.mapped('qty_delivered')) - sum(sale_lines.mapped('scraped_qty'))
+                    line.storage_remaining_qty = line.product_uom_qty - sum(sale_lines.mapped('qty_delivered')) - sum(
+                        sale_lines.mapped('scraped_qty'))
                 else:
-                    line.storage_remaining_qty = line.qty_delivered - sum(sale_lines.mapped('qty_delivered')) - sum(sale_lines.mapped('scraped_qty'))
+                    line.storage_remaining_qty = line.qty_delivered - sum(sale_lines.mapped('qty_delivered')) - sum(
+                        sale_lines.mapped('scraped_qty'))
             else:
                 pass
 
@@ -1177,10 +1108,12 @@ class SaleOrderLine(models.Model):
             for sl in lines:
                 lines = sl.storage_contract_line_ids.filtered(lambda r: r.order_id.state not in ['draft', 'cancel'])
                 if not sl.sudo().purchase_line_ids:
-                    if (sl.product_uom_qty - sum(lines.mapped('qty_delivered')) - sum(lines.mapped('scraped_qty'))) > value:
+                    if (sl.product_uom_qty - sum(lines.mapped('qty_delivered')) - sum(
+                            lines.mapped('scraped_qty'))) > value:
                         ids.append(sl.id)
                 else:
-                    if (sl.qty_delivered - sum(lines.mapped('qty_delivered')) - sum(lines.mapped('scraped_qty'))) > value:
+                    if (sl.qty_delivered - sum(lines.mapped('qty_delivered')) - sum(
+                            lines.mapped('scraped_qty'))) > value:
                         ids.append(sl.id)
         return [('id', 'in', ids)]
 
@@ -1192,7 +1125,7 @@ class SaleOrderLine(models.Model):
             else:
                 rec.sale_uom_ids = False
 
-    # @api.multi
+    #
     # def _prepare_invoice_line(self, qty):
     #     self.ensure_one()
     #     res = super(SaleOrderLine, self)._prepare_invoice_line(qty)
@@ -1204,7 +1137,9 @@ class SaleOrderLine(models.Model):
 
     def product_id_check_availability(self):
         if not self.product_id or not self.product_uom_qty or not self.product_uom:
-            self.product_packaging = False
+            # TODO :: FIX THIS FOR ODOO-15 MIGRATION
+            # TODO::fix this this field is not available in odoo-15, field removed from sale_stock (12).
+            # self.product_packaging = False
             return {}
         if self.product_id.type == 'product':
             precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
@@ -1244,9 +1179,11 @@ class SaleOrderLine(models.Model):
     def _onchange_tax(self):
         if not self.tax_id:
             if self.product_id and self.order_id and self.order_id.partner_id \
-            and not self.order_id.partner_id.vat:
+                    and not self.order_id.partner_id.vat:
                 raise UserError(_('You can not remove Tax for this Partner.'))
-
+    #todo source not found need to replace before go live
+    def _check_routing(self):
+        return {}
     @api.onchange('product_uom_qty', 'product_uom', 'route_id')
     def _onchange_product_id_check_availability(self):
         res = self.product_id_check_availability()
@@ -1278,8 +1215,7 @@ class SaleOrderLine(models.Model):
 
                             prices_all = self.env['customer.product.price']
                             for rec in self.order_id.partner_id.customer_pricelist_ids:
-                                if not rec.pricelist_id.expiry_date or rec.pricelist_id.expiry_date >= str(
-                                        date.today()):
+                                if not rec.pricelist_id.expiry_date or rec.pricelist_id.expiry_date >= date.today():
                                     prices_all |= rec.pricelist_id.customer_product_price_ids
 
                             prices_all = prices_all.filtered(lambda r: r.product_id.id == item.id)
@@ -1301,6 +1237,8 @@ class SaleOrderLine(models.Model):
                                                                                                               uom)
                         similar_product_price += "</table>"
                         self.similar_product_price = similar_product_price
+                    else:
+                        self.similar_product_price = False
         return res
 
     @api.depends('product_uom_qty', 'qty_delivered')
@@ -1326,33 +1264,19 @@ class SaleOrderLine(models.Model):
                     if line.product_id.cost:
                         line.working_cost = uom_price[0].cost
                 else:
-                    line.product_id.job_queue_standard_price_update()
+                    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
+                    # TODO :: PLEASE MIGRATE price_maintance module and add that module in depends.
+                    # line.product_id.job_queue_standard_price_update()
                     uom_price = line.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == line.product_uom)
                     if uom_price:
                         line.lst_price = uom_price[0].price
                         if line.product_id.cost:
                             line.working_cost = uom_price[0].cost
-            if line.is_delivery and line.order_id.carrier_id and line.order_id.carrier_id.delivery_type not in ['base_on_rule', 'fixed']:
+            if line.is_delivery and line.order_id.carrier_id and line.order_id.carrier_id.delivery_type not in [
+                'base_on_rule', 'fixed']:
                 line.working_cost = line.order_id.delivery_cost
                 line.lst_price = line.order_id.delivery_price
 
-    # @api.multi
-    # def _prepare_invoice_line(self, qty):
-    #     res = super(SaleOrderLine, self)._prepare_invoice_line(qty)
-    #     if self.is_downpayment and self.product_id.is_storage_contract:
-    #         account = self.product_id.storage_contract_account_id or self.product_id.property_account_income_id or self.product_id.categ_id.property_account_income_categ_id
-    #
-    #         if not account and self.product_id:
-    #             raise UserError(_('Please define storage contract account for this product: "%s" (id:%d)".') %
-    #                             (self.product_id.name, self.product_id.id))
-    #
-    #         fpos = self.order_id.fiscal_position_id or self.order_id.partner_id.property_account_position_id
-    #         if fpos and account:
-    #             account = fpos.map_account(account)
-    #         res.update({'account_id': account.id, 'product_id': False})
-    #     return res
-
-    @api.multi
     def unlink(self):
         """
         lets users to bypass super unlink block for confirmed lines
@@ -1384,13 +1308,12 @@ class SaleOrderLine(models.Model):
 
             return super(SaleOrderLine, (self - unlinked_lines) + cascade_line).unlink()
 
-    @api.multi
     def name_get(self):
 
         result = []
         for line in self:
             result.append((line.id, "%s - %s - %s - %s" % (
-            line.order_id.name, line.name, line.product_uom.name, line.order_id.date_order)))
+                line.order_id.name, line.name, line.product_uom.name, line.order_id.date_order)))
         return result
 
     def update_price_list(self):
@@ -1504,23 +1427,23 @@ class SaleOrderLine(models.Model):
                 if price_from:
                     self.price_from = price_from.id
 
-    @api.multi
     def write(self, vals):
         for line in self:
             if vals.get('price_unit') and line.order_id.state == 'sale':
                 if not self.env.user.has_group('sales_team.group_sale_manager') and line.product_id.type != 'service':
                     if line.price_unit < line.working_cost and vals.get('price_unit') < line.price_unit:
-                        raise ValidationError(_('You are not allowed to reduce price below product cost. Contact your sales Manager.'))
+                        raise ValidationError(
+                            _('You are not allowed to reduce price below product cost. Contact your sales Manager.'))
                     if line.price_unit >= line.working_cost and vals.get('price_unit') < line.working_cost:
-                        raise ValidationError(_('You are not allowed to reduce price below product cost. Contact your sales Manager.'))
-
-        res = super(SaleOrderLine, self).write(vals)
+                        raise ValidationError(
+                            _('You are not allowed to reduce price below product cost. Contact your sales Manager.'))
+        print(self, vals)
+        res = super().write(vals)
         for line in self:
             if vals.get('price_unit') and line.order_id.state == 'sale':
                 line.update_price_list()
         return res
 
-    @api.multi
     def _prepare_procurement_values(self, group_id=False):
         """ Prepare specific key for moves or other components that will be created from a stock rule
         comming from a sale order line. This method could be override in order to add other custom key that could
@@ -1533,8 +1456,8 @@ class SaleOrderLine(models.Model):
         })
         return values
 
-    @api.multi
-    def _action_launch_stock_rule(self):
+    def _action_launch_stock_rule_not_migrated(self, previous_product_uom_qty=False):
+
         """
         Launch procurement group run method with required/custom fields genrated by a
         sale order line. procurement group will launch '_run_pull', '_run_buy' or '_run_manufacture'
@@ -1618,7 +1541,7 @@ class SaleOrderLine(models.Model):
         if res.note_type == 'permanant':
             note = self.env['product.notes'].search([
                 ('product_id', '=', res.product_id.id),
-                 ('partner_id', '=', res.order_id.partner_id.id),
+                ('partner_id', '=', res.order_id.partner_id.id),
                 ('expiry_date', '>', date.today())
             ], limit=1)
             if not note:
@@ -1661,7 +1584,6 @@ class SaleOrderLine(models.Model):
         else:
             self.last_sale = 'No Previous information Found'
 
-
     @api.depends('product_id', 'product_uom_qty', 'price_unit', 'order_id.delivery_cost')
     def calculate_profit_margin(self):
         """
@@ -1686,75 +1608,78 @@ class SaleOrderLine(models.Model):
                         line_price = numer / denom
                     line.profit_margin = float_round((line_price - product_price) * line.product_uom_qty,
                                                      precision_digits=2)
-
-    @api.multi
-    @api.onchange('product_id')
-    def product_id_change(self):
-        """
-        Add taxes automatically to sales lines if partner has a
-        resale number and no taxes charged based on previous
-        purchase history.
-        Display a message from which pricelist the unit price is taken .
-
-        """
-        # TODO: update tax computational logic
-
-        res = super(SaleOrderLine, self).product_id_change()
-        lst_price = 0
-        working_cost = 0
-        if not self.product_id:
-            res.update({'value': {'lst_price': lst_price, 'working_cost': working_cost}})
-        if self.product_id:
-            warn_msg = not self.product_id.purchase_ok and "This item can no longer be purchased from vendors" or ""
-            if not self.order_id.storage_contract and sum(
-                    [1 for line in self.order_id.order_line if line.product_id.id == self.product_id.id]) > 1:
-                warn_msg += "\n{} is already in SO.".format(self.product_id.name)
-
-            if self.order_id:
-                partner_history = self.env['sale.tax.history'].search(
-                    [('partner_id', '=', self.order_id and self.order_id.partner_shipping_id.id or False),
-                     ('product_id', '=', self.product_id and self.product_id.id)])
-                if self.order_id.partner_id and not self.order_id.partner_id.vat:
-                    partner_history = False
-                if partner_history and not partner_history.tax:
-                    self.tax_id = [(5, _, _)]
-
-                # force domain the tax_id field with only available taxes based on applied fpos
-                if not res.get('domain', False):
-                    res.update({'domain': {}})
-                pro_tax_ids = self.product_id.taxes_id
-                if self.order_id.fiscal_position_id:
-                    taxes_ids = self.order_id.partner_shipping_id.property_account_position_id.map_tax(pro_tax_ids,
-                                                                                                       self.product_id,
-                                                                                                       self.order_id.partner_shipping_id).ids
-                    res.get('domain', {}).update({'tax_id': [('id', 'in', taxes_ids)]})
-
-            msg, product_price, price_from = self.calculate_customer_price()
-            warn_msg += msg and "\n\n{}".format(msg)
-            if self.product_id.sale_delay > 0:
-                warn_msg += 'product: {} takes {} days to be procured.'.format(self.product_id.name, self.product_id.sale_delay)
-            if warn_msg:
-                res.update({'warning': {'title': _('Warning!'), 'message': warn_msg}})
-
-            res.update({'value': {'price_unit': product_price, 'price_from': price_from}})
-
-            # for uom only show those applicable uoms
-            domain = res.get('domain', {})
-            product_uom_domain = domain.get('product_uom', [])
-            product_uom_domain.append(('id', 'in', self.product_id.sale_uoms.ids))
-
-            # get this customers last time sale description for this product and update it in the line
-            note = self.env['product.notes'].search(
-                [('product_id', '=', self.product_id.id),
-                ('partner_id', '=', self.order_id.partner_id.id),
-                ('expiry_date', '>', date.today())], limit=1)
-            if note:
-                self.note = note.notes
-                self.note_expiry_date = note.expiry_date
             else:
-                self.note = ''
+                line.profit_margin = 0.0
 
-        return res
+    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
+    # @api.onchange('product_id')
+    # def product_id_change(self):
+    #     """
+    #     Add taxes automatically to sales lines if partner has a
+    #     resale number and no taxes charged based on previous
+    #     purchase history.
+    #     Display a message from which pricelist the unit price is taken .
+    #
+    #     """
+    #     # TODO: update tax computational logic
+    #
+    #     res = super(SaleOrderLine, self).product_id_change()
+    #     lst_price = 0
+    #     working_cost = 0
+    #     # if not self.product_id:
+    #     #     res = res or dict()
+    #     #     res.update({'value': {'lst_price': lst_price, 'working_cost': working_cost}})
+    #     if self.product_id:
+    #         warn_msg = not self.product_id.purchase_ok and "This item can no longer be purchased from vendors" or ""
+    #         if not self.order_id.storage_contract and sum(
+    #                 [1 for line in self.order_id.order_line if line.product_id.id == self.product_id.id]) > 1:
+    #             warn_msg += "\n{} is already in SO.".format(self.product_id.name)
+    #
+    #         if self.order_id:
+    #             partner_history = self.env['sale.tax.history'].search(
+    #                 [('partner_id', '=', self.order_id and self.order_id.partner_shipping_id.id or False),
+    #                  ('product_id', '=', self.product_id and self.product_id.id)])
+    #             if self.order_id.partner_id and not self.order_id.partner_id.vat:
+    #                 partner_history = False
+    #             if partner_history and not partner_history.tax:
+    #                 self.tax_id = [(5, _, _)]
+    #
+    #             # force domain the tax_id field with only available taxes based on applied fpos
+    #             if not res.get('domain', False):
+    #                 res.update({'domain': {}})
+    #             pro_tax_ids = self.product_id.taxes_id
+    #             if self.order_id.fiscal_position_id:
+    #                 taxes_ids = self.order_id.partner_shipping_id.property_account_position_id.map_tax(pro_tax_ids,
+    #                                                                                                    self.product_id,
+    #                                                                                                    self.order_id.partner_shipping_id).ids
+    #                 res.get('domain', {}).update({'tax_id': [('id', 'in', taxes_ids)]})
+    #
+    #         msg, product_price, price_from = self.calculate_customer_price()
+    #         warn_msg += msg and "\n\n{}".format(msg)
+    #         if self.product_id.sale_delay > 0:
+    #             warn_msg += 'product: {} takes {} days to be procured.'.format(self.product_id.name, self.product_id.sale_delay)
+    #         if warn_msg:
+    #             res.update({'warning': {'title': _('Warning!'), 'message': warn_msg}})
+    #
+    #         res.update({'value': {'price_unit': product_price, 'price_from': price_from}})
+    #
+    #         # for uom only show those applicable uoms
+    #         domain = res.get('domain', {})
+    #         product_uom_domain = domain.get('product_uom', [])
+    #         product_uom_domain.append(('id', 'in', self.product_id.sale_uoms.ids))
+    #
+    #         # get this customers last time sale description for this product and update it in the line
+    #         note = self.env['product.notes'].search(
+    #             [('product_id', '=', self.product_id.id),
+    #             ('partner_id', '=', self.order_id.partner_id.id),
+    #             ('expiry_date', '>', date.today())], limit=1)
+    #         if note:
+    #             self.note = note.notes
+    #             self.note_expiry_date = note.expiry_date
+    #         else:
+    #             self.note = ''
+    #
+    #     return res
 
     @api.onchange('product_uom', 'product_uom_qty')
     def product_uom_change(self):
@@ -1808,7 +1733,6 @@ class SaleOrderLine(models.Model):
                 res.update({'warning': warning_mess})
         return res
 
-    @api.multi
     def calculate_customer_price(self):
         """
         Fetch unit price from the relevant pricelist of partner
@@ -1853,6 +1777,6 @@ class SaleOrderLine(models.Model):
         return msg, product_price, price_from
 
 
-SaleOrderLine()
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -33,7 +33,6 @@
             <field name="name">Search Existing Customer</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">search.existing.customer</field>
-            <field name="view_type">form</field>
             <field name="view_mode">form</field>
             <field name="view_id" ref="view_existing_customer"/>
             <field name="target">new</field>

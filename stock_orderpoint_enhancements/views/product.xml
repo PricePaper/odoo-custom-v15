@@ -8,20 +8,9 @@
             <field name="inherit_id" ref="product.product_normal_form_view"/>
             <field name="arch" type="xml">
                 <!--product smart buttons order changes-->
-                <xpath expr="//button[@name='%(stock.product_open_orderpoint)d']" position="after">
-                    <xpath expr="//button[@name='action_view_sales']" position="move"/>
-                    <button class="oe_stat_button" name="get_number_of_days" type="object" string="View Sales Forecast"
-                            icon="fa-signal"/>
-                </xpath>
+<!--            TODO soeme xpath is missing here refer 12 code-->
 
-                <xpath expr="//button[@name='action_view_stock_move_lines']" position="after">
-                    <xpath expr="//button[@name='%(stock.product_open_orderpoint)d']" position="move"/>
-                 </xpath>
 
-                <button name="toggle_active" position="after">
-                    <xpath expr="//button[@name='action_view_stock_move_lines']" position="move"/>
-                    <xpath expr="//button[@name='%(stock.action_stock_rules_report)d']" position="move"/>
-                </button>
 
                 <xpath expr="//div[@name='button_box']" position="inside">
                     <button class="oe_stat_button" name="reset_orderpoint" type="object" string="Reset Orderpoint"

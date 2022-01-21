@@ -8,9 +8,10 @@
 
 {
     'name': 'Saleperson Payment Collection',
-    'version': '12.0.1.0',
+    'version': '1',
     'category': 'Sales & Accounting',
     'sequence': '15',
+    'license': 'LGPL-3',
     'description': """
         This module will helps register payments from sales window.
     """,
@@ -18,6 +19,7 @@
     'website': 'https://www.confianzit.com',
     'depends': ['account', 'sale'],
     'data': [
+        'security/ir.model.access.csv',
         'wizard/register_payment_view.xml',
     ],
     'demo': [],

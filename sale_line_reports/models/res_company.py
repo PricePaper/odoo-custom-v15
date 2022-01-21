@@ -10,6 +10,4 @@ class ResCompany(models.Model):
                                   help='This field is used to specify the company margin for a products category. It is visible in the sale line reports.')
 
 
-ResCompany()
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -10,9 +10,6 @@ class HelpDeskTeam(models.Model):
     is_credit_team = fields.Boolean(string='Credit Team')
 
 
-HelpDeskTeam()
-
-
 class HelpDeskTicket(models.Model):
     _inherit = 'helpdesk.ticket'
 
@@ -23,6 +20,5 @@ class HelpDeskTicket(models.Model):
         super(HelpDeskTicket, self).assign_ticket_to_self()
 
 
-HelpDeskTicket()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

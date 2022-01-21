@@ -9,7 +9,6 @@ class AssignRouteWizard(models.TransientModel):
 
     line_ids = fields.One2many('assign.route.wizard.line', 'parent_id', string='Assign Route Lines')
 
-    @api.multi
     def assign_routes(self):
 
         pickings = self.env['stock.picking'].search(
@@ -43,9 +42,6 @@ class AssignRouteWizard(models.TransientModel):
         return res
 
 
-AssignRouteWizard()
-
-
 class AssignRouteWizardLines(models.TransientModel):
     _name = 'assign.route.wizard.line'
     _description = 'Assign Route Line'
@@ -59,6 +55,6 @@ class AssignRouteWizardLines(models.TransientModel):
         return {'domain': {'prior_batch_id': ([('route_id', '=', self.route_id.id)])}}
 
 
-AssignRouteWizardLines()
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

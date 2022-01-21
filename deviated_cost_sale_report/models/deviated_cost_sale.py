@@ -13,6 +13,7 @@ class ReportDeviatedCost(models.AbstractModel):
         domain = [('state', '=', 'sale'), ('confirmation_date', '>=', data.get('from_date')),
                   ('confirmation_date', '<=', data.get('to_date'))]
         sale_orders = self.env['sale.order'].search(domain)
+
         order_lines = sale_orders.mapped('order_line').filtered(
             lambda rec: rec.vendor_id and rec.vendor_id.id and rec.rebate_contract_id and rec.rebate_contract_id.id).sorted(
             key=lambda l: (l.vendor_id.id, l.rebate_contract_id.id))
@@ -21,7 +22,9 @@ class ReportDeviatedCost(models.AbstractModel):
         if not order_lines:
             raise ValidationError(_('No records available'))
         line_dict = {}
+
         for line in order_lines:
+
             line_dict = {
                 'so_number': line.order_id.name,
                 'date': line.order_id.confirmation_date,
@@ -48,18 +51,16 @@ class ReportDeviatedCost(models.AbstractModel):
                     'order_lines': [con_line],
                 }
                 res.append(vals)
+
         return res
 
     @api.model
     def _get_report_values(self, docids, data=None):
         return {
             'doc_model': 'sale.order',
-            'docs': self.env['account.invoice'],
+            'docs': self.env['account.move'],
             'data': data,
             'orders': self.get_sale_order_lines(data)
         }
-
-
-ReportDeviatedCost()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

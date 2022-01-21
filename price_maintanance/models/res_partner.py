@@ -35,7 +35,7 @@ class ResPartner(models.Model):
             else:
                 partner.partner_pricelist_line_ids = False
 
-    @api.multi
+
     def create_audit_notes(self, audit_notes):
         for partner in self:
             partner.env['price.edit.notes'].create({
@@ -45,7 +45,7 @@ class ResPartner(models.Model):
                 'user_id': self.env.user.id
             })
 
-    @api.multi
+
     def write(self, vals):
         change_flag = vals.pop('change_flag', False)
         audit_notes = vals.pop('audit_notes', False)

@@ -3,6 +3,7 @@
 {
     'name': 'Sale Line Reports',
     'version': '1.0',
+    'license': 'LGPL-3',
     'category': 'Sales and Purchase',
     'summary': "Sales and Purchase",
     'description': """

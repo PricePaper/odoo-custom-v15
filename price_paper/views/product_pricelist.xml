@@ -41,9 +41,8 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
 
-                <xpath expr="//div[3]" position="before">
-                    <div>
-                        <separator string="Customer Product Price"/>
+                <xpath expr="//page[@name='pricelist_config']" position="after">
+                    <page string="Customer Product Price">
 <!--                        ADD these to customer_product_price_ids for custom search, options="{'custom_search': True}"-->
                         <field name="customer_product_price_ids" mode="tree,kanban">
                             <tree editable="bottom">
@@ -105,12 +104,12 @@
                                     </templates>
                                 </kanban>
                         </field>
-                    </div>
+                    </page>
                 </xpath>
 
-                <xpath expr="//div[4]" position="attributes">
-                    <attribute name="invisible">1</attribute>
-                </xpath>
+<!--      can't find a path in odoo-15          <xpath expr="//div[4]" position="attributes">-->
+<!--                    <attribute name="invisible">1</attribute>-->
+<!--                </xpath>-->
             </field>
         </record>
     </data>

@@ -1,27 +1,29 @@
 <odoo>
     <data>
-        <record id="inherit_account_invoice_form_view_purchase_ext" model="ir.ui.view">
-            <field name="name">inherite.account.invoice.form.view</field>
-            <field name="model">account.invoice</field>
-            <field name="type">form</field>
-            <field name="inherit_id" ref="account.invoice_form"/>
-            <field name="arch" type="xml">
-                <field name='payment_term_id' position='attributes'>
-                    <attribute name='domain'>[('order_type', '=', 'sale')]</attribute>
-                </field>
-            </field>
-        </record>
+        <!--TODO handle in py code-->
+<!--        <record id="inherit_account_invoice_form_view_purchase_ext" model="ir.ui.view">-->
+<!--            <field name="name">inherite.account.invoice.form.view</field>-->
+<!--            <field name="model">account.invoice</field>-->
+<!--            <field name="type">form</field>-->
+<!--            <field name="inherit_id" ref="account.invoice_form"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <field name='payment_term_id' position='attributes'>-->
+<!--                    <attribute name='domain'>[('order_type', '=', 'sale')]</attribute>-->
+<!--                </field>-->
+<!--            </field>-->
+<!--        </record>-->
 
+        <!--TODO handle in py code-->
         <record id="inherit_account_invoice_supplier_form_view" model="ir.ui.view">
             <field name="name">inherited.account.supplier.form.view</field>
-            <field name="model">account.invoice</field>
+            <field name="model">account.move</field>
             <field name="type">form</field>
-            <field name="inherit_id" ref="account.invoice_supplier_form"/>
+            <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
-                <field name='payment_term_id' position='attributes'>
-                    <attribute name='domain'>[('order_type', '=', 'purchase')]</attribute>
-                </field>
-                <xpath expr="//field[@name='date_due']" position="after">
+<!--                <field name='payment_term_id' position='attributes'>-->
+<!--                    <attribute name='domain'>[('order_type', '=', 'purchase')]</attribute>-->
+<!--                </field>-->
+                <xpath expr="//field[@name='invoice_date_due']" position="after">
                     <field name="discount_due_date" readonly='1'/>
                 </xpath>
             </field>
@@ -29,11 +31,11 @@
 
         <record id="invoice_supplier_tree_inherit_ppt" model="ir.ui.view">
             <field name="name">account.invoice.supplier.tree.ppt</field>
-            <field name="model">account.invoice</field>
-            <field name="inherit_id" ref="account.invoice_supplier_tree"/>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_in_invoice_bill_tree"/>
             <field name="arch" type="xml">
 
-                <xpath expr="//field[@name='reference']" position="after">
+                <xpath expr="//field[@name='ref']" position="after">
                    <field name="discount_due_date"/>
                 </xpath>
 
@@ -41,17 +43,18 @@
         </record>
         <record id="view_invoice_supplier_purchase_form_inherited" model="ir.ui.view">
             <field name="name">account.invoice.supplier.purchase</field>
-            <field name="model">account.invoice</field>
-            <field name="inherit_id" ref="purchase.view_invoice_supplier_purchase_form"/>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
             <field name="groups_id" eval="[(4,ref('purchase.group_purchase_user'))]"/>
             <field name="arch" type="xml">
-                <field name="vendor_bill_purchase_id" position="after">
-                    <field name="vendor_bill_receipt_id" attrs="{'invisible': ['|', '|', ('state','not in',['draft']), ('state', '=', 'purchase'), ('type', '=', 'in_refund')]}"
+                <field name="purchase_vendor_bill_id" position="after">
+                    <field name="vendor_bill_receipt_id" attrs="{'invisible': ['|', '|', ('state','not in',['draft']), ('state', '=', 'purchase'), ('move_type', 'in', ('in_refund','out_invoice','out_refund'))]}"
                         class="oe_edit_only" domain="[('partner_id','child_of',[partner_id]), ('state', '=', 'done'), ('picking_type_code', '=', 'incoming')]"
                         placeholder="Select a receipt"
                         options="{'no_create': True, 'no_open': True}"/>
-                    <field name="bill_receipt_id" attrs="{'invisible': ['|', '|', ('state','not in',['draft']), ('state', '=', 'purchase'), ('type', '=', 'in_invoice')]}"
-                        class="oe_edit_only" domain="[('partner_id','child_of',[partner_id]), ('state', '=', 'done'), ('picking_type_code', '=', 'outgoing'), ('move_ids_without_package.purchase_line_id', '!=', False)]"
+                        <!--                        ('move_ids_without_package.purchase_line_id', '!=', False) TODO this condition handle in bill_receipt_id's domain'-->
+                    <field name="bill_receipt_id" attrs="{'invisible': ['|', '|', ('state','not in',['draft']), ('state', '=', 'purchase'), ('move_type', 'in', ('in_invoice','in_refund'))]}"
+                        class="oe_edit_only" domain="[('partner_id','child_of',[partner_id]), ('state', '=', 'done'), ('picking_type_code', '=', 'outgoing'), ]"
                         placeholder="Select a receipt"
                         options="{'no_create': True, 'no_open': True}"/>
                 </field>

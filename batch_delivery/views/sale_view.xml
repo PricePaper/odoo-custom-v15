@@ -2,45 +2,65 @@
 <odoo>
     <data>
 
-        <record id="inherit_sale_order_form_view_batch" model="ir.ui.view">
+        <record id="batch_delivery_sale_order_view" model="ir.ui.view">
             <field name="name">inherited.sale.order.form.view.batch</field>
             <field name="model">sale.order</field>
             <field name="type">form</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
 
-                <xpath expr="//group[hasclass('oe_subtotal_footer')]" position="before">
-                  <group attrs="{'invisible': [('cancel_reason', '=', False)]}">
-                    <field name="cancel_reason" readonly='1' force_save="1"/>
-                  </group>
+                <sheet position='before'>
+                    <div class="oe_form_box_info oe_text_center"
+                         attrs="{'invisible':[('batch_warning', '=', False)]}">
+                        <p attrs="{'invisible':[('batch_warning', '=', False)]}">
+                            <b>
+                                <field name='batch_warning'/>
+                            </b>
+                        </p>
+
+                    </div>
+
+                </sheet>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='qty_delivered']" position="attributes">
+                    <attribute name="optional">hide</attribute>
                 </xpath>
-                <xpath expr="//field[@name='payment_term_id']" position="after">
-                    <field name="have_prive_lock" invisible="1"/>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='qty_invoiced']" position="attributes">
+                    <attribute name="optional">hide</attribute>
                 </xpath>
 
-                <xpath expr="//field[@name='confirmation_date']" position="after">
+                <group name="note_group" position="after">
+                    <group attrs="{'invisible': [('cancel_reason', '=', False)]}" colspan="4" string="Cancel Reason">
+                        <field name="cancel_reason" readonly='1' nolabel="1"/>
+                    </group>
+                </group>
+                <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name="have_price_lock" invisible="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='date_order']" position="after">
                     <field name="delivery_date" attrs="{'invisible': [('delivery_date', '=', False)]}"/>
                 </xpath>
 
                 <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom']" position="after">
-                    <field name="lot_id"/>
+                    <field name="lot_id" optional="hide"/>
                 </xpath>
 
                 <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']"
                        position="before">
                     <field name="lot_id"/>
                 </xpath>
-
+                <!--todo fileds used in priceppaer cann't ad her without overriding the super-->
                 <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']"
                        position="after">
+                    <field name="price_lock" invisible="1"/>
                     <field name="info" widget="price_lock" string="Lock Info"
                            attrs="{'invisible':[('price_lock', '=', False)]}"/>
                 </xpath>
-
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
+                    <field name="price_lock" invisible="1"/>
                     <field name="info" widget="price_lock" string="Lock Info"
-                           attrs="{'column_invisible':[('parent.have_prive_lock', '=', False)],
-                                    'invisible':[('price_lock', '=', False)]}"/>
+                           attrs="{'column_invisible':[('parent.have_price_lock', '=', False)],
+                                                    'invisible':[('price_lock', '=', False)]}"/>
                 </xpath>
 
 

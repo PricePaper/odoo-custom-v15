@@ -8,7 +8,8 @@ from dateutil.relativedelta import relativedelta
 
 from odoo import fields, models, api, _
 from odoo.addons.price_paper.models import margin
-from odoo.addons.queue_job.job import job
+# TODO: FIX THIS FOR ODOO-15 MIGRATION
+# from odoo.addons.queue_job.job import job
 from odoo.tools import float_round
 
 _logger = logging.getLogger(__name__)
@@ -29,7 +30,6 @@ class ProductProduct(models.Model):
     change_flag = fields.Boolean(string='Log an Audit Note')
     audit_notes = fields.Text(string='Audit Note')
 
-    @api.multi
     def edit_price(self):
         context = {'product_id': self.id, 'lst_price': self.lst_price, 'cost': self.standard_price,
                    'customer_pricelist': self.customer_price_ids.ids, 'future_price': self.future_price_ids.ids}
@@ -45,7 +45,6 @@ class ProductProduct(models.Model):
             'target': 'new'
         }
 
-    @api.multi
     def compute_last_purchase_price(self):
 
         for product in self:
@@ -121,7 +120,6 @@ class ProductProduct(models.Model):
                                                  unit_price_median_90_day.get(uom, 0))
             product.median_price = median_price
 
-    @api.multi
     def write(self, vals):
         change_flag = vals.pop('change_flag', False)
         audit_notes = vals.pop('audit_notes', False)
@@ -132,12 +130,10 @@ class ProductProduct(models.Model):
             self.cost_change_cron_button()
         return res
 
-    @api.multi
     def cost_change_cron_button(self):
         self.env['cost.change'].cost_change_cron()
         return True
 
-    @api.multi
     def create_audit_notes(self, audit_notes):
         for product in self:
             product.env['price.edit.notes'].create({
@@ -168,8 +164,8 @@ class ProductProduct(models.Model):
             name = 'Standard Price: '+ name
             product.with_delay(description=name, channel='root.standardprice').job_queue_standard_price_update()
 
-    @job
-    @api.multi
+    # TODO: FIX THIS FOR ODOO-15 MIGRATION
+    # @job
     def job_queue_standard_price_update(self):
 
         price_from_msg = ''

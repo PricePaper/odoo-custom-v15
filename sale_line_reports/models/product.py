@@ -6,7 +6,7 @@ from odoo import models, api
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
-    @api.multi
+
     def name_get(self):
         """
         overidden to show name of product as only the sku
@@ -22,7 +22,5 @@ class ProductProduct(models.Model):
             result = super(ProductProduct, self).name_get()
         return result
 
-
-ProductProduct()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

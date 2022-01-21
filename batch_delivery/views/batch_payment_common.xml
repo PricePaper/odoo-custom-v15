@@ -63,10 +63,10 @@
                                 <field name="common_batch_id" invisible="1"/>
                                 <field name="partner_id" domain="[('customer', '=', True)]"/>
                                 <field name="partner_ids" invisible="1"/>
-                                <field name="invoice_id" domain="[('partner_id', '=', partner_id), ('state', '=', 'open'), ('type', '=', 'out_invoice')]" context="{'from_batch_payment': True}"/>
+                                <field name="invoice_id" domain="[('partner_id', '=', partner_id), ('state', '=', 'open'), ('move_type', '=', 'out_invoice')]" context="{'from_batch_payment': True}"/>
                                 <field name="journal_id" required="1"/>
-                                <field name="available_payment_method_ids" invisible="1"/>
-                                <field name="payment_method_id" domain="[('id','in',available_payment_method_ids)]" required="1"/>
+                                <field name="available_payment_method_line_ids" invisible="1"/>
+                                <field name="payment_method_id" domain="[('id','in',available_payment_method_line_ids)]" required="1"/>
                                 <field name="discount"/>
                                 <field name="communication" attrs="{'required': [('is_communication', '=', True)]}"/>
                                 <field name="is_communication" invisible="1"/>
@@ -77,8 +77,8 @@
                                     <group>
                                         <field name="partner_id"/>
                                         <field name="journal_id"/>
-                                        <field name="available_payment_method_ids" invisible="1"/>
-                                        <field name="payment_method_id" domain="[('id','in',available_payment_method_ids)]" required="1"/>
+                                        <field name="available_payment_method_line_ids" invisible="1"/>
+                                        <field name="payment_method_id" domain="[('id','in',available_payment_method_line_ids)]" required="1"/>
                                         <field name="communication"/>
                                     </group>
                                     <group>
@@ -114,7 +114,6 @@
             <field name="name">Batch Payments Common</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">batch.payment.common</field>
-            <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="view_batch_payment_common_search"/>
             <field name="help" type="html">

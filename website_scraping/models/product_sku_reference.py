@@ -5,6 +5,7 @@ from odoo import models, fields, api
 
 class ProductSkuReference(models.Model):
     _name = "product.sku.reference"
+    _description = "Product SKU Reference"
     _inherit = ['mail.thread']
 
     product_id = fields.Many2one('product.product', string='Product', required=True)
@@ -12,13 +13,11 @@ class ProductSkuReference(models.Model):
     competitor_desc = fields.Char(string='Competitor description')
     website_link = fields.Char(string='URL')
     qty_in_uom = fields.Float(string='Units in UOM')
-    competitor = fields.Selection([('rdepot', 'Restaurant Depot'), ('wdepot', 'Webstaurant Depot')],
-                                  related='web_config.competitor', string='Competitors')
+    competitor = fields.Selection(related='web_config.competitor', string='Competitors')
     web_config = fields.Many2one('website.scraping.cofig', string='Competitor')
     scheduled_ids = fields.One2many('price.fetch.schedule', 'product_sku_ref_id', string='Scheduled Price Fetches')
     in_exception = fields.Boolean(string='Exception', default=False)
 
-    @api.multi
     @api.depends('product_id', 'competitor')
     def name_get(self):
         result = []
@@ -29,7 +28,7 @@ class ProductSkuReference(models.Model):
             result.append((record.id, name))
         return result
 
-    @api.multi
+
     def schedule_price_update(self):
         """
         creates a scheduled task in the system
@@ -38,7 +37,6 @@ class ProductSkuReference(models.Model):
             if not rec.in_exception:
                 self.env['price.fetch.schedule'].create({'product_sku_ref_id': rec.id})
 
-    @api.multi
     def mark_exception_fixed(self):
         for rec in self:
             rec.in_exception = False
@@ -51,7 +49,5 @@ class ProductSkuReference(models.Model):
         ref_obj.message_post(body=except_string)
         return True
 
-
-ProductSkuReference()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

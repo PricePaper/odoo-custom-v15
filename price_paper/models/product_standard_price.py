@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import odoo.addons.decimal_precision as dp
+
 from odoo import models, fields, api
 from odoo.addons.price_paper.models import margin
 from odoo.tools import float_round
@@ -14,13 +14,15 @@ class ProductStandardPrice(models.Model):
     uom_id = fields.Many2one('uom.uom', string="UOM")
     price = fields.Float(string="Standard Price")
     cost = fields.Float(string="cost", compute='compute_cost', store=False)
-    price_margin = fields.Float(string='Margin %', compute='compute_margin', digits=dp.get_precision("Product Price"))
+    price_margin = fields.Float(string='Margin %', compute='compute_margin', digits='Product Price')
 
     @api.depends('price', 'product_id.cost', 'cost')
     def compute_margin(self):
         for rec in self:
+            price_margin = 0.0
             if rec.cost:
-                rec.price_margin = margin.get_margin(rec.price, rec.cost, percent=True)
+                price_margin = margin.get_margin(rec.price, rec.cost, percent=True)
+            rec.price_margin = price_margin
 
     @api.depends('product_id.cost', 'uom_id')
     def compute_cost(self):
@@ -35,7 +37,7 @@ class ProductStandardPrice(models.Model):
             else:
                 rec.cost = 0
 
-    @api.multi
+
     def write(self, vals):
         """
         product price log
@@ -82,6 +84,5 @@ class ProductStandardPrice(models.Model):
         return res
 
 
-ProductStandardPrice()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

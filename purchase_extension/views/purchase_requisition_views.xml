@@ -10,7 +10,7 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//field[@name='vendor_id']" position='after'>
-                    <field name="supplier_ids" widget="many2many_tags" domain="[('supplier','=',True)]"/>
+                    <field name="supplier_ids" widget="many2many_tags" domain="[('supplier_rank','>',0)]"/>
                 </xpath>
             </field>
         </record>

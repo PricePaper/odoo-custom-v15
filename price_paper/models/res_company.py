@@ -18,6 +18,5 @@ class ResCompany(models.Model):
     discount_account_id = fields.Many2one('account.account', domain=[('deprecated', '=', False)])
 
 
-ResCompany()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

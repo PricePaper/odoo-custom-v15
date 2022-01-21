@@ -14,7 +14,6 @@ class PriceEditNotes(models.Model):
     edit_date = fields.Datetime(string='Date')
     user_id = fields.Many2one('res.users', string="Edited by")
 
-    @api.multi
     @api.depends('product_id', 'edit_date')
     def name_get(self):
         result = []

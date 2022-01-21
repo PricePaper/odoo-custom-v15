@@ -9,7 +9,6 @@ class inactive_product_wizard(models.TransientModel):
 
     latest_sale_date = fields.Date(string='Latest Sale Before')
 
-    @api.multi
     def display_inactive_product_report(self):
         latest_sale_date = "%s 00:00:00" % (str(self.latest_sale_date))
 
@@ -29,7 +28,6 @@ class inactive_product_wizard(models.TransientModel):
                 'name': _('Inactive Products Since %s' % (self.latest_sale_date)),
                 'type': action_id['type'],
                 'res_model': action_id['res_model'],
-                'view_type': action_id['view_type'],
                 'view_mode': 'tree,form',
                 'search_view_id': action_id['search_view_id'],
                 'domain': [["id", "in", products.ids]],

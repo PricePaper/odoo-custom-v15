@@ -2,12 +2,13 @@
 
 {
     'name': 'Low Inventory Warning',
-    'version': '1.0',
+    'version': '15.0.0.1',
+    'license': 'LGPL-3',
     'category': 'Inventory',
     'summary': "Inventory",
     'description': """
 Custom module implemented for Price Papers for Raising low inventory warning.
-==================================================================================
+=============================================================================
 Creates a helpdesk ticket if a product added in a Sale line is low in inventory.
        """,
     'author': 'Confianz Global',

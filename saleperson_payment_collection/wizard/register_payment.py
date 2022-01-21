@@ -21,7 +21,7 @@ class SaleTeamRegisterPayment(models.TransientModel):
         res['journal_id'] = cash_journal and cash_journal.id or False
         return res
 
-    @api.multi
+
     def action_register_payment(self):
         self.ensure_one()
         payment_method = self.env.ref('account.account_payment_method_manual_in')
@@ -31,12 +31,12 @@ class SaleTeamRegisterPayment(models.TransientModel):
             'partner_id': self.partner_id.id,
             'amount': self.amount,
             'journal_id': self.journal_id.id,
-            'payment_date': self.payment_date,
-            'communication': self.reference,
+            'date': self.payment_date,
+            'ref': self.reference,
             'payment_method_id': payment_method and payment_method.id,
         })
         return True
 
-SaleTeamRegisterPayment()
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

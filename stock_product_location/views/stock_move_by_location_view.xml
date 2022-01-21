@@ -7,18 +7,25 @@
             <field name="priority">1</field>
             <field name="arch" type="xml">
                 <form string="Product Moves by Location">
-                    <field name="categ_id" select="1"/>
-                    <field name="date" select="1"/>
-                    <field name="picking_id" select="1"/>
-                    <field name="product_id" select="1"/>
-                    <field name="uom_id" select="1"/>
-                    <field name="location_id" select="1"/>
-                    <field name="name" select="1"/>
-                    <field name="product_qty_pending" select="1"/>
-                    <field name="description" select="1"/>
-                    <notebook colspan="4">
-                        <page string="invisible" invisible="1"/>
-                    </notebook>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="date"/>
+                                <field name="picking_id"/>
+                                <field name="product_id"/>
+                                <field name="uom_id"/>
+                                <field name="categ_id"/>
+                            </group>
+                            <group>
+                                <field name="location_id"/>
+                                <field name="name"/>
+                                <field name="product_qty_pending"/>
+                                <field name="description"/>
+                            </group>
+                        </group>
+
+                    </sheet>
+
                 </form>
             </field>
         </record>
@@ -29,15 +36,15 @@
             <field name="priority">1</field>
             <field name="arch" type="xml">
                 <tree string="Product Moves by Location" editable="bottom">
-                    <field name="categ_id" select="1"/>
-                    <field name="date" select="1"/>
-                    <field name="product_id" select="1"/>
-                    <field name="uom_id" select="1"/>
-                    <field name="name" select="1" sum="Product Qty"/>
-                    <field name="product_qty_pending" select="1" sum="Product Qty Pending"/>
-                    <field name="picking_id" select="1"/>
-                    <field name="location_id" select="1"/>
-                    <field name="description" select="1"/>
+                    <field name="categ_id"/>
+                    <field name="date"/>
+                    <field name="product_id"/>
+                    <field name="uom_id"/>
+                    <field name="name" sum="Product Qty"/>
+                    <field name="product_qty_pending" sum="Product Qty Pending"/>
+                    <field name="picking_id"/>
+                    <field name="location_id"/>
+                    <field name="description"/>
                 </tree>
             </field>
         </record>
@@ -45,9 +52,7 @@
         <record model="ir.actions.act_window" id="stock_move_by_location_act1">
             <field name="name">Product Moves by Location</field>
             <field name="res_model">stock.move.by.location</field>
-            <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="stock_move_by_location_list"/>
         </record>
 
         <record model="ir.actions.act_window.view" id="stock_move_by_location_act1_view2">
@@ -70,12 +75,14 @@
                 parent="stock.menu_warehouse_report"
                 sequence="150"/>
 
-        <act_window
-                domain="[('product_id','=',active_id)]"
-                id="act_product_moves"
-                name="Product Moves"
-                res_model="stock.move.by.location"
-                src_model="product.product"/>
+         <record id="act_product_moves" model="ir.actions.act_window">
+            <field name="name">Product Moves</field>
+            <field name="res_model">stock.move.by.location</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+             <field name="binding_model_id" ref="product.model_product_product"/>
+            <field name="binding_view_types">form</field>
+    </record>
 
 
     </data>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="sale_team_register_payment_view_form" model="ir.ui.view">
+    <record id="sale_team_register_payment_view_form123" model="ir.ui.view">
         <field name="name">sale.team.register.payment.form</field>
         <field name="model">sale.team.register.payment</field>
         <field name="arch" type="xml">
@@ -8,7 +8,7 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="partner_id" required="1" domain="[('customer', '=', True)]"/>
+                            <field name="partner_id" required="1" domain="[('customer_rank', '>', 0)]"/>
                         </group>
                         <group>
                             <field name="payment_date" required="1"/>
@@ -35,10 +35,9 @@
     <record id="sale_team_register_payment_action" model="ir.actions.act_window">
         <field name="name">Register Payments</field>
         <field name="res_model">sale.team.register.payment</field>
-        <field name="view_type">form</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
-        <field name="view_id" ref="sale_team_register_payment_view_form"/>
+        <field name="view_id" ref="sale_team_register_payment_view_form123"/>
     </record>
 
     <menuitem id="sale_team_register_payment_menu"

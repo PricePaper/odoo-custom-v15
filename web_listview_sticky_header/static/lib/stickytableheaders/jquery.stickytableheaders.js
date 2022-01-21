@@ -61,7 +61,6 @@
 				base.$clonedHeader.css({display: 'none', opacity: 0.0});
 
 				base.$originalHeader.addClass('tableFloatingHeaderOriginal');
-
 				base.$originalHeader.after(base.$clonedHeader);
 
 				base.$printStyle = $('<style type="text/css" media="print">' +
@@ -152,6 +151,15 @@
 								newTopOffset > offset.top,
 						notScrolledPastBottom = (base.isWindowScrolling ? scrollTop : 0) <
 							(offset.top + $this.height() - headerHeight - (base.isWindowScrolling ? 0 : newTopOffset));
+	           $(".o_optional_columns_dropdown_toggle").css("top", newTopOffset+"px");
+
+	           $(".o_optional_columns").css("right", '12px');
+	           $(".o_optional_columns").css('position', 'fixed');
+	           $(".o_optional_columns").css('z-index', '100');
+	           $(".o_optional_columns").css('top', newTopOffset+"px");
+
+	           $(".o_optional_columns_dropdown").css('max-height', ($(".o_list_view").height()-29)+"px");
+	           $(".o_optional_columns_dropdown").css('overflow', 'auto');
 
 					if (scrolledPastTop && notScrolledPastBottom) {
 						newLeft = offset.left - scrollLeft + base.options.leftOffset;
@@ -179,6 +187,13 @@
 						$this.trigger('disabledStickiness.' + name);
 					}
 				});
+                // fix in case header is not scrolling if horizontally.
+                var offset = $('.table-responsive').offset();
+                var offset_left = offset && offset.left || 0;
+                $('.table-responsive').scroll(function(){
+                    let scroll = offset_left - $('.table-responsive').scrollLeft();
+                    $('.tableFloatingHeaderOriginal').css({ left: scroll });
+                });
 			}
 		}, 0);
 

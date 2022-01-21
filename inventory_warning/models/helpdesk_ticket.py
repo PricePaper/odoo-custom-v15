@@ -9,15 +9,11 @@ class HelpDeskTicket(models.Model):
     product_id = fields.Many2one('product.product', string='Product')
 
 
-HelpDeskTicket()
-
-
 class HelpDeskTeam(models.Model):
     _inherit = 'helpdesk.team'
 
     is_purchase_team = fields.Boolean(string='Purchase Team')
 
 
-HelpDeskTeam()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

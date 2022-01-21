@@ -1,38 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="view_backorder_confirmation_inhrt" model="ir.ui.view">
-        <field name="name">stock_backorder_confirmation_inhrt</field>
-        <field name="model">stock.backorder.confirmation</field>
-        <field name="inherit_id" ref="stock.view_backorder_confirmation"/>
-        <field name="arch" type="xml">
+<!--    <record id="view_backorder_confirmation_inhrt" model="ir.ui.view">-->
+<!--        <field name="name">stock_backorder_confirmation_inhrt</field>-->
+<!--        <field name="model">stock.backorder.confirmation</field>-->
+<!--        <field name="inherit_id" ref="stock.view_backorder_confirmation"/>-->
+<!--        <field name="arch" type="xml">-->
 
-            <xpath expr="//footer/button[@name='process']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
+<!--            <xpath expr="//footer/button[@name='process']" position="attributes">-->
+<!--                <attribute name="invisible">1</attribute>-->
+<!--            </xpath>-->
 
-            <xpath expr="//footer/button[@name='process_cancel_backorder']" position="attributes">
-                <attribute name="string">Submit</attribute>
-            </xpath>
-        </field>
-    </record>
-    <record id="view_backorder_confirmation_new" model="ir.ui.view">
+<!--            <xpath expr="//footer/button[@name='process_cancel_backorder']" position="attributes">-->
+<!--                <attribute name="string">Submit</attribute>-->
+<!--                <attribute name="context">{'back_order_cancel': True}</attribute>-->
+<!--            </xpath>-->
+<!--        </field>-->
+<!--    </record>-->
+    <record id="view_cancel_back_order_form" model="ir.ui.view">
         <field name="name">stock_backorder_confirmation</field>
         <field name="model">stock.backorder.confirmation</field>
         <field name="arch" type="xml">
-            <form string="Backorder creation">
+            <form string="Immediate transfer">
                 <group>
                     <p>
                         You have processed less products than the initial demand.
                     </p><p class="text-muted">
-                        Create a backorder if you expect to process the remaining
-                        products later. Do not create a backorder if you will not
-                        process the remaining products.
+                        Odoo will process all the non-zero quantities and cancel the remaining products.
                     </p>
                 </group>
                 <footer>
-                    <button name="process" string="Create Backorder" type="object" class="oe_highlight"/>
-                    <button name="process_cancel_backorder" string="No Backorder" type="object" class="btn-primary"/>
-                    <button string="_Cancel" class="btn-secondary" special="cancel" />
+                    <button name="process_cancel_backorder" string="Apply" type="object" class="btn-primary" data-hotkey="q" context="{'back_order_cancel': True}"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="c"/>
                 </footer>
             </form>
         </field>

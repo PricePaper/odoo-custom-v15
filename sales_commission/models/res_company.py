@@ -10,6 +10,6 @@ class ResCompany(models.Model):
                                             string='Commission Ageing reduction percentage')
 
 
-ResCompany()
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

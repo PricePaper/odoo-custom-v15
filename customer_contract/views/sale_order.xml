@@ -14,10 +14,12 @@
                 <xpath expr="//field[@name='order_line']/form//label[@for='qty_delivered']" position="before">
                     <field name="customer_contract_line_id" options="{'no_create': False}"
                            attrs="{'invisible': [('parent.show_customer_contract_line', '=', False)]}"
-                           domain="[('remaining_qty', '&gt;', 0), ('contract_id.partner_id', '=', parent.partner_id), ('state', '=', 'confirmed')]"/>
+/><!--Note  removed domain from here and added in py code-->
                 </xpath>
             </field>
         </record>
 
     </data>
 </odoo>
+
+

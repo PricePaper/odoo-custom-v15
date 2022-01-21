@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
+import json
 
 from lxml import etree
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError, UserError
-from odoo.osv.orm import setup_modifiers
 
 
 class ResPartner(models.Model):
@@ -15,10 +15,7 @@ class ResPartner(models.Model):
     fax_number = fields.Char(string='Fax')
     customer_pricelist_ids = fields.One2many('customer.pricelist', 'partner_id', string="Customer Pricelists")
     customer_code = fields.Char(string='Partner Code', copy=False)
-    # comment the below line while running customer scripts
     established_date = fields.Date(string='Established Date', compute='_compute_estbl_date', store=True)
-    # Uncomment the below line while running customer import scripts
-    # established_date = fields.Date(string='Established Date')
     last_sold_date = fields.Date(string='Last Sold Date', compute='_compute_last_date', store=False)
     last_paid_date = fields.Date(string='Last Paid Date', compute='_compute_last_date', store=False)
     delivery_day_mon = fields.Boolean(string='Monday')
@@ -46,25 +43,43 @@ class ResPartner(models.Model):
     credit_limit = fields.Float(string='Credit Limit', default=lambda self: self.env.user.company_id.credit_limit)
     default_shipping = fields.Boolean(string='Default', help="if checked this will be the default shipping address")
     property_account_payable_id = fields.Many2one('account.account', company_dependent=True,
-        string="Account Payable", oldname="property_account_payable",
+        string="Account Payable",
         domain="[('internal_type', '=', 'payable'), ('deprecated', '=', False)]",
         help="This account will be used instead of the default one as the payable account for the current partner",
         required=False)
+    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
+    # we don't need customer and supplier fields any more instead we can use customer_rank and supplier_rank from odoo-15 base.
+    # re-implement all xml files with this new fields.
+    supplier = fields.Boolean(string='Is a Vendor',
+                               help="Check this box if this contact is a vendor. It can be selected in purchase orders.")
+    customer = fields.Boolean(string='Is a Customer', default=True,
+                               help="Check this box if this contact is a customer. It can be selected in sales orders.")
+    # TODO :: [UPDATE] please remove this field from sales_commission.
+    payment_method = fields.Selection([('credit_card', 'Credit Card'), ('cash', 'Cash')], string='Payment Method',
+                                      required=True, default='cash')
+     # TODO :: Remove this field from sales_commission.
+    is_sales_person = fields.Boolean(string='Is sale person')
 
-    @api.depends('sale_order_ids.confirmation_date', 'invoice_ids.payment_ids.payment_date')
+    # TODO: TEST THIS FOR ODOO-15 MIGRATION
+    # TODO :: Test this correctly, is this working?
+    @api.depends('sale_order_ids.confirmation_date', 'invoice_ids', 'invoice_ids.line_ids.move_id.payment_id', 'invoice_ids.line_ids.move_id.payment_id.date')
     def _compute_last_date(self):
         for rec in self:
+            payment_date = sale_date = established_date = False
             if rec.invoice_ids:
-                payment_date_list = [payment.payment_date for payment in rec.invoice_ids.mapped('payment_ids') if
-                                     payment.payment_date]
+                reconciled_payments = self.env['account.payment']
+                for move in rec.invoice_ids:
+                    reconciled_payments = move._get_reconciled_payments()
+                payment_date_list = [payment.date for payment in reconciled_payments if payment.date]
                 payment_date = max(payment_date_list) if payment_date_list else False
-                rec.last_paid_date = payment_date
             if rec.sale_order_ids:
                 sale_date_list = [sale.confirmation_date.date() for sale in rec.sale_order_ids if
                                   sale.confirmation_date]
                 sale_date = max(sale_date_list) if sale_date_list else False
-                rec.last_sold_date = sale_date
-                rec.established_date = min(sale_date_list) if sale_date_list else False
+                established_date = min(sale_date_list) if sale_date_list else False
+            rec.last_paid_date = payment_date
+            rec.last_sold_date = sale_date
+            rec.established_date = established_date
 
     def xmlrpc_compute_estbl_date(self):
         for rec in self:
@@ -114,8 +129,10 @@ class ResPartner(models.Model):
                 nodes = doc.xpath("//notebook/page[@name='sales_purchases']/group/group/field[@name='customer_code']")
                 for node in nodes:
                     node.set('readonly', '0')
-                    setup_modifiers(node, res['fields']['customer_code'])
-                    res['arch'] = etree.tostring(doc)
+                    modifiers = json.loads(node.get("modifiers"))
+                    modifiers['readonly'] = True
+                    node.set("modifiers", json.dumps(modifiers))
+                res['arch'] = etree.tostring(doc,  encoding='unicode')
                 return res
         return res
 
@@ -143,7 +160,7 @@ class ResPartner(models.Model):
                     res.append(code)
         return res
 
-    @api.multi
+
     def name_get(self):
         res = super(ResPartner, self).name_get()
         result=[]
@@ -208,7 +225,7 @@ class ResPartner(models.Model):
 
 
 
-    @api.multi
+
     def write(self, vals):
         # if 'property_payment_term_id' in vals and not self.env.user.has_group('account.group_account_invoice'):
         #     raise UserError("You dont have the rights to change the payment terms of this customer.")

@@ -11,7 +11,6 @@ class OrderPointReset(models.TransientModel):
     _name = "order.point.reset"
     _description = "Reset Order point"
 
-    @api.multi
     def reset_order_point(self):
         context = dict(self._context or {})
         active_ids = context.get('active_ids', []) or []
@@ -20,6 +19,5 @@ class OrderPointReset(models.TransientModel):
         return {'type': 'ir.actions.act_window_close'}
 
 
-OrderPointReset()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

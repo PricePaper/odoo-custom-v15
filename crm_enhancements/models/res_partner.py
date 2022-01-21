@@ -26,24 +26,28 @@ class ResPartner(models.Model):
 
     @api.model
     def set_customer_ranking_cron(self):
+        """
+        Cron method to Set customer rank based on the Amount configured in Company Record
+        """
         last_year_start_date = datetime.datetime.now() - relativedelta(years=1)
         last_year_start_date = datetime.datetime(last_year_start_date.year, last_year_start_date.month, 1)
 
         last_3_month_start_date = datetime.datetime.now() - relativedelta(months=3)
         last_3_month_start_date = datetime.datetime(last_3_month_start_date.year, last_3_month_start_date.month, 1)
 
+
         end_date = datetime.datetime.now() - relativedelta(months=1)
         end_date = datetime.datetime(end_date.year, end_date.month, calendar.mdays[end_date.month], 00, 00, 00)
 
         last_year_sale_orders = self.env['sale.order'].search(
-            [('state', 'in', ['sale', 'done']), ('confirmation_date', '>=', str(last_year_start_date)),
-             ('confirmation_date', '<=', str(end_date))])
+            [('state', 'in', ['sale', 'done']), ('confirmation_date', '>=', last_year_start_date),
+             ('confirmation_date', '<=', end_date)])
 
         last_3_month_sale_orders = self.env['sale.order'].search(
-            [('state', 'in', ['sale', 'done']), ('confirmation_date', '>=', str(last_3_month_start_date)),
-             ('confirmation_date', '<=', str(end_date))])
+            [('state', 'in', ['sale', 'done']), ('confirmation_date', '>=', last_3_month_start_date),
+             ('confirmation_date', '<=', end_date)])
 
-        for customer in self.env['res.partner'].search([('customer', '=', True)]):
+        for customer in self.env['res.partner'].search([('customer_rank', '>', 0)]):
             customer_last_year_sale_order = last_year_sale_orders.filtered(lambda so: so.partner_id == customer)
             customer_last_3_month_sale_orders = last_3_month_sale_orders.filtered(lambda so: so.partner_id == customer)
 
@@ -54,10 +58,8 @@ class ResPartner(models.Model):
 
             if last_3_month_total:
                 customer.mrg_per_lst_3_mon = round(100 * (profit_margin_lst_3_mnt / last_3_month_total), 2)
-
             if customer.company_id:
                 company = customer.company_id
-
                 if last_year_total > company.amount_a:
                     customer.rnk_lst_12_mon = 'A'
                 elif last_year_total > company.amount_b:
@@ -87,6 +89,7 @@ class ResPartner(models.Model):
                     customer.rnk_lst_3_mon = 'F'
                 else:
                     customer.rnk_lst_3_mon = 'Z'
+
 
     @api.depends('sale_order_ids')
     def _calc_monthly_revenue(self):
@@ -126,20 +129,24 @@ class ResPartner(models.Model):
         per transaction
         """
         for partner in self:
+            exp_mon_rev = 0.0
             if partner.rev_per_trans and partner.business_freq:
                 if partner.business_freq == 'week':
-                    partner.exp_mon_rev = partner.rev_per_trans * 4
+                    exp_mon_rev = partner.rev_per_trans * 4
                 elif partner.business_freq == 'biweek':
-                    partner.exp_mon_rev = partner.rev_per_trans * 2
+                    exp_mon_rev = partner.rev_per_trans * 2
                 elif partner.business_freq == 'month':
-                    partner.exp_mon_rev = partner.rev_per_trans
+                    exp_mon_rev = partner.rev_per_trans
+            partner.exp_mon_rev = exp_mon_rev
 
-    @api.multi
+
     @api.returns('mail.message', lambda value: value.id)
     def message_post(self, **kwargs):
+        """
+        mail_post_autofollow=False
+        """
         return super(ResPartner, self.with_context(mail_post_autofollow=False)).message_post(**kwargs)
 
 
-ResPartner()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

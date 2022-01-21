@@ -10,6 +10,4 @@ class ResCompany(models.Model):
     check_bounce_term = fields.Many2one('account.payment.term', string='Check Bounce Payment Term')
 
 
-ResCompany()
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

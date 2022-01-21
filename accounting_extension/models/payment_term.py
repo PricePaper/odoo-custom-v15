@@ -19,4 +19,3 @@ class AccountPaymentTerm(models.Model):
             self.discount_per = False
 
 
-AccountPaymentTerm()

@@ -14,14 +14,14 @@ class SaleCommissionSettlement(models.Model):
                                       states={'draft': [('readonly', False)]})
     amount_paid = fields.Float(string="Amount", compute='_compute_total_amount', store=True)
     commission_ids = fields.One2many('sale.commission', 'settlement_id', string="Commission Lines", required=True)
-    date_from = fields.Date(strong="Date From", readonly=True, required=True, states={'draft': [('readonly', False)]})
-    date_to = fields.Date(strong="Date From", readonly=True, required=True, states={'draft': [('readonly', False)]})
+    date_from = fields.Date(string="Date From", readonly=True, required=True, states={'draft': [('readonly', False)]})
+    date_to = fields.Date(string="Date From", readonly=True, required=True, states={'draft': [('readonly', False)]})
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
         ('paid', 'Paid'),
         ('cancel', 'Cancelled'),
-    ], copy=False, string='Status', track_visibility='onchange', default='draft')
+    ], copy=False, string='Status', tracking=True, default='draft')
 
     @api.depends('commission_ids.commission', 'commission_ids.is_removed')
     def _compute_total_amount(self):
@@ -35,7 +35,7 @@ class SaleCommissionSettlement(models.Model):
         result = super(SaleCommissionSettlement, self).create(vals)
         return result
 
-    @api.multi
+
     def action_load(self):
         for rec in self:
             domain = []
@@ -54,30 +54,28 @@ class SaleCommissionSettlement(models.Model):
                 lambda rec: not rec.is_removed and rec.is_settled)
             rec.commission_ids = commission_lines
 
-    @api.multi
+
     def action_make_payment(self):
         for rec in self:
             rec.commission_ids.filtered(lambda rec: not rec.is_removed).write({'is_settled': True})
             rec.state = 'paid'
 
-    @api.multi
+
     def action_confirm(self):
         for rec in self:
             rec.state = 'confirmed'
 
-    @api.multi
+
     def action_cancel(self):
         for rec in self:
             rec.state = 'cancel'
             rec.commission_ids.write({'is_settled': False})
             rec.commission_ids = False
 
-    @api.multi
+
     def action_draft(self):
         for rec in self:
             rec.state = 'draft'
 
-
-SaleCommissionSettlement()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

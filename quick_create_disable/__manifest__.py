@@ -1,8 +1,15 @@
-# -*- coding: utf-8 -*-
+# -*- encoding: utf-8 -*-
+##############################################################################
+#
+#    Confianz IT
+#    Copyright (C) 2021   (https://www.confianzit.com)
+#
+##############################################################################
 
 {
     'name': 'Disable Quick Create',
     'version': '1.0',
+    'license': 'LGPL-3',
     'category': 'web',
     'summary': "Web Assets",
     'description': """
@@ -13,8 +20,11 @@ This module disable the quick create from odoo many2one drop down.
     'author': 'Confianz Global',
     'website': 'http://confianzit.com',
     'images': [],
-    'data': ['views/website_asset.xml'],
+    'data': [],
     'depends': ['web'],
+    'web.assets_backend': [
+            'quick_create_disable/static/src/js/many2one_quick_create_disbale.js',
+        ],
     'qweb': [],
     'installable': True,
     'auto_install': False,

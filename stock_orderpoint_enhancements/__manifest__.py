@@ -15,8 +15,8 @@
     'website': 'http://confianzit.com',
 
     'category': 'Inventory',
-    'version': '0.1',
-
+    'version': '15.0.0.1',
+    'license': 'LGPL-3',
     'depends': ['stock', 'odoo_fbprophet', 'price_paper', 'queue_job'],
 
     'data': [

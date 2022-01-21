@@ -30,6 +30,5 @@ class PriceFetchSchedule(models.Model):
         active_configs.schedule_price_update()
 
 
-PriceFetchSchedule()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

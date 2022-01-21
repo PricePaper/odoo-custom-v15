@@ -13,6 +13,5 @@ class WebsiteScrapingConfig(models.Model):
     competitor = fields.Selection([('rdepot', 'Restaurant Depot'), ('wdepot', 'Webstaurant Store')], string='Competitor')
 
 
-WebsiteScrapingConfig
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

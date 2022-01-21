@@ -34,9 +34,11 @@
             </field>
         </record>
 
-        <act_window id="action_sc_popup_windows"
-                    name="Storage Contract"
-                    res_model="sc.popup.window"
-                    view_mode="form" target="new" view_type="form"/>
+        <record id="action_sc_popup_windows" model="ir.actions.act_window">
+            <field name="name">Storage Contract</field>
+            <field name="res_model">sc.popup.window</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+    </record>
     </data>
 </odoo>

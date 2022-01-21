@@ -11,7 +11,9 @@ class SaleOrderLine(models.Model):
 
     @api.model
     def create(self, vals):
-
+        """
+        Create inventory warning tocket if the inventory of a stock is critically low for a product
+        """
         res = super(SaleOrderLine, self).create(vals)
         if not self._context.get('from_import'):
             day = int(datetime.strftime(datetime.today(), '%w'))
@@ -25,13 +27,13 @@ class SaleOrderLine(models.Model):
                     product = line.product_id.with_context(warehouse=line.order_id.warehouse_id.id)
                     product_qty = line.product_uom._compute_quantity(line.product_uom_qty, line.product_id.uom_id)
                     if float_compare(product.virtual_available, product_qty, precision_digits=precision) == -1:
-                        is_available = line._check_routing()
 
-                        if not is_available:
+                        if not line.is_mto:
                             ticket = self.env['helpdesk.ticket'].search([('product_id', '=', line.product_id.id), (
                             'create_date', '>',
                             (datetime.today() - relativedelta.relativedelta(days=day)).strftime('%Y-%m-%d 00:00:00')),
                                                                          ('stage_id.is_close', '=', False)])
+
                             if not ticket or ticket.stage_id.is_close:
                                 vals = {'name': 'Inventory Warning: ' + line.product_id.name,
                                         'team_id': team.id,
@@ -46,7 +48,5 @@ class SaleOrderLine(models.Model):
                             ticket.message_post(body=msg)
         return res
 
-
-SaleOrderLine()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

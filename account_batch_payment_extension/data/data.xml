@@ -6,8 +6,8 @@
           <field name="name">Cash to Bank</field>
           <field name="type">cash</field>
           <field name="code">CSBK</field>
-          <field name="default_debit_account_id" ref="__import__.price_paper_coa_001"/>
-          <field name="default_credit_account_id" ref="__import__.price_paper_coa_002"/>
+<!--          <field name="default_debit_account_id" ref="__import__.price_paper_coa_001"/>--> <!--TODO uncomment me-->
+<!--          <field name="default_credit_account_id" ref="__import__.price_paper_coa_002"/>--><!--TODO uncomment me-->
         </record>
     </data>
 </odoo>

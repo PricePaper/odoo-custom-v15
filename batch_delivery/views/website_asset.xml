@@ -11,12 +11,12 @@
 
     </template>
 
-    <template id="assets_backend" name="account assets" inherit_id="web.assets_backend">
+    <!-- <template id="assets_backend" name="account assets" inherit_id="web.assets_backend">
         <xpath expr="." position="inside">
-            <!-- <link rel="stylesheet" type="text/css" href="/batch_delivery/static/src/css/card_block_border.css"/> -->
+            <link rel="stylesheet" type="text/css" href="/batch_delivery/static/src/css/card_block_border.css"/>
             <script type="text/javascript" src="/batch_delivery/static/src/js/product_price_lock.js"></script>
             <script type="text/javascript" src="/batch_delivery/static/src/js/kanban_reset_button.js"></script>
         </xpath>
-    </template>
+    </template> -->
 
 </odoo>

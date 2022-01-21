@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, api
-from odoo.addons.queue_job.job import job
+from odoo.addons.queue_job.job import Job
 
 
 class SaleTaxHistoryWizard(models.TransientModel):
     _name = 'sale.tax.history.wizard'
     _description = 'Sales Tax History Wizard'
 
-    @api.multi
-    @job
+
     def job_queue_create_sale_tax_history(self, line):
         line = self.env['sale.order.line'].browse(line[0])
         tax = False
@@ -19,7 +18,7 @@ class SaleTaxHistoryWizard(models.TransientModel):
         self.env['sale.tax.history'].create(vals)
         return True
 
-    @api.multi
+
     def add_sale_tax_history_lines(self):
         """
         Creating sale tax history

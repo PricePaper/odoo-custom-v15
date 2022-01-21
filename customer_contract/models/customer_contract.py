@@ -13,7 +13,6 @@ class CustomerContract(models.Model):
     state = fields.Selection([('draft', 'Draft'), ('confirmed', 'Confirmed'), ('expired', 'Expired')], default='draft')
     product_line_ids = fields.One2many('customer.contract.line', 'contract_id', string='Products')
 
-    @api.multi
     def action_confirm(self):
         self.ensure_one()
         self.state = 'confirmed'
@@ -22,16 +21,11 @@ class CustomerContract(models.Model):
             sequence_val = self.env['ir.sequence'].next_by_code('customer.contract') or '/'
             self.name = sequence_val
 
-    @api.multi
     def action_expire(self):
         self.write({'state': 'expired'})
 
-    @api.multi
     def action_reset(self):
         self.write({'state': 'draft'})
-
-
-CustomerContract()
 
 
 class CustomerContractLine(models.Model):
@@ -47,13 +41,11 @@ class CustomerContractLine(models.Model):
     sale_line_ids = fields.One2many('sale.order.line', 'customer_contract_line_id')
 
 
-    @api.multi
     @api.depends('sale_line_ids.product_uom_qty', 'product_qty')
     def _compute_remaining_qty(self):
         for line in self:
             line.remaining_qty = line.product_qty - sum(line.sale_line_ids.mapped('product_uom_qty'))
 
-    @api.multi
     def name_get(self):
         result = []
         for record in self:
@@ -61,6 +53,6 @@ class CustomerContractLine(models.Model):
         return result
 
 
-CustomerContractLine()
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

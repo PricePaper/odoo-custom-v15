@@ -2,6 +2,7 @@
 {
     'name': 'Customer Contract',
     'version': '1.0',
+    'license': 'LGPL-3',
     'summary': 'Customer Contract Management',
     'description': """
 Customer Contract

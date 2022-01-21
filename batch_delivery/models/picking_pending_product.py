@@ -2,7 +2,7 @@
 
 from odoo import fields, models, api
 
-
+#todo not used anywhere remove it before go live
 class PickingPendingProduct(models.Model):
     _name = 'picking.pending.product'
     _description = 'Batch Picking Pending Product'
@@ -24,7 +24,6 @@ class PickingPendingProduct(models.Model):
             rec.total = total
             rec.pending = total - reserved
 
-    @api.multi
     def open_pickings(self):
         pickings = []
         for rec in self:
@@ -43,8 +42,5 @@ class PickingPendingProduct(models.Model):
             "target": "current",
         }
         return res
-
-
-PickingPendingProduct()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

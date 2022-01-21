@@ -14,7 +14,6 @@ class UpdateVendorPricelist(models.TransientModel):
     line_ids = fields.One2many('update.vendor.pricelist.line', 'parent_id', string='Lines')
 
 
-
     @api.onchange('vendor_id')
     def onchange_vendor_id(self):
         self.ensure_one()
@@ -32,7 +31,7 @@ class UpdateVendorPricelist(models.TransientModel):
             self.line_ids = res
 
 
-    @api.multi
+
     def update_pricelists(self):
         self.ensure_one()
         for line in self.line_ids:
@@ -51,7 +50,6 @@ class UpdateVendorPricelist(models.TransientModel):
         return True
 
 
-UpdateVendorPricelist()
 
 class UpdateVendorPricelistLines(models.TransientModel):
 
@@ -65,4 +63,3 @@ class UpdateVendorPricelistLines(models.TransientModel):
     price = fields.Float(string='Price')
 
 
-UpdateVendorPricelistLines()

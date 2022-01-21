@@ -21,6 +21,5 @@ class ResCompany(models.Model):
     purchase_default_message = fields.Html(string='Default Purchase Message', default=_get_default_purchase_msg)
 
 
-ResCompany()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

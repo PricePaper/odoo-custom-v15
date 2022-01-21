@@ -20,7 +20,4 @@ class PartnerProductCost(models.Model):
         product_ids = [product.id for product in self.partner_category_id.partner_product_ids.mapped('product_id')]
         return {'domain': {'product_id': ([('id', 'not in', product_ids)])}}
 
-
-PartnerProductCost()
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

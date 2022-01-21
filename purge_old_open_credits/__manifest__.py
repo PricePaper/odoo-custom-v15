@@ -10,6 +10,7 @@
 {
     'name': 'Purge old open credits',
     'version': '12.0.1.0',
+    'license': 'LGPL-3',
     'category': 'Accounting',
     'sequence': '15',
     'description': """
@@ -17,10 +18,9 @@
     """,
     'author': 'Confianz IT',
     'website': 'https://www.confianzit.com',
-    'depends': ['account_cancel', 'price_paper'],
+    'depends': ['account', 'price_paper'], #TODO account_cancel module not in V15,depends changed to account
     'data': [
         'data/cron_data.xml',
-
         'views/res_company_view.xml',
     ],
     'demo': [],

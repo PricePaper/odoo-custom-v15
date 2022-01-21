@@ -6,7 +6,7 @@ from odoo import api, models
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
-    @api.multi
+
     def _prepare_stock_moves(self, picking):
         """ overriden to update the line by line destination_location
             for every stock move when received
@@ -16,11 +16,11 @@ class PurchaseOrderLine(models.Model):
         if product_loc_id:
             for val in res:
                 val['location_dest_id'] = product_loc_id
+
 #            res[0].update({'location_dest_id': product_loc_id})
+
         return res
 
-
-PurchaseOrderLine()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 

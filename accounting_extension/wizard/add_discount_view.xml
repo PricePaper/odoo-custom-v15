@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_writeoff_discount_window_view_form" model="ir.ui.view">
+            <field name="name">view_add_discount_form</field>
+            <field name="model">add.discount</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <script>
+                          $(document).ready(function(){
+                              $('.modal-dialog').css({'width': '500PX', 'height': '450PX'});
+                          });
+                      </script>
+                        <group>
+                            <div class="row">
+                                <field name="discount_type" widget="selection_badge" class="col"/>
+                                <field name="discount" required="1"  class="col"/>
+                          </div>
+                        </group>
+                        <footer class="oe_edit_only">
+                            <button string="Confirm" type="object" name="create_discount" class="oe_highlight"/>
+                            <button string="Discard" special="cancel"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

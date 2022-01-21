@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
-from odoo.addons import decimal_precision as dp
 from odoo.tools import float_round
 from odoo.exceptions import ValidationError
 
@@ -16,7 +15,7 @@ class ChangeProductUom(models.TransientModel):
     new_default_code = fields.Char('Internal reference')
     new_uom = fields.Many2one('uom.uom', string='New UOM')
     new_sale_uoms = fields.Many2many('uom.uom', 'change_product_uom_rel', 'change_id', 'uom_id', string='New Sale UOMS')
-    new_cost = fields.Float(string='Cost', digits=dp.get_precision('Product Price'))
+    new_cost = fields.Float(string='Cost', digits='Product Price')
     volume = fields.Float(string='Volume')
     weight = fields.Float(string='Weight')
     duplicate_pricelist = fields.Boolean(string='Copy Pricelist')
@@ -67,4 +66,4 @@ class ChangeProductUom(models.TransientModel):
                 'res_id': res.id,
             }
 
-ChangeProductUom()
+

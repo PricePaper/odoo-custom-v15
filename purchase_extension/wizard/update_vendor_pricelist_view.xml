@@ -37,7 +37,6 @@
             <field name="name">Update Vendor Pricelists</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">update.vendor.pricelist</field>
-            <field name="view_type">form</field>
             <field name="view_mode">form</field>
             <field name="view_id" ref="update_vendor_pricelist_wizard"/>
             <field name="target">new</field>

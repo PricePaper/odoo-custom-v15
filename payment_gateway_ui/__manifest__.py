@@ -21,6 +21,7 @@
 {
     'name': 'Payment Gateway Integration',
     'version': '1.1',
+    'license': 'LGPL-3',
     'category': 'Accounting & Finance',
     'summary': "Accounting",
     'description': """
@@ -44,7 +45,7 @@ Payment Gateway Integration module for making payments through different gateway
             "data/mail_template_sale.xml",
              ],
 
-    'depends': ['base','base_setup','sale','account','account_cancel','mail'],
+    'depends': ['base','base_setup','sale','account','mail'], #TODO account_cancel removed from depends
     'installable': True,
     'auto_install': False,
     'application': False,

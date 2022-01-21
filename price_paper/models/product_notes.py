@@ -13,6 +13,5 @@ class ProductNotes(models.Model):
     expiry_date = fields.Date('Valid Upto')
 
 
-ProductNotes()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

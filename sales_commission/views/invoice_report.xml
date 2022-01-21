@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="report_invoice_salesperson" inherit_id="account.report_invoice_document">
-        <xpath expr="//div[@t-if='o.origin']" position="after">
+        <xpath expr="//div[@t-if='o.invoice_date']" position="before"><!-- TODO o.origin changed to o.invoice_date v15 has no  origin field-->
             <div class="col-xs-2" t-if="o.sales_person_ids">
                 <strong>Salespersons:</strong>
                     <p t-esc="','.join([str(s.id) for s in o.sales_person_ids])"/>

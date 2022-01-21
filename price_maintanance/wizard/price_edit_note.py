@@ -46,7 +46,6 @@ class PriceMaintanace(models.TransientModel):
                                          string='Customer price list')
     note = fields.Text('Note')
 
-    @api.multi
     def edit_prices(self):
         note = ''
         product = self.product_id

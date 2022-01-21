@@ -7,24 +7,19 @@ import werkzeug
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
-from odoo.addons import decimal_precision as dp
 import logging
 from odoo.tools import float_round
 from odoo.exceptions import ValidationError
 
 
-def urlplus(url, params):
-    return werkzeug.Href(url)(params or None)
-
-
 class StockPickingBatch(models.Model):
     _inherit = 'stock.picking.batch'
 
-    route_id = fields.Many2one('truck.route', string='Route', track_visibility='onchange', readonly=True)
-    truck_driver_id = fields.Many2one('res.partner', string='Driver', track_visibility='onchange')
-    date = fields.Date(string='Scheduled Date', default=date.today(), copy=False, track_visibility='onchange')
+    route_id = fields.Many2one('truck.route', string='Route', tracking=True, readonly=True)
+    truck_driver_id = fields.Many2one('res.partner', string='Driver', tracking=True)
+    date = fields.Date(string='Scheduled Date', copy=False, tracking=True)
     payment_ids = fields.One2many('account.payment', 'batch_id', string='Payments')
-    actual_returned = fields.Float(string='Total Amount', help='Total amount returned by the driver.', digits=dp.get_precision('Product Price'))
+    actual_returned = fields.Float(string='Total Amount', help='Total amount returned by the driver.', digits='Product Price')
     cash_collected_lines = fields.One2many('cash.collected.lines', 'batch_id', string='Cash Collected Breakup')
     is_posted = fields.Boolean(string="Posted")
     pending_amount = fields.Float(string="Difference", compute='_calculate_pending_amount')
@@ -38,19 +33,27 @@ class StockPickingBatch(models.Model):
     total_unit = fields.Float(string="Total Unit", compute='_compute_gross_weight_volume')
     batch_payment_count = fields.Integer(string='Batch Payment', compute='_compute_batch_payment_count')
     to_invoice = fields.Boolean(string='Need Invoice', compute='_compute_to_invoice_state')
-    invoice_ids = fields.Many2many('account.invoice', compute='_compute_invoice_ids')
+    invoice_ids = fields.Many2many('account.move', compute='_compute_invoice_ids')
     show_warning = fields.Boolean(string='Pending Line Warning')
-    cash_amount = fields.Float(string='Cash Amount', digits=dp.get_precision('Product Price'), track_visibility='onchange')
-    cheque_amount = fields.Float(string='Check Amount', digits=dp.get_precision('Product Price'), track_visibility='onchange')
-
+    cash_amount = fields.Float(string='Cash Amount', digits='Product Price', tracking=True)
+    cheque_amount = fields.Float(string='Check Amount', digits='Product Price', tracking=True)
+    #removed the compute in state
     state = fields.Selection([
         ('draft', 'Draft'),
         ('in_progress', 'Running'),
+        ('in_truck', 'In Progress'),
         ('done', 'Shipping Done'),
         ('no_payment', 'No Payment'),
         ('paid', 'Paid'),
         ('cancel', 'Cancelled')], default='draft',
-        copy=False, track_visibility='onchange', required=True)
+        copy=False, tracking=True, required=True)
+
+    @api.depends('picking_ids', 'picking_ids.move_line_ids', 'picking_ids.move_lines', 'picking_ids.move_lines.state')
+    def _compute_move_ids(self):
+        for batch in self:
+            batch.move_ids = batch.picking_ids.move_lines
+            batch.move_line_ids = batch.picking_ids.move_line_ids
+            batch.show_check_availability = any(m.state not in ['assigned', 'done'] or m.is_transit is False for m in batch.move_ids)
 
     @api.depends('picking_ids.invoice_ids')
     def _compute_invoice_ids(self):
@@ -73,19 +76,19 @@ class StockPickingBatch(models.Model):
             if float_round(batch.cheque_amount + batch.cash_amount, precision_digits=2) != float_round(batch.actual_returned, precision_digits=2):
                 msg += 'Total amount and sum of Cash,Check does not match.\n'
             if msg:
-                raise UserError(_(msg))
+                raise UserError(msg)
 
     def _compute_to_invoice_state(self):
         for rec in self:
             rec.to_invoice = not all([pick.is_invoiced for pick in rec.picking_ids])
 
-    @api.multi
+
     @api.depends('payment_ids')
     def _compute_batch_payment_count(self):
         for rec in self:
             rec.batch_payment_count = len(rec.payment_ids.mapped('batch_payment_id'))
 
-    @api.multi
+
     @api.depends('picking_ids', 'picking_ids.state', 'picking_ids.move_lines.product_id', 'picking_ids.move_lines.quantity_done')
     def _compute_gross_weight_volume(self):
         for batch in self:
@@ -95,13 +98,195 @@ class StockPickingBatch(models.Model):
                 batch.total_volume += line.product_id.volume * product_qty
                 batch.total_weight += line.product_id.weight * product_qty
 
-    @api.multi
+
     @api.depends('picking_ids.is_late_order')
     def _compute_late_order(self):
         for rec in self:
             rec.have_late_order = any(rec.picking_ids.mapped('is_late_order'))
 
-    @api.multi
+    @api.depends('picking_ids.move_lines.quantity_done', 'picking_ids.move_line_ids.qty_done')
+    def _calculate_batch_profit(self):
+        """
+        #todo not tested
+        compute batch total order amount,
+        profit,profit percentage
+        """
+        for batch in self:
+            order_amount = 0
+            profit_amount = 0
+            for picking in batch.picking_ids:
+                if picking.move_line_ids:
+                    for line in picking.move_line_ids:
+                        if line.move_id.product_uom_qty:
+                            order_amount += ((
+                                                     line.move_id.sale_line_id.price_total / line.move_id.product_uom_qty) * line.qty_done) if line.qty_done else line.move_id.sale_line_id.price_total
+                            if line.move_id.sale_line_id.profit_margin:
+                                profit_amount += ((
+                                                          line.move_id.sale_line_id.profit_margin / line.move_id.product_uom_qty) * line.qty_done) if line.qty_done else line.move_id.sale_line_id.profit_margin
+                else:
+                    for line in picking.move_lines:
+                        if line.product_uom_qty:
+                            order_amount += ((
+                                                     line.sale_line_id.price_total / line.product_uom_qty) * line.quantity_done) if line.quantity_done else line.sale_line_id.price_total
+                            if line.sale_line_id.profit_margin:
+                                profit_amount += ((
+                                                          line.sale_line_id.profit_margin / line.product_uom_qty) * line.quantity_done) if line.quantity_done else line.sale_line_id.profit_margin
+            batch.total_amount = order_amount
+            batch.total_profit = profit_amount
+            batch.profit_percentage = batch.total_profit and (batch.total_profit / batch.total_amount) * 100 or 0
+
+    @api.depends('actual_returned', 'cash_collected_lines', 'cash_collected_lines.amount')
+    def _calculate_pending_amount(self):
+        for batch in self:
+            real_collected = 0
+            for cash_line in batch.cash_collected_lines:
+                real_collected += float_round(cash_line.amount, precision_digits=2)
+            batch.pending_amount = float_round(batch.actual_returned - real_collected, precision_digits=2)
+
+    def name_get(self):
+        result = []
+        if 'from_route_picker' in self._context:
+            for batch in self:
+                if batch.route_id:
+                    result.append((batch.id, _('%s (%s) (%s)') % (
+                        batch.name, batch.date and batch.date or '',
+                        batch.route_id.name and batch.route_id.name or '')))
+                result.append((batch.id, _('%s (%s)') % (batch.name, batch.date and batch.date or '')))
+            return result
+        for batch in self:
+            if batch.route_id:
+                result.append(
+                    (batch.id, _('%s (%s)') % (batch.name, batch.route_id.name and batch.route_id.name or '')))
+            result.append((batch.id, _('%s') % (batch.name)))
+        return result
+
+
+    def view_pending_products(self):
+        self.ensure_one()
+        pass 
+
+    def print_master_pickticket(self):
+        self.write({'late_order_print': False})
+        return self.env.ref('batch_delivery.report_master_pick_ticket').report_action(self, config=False)
+
+    def print_master_late_order_pickticket(self):
+        self.write({'late_order_print': True})
+        return self.env.ref('batch_delivery.report_master_pick_ticket').report_action(self, config=False)
+
+    def print_product_labels(self):
+        return self.env.ref('batch_delivery.batch_product_label_report').report_action(self, config=False)
+
+    def print_delivery_slip(self):
+        return self.env.ref('batch_delivery.batch_deliveryslip_report').report_action(self, config=False)
+
+
+
+    def print_invoice_report(self):
+        self.ensure_one()
+        invoices = self.mapped('invoice_ids').filtered(lambda r: r.state != 'cancel')
+        if not invoices:
+            raise UserError(_('Nothing to print.'))
+        if self.truck_driver_id and not self.truck_driver_id.firstname:
+            raise UserError(_('Missing firstname from driver: %s' % self.truck_driver_id.name))
+        return self.env.ref('batch_delivery.ppt_account_batch_invoices_report').report_action(self, config=False)
+
+    def print_driver_spreadsheet(self):
+        return self.env.ref('batch_delivery.batch_driver_report').report_action(self, config=False)
+
+    def print_picking(self):
+        pickings = self.mapped('picking_ids')
+        if not pickings:
+            raise UserError(_('Nothing to print.'))
+        return self.env.ref('batch_delivery.batch_picking_all_report').report_action(self)
+
+    def action_confirm(self):
+        for batch in self:
+            if not batch.truck_driver_id:
+                raise UserError(_('Driver should be assigned before confirmation.'))
+
+            if not self.route_id:
+                raise UserError(_('Route should be assigned before confirmation.'))
+            batch.truck_driver_id.is_driver_available = False
+            # fetch all unassigned pickings and try to assign
+            unassigned_pickings = batch.mapped('picking_ids').filtered(
+                lambda picking: picking.state in ('draft', 'waiting', 'confirmed'))
+            for pick in unassigned_pickings:
+                pick.action_assign()
+
+            # if atleast one picking not assigned, donot allow to proceed
+            pickings = batch.picking_ids.filtered(
+                lambda picking: picking.state not in ('cancel', 'waiting', 'confirmed'))
+
+            if any(picking.state not in ('assigned', 'in_transit', 'done') for picking in pickings):
+                raise UserError(_(
+                    'Some pickings are still waiting for goods. Please check or force their availability before setting this batch to done.'))
+            # invoice creation from batch procesing
+            # move every shipment to transit location(default done state of odoo picking)
+            sale_orders = batch.mapped('picking_ids').mapped('sale_id').filtered(lambda r: r.state != 'done')
+            if sale_orders:
+                sale_orders.action_done()
+            for pick in pickings:
+                pick.action_make_transit()
+                invoice = pick.sale_id.invoice_ids.filtered(lambda rec: pick in rec.picking_ids)
+                if invoice:
+                    invoice.write({'date_invoice': pick.batch_id.date})
+
+        self.write({'state': 'in_progress'})
+        return True
+
+    def action_done(self):
+        for batch in self:
+            res = []
+            sale_orders = batch.mapped('picking_ids').mapped('sale_id').filtered(lambda r: r.state != 'done')
+            if sale_orders:
+                sale_orders.action_done()
+            for picking in batch.picking_ids.filtered(lambda rec: rec.state not in ['cancel']):
+                if picking.sale_id and picking.sale_id.invoice_status == 'to invoice' or not picking.is_invoiced:
+                    raise UserError(_('Please create invoices for delivery order %s, to continue.') % (picking.name))
+                partner_id = picking.partner_id.id
+                if picking.sale_id:
+                    partner_id = picking.sale_id.partner_invoice_id.id
+                res.append((0, 0, {'partner_id': partner_id, 'sequence': picking.sequence or 0}))
+            batch.truck_driver_id.is_driver_available = True
+            if batch.route_id:
+                batch.route_id.set_active = False
+            batch.write({'cash_collected_lines': res, 'state': 'done'})
+        return True
+
+    def cancel_picking(self):
+        self.mapped('truck_driver_id').write({'is_driver_available': True})
+        if self.mapped('route_id').ids:
+            self.mapped('route_id').write({'set_active': False})
+        self.mapped('picking_ids').write({'batch_id': False, 'route_id': False, 'is_late_order': False})
+        return self.write({'state': 'cancel'})
+
+    def set_in_truck(self):
+        self.write({'state': 'in_truck', 'date': fields.Date.today()})
+        sale_orders = self.mapped('picking_ids').mapped('sale_id')
+        if sale_orders:
+            sale_orders.write({'batch_warning': 'This order has already been processed for shipment'})
+            sale_orders.action_done()
+
+    def set_to_draft(self):
+        self.write({'state': 'draft', 'date': False})
+        sale_orders = self.mapped('picking_ids').mapped('sale_id')
+        if sale_orders:
+            sale_orders.write({'batch_warning': '', 'state': 'sale'})
+
+
+
+    def view_location_map(self):
+        pass
+
+
+    def action_no_payment(self):
+        for batch in self:
+            batch.state = 'no_payment'
+
+    def action_to_shipping_done(self):
+        for batch in self:
+            batch.state = 'done'
+
     @api.depends('picking_ids.move_lines.quantity_done', 'picking_ids.move_line_ids.qty_done')
     def _calculate_batch_profit(self):
         """
@@ -132,181 +317,20 @@ class StockPickingBatch(models.Model):
             batch.total_profit = profit_amount
             batch.profit_percentage = batch.total_profit and (batch.total_profit / batch.total_amount) * 100 or 0
 
-    @api.multi
-    @api.depends('actual_returned', 'cash_collected_lines', 'cash_collected_lines.amount')
-    def _calculate_pending_amount(self):
-        for batch in self:
-            real_collected = 0
-            for cash_line in batch.cash_collected_lines:
-                real_collected += float_round(cash_line.amount, precision_digits=2)
-            batch.pending_amount = float_round(batch.actual_returned - real_collected, precision_digits=2)
-
-    @api.multi
-    def name_get(self):
-        result = []
-        if 'from_route_picker' in self._context:
-            for batch in self:
-                if batch.route_id:
-                    result.append((batch.id, _('%s (%s) (%s)') % (
-                        batch.name, batch.date and batch.date or '',
-                        batch.route_id.name and batch.route_id.name or '')))
-                result.append((batch.id, _('%s (%s)') % (batch.name, batch.date and batch.date or '')))
-            return result
-        for batch in self:
-            if batch.route_id:
-                result.append(
-                    (batch.id, _('%s (%s)') % (batch.name, batch.route_id.name and batch.route_id.name or '')))
-            result.append((batch.id, _('%s') % (batch.name)))
-        return result
-
-
-    def view_pending_products(self):
-        self.ensure_one()
-        pending_view = self.env['pending.product.view'].create({'batch_ids': [(6, 0, self.ids)]})
-        return pending_view.generate_move_lines()
-
-    @api.multi
-    def print_master_pickticket(self):
-        self.write({'late_order_print': False})
-        return self.env.ref('batch_delivery.report_master_pick_ticket').report_action(self, config=False)
-
-    @api.multi
-    def print_master_late_order_pickticket(self):
-        self.write({'late_order_print': True})
-        return self.env.ref('batch_delivery.report_master_pick_ticket').report_action(self, config=False)
-
-    @api.multi
-    def print_product_labels(self):
-        return self.env.ref('batch_delivery.batch_product_label_report').report_action(self, config=False)
-
-    @api.multi
-    def print_delivery_slip(self):
-        return self.env.ref('batch_delivery.batch_deliveryslip_report').report_action(self, config=False)
-
-    @api.multi
-    def print_invoice_report(self):
-        self.ensure_one()
-        invoices = self.mapped('invoice_ids').filtered(lambda r: r.state != 'cancel')
-
-        if not invoices:
-            raise UserError(_('Nothing to print.'))
-
-        if self.truck_driver_id and not self.truck_driver_id.firstname:
-            raise UserError(_('Missing firstname from driver: %s' % self.truck_driver_id.name))
-
-        return self.env.ref('batch_delivery.ppt_account_batch_invoices_report').report_action(self, config=False)
-
-    @api.multi
-    def print_driver_spreadsheet(self):
-        return self.env.ref('batch_delivery.batch_driver_report').report_action(self, config=False)
-
-    @api.multi
-    def print_picking(self):
-        pickings = self.mapped('picking_ids')
-        if not pickings:
-            raise UserError(_('Nothing to print.'))
-        return self.env.ref('batch_delivery.batch_picking_all_report').report_action(self)
-
-    @api.multi
-    def confirm_picking(self):
-        for batch in self:
-            if not batch.truck_driver_id:
-                raise UserError(_('Driver should be assigned before confirmation.'))
-
-            if not self.route_id:
-                raise UserError(_('Route should be assigned before confirmation.'))
-            batch.truck_driver_id.is_driver_available = False
-            # fetch all unassigned pickings and try to assign
-            unassigned_pickings = batch.mapped('picking_ids').filtered(
-                lambda picking: picking.state in ('draft', 'waiting', 'confirmed'))
-            for pick in unassigned_pickings:
-                pick.action_assign()
-
-            # if atleast one picking not assigned, donot allow to proceed
-            pickings = batch.picking_ids.filtered(
-                lambda picking: picking.state not in ('cancel', 'waiting', 'confirmed'))
-
-            if any(picking.state not in ('assigned', 'in_transit', 'done') for picking in pickings):
-                raise UserError(_(
-                    'Some pickings are still waiting for goods. Please check or force their availability before setting this batch to done.'))
-            # invoice creation from batch procesing
-            # move every shipment to transit location(default done state of odoo picking)
-            for pick in pickings:
-                pick.action_make_transit()
-                invoice = pick.sale_id.invoice_ids.filtered(lambda rec: pick in rec.picking_ids)
-                if invoice:
-                    invoice.write({'date_invoice': pick.batch_id.date})
-
-        self.write({'state': 'in_progress'})
-        return True
-
-    @api.multi
-    def done(self):
-        for batch in self:
-            res = []
-            for picking in batch.picking_ids.filtered(lambda rec: rec.state not in ['cancel']):
-                if picking.sale_id and picking.sale_id.invoice_status == 'to invoice' or not picking.is_invoiced:
-                    raise UserError(_('Please create invoices for delivery order %s, to continue.') % (picking.name))
-                partner_id = picking.partner_id.id
-                if picking.sale_id:
-                    partner_id = picking.sale_id.partner_invoice_id.id
-                res.append((0, 0, {'partner_id': partner_id, 'sequence': picking.sequence or 0}))
-            batch.truck_driver_id.is_driver_available = True
-            if batch.route_id:
-                batch.route_id.set_active = False
-            batch.write({'cash_collected_lines': res, 'state': 'done'})
-        return True
-
-    @api.multi
-    def cancel_picking(self):
-        self.mapped('truck_driver_id').write({'is_driver_available': True})
-        if self.mapped('route_id').ids:
-            self.mapped('route_id').write({'set_active': False})
-        self.mapped('picking_ids').write({'batch_id': False, 'route_id': False, 'is_late_order': False})
-        return self.write({'state': 'cancel'})
-
-
-    @api.multi
-    def compute_url(self):
-        """
-        Compute location URL
-        """
-        for rec in self:
-            partners = rec.picking_ids and rec.picking_ids.mapped('partner_id')
-            if partners:
-                partners.geo_localize()
-                params = {'partner_ids': ','.join(map(str, partners and partners.ids or [])),
-                          'partner_url': 'customers'
-                          }
-                return urlplus('/google_map', params)
-            raise UserError(_('Partners Not Found,\nPlease add pickings before proceed.'))
-
-    @api.multi
-    def view_location_map(self):
-        url = self.compute_url()
-        return {
-            'name': 'Picking Locations',
-            'res_model': 'ir.actions.act_url',
-            'type': 'ir.actions.act_url',
-            'target': 'new',
-            'url': url or ""
-        }
-
-    @api.multi
     def view_invoices(self):
         pickings = self.picking_ids
         invoices = pickings.mapped('invoice_ids')
-        action = self.env.ref('account.action_invoice_tree1').read()[0]
+        action = self.env.ref('account.action_move_out_invoice_type').read()[0]
         if len(invoices) > 1:
             action['domain'] = [('id', 'in', invoices.ids)]
         elif len(invoices) == 1:
-            action['views'] = [(self.env.ref('account.invoice_form').id, 'form')]
-            action['res_id'] = invoices.ids[0]
+            # action['views'] = [(self.env.ref('account.invoice_form').id, 'form')]
+            action['res_id'] = invoices.id
         else:
             action = {'type': 'ir.actions.act_window_close'}
         return action
 
-    @api.multi
+
     def view_payments(self):
         payments = self.payment_ids
         action = self.env.ref('account.action_account_payments').read()[0]
@@ -319,12 +343,12 @@ class StockPickingBatch(models.Model):
             action = {'type': 'ir.actions.act_window_close'}
         return action
 
-    @api.multi
+
     def create_batch_invoice(self):
         for batch in self:
             batch.picking_ids.create_invoice()
 
-    @api.multi
+
     def view_batch_payments(self):
         self.ensure_one()
         payments = self.payment_ids
@@ -341,7 +365,7 @@ class StockPickingBatch(models.Model):
 
         return action
 
-    @api.multi
+
     def register_payments(self):
         for batch in self:
             msg = ''
@@ -371,17 +395,6 @@ class StockPickingBatch(models.Model):
             batch.state = 'paid'
 
 
-    @api.multi
-    def action_no_payment(self):
-        for batch in self:
-            batch.state = 'no_payment'
-
-    @api.multi
-    def action_to_shipping_done(self):
-        for batch in self:
-            batch.state = 'done'
-
-    @api.multi
     def create_driver_journal(self):
 
         company_id = self.env['res.users'].browse(self.env.uid).company_id
@@ -425,8 +438,6 @@ class StockPickingBatch(models.Model):
         return True
 
 
-StockPickingBatch()
-
 
 class CashCollectedLines(models.Model):
     _name = 'cash.collected.lines'
@@ -434,16 +445,16 @@ class CashCollectedLines(models.Model):
 
     batch_id = fields.Many2one('stock.picking.batch', string='Batch')
     partner_id = fields.Many2one('res.partner', string='Customer', required=True)
-    amount = fields.Float(string='Amount Collected', digits=dp.get_precision('Product Price'))
+    amount = fields.Float(string='Amount Collected', digits='Product Price')
     communication = fields.Char(string='Memo')
     payment_method_id = fields.Many2one('account.payment.method', domain=[('payment_type', '=', 'inbound')])
     is_communication = fields.Boolean(string='Is Communication')
     journal_id = fields.Many2one('account.journal', string='Journal', domain=[('type', 'in', ['bank', 'cash'])])
     partner_ids = fields.Many2many('res.partner', compute='_compute_partner_ids')
-    invoice_id = fields.Many2one('account.invoice')
+    invoice_id = fields.Many2one('account.move')
     discount = fields.Float(string='Discount(%)')
     sequence = fields.Integer(string='Order')
-    available_payment_method_ids = fields.One2many(comodel_name='account.payment', compute='_compute_available_payment_method_ids')
+    available_payment_method_line_ids = fields.Many2many('account.payment.method.line', compute='_compute_available_payment_method_ids')
     billable_partner_ids = fields.Many2many('res.partner', compute='_compute_billable_partner_ids')
     common_batch_id = fields.Many2one('batch.payment.common', string='Batch')
 
@@ -457,16 +468,21 @@ class CashCollectedLines(models.Model):
 
     @api.depends('journal_id')
     def _compute_available_payment_method_ids(self):
-        for record in self:
-            record.available_payment_method_ids = record.journal_id.inbound_payment_method_ids.ids
+        for pay in self:
+            pay.available_payment_method_line_ids = pay.journal_id._get_available_payment_method_lines('inbound')
+            # to_exclude = self._get_payment_method_codes_to_exclude()
+            # if to_exclude:
+            #     pay.available_payment_method_line_ids = pay.available_payment_method_line_ids.filtered(lambda x: x.code not in to_exclude)
 
     @api.depends('partner_id')
     def _compute_partner_ids(self):
         for line in self:
+            partner = self.env['res.partner']
             picking = line.batch_id.picking_ids.filtered(lambda pick: pick.sale_id.partner_invoice_id.id == line.partner_id.id)
             sale = picking[0].sale_id if picking else False
             if sale:
-                line.partner_ids = sale.partner_id | sale.partner_invoice_id | sale.partner_shipping_id
+                partner |= sale.partner_id | sale.partner_invoice_id | sale.partner_shipping_id
+            line.partner_ids = partner
 
     @api.onchange('invoice_id')
     def onchange_invoice_id(self):
@@ -477,7 +493,6 @@ class CashCollectedLines(models.Model):
                 self.discount = self.invoice_id.payment_term_id.discount_per
             else:
                 self.discount = 0
-
 
     @api.onchange('discount', 'invoice_id')
     def onchange_discount(self):
@@ -492,7 +507,7 @@ class CashCollectedLines(models.Model):
     def _onchange_payment_method_id(self):
         self.is_communication = self.payment_method_id.code == 'check_printing'
 
-    @api.multi
+# todo not tested
     def create_payment(self):
 
         batch_payment_info = {}
@@ -550,7 +565,5 @@ class CashCollectedLines(models.Model):
                 })
                 # ob.payment_ids.action_validate_invoice_payment()
 
-
-CashCollectedLines()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

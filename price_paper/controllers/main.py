@@ -6,7 +6,8 @@ from odoo.addons.mail.controllers.main import MailController
 
 
 class PPTMailController(MailController):
-
+    #TODO :: FIX THIS FOR ODOO-15 MIGRATION
+    #can't find this in odoo-15 need to find coresponding method in 15.
     @http.route('/mail/assign', type='http', auth='user', methods=['GET'])
     def mail_action_assign(self, model, res_id, token=None):
         comparison, record, redirect = self._check_token_and_record_or_redirect(model, int(res_id), token)

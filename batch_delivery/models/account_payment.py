@@ -7,16 +7,12 @@ class AccountPayment(models.Model):
     _inherit = 'account.payment'
 
     batch_id = fields.Many2one('stock.picking.batch', string='Delivery Batch')
-    state = fields.Selection([('draft', 'Draft'), ('posted', 'Posted'), ('sent', 'Sent'), ('reconciled', 'Reconciled'),
-                              ('cancelled', 'Cancelled')], readonly=True, default='draft', copy=False, string="Status", track_visibility='onchange')
+    # state = fields.Selection(selection_add=[], tracking=True)
+    # todo overrrided for tracking, by default tracking is added in v15
     common_batch_id = fields.Many2one('batch.payment.common', string='Delivery Batch')
 
-    @api.multi
-    def print_checks(self):
-        self.set_check_amount_in_words()
-        return super(AccountPayment, self).print_checks()
-
-
-AccountPayment()
+    def name_get(self):
+        pass
+        # todo for batch payment extension we can move this method to that module
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

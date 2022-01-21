@@ -9,24 +9,25 @@ class Lead2OpportunityPartner(models.TransientModel):
 
     @api.model
     def default_get(self, fields):
+        """
+        Auto Fill sales person ids in Convert To Opportunity Wizard
+        """
         result = super(Lead2OpportunityPartner, self).default_get(fields)
-
         if self._context.get('default_sales_person_ids'):
             result['sales_person_ids'] = self._context.get('default_sales_person_ids')
-
         return result
 
-    @api.multi
-    def action_apply(self):
-        self.ensure_one()
 
+    def action_apply(self):
+        """
+        Write Sales person ids to Lead record while Click on Create Opportunity button of wizard
+        """
+        self.ensure_one()
         if self.name != 'merge':
             leads = self.env['crm.lead'].browse(self._context.get('active_ids', []))
             leads.write({'sales_person_ids': [(6, 0, self.sales_person_ids.ids)]})
-
         return super(Lead2OpportunityPartner, self).action_apply()
 
 
-Lead2OpportunityPartner()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

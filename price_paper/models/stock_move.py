@@ -29,7 +29,7 @@ class StockMove(models.Model):
             ('state', 'in', ['draft', 'confirmed', 'waiting', 'partially_available', 'assigned'])], limit=1)
         return picking
 
-    @api.multi
+
     def _get_accounting_data_for_valuation(self):
         """ Over ride to Return the accounts for inventory adjustment. """
         self.ensure_one()
@@ -56,7 +56,6 @@ class StockMove(models.Model):
             res = (res[0], acc_src, acc_dest, res[3])
         return res
 
-StockMove()
 
 
 class StockMoveLine(models.Model):
@@ -64,9 +63,10 @@ class StockMoveLine(models.Model):
 
     picking_partner_id = fields.Many2one('res.partner', related='move_id.picking_partner_id', string='Partner')
     product_onhand_qty = fields.Float(string='Product Onhand QTY')
-    inventory_id = fields.Many2one('stock.inventory', related='move_id.inventory_id', string='Inventory')
+    # TODO: FIX THIS FOR ODOO-15 MIGRATION
+    # inventory_id = fields.Many2one('stock.inventory', related='move_id.inventory_id', string='Inventory')
 
 
-StockMoveLine()
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

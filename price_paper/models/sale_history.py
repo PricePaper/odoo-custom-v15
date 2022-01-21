@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api
-from odoo.addons.queue_job.job import job
+# TODO :: FIX THIS FOR ODOO-15 MIGRATION
+# from odoo.addons.queue_job.job import job
 
 
 class SaleOrderHistory(models.Model):
@@ -15,10 +16,14 @@ class SaleOrderHistory(models.Model):
     order_id = fields.Many2one('sale.order', related='order_line_id.order_id', string='Order')
     order_line_id = fields.Many2one('sale.order.line', string='Order Line')
     order_date = fields.Datetime(string='Order Date', related='order_line_id.order_id.confirmation_date')
-    active = fields.Boolean('Active', default=True, track_visibility=True)
+    active = fields.Boolean('Active', default=True, tracking=True)
 
-    @api.multi
-    @job
+    def _valid_field_parameter(self, field, name):
+        return name == 'track_visibility' or super()._valid_field_parameter(field, name)
+
+    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
+    # TODO:: fix this for job_runner in odoo-15 migration
+    # @job
     def job_queue_create_purchase_history(self, line):
         """
         Queue Job
@@ -52,6 +57,5 @@ class SaleOrderHistory(models.Model):
             self.with_delay(channel='root.Sales_History').job_queue_create_purchase_history(line)
 
 
-SaleOrderHistory()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -26,9 +26,6 @@ class VendorProductLines(models.TransientModel):
     delivered_qty = fields.Float(string='Delivered Qty')
 
 
-VendorProductLines()
-
-
 class VendorProductReportWizard(models.TransientModel):
 
     _name = 'vedor.product.report.wizard'
@@ -44,7 +41,7 @@ class VendorProductReportWizard(models.TransientModel):
 
     report_lines = fields.One2many('vedor.product.lines', 'parent_id', string="Sale Report")
 
-    @api.multi
+
     def generate_products(self):
         if self.vendor_ids:
             res_prd = self.env['product.product']
@@ -62,7 +59,7 @@ class VendorProductReportWizard(models.TransientModel):
             self.product_ids = False
             raise UserError(_('Vendor should be selected'))
 
-    @api.multi
+
     def generate_lines(self):
         if not self.product_ids:
             raise UserError(_('There is no Product for the choosen criteria'))
@@ -124,10 +121,12 @@ class VendorProductReportWizard(models.TransientModel):
                                 }))
             self.report_lines = False
             self.report_lines = report_lines
-    @api.multi
+
+
     def print_pdf(self):
         return self.env.ref('purchase_extension.vendor_product_report').report_action(self)
-    @api.multi
+
+
     def print_xlxs(self):
 
         data = {'rec' : self.id}
@@ -181,4 +180,4 @@ class VendorProductReportWizard(models.TransientModel):
         response.stream.write(output.read())
         output.close()
 
-VendorProductReportWizard()
+

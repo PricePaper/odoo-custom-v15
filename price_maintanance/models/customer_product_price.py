@@ -42,7 +42,6 @@ class CustomerProductPrice(models.Model):
             if line.std_price != 0.0:
                 line.deviation = (line.price - line.std_price) * 100 / line.std_price
 
-    @api.multi
     def _get_competietor_prices(self):
         for line in self:
             comp_lines = self.search(
@@ -96,7 +95,6 @@ class CustomerProductPrice(models.Model):
                 else:
                     record.is_taxable = False
 
-    @api.multi
     def action_remove(self):
         self.unlink()
         return {

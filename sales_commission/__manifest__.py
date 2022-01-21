@@ -3,6 +3,7 @@
 {
     'name': 'Sales Commission',
     'version': '1.0',
+    'license': 'LGPL-3',
     'category': 'Sales and Purchase',
     'summary': "Sales and Purchase",
     'description': """
@@ -18,7 +19,7 @@ Sales commission module implemented for Price Papers.
         'data/data.xml',
         'data/account_data.xml',
         'data/ir_sequence_data.xml',
-        'security/sales_commission_security.xml',
+        'security/sales_commission_security.xml', #TODO security permission files pending to migate to 15
         'security/ir.model.access.csv',
         'wizard/existing_user.xml',
         'wizard/sales_commission.xml',

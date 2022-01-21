@@ -40,7 +40,7 @@ class CostDiscrepancyReport(models.TransientModel):
                 if line.price_unit - xls_group_key[0].standard_price:
                     yield xls_group_key, line
 
-    @api.multi
+
     def print_xlxs(self):
         data = {'start_date': self.start_date, 'end_date': self.end_date}
         return {

@@ -22,15 +22,15 @@ class PosSaleReport(models.Model):
     profit_dollars = fields.Float(string='Profit dollars', readonly=True)
     product_qty = fields.Float('Product Quantity', readonly=True)
 
-
+    #TODO test the querry result with migrated db data v15
     def _inv(self):
         so_str = """
                 SELECT  inv_line.id AS id,
-                inv.number AS name,
+                inv.name AS name,
                 inv.partner_id AS partner_id,
                 inv_line.product_id AS product_id,
                 pro.product_tmpl_id AS product_tmpl_id,
-                inv.date_invoice AS date_invoice,
+                inv.invoice_date AS date_invoice,
                 (inv_line.quantity / u.factor * u2.factor) as product_qty,
                 inv_line.price_unit,
                 COALESCE(so_line.working_cost, 0.00) AS product_cost,
@@ -39,24 +39,24 @@ class PosSaleReport(models.Model):
                         THEN ROUND(CAST(COALESCE((inv_line.price_subtotal - dc.average_company_cost) * inv_line.quantity, 0.00) AS NUMERIC), 2)
                     ELSE COALESCE((inv_line.price_unit - so_line.working_cost) * inv_line.quantity, 0.00)
                 END) AS profit_dollars,
-                inv.user_id AS user_id,
+                inv.invoice_user_id AS user_id,
                 pt.categ_id AS categ_id,
                 inv.company_id AS company_id,
                 inv_line.price_total AS sales_dollars,
                 rp.country_id AS country_id,
                 inv_line.price_subtotal AS price_subtotal 
-        FROM account_invoice_line inv_line
+        FROM account_move_line inv_line
             JOIN sale_order_line_invoice_rel sl ON (inv_line.id = sl.invoice_line_id)
             JOIN sale_order_line so_line ON (so_line.id = sl.order_line_id)
             JOIN sale_order so ON (so_line.order_id = so.id)
             JOIN delivery_carrier dc ON (so.carrier_id = dc.id)
-            JOIN account_invoice inv ON (inv_line.invoice_id = inv.id)
+            JOIN account_move inv ON (inv_line.move_id = inv.id)
             LEFT JOIN product_product pro ON (inv_line.product_id = pro.id)
             JOIN res_partner rp ON (inv.partner_id = rp.id)
             LEFT JOIN product_template pt ON (pro.product_tmpl_id = pt.id)
-            LEFT JOIN uom_uom u on (u.id=inv_line.uom_id)
+            LEFT JOIN uom_uom u on (u.id=inv_line.product_uom_id)
             LEFT JOIN uom_uom u2 on (u2.id=pt.uom_id)
-        WHERE inv.state in ('open','paid', 'in_payment')
+        WHERE inv.state in ('posted') and inv.payment_state in ('in_payment','paid','partial')
         """
         return so_str
 
@@ -83,7 +83,6 @@ class PosSaleReport(models.Model):
                 AS foo""" % (self._table, self._from())
         return request
 
-    @api.model_cr
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute(self.get_main_request())

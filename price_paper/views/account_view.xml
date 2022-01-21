@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-         <template id="report_ppt_followup_filter_info_template_inherit" inherit_id="account_reports.followup_filter_info_template">
-            <xpath expr="//div/div/div" position="attributes">
-                <attribute name="class">col-5</attribute>
-            </xpath>
-        </template>
+<!--        Can't find  a record in odoo-15 base code-->
+<!--         <template id="report_ppt_followup_filter_info_template_inherit" inherit_id="account_reports.followup_filter_info_template">-->
+<!--            <xpath expr="//div/div/div" position="attributes">-->
+<!--                <attribute name="class">col-5</attribute>-->
+<!--            </xpath>-->
+<!--        </template>-->
+
 
         <record id="account_payment_term_line_tree_pricepaper" model="ir.ui.view">
             <field name="name">account.payment.term.line.tree.pricepaper</field>
@@ -31,8 +33,8 @@
 
         <record id="view_account_invoice_supplier_form_form_inherit_price_paper_storage_contract" model="ir.ui.view">
             <field name="name">account.invoice.inherited.form</field>
-            <field name="model">account.invoice</field>
-            <field name="inherit_id" ref="account.invoice_supplier_form"/>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
                  <xpath expr="//form/sheet/notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_subtotal']" position="before">
                     <field name="is_storage_contract" invisible="1"/>
@@ -41,9 +43,9 @@
         </record>
         <record id="inherit_account_invoice_form_view" model="ir.ui.view">
             <field name="name">inherited.account.invoice.form.view</field>
-            <field name="model">account.invoice</field>
+            <field name="model">account.move</field>
             <field name="type">form</field>
-            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="invoice_address_id"/>
@@ -59,14 +61,15 @@
                     <field name="lst_price" invisible="1"/>
                     <field name="working_cost" invisible="1"/>
                 </xpath>
-                <xpath expr="//field[@name='amount_untaxed']" position="after">
-                    <field name="gross_profit" widget="monetary" string='Profit'
-                           options="{'currency_field': 'currency_id', 'field_digits': True}"
-                           attrs="{'invisible':[('state','!=', 'paid')]}"/>
-                    <field name="gross_profit" widget="monetary" string='Predicted Profit'
-                           options="{'currency_field': 'currency_id', 'field_digits': True}"
-                           attrs="{'invisible':[('state','=', 'paid')]}"/>
-                </xpath>
+                    <!--TODO uncomment below xpath section-->
+<!--                <xpath expr="//field[@name='amount_untaxed']" position="after">-->
+<!--                    <field name="gross_profit" widget="monetary" string='Profit'-->
+<!--                           options="{'currency_field': 'currency_id', 'field_digits': True}"-->
+<!--                           attrs="{'invisible':[('state','!=', 'paid')]}"/>-->
+<!--                    <field name="gross_profit" widget="monetary" string='Predicted Profit'-->
+<!--                           options="{'currency_field': 'currency_id', 'field_digits': True}"-->
+<!--                           attrs="{'invisible':[('state','=', 'paid')]}"/>-->
+<!--                </xpath>-->
 <!--                <xpath expr="//header/button[@name='action_invoice_open']" position="before">-->
 <!--                    <field name="is_released" invisible="1"/>-->
 <!--                    <field name="storage_down_payment" invisible="1"/>-->
@@ -79,22 +82,14 @@
                  <xpath expr="//form/sheet/notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_subtotal']" position="before">
                     <field name="is_storage_contract" invisible="1"/>
                 </xpath>
-            </field>
-        </record>
-
-        <record id="inherit_account_invoice_line_form_view" model="ir.ui.view">
-            <field name="name">inherited.account.invoice.line.form.view</field>
-            <field name="model">account.invoice.line</field>
-            <field name="type">form</field>
-            <field name="inherit_id" ref="account.view_invoice_line_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='price_unit']" position="before">
-                    <field name="profit_margin" attrs="{'invisible': [('parent.type','!=','out_invoice')]}"/>
+                 <xpath expr="//form/sheet/notebook/page/field[@name='invoice_line_ids']/form/sheet/group/field[@name='price_unit']" position="before">
+                    <field name="profit_margin" attrs="{'invisible': [('parent.move_type','!=','out_invoice')]}"/>
                     <field name="lst_price" invisible="1"/>
                     <field name="working_cost" invisible="1"/>
                 </xpath>
             </field>
         </record>
+
 
         <record id="inherit_view_account_position_form_pricepaper" model="ir.ui.view">
             <field name="name">inherited.account.position.form.view</field>

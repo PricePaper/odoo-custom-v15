@@ -19,8 +19,8 @@
                         <field name="delivery_notes" nolabel="1"/>
                     </group>
                 </xpath>
-                <xpath expr="//field[@name='child_ids']/form/sheet/group/group[position()=2]/field[@name='comment']" position="before">
-                    <field name="delivery_notes"/>                    
+                <xpath expr="//field[@name='child_ids']/form/sheet/group[2]/field[@name='comment']" position="before">
+                    <field name="delivery_notes"/> 
                 </xpath>
 
             </field>

@@ -22,7 +22,7 @@
             <search string="Sales Analysis">
                 <field name="date_invoice"/>
                 <field name="product_id"/>
-                <filter string="Date" name="current_quarter" date="date_invoice" default_period="this_quarter"/>
+                <filter string="Date" name="current_quarter" date="date_invoice" /><!--TODO default_period="quarter" not in V15 handle this issue-->
                 <filter string="Last 365 Days" name="last_year" domain="[('date_invoice', '&gt;=', (context_today() - datetime.timedelta(days=365)).strftime('%Y-%m-%d'))]"/>
                 <group expand="1" string="Group By">
                     <filter string="Customer" name="customer" context="{'group_by':'partner_id'}"/>

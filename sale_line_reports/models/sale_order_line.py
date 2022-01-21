@@ -13,7 +13,6 @@ class SaleOrderline(models.Model):
     is_taxed = fields.Char(string='TX', compute='_is_taxed')
     cost = fields.Float(string='Cost', related='product_id.cost')
     percent = fields.Float(string='PCT', compute='_calculate_percent')
-    # lst_price = fields.Float(string='STD Price', related='product_id.lst_price')
     class_margin = fields.Float(related='product_id.categ_id.class_margin')
     company_margin = fields.Float(related='company_id.company_margin')
     remark = fields.Char(string='RM', compute='_calculate_remark')
@@ -28,7 +27,6 @@ class SaleOrderline(models.Model):
         return {
             'name': 'Sale Order',
             'type': 'ir.actions.act_window',
-            'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'sale.order',
             'views': [(view.id, 'form')],
@@ -38,26 +36,35 @@ class SaleOrderline(models.Model):
             'context': self.env.context,
         }
 
-    @api.multi
-    def _calculate_percent(self):
-        for line in self:
-            if line.working_cost:
-                line.percent = margin.get_margin(line.price_unit, line.working_cost, percent=True)
 
-    @api.multi
+    def _calculate_percent(self):
+        """
+        Percentage calculation
+        """
+        for line in self:
+            percent = 0.0
+            if line.working_cost:
+                percent = margin.get_margin(line.price_unit, line.working_cost, percent=True)
+            line.percent = percent
+
     def _is_taxed(self):
+        """
+        Tax Line or Not
+        """
         for line in self:
             if line.tax_id:
                 line.is_taxed = 'T'
             else:
                 line.is_taxed = ''
 
-    @api.multi
     def _calculate_remark(self):
+        """
+        Remarks based on conditions
+        """
         for line in self:
             remarks = []
 
-            ## TODO move variance percent to company parameters
+            ## TODO move variance percent to company parameters(-->this todo already in 12 code)
             if line.percent < line.class_margin * 0.90:
                 remarks.append('CBM')
             elif line.percent > line.class_margin * 1.20:
@@ -80,8 +87,5 @@ class SaleOrderline(models.Model):
                 remarks.append('M')
 
             line.remark = ",".join(remarks)
-
-
-SaleOrderline()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

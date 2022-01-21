@@ -9,6 +9,5 @@ class ResPartner(models.Model):
     deviated_contract_ids = fields.Many2many('deviated.cost.contract', string="Rebate Contracts")
 
 
-ResPartner()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

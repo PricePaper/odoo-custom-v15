@@ -12,6 +12,4 @@ class SaleTaxHistory(models.Model):
     tax = fields.Boolean(string='Tax applicable')
 
 
-SaleTaxHistory()
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

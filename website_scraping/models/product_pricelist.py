@@ -11,6 +11,5 @@ class ProductPricelist(models.Model):
                                       help='Margin From Competitor Price. When pricelist is auto updated, this margin is considered.')
 
 
-ProductPricelist()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

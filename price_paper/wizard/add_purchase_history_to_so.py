@@ -204,7 +204,6 @@ class AddPurchaseHistorySO(models.TransientModel):
             }
         }
 
-    @api.multi
     def add_history_lines(self):
         """
         Creating saleorder line with purchase history lines

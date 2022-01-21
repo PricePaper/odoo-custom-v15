@@ -27,20 +27,24 @@
             </field>
         </record>
 
-        <act_window id="action_active_customer_statement_generator"
-                    name="Customer Statement"
-                    src_model="res.partner"
-                    res_model="customer.statement.wizard"
-                    view_mode="form"
-                    view_type="form"
-                    context="{'ppt_active_recipient': True}"
-                    target="new"
-                    />
+<!--        <act_window id="action_active_customer_statement_generator"-->
+<!--                    name="Customer Statement"-->
+<!--                    src_model="res.partner"-->
+<!--                    res_model="customer.statement.wizard"-->
+<!--                    view_mode="form"-->
+<!--                    view_type="form"-->
+<!--                    context="{'ppt_active_recipient': True}"-->
+<!--                    target="new"-->
+<!--                    />-->
 
-       <act_window id="action_customer_statement_generator"
-            name="Customer Statement"
-            res_model="customer.statement.wizard"
-            view_mode="form" target="new" view_type="form"/>
+        <record id="action_customer_statement_generator" model="ir.actions.act_window">
+            <field name="name">Customer Statement</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">customer.statement.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
 
         <menuitem action="action_customer_statement_generator"
                   name="Customer Statement"

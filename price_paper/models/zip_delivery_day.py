@@ -22,6 +22,5 @@ class ZipDeliveryDay(models.Model):
     _sql_constraints = [('zip', 'unique(zip)', 'Choose another zip value - Record already exists!')]
 
 
-ZipDeliveryDay()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

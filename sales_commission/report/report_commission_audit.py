@@ -25,7 +25,7 @@ class Reportcommission_audit(models.AbstractModel):
             from_date = datetime.strptime(from_date, "%Y%m%d").date()
             to_date = "%s%s%s" %(year, month, month_last_date)
             to_date = datetime.strptime(to_date, "%Y%m%d").date()
-            invoices = self.env['account.invoice'].search([('state', '=', 'paid'), ('type', 'in', ('out_invoice', 'out_refund')), ('check_bounce_invoice', '=', False)])
+            invoices = self.env['account.move'].search([('state', '=', 'paid'), ('move_type', 'in', ('out_invoice', 'out_refund')), ('check_bounce_invoice', '=', False)])
             invoices = invoices.filtered(lambda r: r.paid_date and r.paid_date >= from_date and r.paid_date <= to_date)
             for invoice in invoices:
                 if invoice.paid_date and invoice.paid_date >= from_date and invoice.paid_date <= to_date:
@@ -51,7 +51,7 @@ class Reportcommission_audit(models.AbstractModel):
                         if commission == 0:
                             continue
                         type = 'Invoice'
-                        if invoice.type == 'out_refund':
+                        if invoice.move_type == 'out_refund':
                             commission = -commission
                             type = 'Refund'
 
@@ -80,7 +80,7 @@ class Reportcommission_audit(models.AbstractModel):
                         else:
                             commission_vals[rec.sales_person_id] = {invoice.partner_id: {invoice : [vals]}}
 
-                        if invoice.type != 'out_refund' and invoice.paid_date > invoice.date_due:
+                        if invoice.move_type != 'out_refund' and invoice.paid_date > invoice.date_due:
                             extra_days = invoice.paid_date - invoice.date_due
                             if invoice.partner_id.company_id.commission_ageing_ids:
                                 commission_ageing = invoice.partner_id.company_id.commission_ageing_ids.filtered(

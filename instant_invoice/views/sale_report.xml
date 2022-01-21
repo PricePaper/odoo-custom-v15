@@ -1,49 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <report
-                id="action_report_quick_saleorder"
-                string="Quick Sale - Quotation / Order"
-                model="sale.order"
-                report_type="qweb-pdf"
-                file="instant_invoice.report_quick_saleorder"
-                name="instant_invoice.report_quick_saleorder"
-                print_report_name="(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or 'Order - %s' % (object.name)"
-        />
-        <report
-                string="Quick Sale - Product Labels"
-                id="quick_sale_product_label_report"
-                model="stock.picking"
-                report_type="qweb-pdf"
-                file="batch_delivery.report_product_label"
-                name="batch_delivery.report_product_label"
-                paperformat="batch_delivery.print_product_label_paperformat"
-                print_report_name="'Product labels - %s' % (object.name or '')"
-                menu="False"
-        />
-        <report
-           id="account_invoices_quick_sale"
-           model="account.invoice"
-           string="Invoices (Quick Sale)"
-           report_type="qweb-pdf"
-           menu="False"
-           name="batch_delivery.report_ppt_selected_invoice_with_payment_quick_sale"
-           file="batch_delivery.report_ppt_selected_invoice_with_payment_quick_sale"
-           attachment="(object.state in ('open','in_payment','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"
-           print_report_name="(object._get_report_base_filename())"
-        />
 
-        <report
-                string=" Quick sale Pick Ticket"
-                id="quick_sale_batch_picking_active_report"
-                model="stock.picking"
-                report_type="qweb-pdf"
-                file="batch_delivery.report_batch_picking_active"
-                name="batch_delivery.report_batch_picking_active"
-                paperformat="batch_delivery.paperformat_batch_picking_ticket"
-                print_report_name="object.batch_id and 'Pick - %s - %s' % (object.batch_id.truck_driver_id and  object.batch_id.truck_driver_id.name or '', object.batch_id.date) or ('Pick - %s - %s' % (object.partner_id and object.partner_id.name or '',object.name))"
-                menu="False"
-        />
+        <record id="action_report_quick_saleorder" model="ir.actions.report">
+            <field name="name">Quick Sale - Quotation / Order</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">instant_invoice.report_quick_saleorder</field>
+            <field name="report_file">instant_invoice.report_quick_saleorder</field>
+            <field name="print_report_name">(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or 'Order - %s' % (object.name)</field>
+
+
+        </record>
+
+    <!--TODO uncomment below code after batch_delivery report migration-->
+
+<!--        <report-->
+<!--                string="Quick Sale - Product Labels"-->
+<!--                id="quick_sale_product_label_report"-->
+<!--                model="stock.picking"-->
+<!--                report_type="qweb-pdf"-->
+<!--                file="batch_delivery.report_product_label"-->
+<!--                name="batch_delivery.report_product_label"-->
+<!--                paperformat="batch_delivery.print_product_label_paperformat"-->
+<!--                print_report_name="'Product labels - %s' % (object.name or '')"-->
+<!--                menu="False"-->
+<!--        />-->
+<!--        <report-->
+<!--           id="account_invoices_quick_sale"-->
+<!--           model="account.invoice"-->
+<!--           string="Invoices (Quick Sale)"-->
+<!--           report_type="qweb-pdf"-->
+<!--           menu="False"-->
+<!--           name="batch_delivery.report_ppt_selected_invoice_with_payment_quick_sale"-->
+<!--           file="batch_delivery.report_ppt_selected_invoice_with_payment_quick_sale"-->
+<!--           attachment="(object.state in ('open','in_payment','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"-->
+<!--           print_report_name="(object._get_report_base_filename())"-->
+<!--        />-->
+
+<!--        <report-->
+<!--                string=" Quick sale Pick Ticket"-->
+<!--                id="quick_sale_batch_picking_active_report"-->
+<!--                model="stock.picking"-->
+<!--                report_type="qweb-pdf"-->
+<!--                file="batch_delivery.report_batch_picking_active"-->
+<!--                name="batch_delivery.report_batch_picking_active"-->
+<!--                paperformat="batch_delivery.paperformat_batch_picking_ticket"-->
+<!--                print_report_name="object.batch_id and 'Pick - %s - %s' % (object.batch_id.truck_driver_id and  object.batch_id.truck_driver_id.name or '', object.batch_id.date) or ('Pick - %s - %s' % (object.partner_id and object.partner_id.name or '',object.name))"-->
+<!--                menu="False"-->
+<!--        />-->
 
     </data>
 </odoo>

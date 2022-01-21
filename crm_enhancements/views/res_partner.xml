@@ -36,32 +36,32 @@
                     <field name="display_name"/>
                     <field name="title"/>
                     <field name="is_company"/>
-                    <field name="image_small"/>
+                    <field name="image_128"/>
                     <field name="type"/>
                     <field name="exp_mon_rev"/>
                     <templates>
                         <t t-name="kanban-box">
                             <div class="oe_kanban_global_click o_res_partner_kanban">
                                 <div class="o_kanban_image">
-                                    <t t-if="record.image_small.raw_value">
-                                        <img t-att-src="kanban_image('res.partner', 'image_small', record.id.raw_value)"
-                                             alt=""/>
+                                    <t t-if="record.image_128.raw_value">
+                                        <img t-att-src="kanban_image('res.partner', 'image_128', record.id.raw_value)"
+                                             alt="Partner Image"/>
                                     </t>
-                                    <t t-if="!record.image_small.raw_value">
+                                    <t t-if="!record.image_128.raw_value">
                                         <t t-if="record.type.raw_value === 'delivery'">
                                             <img t-att-src='_s + "/base/static/src/img/truck.png"'
-                                                 class="o_kanban_image oe_kanban_avatar_smallbox" alt=""/>
+                                                 class="o_kanban_image oe_kanban_avatar_smallbox" alt="Truck Image"/>
                                         </t>
                                         <t t-if="record.type.raw_value === 'invoice'">
                                             <img t-att-src='_s + "/base/static/src/img/money.png"'
-                                                 class="o_kanban_image oe_kanban_avatar_smallbox" alt=""/>
+                                                 class="o_kanban_image oe_kanban_avatar_smallbox" alt="Money Image"/>
                                         </t>
                                         <t t-if="record.type.raw_value != 'invoice' &amp;&amp; record.type.raw_value != 'delivery'">
                                             <t t-if="record.is_company.raw_value === true">
-                                                <img t-att-src='_s + "/base/static/src/img/company_image.png"' alt=""/>
+                                                <img t-att-src='_s + "/base/static/src/img/company_image.png"' alt="Company Image"/>
                                             </t>
                                             <t t-if="record.is_company.raw_value === false">
-                                                <img t-att-src='_s + "/base/static/src/img/avatar.png"' alt=""/>
+                                                <img t-att-src='_s + "/base/static/src/img/avatar.png"' alt="Default"/>
                                             </t>
                                         </t>
                                     </t>
@@ -101,7 +101,6 @@
             <field name="name">Customers</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">res.partner</field>
-            <field name="view_type">form</field>
             <field name="view_mode">kanban,tree,form</field>
             <field name="domain">[('customer', '=', True)]</field>
             <field name="context">{"search_default_customer": 1}</field>

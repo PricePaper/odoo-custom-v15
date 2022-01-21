@@ -23,12 +23,11 @@ class GenerateCommission(models.TransientModel):
 
     month = fields.Selection(string="Month", selection=_get_months, required=True)
 
-    @api.multi
+
     def generate_commission(self):
         return self.env.ref('sales_commission.commission_audit_report').report_action(self)
 
 
 
-GenerateCommission()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -26,7 +26,6 @@
             <field name="name">Inactive Product Report</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">inactive.product.report.wizard</field>
-            <field name="view_type">form</field>
             <field name="view_mode">form</field>
             <field name="view_id" ref="inactive_product_report_wizard_view"/>
             <field name="target">new</field>

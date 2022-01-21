@@ -16,15 +16,17 @@
             <field name="header_spacing">50</field>
             <field name="dpi">90</field>
         </record>
-        <report
-                id="report_deviated_cost_sale"
-                string="Deviated Cost Report"
-                model="account.invoice"
-                report_type="qweb-pdf"
-                menu="False"
-                file="deviated_cost_sale_report.deviated_cost_report"
-                name="deviated_cost_sale_report.deviated_cost_report"
-                paperformat="paperformat_deviated_cost"
-        />
+
+        <record id="report_deviated_cost_sale" model="ir.actions.report">
+            <field name="name">Deviated Cost Report</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">deviated_cost_sale_report.deviated_cost_report</field>
+            <field name="report_file">deviated_cost_sale_report.deviated_cost_report</field>
+            <field name="print_report_name">'Deviated Cost Report- %s' % (object.name)</field>
+            <field name="paperformat_id" ref="paperformat_deviated_cost"/>
+
+        </record>
+
     </data>
 </odoo>

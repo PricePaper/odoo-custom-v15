@@ -15,6 +15,4 @@ class ProductForecast(models.TransientModel):
     quantity_min = fields.Float(string="Product Quantity Min")
 
 
-ProductForecast()
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -6,7 +6,6 @@ from odoo import api, fields, models
 class StockBackorderConfirmation(models.TransientModel):
     _inherit = 'stock.backorder.confirmation'
 
-    @api.one
     def _process(self, cancel_backorder=False):
         so = self.env['sale.order']
         for pick_id in self.pick_ids:

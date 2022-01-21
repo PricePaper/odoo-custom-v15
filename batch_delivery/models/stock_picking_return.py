@@ -13,9 +13,10 @@ class StockPickingReturn(models.Model):
     sale_id = fields.Many2one('sale.order', string='Sale Order')
     return_line_ids = fields.One2many('stock.picking.return.line', 'return_id')
 
+    #todo sending mails need to revamb
     @api.model
     def create(self, vals):
-        record = super(StockPickingReturn, self).create(vals)
+        record = super().create(vals)
         template = self.env.ref('batch_delivery.stock_return_notification_mail')
         email_context = {}
         mail_to = record.sales_person_ids.ids + record.picking_id.message_partner_ids.filtered(lambda r: r.id not in [1, 2]).ids
@@ -25,10 +26,6 @@ class StockPickingReturn(models.Model):
             template.with_context(email_context).send_mail(
                 record.id, force_send=True, notif_layout="mail.mail_notification_light")
         return record
-
-
-StockPickingReturn()
-
 
 class StockPickingReturnLine(models.Model):
     _name = 'stock.picking.return.line'
@@ -45,9 +42,6 @@ class StockPickingReturnLine(models.Model):
     def _compute_returned_qty(self):
         for rec in self:
             rec.returned_qty = rec.ordered_qty - rec.delivered_qty
-
-
-StockPickingReturnLine()
 
 
 class StockPickingReturnReason(models.Model):

@@ -10,8 +10,13 @@ from odoo import fields, models, api
 class ProductPricelist(models.Model):
     _inherit = 'product.pricelist'
 
-    type = fields.Selection(string='Type',
-                            selection=[('customer', 'Customer'), ('shared', 'Shared'), ('competitor', 'Competitor')])
+    type = fields.Selection(
+        string='Type',
+        selection=[
+            ('customer', 'Customer'),
+            ('shared', 'Shared'),
+            ('competitor', 'Competitor')
+        ])
     customer_pricelist_ids = fields.One2many('customer.pricelist', 'pricelist_id')
     customer_product_price_ids = fields.One2many('customer.product.price', 'pricelist_id')
     expiry_date = fields.Date('Valid Until')
@@ -47,8 +52,7 @@ class ProductPricelist(models.Model):
                 'base.group_system'):
             records = super(ProductPricelist, self).search(args, offset, limit, order, count)
             out_result = records.filtered(
-                lambda rec: rec.type == 'competitor' or self.env.user.partner_id.id in rec.mapped(
-                    'partner_ids').mapped('sales_person_ids').ids)
+                lambda rec: rec.type == 'competitor' or self.env.user.partner_id.id in rec.mapped('partner_ids').mapped('sales_person_ids').ids)
             return out_result
         return super(ProductPricelist, self).search(args, offset, limit, order, count)
 
@@ -65,6 +69,5 @@ class ProductPricelist(models.Model):
         product_prices.write(vals)
 
 
-ProductPricelist()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

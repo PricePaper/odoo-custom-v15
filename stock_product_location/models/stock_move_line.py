@@ -7,8 +7,11 @@ class StockMoveLine(models.Model):
     _inherit = "stock.move.line"
 
     @api.onchange('product_id', 'product_uom_id')
-    def onchange_product_id(self):
-        res = super(StockMoveLine, self).onchange_product_id()
+    def _onchange_product_id(self):
+        """
+        Update Source/Destination Location by Product/Catgory Stock Location
+        """
+        res = super(StockMoveLine, self)._onchange_product_id()
         if self.product_id:
             product_loc_id = self.product_id.property_stock_location.id or self.product_id.categ_id.property_stock_location.id or ''
             if self.location_id.usage == 'supplier':
@@ -17,7 +20,5 @@ class StockMoveLine(models.Model):
                 self.location_id = product_loc_id
         return res
 
-
-StockMoveLine()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

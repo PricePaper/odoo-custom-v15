@@ -2,6 +2,7 @@
 {
     'name': 'Customer Statement Report',
     'version': '1.0',
+    'license': 'LGPL-3',
     'summary': 'Customer Statement Report',
     'description': """
 Customer Statement Report
@@ -11,7 +12,8 @@ Customer Statement Report
     'website': 'http://confianzit.com',
 
     'data': [
-        'report/customer_statement_report.xml',
+        'security/ir.model.access.csv',
+        'reports/customer_statement_report.xml',
         'data/mail_data.xml',
         'wizard/customer_statement_wizard.xml',
         'views/res_partner_view.xml',

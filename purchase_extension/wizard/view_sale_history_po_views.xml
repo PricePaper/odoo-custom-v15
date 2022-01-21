@@ -16,9 +16,6 @@
     </record>
 
 
-
-
-
     <record id="view_sales_history_po_pivot" model="ir.ui.view">
          <field name="name">view.sales.history.po.pivot</field>
          <field name="model">view.sales.history.po</field>
@@ -54,7 +51,6 @@
         <field name="name">Sales History</field>
         <field name="res_model">view.sales.history.po</field>
         <field name="domain">[]</field>
-        <field name="view_type">form</field>
         <field name="search_view_id" ref="purchase_extension.view_sales_history_po_search"/>
         <field name="view_mode">tree,pivot,form</field>
     </record>

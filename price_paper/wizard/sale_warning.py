@@ -15,7 +15,6 @@ class SaleWarningWizard(models.TransientModel):
         res['warning_message'] = self._context.get('warning_message', '')
         return res
 
-    @api.multi
     def close_window(self):
         return {
             'type': 'ir.actions.client',

@@ -10,7 +10,7 @@ class DriverInvoiceWizard(models.TransientModel):
 
     amount = fields.Float(string='Invoice Amount')
 
-    @api.multi
+
     def create_invoice(self):
 
         batches = self.env['stock.picking.batch'].browse(self._context.get('active_ids'))

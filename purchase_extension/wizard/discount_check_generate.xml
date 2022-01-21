@@ -42,7 +42,6 @@
             <field name="name">Generate Vendor Checks</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">generate.discount.check</field>
-            <field name="view_type">form</field>
             <field name="view_mode">form</field>
             <field name="view_id" ref="generate_discount_check_wizard"/>
             <field name="target">new</field>

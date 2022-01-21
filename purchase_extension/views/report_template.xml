@@ -17,16 +17,28 @@
             <field name="header_spacing">10</field>
             <field name="dpi">90</field>
         </record>
-        <report
-                string="Vendor Product Report"
-                id="vendor_product_report"
-                model="vedor.product.report.wizard"
-                report_type="qweb-pdf"
-                file="purchase_extension.report_pdf_vendor_product"
-                name="purchase_extension.report_pdf_vendor_product"
-                paperformat="paperformat_report_pdf_vendor_product"
-                print_report_name="'Vendor Product Report'"
-        />
+<!--        <report-->
+<!--                string="Vendor Product Report"-->
+<!--                id="vendor_product_report"-->
+<!--                model="vedor.product.report.wizard"-->
+<!--                report_type="qweb-pdf"-->
+<!--                file="purchase_extension.report_pdf_vendor_product"-->
+<!--                name="purchase_extension.report_pdf_vendor_product"-->
+<!--                paperformat="paperformat_report_pdf_vendor_product"-->
+<!--                print_report_name="'Vendor Product Report'"-->
+<!--        />-->
+
+
+        <record id="vendor_product_report" model="ir.actions.report">
+            <field name="name">Vendor Product Report</field>
+            <field name="model">vedor.product.report.wizard</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">purchase_extension.report_pdf_vendor_product</field>
+            <field name="report_file">purchase_extension.report_pdf_vendor_product</field>
+            <field name="print_report_name">'Vendor Product Report- %s' % (object.name)</field>
+            <field name="paperformat_id" ref="paperformat_report_pdf_vendor_product"/>
+
+        </record>
 
     </data>
 </odoo>

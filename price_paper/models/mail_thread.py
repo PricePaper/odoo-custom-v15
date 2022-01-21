@@ -13,6 +13,5 @@ class MailThread(models.AbstractModel):
         return super().create(vals)
 
 
-MailThread()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

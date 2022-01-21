@@ -12,6 +12,5 @@ class CommissionAgeing(models.Model):
     company_id = fields.Many2one('res.company', string='Company')
 
 
-CommissionAgeing()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

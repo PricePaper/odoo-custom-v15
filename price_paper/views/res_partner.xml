@@ -7,7 +7,7 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
-                <button name="toggle_active" position="after">
+                <widget name="web_ribbon" position="after">
                     <button class="oe_stat_button" type="action"
                             name="%(price_paper.act_res_partner_2_sale_order_line)d"
                             attrs="{'invisible': [('customer', '=', False)]}" string=" Purchase History"
@@ -15,10 +15,10 @@
                     <button class="oe_stat_button" type="action" name="%(price_paper.act_res_partner_2_product_notes)d"
                             attrs="{'invisible': [('customer', '=', False)]}" string=" Product Notes"
                             icon="fa-sticky-note"/>
-                </button>
+                </widget>
 
-                <xpath expr="//notebook/page[@name='sales_purchases']/group/group/field[@name='customer']"
-                       position="after">
+                <xpath expr="//notebook/page[@name='sales_purchases']/group//field[@name='user_id']" position="after">
+                    <field name="is_sales_person"/>
                     <field name="customer_code" readonly="1"/>
                     <field name="established_date"/>
                     <field name="last_sold_date"/>
@@ -44,7 +44,12 @@
                             </div>
                 </xpath> -->
 
-                <field name="trust" position="attributes">
+<!--                <field name="trust" position="attributes">-->
+<!--CAPTCHA:can't find in odoo-15-->
+<!--                </field>-->
+                <field name="vat" position="after">
+                    <!-- <field name="supplier" invisible="1"/> -->
+
 
                 </field>
                  <xpath expr="//field[@name='child_ids']" position="attributes">
@@ -56,14 +61,14 @@
                         'default_state_id': state_id,
                         'default_zip': zip,
                         'default_country_id': country_id,
-                        'default_supplier': supplier,
+                        <!-- 'default_supplier': supplier, -->
                         'default_customer': customer,
                         'default_lang': lang,
                         'default_user_id': user_id,
                         'lastname': lastname,
                         'firstname': firstname}</attribute>
                 </xpath>
-                <xpath expr="//field[@name='child_ids']/form/sheet/group/group[position()=2]/field[@name='name']" position="before">
+                <xpath expr="//field[@name='child_ids']/form/sheet/group//field[@name='name']" position="before">
                     <field name="default_shipping" attrs="{'invisible': [('type', '!=', 'delivery')]}"/>
                     <field name="property_delivery_carrier_id" attrs="{'invisible': [('type', '!=', 'delivery')]}"/>
                     <field name="customer_code" readonly="1"/>
@@ -75,6 +80,7 @@
 
                 <xpath expr="//notebook/page[@name='sales_purchases']/group[1]" position="inside">
                     <group string="Pricelists">
+                        <field name="customer" invisible="1"/>
                         <field name='customer_pricelist_ids' attrs="{'invisible':[('customer', '=', False)]}"
                                nolabel="1">
                             <tree string="Customer Pricelist priority" editable="bottom">
@@ -85,10 +91,10 @@
                     </group>
                 </xpath>
 
-                <xpath expr="//field[@name='category_id']" position="after">
+  <!--               <xpath expr="//field[@name='category_id']" position="after">
                     <field name="seller_partner_ids" attrs="{'invisible': [('supplier', '=', False)]}"
                            widget="many2many_tags"/>
-                </xpath>
+                </xpath> -->
 
                 <xpath expr="//notebook/page[@name='sales_purchases']/group[1]" position="after">
                     <group string="Shipping Days">
@@ -204,7 +210,7 @@
                                 <field name="commercial_partner_id" invisible="1"/>
                                 <field name="customer" invisible="1"/>
                                 <field name="parent_id" invisible="1"/>
-                                <field name="supplier" invisible="1"/>
+                                <!-- <field name="supplier" invisible="1"/> -->
                                 <field name="customer_code" readonly="1"/>
                                 <label for="street" string="Address"/>
                                 <div class="o_address_format">
@@ -225,10 +231,11 @@
                                 <field name="vat" placeholder="e.g. BE0477472701" attrs="{'readonly': [('parent_id','!=',False)]}"/>
                                </group>
                                 <group string="Fiscal Information">
+                                    <!-- attrs="{'required': ['|', ('customer', '=', True),'|', '&amp;', '&amp;', ('parent_id', '=', False), ('type', '=', 'contact'), ('supplier', '=', False), ('type', '=', 'delivery')]}" -->
                                     <field name="property_account_position_id"
                                            options="{'no_create': True, 'no_open': True}"
                                            readonly="0"
-                                           attrs="{'required': ['|', ('customer', '=', True),'|', '&amp;', '&amp;', ('parent_id', '=', False), ('type', '=', 'contact'), ('supplier', '=', False), ('type', '=', 'delivery')]}"
+                                           
                                           />
                                 </group>
                         </group>
@@ -348,7 +355,7 @@
 
                 <field name="property_account_payable_id" position="attributes">
                     <attribute name="readonly">1</attribute>
-                    <attribute name="attrs">{'required': [('supplier', '=', True)]}</attribute>
+                    <!-- <attribute name="attrs">{'required': [('supplier', '=', True)]}</attribute> -->
                 </field>
 
                 <xpath expr="//group[@name='accounting_entries']" position="attributes">
@@ -378,7 +385,7 @@
 
                 <xpath expr="//field[@name='property_account_position_id']" position="attributes">
                     <attribute name="readonly">0</attribute>
-                    <attribute name="attrs">{'required': ['|', ('customer', '=', True),'|', '&amp;', '&amp;', ('parent_id', '=', False), ('type', '=', 'contact'), ('supplier', '=', False), ('type', '=', 'delivery')]}</attribute>
+                    <!-- <attribute name="attrs">{'required': ['|', ('customer', '=', True),'|', '&amp;', '&amp;', ('parent_id', '=', False), ('type', '=', 'contact'), ('supplier', '=', False), ('type', '=', 'delivery')]}</attribute> -->
                 </xpath>
 
                 <xpath expr="//field[@name='property_account_receivable_id']" position="attributes">

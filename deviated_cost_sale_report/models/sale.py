@@ -3,7 +3,6 @@
 from datetime import datetime
 
 from odoo import models, fields, api
-from odoo.addons import decimal_precision as dp
 
 
 class SaleOrderLine(models.Model):
@@ -11,9 +10,9 @@ class SaleOrderLine(models.Model):
 
     vendor_id = fields.Many2one('res.partner', string="Vendor")
     rebate_contract_id = fields.Many2one('deviated.cost.contract', string="Rebate Contract Applicable")
-    product_cost = fields.Float(string='Cost', digits=dp.get_precision('Product Price'))
+    product_cost = fields.Float(string='Cost', digits='Product Price')
 
-    @api.multi
+
     def compute_vendor(self):
         """
         Set the vendor of selected product in sale order line
@@ -29,7 +28,6 @@ class SaleOrderLine(models.Model):
         return vendor_id
 
 
-    @api.multi
     def calculate_unit_price_and_contract(self):
         """
         Calculate the unit price of product by
@@ -51,7 +49,7 @@ class SaleOrderLine(models.Model):
                     contract_id = contract.id if contract_product_cost_id else False
         return unit_price, contract_id
 
-    @api.multi
+
     def calculate_customer_price(self):
         """
         Overrride the method to update msg if the product
@@ -62,7 +60,7 @@ class SaleOrderLine(models.Model):
             msg = "Unit price of this product is fetched from the contract '%s'" % (self.rebate_contract_id.name)
         return msg, product_price, price_from
 
-    @api.multi
+
     def compute_rebate_contract(self):
         """
         Set the contract_id in sale order line
@@ -117,8 +115,5 @@ class SaleOrderLine(models.Model):
                 line.working_cost = unit_price
         return res
 
-
-
-SaleOrderLine()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

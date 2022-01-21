@@ -13,6 +13,5 @@ class DeviatedCostContract(models.Model):
     partner_ids = fields.Many2many('res.partner', string="Partners")
 
 
-DeviatedCostContract()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

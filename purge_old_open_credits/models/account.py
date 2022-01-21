@@ -2,27 +2,35 @@
 
 from datetime import datetime, timedelta
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 
 class AccountInvoice(models.Model):
-    _inherit = "account.invoice"
+    _inherit = "account.move"
+
 
     @api.model
     def _cron_purge_old_open_credits(self):
+        """
+        Cron method to identify old open credit notes and writeoff the amount
+        """
         limit_days = self.env.user.company_id and self.env.user.company_id.purge_old_open_credit_limit or 120
         domain_date = datetime.today() - timedelta(days=limit_days)
         credit_notes = self.search([
-            ('state', '=', 'open'),
-            ('type', '=', 'out_refund'),
-            ('date_invoice', '<', domain_date.strftime('%Y-%m-%d')),
+            ('state', '=', 'posted'),
+            ('move_type', '=', 'out_refund'),
+            ('payment_state','in',('not_paid','in_payment','partial')),
+            ('invoice_date', '<', domain_date.strftime('%Y-%m-%d')),
         ]).sudo()
         for invoice in credit_notes:
             invoice.create_purge_writeoff()
         return True
 
     def create_purge_writeoff(self):
-
+        """
+        Writeoff the balance amount and reconcile the credit note
+        """
         self.ensure_one()
         rev_line_account = self.partner_id and self.partner_id.property_account_receivable_id
         if not rev_line_account:
@@ -35,13 +43,13 @@ class AccountInvoice(models.Model):
         if not wrtf_account:
             raise UserError(_('Please set a Write off account for credit Purge.'))
 
-        wrtf_amount = self.residual
+        wrtf_amount = self.amount_residual
 
         amobj = self.env['account.move'].create({
             'company_id': self.company_id.id,
             'date': fields.Date.today(),
             'journal_id': self.journal_id.id,
-            'ref': self.reference,
+            'ref': self.payment_reference,
             'line_ids': [(0, 0, {
                 'account_id': rev_line_account.id,
                 'company_currency_id': company_currency.id,
@@ -60,12 +68,9 @@ class AccountInvoice(models.Model):
                 'partner_id': self.partner_id.id
              })]
         })
-        amobj.post()
-        rcv_lines = self.move_id.line_ids.filtered(lambda r: r.account_id.user_type_id.type == 'receivable')
+        amobj.action_post()
+        rcv_lines = self.line_ids.filtered(lambda r: r.account_id.user_type_id.type == 'receivable')
         rcv_wrtf = amobj.line_ids.filtered(lambda r: r.account_id.user_type_id.type == 'receivable')
         (rcv_lines + rcv_wrtf).reconcile()
-
-
-AccountInvoice()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

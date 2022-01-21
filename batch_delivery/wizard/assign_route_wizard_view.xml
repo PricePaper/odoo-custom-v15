@@ -17,7 +17,7 @@
                     <footer>
                         <button string="Assign" type="object" name="assign_routes"/>
                         or
-                        <button string="Cancel" class="oe_link" special="cancel"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
                     </footer>
                 </form>
             </field>
@@ -28,7 +28,6 @@
             <field name="name">Assign Routes Selector</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">assign.route.wizard</field>
-            <field name="view_type">form</field>
             <field name="view_mode">form</field>
             <field name="view_id" ref="view_assign_route_wizard_form"/>
             <field name="target">new</field>

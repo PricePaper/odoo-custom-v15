@@ -8,7 +8,7 @@
             <field name="model">account.payment</field>
             <field name="inherit_id" ref="account.view_account_payment_form"/>
             <field name="arch" type="xml">
-                <field name="communication" position="after">
+                <field name="ref" position="after">
                     <field name="transaction_id" readonly="1"/>
                     <field name="payment_id" readonly="1"/>
                 </field>
@@ -36,16 +36,17 @@
             </field>
         </record>
 
-        <record id="view_account_payment_invoice_form" model="ir.ui.view">
-            <field name="name">Add context for refund</field>
-            <field name="model">account.payment</field>
-            <field name="inherit_id" ref="account.view_account_payment_invoice_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//button[@name='action_validate_invoice_payment']" position="attributes">
-                    <attribute name="context">{'refund_mode':True}</attribute>
-                </xpath>
-            </field>
-        </record>
+            <!--TODO purpose in V15?.-->
+<!--        <record id="view_account_payment_invoice_form" model="ir.ui.view">-->
+<!--            <field name="name">Add context for refund</field>-->
+<!--            <field name="model">account.payment</field>-->
+<!--            <field name="inherit_id" ref="account.view_account_payment_invoice_form"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//button[@name='action_validate_invoice_payment']" position="attributes">-->
+<!--                    <attribute name="context">{'refund_mode':True}</attribute>-->
+<!--                </xpath>-->
+<!--            </field>-->
+<!--        </record>-->
 
 
         <record id="account_move_inherit_view" model="ir.ui.view">

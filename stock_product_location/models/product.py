@@ -12,17 +12,13 @@ class ProductTemplate(models.Model):
                                                    "Leave empty if you want to use the location of this product category")
 
 
-ProductTemplate()
-
 
 class ProductCategory(models.Model):
     _inherit = 'product.category'
 
     property_stock_location = fields.Many2one('stock.location', company_dependent=True,
-                                              string='Stock Location', method=True,
+                                              string='Stock Location',
                                               help="This location will be proposed as source (sale,internal) or target (purchase,production) location for stock moves of this category")
 
-
-ProductCategory()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -15,7 +15,6 @@ class UploadFileWizard(models.TransientModel):
     file_name = fields.Char(string='File name')
     customer_product_ids = fields.Many2many('customer.product.price', string="Customer Product Price")
 
-    @api.multi
     @api.onchange('upload_file')
     def onchange_load_data(self):
         """
@@ -77,7 +76,6 @@ class UploadFileWizard(models.TransientModel):
                     result.append(val)
             data.customer_product_ids = result
 
-    @api.multi
     def import_pricelists(self):
         """
         Update customer product price with the  data

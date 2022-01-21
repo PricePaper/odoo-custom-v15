@@ -20,7 +20,6 @@
             <field name="name">Pending Products</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">picking.pending.product</field>
-            <field name="view_type">form</field>
             <field name="view_mode">tree</field>
             <field name="help" type="html">
                 <p>

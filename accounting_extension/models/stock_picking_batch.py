@@ -6,7 +6,7 @@ class StockPickingBatch(models.Model):
     _inherit = 'stock.picking.batch'
 
 
-    @api.multi
+
     def add_new_partner_line(self):
         """
         Return 'add cash collected line wizard'
@@ -23,4 +23,3 @@ class StockPickingBatch(models.Model):
             'target': 'new'
         }
 
-StockPickingBatch()

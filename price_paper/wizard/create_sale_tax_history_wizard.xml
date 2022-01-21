@@ -27,7 +27,6 @@
             <field name="name">Create Sales Tax History</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">sale.tax.history.wizard</field>
-            <field name="view_type">form</field>
             <field name="view_mode">form</field>
             <field name="view_id" ref="view_sale_tax_history_wiz"/>
             <field name="target">new</field>

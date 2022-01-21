@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import calendar
-from datetime import datetime
+from datetime import datetime,date
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
@@ -65,10 +65,6 @@ class FbprophetConfig(models.Model):
         if not (self.interval_width >= 0 and self.interval_width <= 1):
             raise ValidationError(_("Interval width should be in the range 0.0-1.0"))
 
-
-FbprophetConfig()
-
-
 class ChangepointDates(models.Model):
     _name = 'changepoint.dates'
     _description = 'CHanger Point Dates'
@@ -86,21 +82,22 @@ class ChangepointDates(models.Model):
         name of week day
         """
         for date in self:
+            day = ''
             if date.date:
                 # date_obj = datetime.strptime(date.date, '%Y-%m-%d').date()
-                date.day = calendar.day_name[date.date.weekday()]
+                day = calendar.day_name[date.date.weekday()]
+            date.day = day
 
     @api.constrains('date')
     def change_point_date(self):
         """
         date should be prior to today
         """
-        date_order = datetime.strptime(self.date, '%Y-%m-%d')
-        date_today = datetime.strptime(fields.Date.context_today(self), '%Y-%m-%d')
-        if date_order > date_today:
-            raise ValidationError(_('Changepoint date should be prior to today.'))
+        for date in self:
+            date_order = date.date
+            date_today = date.today()
+            if date_order > date_today:
+                raise ValidationError(_('Changepoint date should be prior to today.'))
 
-
-ChangepointDates()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

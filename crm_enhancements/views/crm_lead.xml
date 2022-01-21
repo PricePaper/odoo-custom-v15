@@ -4,7 +4,7 @@
         <record id="crm_lead_inherit_crm_enhance" model="ir.ui.view">
             <field name="name">crm.lead.crm.enhance</field>
             <field name="model">crm.lead</field>
-            <field name="inherit_id" ref="crm.crm_case_form_view_leads"/>
+            <field name="inherit_id" ref="crm.crm_lead_view_form"/>
             <field name="arch" type="xml">
 
                 <xpath expr="//notebook[1]" position="inside">
@@ -34,33 +34,35 @@
             </field>
         </record>
 
-        <record id="crm_opportunity_inherit_crm_enhancement" model="ir.ui.view">
-            <field name="name">crm.opportunity.crm.enhance</field>
-            <field name="model">crm.lead</field>
-            <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
-            <field name="arch" type="xml">
-                <xpath expr="//notebook[1]" position="inside">
-                    <page string="Prospect Values" autofocus="autofocus">
-                        <group col="4">
-                            <field name="rev_per_trans" widget="monetary"
-                                   options="{'currency_field': 'company_currency'}"/>
-                            <field name="business_freq"/>
+<!--Note: V15 Lead and Opportunities have same form view-->
+
+<!--        <record id="crm_opportunity_inherit_crm_enhancement" model="ir.ui.view">-->
+<!--            <field name="name">crm.opportunity.crm.enhance</field>-->
+<!--            <field name="model">crm.lead</field>-->
+<!--            <field name="inherit_id" ref="crm.crm_lead_view_form"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//notebook[1]" position="inside">-->
+<!--                    <page string="Prospect Values" autofocus="autofocus">-->
+<!--                        <group col="4">-->
+<!--                            <field name="rev_per_trans" widget="monetary"-->
+<!--                                   options="{'currency_field': 'company_currency'}"/>-->
+<!--                            <field name="business_freq"/>-->
                             <!--                            <field name="exp_mon_rev" widget="monetary" options="{'currency_field': 'company_currency'}"/>-->
-                        </group>
-                    </page>
-                </xpath>
+<!--                        </group>-->
+<!--                    </page>-->
+<!--                </xpath>-->
 
-                <xpath expr="//field[@name='user_id']" position="attributes">
-                    <attribute name="invisible">True</attribute>
-                </xpath>
+<!--                <xpath expr="//field[@name='user_id']" position="attributes">-->
+<!--                    <attribute name="invisible">True</attribute>-->
+<!--                </xpath>-->
 
-                <field name="user_id" position="after">
-                    <field name="sales_person_ids" widget="many2many_tags" domain="[('is_sales_person', '=', True)]"
-                           options="{'no_create_edit': True}"/>
-                </field>
+<!--                <field name="user_id" position="after">-->
+<!--                    <field name="sales_person_ids" widget="many2many_tags" domain="[('is_sales_person', '=', True)]"-->
+<!--                           options="{'no_create_edit': True}"/>-->
+<!--                </field>-->
 
-            </field>
-        </record>
+<!--            </field>-->
+<!--        </record>-->
 
         <!--        <record id="crm_lead_kanban_view_inherit" model="ir.ui.view">-->
         <!--            <field name="name">lead.kanban.inherit</field>-->

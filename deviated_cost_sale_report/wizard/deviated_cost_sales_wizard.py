@@ -12,6 +12,8 @@ class DeviatedCost(models.TransientModel):
     _name = "deviated.cost.sale"
     _description = "Deviated Cost Sale"
 
+
+
     @api.model
     def _get_months(self):
         """
@@ -26,7 +28,6 @@ class DeviatedCost(models.TransientModel):
             res.append((val, string))
         return res
 
-    @api.multi
     def print_report(self):
         for record in self:
             month_no, year = self.month.split(" ")
@@ -41,10 +42,11 @@ class DeviatedCost(models.TransientModel):
             return self.env.ref('deviated_cost_sale_report.report_deviated_cost_sale').report_action(
                 self.env['sale.order'], data)
 
+
     partner_id = fields.Many2one('res.partner', string="Vendor")
     month = fields.Selection(string="Month", selection=_get_months)
 
 
-DeviatedCost()
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -20,7 +20,6 @@ class PurchaseOrder(models.Model):
             else:
                 order.storage_contract_po = False
 
-    @api.multi
     def button_cancel(self):
         result = super(PurchaseOrder, self).button_cancel()
         sale = self.mapped('order_line.sale_order_id').filtered(lambda s: s.storage_contract)
@@ -28,7 +27,6 @@ class PurchaseOrder(models.Model):
             sale.write({'sc_po_done': False, 'state': 'sale'})
         return result
 
-    @api.multi
     def button_draft(self):
         res = super(PurchaseOrder, self).button_draft()
         sale = self.order_line.mapped('sale_order_id').filtered(lambda s: s.storage_contract)
@@ -36,7 +34,6 @@ class PurchaseOrder(models.Model):
             sale.write({'sc_po_done': True})
         return res
 
-    @api.multi
     def button_confirm(self):
         """
         cancel all other RFQ under the same purchase agreement
@@ -45,7 +42,6 @@ class PurchaseOrder(models.Model):
         return super(PurchaseOrder, self).button_confirm()
 
 
-PurchaseOrder()
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

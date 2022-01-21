@@ -20,7 +20,8 @@
                 <field name="date" position="after">
                     <field name="picking_partner_id"/>
                     <field name="picking_id" attrs="{'invisible':[('picking_id', '=', False)]}"/>
-                    <field name="inventory_id" attrs="{'invisible':[('picking_id', '!=', False)]}"/>
+<!--                    TODO:: fix this in odoo-15migration-->
+<!--                    <field name="inventory_id" attrs="{'invisible':[('picking_id', '!=', False)]}"/>-->
                 </field>
                 <field name="product_id" position="after">
                     <field name="product_onhand_qty" />
@@ -54,7 +55,7 @@
                 <field name="move_ids_without_package" readonly="1">
                     <tree>
                         <field name="name" invisible="1"/>
-                        <field name="date_expected" invisible="1"/>
+<!--                 migration change 12 -> 15       <field name="date_expected" invisible="1"/>-->
                         <field name="state" invisible="1" readonly="0"/>
                         <field name="picking_type_id" invisible="1"/>
                         <field name="location_id" invisible="1"/>
@@ -66,7 +67,7 @@
                         <field name="show_reserved_availability" invisible="1"/>
                         <field name="show_operations" invisible="1" readonly="1"/>
                         <field name="additional" invisible="1"/>
-                        <field name="has_move_lines" invisible="1"/>
+<!--                   migration change 12 -> 15     <field name="has_move_lines" invisible="1"/>-->
                         <field name="is_locked" invisible="1"/>
                         <field name="product_id"/>
                         <field name="po_original_qty" string="Initial Demand"/>

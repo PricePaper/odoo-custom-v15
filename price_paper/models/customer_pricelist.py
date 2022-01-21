@@ -13,6 +13,5 @@ class CustomerPricelist(models.Model):
     partner_id = fields.Many2one('res.partner', string='Customer', ondelete='cascade',)
 
 
-CustomerPricelist()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -10,6 +10,7 @@
 {
     'name': 'Confianz Theme',
     'version': '12.0.1.0',
+    'license': 'LGPL-3',
     'category': 'Theme',
     'sequence': '3',
     'description': """
@@ -19,8 +20,13 @@
     'website': 'https://www.confianzit.com',
     'depends': ['web_enterprise'],
     'data': [
-        'views/assets.xml',
+#        'views/assets.xml',
     ],
+    'assets': {
+        'web.assets_backend': ['/odoov12_theme/static/src/css/odoov12_theme.css'],
+        'web_enterprise._assets_primary_variables' : ['/odoov12_theme/static/src/scss/primary_variables.scss'],
+        'web_enterprise._assets_secondary_variables' : ['/odoov12_theme/static/src/scss/secondary_variables.scss']
+        },
     'demo': [],
     'installable': True,
     'application': False,

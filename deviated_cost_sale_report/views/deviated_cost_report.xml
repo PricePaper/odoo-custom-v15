@@ -26,18 +26,15 @@
                               t-field-options='{"widget": "contact", "fields": ["address","email"], "no_marker": true}'/>
                     </div>
                 </div>
-                <div class="article">
-                    <div class="page" style="margin-top:25px;">
-                        <div class="row text-center">
+                <div class="row article">
+                    <div style="margin-top:25px;" width="100%">
+                        <div class="text-center">
                             <strong><h3>VENDOR REBATE REPORT</h3></strong>
+                            <div style="margin-left:10px">AS OF : <span t-esc="datetime.datetime.strptime(data.get('from_date'), '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')"/>
+                            <br/>
+                            ON : <span t-esc="datetime.datetime.strptime(data.get('to_date'), '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')"/></div>
                         </div>
-                        <div class="row" style="margin-left:10px;">
-                            AS OF : <span
-                                t-esc="datetime.datetime.strptime(data.get('from_date'), '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')"/>
-                            <br></br>
-                            ON : <span
-                                t-esc="datetime.datetime.strptime(data.get('to_date'), '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')"/>
-                        </div>
+                        <br/><br/><br/>
                         <div>
                             <table class="table table-bordered" width="100%">
                                 <tr>

@@ -26,26 +26,26 @@
          </field>
      </record>
 
-        <record id="view_stock_move_rest_window" model="ir.ui.view">
-        <field name="name">stock.move.reset.logic.window</field>
-        <field name="model">stock.move</field>
-        <field name="arch" type="xml">
-            <form>
-                <p class="text-muted" style="width:350px;">
-                      &#10148; Please enter the required quantities for reset.
-                </p>
-                <group>
-                    <group>
-                        <field name="qty_update"/>
-                    </group>
-                </group>
-                <footer class="oe_edit_only">
-                        <button string="Reset" type="object" name="action_reset" class="oe_highlight"/>
-                        <button string="Discard" special="cancel"/>
-                </footer>
-            </form>
-         </field>
-     </record>
+<!--        <record id="view_stock_move_rest_window" model="ir.ui.view">-->
+<!--        <field name="name">stock.move.reset.logic.window</field>-->
+<!--        <field name="model">stock.move</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <form>-->
+<!--                <p class="text-muted" style="width:350px;">-->
+<!--                      &#10148; Please enter the required quantities for reset.-->
+<!--                </p>-->
+<!--                <group>-->
+<!--                    <group>-->
+<!--                        <field name="qty_update"/>-->
+<!--                    </group>-->
+<!--                </group>-->
+<!--                <footer class="oe_edit_only">-->
+<!--                        <button string="Reset" type="object" name="action_reset" class="oe_highlight"/>-->
+<!--                        <button string="Discard" special="cancel"/>-->
+<!--                </footer>-->
+<!--            </form>-->
+<!--         </field>-->
+<!--     </record>-->
 
         <record id="view_stock_move_nosuggest_reson_for_return_operations" model="ir.ui.view">
             <field name="name">stock.move.operations.reason.for.return.form</field>
@@ -96,18 +96,19 @@
             <field eval="8" name="priority"/>
             <field name="arch" type="xml">
                 <tree string="Moves" create="0" editable="top">
-                    <field name="reference" readonly="1"/>
-                    <field name="picking_type_id" invisible="1"/>
-                    <field name="partner_id"/>
-                    <field name="product_id" readonly="1"/>
-                    <field name="product_uom_qty" readonly="1"/>
-                    <field name="qty_available" string="Available Quantity" readonly="1"/>
-                    <field name="reserved_availability"/>
-                    <field name="product_uom" options="{'no_open': True, 'no_create': True}" string="Unit of Measure"
-                           groups="uom.group_uom" readonly="1"/>
-                    <field name="reserved_availability" readonly="1"/>
-                    <field name="qty_update" string="Reset Logic" invisible="1"/>
-                    <button name="action_show_reset_window" string="Reset Reserve Qty" type="object" icon="fa-refresh text-success"/>
+<!--                    <field name="reference" readonly="1"/>-->
+<!--                    <field name="picking_type_id" invisible="1"/>-->
+<!--                    <field name="partner_id"/>-->
+<!--                    <field name="product_id" readonly="1"/>-->
+<!--                    <field name="product_uom_qty" readonly="1"/>-->
+<!--                    <field name="qty_available" string="Available Quantity" readonly="1"/>-->
+<!--                    <field name="reserved_availability"/>-->
+<!--                    <field name="product_uom" options="{'no_open': True, 'no_create': True}" string="Unit of Measure"-->
+<!--                           groups="uom.group_uom" readonly="1"/>-->
+<!--                    <field name="reserved_availability" readonly="1"/>-->
+<!--                    <field name="qty_update" string="Reset Logic" invisible="1"/>-->
+                    <button name="action_show_reset_window" string="" type="object"
+                            icon="fa-refresh text-success"/>
                     <field name="state" readonly="1"/>
                 </tree>
             </field>
@@ -118,7 +119,6 @@
             <field name="res_model">stock.move</field>
             <field name="type">ir.actions.act_window</field>
             <field name="view_mode">tree</field>
-            <field name="view_type">form</field>
             <field name="view_id" ref="pending_product_move_tree"/>
             <field name="search_view_id" ref="stock.view_move_search"/>
             <field name="context">{'search_default_future': 1, 'search_default_by_product': 1}</field>
@@ -148,7 +148,6 @@
             <field name="inherit_id" ref="stock.view_move_form"/>
             <field name="arch" type="xml">
                  <xpath expr="//sheet" position="after">
-
                      <div class="oe_chatter">
                         <field name="message_follower_ids" widget="mail_followers"/>
                          <field name="activity_ids" widget="mail_activity"/>

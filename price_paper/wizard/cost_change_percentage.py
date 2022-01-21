@@ -8,7 +8,7 @@ class CostChangePercentage(models.TransientModel):
 
     percentage_change = fields.Float(string='Percentage change')
 
-    @api.multi
+
     def add_cost_change_lines(self):
         """
         Creating cost change lines
@@ -55,8 +55,5 @@ class CostChangePercentage(models.TransientModel):
         return True
 
 
-
-
-CostChangePercentage()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

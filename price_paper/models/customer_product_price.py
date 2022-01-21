@@ -31,8 +31,11 @@ class CustomerProductPrice(models.Model):
                 partner_id = rec.pricelist_id.mapped('partner_ids')
                 if partner_id and len(partner_id) == 1:
                     rec.partner_id = partner_id.id
+                else:
+                    rec.partner_id = False
+            else:
+                rec.partner_id = False
 
-    @api.multi
     @api.constrains('pricelist_id', 'product_id', 'product_uom')
     def _check_unique_constrain(self):
         for rec in self:
@@ -44,7 +47,6 @@ class CustomerProductPrice(models.Model):
                     raise ValidationError(
                         _('Already a record with same product and same UOM exists in Pricelist'))
 
-    @api.multi
     def write(self, vals):
         """
         overriden to update price_last_updated
@@ -99,7 +101,6 @@ class CustomerProductPrice(models.Model):
             self.env['product.price.log'].create(log_vals)
         return res
 
-    @api.multi
     @api.depends('pricelist_id', 'product_id', 'partner_id')
     def name_get(self):
         result = []
@@ -142,6 +143,5 @@ class CustomerProductPrice(models.Model):
             self.lock_expiry_date = False
 
 
-CustomerProductPrice()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

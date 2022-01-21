@@ -44,7 +44,6 @@
             <field name="name">Yearly Holiday List</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">yearly.holidays</field>
-            <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p>
@@ -130,7 +129,6 @@
             <field name="name">Fbprophet Config</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">fbprophet.config</field>
-            <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p>

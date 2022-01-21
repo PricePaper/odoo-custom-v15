@@ -12,7 +12,6 @@ class CommissionRules(models.Model):
     percentage = fields.Float(string='Percentage', required=True)
 
 
-    @api.multi
     @api.depends('based_on', 'percentage')
     def name_get(self):
         result = []
@@ -21,6 +20,6 @@ class CommissionRules(models.Model):
             result.append((record.id,name))
         return result
 
-CommissionRules()
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -1,76 +1,46 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
-from odoo.addons import decimal_precision as dp
 from odoo.tools import float_round
 from odoo.exceptions import UserError
 
+#todo not migrated we can do after finishing other modules
 class BatchPaymentCommon(models.Model):
-
     _inherit = ['mail.thread']
     _name = 'batch.payment.common'
+    _description = "Batch Payment Common"
 
     name = fields.Char(string='Batch Picking Name', default='New',
-        copy=False, required=True, help='Name of the batch payment')
+                       copy=False, required=True, help='Name of the batch payment')
     cash_collected_lines = fields.One2many('cash.collected.lines', 'common_batch_id',
-        string='Cash Collected Breakup')
+                                           string='Cash Collected Breakup')
     payment_ids = fields.One2many('account.payment', 'common_batch_id', string='Payments')
     actual_returned = fields.Float(string='Total Amount',
-        help='Total amount returned by the driver.',
-        digits=dp.get_precision('Product Price'))
+                                   help='Total amount returned by the driver.',
+                                   digits='Product Price')
     is_posted = fields.Boolean(string="Posted")
     pending_amount = fields.Float(string="Difference",
-        compute='_calculate_pending_amount')
+                                  compute='_calculate_pending_amount')
     batch_payment_count = fields.Integer(string='Batch Payment',
-        compute='_compute_batch_payment_count')
+                                         compute='_compute_batch_payment_count')
     cash_amount = fields.Float(string='Cash Amount',
-        digits=dp.get_precision('Product Price'))
+                               digits='Product Price')
     cheque_amount = fields.Float(string='Check Amount',
-        digits=dp.get_precision('Product Price'))
+                                 digits='Product Price')
     show_warning = fields.Boolean(string='Pending Line Warning')
     state = state = fields.Selection([
         ('draft', 'Draft'),
         ('paid', 'Paid'),
         ('cancel', 'Cancelled')], default='draft',
-        copy=False, track_visibility='onchange', required=True)
+        copy=False, tracking=True, required=True)
     card_amount = fields.Float(string='Credit card Amount',
-        digits=dp.get_precision('Product Price'))
+                               digits='Product Price')
 
-
-    @api.multi
     @api.depends('payment_ids')
     def _compute_batch_payment_count(self):
         for rec in self:
             rec.batch_payment_count = len(rec.payment_ids.mapped('batch_payment_id'))
 
-    @api.constrains('cheque_amount', 'cash_amount', 'actual_returned', 'card_amount')
-    def check_total_amount(self):
-
-        for batch in self:
-            msg = ''
-            cc_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_id.code == 'credit_card')
-            if cc_lines and float_round(sum(cc_lines.mapped('amount')), precision_digits=2) != float_round(batch.card_amount, precision_digits=2):
-                msg += 'Credit card Amount mismatch.\n'
-            check_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_id.code in ('check_printing_in', 'batch_payment'))
-            if check_lines and float_round(sum(check_lines.mapped('amount')), precision_digits=2) != float_round(batch.cheque_amount, precision_digits=2):
-                msg += 'Check Amount mismatch.\n'
-            cash_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_id.code == 'manual')
-            if cash_lines and float_round(sum(cash_lines.mapped('amount')), precision_digits=2) != float_round(batch.cash_amount, precision_digits=2):
-                msg += 'Cash Amount mismatch.\n'
-            if batch.pending_amount:
-                msg += 'Total Amount mismatch.\n'
-            if float_round(batch.cheque_amount + batch.cash_amount + batch.card_amount, precision_digits=2) != float_round(batch.actual_returned, precision_digits=2):
-                msg += 'Total amount and sum of Cash,Check,Credit Card does not match.\n'
-            if msg:
-                raise UserError(_(msg))
-
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'new') == 'new':
-            vals['name'] = self.env['ir.sequence'].next_by_code('batch.payment.common') or 'new'
-        return super(BatchPaymentCommon, self).create(vals)
-
-    @api.multi
     @api.depends('actual_returned', 'cash_collected_lines', 'cash_collected_lines.amount')
     def _calculate_pending_amount(self):
         for batch in self:
@@ -79,20 +49,21 @@ class BatchPaymentCommon(models.Model):
                 real_collected += float_round(cash_line.amount, precision_digits=2)
             batch.pending_amount = float_round(batch.actual_returned - real_collected, precision_digits=2)
 
-    @api.multi
-    def view_payments(self):
-        payments = self.payment_ids
-        action = self.env.ref('account.action_account_payments').read()[0]
-        if len(payments) > 1:
-            action['domain'] = [('id', 'in', payments.ids)]
-        elif len(payments) == 1:
-            action['views'] = [(self.env.ref('account.view_account_payment_form').id, 'form')]
-            action['res_id'] = payments.ids[0]
-        else:
-            action = {'type': 'ir.actions.act_window_close'}
-        return action
+    def register_payments(self):
+        for batch in self:
+            if not batch.actual_returned:
+                raise UserError(_('Please properly enter the returned amount'))
+            if not batch.cash_collected_lines:
+                raise UserError(_('Please add cash collected lines before proceeding.'))
+            if batch.cash_collected_lines and all(l.amount > 0 for l in batch.cash_collected_lines):
+                batch.cash_collected_lines.create_from_common_batch_payment()
+            else:
+                batch.show_warning = True
+                return
+            batch.show_warning = False
+            batch.is_posted = True
+            batch.state = 'paid'
 
-    @api.multi
     def view_batch_payments(self):
         self.ensure_one()
         payments = self.payment_ids
@@ -108,36 +79,3 @@ class BatchPaymentCommon(models.Model):
             action = {'type': 'ir.actions.act_window_close'}
 
         return action
-
-    @api.multi
-    def register_payments(self):
-        for batch in self:
-            msg = ''
-            cc_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_id.code == 'credit_card')
-            if cc_lines and sum(cc_lines.mapped('amount')) != batch.card_amount:
-                msg += 'Credit card Amount mismatch.\n'
-            check_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_id.code in ('check_printing_in', 'batch_payment'))
-            if check_lines and sum(check_lines.mapped('amount')) != batch.cheque_amount:
-                msg += 'Check Amount mismatch.\n'
-            cash_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_id.code == 'manual')
-            print(cash_lines)
-            if cash_lines and sum(cash_lines.mapped('amount')) != batch.cash_amount:
-                msg += 'Cash Amount mismatch.\n'
-            if msg:
-                raise UserError(_(msg))
-            if batch.pending_amount:
-                raise UserError(_('Total Amount mismatch'))
-            if float_round(batch.cheque_amount + batch.cash_amount + batch.card_amount, precision_digits=2) != float_round(batch.actual_returned, precision_digits=2):
-                raise UserError(_('Total amount and sum of Cash,Check,Credit Card does not match'))
-            if not batch.actual_returned:
-                raise UserError(_('Please properly enter the returned amount'))
-            if not batch.cash_collected_lines:
-                raise UserError(_('Please add cash collected lines before proceeding.'))
-            if batch.cash_collected_lines and all(l.amount > 0 for l in batch.cash_collected_lines):
-                batch.cash_collected_lines.create_from_common_batch_payment()
-            else:
-                batch.show_warning = True
-                return
-            batch.show_warning = False
-            batch.is_posted = True
-            batch.state = 'paid'

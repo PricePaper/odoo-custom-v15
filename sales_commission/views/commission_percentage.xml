@@ -52,7 +52,6 @@
             <field name="name">Customer Commission Rule</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">commission.percentage</field>
-            <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
               <p>

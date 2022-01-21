@@ -11,7 +11,6 @@ class SaleOrderRelease(models.TransientModel):
     _name = "release.sale.order"
     _description = "Release Cedit Hold sale orders"
 
-    @api.multi
     def release_order(self):
         context = dict(self._context or {})
         active_ids = context.get('active_ids', []) or []
@@ -30,7 +29,6 @@ class SalePriceHoldOrderRelease(models.TransientModel):
     _name = "release.price.hold.sale.order"
     _description = "Release Price Hold sale orders"
 
-    @api.multi
     def release_order(self):
         context = dict(self._context or {})
         active_ids = context.get('active_ids', []) or []

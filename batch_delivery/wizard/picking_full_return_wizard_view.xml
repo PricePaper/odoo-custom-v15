@@ -5,16 +5,20 @@
             <field name="name">picking.full.return.wizard</field>
             <field name="model">picking.full.return.wizard</field>
             <field name="arch" type="xml">
-                <p>
-                    Are you sure you want to fully return this DO ?
-                </p>
-                <field name="picking_id" invisible="1"/>
-                    <field name="sale_id" invisible="1"/>
-                <footer>
-                    <button string="Return" type="object" name="create_full_return"/>
-                    or
-                    <button string="Cancel" class="oe_link" special="cancel"/>
-                </footer>
+                <form>
+                    <sheet>
+                        <p>
+                            Are you sure you want to fully return this DO ?
+                        </p>
+                        <field name="picking_id" invisible="1"/>
+                            <field name="sale_id" invisible="1"/>
+                        <footer>
+                            <button string="Return" type="object" name="create_full_return"/>
+                            or
+                            <button string="Cancel" class="oe_link" special="cancel"/>
+                        </footer>
+                    </sheet>
+                </form>
             </field>
         </record>
 
@@ -22,7 +26,6 @@
             <field name="name">Picking Full Return</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">picking.full.return.wizard</field>
-            <field name="view_type">form</field>
             <field name="view_mode">form</field>
             <field name="view_id" ref="view_picking_full_return_wizard_form"/>
             <field name="target">new</field>

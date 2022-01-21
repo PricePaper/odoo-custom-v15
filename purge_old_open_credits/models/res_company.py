@@ -9,8 +9,6 @@ class ResCompany(models.Model):
     purge_old_open_credit_limit = fields.Integer(default=120, string="Open Credit Active Days")
 
 
-ResCompany()
-
 
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'

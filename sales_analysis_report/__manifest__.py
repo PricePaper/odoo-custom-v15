@@ -2,6 +2,7 @@
 {
     'name': 'Sales Analysis Report',
     'version': '1.0',
+    'license': 'LGPL-3',
     'summary': 'Sales Analysis Report',
     'description': """
 Sales Analysis Report

@@ -19,10 +19,10 @@
         </template>
         <record id="accounting_extension_view_account_payment_from_invoices" model="ir.ui.view">
             <field name="name">Register payment wizard</field>
-            <field name="model">account.register.payments</field>
-            <field name="inherit_id" ref="account.view_account_payment_from_invoices"/>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
             <field name="arch" type="xml">
-                <xpath expr="/form/group" position="after">
+                <xpath expr="/form/sheet/group" position="after">
                     <field name="payment_lines">
                         <tree editable='bottom' create='false' delete='false'>
                             <field name="invoice_id" readonly="1" force_save="1"/>
@@ -38,19 +38,22 @@
                         </tree>
                     </field>
                 </xpath>
-                <field name="partner_id" position="replace"/>
-                <xpath expr="/form/group" position="before">
-                    <group>
-                        <field name="partner_id" readonly="1"/>
-                    </group>
-                </xpath>
+                <widget name="web_ribbon"  position="after">
+                    <widget name="web_ribbon" title="Reconciled" attrs="{'invisible': [('reconciled_statements_count','=', 0)]}"/>
+                </widget>
+<!--                <field name="partner_id" position="replace"/>-->
+<!--                <xpath expr="/form/sheet/group" position="before">-->
+<!--                    <group>-->
+<!--                        <field name="partner_id" readonly="1"/>-->
+<!--                    </group>-->
+<!--                </xpath>-->
                 <field name="amount" position="after">
                     <field name="discount_total" invisible='1'/>
                 </field>
-                <xpath expr="//form/group/group[3]" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|', ('discount_amount', '!=', 0.0), ('payment_difference', '=', 0.0)]}</attribute>
-                </xpath>
-                <field name="communication" position="after">
+<!--                <xpath expr="//form/sheet/group/group[3]" position="attributes">-->
+<!--                    <attribute name="attrs">{'invisible': [('discount_amount', '!=', 0.0), ]}</attribute>&lt;!&ndash;TODO ('payment_difference', '=', 0.0) add this condition in domain payment_difference field not exist in V15&ndash;&gt;-->
+<!--                </xpath>-->
+                <field name="ref" position="after">
                     <field name="payment_reference"/>
                     <field name="discount_amount" attrs="{'invisible':[('discount_amount','=',0)]}"/>
                     <field name="writeoff_account_id" attrs="{'invisible':[('discount_amount','=',0)]}"/>
@@ -62,9 +65,9 @@
         <record id="accounting_extension_view_account_payment" model="ir.ui.view">
             <field name="name">Account Payment</field>
             <field name="model">account.payment</field>
-            <field name="inherit_id" ref="account.view_account_payment_invoice_form"/>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='communication']" position="after">
+                <xpath expr="//field[@name='ref']" position="after">
                     <field name="discount_amount" readonly="1" attrs="{'invisible':[('discount_amount','=',0)]}"/>
                 </xpath>
             </field>
@@ -89,15 +92,15 @@
             <field name="inherit_id" ref="account.view_account_payment_form"/>
             <field name="arch" type="xml">
 
-                <field name="communication" position="after">
+                <field name="ref" position="after">
                     <field name="payment_reference" readonly="1"/>
                     <field name="batch_payment_id" attrs="{'readonly': [('state', '!=', 'cancelled')], 'invisible':[('batch_payment_id','=', False)]}" groups="account.group_account_manager"/>
                 </field>
-                 <xpath expr="//button[@name='cancel']" position="attributes">
+                 <xpath expr="//button[@name='action_cancel']" position="attributes">
                     <attribute name="attrs">{'invisible': [('state', 'in', ['cancelled'])]}</attribute>
                 </xpath>
                 <xpath expr="//sheet/group/group[2]" position="after">
-                    <field name="invoice_ids" readonly="1" attrs="{'invisible':[('invoice_ids','=', [])]}"/>
+                    <field name="reconciled_invoice_ids" readonly="1" attrs="{'invisible':[('reconciled_invoice_ids','=', [])]}"/>
                 </xpath>
                 <xpath expr="/form/sheet" position="inside">
                     <field name="has_payment_lines" invisible="1"/>

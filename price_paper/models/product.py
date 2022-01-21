@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-
+import json
 import operator as py_operator
 
 from lxml import etree
 
 from odoo import fields, models, api, _
-from odoo.addons import decimal_precision as dp
 from odoo.exceptions import UserError, ValidationError
-from odoo.osv.orm import setup_modifiers
+
 
 OPERATORS = {
     '<': py_operator.lt,
@@ -21,7 +20,7 @@ OPERATORS = {
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    @api.multi
+
     def _get_product_accounts(self):
         """ Add the stock accounts related to product to the result of super()
         @return: dictionary which contains information regarding stock accounts and super (income+expense accounts)
@@ -33,21 +32,19 @@ class ProductTemplate(models.Model):
         return accounts
 
 
-ProductTemplate()
-
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     burden_percent = fields.Float(string='Burden %', default=lambda s: s.default_burden_percent())
-    new_products = fields.One2many(comodel_name='product.superseded', inverse_name='old_product',
+    new_products = fields.One2many('product.superseded','old_product',
                                  string="New Product")
-    superseded = fields.One2many(comodel_name='product.superseded', inverse_name='product_child_id',
+    superseded = fields.One2many('product.superseded','product_child_id',
                                  string="Supersedes")
-    cost = fields.Float(compute='compute_sale_burden', string="Working Cost", digits=dp.get_precision('Product Price'))
+    cost = fields.Float(compute='compute_sale_burden', string="Working Cost", digits='Product Price')
     sale_uoms = fields.Many2many('uom.uom', 'product_uom_rel', 'product_id', 'uom_id', string='Sale UOMS')
     vendor_id = fields.Many2one('res.partner', compute='compute_product_vendor', string="Vendor", store=True)
-    uom_standard_prices = fields.One2many(comodel_name='product.standard.price', inverse_name='product_id',
+    uom_standard_prices = fields.One2many('product.standard.price','product_id',
                                           string="UOM STD Prices")
 
     is_bel_min_qty = fields.Boolean(string='Below Minimum Quantity', compute='compute_qty_status',
@@ -73,11 +70,11 @@ class ProductProduct(models.Model):
                                            'product_id', string="Alternative Product Reverse")
     volume = fields.Float('Volume', help="The volume in m3.", copy=False)
     weight = fields.Float(
-        'Weight', digits=dp.get_precision('Stock Weight'),
+        'Weight', digits='Stock Weight',
         help="Weight of the product, packaging not included. The unit of measure can be changed in the general settings", copy=False)
     lst_from_std_price = fields.Float(
         'Standard Price', compute='_compute_lst_price_std_price',
-        digits=dp.get_precision('Product Price'))
+        digits='Product Price')
 
     def _compute_lst_price_std_price(self):
         for product in self:
@@ -86,14 +83,12 @@ class ProductProduct(models.Model):
 
     @api.model
     def default_burden_percent(self):
-
         if self.env.user.company_id and self.env.user.company_id.burden_percent:
             return self.env.user.company_id.burden_percent
         return 0
 
-    @api.multi
     def copy(self, default=None):
-
+    #TODO migrate this fn
         res = super(ProductProduct, self).copy(default)
         res and res._check_weight_and_volume()
         if not self._context.get('from_change_uom'):
@@ -115,83 +110,85 @@ class ProductProduct(models.Model):
                 nodes = doc.xpath("//notebook//page[@name='superseded']//field[@name='superseded']")
                 for node in nodes:
                     node.set('readonly', '1')
-                    setup_modifiers(node, res['fields']['superseded'])
-                    res['arch'] = etree.tostring(doc)
+                    modifiers = json.loads(node.get("modifiers"))
+                    modifiers['readonly'] = True
+                    node.set("modifiers", json.dumps(modifiers))
+                res['arch'] = etree.tostring(doc,  encoding='unicode')
                 return res
         return res
+    # TODO: FIX THIS FOR ODOO-15 MIGRATION
+    # TODO: need migration for this method
+    # @api.model
+    # def _anglo_saxon_sale_move_lines(self, name, product, uom, qty, price_unit, currency=False, amount_currency=False,
+    #                                  fiscal_position=False, account_analytic=False, analytic_tags=False):
+    #     """Prepare dicts describing new journal COGS journal items for a product sale.
+    #
+    #     Returns a dict that should be passed to `_convert_prepared_anglosaxon_line()` to
+    #     obtain the creation value for the new journal items.
+    #
+    #     :param Model product: a product.product record of the product being sold
+    #     :param Model uom: a product.uom record of the UoM of the sale line
+    #     :param Integer qty: quantity of the product being sold
+    #     :param Integer price_unit: unit price of the product being sold
+    #     :param Model currency: a res.currency record from the order of the product being sold
+    #     :param Interger amount_currency: unit price in the currency from the order of the product being sold
+    #     :param Model fiscal_position: a account.fiscal.position record from the order of the product being sold
+    #     :param Model account_analytic: a account.account.analytic record from the line of the product being sold
+    #     """
+    #     if not self._context.get('sc_move', False):
+    #         return super(ProductProduct, self)._anglo_saxon_sale_move_lines(
+    #             name, product, uom, qty,
+    #             price_unit, currency, amount_currency,
+    #             fiscal_position, account_analytic, analytic_tags
+    #         )
+    #
+    #     if (product.valuation == 'real_time'
+    #             and (product.type == 'product' or (product.type == 'consu' and product._is_phantom_bom()))):
+    #         accounts = product.product_tmpl_id.get_product_accounts(fiscal_pos=fiscal_position)
+    #         # debit account dacc will be the output account
+    #         if not accounts['sc_liability_out']:
+    #             raise UserError(
+    #                 _('Cannot find a SC Stock Liability Account in product category: %s' % product.categ_id.name))
+    #         dacc = accounts['sc_liability_out'].id
+    #         # credit account cacc will be the expense account
+    #         cacc = accounts['expense'].id
+    #         if self._context.get('sc_move', '') == 'sc_order':
+    #             #if it is storage order reverse the move lines
+    #             dacc = accounts['stock_output'].id
+    #             cacc = accounts['sc_liability_out'].id
+    #         if dacc and cacc:
+    #             return [
+    #                 {
+    #                     'type': 'src',
+    #                     'name': name[:64],
+    #                     'price_unit': price_unit,
+    #                     'quantity': qty,
+    #                     'price': price_unit * qty,
+    #                     'currency_id': currency and currency.id,
+    #                     'amount_currency': amount_currency,
+    #                     'account_id': dacc,
+    #                     'product_id': product.id,
+    #                     'uom_id': uom.id,
+    #                 },
+    #
+    #                 {
+    #                     'type': 'src',
+    #                     'name': name[:64],
+    #                     'price_unit': price_unit,
+    #                     'quantity': qty,
+    #                     'price': -1 * price_unit * qty,
+    #                     'currency_id': currency and currency.id,
+    #                     'amount_currency': -1 * amount_currency,
+    #                     'account_id': cacc,
+    #                     'product_id': product.id,
+    #                     'uom_id': uom.id,
+    #                     'account_analytic_id': account_analytic and account_analytic.id,
+    #                     'analytic_tag_ids': analytic_tags and analytic_tags.ids and [
+    #                         (6, 0, analytic_tags.ids)] or False,
+    #                 },
+    #             ]
+    #     return []
 
-    @api.model
-    def _anglo_saxon_sale_move_lines(self, name, product, uom, qty, price_unit, currency=False, amount_currency=False,
-                                     fiscal_position=False, account_analytic=False, analytic_tags=False):
-        """Prepare dicts describing new journal COGS journal items for a product sale.
-
-        Returns a dict that should be passed to `_convert_prepared_anglosaxon_line()` to
-        obtain the creation value for the new journal items.
-
-        :param Model product: a product.product record of the product being sold
-        :param Model uom: a product.uom record of the UoM of the sale line
-        :param Integer qty: quantity of the product being sold
-        :param Integer price_unit: unit price of the product being sold
-        :param Model currency: a res.currency record from the order of the product being sold
-        :param Interger amount_currency: unit price in the currency from the order of the product being sold
-        :param Model fiscal_position: a account.fiscal.position record from the order of the product being sold
-        :param Model account_analytic: a account.account.analytic record from the line of the product being sold
-        """
-        if not self._context.get('sc_move', False):
-            return super(ProductProduct, self)._anglo_saxon_sale_move_lines(
-                name, product, uom, qty,
-                price_unit, currency, amount_currency,
-                fiscal_position, account_analytic, analytic_tags
-            )
-
-        if (product.valuation == 'real_time'
-                and (product.type == 'product' or (product.type == 'consu' and product._is_phantom_bom()))):
-            accounts = product.product_tmpl_id.get_product_accounts(fiscal_pos=fiscal_position)
-            # debit account dacc will be the output account
-            if not accounts['sc_liability_out']:
-                raise UserError(
-                    _('Cannot find a SC Stock Liability Account in product category: %s' % product.categ_id.name))
-            dacc = accounts['sc_liability_out'].id
-            # credit account cacc will be the expense account
-            cacc = accounts['expense'].id
-            if self._context.get('sc_move', '') == 'sc_order':
-                #if it is storage order reverse the move lines
-                dacc = accounts['stock_output'].id
-                cacc = accounts['sc_liability_out'].id
-            if dacc and cacc:
-                return [
-                    {
-                        'type': 'src',
-                        'name': name[:64],
-                        'price_unit': price_unit,
-                        'quantity': qty,
-                        'price': price_unit * qty,
-                        'currency_id': currency and currency.id,
-                        'amount_currency': amount_currency,
-                        'account_id': dacc,
-                        'product_id': product.id,
-                        'uom_id': uom.id,
-                    },
-
-                    {
-                        'type': 'src',
-                        'name': name[:64],
-                        'price_unit': price_unit,
-                        'quantity': qty,
-                        'price': -1 * price_unit * qty,
-                        'currency_id': currency and currency.id,
-                        'amount_currency': -1 * amount_currency,
-                        'account_id': cacc,
-                        'product_id': product.id,
-                        'uom_id': uom.id,
-                        'account_analytic_id': account_analytic and account_analytic.id,
-                        'analytic_tag_ids': analytic_tags and analytic_tags.ids and [
-                            (6, 0, analytic_tags.ids)] or False,
-                    },
-                ]
-        return []
-
-    @api.multi
     @api.depends('qty_available', 'orderpoint_ids.product_max_qty', 'orderpoint_ids.product_min_qty')
     def compute_qty_status(self):
         for product in self:
@@ -233,7 +230,6 @@ class ProductProduct(models.Model):
                 ids.append(product.id)
         return [('id', 'in', ids)]
 
-    @api.multi
     def toggle_active(self):
         """ remove superseded if there is a child product with superseded set while unarchiving,
         archive reordering rules before archiving product
@@ -247,7 +243,6 @@ class ProductProduct(models.Model):
             to_unlink.unlink()
         return super(ProductProduct, self).toggle_active()
 
-    @api.multi
     def write(self, vals):
         """
         overriden to update the customer product price when
@@ -256,30 +251,32 @@ class ProductProduct(models.Model):
         # TODO Update price_list when standard price change
         for product in self:
             if 'standard_price' in vals:
-                log_vals = {'change_date': fields.Datetime.now(),
-                            'type': 'cost',
-                            'old_price': product.standard_price,
-                            'new_price': vals.get('standard_price'),
-                            'user_id': self.env.user.id,
-                            'uom_id': product.uom_id.id,
-                            'price_from': 'manual',
-                            'product_id': product.id
-                            }
+                log_vals = {
+                    'change_date': fields.Datetime.now(),
+                    'type': 'cost',
+                    'old_price': product.standard_price,
+                    'new_price': vals.get('standard_price'),
+                    'user_id': self.env.user.id,
+                    'uom_id': product.uom_id.id,
+                    'price_from': 'manual',
+                    'product_id': product.id
+                    }
                 if self._context.get('user', False):
                     log_vals['user_id'] = self._context.get('user', False)
                 if self._context.get('cost_cron', False):
                     log_vals['price_from'] = 'cost_cron'
                 self.env['product.price.log'].create(log_vals)
             if 'burden_percent' in vals:
-                log_vals = {'change_date': fields.Datetime.now(),
-                            'type': 'burden',
-                            'old_price': product.burden_percent,
-                            'new_price': vals.get('burden_percent'),
-                            'user_id': self.env.user.id,
-                            'uom_id': product.uom_id.id,
-                            'price_from': 'manual',
-                            'product_id': product.id
-                            }
+                log_vals = {
+                    'change_date': fields.Datetime.now(),
+                    'type': 'burden',
+                    'old_price': product.burden_percent,
+                    'new_price': vals.get('burden_percent'),
+                    'user_id': self.env.user.id,
+                    'uom_id': product.uom_id.id,
+                    'price_from': 'manual',
+                    'product_id': product.id
+                    }
                 if self._context.get('user', False):
                     log_vals['user_id'] = self._context.get('user', False)
                 if self._context.get('cost_cron', False):
@@ -370,29 +367,40 @@ class ProductProduct(models.Model):
     def onchange_sale_uoms(self):
         """
         """
-        return {'domain': {'uom_id': ([('id', 'in', self.sale_uoms.ids)]),
-                           'uom_po_id': ([('id', 'in', self.sale_uoms.ids)])}}
+        return {'domain': {
+            'uom_id': ([('id', 'in', self.sale_uoms.ids)]),
+            'uom_po_id': ([('id', 'in', self.sale_uoms.ids)])
+        }}
 
-
-ProductProduct()
-
+    @api.constrains('weight', 'volume')
+    def _check_weight_and_volume(self):
+        for rec in self:
+            if rec.weight <= 0 and rec.type == 'product':
+                raise ValidationError('Weight should be greater than Zero')
+            if rec.volume <= 0 and rec.type == 'product':
+                raise ValidationError('Volume should be greater than Zero')
 
 class ProductCategory(models.Model):
     _inherit = "product.category"
 
     repacking_upcharge = fields.Float(string="Repacking Charge %")
     categ_code = fields.Char(string='Category Code')
-    standard_price = fields.Float(string="Class Standard Price Percent", digits=dp.get_precision('Product Price'))
-    inv_adj_output_account_id = fields.Many2one('account.account', company_dependent=True,
-                                                  string="Inventory Adjustment Output Account",
-                                                  domain=[('deprecated', '=', False)])
-    inv_adj_input_account_id = fields.Many2one('account.account', company_dependent=True,
-                                                    string="Inventory Adjustment Input Account",
-                                                    domain=[('deprecated', '=', False)])
+    standard_price = fields.Float(
+        string="Class Standard Price Percent",
+        digits='Product Price')
 
-
-
-ProductCategory()
+    inv_adj_output_account_id = fields.Many2one(
+        'account.account',
+        company_dependent=True,
+        string="Inventory Adjustment Output Account",
+        domain=[('deprecated', '=', False)]
+    )
+    inv_adj_input_account_id = fields.Many2one(
+        'account.account',
+        company_dependent=True,
+        string="Inventory Adjustment Input Account",
+        domain=[('deprecated', '=', False)]
+    )
 
 
 class ProductUom(models.Model):
@@ -401,28 +409,28 @@ class ProductUom(models.Model):
     product_ids = fields.Many2many('product.product', 'product_uom_rel', 'uom_id', 'product_id', string="Products")
 
 
-ProductUom()
-
-
 class ProductSuperseded(models.Model):
     _name = 'product.superseded'
     _description = 'Superseded Products'
+
 
     old_product = fields.Many2one('product.product', string="Old Product",
                                   domain=[('active', '=', False)], required=True, ondelete='cascade')
     product_child_id = fields.Many2one('product.product', string="New Product",
                                        readonly=True, required=True)
 
-    @api.one
+
+
     @api.constrains('old_product', 'product_child_id')
     def check_duplicates(self):
-        result = self.search([('old_product', '=', self.old_product.id),
-                              ('product_child_id', '=', self.product_child_id.id),
-                              ('id', '!=', self.id)])
+        result = self.search([
+            ('old_product', '=', self.old_product.id),
+            ('product_child_id', '=', self.product_child_id.id),
+            ('id', '!=', self.id)
+        ])
         if result:
             raise UserError('Duplicate entry in superseded')
 
 
-ProductSuperseded()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

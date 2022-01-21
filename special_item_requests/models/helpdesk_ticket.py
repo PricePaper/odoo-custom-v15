@@ -34,7 +34,7 @@ class HelpDeskTicket(models.Model):
     response = fields.Selection([('available', 'Available in Stock'), ('suggest', 'Suggested Alternative'),
                                  ('special', 'Special Request to Purchasing')])
 
-    @api.multi
+
     def _compute_stage_code(self):
         for ticket in self:
             if not ticket.is_special_order_ticket:
@@ -44,7 +44,7 @@ class HelpDeskTicket(models.Model):
                 ticket.stage_code = stage_ext_id.get(ticket.stage_id.id, False) and \
                                     stage_ext_id.get(ticket.stage_id.id, False).split('.')[1]
 
-    @api.multi
+
     def assign_to_greg(self):
         stage_id = self.env.ref('special_item_requests.special_item_requests_stage_greg')
         user_greg = self.env['res.users'].search([('login', '=', 'greg@pricepaper.com')])
@@ -52,7 +52,7 @@ class HelpDeskTicket(models.Model):
             ticket.user_id = user_greg and user_greg.id
             ticket.stage_id = stage_id.id
 
-    @api.multi
+
     def mark_as_available(self):
         stage_id = self.env.ref('special_item_requests.special_item_requests_stage_available')
         for ticket in self:
@@ -62,7 +62,7 @@ class HelpDeskTicket(models.Model):
             ticket.stage_id = stage_id.id
             ticket.user_id = ticket.create_uid and ticket.create_uid.id
 
-    @api.multi
+
     def suggest_equivalent(self):
         stage_id = self.env.ref('special_item_requests.special_item_requests_stage_suggest')
         for ticket in self:
@@ -72,7 +72,7 @@ class HelpDeskTicket(models.Model):
             ticket.stage_id = stage_id.id
             ticket.user_id = ticket.create_uid and ticket.create_uid.id
 
-    @api.multi
+
     def special_request_to_purchasing(self):
         stage_id = self.env.ref('special_item_requests.special_item_requests_stage_special')
         user_angela = self.env['res.users'].search([('login', '=', 'angela@pricepaper.com')])
@@ -81,32 +81,30 @@ class HelpDeskTicket(models.Model):
             ticket.user_id = user_angela and user_angela.id
             ticket.stage_id = stage_id.id
 
-    @api.multi
+
     def accept_suggested_available(self):
         stage_id = self.env.ref('special_item_requests.special_item_requests_stage_accept_suggested')
         for ticket in self:
             ticket.stage_id = stage_id.id
 
-    @api.multi
+
     def accept_suggested_alternative(self):
         stage_id = self.env.ref('special_item_requests.special_item_requests_stage_accept_alternative')
         for ticket in self:
             ticket.stage_id = stage_id.id
 
-    @api.multi
+
     def reject_suggestion(self):
         stage_id = self.env.ref('special_item_requests.special_item_requests_stage_reject')
         for ticket in self:
             ticket.stage_id = stage_id.id
 
-    @api.multi
+
     def close_special_order_ticket(self):
         stage_id = self.env.ref('special_item_requests.special_item_requests_stage_close')
         for ticket in self:
             ticket.stage_id = stage_id.id
 
-
-HelpDeskTicket()
 
 
 class ItemsAvailable(models.Model):
@@ -118,8 +116,6 @@ class ItemsAvailable(models.Model):
     description = fields.Text(string='Description')
 
 
-ItemsAvailable()
-
 
 class HelpDeskTeam(models.Model):
     _inherit = 'helpdesk.team'
@@ -127,6 +123,5 @@ class HelpDeskTeam(models.Model):
     is_special_order_team = fields.Boolean(string='Special Order Processing Team')
 
 
-HelpDeskTeam()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

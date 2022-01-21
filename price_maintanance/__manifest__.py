@@ -3,6 +3,7 @@
 {
     'name': 'Price Maintanace',
     'version': '1.0',
+    'license': 'LGPL-3',
     'category': 'Sales and Purchase',
     'summary': "Sales and Purchase",
     'description': """
@@ -24,8 +25,14 @@ Custom module implemented for Price maintanance.
         'views/customer.xml',
         'views/customer_product_price.xml',
     ],
-
-    'depends': ['website_scraping', 'crm_enhancements', 'base_address_city'],
+    'assets': {
+        'web.assets_backend': [
+                '/price_maintanance/static/src/js/one2manySearch.js',
+            ],
+        'web.assets_qweb': [
+        ],
+    },
+    'depends': ['price_paper', 'website_scraping', 'crm_enhancements', 'base_address_city'],
     'installable': True,
     'auto_install': False,
     'application': False,

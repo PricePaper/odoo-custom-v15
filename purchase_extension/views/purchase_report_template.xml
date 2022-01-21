@@ -34,16 +34,16 @@
             </xpath>
             <xpath expr="//table/thead/tr/th[3]" position="replace">
             </xpath>
-            <xpath expr="//table/tbody/tr/td[1]" position="before">
+            <xpath expr="//table/tbody/t/tr/t/td[1]" position="before">
                 <t t-set="product_code" t-value="order_line.product_id and order_line.product_id.seller_ids.filtered(lambda r: r.name.id == order_line.order_id.partner_id.id).mapped('product_code')"/>
                 <td>
                     <span t-esc="product_code and product_code[-1]"/>
                 </td>
             </xpath>
-            <xpath expr="//table/tbody/tr/td[2]/span" position="replace">
+            <xpath expr="//table/tbody/t/tr/t/td[2]/span" position="replace">
                 <span t-field="order_line.product_id"/>
             </xpath>
-            <xpath expr="//table/tbody/tr/td[3]" position="replace">
+            <xpath expr="//table/tbody/t/tr/t/td[3]" position="replace">
             </xpath>
         </template>
 
@@ -68,21 +68,21 @@
                     <p t-field="o.date_planned" class="m-0"/>
                 </div>
             </xpath>
-             <xpath expr="//table/tbody/tr/td[1]/span" position="replace">
+             <xpath expr="//table/tbody/t/tr/t/td[1]/span" position="replace">
                 <span t-field="line.product_id.display_name"/>
             </xpath>
             <xpath expr="//table/thead/tr/th[3]" position="replace">
             </xpath>
             <xpath expr="//table/thead/tr/th[2]" position="replace">
             </xpath>
-            <xpath expr="//table/tbody/tr/td[3]" position="replace">
+            <xpath expr="//table/tbody/t/tr/t/td[3]" position="replace">
             </xpath>
-            <xpath expr="//table/tbody/tr/td[2]" position="replace">
+            <xpath expr="//table/tbody/t/tr/t/td[2]" position="replace">
             </xpath>
             <xpath expr="//table/thead/tr/th[1]" position="before">
                 <th><strong>Product Code</strong></th>
             </xpath>
-            <xpath expr="//table/tbody/tr/td[1]" position="before">
+            <xpath expr="//table/tbody/t/tr/t/td[1]" position="before">
                 <t t-set="product_code" t-value="line.product_id and line.product_id.seller_ids.filtered(lambda r: r.name.id == line.order_id.partner_id.id).mapped('product_code')"/>
                 <td>
                     <span t-esc="product_code and product_code[-1]"/>

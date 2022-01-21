@@ -19,6 +19,3 @@ class ViewSalesHistoryPo(models.TransientModel):
     uom = fields.Many2one('uom.uom', string="UOM")
     sale_line_id = fields.Many2one('sale.order.line', string="Sale Line")
 
-
-
-ViewSalesHistoryPo()

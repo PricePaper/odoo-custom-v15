@@ -34,7 +34,7 @@
             <field name="report_template" ref="sale.action_report_saleorder"/>
             <field name="report_name">${(object.name or '').replace('/','_')}</field>
             <field name="lang">${object.partner_id.lang}</field>
-            <field name="user_signature" eval="False"/>
+<!--            <field name="user_signature" eval="False"/>-->
             <field name="auto_delete" eval="True"/>
         </record>
     </data>

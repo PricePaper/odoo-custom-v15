@@ -4,7 +4,7 @@ import base64
 import csv
 import io
 
-from odoo import models, fields, api
+from odoo import models, fields, api,_
 
 
 class UploadFileWizard(models.TransientModel):
@@ -15,7 +15,7 @@ class UploadFileWizard(models.TransientModel):
     file_name = fields.Char(string='File name')
     product_ids = fields.Many2many('res.category.product.cost', 'product_id', string="Products")
 
-    @api.multi
+
     @api.onchange('upload_file')
     def onchange_load_data(self):
         """
@@ -61,12 +61,12 @@ class UploadFileWizard(models.TransientModel):
                             message = 'Multiple Product found for Vendor Product Code %s' % row[0].strip()
                         return {'warning': {'title': 'Error!', 'message': message}}
                         break
-                    result.append({'product_id': product_id,
+                    result.append((0,0,{'product_id': product_id,
                                    'cost': cost,
-                                   })
+                                   }))
             data.product_ids = result
 
-    @api.multi
+
     def import_products(self):
         """
         Update product and cost of  contract with data
@@ -82,8 +82,5 @@ class UploadFileWizard(models.TransientModel):
                 lines.append((0, False, vals))
             contract_id.write({'partner_product_ids': lines})
         return True
-
-
-UploadFileWizard()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -2,6 +2,7 @@
 {
     'name': 'Deviated Cost Sale Report',
     'version': '1.0',
+    'license': 'LGPL-3',
     'summary': 'Deviated Cost Sale Report',
     'description': """
 Deviated Cost Sale Report

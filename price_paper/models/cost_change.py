@@ -75,7 +75,7 @@ class CostChangeParent(models.Model):
             rec.is_done = True
         return True
 
-    @api.multi
+
     def add_percentage_lines(self):
         view_id = self.env.ref('price_paper.view_cost_change_percentage_wiz').id
         return {
@@ -88,14 +88,12 @@ class CostChangeParent(models.Model):
             'target': 'new'
         }
 
-    @api.multi
+
     def cost_change_method(self):
         for rec in self:
             for line in rec.cost_change_lines:
                 line.cost_change_method()
             rec.is_done = True
-
-CostChangeParent()
 
 
 class CostChange(models.Model):
@@ -126,9 +124,6 @@ class CostChange(models.Model):
     user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
     cost_change_parent = fields.Many2one('cost.change.parent', string='Cost change Record')
     vendor_product_code = fields.Char('Vendor code')
-
-
-
 
 
     @api.depends('new_cost', 'old_cost')
@@ -189,7 +184,7 @@ class CostChange(models.Model):
                 rec.new_cost = rec.old_cost
 
 
-    @api.multi
+
     def cost_change_method(self):
 
 
@@ -206,6 +201,7 @@ class CostChange(models.Model):
             if rec.cost_change_parent.update_customer_pricelist:
                 customer_price_lists = self.env['customer.product.price'].search(
                     [('product_id', '=', product.id), ('pricelist_id.type', '!=', 'competitor')])
+
                 today = date.today()
                 for price_list_rec in customer_price_lists:
                     # skips the update pricelist if expiry lock is active and lock expiry date is set
@@ -256,22 +252,26 @@ class CostChange(models.Model):
     #     return True
 
     def calculate_new_stdprice(self, product):
+
         for rec in product.uom_standard_prices:
             new_price = 0
             margin = rec.price_margin / 100
+
             if self.price_filter == 'fixed':
                 new_working_cost = self.price_change * ((100 + product.burden_percent) / 100)
-                if self.update_burden and self.burden_change:
+                if self.cost_change_parent.update_burden and self.burden_change:
                     new_working_cost = self.price_change * ((100 + self.burden_change) / 100)
                 if product.uom_id != rec.uom_id:
                     new_price = (product.uom_id._compute_price(new_working_cost, rec.uom_id) * (
                                 (100 + product.categ_id.repacking_upcharge) / 100)) / (1 - margin)
                 else:
                     new_price = new_working_cost / (1 - margin)
+
+
             else:
                 new_working_cost = (product.standard_price * (100 + self.price_change) / 100) * (
                             (100 + product.burden_percent) / 100)
-                if self.update_burden and self.burden_change:
+                if self.cost_change_parent.update_burden and self.burden_change:
                     new_working_cost = (product.standard_price * (100 + self.price_change) / 100) * (
                                 (100 + self.burden_change) / 100)
                 if product.uom_id != rec.uom_id:
@@ -300,7 +300,7 @@ class CostChange(models.Model):
 
             if self.price_filter == 'fixed':
                 new_working_cost = self.price_change * ((100 + product.burden_percent) / 100)
-                if self.update_burden and self.burden_change:
+                if self.cost_change_parent.update_burden and self.burden_change:
                     new_working_cost = self.price_change * ((100 + self.burden_change) / 100)
                 if product.uom_id != pricelist.product_uom:
                     new_price = (product.uom_id._compute_price(new_working_cost, pricelist.product_uom) * (
@@ -310,7 +310,7 @@ class CostChange(models.Model):
             else:
                 new_working_cost = (product.standard_price * (100 + self.price_change) / 100) * (
                             (100 + product.burden_percent) / 100)
-                if self.update_burden and self.burden_change:
+                if self.cost_change_parent.update_burden and self.burden_change:
                     new_working_cost = (product.standard_price * (100 + self.price_change) / 100) * (
                                 (100 + self.burden_change) / 100)
                 if product.uom_id != pricelist.product_uom:
@@ -320,17 +320,16 @@ class CostChange(models.Model):
                     new_price = new_working_cost / (1 - margin)
         return new_price
 
-    @api.one
+
     @api.constrains('price_change')
     def check_if_zero_cost(self):
         # if not self.price_change and self.product_id and self.product_id.type != 'service':
         #     raise ValidationError('Cost change field cannot be 0.00')
-        if self.product_id and self.old_cost == 0:
-            if self.cost_change_parent.update_standard_price or self.cost_change_parent.update_customer_pricelist:
-                raise ValidationError('Please update only cost since old cost of the product is zero.(Uncheck standard price, customer pricelist update check boxes.)')
+        for record in self:
+            if record.product_id and record.old_cost == 0:
+                if record.cost_change_parent.update_standard_price or record.cost_change_parent.update_customer_pricelist:
+                    raise ValidationError('Please update only cost since old cost of the product is zero.(Uncheck standard price, customer pricelist update check boxes.)')
 
 
-
-CostChange()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

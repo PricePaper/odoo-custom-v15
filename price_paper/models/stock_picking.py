@@ -67,7 +67,7 @@ class StockPicking(models.Model):
 class StockRule(models.Model):
     _inherit = 'stock.rule'
 
-    def _make_po_get_domain(self, values, partner):
+    def _make_po_get_domain_old(self, values, partner):
         domain = super(StockRule, self)._make_po_get_domain(values, partner)
         storage_contract = self._context.get('storage_contract')
         if storage_contract:
@@ -77,7 +77,7 @@ class StockRule(models.Model):
         return domain
 
 
-    def _run_buy(self, product_id, product_qty, product_uom, location_id, name, origin, values):
+    def _run_buy_old(self, product_id, product_qty, product_uom, location_id, name, origin, values):
         procurement_group = values.get('group_id', False)
         order_point = values.get('orderpoint_id', False)
         if procurement_group and (procurement_group.sale_id and procurement_group.sale_id.storage_contract or not procurement_group.sale_id):

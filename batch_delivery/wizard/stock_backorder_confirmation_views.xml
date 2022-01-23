@@ -21,13 +21,13 @@
         <field name="model">stock.backorder.confirmation</field>
         <field name="arch" type="xml">
             <form string="Immediate transfer">
-                <group>
+<!--                <group>-->
                     <p>
                         You have processed less products than the initial demand.
                     </p><p class="text-muted">
                         Odoo will process all the non-zero quantities and cancel the remaining products.
                     </p>
-                </group>
+<!--                </group>-->
                 <footer>
                     <button name="process_cancel_backorder" string="Apply" type="object" class="btn-primary" data-hotkey="q" context="{'back_order_cancel': True}"/>
                     <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="c"/>

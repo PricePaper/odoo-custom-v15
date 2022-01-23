@@ -58,31 +58,32 @@ class StockPicking(models.Model):
 
     @api.depends('move_lines.sale_line_id.order_id.release_date')
     def _compute_scheduled_date(self):
-        release_date = []
-        if self.move_lines.mapped('sale_line_id').mapped('order_id'):
-            release_date = self.move_lines.mapped('sale_line_id').mapped('order_id').mapped('release_date')
-        # elif self.move_lines.mapped('purchase_line_id').mapped('order_id'):
-        #     release_date = self.move_lines.mapped('purchase_line_id').mapped('order_id').mapped('release_date')
-        if self.move_type == 'direct':
-            # if self.rma_id:
-            #     self.scheduled_date = fields.Datetime.now()
-            # el
-            if release_date and any(release_date):
-                self.scheduled_date = datetime.combine(min(release_date), datetime.min.time())
-            elif self.move_lines.mapped('date_expected'):
-                self.scheduled_date = min(self.move_lines.mapped('date_expected'))
+        for picking in self:
+            release_date = []
+            if picking.move_lines.mapped('sale_line_id').mapped('order_id'):
+                release_date = picking.move_lines.mapped('sale_line_id').mapped('order_id').mapped('release_date')
+            # elif self.move_lines.mapped('purchase_line_id').mapped('order_id'):
+            #     release_date = self.move_lines.mapped('purchase_line_id').mapped('order_id').mapped('release_date')
+            if picking.move_type == 'direct':
+                # if self.rma_id:
+                #     self.scheduled_date = fields.Datetime.now()
+                # el
+                if release_date and any(release_date):
+                    picking.scheduled_date = datetime.combine(min(release_date), datetime.min.time())
+                elif picking.move_lines.mapped('date'):
+                    picking.scheduled_date = min(picking.move_lines.mapped('date'))
+                else:
+                    picking.scheduled_date = fields.Datetime.now()
             else:
-                self.scheduled_date = fields.Datetime.now()
-        else:
-            # if self.rma_id:
-            #     self.scheduled_date = fields.Datetime.now()
-            # el
-            if release_date and any(release_date):
-                self.scheduled_date = datetime.combine(min(release_date), datetime.min.time())
-            elif self.move_lines.mapped('date_expected'):
-                self.scheduled_date = min(self.move_lines.mapped('date_expected'))
-            else:
-                self.scheduled_date = fields.Datetime.now()
+                # if self.rma_id:
+                #     self.scheduled_date = fields.Datetime.now()
+                # el
+                if release_date and any(release_date):
+                    picking.scheduled_date = datetime.combine(min(release_date), datetime.min.time())
+                elif picking.move_lines.mapped('date_expected'):
+                    picking.scheduled_date = min(picking.move_lines.mapped('date_expected'))
+                else:
+                    picking.scheduled_date = fields.Datetime.now()
 
     @api.depends('sale_id.invoice_status', 'invoice_ids', 'invoice_ids.state')
     def _compute_state_flags(self):
@@ -155,18 +156,24 @@ class StockPicking(models.Model):
                 vals['location_dest_id'] = False
         return super().create(vals)
 
-    def action_generate_backorder_wizard(self):
+    def _action_generate_backorder_wizard(self, show_transfers=False):
         """
           Delivery order don't need to create a active back order it is is always cancel back order
           new view added for this
         """
         view = self.env.ref('batch_delivery.view_cancel_back_order_form')
-        wiz = self.env['stock.backorder.confirmation'].create({'pick_ids': [(4, p.id) for p in self]})
+        # wiz = self.env['stock.backorder.confirmation'].create({'pick_ids': [(4, p.id) for p in self]})
 
         code = self.mapped('picking_type_code')
         if isinstance(code, list) and len(code) > 0:
             code = code[0]
         if code != 'incoming':
+            res = super()._action_generate_backorder_wizard(show_transfers)
+            res.update({
+                'views': [(view.id, 'form')],
+                'view_id': view.id,
+            })
+            return res
             return {
                 'name': 'Immediate Transfer?',
                 'type': 'ir.actions.act_window',
@@ -179,7 +186,7 @@ class StockPicking(models.Model):
                 'res_id': wiz.id,
                 'context': self.env.context,
             }
-        return super().action_generate_backorder_wizard()
+        return super()._action_generate_backorder_wizard(show_transfers)
 
     def validate_multiple_delivery(self, records):
         for rec in records:
@@ -254,12 +261,18 @@ class StockPicking(models.Model):
         self.ensure_one()
         return self.button_validate()
 
-
-    #todo need to test
     @api.model
     def _read_group_route_ids(self, routes, domain, order):
-        route_ids = self.env['truck.route'].search([('set_active', '=', True)])
-        return route_ids
+        """
+              This method used to show the routes in assign route kanban.
+
+              :param routes: default param
+              :param domain: default param
+              :param order: default param
+              :returns: active truck routes record set
+              :raises UserError: raises an exception if search/ read is allowed
+          """
+        return self.env['truck.route'].search([('set_active', '=', True)])
 
     def create_invoice(self):
         for picking in self:
@@ -351,7 +364,7 @@ class StockPicking(models.Model):
             # TODO::should we need to cancel the invoice documents?
 
             if not self._context.get('back_order_cancel', False):
-                self.mapped('invoice_ids').filtered(lambda r: rec in r.picking_ids).sudo().action_cancel()
+                self.mapped('invoice_ids').filtered(lambda r: rec in r.picking_ids).sudo().button_cancel()
             else:
                 self.mapped('invoice_ids').remove_zero_qty_line()
         res = super(StockPicking, self).action_cancel()

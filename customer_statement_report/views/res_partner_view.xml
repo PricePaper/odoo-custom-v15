@@ -1,19 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!--TODO Uncomment below after migrating static file-->
-<!--        <template id="assets_backend" name="web_notify assets" inherit_id="web.assets_backend">-->
-<!--        <xpath expr="." position="inside">-->
-<!--            <script type="text/javascript" src="/customer_statement_report/static/src/js/web_client.js"/>-->
-<!--        </xpath>-->
-<!--    </template>-->
         <record id="customer_statement_report_partner_form_inherit" model="ir.ui.view">
             <field name="name">customer_statement_report.view_partner_form.inherit</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='category_id']" position="after">
+                <xpath expr="//field[@name='email']" position="after">
                     <field name="statement_method" widget="radio" options="{'horizontal': true}"/>
                 </xpath>
             </field>

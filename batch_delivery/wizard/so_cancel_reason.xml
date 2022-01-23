@@ -15,7 +15,7 @@
                         </group>
                     </sheet>
                     <footer>
-                        <button string="Submit" type="object" name="cancel_so"/>
+                        <button string="Submit" type="object" class="oe_highlight" name="cancel_so"/>
                         or
                         <button string="Cancel" class="oe_link" special="cancel"/>
                     </footer>

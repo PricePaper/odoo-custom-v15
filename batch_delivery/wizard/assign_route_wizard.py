@@ -15,7 +15,8 @@ class AssignRouteWizard(models.TransientModel):
             [('state', 'in', ['confirmed', 'assigned', 'in_transit']), ('picking_type_code', '=', 'outgoing'),
              ('route_id', '=', False)])
 
-        # group all potential pickings into a dictionary based on partner_id. this dictionary is later used to assign routes for pickings
+        # group all potential pickings into a dictionary based on partner_id.
+        # this dictionary is later used to assign routes for pickings
         picking_dict = {}
         for picking in pickings:
             if picking.carrier_id and picking.carrier_id.show_in_route:
@@ -24,7 +25,8 @@ class AssignRouteWizard(models.TransientModel):
                 else:
                     picking_dict.update({picking.partner_id.id: [picking]})
 
-        # the below loop assigns routes to the available pickings ready for delivery when route is assigned, batch is auto assigned based in the logic written in stock.picking model
+        # the below loop assigns routes to the available pickings ready for delivery when route is assigned,
+        # batch is auto assigned based in the logic written in stock.picking model
         partners_assigned = []
         for line in self.line_ids:
             if line.route_id:
@@ -37,9 +39,7 @@ class AssignRouteWizard(models.TransientModel):
                     partners_assigned.append(partner_id)
 
         # it will preserve the context and domain value for view transition.
-        res = self.env.ref('batch_delivery.stock_picking_act_route_assign').read()[0]
-
-        return res
+        return self.env.ref('batch_delivery.stock_picking_act_route_assign').read()[0]
 
 
 class AssignRouteWizardLines(models.TransientModel):
@@ -53,8 +53,5 @@ class AssignRouteWizardLines(models.TransientModel):
     @api.onchange('route_id')
     def onchange_route_id(self):
         return {'domain': {'prior_batch_id': ([('route_id', '=', self.route_id.id)])}}
-
-
-
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

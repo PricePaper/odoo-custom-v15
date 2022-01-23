@@ -16,6 +16,7 @@ This module sets up the batch delivery process for price paper.
     'images': [],
     # TODO :: FIX THIS FOR ODOO-15 MIGRATION
     'data': [
+        'data/data.xml',
         'security/ir.model.access.csv',
         'views/truck_driver_view.xml',
        'views/account_view.xml',
@@ -25,6 +26,7 @@ This module sets up the batch delivery process for price paper.
         'wizard/stock_backorder_confirmation_views.xml',
         'wizard/reset_quantity_view.xml',
         'wizard/so_cancel_reason.xml',
+        'wizard/pending_product_view.xml',
         'views/truck_route_view.xml',
         'views/batch_delivery_view.xml',
         'views/product_view.xml',

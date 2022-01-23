@@ -10,7 +10,7 @@
                     <sheet>
                         <script>
                           $(document).ready(function(){
-                              $('.modal-dialog').css({'width': '500PX', 'height': '450PX'});
+                              $('.modal-dialog').css({'width': '550PX', 'height': '450PX'});
                           });
                       </script>
                         <div class="oe_title">
@@ -49,6 +49,6 @@
         <menuitem action="action_customer_statement_generator"
                   name="Customer Statement"
                   id="ppt_customer_statement_wizard_menu"
-                  parent="account.menu_finance_receivables" sequence="17"/>
+                  parent="account.menu_finance_receivables" sequence="25"/>
     </data>
 </odoo>

@@ -9,12 +9,6 @@ class SaleWarningWizard(models.TransientModel):
 
     warning_message = fields.Text(string='Warning')
 
-    @api.model
-    def default_get(self, fields):
-        res = super(SaleWarningWizard, self).default_get(fields)
-        res['warning_message'] = self._context.get('warning_message', '')
-        return res
-
     def close_window(self):
         return {
             'type': 'ir.actions.client',

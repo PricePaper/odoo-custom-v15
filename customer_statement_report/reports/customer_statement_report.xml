@@ -26,7 +26,6 @@
             <field name="report_file">customer_statement_report.customer_statement_pdf</field>
             <field name="print_report_name">'Customer Statement - %s' % (object.name or '',)</field>
             <field name="paperformat_id" ref="paperformat_customer_statement"/>
-
         </record>
 
 

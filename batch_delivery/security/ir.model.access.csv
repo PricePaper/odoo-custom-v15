@@ -16,4 +16,7 @@ access_so_cancel_reason_user,so_cancel_reason_user,model_so_cancel_reason,base.g
 access_reset_quantity_user,reset_quantity_user,model_stock_reset_quantity,base.group_user,1,1,1,0
 access_assign_route_wizard_line_user,assign_route_wizard_line,model_assign_route_wizard_line,base.group_user,1,1,1,0
 access_assign_route_wizard_user,assign_route_wizard,model_assign_route_wizard,base.group_user,1,1,1,0
+access_pending_product_view_user,pending_product_view,model_pending_product_view,base.group_user,1,1,1,0
+access_pending_product_email_view_user,pending_product_email_view,model_pending_product_email_view,base.group_user,1,1,1,0
+
 

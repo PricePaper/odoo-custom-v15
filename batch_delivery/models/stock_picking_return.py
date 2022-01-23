@@ -13,6 +13,20 @@ class StockPickingReturn(models.Model):
     sale_id = fields.Many2one('sale.order', string='Sale Order')
     return_line_ids = fields.One2many('stock.picking.return.line', 'return_id')
 
+
+    def send(self):
+        record = self
+        template = self.env.ref('batch_delivery.stock_return_notification_mail')
+        email_context = {}
+        mail_to = record.sales_person_ids.ids + record.picking_id.message_partner_ids.filtered(
+            lambda r: r.id not in [1, 2]).ids
+        if mail_to:
+            email_context['partner_to'] = ','.join(map(str, set(mail_to)))
+            email_context['return_date'] = fields.Date.today()
+            template.with_context(email_context).send_mail(
+                record.id, force_send=True, notif_layout="mail.mail_notification_light")
+        return True
+
     #todo sending mails need to revamb
     @api.model
     def create(self, vals):

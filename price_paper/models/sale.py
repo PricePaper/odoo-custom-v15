@@ -6,7 +6,6 @@ from datetime import timedelta
 from collections import Counter
 import pytz
 from dateutil.relativedelta import relativedelta
-
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, float_compare, float_is_zero
@@ -18,8 +17,8 @@ class SaleOrder(models.Model):
 
     release_date = fields.Date(string="Earliest Delivery Date", copy=False,
                                default=lambda s: s.get_release_deliver_default_date())
-    customer_code = fields.Char(string='Partner Code', related='partner_id.customer_code')
     deliver_by = fields.Date(string="Deliver By", copy=False, default=lambda s: s.get_release_deliver_default_date())
+    customer_code = fields.Char(string='Partner Code', related='partner_id.customer_code')
     is_creditexceed = fields.Boolean(string="Credit limit exceeded", default=False, copy=False)
     is_low_price = fields.Boolean(string="Is Low Price", default=False, copy=False)
     credit_warning = fields.Text(string='Credit Limit Warning Message', compute='compute_credit_warning', copy=False)
@@ -58,40 +57,168 @@ class SaleOrder(models.Model):
     sales_person_ids = fields.Many2many('res.partner', string='Associated Sales Persons')
     # TODO :: FIX THIS FOR ODOO-15 MIGRATION
     # Remove this field from batch_delivery (sale)
-    have_prive_lock = fields.Boolean(compute='_compute_price_lock')
+    # have_prive_lock = fields.Boolean(compute='_compute_price_lock')
+
+    @api.model
+    def get_release_deliver_default_date(self):
+        user_tz = self.env.user.tz or "UTC"
+        user_time = datetime.now(pytz.timezone(user_tz)).date()
+        user_time = user_time + relativedelta(days=1)
+        return user_time
+
+    def compute_credit_warning(self):
+
+        for order in self:
+            pending_invoices = order.partner_id.invoice_ids.filtered(
+                lambda rec: rec.state == 'posted' and rec.payment_state != 'paid' and (
+                            rec.invoice_date_due and rec.invoice_date_due < date.today()) or not rec.invoice_date_due)
+            msg = ''
+            msg1 = ''
+            if pending_invoices:
+                msg += 'Customer has pending invoices.\n %s ' % '\n'.join(pending_invoices.mapped('name'))
+            if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
+                msg += "\nCustomer Credit limit Exceeded.\n%s's Credit limit is %s and due amount is %s\n" % (
+                    order.partner_id.name, order.partner_id.credit_limit,
+                    (order.partner_id.credit + order.amount_total))
+            for order_line in order.order_line.filtered(lambda r: not r.storage_contract_line_id):
+                if order_line.price_unit < order_line.working_cost and not (
+                        'rebate_contract_id' in order_line and order_line.rebate_contract_id):
+                    msg1 += '[%s]%s ' % (order_line.product_id.default_code,
+                                         order_line.product_id.name) + "Unit Price is less than  Product Cost Price.\n"
+            if order.carrier_id and order.gross_profit < order.carrier_id.min_profit:
+                msg1 += 'Order profit is less than minimum profit'
+            order.credit_warning = msg
+            order.low_price_warning = msg1
+
+    def check_credit_limit(self):
+        """
+        whether the partner's credit limit exceeded or
+        partner has pending invoices block the sale order confirmation
+        and display warning message.
+        """
+        for order in self:
+            if order.credit_warning:
+                # todo ticket creation is blocked from 12 itself.
+                order.write({'is_creditexceed': True, 'ready_to_release': False})
+                order.message_post(body=order.credit_warning)
+                return order.credit_warning
+            order.write({'is_creditexceed': False, 'ready_to_release': True})
+            return ''
+
+    def check_low_price(self):
+        """
+        whether order contains low price line
+        block the sale order confirmation
+        and display warning message.
+        """
+        self.ensure_one()
+        if self.low_price_warning:
+            self.write({'is_low_price': True, 'release_price_hold': False})
+            self.message_post(body=self.low_price_warning)
+            return self.low_price_warning
+        self.write({'is_low_price': False, 'release_price_hold': True})
+        return ''
+
+    def action_confirm(self):
+        """
+        create record in price history
+        and also update the customer pricelist if needed.
+        create invoice for bill_with_goods customers.
+        """
+
+        if self._context.get('from_import'):
+            return super(SaleOrder, self).action_confirm()
+        for order in self:
+            if not order.carrier_id:
+                raise ValidationError(_('Delivery method should be set before confirming an order'))
+
+            price_warning = ''
+            credit_warning = ''
+            if not order.ready_to_release:
+                credit_warning = order.check_credit_limit()
+                if credit_warning:
+                    order.hold_state = 'credit_hold'
+            if not order.release_price_hold:
+                price_warning = order.check_low_price()
+                if price_warning:
+                    order.hold_state = 'both_hold'
+                    if not credit_warning:
+                        order.hold_state = 'price_hold'
+            if credit_warning or price_warning:
+                view_id = self.env.ref('price_paper.view_sale_warning_wizard').id
+                return {
+                    'name': 'Warning',
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'res_model': 'sale.warning.wizard',
+                    'view_id': view_id,
+                    'type': 'ir.actions.act_window',
+                    'context': {'default_warning_message': '\n'.join([credit_warning, price_warning])},
+                    'target': 'new'
+                }
+            if order.hold_state in ('credit_hold', 'price_hold', 'both_hold'):
+                order.hold_state = 'release'
+            sc_line = order.order_line.mapped('storage_contract_line_id')
+            sc_not_avl = sc_line.filtered(lambda r: r.storage_remaining_qty <= 0)
+            if sc_not_avl:
+                raise ValidationError(_('There is no available quantity in Storage Contract : \n ➤ %s' % ','.join(
+                    [name[:-22] for name in sc_not_avl.mapped('display_name')])))
+
+            for line in sc_line:
+                qty = sum(line.storage_contract_line_ids.filtered(lambda r: r.id in order.order_line.ids).mapped(
+                    'product_uom_qty'))
+                if line.storage_remaining_qty < qty:
+                    raise ValidationError(
+                        _('You are planning to sell more than available qty in Storage Contract: \n ➤ {0} \n There is only {1:.2f} left.'.format(
+                            line.display_name[:-22], line.storage_remaining_qty)))
+
+        res = super(SaleOrder, self).action_confirm()
+
+        for order in self:
+            order.confirmation_date = fields.Datetime.now()
+            for order_line in order.order_line:
+                if order_line.is_delivery:
+                    continue
+                if not order_line.update_pricelist:
+                    continue
+                order_line.update_price_list()
+
+        return res
 
     # TODO :: FIX THIS FOR ODOO-15 MIGRATION
     # Remove this function from batch_delivery (sale)
-    @api.depends('order_line.price_lock')
-    def _compute_price_lock(self):
-        for rec in self:
-            rec.have_prive_lock = any(rec.order_line.mapped('price_lock'))
-            print('Lock.......................................', rec.order_line.mapped('price_lock'))
+    # @api.depends('order_line.price_lock')
+    # def _compute_price_lock(self):
+    #     for rec in self:
+    #         rec.have_prive_lock = any(rec.order_line.mapped('price_lock'))
+    #         print('Lock.......................................', rec.order_line.mapped('price_lock'))
 
-    def _valid_field_parameter(self, field, name):
-        return name in ['track_visibility', 'track_sequence'] or super()._valid_field_parameter(field, name)
+    # todo not needed
+    # def _valid_field_parameter(self, field, name):
+    #     return name in ['track_visibility', 'track_sequence'] or super()._valid_field_parameter(field, name)
 
-    def action_view_purchase_orders(self):
-        orders = self.order_line.mapped('move_ids.created_purchase_line_id.order_id')
-        action = self.env.ref('purchase.purchase_rfq').read()[0]
-        if len(orders) > 1:
-            action['domain'] = [('id', 'in', orders.ids)]
-        elif len(orders) == 1:
-            action['views'] = [(self.env.ref('purchase.purchase_order_form').id, 'form')]
-            action['res_id'] = orders.ids[0]
-        action['context'] = {'create': False}
-        return action
+    # def action_view_purchase_orders_old(self):
+    #     orders = self.order_line.mapped('move_ids.created_purchase_line_id.order_id')
+    #     action = self.env.ref('purchase.purchase_rfq').read()[0]
+    #     if len(orders) > 1:
+    #         action['domain'] = [('id', 'in', orders.ids)]
+    #     elif len(orders) == 1:
+    #         action['views'] = [(self.env.ref('purchase.purchase_order_form').id, 'form')]
+    #         action['res_id'] = orders.ids[0]
+    #     action['context'] = {'create': False}
+    #     return action
 
-    @api.depends('order_line.move_ids.created_purchase_line_id')
-    def _compute_po_count(self):
-        for sale in self:
-            sale.po_count = len(sale.sudo().order_line.mapped('move_ids.created_purchase_line_id.order_id').ids)
+    # todo default will do the function, lets wait for few days
+    # @api.depends('order_line.move_ids.created_purchase_line_id')
+    # def _compute_po_count(self):
+    #     for sale in self:
+    #         sale.po_count = len(sale.sudo().order_line.mapped('move_ids.created_purchase_line_id.order_id').ids)
 
     def _compute_sc_child_order_count(self):
         for order in self:
             order.sc_child_order_count = len(order.order_line.mapped('storage_contract_line_ids.order_id').filtered(
                 lambda r: r.state not in ['sent', 'cancel']))
-
+    # todo start from here
     @api.depends('state', 'order_line.invoice_status', 'order_line.invoice_lines')
     def _get_invoiced(self):
         super(SaleOrder, self)._get_invoiced()
@@ -328,12 +455,6 @@ class SaleOrder(models.Model):
         template = self.env['mail.template'].browse(template_id)
         return template.with_context(email_context).send_mail(self.id)
 
-    @api.model
-    def get_release_deliver_default_date(self):
-        user_tz = self.env.user.tz or "UTC"
-        user_time = datetime.now(pytz.timezone(user_tz)).date()
-        user_time = user_time + relativedelta(days=1)
-        return user_time
 
     @api.onchange('partner_shipping_id')
     def onchange_partner_id_carrier_id(self):
@@ -388,13 +509,13 @@ class SaleOrder(models.Model):
         else:
             self.carrier_id = self.partner_id and self.partner_id.property_delivery_carrier_id or False
 
-    @api.onchange('carrier_id', 'order_line')
-    def onchange_delivery_carrier_method(self):
-        """ onchange delivery carrier,
-            recompute the delicery price
-        """
-        if self.carrier_id:
-            self.get_delivery_price()
+    # @api.onchange('carrier_id', 'order_line')
+    # def onchange_delivery_carrier_method(self):
+    #     """ onchange delivery carrier,
+    #         recompute the delicery price
+    #     """
+    #     if self.carrier_id:
+    #         self.get_delivery_price()
 
     @api.model
     def create(self, vals):
@@ -436,6 +557,7 @@ class SaleOrder(models.Model):
 
         if 'sales_person_ids' in vals and vals['sales_person_ids']:
             self.message_subscribe(partner_ids=vals['sales_person_ids'][0][-1])
+        print('order write vals', vals)
         return res
 
     def copy(self, default=None):
@@ -576,41 +698,6 @@ class SaleOrder(models.Model):
             msg = {'warning': {'title': _('Warning'), 'message': _('Earliest Delivery Date is greater than 1 week')}}
             return msg
 
-    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
-    def compute_credit_warning(self):
-
-        for order in self:
-            # debit_due = self.env['account.move.line'].search(
-            #     [('partner_id', '=', order.partner_id.id), ('full_reconcile_id', '=', False),
-            #      ('amount_residual', '>', 0),
-            #      ('date_maturity', '<', date.today()), ('invoice_id', '!=', False)], order='date_maturity desc')
-            # msg = ''
-            # msg1 = ''
-            # if debit_due:
-            #     for rec in debit_due.mapped('invoice_id'):
-            #         if rec.type == "out_invoice" and rec.state not in ('paid', 'cancel'):
-            #             term_line = rec.payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
-            #             date_due = rec.date_due
-            #             if term_line and term_line.grace_period:
-            #                 date_due = rec.date_due + timedelta(days=term_line.grace_period)
-            #             if date_due and date_due < date.today() and rec.number:
-            #                 msg = msg + '%s, ' % (rec.number)
-            #     if msg:
-            #         msg = 'Customer has pending invoices.\n' + msg
-            # if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
-            #     msg += "\nCustomer Credit limit Exceeded.\n%s's Credit limit is %s and due amount is %s\n" % (
-            #         order.partner_id.name, order.partner_id.credit_limit,
-            #         (order.partner_id.credit + order.amount_total))
-            #
-            # for order_line in order.order_line.filtered(lambda r: not r.storage_contract_line_id):
-            #     if order_line.price_unit < order_line.working_cost and not (
-            #             'rebate_contract_id' in order_line and order_line.rebate_contract_id):
-            #         msg1 = '[%s]%s ' % (order_line.product_id.default_code,
-            #                             order_line.product_id.name) + "Unit Price is less than  Product Cost Price"
-            msg = msg1 = 'TEST UNDER MIGRATION'
-            order.credit_warning = msg
-            order.low_price_warning = msg1
-
     def action_release_credit_hold(self):
         """
         release hold sale order for credit limit exceed.
@@ -645,51 +732,8 @@ class SaleOrder(models.Model):
         action.pop('context')
         return action
 
-    def check_credit_limit(self):
-        """
-        wheather the partner's credit limit exceeded or
-        partner has pending invoices block the sale order confirmation
-        and display warning message.
-        """
-        for order in self:
-            msg = order.credit_warning and order.credit_warning or ''
-            if msg:
-                team = self.env['helpdesk.team'].search([('is_credit_team', '=', True)], limit=1)
-                if team:
-                    vals = {'name': 'Sale order with Credit Limit exceeded partner or Partner has pending Invoice.',
-                            'team_id': team and team.id,
-                            'description': 'Order : ' + order.name + '\n' + msg,
-                            }
-                    # ticket = self.env['helpdesk.ticket'].create(vals)
-                order.write({'is_creditexceed': True, 'ready_to_release': False})
-                order.message_post(body=msg)
-                return msg
-            else:
-                order.write({'is_creditexceed': False, 'ready_to_release': True})
-                return ''
 
-    def check_low_price(self):
-        """
-        wheather order contains low price line
-        block the sale order confirmation
-        and display warning message.
-        """
-        for order in self:
-            msg1 = order.low_price_warning and order.low_price_warning or ''
-            if msg1:
-                team = self.env['helpdesk.team'].search([('is_sales_team', '=', True)], limit=1)
-                if team:
-                    vals = {'name': 'Sale order with Product below working cost',
-                            'team_id': team and team.id,
-                            'description': 'Order : ' + order.name + '\n' + msg1,
-                            }
-                    # ticket = self.env['helpdesk.ticket'].create(vals)
-                order.write({'is_low_price': True, 'release_price_hold': False})
-                order.message_post(body=msg1)
-                return msg1
-            else:
-                order.write({'is_low_price': False, 'release_price_hold': True})
-                return ''
+
 
     @api.onchange('payment_term_id')
     def onchange_payment_term(self):
@@ -715,73 +759,7 @@ class SaleOrder(models.Model):
         self.filtered(lambda s: s.storage_contract and s.state == 'done').write({'state': 'received'})
         self.filtered(lambda s: not s.storage_contract and s.state == 'done').write({'state': 'sale'})
 
-    def action_confirm(self):
-        """
-        create record in price history
-        and also update the customer pricelist if needed.
-        create invoice for bill_with_goods customers.
-        """
 
-        if self._context.get('from_import'):
-            res = super(SaleOrder, self).action_confirm()
-        else:
-            for order in self:
-                if not order.carrier_id:
-                    raise ValidationError(_('Delivery method should be set before confirming an order'))
-                warning = ''
-                if not order.ready_to_release:
-                    warning += order.check_credit_limit()
-                    if warning:
-                        order.hold_state = 'credit_hold'
-                if not order.release_price_hold:
-                    warning1 = order.check_low_price()
-                    if warning1:
-                        order.hold_state = 'both_hold'
-                        if not warning:
-                            order.hold_state = 'price_hold'
-                        warning = warning + warning1
-                if warning:
-                    context = {'warning_message': warning}
-                    view_id = self.env.ref('price_paper.view_sale_warning_wizard').id
-                    return {
-                        'name': _('Sale Warning'),
-                        'view_type': 'form',
-                        'view_mode': 'form',
-                        'res_model': 'sale.warning.wizard',
-                        'view_id': view_id,
-                        'type': 'ir.actions.act_window',
-                        'context': context,
-                        'target': 'new'
-                    }
-                if order.hold_state in ('credit_hold', 'price_hold', 'both_hold'):
-                    order.hold_state = 'release'
-
-                sc_line = order.order_line.mapped('storage_contract_line_id')
-                sc_not_avl = sc_line.filtered(lambda r: r.storage_remaining_qty <= 0)
-                if sc_not_avl:
-                    raise ValidationError(_('There is no available quantity in Storage Contract : \n ➤ %s' % ','.join(
-                        [name[:-22] for name in sc_not_avl.mapped('display_name')])))
-
-                for line in sc_line:
-                    qty = sum(line.storage_contract_line_ids.filtered(lambda r: r.id in order.order_line.ids).mapped(
-                        'product_uom_qty'))
-                    if line.storage_remaining_qty < qty:
-                        raise ValidationError(
-                            _('You are planning to sell more than available qty in Storage Contract: \n ➤ {0} \n There is only {1:.2f} left.'.format(
-                                line.display_name[:-22], line.storage_remaining_qty)))
-
-            res = super(SaleOrder, self).action_confirm()
-
-            for order in self:
-                order.confirmation_date = fields.Datetime.now()
-                for order_line in order.order_line:
-                    if order_line.is_delivery:
-                        continue
-                    if not order_line.update_pricelist:
-                        continue
-                    order_line.update_price_list()
-
-        return res
 
     def import_action_confirm(self):
         self = self.with_context({'from_import': True})
@@ -1141,7 +1119,7 @@ class SaleOrderLine(models.Model):
             # TODO::fix this this field is not available in odoo-15, field removed from sale_stock (12).
             # self.product_packaging = False
             return {}
-        if self.product_id.type == 'product':
+        if self.product_id.type == 'product' and self.is_mto is False:
             precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
             product = self.product_id.with_context(
                 warehouse=self.order_id.warehouse_id.id,
@@ -1344,8 +1322,7 @@ class SaleOrderLine(models.Model):
                 if sale_history:
                     sale_history.order_line_id = self
                 else:
-                    vals = {'order_line_id': self.id, 'partner_id': partner}
-                    self.env['sale.history'].create(vals)
+                    self.env['sale.history'].create({'order_line_id': self.id, 'partner_id': partner})
 
                 sale_tax_history = self.env['sale.tax.history'].search(
                     [('partner_id', '=', self.order_id.partner_shipping_id.id),
@@ -1385,15 +1362,12 @@ class SaleOrderLine(models.Model):
 
                     if not price_rec.partner_id and prices_all.filtered(lambda r: r.partner_id):
                         continue
-
-                    product_price = price_rec.price
                     price_from = price_rec
                     break
                 if price_from:
                     if price_from.price < unit_price:
                         price_from.with_context({'from_sale': True}).price = unit_price
                         self.manual_price = True
-
                 else:
                     price_lists = self.order_id.partner_id.customer_pricelist_ids.filtered(
                         lambda r: r.pricelist_id.type == 'customer').sorted(key=lambda r: r.sequence)
@@ -1437,7 +1411,7 @@ class SaleOrderLine(models.Model):
                     if line.price_unit >= line.working_cost and vals.get('price_unit') < line.working_cost:
                         raise ValidationError(
                             _('You are not allowed to reduce price below product cost. Contact your sales Manager.'))
-        print(self, vals)
+        # print(self, vals)
         res = super().write(vals)
         for line in self:
             if vals.get('price_unit') and line.order_id.state == 'sale':

@@ -77,6 +77,7 @@ class StockMove(models.Model):
     @api.depends('quantity_done')
     def _compute_total_price(self):
         for move in self:
+            move.total = False
             if move.picking_id.picking_type_id.code == 'outgoing':
                 move.unit_price = -move.price_unit
             elif move.picking_id.picking_type_id.code == 'incoming':

@@ -1,0 +1,10 @@
+.o_kanban_view .o_kanban_group {
+    -webkit-box-flex: 10;
+    flex: 0 0 auto;
+    border-style: solid;
+    border-bottom: none;
+    border-top: none;
+    border-block-width: inherit;
+    border-width: thin;
+    border-color: #b1a3a3;
+}

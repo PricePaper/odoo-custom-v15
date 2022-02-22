@@ -9,6 +9,33 @@ class SaleOrder(models.Model):
 
     quick_sale = fields.Boolean(string='is_quick_sale', default=False, copy=False)
 
+
+    #Note V15 following odoo's default Delivery method logic by Add Shipping button
+#    def compute_credit_warning(self):
+#        for order in self:
+#            if not order.quick_sale and order.carrier_id:
+#                order.adjust_delivery_line()
+#        res = super(SaleOrder, self).compute_credit_warning()
+
+#    def write(self, vals):
+#        """
+#        auto save the delivery line.
+#        """
+#        for order in self:
+#            if vals.get('state', '') == 'done' and not order.state == 'done':
+#                if not order.quick_sale and order.carrier_id:
+#                    order.adjust_delivery_line()
+#                else:
+#                    order._remove_delivery_line()
+#        res = super(SaleOrder, self).write(vals)
+#        for order in self:
+#            if order.state != 'done' and ('state' not in vals or vals.get('state', '') != 'done'):
+#                if not order.quick_sale and order.carrier_id:
+#                    order.adjust_delivery_line()
+#                else:
+#                    order._remove_delivery_line()
+
+
     def action_quick_sale(self):
         for rec in self.sudo():
             if all(line.product_id.type == 'service' for line in rec.order_line):
@@ -35,8 +62,46 @@ class SaleOrder(models.Model):
 
     def action_print_invoice(self):
         invoice = self.invoice_ids
-        invoice.filtered(lambda inv: not inv.sent).write({'sent': True})
+        invoice.filtered(lambda inv: not inv.is_move_sent).write({'is_move_sent': True})
         return self.env.ref('instant_invoice.account_invoices_quick_sale').report_action(invoice)
 
+    def print_quotation(self):
+        if self.quick_sale:
+            return self.env.ref('instant_invoice.action_report_quick_saleorder') \
+                .with_context(discard_logo_check=True).report_action(self)
+        return super(SaleOrder, self).print_quotation()
+
+
+    def action_release_credit_hold(self):
+        """
+        release hold sale order for credit limit exceed.
+        """
+        for order in self:
+            order.write({'is_creditexceed': False, 'ready_to_release': True})
+            order.message_post(body="Credit Team Approved")
+            if order.release_price_hold or not order.check_low_price():
+                order.hold_state = 'release'
+                if not self.quick_sale:
+                    order.action_confirm()
+                else:
+                    order.action_quick_sale()
+            else:
+                order.hold_state = 'price_hold'
+
+    def action_release_price_hold(self):
+        """
+        release hold sale order for low price.
+        """
+        for order in self:
+            order.write({'is_low_price': False, 'release_price_hold': True})
+            order.message_post(body="Sale Team Approved")
+            if order.ready_to_release or not order.check_credit_limit():
+                order.hold_state = 'release'
+                if not self.quick_sale:
+                    order.action_confirm()
+                else:
+                    order.action_quick_sale()
+            else:
+                order.hold_state = 'credit_hold'
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

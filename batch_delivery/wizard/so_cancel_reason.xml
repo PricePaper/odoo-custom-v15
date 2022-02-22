@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <record id="view_so_cancel_reason_wiz" model="ir.ui.view">
-            <field name="name">so.cancel.reason</field>
-            <field name="model">so.cancel.reason</field>
+        <record id="sale.sale_order_cancel_view_form" model="ir.ui.view">
+            <field name="name">sale.order.cancel.form</field>
+            <field name="model">sale.order.cancel</field>
             <field name="arch" type="xml">
-                <form string="SO cancel reason">
-                    <sheet>
-                        <separator string="SO cancel reason"/>
-                        <group>
-                            <group>
-                                <field name="reason" help='Reason for cancelling the order'/>
-                            </group>
-                        </group>
-                    </sheet>
+                <form>
+                    <field name="order_id" invisible="1"/>
+                    <field name="display_invoice_alert" invisible="1"/>
+                    <div attrs="{'invisible': [('display_invoice_alert', '=', False)]}">
+                        Draft invoices for this order will be cancelled.
+                    </div>
+                    <field name="reason" help='Reason for cancelling the order' placeholder="Cancel reason"/>
                     <footer>
-                        <button string="Submit" type="object" class="oe_highlight" name="cancel_so"/>
-                        or
-                        <button string="Cancel" class="oe_link" special="cancel"/>
+                        <button string="Confirm" name="action_cancel" type="object" class="oe_highlight"
+                                data-hotkey="q"/>
+                        <button string="Cancel" class="btn btn-default" special="cancel" data-hotkey="z"/>
                     </footer>
                 </form>
             </field>

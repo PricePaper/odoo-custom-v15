@@ -23,14 +23,14 @@
                     <attribute name="invisible">True</attribute>
                 </xpath>
 
-                <field name="user_id" position="after">
-                    <field name="sales_person_ids" widget="many2many_tags" domain="[('is_sales_person', '=', True)]"
-                           options="{'no_create_edit': True}"/>
-                </field>
+<!--                <field name="user_id" position="after">-->
+<!--                    <field name="sales_person_ids" widget="many2many_tags" domain="[('is_sales_person', '=', True)]"-->
+<!--                           options="{'no_create_edit': True}"/>-->
+<!--                </field>-->
 
-                <xpath expr="//button[@name='%(crm.action_crm_lead2opportunity_partner)d']" position="attributes">
-                    <attribute name="context">{'default_sales_person_ids': sales_person_ids}</attribute>
-                </xpath>
+<!--                <xpath expr="//button[@name='%(crm.action_crm_lead2opportunity_partner)d']" position="attributes">-->
+<!--                    <attribute name="context">{'default_sales_person_ids': sales_person_ids}</attribute>-->
+<!--                </xpath>-->
             </field>
         </record>
 

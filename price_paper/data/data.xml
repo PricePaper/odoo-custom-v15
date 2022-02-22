@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="stock_propagate_uom" model="ir.config_parameter">
+            <field name="key">stock.propagate_uom</field>
+            <field name="value">1</field>
+        </record>
+
         <record forcecreate="True" id="ir_cron_cost_change" model="ir.cron">
             <field name="name">Cost change</field>
             <field name="model_id" ref="model_cost_change_parent"/>
@@ -29,13 +34,13 @@
         </record>
 
         <record id="action_duplicate_sale_order" model="ir.actions.server">
-          <field name="name">SO: Duplicate</field>
-          <field name="model_id" ref="sale.model_sale_order"/>
-          <field name="binding_model_id" ref="sale.model_sale_order"/>
-          <field name="state">code</field>
-          <field name="code">
-              action = records.so_duplicate()
-          </field>
+            <field name="name">SO: Duplicate</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="state">code</field>
+            <field name="code">
+                action = records.so_duplicate()
+            </field>
         </record>
         <record forcecreate="True" id="ir_cron_sale_history" model="ir.cron">
             <field name="name">Sales History Creation</field>

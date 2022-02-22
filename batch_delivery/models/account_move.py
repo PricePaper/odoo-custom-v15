@@ -18,10 +18,18 @@ class AccountMove(models.Model):
                                              search="_search_has_outstanding")
     out_standing_credit = fields.Float(compute='_compute_out_standing_credit', string="Out Standing")
 
+
+    def action_invoice_sent(self):
+        self.ensure_one()
+        template = self.env.ref('account.email_template_edi_invoice', False)
+        report_template = self.env.ref('batch_delivery.ppt_account_selected_invoices_with_payment_report')
+        if template and report_template and template.report_template.id != report_template.id:
+            template.write({'report_template': report_template.id})
+        return super(AccountMove, self).action_invoice_sent()
+
     @api.depends('line_ids.stock_move_ids')
     def _compute_picking_ids(self):
         for rec in self:
-            print(rec.line_ids.mapped('stock_move_ids'))
             pickings = rec.line_ids.mapped('stock_move_ids').mapped('picking_id')
             rec.picking_ids = pickings
             rec.picking_count = len(pickings)
@@ -31,6 +39,8 @@ class AccountMove(models.Model):
         for rec in self:
             info = json.loads(rec.invoice_outstanding_credits_debits_widget)
             rec.out_standing_credit = sum(list(map(lambda r: r['amount'], info['content']))) if info else 0
+
+
 
     def _search_has_outstanding(self, operator, value):
         if self._context.get('default_move_type') in ('out_invoice', 'in_refund'):
@@ -60,21 +70,81 @@ class AccountMove(models.Model):
             action['res_id'] = pickings.id
         return action
 
-    def calculate_gross_profit(self):
+    def get_discount(self):
+        """
+        implemented in accounting extension module
+        """
         pass
-        # todo migrate code
+
+    @api.depends(
+        'line_ids.profit_margin',
+        'line_ids.matched_debit_ids.debit_move_id.move_id.payment_id.is_matched',
+        'line_ids.matched_debit_ids.debit_move_id.move_id.line_ids.amount_residual',
+        'line_ids.matched_debit_ids.debit_move_id.move_id.line_ids.amount_residual_currency',
+        'line_ids.matched_credit_ids.credit_move_id.move_id.payment_id.is_matched',
+        'line_ids.matched_credit_ids.credit_move_id.move_id.line_ids.amount_residual',
+        'line_ids.matched_credit_ids.credit_move_id.move_id.line_ids.amount_residual_currency',
+        'line_ids.debit',
+        'line_ids.credit',
+        'line_ids.currency_id',
+        'line_ids.amount_currency',
+        'line_ids.amount_residual',
+        'line_ids.amount_residual_currency',
+        'line_ids.payment_id.state',
+        'line_ids.full_reconcile_id'
+    )
+    def calculate_gross_profit(self):
+        """
+        Compute the gross profit in invoice.
+        """
+        for move in self:
+            if move.move_type not in ('out_invoice', 'out_refund'):
+                move.gross_profit = 0
+                continue
+            if move.payment_state in ('paid', 'in_payment'):
+                gross_profit = 0
+                for line in move.line_ids:
+                    gross_profit += line.profit_margin
+                card_amount = 0
+                for partial, amount, counterpart_line in move._get_reconciled_invoices_partials():
+                    if counterpart_line.payment_id.payment_method_line_id.code == 'credit_card':
+                        card_amount += amount
+                if card_amount:
+                    gross_profit -= card_amount * 0.03
+                discount = move.get_discount()
+                if discount:
+                    gross_profit -= discount
+                # if invoice.discount_from_batch:
+                #     gross_profit -= invoice.discount_from_batch
+                if move.move_type == 'out_refund':
+                    if gross_profit < 0:
+                        gross_profit = 0
+                move.update({'gross_profit': round(gross_profit, 2)})
+
+            else:
+                gross_profit = 0
+                for line in move.line_ids:
+                    gross_profit += line.profit_margin
+                if move.partner_id.payment_method == 'credit_card':
+                    gross_profit -= move.amount_total * 0.03
+                if move.invoice_payment_term_id.discount_per > 0:
+                    gross_profit -= move.amount_total * (move.invoice_payment_term_id.discount_per / 100)
+                if move.move_type == 'out_refund':
+                    if gross_profit < 0:
+                        gross_profit = 0
+                move.update({'gross_profit': round(gross_profit, 2)})
 
     def _compute_show_reset_to_draft_button(self):
         res = super()._compute_show_reset_to_draft_button()
         for move in self:
-            move.show_reset_to_draft_button = not move.picking_ids.filtered(lambda rec: rec.state in ('in_transit', 'done'))
+            move.show_reset_to_draft_button = not move.picking_ids.filtered(lambda rec: rec.state in ('in_transit', 'done')) and self.env.user.has_group('account.group_account_manager')
         return res
 
     def name_get(self):
         result = []
         if self._context.get('from_batch_payment', False):
             for move in self:
-                result.append((move.id, '%s ( %s )' % (move.number, move.amount_residual)))
+                result.append((move.id, '%s ( %s )' % (move.name, move.amount_residual)))
             return result
         return super().name_get()
 
@@ -103,6 +173,8 @@ class AccountMove(models.Model):
                 move.picking_ids.make_picking_done() # todo implement this method to handle DO done
             move.line_ids.mapped('sale_line_ids').mapped('order_id').filtered(lambda rec: rec.storage_contract is False).action_done()
         return super().action_post()
+
+
 
     @api.depends('posted_before', 'state', 'journal_id', 'date')
     def _compute_name(self):

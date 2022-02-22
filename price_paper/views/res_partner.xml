@@ -6,8 +6,9 @@
             <field name="name">res.partner.pricepaper</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="active">True</field>
             <field name="arch" type="xml">
-                <widget name="web_ribbon" position="after">
+                <xpath expr="//div[@name='button_box']" position="inside">
                     <button class="oe_stat_button" type="action"
                             name="%(price_paper.act_res_partner_2_sale_order_line)d"
                             attrs="{'invisible': [('customer', '=', False)]}" string=" Purchase History"
@@ -15,43 +16,16 @@
                     <button class="oe_stat_button" type="action" name="%(price_paper.act_res_partner_2_product_notes)d"
                             attrs="{'invisible': [('customer', '=', False)]}" string=" Product Notes"
                             icon="fa-sticky-note"/>
-                </widget>
+                </xpath>
 
                 <xpath expr="//notebook/page[@name='sales_purchases']/group//field[@name='user_id']" position="after">
-                    <field name="is_sales_person"/>
+<!--                    <field name="is_sales_person"/>-->
                     <field name="customer_code" readonly="1"/>
                     <field name="established_date"/>
                     <field name="last_sold_date"/>
                     <field name="last_paid_date"/>
                     <field name="destination_code"/>
                 </xpath>
-
-                <!-- <xpath expr="//div[hasclass('o_address_format')]" position="replace">
-                     <div class="o_address_format">
-                                <div attrs="{'invisible': ['|', ('parent_id', '=', False), ('type', '!=', 'contact')]}" class="oe_edit_only"><b>Company Address:</b></div>
-                                <field name="street" placeholder="Street..." class="o_address_street"
-                                    attrs="{'readonly': True}"/>
-                                <field name="street2" placeholder="Street 2..." class="o_address_street"
-                                    attrs="{'readonly': True}"/>
-                                <field name="city" placeholder="City" class="o_address_city"
-                                    attrs="{'readonly': True}"/>
-                                <field name="state_id" class="o_address_state" placeholder="State" options='{"no_open": True}'
-                                    attrs="{'readonly': True}" context="{'country_id': country_id, 'zip': zip}"/>
-                                <field name="zip" placeholder="ZIP" class="o_address_zip"
-                                    attrs="{'readonly': True}"/>
-                                <field name="country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'
-                                    attrs="{'readonly': True}"/>
-                            </div>
-                </xpath> -->
-
-<!--                <field name="trust" position="attributes">-->
-<!--CAPTCHA:can't find in odoo-15-->
-<!--                </field>-->
-                <field name="vat" position="after">
-                    <!-- <field name="supplier" invisible="1"/> -->
-
-
-                </field>
                  <xpath expr="//field[@name='child_ids']" position="attributes">
                     <attribute name="context">{
                         'default_parent_id': active_id,
@@ -61,7 +35,7 @@
                         'default_state_id': state_id,
                         'default_zip': zip,
                         'default_country_id': country_id,
-                        <!-- 'default_supplier': supplier, -->
+                         'default_supplier': supplier,
                         'default_customer': customer,
                         'default_lang': lang,
                         'default_user_id': user_id,
@@ -78,9 +52,10 @@
                     <attribute name="groups">account.group_account_user</attribute>
                 </field>
 
-                <xpath expr="//notebook/page[@name='sales_purchases']/group[1]" position="inside">
+                <xpath expr="//group[@name='misc']" position="after">
                     <group string="Pricelists">
                         <field name="customer" invisible="1"/>
+                        <field name="supplier" invisible="1"/>
                         <field name='customer_pricelist_ids' attrs="{'invisible':[('customer', '=', False)]}"
                                nolabel="1">
                             <tree string="Customer Pricelist priority" editable="bottom">
@@ -91,13 +66,13 @@
                     </group>
                 </xpath>
 
-  <!--               <xpath expr="//field[@name='category_id']" position="after">
+                 <xpath expr="//field[@name='category_id']" position="after">
                     <field name="seller_partner_ids" attrs="{'invisible': [('supplier', '=', False)]}"
                            widget="many2many_tags"/>
-                </xpath> -->
+                </xpath>
 
-                <xpath expr="//notebook/page[@name='sales_purchases']/group[1]" position="after">
-                    <group string="Shipping Days">
+                <xpath expr="//group[@name='misc']" position="after">
+                    <group string="Shipping Days" name="shipping_days">
                         <field name="change_delivery_days"/>
                         <field name="zip_delivery_id" invisible="1"/>
                         <field name="shipping_easiness" attrs="{'invisible': [('change_delivery_days', '=', False)]}"/>
@@ -244,18 +219,6 @@
             </field>
         </record>
 
-<!--        <record id="ppt_customer_payment_term_edit_permission_action" model="ir.actions.act_window">-->
-<!--            <field name="name">Customer Payment Terms</field>-->
-<!--            <field name="type">ir.actions.act_window</field>-->
-<!--            <field name="res_model">res.partner</field>-->
-<!--            <field name="view_mode">kanban,tree,form</field>-->
-<!--            <field name="context">{'default_customer':1, 'search_default_customer':1, 'default_is_company': True}</field>-->
-<!--              <field name="help" type="html">-->
-<!--                <p class="o_view_nocontent_smiling_face">-->
-<!--                    Create your take off template-->
-<!--                </p>-->
-<!--            </field>-->
-<!--        </record>-->
 
         <record id="res_partner_pricepaper_vat_edit_permission_action" model="ir.actions.act_window">
             <field name="name">Resale Number Entry</field>
@@ -291,26 +254,6 @@
             <field name="act_window_id" ref="price_paper.res_partner_pricepaper_vat_edit_permission_action"/>
         </record>
 
-<!--        <record id="ppt_customer_payment_method_and_term_edit_action_kanban_view" model="ir.actions.act_window.view">-->
-<!--            <field eval="1" name="sequence"/>-->
-<!--            <field name="view_mode">kanban</field>-->
-<!--            <field name="view_id" ref="base.res_partner_kanban_view"/>-->
-<!--            <field name="act_window_id" ref="price_paper.ppt_customer_payment_term_edit_permission_action"/>-->
-<!--        </record>-->
-
-<!--        <record id="ppt_customer_payment_term_edit_action_tree_view" model="ir.actions.act_window.view">-->
-<!--            <field eval="2" name="sequence"/>-->
-<!--            <field name="view_mode">tree</field>-->
-<!--            <field name="view_id" ref="base.view_partner_tree"/>-->
-<!--            <field name="act_window_id" ref="price_paper.ppt_customer_payment_term_edit_permission_action"/>-->
-<!--        </record>-->
-
-<!--        <record id="ppt_customer_payment_term_edit_action_form_view" model="ir.actions.act_window.view">-->
-<!--            <field eval="3" name="sequence"/>-->
-<!--            <field name="view_mode">form</field>-->
-<!--            <field name="view_id" ref="view_partner_pricepaper_payment_terms_form"/>-->
-<!--            <field name="act_window_id" ref="price_paper.ppt_customer_payment_term_edit_permission_action"/>-->
-<!--        </record>-->
 
 
 
@@ -447,9 +390,5 @@
                   groups="account.group_account_invoice"
                   parent="account.menu_finance_receivables" sequence="16"/>
 
-<!--         <menuitem action="ppt_customer_payment_term_edit_permission_action"-->
-<!--                   id="ppt_customer_payment_term_edit_action_menu"-->
-<!--                   groups="account.group_account_manager"-->
-<!--                  parent="account.menu_finance_receivables" sequence="17"/>-->
     </data>
 </odoo>

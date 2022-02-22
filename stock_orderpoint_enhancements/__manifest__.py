@@ -20,6 +20,7 @@
     'depends': ['stock', 'odoo_fbprophet', 'price_paper', 'queue_job'],
 
     'data': [
+        'security/ir.model.access.csv',
         'data/data.xml',
         'wizard/product_forecast_views.xml',
         'wizard/order_point_reset.xml',

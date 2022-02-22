@@ -55,7 +55,7 @@
                                 <field name="uom_id"/>
                                 <field name="new_price"/>
                                 <field name="old_price"/>
-                                <field name="trace_log" invisible='1'/>
+<!--                                <field name="trace_log" invisible='1'/>-->
                             </group>
                         </group>
                     </sheet>

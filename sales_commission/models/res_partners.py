@@ -25,8 +25,28 @@ class ResPartner(models.Model):
 
     def _inverse_set_salespersons(self):
         for partner in self:
-            pass #TODO remove me 
+            partner_with_out_rule_id = partner.sales_person_ids.filtered(lambda r: not r.default_commission_rule)
+            if partner_with_out_rule_id:
+                raise UserError(_('Commission rule Not Found !!\n\nPlease update commission rule for \n%s') % (
+                    '\n'.join([p.name for p in partner_with_out_rule_id])))
 
+            all_salespersons = [c.sale_person_id.id for c in partner.commission_percentage_ids]
+            all_salespersons_brw = self.browse(all_salespersons)
+            to_delete = partner.commission_percentage_ids.filtered(
+                lambda c: c.sale_person_id.id not in partner.sales_person_ids.ids)
+            to_create = partner.sales_person_ids.filtered(lambda s: s.id not in all_salespersons)
+            write_vals = [(0, False, {'sale_person_id': s.id,
+                                      'rule_id': s.default_commission_rule and s.default_commission_rule.id or False})
+                          for s in to_create] + [(2, r.id, False) for r in to_delete]
+            partner.commission_percentage_ids = write_vals
+
+    @api.model
+    def default_get(self, fields_list):
+        res = super(ResPartner, self).default_get(fields_list)
+        if self.env.user.partner_id and self.env.user.partner_id.is_sales_person:
+            res.update({'commission_percentage_ids': [(0, False, {'sale_person_id': self.env.user.partner_id.id,
+                                                                  'rule_id': self.env.user.partner_id.default_commission_rule and self.env.user.partner_id.default_commission_rule.id or False})]})
+        return res
 
     @api.depends('sale_order_ids.confirmation_date')
     def get_last_sale_order(self):

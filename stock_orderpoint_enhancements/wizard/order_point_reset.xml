@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+    <!--    TODO not using ?.remove this file-->
         <record id="reset_order_point_wizard" model="ir.ui.view">
             <field name="name">reset.order.point</field>
             <field name="model">order.point.reset</field>

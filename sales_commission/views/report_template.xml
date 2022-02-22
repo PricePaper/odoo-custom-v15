@@ -33,26 +33,23 @@
             <field name="header_spacing">10</field>
             <field name="dpi">90</field>
         </record>
-        <report
-                string="commission Audit Report"
-                id="commission_audit_report"
-                model="generate.sales.commission"
-                report_type="qweb-pdf"
-                file="sales_commission.report_commission_audit"
-                name="sales_commission.report_commission_audit"
-                paperformat="paperformat_report_commission_audit"
-                print_report_name="'Sales Commission - %s' % (object.month)"
-        />
-
-        <report
-                string="Commission Settlement"
-                id="settlement_report"
-                model="sale.commission.settlement"
-                report_type="qweb-pdf"
-                file="sales_commission.report_commission_settlement"
-                name="sales_commission.report_commission_settlement"
-                paperformat="paperformat_commission_settlement"
-                print_report_name="'%s - %s %s' % (object.sales_person_id.name or '', object.date_from or '', object.name)"
-        />
+        <record id="commission_audit_report" model="ir.actions.report">
+            <field name="name">commission Audit Report</field>
+            <field name="model">generate.sales.commission</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">sales_commission.report_commission_audit</field>
+            <field name="report_file">sales_commission.report_commission_audit</field>
+            <field name="print_report_name">'Sales Commission - %s' % (object.month)</field>
+            <field name="paperformat_id" ref="sales_commission.paperformat_report_commission_audit"/>
+        </record>
+        <record id="settlement_report" model="ir.actions.report">
+            <field name="name">Commission Settlement</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">sales_commission.report_commission_settlement</field>
+            <field name="report_file">sales_commission.report_commission_settlement</field>
+            <field name="print_report_name">'%s - %s %s' % (object.sales_person_id.name or '', object.date_from or '', object.name)</field>
+            <field name="paperformat_id" ref="sales_commission.paperformat_commission_settlement"/>
+        </record>
     </data>
 </odoo>

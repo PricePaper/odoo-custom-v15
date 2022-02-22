@@ -18,11 +18,13 @@
         <record model="ir.ui.view" id="product_category_loc_form_view">
             <field name="name">view.product.category.loc.form</field>
             <field name="model">product.category</field>
-            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="inherit_id" ref="account.view_category_property_form"/>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <xpath expr="//group[@name='first']" position="inside">
-                    <field name="property_stock_location" string="Stock Location" domain="[('usage','=','internal')]"/>
+                <xpath expr="//group[@name='account_property']" position="inside">
+                    <group name="stock_location" string="Stock Locations">
+                        <field name="property_stock_location" string="Stock Location" domain="[('usage','=','internal')]"/>
+                    </group>
                 </xpath>
             </field>
         </record>

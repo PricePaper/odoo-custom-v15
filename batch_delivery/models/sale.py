@@ -28,14 +28,13 @@ class SaleOrder(models.Model):
                         raise ValidationError(
                             _('You don\'t have permissions to cancel a SO with DO in transit. \n\
                             Only Sales Manager and Accounting adviser have the permission.'))
-                view_id = self.env.ref('batch_delivery.view_so_cancel_reason_wiz').id
                 return {
-                    'name': _('Sale Order Cancel Reason'),
-                    'view_type': 'form',
+                    'name': 'Cancel Sales Order',
                     'view_mode': 'form',
-                    'res_model': 'so.cancel.reason',
-                    'view_id': view_id,
+                    'res_model': 'sale.order.cancel',
+                    'view_id': self.env.ref('sale.sale_order_cancel_view_form').id,
                     'type': 'ir.actions.act_window',
+                    'context': {'default_order_id': self.id},
                     'target': 'new'
                 }
 
@@ -60,6 +59,31 @@ class SaleOrderLine(models.Model):
                     'title': 'Price locked until %s' % line.price_from.price_lock.lock_expiry_date.strftime('%m/%d/%Y'),
                     'record': line.price_from.id}
                 line.info = json.dumps(info)
+
+    @api.depends('move_ids.state', 'move_ids.scrapped', 'move_ids.product_uom_qty', 'move_ids.product_uom', 'move_ids.quantity_done')
+    def _compute_qty_delivered(self):
+        super(SaleOrderLine, self)._compute_qty_delivered()
+        print('inside compute qty delivered')
+        for line in self:  # TODO: maybe one day, this should be done in SQL for performance sake
+            if line.qty_delivered_method == 'stock_move':
+                qty = 0.0
+                outgoing_moves, incoming_moves = line._get_outgoing_incoming_moves()
+                for move in outgoing_moves:
+                    if move.state == 'done':
+                        qty += move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom,
+                                                                  rounding_method='HALF-UP')
+                    elif move.picking_id.state == 'in_transit':
+                        qty += move.product_uom._compute_quantity(move.quantity_done, line.product_uom,
+                                                                  rounding_method='HALF-UP')
+                for move in incoming_moves:
+                    if move.state == 'done':
+                        qty -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom,
+                                                                  rounding_method='HALF-UP')
+                    elif move.picking_id.state == 'in_transit':
+                        qty -= move.product_uom._compute_quantity(move.quantity_done, line.product_uom,
+                                                                  rounding_method='HALF-UP')
+                print(qty)
+                line.qty_delivered = qty
 
     # todo by default system handles theis things
     # def write(self, vals):

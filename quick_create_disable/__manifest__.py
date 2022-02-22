@@ -22,9 +22,11 @@ This module disable the quick create from odoo many2one drop down.
     'images': [],
     'data': [],
     'depends': ['web'],
-    'web.assets_backend': [
+    'assets': {
+        'web.assets_backend': [
             'quick_create_disable/static/src/js/many2one_quick_create_disbale.js',
         ],
+    },
     'qweb': [],
     'installable': True,
     'auto_install': False,

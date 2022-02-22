@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
-        <record id="product_category_form_view_inherit_account_extension" model="ir.ui.view">
-            <field name="name">account.extension.product.category.form</field>
+        <record id="product_category_account_inherit_pricepaper" model="ir.ui.view">
+            <field name="name">product.category.form.pricepaper</field>
             <field name="model">product.category</field>
-            <field name="inherit_id" ref="account.view_category_property_form"/>
+            <field name="inherit_id" ref="stock_account.view_category_property_form"/>
             <field name="arch" type="xml">
+                <field name="property_stock_account_output_categ_id" position='after'>
+                    <field name="inv_adj_input_account_id" required="1"/>
+                    <field name="inv_adj_output_account_id" required="1"/>
+                </field>
                 <xpath expr="//group[@name='account_property']/group[1]" position="after">
                     <group string="Storage Contract">
                         <field name="sc_stock_valuation_account_id"/>
@@ -16,5 +19,24 @@
             </field>
         </record>
 
+        <record id="product_category_inherit_pricepaper" model="ir.ui.view">
+            <field name="name">product.category.form.pricepaper</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="arch" type="xml">
+                <group name="first" position="after">
+                    <group>
+                        <group>
+                            <field name="categ_code"/>
+                            <field name="standard_price"/>
+                        </group>
+                        <group name="storage_contract">
+                            <field name="is_storage_contract"/>
+                            <field name="repacking_upcharge"/>
+                        </group>
+                    </group>
+                </group>
+            </field>
+        </record>
     </data>
 </odoo>

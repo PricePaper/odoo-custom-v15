@@ -14,7 +14,8 @@ class StockMoveLine(models.Model):
     # pref_lot_id = fields.Many2one('stock.production.lot', string='Preferred Lot')
     is_transit = fields.Boolean(related='move_id.is_transit', readonly=True)
 
-    def _free_reservation(self, product_id, location_id, quantity, lot_id=None, package_id=None, owner_id=None, ml_ids_to_ignore=None):
+    def _free_reservation(self, product_id, location_id, quantity, lot_id=None, package_id=None, owner_id=None,
+                          ml_ids_to_ignore=None):
         if self._context.get('from_inv_adj', False):
             in_transit_move_lines_domain = [
                 ('state', 'not in', ['done', 'cancel']),
@@ -32,13 +33,29 @@ class StockMoveLine(models.Model):
                 ml_ids_to_ignore = []
             ml_ids_to_ignore += in_transit_candidates.ids
         return super()._free_reservation(product_id, location_id, quantity, lot_id=lot_id,
-                                                            package_id=package_id, owner_id=owner_id,
-                                                            ml_ids_to_ignore=ml_ids_to_ignore)
+                                         package_id=package_id, owner_id=owner_id,
+                                         ml_ids_to_ignore=ml_ids_to_ignore)
 
+    @api.model
+    def create(self, vals):
+        result = super(StockMoveLine, self).create(vals)
+        if 'qty_done' in vals:
+            result.move_id.update_invoice_line()
+        return result
 
     def write(self, vals):
-        #todo migrate after in transit new logic implimentation
         result = super(StockMoveLine, self).write(vals)
+        if 'qty_done' in vals:
+            for line in self.mapped('move_id'):
+                line.update_invoice_line()
+        return result
+
+    def unlink(self):
+        moves = self.mapped('move_id')
+        result = super(StockMoveLine, self).unlink()
+        for line in moves:
+            line.update_invoice_line()
+        return result
         # for line in self:
         #     sale_line = line.move_id.sale_line_id
         #
@@ -78,22 +95,5 @@ class StockMoveLine(models.Model):
         #     if 'picking_id' in vals:
         #         sale_line.invoice_lines.filtered(lambda
         #                                              rec: line.move_id in rec.stock_move_ids and rec.invoice_id and rec.invoice_id.state != 'cancel').sudo().unlink()
-
-        return result
-
-    # @api.multi
-    # def unlink(self):
-    #     for line in self:
-    #         sale_line = line.move_id.sale_line_id
-    #         if sale_line:
-    #             invoice_lines = sale_line.invoice_lines.filtered(
-    #                 lambda rec: rec.invoice_id.state != 'cancel' and line.move_id in rec.stock_move_ids)
-    #
-    #             if invoice_lines:
-    #                 invoices = invoice_lines.mapped('invoice_id')
-    #                 invoice_lines.write({'quantity': 0})
-    #
-    #     result = super(StockMoveLine, self).unlink()
-    #     return result
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

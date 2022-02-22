@@ -26,10 +26,10 @@
             <field name="domain" eval="[('account_id.user_type_id', 'in', [ref('account.data_account_type_current_assets'), ref('__import__.data_account_type_other_current_asset')])]" />
             <field name="formulas">balance = sum.balance</field>
         </record>
-        <record id="account_reports.account_financial_report_detailed_net_profit0" model="account.financial.html.report.line">
+        <!-- <record id="account_reports.account_financial_report_detailed_net_profit0" model="account.financial.html.report.line">
             <field name="formulas">debit = sum.debit; credit = sum.credit</field>
             <field name="domain" eval="[('account_id.user_type_id.include_initial_balance', '=', False)]" />
-        </record>
+        </record> -->
         <record id="account_reports.account_financial_report_net_profit0" model="account.financial.html.report.line">
             <field name="domain"></field>
             <field name="formulas">balance = OPINC.balance + OIN.balance - COS.balance - EXP.balance - DEP.balance</field>

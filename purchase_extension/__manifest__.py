@@ -12,7 +12,6 @@ Custom module implemented for Purchase extension.
     'author': 'Confianz Global',
     'website': 'http://confianzit.com',
     'data': ['views/account_vendor_bill.xml',
-             'views/payment_term.xml',
              'views/product_view.xml',
              'security/ir.model.access.csv',
              'views/purchase_order.xml',

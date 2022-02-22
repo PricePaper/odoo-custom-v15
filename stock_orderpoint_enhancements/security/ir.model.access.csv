@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_prophet_forecast_days_user,prophet_forecast_days_user,model_prophet_forecast_days,base.group_user,1,1,1,1
+access_product_forecast,product_forecast_user,model_product_forecast,base.group_user,1,1,1,1

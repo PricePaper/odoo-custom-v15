@@ -17,6 +17,4 @@ class ResCompany(models.Model):
     storage_product_id = fields.Many2one('product.product', string='Storage Product')
     discount_account_id = fields.Many2one('account.account', domain=[('deprecated', '=', False)])
 
-
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

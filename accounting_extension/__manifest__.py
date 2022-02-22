@@ -16,8 +16,7 @@ User can choose invoice against payments
     'website': 'http://www.confianzit.com',
     'images': [],
     # TODO :: FIX THIS FOR ODOO-15 MIGRATION
-    'data': ['views/payment_term_view.xml',
-             'data/data.xml',
+    'data': ['data/data.xml',
              'views/stock_picking_batch.xml',
              'views/account_payment_view.xml',
              'views/account_invoice_view.xml',

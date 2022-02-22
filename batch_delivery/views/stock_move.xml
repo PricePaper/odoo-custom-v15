@@ -106,7 +106,9 @@
                            groups="uom.group_uom" readonly="1"/>
                     <field name="reserved_availability" readonly="1"/>
                     <field name="qty_update" string="Reset Logic" invisible="1"/>
-                    <button name="action_show_reset_window" string="" type="object"
+                    <field name="procure_method" string="Reset Logic" invisible="1"/>
+                    <button name="action_show_reset_window" string="reset" type="object"
+                            attrs="{'invisible': [('procure_method', '!=', 'make_to_stock')]}"
                             icon="fa-refresh text-success"/>
                     <field name="state" readonly="1"/>
                 </tree>

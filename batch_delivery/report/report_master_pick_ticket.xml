@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+    <template id="master_pick_ticket_report">
+            <t t-call="web.html_container">
+                <t t-call="web.basic_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <div class="row">
+                            <strong class="text-center">
+                                <h1>Master Pick Ticket</h1>
+                            </strong>
+                        </div>
+                        <table class="table table-bordered mb64">
+                            <tr>
+                                <th style="width:31%;padding-left: 3px;padding-right: 3px;">Product</th>
+                                <th style="width:20%;padding-left: 3px;padding-right: 3px;">Product Code</th>
+                                <th style="width:12%;padding-left: 3px;padding-right: 3px;">Onhand Qty</th>
+                                <th style="width:12%;padding-left: 3px;padding-right: 3px;">Pick UOM</th>
+                                <th style="width:12%;padding-left: 3px;padding-right: 3px;">Pick Qty</th>
+                                <th style="width:12%;padding-left: 3px;padding-right: 3px;">Location</th>
+                            </tr>
+                            <t t-set="location_list" t-value="get_master_tickets(docs)"/>
+                            <t t-foreach="location_list" t-as="location">
+                                <t t-foreach="location[1]" t-as="product">
+                                    <t t-foreach="product_value" t-as="uom">
+                                        <tr>
+                                            <td>
+                                                <t t-esc="product.name"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="product.default_code"/>
+                                            </td>
+                                            <td>
+                                                <span t-esc="'%.2f'% product.qty_available"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="uom.name"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="uom_value"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="location[0]"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </t>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

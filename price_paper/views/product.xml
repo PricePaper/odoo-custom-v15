@@ -7,11 +7,11 @@
             <field name="inherit_id" ref="product.product_product_tree_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='lst_price']" position="after">
-                  <field name="lst_from_std_price"/>
-              </xpath>
-              <xpath expr="//field[@name='lst_price']" position="attributes">
-                  <attribute name="invisible">1</attribute>
-              </xpath>
+                    <field name="lst_from_std_price"/>
+                </xpath>
+                <xpath expr="//field[@name='lst_price']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
 
                 <xpath expr="//field[@name='name']" position="before">
                     <field name="categ_id"/>
@@ -23,15 +23,13 @@
                 <xpath expr="//field[@name='barcode']" position="after">
                     <field name="vendor_id"/>
                     <field name="property_stock_location"/>
-<!--    TODO::FIX this in odoo-15 migration                <field name="stock_value" sum="Stock Valuation"-->
-<!--                           widget="monetary" string="Total Value"/>-->
+                    <field name="value_svl" sum="Stock Valuation" widget="monetary" string="Total Value"/>
                 </xpath>
 
                 <xpath expr="//field[@name='qty_available']" position="after">
                     <field name="incoming_qty"/>
                     <field name="outgoing_qty"/>
                 </xpath>
-
                 <xpath expr="//field[@name='qty_available']" position="after">
                     <field name="reordering_min_qty" string="Min Qty"/>
                 </xpath>
@@ -49,22 +47,11 @@
                             string=" Product Notes" icon="fa-sticky-note"/>
                 </xpath>
 
-<!--                <field name="list_price" position="after"> <!-->
-<!--                    <field name="burden_percent"-->
-<!--                           groups="sales_team.group_sale_manager"/>-->
-<!--                    <field name="cost" widget="monetary"-->
-<!--                           options="{'currency_field': 'currency_id', 'field_digits': True}"/>-->
-<!--                </field>-->
-
-                <xpath expr="//div[@name='pricing']" position="after">
-                   <label for="burden_percent" groups="sales_team.group_sale_manager" />
-                   <div name="burden_percent" groups="sales_team.group_sale_manager">
-                        <field name="burden_percent"/>
-                   </div>
-                    <label for="cost" groups="sales_team.group_sale_manager" />
-                    <div name="cost" groups="sales_team.group_sale_manager">
-                        <field name="cost" widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"/>
-                   </div>
+                <xpath expr="//div[@name='standard_price_uom']" position="after">
+                    <field name="burden_percent"
+                           groups="sales_team.group_sale_manager"/>
+                    <field name="cost" widget="monetary"
+                           options="{'currency_field': 'currency_id', 'field_digits': True}"/>
                 </xpath>
 
                 <field name="detailed_type" position="before">
@@ -78,130 +65,115 @@
                       'invisible':[('is_storage_contract', '=', False)]}"/>
                 </field>
 
-<!--                TODO uncomment below one check the purpose of below code in odoo 15-->
-<!--                <xpath expr="//div[@name='pricelist_item']" position="attributes">-->
-<!--                    <attribute name="invisible">1</attribute>-->
-<!--                </xpath>-->
+                <!--                TODO uncomment below one check the purpose of below code in odoo 15--><!--TODO Fixed ,found no use-->
+                <!--                <xpath expr="//div[@name='pricelist_item']" position="attributes">-->
+                <!--                    <attribute name="invisible">1</attribute>-->
+                <!--                </xpath>-->
 
-                <xpath expr="//field[@name='standard_price']" position="attributes">
+                <xpath expr="//group[@name='group_standard_price']" position="attributes">
                     <attribute name='groups'>sales_team.group_sale_manager</attribute>
                 </xpath>
-
                 <xpath expr="//field[@name='uom_id']" position="before">
                     <field name="sale_uoms" widget="many2many_tags" required="1"/>
                 </xpath>
-
                 <xpath expr="//field[@name='uom_id']" position="attributes">
                     <attribute name='domain'>[('product_ids.id', '=', active_id)]</attribute>
                 </xpath>
 
-<!--                TODO uncomment below one symbols cause erros-->
-<!--                &lt;!&ndash; <xpath expr="//field[@name='uom_po_id']" position="attributes">-->
-<!--                    <attribute name='domain'>[('product_ids.id', '=', active_id)]</attribute>-->
-<!--                </xpath> &ndash;&gt;-->
+                <xpath expr="//field[@name='uom_po_id']" position="attributes">
+                    <attribute name='domain'>[('product_ids.id', '=', active_id)]</attribute>
+                </xpath>
 
                 <xpath expr="//notebook" position="inside">
                     <page name='addons_product' string='Addons Products'
                           attrs="{'invisible': [('need_sub_product', '=', False)]}">
-                        <group>
-                            <group>
-                                <field name="product_addons_list" nolabel="1"
-                                       attrs="{'required': [('need_sub_product', '=', True)]}"/>
-                            </group>
-                        </group>
+                        <field name="product_addons_list" nolabel="1"
+                               attrs="{'required': [('need_sub_product', '=', True)]}"/>
                     </page>
                     <page name='superseded' string='Superseded Products'>
-                        <group>
-                            <group string="Supersedes">
-                              <field name="new_products" invisible="1"/>
-                                <field name="superseded"
-                                       attrs="{'invisible':[('active', '=', False)]}"
-                                       context="{'default_product_child_id':id}"
-                                       domain="[('product_child_id', '=', id)]"
-                                       help="Select a product that has been archived that this product will replace"
-                                       nolabel="1">
-                                    <tree>
-                                        <field name='old_product'/>
-                                    </tree>
-                                    <form>
+                        <group string="Supersedes">
+                            <field name="new_products" invisible="1"/>
+                            <field name="superseded"
+                                   attrs="{'invisible':[('active', '=', False)]}"
+                                   context="{'default_product_child_id':id}"
+                                   domain="[('product_child_id', '=', id)]"
+                                   help="Select a product that has been archived that this product will replace"
+                                   nolabel="1">
+                                <tree>
+                                    <field name='old_product'/>
+                                </tree>
+                                <form>
+                                    <group>
                                         <group>
-                                            <group>
-                                                <field name='old_product'/>
-                                            </group>
-                                            <group>
-                                                <field name='product_child_id' readonly='1'/>
-                                            </group>
+                                            <field name='old_product'/>
                                         </group>
-                                    </form>
-                                </field>
-                            </group>
+                                        <group>
+                                            <field name='product_child_id' readonly='1'/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
                         </group>
                     </page>
                     <page name='standard_price' string='Standard Price'>
-                        <group>
-                            <group string="Standard Price">
-                                <group>
-                                    <field name="standard_price_date_lock"/>
-                                </group>
-                                <field name="uom_standard_prices"
-                                       context="{'default_product_id':id}"
-                                       domain="[('product_id', '=', id)]"
-                                       groups="sales_team.group_sale_salesman"
-                                       nolabel="1"
-                                        mode="tree,kanban">
-                                    <tree>
-                                        <field name='uom_id'/>
-                                        <field name='price'/>
-                                    </tree>
-                                    <kanban class="o_kanban_mobile">
-                                        <field name="product_id"/>
-                                        <field name="uom_id"/>
-                                        <field name="price"/>
-                                        <field name="cost"/>
-                                        <field name="price_margin"/>
-                                        <templates>
-                                            <t t-name="kanban-box">
-                                                <div t-attf-class="oe_kanban_card oe_kanban_global_click">
-                                                    <div class="row">
-                                                        <div class="col-8">
-                                                            <strong>
-                                                                <span>
-                                                                    <t t-esc="record.uom_id.value"/>
-                                                                </span>
-                                                            </strong>
-                                                        </div>
-                                                        <div class="col-4">
-                                                            <strong>
-                                                                <span class="float-right text-right badge badge-info">
-                                                                    <t t-esc="record.price.value"/>
-                                                                </span>
-                                                            </strong>
-                                                        </div>
+                        <group string="Standard Price">
+                            <field name="standard_price_date_lock"/>
+                            <field name="uom_standard_prices"
+                                   context="{'default_product_id':id}"
+                                   domain="[('product_id', '=', id)]"
+                                   groups="sales_team.group_sale_salesman"
+                                   nolabel="1"
+                                   mode="tree,kanban">
+                                <tree>
+                                    <field name='uom_id'/>
+                                    <field name='price'/>
+                                </tree>
+                                <kanban class="o_kanban_mobile">
+                                    <field name="product_id"/>
+                                    <field name="uom_id"/>
+                                    <field name="price"/>
+                                    <field name="cost"/>
+                                    <field name="price_margin"/>
+                                    <templates>
+                                        <t t-name="kanban-box">
+                                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        <strong>
+                                                            <span>
+                                                                <t t-esc="record.uom_id.value"/>
+                                                            </span>
+                                                        </strong>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <strong>
+                                                            <span class="float-right text-right badge badge-info">
+                                                                <t t-esc="record.price.value"/>
+                                                            </span>
+                                                        </strong>
                                                     </div>
                                                 </div>
-                                            </t>
-                                        </templates>
-                                    </kanban>
-                                    <form>
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
+                                <form>
+                                    <group>
                                         <group>
-                                            <group>
-                                                <field name='product_id'/>
-                                                <field name='uom_id'/>
-                                            </group>
-                                            <group>
-                                                <field name='cost'/>
-                                                <field name='price'/>
-                                                <field name='price_margin'/>
-                                            </group>
+                                            <field name='product_id'/>
+                                            <field name='uom_id'/>
                                         </group>
-                                    </form>
-                                </field>
-                            </group>
+                                        <group>
+                                            <field name='cost'/>
+                                            <field name='price'/>
+                                            <field name='price_margin'/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
                         </group>
                         <group>
-                            <group>
-                                <field name='similar_product_ids' widget="many2many_tags"/>
-                            </group>
+                            <field name='similar_product_ids' widget="many2many_tags"/>
                         </group>
                     </page>
                     <page name='Alternative Products' string='Alternative Products'>
@@ -211,12 +183,8 @@
                             </group>
                         </group>
                         <group>
-                            <group string="Alternative Products">
                                 <field name="same_product_ids" widget="many2many_tags"/>
-                            </group>
-                            <group>
                                 <field name="same_product_rel_ids" widget="many2many_tags" invisible="1"/>
-                            </group>
                         </group>
                     </page>
                 </xpath>
@@ -226,40 +194,12 @@
                 <xpath expr="//label[@for='list_price']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+                <field name="tax_string" sposition="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
             </field>
         </record>
 
-        <record id="product_category_inherit_pricepaper" model="ir.ui.view">
-            <field name="name">product.category.form.pricepaper</field>
-            <field name="model">product.category</field>
-            <field name="inherit_id" ref="product.product_category_form_view"/>
-            <field name="arch" type="xml">
-                <group name="first" position="after">
-                    <group>
-                        <group>
-                            <field name="categ_code"/>
-                            <field name="standard_price"/>
-                        </group>
-                        <group>
-                            <field name="is_storage_contract"/>
-                            <field name="repacking_upcharge"/>
-                        </group>
-                    </group>
-                </group>
-            </field>
-        </record>
-
-        <record id="product_category_account_inherit_pricepaper" model="ir.ui.view">
-            <field name="name">product.category.form.pricepaper</field>
-            <field name="model">product.category</field>
-            <field name="inherit_id" ref="stock_account.view_category_property_form"/>
-            <field name="arch" type="xml">
-                  <field name="property_stock_account_output_categ_id" position='after'>
-                      <field name="inv_adj_input_account_id" required="1"/>
-                      <field name="inv_adj_output_account_id" required="1"/>
-                  </field>
-            </field>
-        </record>
 
         <record id="product_search_form_view_price_paper" model="ir.ui.view">
             <field name="name">product.product.search</field>
@@ -268,8 +208,9 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='name']" position="attributes">
                     <attribute name="filter_domain">['|', '|', '|', ('superseded.old_product.default_code', '=', self),
-                                                     ('default_code', 'ilike', self), ('name', 'ilike', self),
-                                                     ('barcode', 'ilike', self)]</attribute>
+                        ('default_code', 'ilike', self), ('name', 'ilike', self),
+                        ('barcode', 'ilike', self)]
+                    </attribute>
                 </xpath>
                 <xpath expr="//field[@name='name']" position="after">
                     <field name="vendor_id" string="Vendor"

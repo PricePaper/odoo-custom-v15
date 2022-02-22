@@ -60,15 +60,20 @@ class StockPickingBatch(models.Model):
         for rec in self:
             rec.invoice_ids = rec.picking_ids.mapped('invoice_ids')
 
+    def _get_report_base_filename(self):
+        self.ensure_one()
+        return 'Invoice'
+
+
     @api.constrains('cheque_amount', 'cash_amount', 'actual_returned')
     def check_total_amount(self):
 
         for batch in self:
             msg = ''
-            check_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_id.code in ('check_printing_in', 'batch_payment'))
+            check_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_line_id.code in ('check_printing_in', 'batch_payment'))
             if check_lines and float_round(sum(check_lines.mapped('amount')), precision_digits=2) != float_round(batch.cheque_amount, precision_digits=2):
                 msg += 'Check Amount mismatch.\n'
-            cash_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_id.code == 'manual')
+            cash_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_line_id.code == 'manual')
             if cash_lines and float_round(sum(cash_lines.mapped('amount')), precision_digits=2) != float_round(batch.cash_amount, precision_digits=2):
                 msg += 'Cash Amount mismatch.\n'
             if batch.pending_amount:
@@ -92,6 +97,9 @@ class StockPickingBatch(models.Model):
     @api.depends('picking_ids', 'picking_ids.state', 'picking_ids.move_lines.product_id', 'picking_ids.move_lines.quantity_done')
     def _compute_gross_weight_volume(self):
         for batch in self:
+            batch.total_unit = 0
+            batch.total_volume = 0
+            batch.total_weight = 0
             for line in batch.mapped('picking_ids').filtered(lambda rec: rec.state != 'cancel').mapped('move_lines'):
                 product_qty = line.quantity_done if line.quantity_done else line.reserved_availability
                 batch.total_unit += line.product_uom_qty
@@ -160,10 +168,10 @@ class StockPickingBatch(models.Model):
             result.append((batch.id, _('%s') % (batch.name)))
         return result
 
-
     def view_pending_products(self):
         self.ensure_one()
-        pass 
+        pending_view = self.env['pending.product.view'].create({'batch_ids': [(6, 0, self.ids)]})
+        return pending_view.generate_move_lines()
 
     def print_master_pickticket(self):
         self.write({'late_order_print': False})
@@ -320,14 +328,26 @@ class StockPickingBatch(models.Model):
     def view_invoices(self):
         pickings = self.picking_ids
         invoices = pickings.mapped('invoice_ids')
-        action = self.env.ref('account.action_move_out_invoice_type').read()[0]
+        action = self.env["ir.actions.actions"]._for_xml_id("account.action_move_out_invoice_type")
         if len(invoices) > 1:
             action['domain'] = [('id', 'in', invoices.ids)]
         elif len(invoices) == 1:
-            # action['views'] = [(self.env.ref('account.invoice_form').id, 'form')]
+            form_view = [(self.env.ref('account.view_move_form').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state, view) for state, view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
             action['res_id'] = invoices.id
         else:
             action = {'type': 'ir.actions.act_window_close'}
+        # action = self.env.ref('account.action_move_out_invoice_type').read()[0]
+        # if len(invoices) > 1:
+        #     action['domain'] = [('id', 'in', invoices.ids)]
+        # elif len(invoices) == 1:
+        #     # action['views'] = [(self.env.ref('account.invoice_form').id, 'form')]
+        #     action['res_id'] = invoices.id
+        # else:
+        #     action = {'type': 'ir.actions.act_window_close'}
         return action
 
 
@@ -369,10 +389,10 @@ class StockPickingBatch(models.Model):
     def register_payments(self):
         for batch in self:
             msg = ''
-            check_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_id.code in ('check_printing_in', 'batch_payment'))
+            check_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_line_id.code in ('check_printing_in', 'batch_payment'))
             if check_lines and float_round(sum(check_lines.mapped('amount')), precision_digits=2) != float_round(batch.cheque_amount, precision_digits=2):
                 msg += 'Check Amount mismatch.\n'
-            cash_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_id.code == 'manual')
+            cash_lines = batch.cash_collected_lines.filtered(lambda r:r.payment_method_line_id.code == 'manual')
             if cash_lines and float_round(sum(cash_lines.mapped('amount')), precision_digits=2) != float_round(batch.cash_amount, precision_digits=2):
                 msg += 'Cash Amount mismatch.\n'
             if msg:
@@ -447,7 +467,7 @@ class CashCollectedLines(models.Model):
     partner_id = fields.Many2one('res.partner', string='Customer', required=True)
     amount = fields.Float(string='Amount Collected', digits='Product Price')
     communication = fields.Char(string='Memo')
-    payment_method_id = fields.Many2one('account.payment.method', domain=[('payment_type', '=', 'inbound')])
+    payment_method_line_id = fields.Many2one('account.payment.method.line', domain=[('payment_type', '=', 'inbound')])
     is_communication = fields.Boolean(string='Is Communication')
     journal_id = fields.Many2one('account.journal', string='Journal', domain=[('type', 'in', ['bank', 'cash'])])
     partner_ids = fields.Many2many('res.partner', compute='_compute_partner_ids')
@@ -457,6 +477,15 @@ class CashCollectedLines(models.Model):
     available_payment_method_line_ids = fields.Many2many('account.payment.method.line', compute='_compute_available_payment_method_ids')
     billable_partner_ids = fields.Many2many('res.partner', compute='_compute_billable_partner_ids')
     common_batch_id = fields.Many2one('batch.payment.common', string='Batch')
+    # {account.journal(7, ): {account.payment.method.line(33, ): [
+    #     {'payment_type': 'inbound', 'partner_type': 'customer', 'payment_method_line_id': 33, 'partner_id': 5083,
+    #      'amount': 1256.78, 'journal_id': 7, 'communication': False, 'batch_id': 741, 'discount_amount': 0.0,
+    #      'discount_journal_id': False},
+    #     {'payment_type': 'inbound', 'partner_type': 'customer', 'payment_method_line_id': 33, 'partner_id': 5083,
+    #      'amount': 20.0, 'journal_id': 7, 'communication': False, 'batch_id': 741}]}, account.journal(8, ): {
+    #     account.payment.method.line(24, ): [
+    #         {'payment_type': 'inbound', 'partner_type': 'customer', 'payment_method_line_id': 24, 'partner_id': 5083,
+    #          'amount': 100.0, 'journal_id': 8, 'communication': False, 'batch_id': 741}]}}
 
     @api.depends('batch_id')
     def _compute_billable_partner_ids(self):
@@ -470,6 +499,7 @@ class CashCollectedLines(models.Model):
     def _compute_available_payment_method_ids(self):
         for pay in self:
             pay.available_payment_method_line_ids = pay.journal_id._get_available_payment_method_lines('inbound')
+            print(pay.journal_id._get_available_payment_method_lines('inbound'))
             # to_exclude = self._get_payment_method_codes_to_exclude()
             # if to_exclude:
             #     pay.available_payment_method_line_ids = pay.available_payment_method_line_ids.filtered(lambda x: x.code not in to_exclude)
@@ -503,13 +533,17 @@ class CashCollectedLines(models.Model):
         else:
             self.amount = 0
 
-    @api.onchange('payment_method_id')
+    @api.onchange('payment_method_line_id')
     def _onchange_payment_method_id(self):
-        self.is_communication = self.payment_method_id.code == 'check_printing'
+        self.is_communication = self.payment_method_line_id.code == 'check_printing'
 
-# todo not tested
+# todo not tested same copy is ther in accounting extension
     def create_payment(self):
-
+        """
+        override in accounting extension
+        """
+        pass
+        print('batch delivery')
         batch_payment_info = {}
 
         for line in self:

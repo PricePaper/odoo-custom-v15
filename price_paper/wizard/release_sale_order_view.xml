@@ -43,7 +43,7 @@
             <field name="res_model">release.sale.order</field>
             <field name="view_mode">form</field>
             <field name="binding_model_id" ref="sale.model_sale_order"/>
-            <field name="binding_view_types">form</field>
+            <field name="binding_view_types">list</field>
             <field name="target">new</field>
             <field name="groups_id" eval="[(4, ref('price_paper.group_allow_more_than_credit_limit'))]"/>
         </record>
@@ -54,7 +54,7 @@
             <field name="res_model">release.price.hold.sale.order</field>
             <field name="view_mode">form</field>
             <field name="binding_model_id" ref="sale.model_sale_order"/>
-            <field name="binding_view_types">form</field>
+            <field name="binding_view_types">list</field>
             <field name="target">new</field>
             <field name="groups_id" eval="[(4, ref('price_paper.group_allow_low_price_unit'))]"/>
         </record>

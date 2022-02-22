@@ -9,46 +9,36 @@
             <field name="report_name">instant_invoice.report_quick_saleorder</field>
             <field name="report_file">instant_invoice.report_quick_saleorder</field>
             <field name="print_report_name">(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or 'Order - %s' % (object.name)</field>
-
-
         </record>
 
-    <!--TODO uncomment below code after batch_delivery report migration-->
+         <record id="quick_sale_product_label_report" model="ir.actions.report">
+            <field name="name">Quick Sale Product Labels</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">batch_delivery.report_product_label</field>
+            <field name="report_file">batch_delivery.report_product_label</field>
+            <field name="paperformat_id" ref="batch_delivery.print_product_label_paperformat"/>
+            <field name="print_report_name">'Product labels - %s' % (object.name or '')</field>
+        </record>
 
-<!--        <report-->
-<!--                string="Quick Sale - Product Labels"-->
-<!--                id="quick_sale_product_label_report"-->
-<!--                model="stock.picking"-->
-<!--                report_type="qweb-pdf"-->
-<!--                file="batch_delivery.report_product_label"-->
-<!--                name="batch_delivery.report_product_label"-->
-<!--                paperformat="batch_delivery.print_product_label_paperformat"-->
-<!--                print_report_name="'Product labels - %s' % (object.name or '')"-->
-<!--                menu="False"-->
-<!--        />-->
-<!--        <report-->
-<!--           id="account_invoices_quick_sale"-->
-<!--           model="account.invoice"-->
-<!--           string="Invoices (Quick Sale)"-->
-<!--           report_type="qweb-pdf"-->
-<!--           menu="False"-->
-<!--           name="batch_delivery.report_ppt_selected_invoice_with_payment_quick_sale"-->
-<!--           file="batch_delivery.report_ppt_selected_invoice_with_payment_quick_sale"-->
-<!--           attachment="(object.state in ('open','in_payment','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"-->
-<!--           print_report_name="(object._get_report_base_filename())"-->
-<!--        />-->
+        <record id="account_invoices_quick_sale" model="ir.actions.report">
+            <field name="name">Invoices (Quick Sale)</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">batch_delivery.report_ppt_selected_invoice_with_payment_quick_sale</field>
+            <field name="report_file">batch_delivery.report_ppt_selected_invoice_with_payment_quick_sale</field>
+            <field name="print_report_name">(object._get_report_base_filename())</field>
+            <field name="paperformat_id" ref="batch_delivery.paperformat_inv_std"/>
+        </record>
 
-<!--        <report-->
-<!--                string=" Quick sale Pick Ticket"-->
-<!--                id="quick_sale_batch_picking_active_report"-->
-<!--                model="stock.picking"-->
-<!--                report_type="qweb-pdf"-->
-<!--                file="batch_delivery.report_batch_picking_active"-->
-<!--                name="batch_delivery.report_batch_picking_active"-->
-<!--                paperformat="batch_delivery.paperformat_batch_picking_ticket"-->
-<!--                print_report_name="object.batch_id and 'Pick - %s - %s' % (object.batch_id.truck_driver_id and  object.batch_id.truck_driver_id.name or '', object.batch_id.date) or ('Pick - %s - %s' % (object.partner_id and object.partner_id.name or '',object.name))"-->
-<!--                menu="False"-->
-<!--        />-->
-
+        <record id="quick_sale_batch_picking_active_report" model="ir.actions.report">
+            <field name="name">Quick sale Pick Ticket</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">batch_delivery.report_batch_picking_active</field>
+            <field name="report_file">batch_delivery.report_batch_picking_active</field>
+            <field name="print_report_name">object.batch_id and 'Pick - %s - %s' % (object.batch_id.truck_driver_id and  object.batch_id.truck_driver_id.name or '', object.batch_id.date) or ('Pick - %s - %s' % (object.partner_id and object.partner_id.name or '',object.name))</field>
+            <field name="paperformat_id" ref="batch_delivery.paperformat_batch_picking_ticket"/>
+        </record>
     </data>
 </odoo>

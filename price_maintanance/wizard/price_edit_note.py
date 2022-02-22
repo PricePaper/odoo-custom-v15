@@ -17,8 +17,6 @@ class PriceMaintanacePricelist(models.TransientModel):
     price_edit_id = fields.Many2one('price.maintanace.edit', string='Price Maintanace Edit')
 
 
-PriceMaintanacePricelist()
-
 
 class VendorPricelist(models.TransientModel):
     _name = 'vendor.price.edit'
@@ -30,8 +28,6 @@ class VendorPricelist(models.TransientModel):
     run_date = fields.Date('Update Date')
     price_change = fields.Float(string='Cost Change')
 
-
-VendorPricelist()
 
 
 class PriceMaintanace(models.TransientModel):
@@ -114,7 +110,5 @@ class PriceMaintanace(models.TransientModel):
 
         return res
 
-
-PriceMaintanace()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

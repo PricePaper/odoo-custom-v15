@@ -83,6 +83,9 @@
                     <button name="print_product_labels" string="Print Product Labels" type="object"
                             class="oe_highlight"
                             attrs="{'invisible': [('state', '!=', 'in_truck')]}"/>
+                   <!-- <button name="print_delivery_slip" string="Print Delivery Slip" type="object"
+                            class="oe_highlight"
+                            />-->
                 </button>
 
                 <button name="action_confirm" position="after">
@@ -310,11 +313,11 @@
                                 <field name="partner_id" domain="[('id', 'in', billable_partner_ids)]"/>
                                 <field name="partner_ids" invisible="1"/>
                                 <field name="invoice_id"
-                                       domain="[('partner_id', 'in', partner_ids), ('state', '=', 'posted'), ('move_type', '=', 'out_invoice')]"
+                                       domain="[('partner_id', 'in', partner_ids), ('state', '=', 'posted'), ('payment_state', 'not in', ('paid', 'in_payment')), ('move_type', '=', 'out_invoice')]"
                                        context="{'from_batch_payment': True}"/>
                                 <field name="journal_id" required="1"/>
                                 <field name="available_payment_method_line_ids" invisible="1"/>
-                                <field name="payment_method_id" domain="[('id','in',available_payment_method_line_ids)]"
+                                <field name="payment_method_line_id" domain="[('id','in',available_payment_method_line_ids)]"
                                        required="1"/>
                                 <field name="discount"/>
                                 <field name="communication" attrs="{'required': [('is_communication', '=', True)]}"/>
@@ -327,7 +330,7 @@
                                         <field name="partner_id"/>
                                         <field name="journal_id"/>
                                         <field name="available_payment_method_line_ids" invisible="1"/>
-                                        <field name="payment_method_id"
+                                        <field name="payment_method_line_id"
                                                domain="[('id','in',available_payment_method_line_ids)]" required="1"/>
                                         <field name="communication"/>
                                     </group>

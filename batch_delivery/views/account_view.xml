@@ -20,6 +20,12 @@
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
+                <field name="move_type" position="after">
+                    <field name="picking_ids" invisible="1"/>
+                </field>
+                <xpath expr="//button[@name='preview_invoice']" position="attributes">
+                    <attribute name="attrs">{'invisible': True}</attribute>
+                </xpath>
                 <!--                <field name="move_type" position="after">-->
                 <!--                    <field name="picking_ids" invisible="1"/>-->
                 <!--                </field>-->
@@ -45,6 +51,7 @@
                 </xpath>
             </field>
         </record>
+
 
         <record id="view_batch_payment_search_inherit_batch_delivery" model="ir.ui.view">
             <field name="name">view.batch.payment.search.inherit.batch.delivery</field>

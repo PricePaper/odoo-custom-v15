@@ -13,17 +13,14 @@ class AddDiscount(models.TransientModel):
     discount_type = fields.Selection([('percentage', 'Discount(%)'), ('amount', 'Discount($)')], default='percentage')
 
     def create_discount(self):
-        batch_discount = self._context.get('batch_discount', False)
         self.ensure_one()
         move = self.env['account.move'].browse(self._context.get('active_id', 0))
         account_receivable = move.partner_id and move.partner_id.property_account_receivable_id
         account_payable = move.partner_id and move.partner_id.property_account_payable_id
         if not account_receivable:
-            account_receivable = self.env['ir.property']. \
-                with_context(force_company=move.company_id.id).get('property_account_receivable_id', 'res.partner')
+            account_receivable = self.env['ir.property']._get('property_account_receivable_id', 'res.partner')
         if not account_payable:
-            account_payable = self.env['ir.property']. \
-                with_context(force_company=move.company_id.id).get('property_account_payable_id', 'res.partner')
+            account_payable = self.env['ir.property']._get('property_account_payable_id', 'res.partner')
 
         if self.env.context.get('type') == 'in_invoice':
             discount_account = move.company_id.purchase_writeoff_account_id
@@ -81,4 +78,9 @@ class AddDiscount(models.TransientModel):
             aml.reconcile()
 
         return discount_move
+
+    @api.model
+    def create_truck_discount(self, batch_discount=0):
+        if batch_discount:
+            self.create({'discount': batch_discount, 'discount_type': 'amount'}).create_discount()
 

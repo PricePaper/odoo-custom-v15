@@ -62,15 +62,24 @@ class SaleCommission(models.Model):
                 subtype_id=self.env.ref('mail.mt_note').id)
             rec.is_removed = True
 
+    @api.model
+    def create_weeekly_draw(self):
+        draw_date = date.today()
+        if draw_date.weekday() < 5:
+            sales_persons = self.env['res.partner'].search([('is_sales_person', '=', True)])
+            for sales_person in sales_persons:
+                weekly_draw = sales_person.weekly_draw
+                if weekly_draw and weekly_draw > 0:
 
-
-
-#class SalesCommission(models.Model):
-#    _name = 'sales.commission'
-#    _description = 'Sales Commission'
-
-#class SalesUnpaidCommission(models.Model):
-#    _name = 'sales.unpaid.commission'
-#    _description = 'Sale Unpaid Commission'
+                    daily_amount = float_round(weekly_draw / 5, precision_digits=2)
+                    vals = {
+                        'sale_person_id': sales_person.id,
+                        'commission': -daily_amount,
+                        'is_paid': True,
+                        'invoice_type': 'draw',
+                        'commission_date': date.today(),
+                        'paid_date': date.today()
+                    }
+                    self.env['sale.commission'].create(vals)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

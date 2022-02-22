@@ -3,16 +3,10 @@
         <record id="product_category_sale_line_report" model="ir.ui.view">
             <field name="name">product.category.form.pricepaper</field>
             <field name="model">product.category</field>
-            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="inherit_id" ref="price_paper.product_category_inherit_pricepaper"/>
             <field name="arch" type="xml">
-                <group name="first" position="after">
-                    <group>
-                        <group>
-                            <field name="class_margin"/>
-                        </group>
-                        <group>
-                        </group>
-                    </group>
+                <group name="storage_contract" position="inside">
+                    <field name="class_margin"/>
                 </group>
             </field>
         </record>

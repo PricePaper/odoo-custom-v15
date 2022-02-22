@@ -154,5 +154,16 @@
                    groups="account.group_account_manager"
                   parent="account.menu_finance_receivables" sequence="17"/>
 
+        <record id="res_partner_price_maintanance_customer" model="ir.ui.view">
+            <field name="name">res.partner.maintanance.search</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="price_maintanance.customer_price_maintanace_form_view"/>
+            <field name="arch" type="xml">
+              <field name="customer_code" position="after">
+                  <field name="sales_person_ids" string="Sales person" readonly="1" widget='many2many_tags'/>
+              </field>
+            </field>
+        </record>
+
     </data>
 </odoo>

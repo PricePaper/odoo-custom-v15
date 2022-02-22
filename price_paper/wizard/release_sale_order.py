@@ -21,6 +21,7 @@ class SaleOrderRelease(models.TransientModel):
 
 SaleOrderRelease()
 
+
 class SalePriceHoldOrderRelease(models.TransientModel):
     """
     This wizard release all the selected price Hold orders price Hold

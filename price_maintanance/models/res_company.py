@@ -10,6 +10,5 @@ class ResCompany(models.Model):
     partner_count = fields.Integer(string='STD price min #partner', default=4)
 
 
-ResCompany()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

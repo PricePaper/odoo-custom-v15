@@ -21,8 +21,15 @@
                 <form string="Truck Driver">
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-
-                                <!--TODO purpose in V15?-->
+                                <!--TODO purpose in V15?--><!--TODO Fixed-->
+                            <button type="object"
+                                class="oe_stat_button"
+                                id="partner_ledger_button"
+                                icon="fa-pencil-square-o"
+                                name="open_partner_ledger"
+                                string="Partner Ledger"
+                                context="{'default_partner_id': active_id}">
+                            </button>
 <!--                            <button type="object" class="oe_stat_button" id="partner_ledger_button"-->
 <!--                                    icon="fa-pencil-square-o" name="open_partner_ledger"-->
 <!--                                    context="{'default_partner_id': active_id}">-->

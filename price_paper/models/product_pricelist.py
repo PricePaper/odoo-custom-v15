@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime, date
-
 from dateutil.relativedelta import relativedelta
-
 from odoo import fields, models, api
 
 
@@ -42,11 +40,6 @@ class ProductPricelist(models.Model):
                     pricelist.partner_ids = [(6, 0, partner_ids)]
 
     @api.model
-    @api.returns('self',
-                 upgrade=lambda self, value, args, offset=0, limit=None, order=None,
-                                count=False: value if count else self.browse(value),
-                 downgrade=lambda self, value, args, offset=0, limit=None, order=None,
-                                  count=False: value if count else value.ids)
     def search(self, args, offset=0, limit=None, order=None, count=False):
         if self.env.user.has_group('price_paper.group_salesman_customer_own_pricelist') and not self.env.user.has_group(
                 'base.group_system'):

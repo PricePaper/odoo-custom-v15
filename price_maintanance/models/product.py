@@ -8,8 +8,7 @@ from dateutil.relativedelta import relativedelta
 
 from odoo import fields, models, api, _
 from odoo.addons.price_paper.models import margin
-# TODO: FIX THIS FOR ODOO-15 MIGRATION
-# from odoo.addons.queue_job.job import job
+
 from odoo.tools import float_round
 
 _logger = logging.getLogger(__name__)
@@ -36,7 +35,6 @@ class ProductProduct(models.Model):
         view_id = self.env.ref('price_maintanance.view_price_maintanace_edit').id
         return {
             'name': _('Edit Price'),
-            'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'price.maintanace.edit',
             'view_id': view_id,
@@ -48,12 +46,16 @@ class ProductProduct(models.Model):
     def compute_last_purchase_price(self):
 
         for product in self:
+            last_purchase_price = ''
+            last_po = False
             line = self.env['purchase.order.line'].search(
                 [('state', 'in', ('done', 'purchase')), ('product_id', '=', product.id)], order='date_order desc',
                 limit=1)
             if line:
-                product.last_purchase_price = '%s %s %s' % (line.price_unit, line.product_uom.name, line.date_order)
-                product.last_po = line.order_id.id
+                last_purchase_price = '%s %s %s' % (line.price_unit, line.product_uom.name, line.date_order)
+                last_po = line.order_id.id
+            product.last_purchase_price = last_purchase_price
+            product.last_po = last_po
 
     def get_median(self, order_lines):
 
@@ -145,7 +147,9 @@ class ProductProduct(models.Model):
 
     @api.model
     def _cron_update_product_lst_price(self):
-
+        """
+        Cron method for Job queue
+        """
         products = self.env['product.product'].search([])
         similar_products = []
         for product in products:
@@ -164,10 +168,11 @@ class ProductProduct(models.Model):
             name = 'Standard Price: '+ name
             product.with_delay(description=name, channel='root.standardprice').job_queue_standard_price_update()
 
-    # TODO: FIX THIS FOR ODOO-15 MIGRATION
-    # @job
-    def job_queue_standard_price_update(self):
 
+    def job_queue_standard_price_update(self):
+        """
+        Create job for standard price update
+        """
         price_from_msg = ''
         date_to = datetime.today() - relativedelta(months=self.env.user.company_id.product_lst_price_months or 0, day=1)
         product_list = self
@@ -218,6 +223,9 @@ class ProductProduct(models.Model):
         return price_from_msg
 
     def get_price_from_competitor_or_categ(self, uom):
+        """
+        Get price from category or competitor
+        """
         new_lst_price = 0
         cost = self.cost
         restaurant_id = self.env.ref('website_scraping.website_scraping_cofig_1').id
@@ -236,6 +244,9 @@ class ProductProduct(models.Model):
         return new_lst_price,price_from
 
     def get_from_competitor(self, competitor_id, uom):
+        """
+        Fetch price from competitor
+        """
         new_lst_price = 0
         pricelist = self.env['product.pricelist'].search([
             ('type', '=', 'competitor'),
@@ -252,6 +263,5 @@ class ProductProduct(models.Model):
         return new_lst_price
 
 
-ProductProduct()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

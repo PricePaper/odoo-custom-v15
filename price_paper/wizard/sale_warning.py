@@ -10,10 +10,11 @@ class SaleWarningWizard(models.TransientModel):
     warning_message = fields.Text(string='Warning')
 
     def close_window(self):
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'reload',
-        }
+        return True
+        # return {
+        #     'type': 'ir.actions.client',
+        #     'tag': 'reload',
+        # }
 
 
 SaleWarningWizard()

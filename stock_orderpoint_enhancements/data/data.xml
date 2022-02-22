@@ -15,5 +15,16 @@
             <field name="numbercall">-1</field>
             <field eval="False" name="doall"/>
         </record>
+
+        <record id="Product_Orderpoint" model="queue.job.channel">
+            <field name="name">productorderpoint</field>
+            <field name="parent_id" ref="queue_job.channel_root" />
+        </record>
+        <record id="job_function_product_orderpoint" model="queue.job.function">
+            <field name="model_id" ref="sale.model_product_product"></field>
+            <field name="method">job_queue_forecast</field>
+            <field name="channel_id" ref="Product_Orderpoint" />
+            <field name="retry_pattern" eval="{1: 60, 2: 180, 3: 10, 5: 300}" />
+        </record>
     </data>
 </odoo>

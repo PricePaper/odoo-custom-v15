@@ -6,6 +6,7 @@ from odoo import models, api
 class MailThread(models.AbstractModel):
     _inherit = ['mail.thread']
 
+    # todo doubtful maybe some other ways in new api
     @api.model
     def create(self, vals):
         if self._name == 'sale.order':

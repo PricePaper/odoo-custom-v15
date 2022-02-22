@@ -8,7 +8,6 @@ class SaleTaxHistoryWizard(models.TransientModel):
     _name = 'sale.tax.history.wizard'
     _description = 'Sales Tax History Wizard'
 
-
     def job_queue_create_sale_tax_history(self, line):
         line = self.env['sale.order.line'].browse(line[0])
         tax = False
@@ -17,7 +16,6 @@ class SaleTaxHistoryWizard(models.TransientModel):
         vals = {'product_id': line.product_id.id, 'partner_id': line.order_id.partner_shipping_id.id, 'tax': tax}
         self.env['sale.tax.history'].create(vals)
         return True
-
 
     def add_sale_tax_history_lines(self):
         """

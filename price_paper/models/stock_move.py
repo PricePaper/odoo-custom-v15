@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api, _
+from odoo import fields, models, api
 from odoo.exceptions import UserError
+
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
 
     picking_partner_id = fields.Many2one('res.partner', related='picking_id.partner_id', string='Partner')
     is_storage_contract = fields.Boolean(compute='_compute_is_storage_contract', store=True)
-    po_original_qty = fields.Float(related="purchase_line_id.product_uom_qty", string='Original Quantity (PO)', readonly=True)
+    po_original_qty = fields.Float(related="purchase_line_id.product_uom_qty", string='Original Quantity (PO)',
+                                   readonly=True)
 
     @api.depends('sale_line_id.storage_contract_line_id', 'sale_line_id.order_id.storage_contract')
     def _compute_is_storage_contract(self):
@@ -16,46 +18,54 @@ class StockMove(models.Model):
             if line.sale_line_id:
                 line.is_storage_contract = True if line.sale_line_id.storage_contract_line_id else True if line.sale_line_id.order_id.storage_contract else False
 
-    def _search_picking_for_assignation(self):
+    def _search_picking_for_assignation_domain(self):
         """
-        Overriden to create one DO per one SO.
+        Override to create one DO per one SO.
         """
-        self.ensure_one()
-        picking = self.env['stock.picking'].search([
-            ('group_id', '=', self.group_id.id),
-            ('location_dest_id', '=', self.location_dest_id.id),
-            ('picking_type_id', '=', self.picking_type_id.id),
-            ('printed', '=', False),
-            ('state', 'in', ['draft', 'confirmed', 'waiting', 'partially_available', 'assigned'])], limit=1)
-        return picking
+        res = super()._search_picking_for_assignation_domain()
+        for domain in res:
+            if domain[0] == 'location_id':
+                res.remove(domain)
+        return res
 
 
     def _get_accounting_data_for_valuation(self):
-        """ Over ride to Return the accounts for inventory adjustment. """
-        self.ensure_one()
-        res = super(StockMove, self)._get_accounting_data_for_valuation()
-
+        """
+        override to chnage account valuation of storage contract
+        """
+        journal_id, acc_src, acc_dest, acc_valuation = super(StockMove, self)._get_accounting_data_for_valuation()
         if self.is_storage_contract:
-            valuation_account = self.product_id.categ_id.sc_stock_valuation_account_id
-            if not valuation_account:
-                raise UserError(_('Cannot find a SC Stock Valuation Account in product category: %s' % self.product_id.categ_id.name))
+            acc_valuation = self.product_id.categ_id.sc_stock_valuation_account_id
+            if not acc_valuation:
+                raise UserError(
+                    'Cannot find a SC Stock Valuation Account in product category: %s' % self.product_id.categ_id.name)
+        return journal_id, acc_src, acc_dest, acc_valuation
 
-            return (res[0], res[1], res[2], valuation_account.id)
 
+    def _get_src_account(self, accounts_data):
         if self._context.get('from_inv_adj', False) or self._context.get('is_scrap', False):
-            acc_src = False
-            acc_dest = False
-            if self.product_id.categ_id.inv_adj_input_account_id:
-                acc_src = self.product_id.categ_id.inv_adj_input_account_id.id
-            if self.product_id.categ_id.inv_adj_output_account_id:
-                acc_dest = self.product_id.categ_id.inv_adj_output_account_id.id
+            acc_src = self.product_id.categ_id.inv_adj_input_account_id.id
             if not acc_src:
-                raise UserError(_('Cannot find a Invenotry Adjustment stock input account for the product %s. You must define one on the product category, before processing this operation.') % (self.product_id.display_name))
-            if not acc_dest:
-                raise UserError(_('Cannot find a Invenotry Adjustment stock output account for the product %s. You must define one on the product category, before processing this operation.') % (self.product_id.display_name))
-            res = (res[0], acc_src, acc_dest, res[3])
-        return res
+                raise UserError(
+                    'Cannot find a Invenotry Adjustment stock input account for the product %s. You must define one on\
+                     the product category, before processing this operation.' %
+                    self.product_id.display_name)
+            return acc_src
+        return super()._get_src_account(accounts_data)
 
+    def _get_dest_account(self, accounts_data):
+        if self._context.get('from_inv_adj', False) or self._context.get('is_scrap', False):
+            acc_dest = self.product_id.categ_id.inv_adj_output_account_id.id
+            if not acc_dest:
+                raise UserError(
+                    'Cannot find a Invenotry Adjustment stock input account for the product %s. You must define one on\
+                     the product category, before processing this operation.' %
+                    self.product_id.display_name)
+            return acc_dest
+        return super()._get_dest_account(accounts_data)
+
+
+StockMove()
 
 
 class StockMoveLine(models.Model):
@@ -63,10 +73,8 @@ class StockMoveLine(models.Model):
 
     picking_partner_id = fields.Many2one('res.partner', related='move_id.picking_partner_id', string='Partner')
     product_onhand_qty = fields.Float(string='Product Onhand QTY')
-    # TODO: FIX THIS FOR ODOO-15 MIGRATION
-    # inventory_id = fields.Many2one('stock.inventory', related='move_id.inventory_id', string='Inventory')
 
 
-
+StockMoveLine()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

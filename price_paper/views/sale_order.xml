@@ -1,115 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!--overriden(replaced) the whole delivery module inherrit for sales order form  this is done to ensure the get/set delivery views are available in confirmed state order-->
-<!--        TODO:: fix this in odoo-15 migration-->
-<!--        <record id="delivery.view_order_form_with_carrier" model="ir.ui.view">-->
-<!--            <field name="name">delivery.sale.order.form.view.with_carrier</field>-->
-<!--            <field name="model">sale.order</field>-->
-<!--            <field name="inherit_id" ref="sale.view_order_form"/>-->
-<!--            <field name="arch" type="xml">-->
 
-<!--                    <xpath expr="//field[@name='payment_term_id']" position="after">-->
-<!--                        <field name="id" invisible="1"/>-->
-<!--&lt;!&ndash;                      migration change 12 -> 15   <field name="available_carrier_ids" invisible="1"/>-->
-<!--                        <label for="carrier_id"/>-->
-<!--                        <div name='carrier_selection'>-->
-<!--                            <div>-->
-<!--                                <field name="carrier_id" domain="[('id', 'in', available_carrier_ids)]"-->
-<!--                                       context="{'order_id': id}" class="oe_inline"-->
-<!--                                       options="{'no_create': True, 'no_open': True}"-->
-<!--                                       attrs="{'readonly':[('state','not in',('draft','sent'))]}"/> <i-->
-<!--                                    class="fa fa-check text-success" role="img" aria-label="Rating OK" title="Rating OK"-->
-<!--                                    attrs="{'invisible':['|','|',('carrier_id','=',False),('state','not in',('draft','sent','sale')),('delivery_rating_success','=',False)]}"></i>-->
-<!--                            </div>-->
-<!--                            <div>-->
-<!--                                <field name='delivery_price' widget='monetary' class="oe_inline"-->
-<!--                                       options="{'currency_field': 'currency_id'}" nolabel="1"-->
-<!--                                       attrs="{'invisible': [('carrier_id','=', False)]}" force_save="1"/>-->
-<!--                                <button name="get_delivery_price" type="object" class="oe_inline oe_link"-->
-<!--                                        attrs="{'invisible':['|',('carrier_id','=',False),('state','not in',('draft','sent','sale'))]}"><i-->
-<!--                                        class="fa fa-arrow-right"/> Get rate</button>-->
-<!--                                <button name="set_delivery_line" type="object" class="oe_inline oe_link"-->
-<!--                                        attrs="{'invisible':['|','|',('carrier_id','=',False),('state','not in',('draft','sent','sale')),('delivery_rating_success','=',False)]}"><i-->
-<!--                                        class="fa fa-arrow-right"/> Add to order</button>-->
-<!--                                <field name='delivery_rating_success' invisible="1" force_save="1"/>-->
-<!--                            </div>-->
-<!--                            <div class="alert alert-info" role="status"-->
-<!--                                 attrs="{'invisible': ['|',('carrier_id','=', False),('delivery_message','=',False)]}">-->
-<!--                                <field name='delivery_message' force_save="1"/>-->
-<!--                                <field name='delivery_cost' invisible="1" force_save="1" />-->
-<!--                            </div>-->
-<!--                        </div>&ndash;&gt;-->
-<!--                    </xpath>-->
-
-<!--                    <xpath expr="//field[@name='product_uom_qty']" position="after">-->
-<!--                        <field name="product_qty" invisible="1"/>-->
-<!--                    </xpath>-->
-<!--                    <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="after">-->
-<!--                        <field name="sale_uom_ids" invisible="1"/>-->
-<!--                    </xpath>-->
-<!--                    <xpath expr="//field[@name='order_line']/form//field[@name='product_uom']" position="attributes">-->
-<!--                        <attribute name="domain">[('id', 'in', sale_uom_ids)]</attribute>-->
-<!--                    </xpath>-->
-<!--                    <xpath expr="//group[hasclass('oe_subtotal_footer')]" position="before">-->
-<!--                        <group name="weight_volume">-->
-<!--                            <field name="total_volume"/>-->
-<!--                            <field name="total_weight"/>-->
-<!--                            <field name="total_qty"/>-->
-<!--                        </group>-->
-<!--                    </xpath>-->
-
-<!--            </field>-->
-<!--        </record>-->
-
-        <record id="sale_order_form_inherit_price_paper_hold" model="ir.ui.view">
-            <field name="name">sale.order.form.inherit.hold</field>
-            <field name="model">sale.order</field>
-            <field name="inherit_id" ref="sale.view_order_tree"/>
-            <field name="arch" type="xml">
-                <field name="name" position="after">
-                    <field name="hold_state"/>
-                </field>
-                <field name="commitment_date" position="attributes">
-                    <attribute name="invisible">1</attribute>
-                </field>
-                <field name="expected_date" position="attributes">
-                    <attribute name="invisible">1</attribute>
-                </field>
-                <field name="expected_date" position="after">
-                    <field name="deliver_by"/>
-                </field>
-            </field>
-        </record>
-
-        <record id="inherit_sale_order_form_view" model="ir.ui.view">
-            <field name="name">inherited.sale.order.form.view</field>
+        <record id="price_paper_sale_order_form_view" model="ir.ui.view">
+            <field name="name">inherited.sale.order.form.view.batch</field>
             <field name="model">sale.order</field>
             <field name="type">form</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-
                 <sheet position='before'>
-                    <div class="oe_form_box_info oe_text_center"
-                         attrs="{'invisible':['|', ('is_creditexceed', '=', False), ('ready_to_release', '=', True)]}">
-                        <p attrs="{'invisible':[('is_creditexceed', '=', False)]}">
-                            <b><field name='credit_warning'/></b>
-                        </p>
-
-                    </div>
-                    <div class="oe_form_box_info oe_text_center"
-                         attrs="{'invisible':['|', ('is_low_price', '=', False), ('release_price_hold', '=', True)]}">
-                        <p attrs="{'invisible':[('is_low_price', '=', False)]}">
-                            <b><field name='low_price_warning'/></b>
+                    <div class=" oe_text_center">
+                        <p>
+                            <b>
+                                <field name='credit_warning' class="alert alert-warning mb-0" role="alert"
+                                       attrs="{'invisible':['|', ('is_creditexceed', '=', False), ('ready_to_release', '=', True)]}"/>
+                                <field name='low_price_warning' class="alert alert-warning mb-0" role="alert"
+                                       attrs="{'invisible':['|', ('is_low_price', '=', False), ('release_price_hold', '=', True)]}"/>
+                            </b>
                         </p>
                     </div>
                 </sheet>
-
-                 <xpath expr="//div[@name='button_box']" position="inside">
-                    <button type="object" name="action_view_purchase_orders" class="oe_stat_button" icon="fa-shopping-cart" attrs="{'invisible': [('po_count', '=', 0)]}" groups="sales_team.group_sale_manager">
-                        <field name="po_count" widget="statinfo" string="Purchase Orders"/>
-                    </button>
-                </xpath>
 
                 <xpath expr="//field[@name='validity_date']" position="after">
                     <field name="storage_contract" invisible="1"/>
@@ -122,26 +32,37 @@
 
                 <field name="partner_id" position="attributes">
                     <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
-                    <attribute name="domain">[('type', '=', 'contact'), ('customer', '=', True), ('parent_id', '=', False)]</attribute>
-                    <attribute name="context">{'search_default_customer': 1, 'show_address': 1, 'tree_view_ref': 'view_partner_tree_search_more',
-                                               'address_inline': 1, 'show_partner_code': 1, 'show_vat': 0}</attribute>
+                    <attribute name="domain">[('type', '=', 'contact'), ('customer', '=', True), ('parent_id', '=',
+                        False)]
+                    </attribute>
+                    <attribute name="context">{'search_default_customer': 1, 'show_address': 1, 'tree_view_ref':
+                        'view_partner_tree_search_more',
+                        'address_inline': 1, 'show_partner_code': 1, 'show_vat': 0}
+                    </attribute>
                 </field>
 
                 <field name="partner_invoice_id" position="attributes">
                     <attribute name="invisible">True</attribute>
-                    <attribute name="domain">['|', ('id', '=', partner_id), '&amp;', ('parent_id', '=', partner_id), ('type', '=', 'invoice')]</attribute>
+                    <attribute name="domain">['|', ('id', '=', partner_id), '&amp;', ('parent_id', '=', partner_id),
+                        ('type', '=', 'invoice')]
+                    </attribute>
                     <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
-                    <attribute name="context">{'default_type': 'invoice', 'address_inline': 1, 'show_address': 1, 'tree_view_ref': 'view_partner_tree_search_more', 'show_partner_code': 1}</attribute>
+                    <attribute name="context">{'default_type': 'invoice', 'address_inline': 1, 'show_address': 1,
+                        'tree_view_ref': 'view_partner_tree_search_more', 'show_partner_code': 1}
+                    </attribute>
                 </field>
                 <field name="partner_id" position="after">
-                  <field name="invoice_address_id" required='1' context="{'default_type': 'invoice', 'address_inline': 1, 'show_address': 1, 'tree_view_ref': 'view_partner_tree_search_more'}"
-                    domain="['|', ('id', '=', partner_id), '&amp;', ('parent_id', '=', partner_id), ('type', '=', 'invoice')]"/>
+                    <field name="invoice_address_id" required='1'
+                           context="{'default_type': 'invoice', 'address_inline': 1, 'show_address': 1, 'tree_view_ref': 'view_partner_tree_search_more'}"
+                           domain="['|', ('id', '=', partner_id), '&amp;', ('parent_id', '=', partner_id), ('type', '=', 'invoice')]"/>
                 </field>
 
                 <field name="partner_shipping_id" position="attributes">
                     <attribute name="domain">['|', ('id', '=', partner_id), ('parent_id', '=', partner_id)]</attribute>
                     <attribute name="options">{"no_create": 1, "no_create_edit": 1, "always_reload": True}</attribute>
-                    <attribute name="context">{'default_type': 'invoice', 'show_address': 1, 'tree_view_ref': 'view_partner_tree_search_more', 'show_partner_code': 1}</attribute>
+                    <attribute name="context">{'default_type': 'invoice', 'show_address': 1, 'tree_view_ref':
+                        'view_partner_tree_search_more', 'show_partner_code': 1}
+                    </attribute>
                 </field>
 
                 <button name="action_cancel" position="after">
@@ -154,7 +75,7 @@
                 </button>
 
                 <button name="action_quotation_send" position="after">
-                    <button name="action_fax_send" string="Send by Fax" type="object" states="draft,sent"
+                    <button name="action_fax_send" string="Send by Fax" type="object" states="draft,order,sent"
                             class="btn-primary"/>
                 </button>
 
@@ -178,6 +99,8 @@
                 <xpath expr="//tree[1]" position="attributes">
                     <attribute name="editable"/>
                     <attribute name="decoration-danger">profit_margin&lt;0</attribute>
+                    <attribute name="decoration-bf">profit_margin&lt;0</attribute>
+                    <attribute name="decoration-it">profit_margin&lt;0</attribute>
                     <attribute name="decoration-info">profit_margin==0</attribute>
                     <attribute name="decoration-success">profit_margin&gt;0</attribute>
                 </xpath>
@@ -186,12 +109,12 @@
                     <attribute name="options">{"no_create": False}</attribute>
                 </xpath>
 
-                 <xpath expr="//field[@name='order_line']/form//label[@for='qty_delivered']" position="before">
-                     <field name="storage_contract_line_id" options="{'no_create': False}"
-                            attrs="{'invisible': [('parent.show_contract_line', '=', False)]}"
-                            domain="[('order_id.state', '=', 'released'), ('order_id.storage_contract', '=', True), ('is_downpayment', '=', False), ('storage_remaining_qty', '&gt;', 0), ('order_id.partner_id', '=', parent.partner_id)]"
-                     invisible="1"/>
-                 </xpath>
+                <xpath expr="//field[@name='order_line']/form//label[@for='qty_delivered']" position="before">
+                    <field name="storage_contract_line_id" options="{'no_create': False}"
+                           attrs="{'invisible': [('parent.show_contract_line', '=', False)]}"
+                           domain="[('order_id.state', '=', 'released'), ('order_id.storage_contract', '=', True), ('is_downpayment', '=', False), ('storage_remaining_qty', '&gt;', 0), ('order_id.partner_id', '=', parent.partner_id)]"
+                           invisible="1"/>
+                </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="before">
                     <field name="lst_price" readonly="1"/>
                     <field name="working_cost" invisible="1"/>
@@ -224,17 +147,19 @@
                        position="after">
                     <field name="update_pricelist"/>
                     <field name="profit_margin" attrs="{'invisible': [('display_type', '!=', False)]}"/>
-                    <field name="price_from" invisible="0"/>
+                    <field name="price_from" invisible="1"/>
                 </xpath>
 
                 <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']" position="attributes">
                     <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
                 </xpath>
-<!--TODO: FIX THIS FOR ODOO-15 MIGRATION-->
-<!--            <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='product_id']" position="attributes">
-                  <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
-                  <attribute name="domain">[('sale_ok', '=', True), ('categ_id.is_storage_contract', '=', False)]</attribute>
-                </xpath>-->
+
+                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='product_id']"
+                       position="attributes">
+                    <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
+                    <attribute name="domain">[('sale_ok', '=', True), ('categ_id.is_storage_contract', '=', False)]
+                    </attribute>
+                </xpath>
 
                 <xpath expr="//field[@name='order_line']/form/group[1]" position="after">
                     <div>
@@ -245,14 +170,14 @@
                                 <field name="note" attrs="{'invisible': [('display_type', '!=', False)]}"/>
                                 <field name="note_type" widget='radio'
                                        attrs="{'invisible': [('display_type', '!=', False)]}"
-                                       />
+                                />
                                 <field name="note_expiry_date"
                                        attrs="{'invisible': ['|', ('note_type', '=', 'temporary'), ('display_type', '!=', False)],
                                        'required': [('note_type', '=', 'permanant')]}"
-                                       />
+                                />
                             </group>
                             <group>
-                              <field name="similar_product_price" readonly="1" nolabel='1' force_save="1"/>
+                                <field name="similar_product_price" readonly="1" nolabel='1' force_save="1"/>
                             </group>
                         </group>
                     </div>
@@ -262,7 +187,7 @@
                     </div>
                 </xpath>
 
-                <xpath expr="//field[@name='tax_totals_json']" position="before">
+                <xpath expr="//group[@name='sale_total']" position="inside">
                     <field name="gross_profit" widget="monetary"
                            options="{'currency_field': 'currency_id', 'field_digits': True}"/>
                 </xpath>
@@ -271,31 +196,11 @@
                     <field name="show_contract_line" invisible="1"/>
                     <button type="object" name="add_purchase_history_to_so_line" string="Browse History Lines"
                             context="{'partner':partner_id}" class="oe_edit_only oe_highlight"/>
-                <button type="action" name="%(action_sc_popup_windows)d" string="Browse Storage Contract" attrs="{'invisible': [('show_contract_line', '=', False)]}"
-                             context="{'default_partner_id':partner_id}" class="oe_edit_only oe_highlight"
+                    <button type="action" name="%(action_sc_popup_windows)d" string="Browse Storage Contract"
+                            attrs="{'invisible': [('show_contract_line', '=', False)]}"
+                            context="{'default_partner_id':partner_id}" class="oe_edit_only oe_highlight"
                     />
 
-                </xpath>
-
-                <!--TODO: FIX THIS FOR ODOO-15 MIGRATION-->
-                <!-- Remove this code block from batch_delivery->views->sale_view.xml-->
-                <xpath expr="//field[@name='payment_term_id']" position="after">
-                    <field name="have_prive_lock" invisible="1"/>
-                </xpath>
-
-                <!--TODO: FIX THIS FOR ODOO-15 MIGRATION-->
-                <!-- Remove this code block from batch_delivery->views->sale_view.xml-->
-                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='price_unit']"
-                       position="after">
-                    <field name="info" widget="price_lock" string="Lock Info"
-                           attrs="{'invisible':[('price_lock', '=', False)]}"/>
-                </xpath>
-                <!--TODO: FIX THIS FOR ODOO-15 MIGRATION-->
-                <!-- Remove this code block from batch_delivery->views->sale_view.xml-->
-                <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
-                    <field name="info" widget="price_lock" string="Lock Info"
-                           attrs="{'column_invisible':[('parent.have_prive_lock', '=', False)],
-                                    'invisible':[('price_lock', '=', False)]}"/>
                 </xpath>
 
                 <xpath expr="//field[@name='order_line']/form" position="inside">
@@ -304,7 +209,33 @@
                         $('.modal header').after($footer);
                     </script>
                 </xpath>
+            </field>
+        </record>
 
+
+        <record id="action_orders_credit_limit_exceeded" model="ir.actions.act_window">
+            <field name="name">Orders On Hold</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_mode">tree,form</field>
+            <!--            <field name="search_view_id" ref="sale_order_view_search_credit_exceeded"/>-->
+            <field name="context">{"search_default_ready_to_release": 1, "search_default_release_price_hold": 1}</field>
+            <field name="help" type="html">
+                <p>
+                    No Holded Sale Order Found.
+                </p>
+            </field>
+        </record>
+
+        <record id="inherit_sale_order_purchase_form" model="ir.ui.view">
+            <field name="name">inherited.sale.order.form.view</field>
+            <field name="model">sale.order</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="sale_purchase.sale_order_inherited_form_purchase"/>
+            <field name="arch" type="xml">
+                <button name="action_view_purchase_orders" position="attributes">
+                    <attribute name="groups">sales_team.group_sale_manager</attribute>
+                </button>
             </field>
         </record>
 
@@ -313,9 +244,9 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_sales_order_filter"/>
             <field name="arch" type="xml">
-                 <xpath expr="//filter[@name='my_sale_orders_filter']" position="attributes">
-                     <attribute name="domain">[('state', 'in', ['sale', 'done'])]</attribute>
-                     <attribute name="context">{'my_orders': True}</attribute>
+                <xpath expr="//filter[@name='my_sale_orders_filter']" position="attributes">
+                    <attribute name="domain">[('state', 'in', ['sale', 'done'])]</attribute>
+                    <attribute name="context">{'my_orders': True}</attribute>
                 </xpath>
             </field>
         </record>
@@ -326,7 +257,8 @@
             <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
             <field name="arch" type="xml">
                 <xpath expr="//filter[@name='my_quotation']" position="replace">
-                    <filter string="My Drafts" name="my_quotation" domain="[('state','in',('draft', 'sent'))]" context="{'my_draft':True}"/>
+                    <filter string="My Drafts" name="my_quotation" domain="[('state','in',('draft', 'sent'))]"
+                            context="{'my_draft':True}"/>
                 </xpath>
 
                 <xpath expr="//filter[@name='draft']" position="replace">
@@ -337,17 +269,20 @@
 
         <record id="sale.action_quotations" model="ir.actions.act_window">
             <field name="search_view_id" ref="price_paper.sale_order_view_search_price_paper"/>
-            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
+            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]
+            </field>
         </record>
 
         <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
             <field name="search_view_id" ref="price_paper.sale_order_view_search_price_paper"/>
-            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
+            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]
+            </field>
         </record>
 
         <record id="sale.action_quotations_salesteams" model="ir.actions.act_window">
             <field name="search_view_id" ref="price_paper.sale_order_view_search_price_paper"/>
-            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
+            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]
+            </field>
         </record>
 
         <record id="sale_order_view_search_credit_exceeded" model="ir.ui.view">
@@ -379,19 +314,6 @@
             <field name="view_mode">tree,form,graph,pivot</field>
         </record>
 
-        <record id="action_orders_credit_limit_exceeded" model="ir.actions.act_window">
-            <field name="name">Orders On Hold</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">sale.order</field>
-            <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref="sale_order_view_search_credit_exceeded"/>
-            <field name="context">{"search_default_ready_to_release": 1, "search_default_release_price_hold": 1}</field>
-            <field name="help" type="html">
-                <p>
-                    No Holded Sale Order Found.
-                </p>
-            </field>
-        </record>
 
         <record id="sale_order_tree_inherit_price" model="ir.ui.view">
             <field name="name">sale.order.tree.inherit.price</field>
@@ -445,7 +367,8 @@
             <field name="res_model">sale.order.line</field>
             <field name="view_mode">tree</field>
             <field name="context">{'search_default_order_partner_id': [active_id],
-                                   'default_order_partner_id': active_id, 'search_default_is_last': 1}</field>
+                'default_order_partner_id': active_id, 'search_default_is_last': 1}
+            </field>
             <field name="domain">[('state', 'in', ['sale', 'done'])]</field>
         </record>
 
@@ -474,86 +397,108 @@
             <field name="view_mode">tree</field>
             <field name="view_id" ref="sale_order_line_tree_pricepaper"/>
             <field name="context">{'search_default_product_id': [active_id],
-                                   'default_product_id': active_id}</field>
+                'default_product_id': active_id}
+            </field>
             <field name="domain">[('state', 'in', ['sale'])]</field>
         </record>
 
         <record id="sale.action_quotations" model="ir.actions.act_window">
-            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
+            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]
+            </field>
             <field name="context">{'default_is_quotation': 1}</field>
             <field name="name">Drafts</field>
         </record>
 
         <record id="sale.action_orders" model="ir.actions.act_window">
-          <field name="domain">[('state', 'not in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
+            <field name="domain">[('state', 'not in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]
+            </field>
         </record>
 
         <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
             <field name="name">Drafts</field>
-            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]</field>
+            <field name="domain">[('state', 'in', ('draft', 'sent', 'cancel')), ('storage_contract', '=', False)]
+            </field>
         </record>
         <record model="ir.actions.server" id="action_confirm_multiple_orders">
             <field name="name">Confirm</field>
             <field name="model_id" ref="sale.model_sale_order"/>
             <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="binding_view_types">list</field>
             <field name="state">code</field>
             <field name="code">
-action = records.env['sale.order'].confirm_multiple_orders(records)
+                action = records.env['sale.order'].confirm_multiple_orders(records)
             </field>
         </record>
+        -->
 
-                <record id="view_storage_contract_order_form" model="ir.ui.view">
-                <field name="name">sale.order.form</field>
-                <field name="model">sale.order</field>
-                <field name="arch" type="xml">
-                    <form string="Sales Order" class="o_sale_order">
+        <record id="view_storage_contract_order_form" model="ir.ui.view">
+            <field name="name">sale.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="arch" type="xml">
+                <form string="Sales Order" class="o_sale_order">
                     <header>
                         <field name="sc_po_done" invisible="1"/>
                         <field name="invoice_status" invisible="1"/>
-                        <field name="active" hidden="1"/>
                         <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice"
-                            type="action" class="btn-primary"
-                            attrs="{'invisible': ['|', '|', ('active', '=', False), ('invoice_status', 'not in', ('to invoice', 'upselling')), ('state', '=', 'done')]}"/>
+                                type="action" class="btn-primary"
+                                attrs="{'invisible': ['|', '|', ('active', '=', False), ('invoice_status', 'not in', ('to invoice', 'upselling')), ('state', '=', 'done')]}"/>
                         <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice"
                                 type="action" context="{'default_advance_payment_method': 'percentage'}"
                                 attrs="{'invisible': ['|', '|', ('active', '=', False), ('invoice_status', '!=', 'no'), ('state', 'not in', ['sale', 'waiting', 'ordered'])]}"/>
-                        <button name="action_storage_contract_confirm" type="object" string="Confirm" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('active', '=', False)]}"/>
-                        <button name="action_create_storage_do" type="object" string="Create PO" class="oe_highlight" attrs="{'invisible': ['|', '|', ('active', '=', False), ('state', '!=', 'sale'), ('sc_po_done', '=', True)]}" groups="account.group_account_manager, purchase.group_purchase_manager"/>
-                        <button name="action_release" groups="account.group_account_manager" type="object" string="Release" class="oe_highlight" attrs="{'invisible': ['|', '|', ('active', '=', False), ('invoice_status', '!=', 'invoiced'), ('state', '!=', 'received')]}"/>
-                        <button name="action_restore" groups="account.group_account_manager" type="object" string="UnRelease" class="oe_highlight" attrs="{'invisible': ['|', ('active', '=', False), ('state', '!=', 'released')]}"/>
-                        <button name="action_cancel" states="draft,sent,sale" type="object" string="Cancel" attrs="{'invisible': [('active', '=', False)]}"/>
-                        <button name="action_draft" states="cancel" type="object" string="Set to Quotation" attrs="{'invisible': [('active', '=', False)]}"/>
-                        <button name="action_done" type="object" string="Lock" states="received"
-                        help="If the sale is locked, you can not modify it anymore. However, you will still be able to invoice or deliver." attrs="{'invisible': [('active', '=', False)]}"/>
-                        <button name="action_unlock" type="object" string="Unlock" states="done" groups="sales_team.group_sale_manager" attrs="{'invisible': [('active', '=', False)]}"/>
+                        <button name="action_storage_contract_confirm" type="object" string="Confirm"
+                                class="oe_highlight"
+                                attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('active', '=', False)]}"/>
+                        <button name="action_create_storage_do" type="object" string="Create PO" class="oe_highlight" groups="account.group_account_manager, purchase.group_purchase_manager" attrs="{'invisible': ['|', '|', ('active', '=', False), ('state', '!=', 'sale'), ('sc_po_done', '=', True)]}"/>
+<!--                                attrs="{'invisible': ['|', '|', ('active', '=', False), ('state', '!=', 'sale'), ('sc_po_done', '=', True)]}"-->
+                                groups="account.group_account_manager, purchase.group_purchase_manager"/>
+                        <button name="action_release" groups="account.group_account_manager" type="object"
+                                string="Release"
+                                class="oe_highlight"
+                                attrs="{'invisible': ['|', '|', ('active', '=', False), ('invoice_status', '!=', 'invoiced'), ('state', '!=', 'received')]}"/>
+                        <button name="action_restore" groups="account.group_account_manager" type="object"
+                                string="UnRelease"
+                                class="oe_highlight"
+                                attrs="{'invisible': ['|', ('active', '=', False), ('state', '!=', 'released')]}"/>
+                        <button name="action_cancel" states="draft,sent,sale" type="object" string="Cancel"
+                                attrs="{'invisible': [('active', '=', False)]}"/>
+                        <button name="action_draft" type="object" string="Set to Quotation"
+                                attrs="{'invisible': ['|', ('active', '=', False), ('state', '!=', 'cancel')]}"/>
+                        <button name="action_done" type="object" string="Lock"
+                                help="If the sale is locked, you can not modify it anymore. However, you will still be able to invoice or deliver."
+                                attrs="{'invisible': ['|',('active', '=', False),('state' ,'!=', 'received')]}"/>
+                        <button name="action_unlock" type="object" string="Unlock"
+                                groups="sales_team.group_sale_manager" attrs="{'invisible': ['|',('active', '=', False),('state', '!=' ,'done')]}"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,sale"/>
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button name="action_view_invoice"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-pencil-square-o"
-                                attrs="{'invisible': [('invoice_count', '=', 0)]}">
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-pencil-square-o"
+                                    attrs="{'invisible': [('invoice_count', '=', 0)]}">
                                 <field name="invoice_count" widget="statinfo" string="Invoices"/>
                             </button>
                             <button type="object"
-                               name="action_view_purchase"
-                               class="oe_stat_button"
-                               icon="fa-shopping-cart"
-                               attrs="{'invisible': [('purchase_order_count', '=', 0)]}"
-                               groups="purchase.group_purchase_user">
-                               <field name="purchase_order_count" widget="statinfo" string="Purchase Orders"/>
-                           </button>
+                                    name="action_view_purchase_orders"
+                                    class="oe_stat_button"
+                                    icon="fa-shopping-cart"
+                                    attrs="{'invisible': [('purchase_order_count', '=', 0)]}"
+                                    groups="purchase.group_purchase_user">
+                                <field name="purchase_order_count" widget="statinfo" string="Purchase Orders"/>
+                            </button>
                             <button class="oe_stat_button"
-                                type="object" name="view_sc_child_orders"
-                                groups="sales_team.group_sale_salesman"
-                                attrs="{'invisible': [('sc_child_order_count', '=', 0)]}"
-                                icon="fa-usd">
+                                    type="object" name="view_sc_child_orders"
+                                    groups="sales_team.group_sale_salesman"
+                                    attrs="{'invisible': [('sc_child_order_count', '=', 0)]}"
+                                    icon="fa-usd">
                                 <field string="Sales" name="sc_child_order_count" widget="statinfo"/>
                             </button>
-                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive" attrs="{'invisible': [('active', '=', True)]}">
-                            </button>
+                          <!--  <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options="{'terminology': 'archive'}"/>
+                            </button>-->
+                            <button type="object" class="oe_stat_button" icon="fa-archive" name="toggle_active" string="Archive" attrs="{'invisible': [('active', '=', False)]}"/>
+                            <button type="object" class="oe_stat_button" icon="fa-archive" name="toggle_active" string="Restore" attrs="{'invisible': [('active', '=', True)]}"/>
                         </div>
                         <div class="oe_title">
                             <h1>
@@ -562,13 +507,22 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                         </div>
                         <group>
                             <group>
-                                <field name="partner_id" widget="res_partner_many2one" domain="[('customer','=',True)]" context="{'search_default_customer':1, 'show_address': 1, 'show_vat': True}" options='{"always_reload": True}'/>
-                                <field name="partner_invoice_id" groups="sale.group_delivery_invoice_address" context="{'default_type':'invoice'}" options='{"always_reload": True}'/>
-                                <field name="partner_shipping_id" groups="sale.group_delivery_invoice_address" context="{'default_type':'delivery'}" options='{"always_reload": True}'/>
+                                <field name="partner_id" widget="res_partner_many2one" domain="[('customer','=',True)]"
+                                       context="{'search_default_customer':1, 'show_address': 1, 'show_vat': True}"
+                                       options='{"always_reload": True}'/>
+                                <field name="partner_invoice_id" groups="sale.group_delivery_invoice_address"
+                                       context="{'default_type':'invoice'}" options='{"always_reload": True}'/>
+                                <field name="partner_shipping_id" groups="sale.group_delivery_invoice_address"
+                                       context="{'default_type':'delivery'}" options='{"always_reload": True}'/>
                                 <field name="company_id" invisible="1"/>
                             </group>
                             <group>
-                                <field name="confirmation_date" attrs="{'invisible': [('confirmation_date', '=', False)]}"/>
+                                <field name="active"  widget="boolean_toggle" class="oe_stat_button" icon="fa-archive" >
+                              <span attrs="{'invisible':[('active', '=', True)]}">Unarchive</span>
+                              <span attrs="{'invisible':[('active', '!=', True)]}">Archive</span>
+                              </field>
+                                <field name="confirmation_date"
+                                       attrs="{'invisible': [('confirmation_date', '=', False)]}"/>
                                 <field name="currency_id" invisible="1"/>
                                 <field name="payment_term_id" options="{'no_create': True}"
                                        attrs="{'readonly': [('state', '!=', 'draft')]}"/>
@@ -579,34 +533,38 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                         <notebook>
                             <page string="Order Lines" name="order_lines">
                                 <field
-                                    name="order_line"
-                                    widget="section_and_note_one2many"
-                                    mode="tree"
-                                    attrs="{'readonly': [('state', 'in', ('waiting', 'ordered', 'received', 'done','cancel'))]}"
+                                        name="order_line"
+                                        widget="section_and_note_one2many"
+                                        mode="tree"
+                                        attrs="{'readonly': [('state', 'in', ('waiting', 'ordered', 'received', 'done','cancel'))]}"
                                 >
                                     <tree
-                                        string="Sales Order Lines"
-                                        editable="bottom"
-                                       >
+                                            string="Sales Order Lines"
+                                            editable="bottom"
+                                    >
                                         <control>
                                             <create string="Add a product"/>
-                                            <create string="Configure a product" context="{'open_product_configurator': True}" groups="product.group_product_variant"/>
-                                            <create string="Add a section" context="{'default_display_type': 'line_section'}"/>
-                                            <create string="Add a note" context="{'default_display_type': 'line_note'}"/>
+                                            <create string="Configure a product"
+                                                    context="{'open_product_configurator': True}"
+                                                    groups="product.group_product_variant"/>
+                                            <create string="Add a section"
+                                                    context="{'default_display_type': 'line_section'}"/>
+                                            <create string="Add a note"
+                                                    context="{'default_display_type': 'line_note'}"/>
                                         </control>
 
-                                        <field name="sequence" widget="handle" />
+                                        <field name="sequence" widget="handle"/>
                                         <field name="display_type" invisible="1"/>
                                         <field name="product_updatable" invisible="1"/>
                                         <field name="product_uom_category_id" invisible="1"/>
                                         <field name="product_id"
                                                domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"
-                                            attrs="{
+                                               attrs="{
                                                 'readonly': ['|', ('product_updatable', '=', False), ('state', 'in', ('sale','done', 'cancel', 'released'))],
                                                 'required': [('display_type', '=', False)],
                                             }"
-                                            force_save="1"
-                                            context="{
+                                               force_save="1"
+                                               context="{
                                                 'partner_id': parent.partner_id,
                                                 'quantity': product_uom_qty,
                                                 'pricelist': parent.pricelist_id,
@@ -616,17 +574,17 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                                                 'default_description_sale': name
                                             }"
                                         />
-                                        <field name="product_custom_attribute_value_ids" invisible="1" />
-                                        <field name="product_no_variant_attribute_value_ids" invisible="1" />
+                                        <field name="product_custom_attribute_value_ids" invisible="1"/>
+                                        <field name="product_no_variant_attribute_value_ids" invisible="1"/>
                                         <field name="name" widget="section_and_note_text"
-                                          attrs="{
+                                               attrs="{
                                               'readonly': [('state', 'in', ('sale','done', 'cancel', 'released'))]}"/>
                                         <field
-                                            name="product_uom_qty"
-                                            string="OrderQty"
-                                            attrs="{
+                                                name="product_uom_qty"
+                                                string="OrderQty"
+                                                attrs="{
                                                 'readonly': [('state', 'in', ('sale','done', 'cancel', 'released'))]}"
-                                            context="{
+                                                context="{
                                                 'partner_id': parent.partner_id,
                                                 'quantity': product_uom_qty,
                                                 'pricelist': parent.pricelist_id,
@@ -634,38 +592,43 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                                                 'company_id': parent.company_id
                                             }"
                                         />
-                                        <field name="qty_delivered" readonly="1" attrs="{'column_invisible': [('parent.state', 'not in', ['done', 'released'])]}" string="Received Qty"/>
+                                        <field name="qty_delivered" readonly="1"
+                                               attrs="{'column_invisible': [('parent.state', 'not in', ['done', 'released'])]}"
+                                               string="Received Qty"/>
                                         <field name="selling_min_qty" attrs="{'readonly': [('state', '=', 'cancel')]}"/>
                                         <field
-                                            name="storage_remaining_qty"
-                                            attrs="{
+                                                name="storage_remaining_qty"
+                                                attrs="{
                                                 'column_invisible': [('parent.state', 'not in', ['sale', 'released'])],
                                             }"
                                         />
                                         <field name="sale_uom_ids" invisible="1"/>
 
                                         <field
-                                            name="product_uom"
-                                            force_save="1"
-                                            attrs="{
+                                                name="product_uom"
+                                                force_save="1"
+                                                attrs="{
                                                 'readonly': [('state', 'in', ('sale','done', 'cancel', 'released'))],
                                                 'required': [('display_type', '=', False)],
                                             }"
-                                            domain="[('id', 'in', sale_uom_ids)]"
-                                            context="{'company_id': parent.company_id}"
-                                            groups="uom.group_uom"
-                                            options='{"no_open": True}'
+                                                domain="[('id', 'in', sale_uom_ids)]"
+                                                context="{'company_id': parent.company_id}"
+                                                groups="uom.group_uom"
+                                                options='{"no_open": True}'
                                         />
                                         <field
-                                            name="price_unit" attrs="{
+                                                name="price_unit" attrs="{
                                                 'readonly': [('state', 'in', ('sale','done', 'cancel', 'released'))]}"
                                         />
                                         <field name="price_tax"/>
-                                        <field name="tax_id" widget="many2many_tags" attrs="{'readonly': [('state', '=', 'released')]}"/>
+                                        <field name="tax_id" widget="many2many_tags"
+                                               attrs="{'readonly': [('state', '=', 'released')]}"/>
                                         <field name="discount" groups="product.group_discount_per_so_line" attrs="{
                                             'readonly': [('state', 'in', ('sale','done', 'cancel', 'released'))]}"/>
-                                        <field name="price_subtotal" widget="monetary" groups="account.group_show_line_subtotals_tax_excluded"/>
-                                        <field name="price_total" widget="monetary" groups="account.group_show_line_subtotals_tax_included"/>
+                                        <field name="price_subtotal" widget="monetary"
+                                               groups="account.group_show_line_subtotals_tax_excluded"/>
+                                        <field name="price_total" widget="monetary"
+                                               groups="account.group_show_line_subtotals_tax_included"/>
                                         <field name="state" invisible="1"/>
                                         <field name="invoice_status" invisible="1"/>
                                         <field name="customer_lead" invisible="1"/>
@@ -673,71 +636,88 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                                         <field name="price_tax" invisible="1"/>
                                     </tree>
                                     <form>
-                                    <field name="display_type" invisible="1"/>
-                                    <!--
-                                        We need the sequence field to be here for new lines to be added at the correct position.
-                                        TODO: at some point we want to fix this in the framework so that an invisible field is not required.
-                                    -->
-                                    <field name="sequence" invisible="1"/>
-                                    <group>
-                                        <group attrs="{'invisible': [('display_type', '!=', False)]}">
-                                            <field name="product_id"/>
-                                            <label for="product_uom_qty" string="Ordered Quantity"/>
-                                            <div>
-                                                <field name="product_uom_qty" class="oe_inline"/>
-                                                <field name="product_uom_category_id" invisible="1"/>
-                                                <field name="product_uom" force_save="1" groups="uom.group_uom" class="oe_inline oe_no_button"/>
-                                            </div>
-                                            <field name="selling_min_qty"/>
-                                            <field name="price_unit"/>
-                                            <field name="qty_delivered" string="Received Quantity"/>
-                                            <field name="storage_remaining_qty" string="Remaining quantity"/>
-                                            <field name="qty_invoiced" string="Invoiced Quantity"/>
-                                            <label for="discount" groups="product.group_discount_per_so_line"/>
-                                            <div name="discount" groups="product.group_discount_per_so_line">
-                                                <field name="discount" class="oe_inline"/> %
-                                            </div>
-                                            <field name="price_subtotal"/>
+                                        <field name="display_type" invisible="1"/>
+                                        <!--
+                                            We need the sequence field to be here for new lines to be added at the correct position.
+                                            TODO: at some point we want to fix this in the framework so that an invisible field is not required.
+                                        -->
+                                        <field name="sequence" invisible="1"/>
+                                        <group>
+                                            <group attrs="{'invisible': [('display_type', '!=', False)]}">
+                                                <field name="product_id"/>
+                                                <label for="product_uom_qty" string="Ordered Quantity"/>
+                                                <div>
+                                                    <field name="product_uom_qty" class="oe_inline"/>
+                                                    <field name="product_uom_category_id" invisible="1"/>
+                                                    <field name="product_uom" force_save="1" groups="uom.group_uom"
+                                                           class="oe_inline oe_no_button"/>
+                                                </div>
+                                                <field name="selling_min_qty"/>
+                                                <field name="price_unit"/>
+                                                <field name="qty_delivered" string="Received Quantity"/>
+                                                <field name="storage_remaining_qty" string="Remaining quantity"/>
+                                                <field name="qty_invoiced" string="Invoiced Quantity"/>
+                                                <label for="discount" groups="product.group_discount_per_so_line"/>
+                                                <div name="discount" groups="product.group_discount_per_so_line">
+                                                    <field name="discount" class="oe_inline"/>
+                                                    %
+                                                </div>
+                                                <field name="price_subtotal"/>
+                                            </group>
+                                            <group attrs="{'invisible': [('display_type', '!=', False)]}">
+                                                <field name="company_id" invisible="1"/>
+                                                <field name="tax_id" widget="many2many_tags"
+                                                       options="{'no_create': True}"
+                                                       context="{'search_view_ref': 'account.account_tax_view_search'}"
+                                                       domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"
+                                                       attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
+                                                <field name="price_tax"/>
+                                                <label for="customer_lead"/>
+                                                <div>
+                                                    <field name="customer_lead" class="oe_inline"/>
+                                                    days
+                                                </div>
+                                                <label for="analytic_tag_ids" groups="analytic.group_analytic_tags"/>
+                                                <div>
+                                                    <field name="analytic_tag_ids" widget="many2many_tags"
+                                                           groups="analytic.group_analytic_tags"
+                                                           options="{'color_field': 'color'}"/>
+                                                </div>
+                                            </group>
                                         </group>
-                                        <group attrs="{'invisible': [('display_type', '!=', False)]}">
-                                            <field name="company_id" invisible="1"/>
-                                            <field name="tax_id" widget="many2many_tags" options="{'no_create': True}" context="{'search_view_ref': 'account.account_tax_view_search'}" domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]" attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
-                                            <field name="price_tax"/>
-                                            <label for="customer_lead"/>
-                                            <div>
-                                                <field name="customer_lead" class="oe_inline"/> days
-                                            </div>
-                                            <label for="analytic_tag_ids" groups="analytic.group_analytic_tags"/>
-                                            <div>
-                                                <field name="analytic_tag_ids" widget="many2many_tags" groups="analytic.group_analytic_tags" options="{'color_field': 'color'}"/>
-                                            </div>
-                                        </group>
-                                    </group>
-                                    <label for="name" string="Description" attrs="{'invisible': [('display_type', '!=', False)]}"/>
-                                    <label for="name" string="Section Name (eg. Products, Services)" attrs="{'invisible': [('display_type', '!=', 'line_section')]}"/>
-                                    <label for="name" string="Note" attrs="{'invisible': [('display_type', '!=', 'line_note')]}"/>
-                                    <field name="name"/>
-                                    <div groups="base.group_no_one" attrs="{'invisible': [('display_type', '!=', False)]}">
-                                        <label for="invoice_lines"/>
-                                        <field name="invoice_lines"/>
-                                        <label for="purchase_line_ids"/>
-                                        <field name="purchase_line_ids"/>
-                                        <label for="storage_contract_line_ids"/>
-                                        <field name="storage_contract_line_ids"/>
-                                    </div>
-                                    <field name="state" invisible="1"/>
-                                </form>
+                                        <label for="name" string="Description"
+                                               attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                                        <label for="name" string="Section Name (eg. Products, Services)"
+                                               attrs="{'invisible': [('display_type', '!=', 'line_section')]}"/>
+                                        <label for="name" string="Note"
+                                               attrs="{'invisible': [('display_type', '!=', 'line_note')]}"/>
+                                        <field name="name"/>
+                                        <div groups="base.group_no_one"
+                                             attrs="{'invisible': [('display_type', '!=', False)]}">
+                                            <label for="invoice_lines"/>
+                                            <field name="invoice_lines"/>
+                                            <label for="purchase_line_ids"/>
+                                            <field name="purchase_line_ids"/>
+                                            <label for="storage_contract_line_ids"/>
+                                            <field name="storage_contract_line_ids"/>
+                                        </div>
+                                        <field name="state" invisible="1"/>
+                                    </form>
 
                                 </field>
                                 <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
-                                    <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                                    <field name="amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                    <field name="amount_untaxed" widget='monetary'
+                                           options="{'currency_field': 'currency_id'}"/>
+                                    <field name="amount_tax" widget='monetary'
+                                           options="{'currency_field': 'currency_id'}"/>
                                     <div class="oe_subtotal_footer_separator oe_inline o_td_label">
-                                        <label for="amount_total" />
+                                        <label for="amount_total"/>
                                     </div>
-                                    <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                    <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator"
+                                           widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                 </group>
-                                <field name="note" class="oe_inline" placeholder="Terms and conditions... (note: you can setup default ones in the Configuration menu)"/>
+                                <field name="note" class="oe_inline"
+                                       placeholder="Terms and conditions... (note: you can setup default ones in the Configuration menu)"/>
                                 <div class="oe_clear"/>
                             </page>
 
@@ -748,9 +728,9 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                         <field name="activity_ids" widget="mail_activity"/>
                         <field name="message_ids" widget="mail_thread"/>
                     </div>
-                    </form>
-                </field>
-            </record>
+                </form>
+            </field>
+        </record>
 
         <record id="sale_order_view_search_storage_contract" model="ir.ui.view">
             <field name="name">sale.order.search.inherit.storage.contract</field>
@@ -764,13 +744,13 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
             </field>
         </record>
 
-         <record id="action_storage_contract" model="ir.actions.act_window">
+        <record id="action_storage_contract" model="ir.actions.act_window">
             <field name="name">Storage Contract</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">sale.order</field>
             <field name="search_view_id" ref="sale_order_view_search_storage_contract"/>
             <field name="context">{'default_storage_contract': 1, 'search_default_sc_todo':1}</field>
-             <field name="domain">[('storage_contract', '=', True)]</field>
+            <field name="domain">[('storage_contract', '=', True)]</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p>
@@ -798,5 +778,6 @@ action = records.env['sale.order'].confirm_multiple_orders(records)
                   action="action_storage_contract"
                   parent="sale.sale_order_menu"
                   sequence="4"/>
+
     </data>
 </odoo>

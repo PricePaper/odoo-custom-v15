@@ -14,7 +14,6 @@ class ReportPartnerLedger(models.AbstractModel):
 
     filter_date = {'mode': 'range', 'filter': 'this_year'}
 
-
     def _get_columns_name(self, options):
         columns = [
             {},
@@ -88,7 +87,8 @@ class ReportPartnerLedger(models.AbstractModel):
                     #########################################################################
                     cumulated_init_balance = cumulated_balance
                     cumulated_balance += aml['balance']
-                    lines.append(self._get_report_line_move_line(options, partner, aml, cumulated_init_balance, cumulated_balance))
+                    lines.append(self._get_report_line_move_line(options, partner, aml, cumulated_init_balance,
+                                                                 cumulated_balance))
 
                     load_more_remaining -= 1
                     load_more_counter -= 1
@@ -114,7 +114,6 @@ class ReportPartnerLedger(models.AbstractModel):
             ))
         return lines
 
-
     @api.model
     def _get_report_line_move_line(self, options, partner, aml, cumulated_init_balance, cumulated_balance):
         if aml['payment_id']:
@@ -126,12 +125,13 @@ class ReportPartnerLedger(models.AbstractModel):
         columns = [
             {'name': aml['journal_code']},
             {'name': aml['account_code']},
-            {'name': self._format_aml_name(aml['name'], aml['ref'], aml['move_name']), 'class': 'o_account_report_line_ellipsis'},
+            {'name': self._format_aml_name(aml['name'], aml['ref'], aml['move_name']),
+             'class': 'o_account_report_line_ellipsis'},
             {'name': date_maturity or '', 'class': 'date'},
             {'name': aml['matching_number'] or ''},
             {'name': self.format_value(cumulated_init_balance), 'class': 'number'},
             {'name': self.format_value(aml['debit'], blank_if_zero=True), 'class': 'number'},
-            {'name': self.format_value(aml['discount'], blank_if_zero=True), 'class': 'number'},#discount line
+            {'name': self.format_value(aml['discount'], blank_if_zero=True), 'class': 'number'},  # discount line
             {'name': self.format_value(aml['credit'], blank_if_zero=True), 'class': 'number'},
         ]
         if self.user_has_groups('base.group_multi_currency'):
@@ -152,13 +152,12 @@ class ReportPartnerLedger(models.AbstractModel):
             'level': 2,
         }
 
-
     @api.model
     def _get_report_line_total(self, options, initial_balance, debit, credit, balance):
         columns = [
             {'name': self.format_value(initial_balance), 'class': 'number'},
             {'name': self.format_value(debit), 'class': 'number'},
-            {'name': '', 'class': 'number'}, #empty line for discount
+            {'name': '', 'class': 'number'},  # empty line for discount
             {'name': self.format_value(credit), 'class': 'number'},
         ]
         if self.user_has_groups('base.group_multi_currency'):
@@ -181,7 +180,7 @@ class ReportPartnerLedger(models.AbstractModel):
         columns = [
             {'name': self.format_value(initial_balance), 'class': 'number'},
             {'name': self.format_value(debit), 'class': 'number'},
-            {'name': '', 'class': 'number'}, #empty line for discount
+            {'name': '', 'class': 'number'},  # empty line for discount
             {'name': self.format_value(credit), 'class': 'number'},
         ]
         if self.user_has_groups('base.group_multi_currency'):

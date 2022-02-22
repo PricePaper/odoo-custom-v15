@@ -11,6 +11,7 @@ class OrderPointReset(models.TransientModel):
     _name = "order.point.reset"
     _description = "Reset Order point"
 
+    #TODO not using ?.remove this file
     def reset_order_point(self):
         context = dict(self._context or {})
         active_ids = context.get('active_ids', []) or []

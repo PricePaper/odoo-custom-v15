@@ -14,7 +14,7 @@ This module overrides the default account financial line domains and formulas.
     'author': 'Confianz Global',
     'website': 'http://confianzit.com',
     'images': [],
-    'data': ['data/account_financial_report_data.xml'],
+    # 'data': ['data/account_financial_report_data.xml'],
     'depends': ['account_reports'],
     'qweb': [],
     'installable': True,

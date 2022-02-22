@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
-
 from lxml import etree
-
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError, UserError
 
@@ -15,7 +13,7 @@ class ResPartner(models.Model):
     fax_number = fields.Char(string='Fax')
     customer_pricelist_ids = fields.One2many('customer.pricelist', 'partner_id', string="Customer Pricelists")
     customer_code = fields.Char(string='Partner Code', copy=False)
-    established_date = fields.Date(string='Established Date', compute='_compute_estbl_date', store=True)
+    established_date = fields.Date(string='Established Date', compute='_compute_last_date', store=True)
     last_sold_date = fields.Date(string='Last Sold Date', compute='_compute_last_date', store=False)
     last_paid_date = fields.Date(string='Last Paid Date', compute='_compute_last_date', store=False)
     delivery_day_mon = fields.Boolean(string='Monday')
@@ -42,36 +40,30 @@ class ResPartner(models.Model):
     seller_partner_ids = fields.Many2many('res.partner', 'vendor_id', 'seller_partner_id', string='Purchaser', domain="[('user_ids', '!=', False)]")
     credit_limit = fields.Float(string='Credit Limit', default=lambda self: self.env.user.company_id.credit_limit)
     default_shipping = fields.Boolean(string='Default', help="if checked this will be the default shipping address")
-    property_account_payable_id = fields.Many2one('account.account', company_dependent=True,
-        string="Account Payable",
-        domain="[('internal_type', '=', 'payable'), ('deprecated', '=', False)]",
-        help="This account will be used instead of the default one as the payable account for the current partner",
-        required=False)
-    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
-    # we don't need customer and supplier fields any more instead we can use customer_rank and supplier_rank from odoo-15 base.
-    # re-implement all xml files with this new fields.
+    property_account_payable_id = fields.Many2one('account.account', required=False)
+    # TODO  customer or supplier ranking won't work in PPt case
     supplier = fields.Boolean(string='Is a Vendor',
                                help="Check this box if this contact is a vendor. It can be selected in purchase orders.")
     customer = fields.Boolean(string='Is a Customer', default=True,
                                help="Check this box if this contact is a customer. It can be selected in sales orders.")
-    # TODO :: [UPDATE] please remove this field from sales_commission.
-    payment_method = fields.Selection([('credit_card', 'Credit Card'), ('cash', 'Cash')], string='Payment Method',
-                                      required=True, default='cash')
+    #todo following fields are from sales comission we can keep there
      # TODO :: Remove this field from sales_commission.
-    is_sales_person = fields.Boolean(string='Is sale person')
+    # is_sales_person = fields.Boolean(string='Is sale person')
 
     # TODO: TEST THIS FOR ODOO-15 MIGRATION
     # TODO :: Test this correctly, is this working?
-    @api.depends('sale_order_ids.confirmation_date', 'invoice_ids', 'invoice_ids.line_ids.move_id.payment_id', 'invoice_ids.line_ids.move_id.payment_id.date')
+    @api.depends('sale_order_ids.confirmation_date', 'invoice_ids', 'invoice_ids.payment_id', 'invoice_ids.payment_id.date')
     def _compute_last_date(self):
         for rec in self:
             payment_date = sale_date = established_date = False
             if rec.invoice_ids:
-                reconciled_payments = self.env['account.payment']
+                payment_date_list = []
+                payment_date = False
                 for move in rec.invoice_ids:
-                    reconciled_payments = move._get_reconciled_payments()
-                payment_date_list = [payment.date for payment in reconciled_payments if payment.date]
-                payment_date = max(payment_date_list) if payment_date_list else False
+                    for partial, amount, counterpart_line in move._get_reconciled_invoices_partials():
+                        payment_date_list += [line.date for line in counterpart_line if line.date]
+                if payment_date_list:
+                    payment_date = max(payment_date_list)
             if rec.sale_order_ids:
                 sale_date_list = [sale.confirmation_date.date() for sale in rec.sale_order_ids if
                                   sale.confirmation_date]

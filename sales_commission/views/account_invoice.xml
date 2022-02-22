@@ -4,7 +4,7 @@
       <record id="account_invoice_tree_inherit_commission" model="ir.ui.view">
           <field name="name">account.invoice.tree.view.commission</field>
           <field name="model">account.move</field>
-          <field name="type">form</field> <!-- TODO purpose ?-->
+          <field name="type">form</field>
           <field name="inherit_id" ref="account.view_invoice_tree" />
           <field name="arch" type="xml">
               <field name="invoice_user_id" position="after">
@@ -19,7 +19,7 @@
         <record id="account_invoice_form_view_inherit_commission" model="ir.ui.view">
             <field name="name">account.invoice.form.view.commission</field>
             <field name="model">account.move</field>
-            <field name="type">form</field> <!-- TODO purpose ?-->
+            <field name="type">form</field>
             <field name="inherit_id" ref="account.view_move_form" />
             <field name="arch" type="xml">
               <field name="invoice_date_due" position="after">
@@ -32,7 +32,7 @@
                 <field name="invoice_user_id" position="attributes">
                     <attribute name='invisible'>1</attribute>
                 </field>
-                    <!-- TODO Purpose in Version 15 ?-->
+                    <!-- Removed since both journal entry and invoices have same model ?-->
 <!--                <field name="move_id" position="attributes">-->
 <!--                    <attribute name='groups'>base.group_user</attribute>-->
 <!--                </field>-->

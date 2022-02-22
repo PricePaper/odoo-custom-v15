@@ -9,9 +9,7 @@ class CustomerPricelist(models.Model):
     _rec_name = 'pricelist_id'
 
     sequence = fields.Integer(string='Sequence')
-    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', ondelete='cascade',)
-    partner_id = fields.Many2one('res.partner', string='Customer', ondelete='cascade',)
-
-
+    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', ondelete='cascade', )
+    partner_id = fields.Many2one('res.partner', string='Customer', ondelete='cascade', )
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

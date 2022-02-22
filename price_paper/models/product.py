@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 import json
 import operator as py_operator
-
 from lxml import etree
-
 from odoo import fields, models, api, _
 from odoo.exceptions import UserError, ValidationError
-
 
 OPERATORS = {
     '<': py_operator.lt,
@@ -17,9 +14,9 @@ OPERATORS = {
     '!=': py_operator.ne
 }
 
+
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
-
 
     def _get_product_accounts(self):
         """ Add the stock accounts related to product to the result of super()
@@ -32,19 +29,19 @@ class ProductTemplate(models.Model):
         return accounts
 
 
-
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     burden_percent = fields.Float(string='Burden %', default=lambda s: s.default_burden_percent())
-    new_products = fields.One2many('product.superseded','old_product',
-                                 string="New Product")
-    superseded = fields.One2many('product.superseded','product_child_id',
+    new_products = fields.One2many('product.superseded', 'old_product',
+                                   string="New Product")
+    superseded = fields.One2many('product.superseded', 'product_child_id',
                                  string="Supersedes")
     cost = fields.Float(compute='compute_sale_burden', string="Working Cost", digits='Product Price')
     sale_uoms = fields.Many2many('uom.uom', 'product_uom_rel', 'product_id', 'uom_id', string='Sale UOMS')
+    # todo didn't find the usage
     vendor_id = fields.Many2one('res.partner', compute='compute_product_vendor', string="Vendor", store=True)
-    uom_standard_prices = fields.One2many('product.standard.price','product_id',
+    uom_standard_prices = fields.One2many('product.standard.price', 'product_id',
                                           string="UOM STD Prices")
 
     is_bel_min_qty = fields.Boolean(string='Below Minimum Quantity', compute='compute_qty_status',
@@ -64,14 +61,15 @@ class ProductProduct(models.Model):
     similar_product_ids = fields.Many2many('product.product', 'product_similar_product_rel', 'product_id',
                                            'similar_product_id', string="Similar Products")
     same_product_ids = fields.Many2many('product.product', 'product_same_product_rel', 'product_id',
-                                           'same_product_id', string="Alternative Product")
+                                        'same_product_id', string="Alternative Product")
     count_in_uom = fields.Integer(string='Count in One Unit')
     same_product_rel_ids = fields.Many2many('product.product', 'product_same_product_rel', 'same_product_id',
-                                           'product_id', string="Alternative Product Reverse")
+                                            'product_id', string="Alternative Product Reverse")
     volume = fields.Float('Volume', help="The volume in m3.", copy=False)
     weight = fields.Float(
         'Weight', digits='Stock Weight',
-        help="Weight of the product, packaging not included. The unit of measure can be changed in the general settings", copy=False)
+        help="Weight of the product, packaging not included. The unit of measure can be changed in the general settings",
+        copy=False)
     lst_from_std_price = fields.Float(
         'Standard Price', compute='_compute_lst_price_std_price',
         digits='Product Price')
@@ -88,22 +86,18 @@ class ProductProduct(models.Model):
         return 0
 
     def copy(self, default=None):
-    #TODO migrate this fn
         res = super(ProductProduct, self).copy(default)
-        res and res._check_weight_and_volume()
+        res._check_weight_and_volume()
         if not self._context.get('from_change_uom'):
             res.standard_price = self.standard_price
-            #Duplicate price_list line
-            lines = self.env['customer.product.price'].search([('product_id', '=', self.id)])
-            default_1 = {'product_id': res.id}
-            for line in lines:
-                new_line = line.copy(default=default_1)
+            # Duplicate price_list line
+            for line in self.env['customer.product.price'].search([('product_id', '=', self.id)]):
+                line.copy(default={'product_id': res.id})
         return res
 
     @api.model
     def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
-        res = super(ProductProduct, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
-                                                          submenu=submenu)
+        res = super().fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
         if not self.env.user.has_group('stock.group_stock_manager'):
             doc = etree.XML(res['arch'])
             if view_type == 'form':
@@ -113,10 +107,11 @@ class ProductProduct(models.Model):
                     modifiers = json.loads(node.get("modifiers"))
                     modifiers['readonly'] = True
                     node.set("modifiers", json.dumps(modifiers))
-                res['arch'] = etree.tostring(doc,  encoding='unicode')
+                res['arch'] = etree.tostring(doc, encoding='unicode')
                 return res
         return res
-    # TODO: FIX THIS FOR ODOO-15 MIGRATION
+
+    # TODO: alglo saxon will do later
     # TODO: need migration for this method
     # @api.model
     # def _anglo_saxon_sale_move_lines(self, name, product, uom, qty, price_unit, currency=False, amount_currency=False,
@@ -220,9 +215,9 @@ class ProductProduct(models.Model):
         if field not in ('is_bel_min_qty', 'is_bel_crit_qty', 'is_abv_max_qty'):
             raise UserError(_('Invalid domain left operand %s') % field)
         if operator not in ('<', '>', '=', '!=', '<=', '>='):
-            raise UserError(_('Invalid domain operator %s') % operator)
+            raise UserError('Invalid domain operator %s' % operator)
         if not isinstance(value, (float, int)):
-            raise UserError(_('Invalid domain right operand %s') % value)
+            raise UserError('Invalid domain right operand %s' % value)
 
         ids = []
         for product in self.search([]):
@@ -236,11 +231,8 @@ class ProductProduct(models.Model):
         """
         if self.qty_available > 0 and self.active:
             raise ValidationError(_("Can't archive product with inventory on hand"))
-
-        supersede_obj = self.env['product.superseded']
         if self.active:
-            to_unlink = supersede_obj.search([('old_product', '=', self.id)])
-            to_unlink.unlink()
+            self.env['product.superseded'].search([('old_product', '=', self.id)]).unlink()
         return super(ProductProduct, self).toggle_active()
 
     def write(self, vals):
@@ -260,7 +252,7 @@ class ProductProduct(models.Model):
                     'uom_id': product.uom_id.id,
                     'price_from': 'manual',
                     'product_id': product.id
-                    }
+                }
                 if self._context.get('user', False):
                     log_vals['user_id'] = self._context.get('user', False)
                 if self._context.get('cost_cron', False):
@@ -276,7 +268,7 @@ class ProductProduct(models.Model):
                     'uom_id': product.uom_id.id,
                     'price_from': 'manual',
                     'product_id': product.id
-                    }
+                }
                 if self._context.get('user', False):
                     log_vals['user_id'] = self._context.get('user', False)
                 if self._context.get('cost_cron', False):
@@ -286,18 +278,17 @@ class ProductProduct(models.Model):
                 if product.qty_available > 0:
                     raise ValidationError(_("Can't archive product with inventory on hand"))
 
-                reordering_rules = self.env['stock.warehouse.orderpoint'].search(
-                    [('product_id', 'in', self.ids), ('active', '=', True)])
-                reordering_rules.toggle_active()
+                # not needed by default odoo doing this operation
+                # reordering_rules = self.env['stock.warehouse.orderpoint'].search(
+                #     [('product_id', 'in', self.ids), ('active', '=', True)])
+                # reordering_rules.toggle_active()
 
             if vals.get('burden_percent') or vals.get('standard_price'):
-                # self.update_customer_product_price()
                 for rec in product.uom_standard_prices:
                     if rec.cost > rec.price:
                         rec.price = rec.cost
 
-        result = super(ProductProduct, self).write(vals)
-        return result
+        return super(ProductProduct, self).write(vals)
 
     @api.model
     def create(self, vals):
@@ -346,14 +337,15 @@ class ProductProduct(models.Model):
     def compute_product_vendor(self):
         """
         Compute vendor of the product
-         """
+        # todo not used anywhere
+        """
         for rec in self:
             rec.vendor_id = rec.seller_ids and rec.seller_ids[0].name.id or False
 
     @api.depends('standard_price', 'burden_percent')
     def compute_sale_burden(self):
         """
-        Compute cost price by adding burden percentange
+        Compute cost price by adding burden percentage
         """
         for rec in self:
             burden_factor = rec.burden_percent / 100
@@ -379,6 +371,7 @@ class ProductProduct(models.Model):
                 raise ValidationError('Weight should be greater than Zero')
             if rec.volume <= 0 and rec.type == 'product':
                 raise ValidationError('Volume should be greater than Zero')
+
 
 class ProductCategory(models.Model):
     _inherit = "product.category"
@@ -413,13 +406,10 @@ class ProductSuperseded(models.Model):
     _name = 'product.superseded'
     _description = 'Superseded Products'
 
-
     old_product = fields.Many2one('product.product', string="Old Product",
                                   domain=[('active', '=', False)], required=True, ondelete='cascade')
     product_child_id = fields.Many2one('product.product', string="New Product",
                                        readonly=True, required=True)
-
-
 
     @api.constrains('old_product', 'product_child_id')
     def check_duplicates(self):
@@ -430,7 +420,5 @@ class ProductSuperseded(models.Model):
         ])
         if result:
             raise UserError('Duplicate entry in superseded')
-
-
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

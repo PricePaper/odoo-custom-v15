@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+            <template id="report_ppt_batch_invoice">
+                    <t t-call="web.html_container">
+                        <t t-foreach="docs.mapped('picking_ids').sorted(key=lambda p: p.sequence).mapped('invoice_ids').filtered(lambda r: r.state != 'cancel')"
+                           t-as="o">
+                            <t t-set="company" t-value="o.company_id.sudo()"/>
+                            <t t-foreach="range(2)" t-as="iv">
+                                <t t-call="batch_delivery.ppt_custom_invoice_template" t-lang="lang"/>
+                            </t>
+                        </t>
+                    </t>
+            </template>
+
+            <template id="report_ppt_selected_invoice">
+                <t t-call="web.html_container">
+                    <t t-foreach="docs" t-as="o">
+                        <t t-set="company" t-value="o.company_id.sudo()"/>
+                         <t t-set="lang" t-value="o.user_id.sudo().lang if o.move_type in ('in_invoice', 'in_refund') else o.partner_id.lang"/>
+                        <t t-foreach="range(2)" t-as="iv">
+                            <t t-call="batch_delivery.ppt_custom_invoice_template" t-lang="lang"/>
+                        </t>
+                    </t>
+                </t>
+        </template>
+
+
+         <template id="report_ppt_selected_invoice_standard">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="company" t-value="o.company_id.sudo()"/>
+                     <t t-set="lang" t-value="o.user_id.sudo().lang if o.move_type in ('in_invoice', 'in_refund') else o.partner_id.lang"/>
+                    <t t-foreach="range(2)" t-as="iv">
+                        <t t-call="batch_delivery.ppt_custom_invoice_template_standard" t-lang="lang"/>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <template id="report_ppt_invoice_document_with_payments" inherit_id="batch_delivery.ppt_custom_invoice_template_standard" primary="True">
+            <xpath expr="//div[@id='total']/div/table" position="replace">
+                <table class="table table-sm" style="page-break-inside: avoid;">
+
+                                    <!--Tax totals-->
+                    <t t-set="tax_totals" t-value="json.loads(o.tax_totals_json)"/>
+                        <t t-call="account.document_tax_totals"/>
+                                    <!--Payments-->
+                                <t t-if="o.payment_state != 'invoicing_legacy'">
+                                    <t t-set="payments_vals" t-value="o.sudo()._get_reconciled_info_JSON_values()"/>
+                                    <t t-foreach="payments_vals" t-as="payment_vals">
+                                        <tr>
+                                            <td>
+                                                <i class="oe_form_field text-right oe_payment_label">Paid on <t t-esc="payment_vals['date']" t-options='{"widget": "date"}'/></i>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-esc="payment_vals['amount']" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <t t-if="len(payments_vals) > 0">
+                                        <tr class="border-black">
+                                            <td><strong>Amount Due</strong></td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_residual"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+                    </table>
+            </xpath>
+        </template>
+
+
+        <template id="report_ppt_selected_invoice_with_payment">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="company" t-value="o.company_id.sudo()"/>
+                    <t t-set="lang" t-value="o.user_id.sudo().lang if o.move_type in ('in_invoice', 'in_refund') else o.partner_id.lang"/>
+                    <t t-foreach="range(2)" t-as="iv">
+                         <t t-call="batch_delivery.report_ppt_invoice_document_with_payments" t-lang="lang"/>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+
+
+
+        <!--template used in 12,but couldn't find any usage-->
+        <template id="report_ppt_selected_invoice_with_payment_quick_sale">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="company" t-value="o.company_id.sudo()"/>
+                    <t t-set="lang" t-value="o.user_id.sudo().lang if o.move_type in ('in_invoice', 'in_refund') else o.partner_id.lang"/>
+                    <t t-foreach="range(2)" t-as="iv">
+                         <t t-call="batch_delivery.ppt_custom_invoice_template" t-lang="lang"/>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+         <template id="report_batch_picking_active">
+            <t t-set="pickings" t-value="docs"/>
+            <t t-set="batch" t-value="docs.mapped('batch_id')"/>
+            <t t-call="batch_delivery.report_picking_batch123"/>
+        </template>
+
+        <template id="report_batch_picking_all">
+            <t t-foreach="docs" t-as="batch_doc">
+                <t t-set="batch" t-value="batch_doc"/>
+                <t t-set="pickings" t-value="batch_doc.mapped('picking_ids').sorted(key=lambda p: p.sequence, reverse=True)"/>
+                <t t-call="batch_delivery.report_picking_batch123"/>
+            </t>
+        </template>
+
+        <template id="report_product_label">
+          <t t-set="pickinglist" t-value="get_product_labels(docs)"/>
+          <t t-foreach="pickinglist" t-as="picking">
+              <t t-foreach="picking" t-as="location">
+                  <t t-foreach="location[1]" t-as="line">
+                    <t t-call="batch_delivery.product_labels_template"/>
+                </t>
+            </t>
+          </t>
+        </template>
+
+          <template id="report_batch_product_label">
+            <t t-set="pickinglist" t-value="get_product_labels(docs)"/>
+            <t t-foreach="pickinglist" t-as="picking">
+                <t t-foreach="picking" t-as="location">
+                    <t t-foreach="location[1]" t-as="line">
+                    <t t-call="batch_delivery.product_labels_template"/>
+                </t>
+            </t>
+            </t>
+        </template>
+    </data>
+</odoo>

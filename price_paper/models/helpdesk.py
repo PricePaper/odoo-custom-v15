@@ -3,6 +3,7 @@
 from odoo import fields, models, api, _
 from odoo.exceptions import Warning
 
+
 class HelpDeskTeam(models.Model):
     _inherit = 'helpdesk.team'
 
@@ -18,7 +19,5 @@ class HelpDeskTicket(models.Model):
         if self.user_id:
             raise Warning(_('Ticket already assigned to %s') % self.user_id.name)
         super(HelpDeskTicket, self).assign_ticket_to_self()
-
-
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

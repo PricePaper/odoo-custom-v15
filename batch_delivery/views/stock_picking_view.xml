@@ -128,7 +128,7 @@
             <field name="name">Delivery Orders</field>
             <field name="res_model">stock.picking</field>
             <field name="view_mode">kanban,tree</field>
-            <field name="domain">['|', ('batch_id.state', 'in', ('draft', 'in_progress', 'in_truck')), ('batch_id', '=', False), ('state','in', ['confirmed', 'assigned', 'in_transit']), ('picking_type_code', '=', 'outgoing')]</field>
+            <field name="domain">['|', ('batch_id.state', 'in', ('draft', 'in_progress', 'in_truck')), ('batch_id', '=', False), ('state','in', ['confirmed', 'waiting', 'assigned', 'in_transit']), ('picking_type_code', '=', 'outgoing')]</field>
             <field name="context">{'search_default_truck_deliveries': 1}</field>
             <field name="search_view_id" ref="stock.view_picking_internal_search"/>
 
@@ -267,7 +267,8 @@
                 </xpath>
 
                 <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='reserved_availability']" position="after">
-                    <button name="action_show_reset_window" help="Reset Reserve Qty" type="object" icon="fa-refresh text-success" attrs="{'column_invisible': ['|', ('parent.picking_type_code', '=', 'incoming'), ('parent.state', 'in', ['done', 'cancel'])]}"/>
+                    <field name="procure_method"  invisible="1"/>
+                    <button name="action_show_reset_window" help="Reset Reserve Qty" type="object" icon="fa-refresh text-success" attrs="{'invisible': ['|', '|',('parent.picking_type_code', '=', 'incoming'), ('parent.state', 'in', ['done', 'cancel']), ('procure_method', '!=', 'make_to_stock')]}"/>
                 </xpath>
 
                 <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_uom']" position="after">

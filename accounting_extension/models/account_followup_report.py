@@ -8,11 +8,11 @@ from odoo.tools.translate import _
 from odoo.tools import append_content_to_html, DEFAULT_SERVER_DATE_FORMAT
 from odoo.exceptions import UserError
 
+
 class AccountFollowupReport(models.AbstractModel):
     _inherit = 'account.report'
     _inherit = "account.followup.report"
     _description = "Follow-up Report"
-
 
     def _get_columns_name(self, options):
         """
@@ -20,10 +20,9 @@ class AccountFollowupReport(models.AbstractModel):
 
         """
         res = []
-        res =  super(AccountFollowupReport, self)._get_columns_name(options)
+        res = super(AccountFollowupReport, self)._get_columns_name(options)
         res.append({'name': _('Total'), 'class': 'number', 'style': 'text-align:right; white-space:nowrap;'})
         return res
-
 
     def _get_lines(self, options, line_id=None):
         """
@@ -60,7 +59,8 @@ class AccountFollowupReport(models.AbstractModel):
                 if is_overdue or is_payment:
                     total_issued += not aml.blocked and amount or 0
                 if is_overdue:
-                    date_due = {'name': date_due, 'class': 'color-red date', 'style': 'white-space:nowrap;text-align:center;color: red;'}
+                    date_due = {'name': date_due, 'class': 'color-red date',
+                                'style': 'white-space:nowrap;text-align:center;color: red;'}
                 if is_payment:
                     date_due = ''
                 move_line_name = self._format_aml_name(aml.name, aml.move_id.ref)
@@ -69,7 +69,10 @@ class AccountFollowupReport(models.AbstractModel):
                 amount = formatLang(self.env, amount, currency_obj=currency)
                 line_num += 1
                 running_total = formatLang(self.env, total, currency_obj=currency)
-                columns = [format_date(self.env, aml.date, lang_code=lang_code), date_due, aml.move_id.invoice_origin, move_line_name, aml.expected_pay_date and str(aml.expected_pay_date) +' '+ (aml.internal_note and aml.internal_note or '') or '', {'name': aml.blocked, 'blocked': aml.blocked}, amount, running_total]
+                columns = [format_date(self.env, aml.date, lang_code=lang_code), date_due, aml.move_id.invoice_origin,
+                           move_line_name, aml.expected_pay_date and str(aml.expected_pay_date) + ' ' + (
+                                       aml.internal_note and aml.internal_note or '') or '',
+                           {'name': aml.blocked, 'blocked': aml.blocked}, amount, running_total]
 
                 if self.env.context.get('print_mode'):
                     columns = columns[:4] + columns[6:]
@@ -92,7 +95,8 @@ class AccountFollowupReport(models.AbstractModel):
                 'style': 'border-top-style: double',
                 'unfoldable': False,
                 'level': 3,
-                'columns': [{'name': v} for v in [''] * (3 if self.env.context.get('print_mode') else 5) + [total >= 0 and _('Total Due') or '', total_due]],
+                'columns': [{'name': v} for v in [''] * (3 if self.env.context.get('print_mode') else 5) + [
+                    total >= 0 and _('Total Due') or '', total_due]],
             })
 
             if total_issued > 0:
@@ -104,7 +108,9 @@ class AccountFollowupReport(models.AbstractModel):
                     'class': 'total',
                     'unfoldable': False,
                     'level': 3,
-                    'columns': [{'name': v} for v in [''] * (3 if self.env.context.get('print_mode') else 5) + [_('Total Overdue'), total_issued]],
+                    'columns': [{'name': v} for v in
+                                [''] * (3 if self.env.context.get('print_mode') else 5) + [_('Total Overdue'),
+                                                                                           total_issued]],
                 })
             # Add an empty line after the total to make a space between two currencies
             line_num += 1

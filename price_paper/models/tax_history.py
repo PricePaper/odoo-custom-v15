@@ -11,5 +11,4 @@ class SaleTaxHistory(models.Model):
     product_id = fields.Many2one('product.product', string='Product')
     tax = fields.Boolean(string='Tax applicable')
 
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

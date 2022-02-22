@@ -14,6 +14,6 @@ class StockPicking(models.Model):
     def print_product_label(self):
         return self.env.ref('instant_invoice.quick_sale_product_label_report').report_action(self, config=False)
 
-StockPicking()
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

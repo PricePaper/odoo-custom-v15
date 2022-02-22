@@ -18,6 +18,16 @@ This module sets up the batch delivery process for price paper.
     'data': [
         'data/data.xml',
         'security/ir.model.access.csv',
+        'report/invoice_report_standard.xml',
+        'report/report_stockpicking_operations.xml',
+        'report/report_master_pick_ticket.xml',
+        'report/report_batch_delivery_slip.xml',
+        'report/report_product_label.xml',
+        'report/report_picking_batch.xml',
+        'report/invoice_without_payment.xml',
+        'report/report_invoice_templates.xml',
+        'report/report_batch_driver.xml',
+        'report/reports.xml',
         'views/truck_driver_view.xml',
        'views/account_view.xml',
         'wizard/assign_route_wizard_view.xml',
@@ -37,6 +47,7 @@ This module sets up the batch delivery process for price paper.
         'views/delivery_carrier_view.xml',
         'views/partner_view.xml',
         'views/picking_product_pending.xml',
+        'views/stock_quant_views.xml',
         'views/stock_location_view.xml',
        'views/stock_picking_view.xml',
         'views/website_asset.xml',
@@ -54,7 +65,8 @@ This module sets up the batch delivery process for price paper.
     ],
     'assets': {
         'web.assets_backend': [
-                'batch_delivery/static/src/js/kanban_reset_button.js',
+                # 'batch_delivery/static/src/js/kanban_reset_button.js',
+                'batch_delivery/static/src/css/card_block_border.css',
             ],
         'web.assets_qweb': [
         ],

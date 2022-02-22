@@ -8,6 +8,7 @@ class AccountBatchPayment(models.Model):
     _inherit = "account.batch.payment"
 
     is_posted = fields.Boolean(compute='_compute_is_posted')
+    state = fields.Selection(selection_add = [('cancel', 'Cancelled')])
 
     @api.depends('payment_ids.state')
     def _compute_is_posted(self):

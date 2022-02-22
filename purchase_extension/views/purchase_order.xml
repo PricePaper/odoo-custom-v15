@@ -39,11 +39,6 @@
                         <field name="total_qty"/>
                     </group>
                 </xpath>
-                <xpath expr="//div[@name='button_box']" position="inside">
-                    <button type="object" name="action_view_sale_orders" class="oe_stat_button" icon="fa-shopping-cart" attrs="{'invisible': [('sale_order_count', '=', 0)]}" groups="purchase.group_purchase_manager">
-                        <field name="sale_order_count" widget="statinfo" string="Sale Orders"/>
-                    </button>
-                </xpath>
                 <xpath expr="//field[@name='order_line']" position="before">
                     <button type="object" name="add_sale_history_to_po_line"
                             string="ADD ADDITIONAL PRODUCTS" icon="fa-history" class="oe_edit_only oe_highlight"/>

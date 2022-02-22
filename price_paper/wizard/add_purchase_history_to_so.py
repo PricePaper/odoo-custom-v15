@@ -144,14 +144,12 @@ class AddPurchaseHistorySO(models.TransientModel):
 
         if self.product_id and self.sale_history_months:
             sale_history = sale_history.filtered(
-                lambda rec: rec.product_id.id == self.product_id.id and rec.order_id.confirmation_date >= history_from)
+                lambda rec: rec.product_id.id == self.product_id.id and rec.order_id.date_order >= history_from)
         elif self.product_id:
             sale_history = sale_history.filtered(lambda rec: rec.product_id.id == self.product_id.id)
         elif self.sale_history_months:
-            sale_history = sale_history.filtered(lambda rec: rec.order_id.confirmation_date >= history_from)
-
+            sale_history = sale_history.filtered(lambda rec: rec.order_id.date_order >= history_from)
         product_list = sale_history.mapped('product_id.id')
-
         for line in self.purchase_history_ids.filtered(lambda rec: rec.qty_to_be != 0.0):
             lines_temp.append((0, 0, {
                 'product_uom': line.product_uom.id,
@@ -180,7 +178,7 @@ class AddPurchaseHistorySO(models.TransientModel):
                     continue
                 lines.append((0, 0, {
                     'product_uom': line.uom_id.id,
-                    'date_order': line.order_id.confirmation_date,
+                    'date_order': line.order_id.date_order,
                     'order_line': line.order_line_id.id,
                     'qty_to_be': 0.0,
                     'qty_available': line.product_id.qty_available - line.product_id.outgoing_qty,

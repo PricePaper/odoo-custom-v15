@@ -106,8 +106,10 @@ class CustomerProductPrice(models.Model):
         result = []
         for record in self:
             name = "%s_%s_%s_%s" % (
-            record.pricelist_id and record.pricelist_id.name or '', record.product_id and record.product_id.name or '',
-            record.product_uom and record.product_uom.name or '', record.partner_id and record.partner_id.name or '')
+                record.pricelist_id and record.pricelist_id.name or '',
+                record.product_id and record.product_id.name or '',
+                record.product_uom and record.product_uom.name or '',
+                record.partner_id and record.partner_id.name or '')
             result.append((record.id, name))
         return result
 
@@ -141,7 +143,5 @@ class CustomerProductPrice(models.Model):
                 self.lock_expiry_date = date.today() + relativedelta(days=days)
         else:
             self.lock_expiry_date = False
-
-
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

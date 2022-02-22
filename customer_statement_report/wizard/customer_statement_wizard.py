@@ -87,8 +87,8 @@ class CustomerStatementWizard(models.TransientModel):
             payment_domain.append(('partner_id', 'in', active_ids))
 
         invoices = self.env['account.move'].search(inv_domain)
-        invoices_open_with_credit = invoices.filtered(lambda r: r.invoice_has_outstanding and r.state in ['posted'] and r.payment_state in ['not_paid','in_payment','partial'])
-        invoices_paid = invoices.filtered(lambda r: r.payment_state == 'paid')
+        invoices_open_with_credit = invoices.filtered(lambda r: r.invoice_has_outstanding and r.state in ['posted'] and r.payment_state in ['not_paid', 'partial'])
+        invoices_paid = invoices.filtered(lambda r: r.payment_state in ('paid', 'in_payment'))
 
         payment = self.env['account.payment'].search(payment_domain)
         partners = self.env['res.partner']

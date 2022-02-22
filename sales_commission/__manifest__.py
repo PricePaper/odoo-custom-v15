@@ -39,7 +39,7 @@ Sales commission module implemented for Price Papers.
         'views/menu.xml',
     ],
 
-    'depends': ['price_paper'],
+    'depends': ['price_paper','price_maintanance'],
     'installable': True,
     'auto_install': False,
     'application': False,

@@ -15,4 +15,19 @@ class AccountPayment(models.Model):
     def action_remove_from_batch(self):
         self.write({'batch_payment_id': False, 'state':'posted'})
 
+    def action_cancel(self):
+        """
+        Mark batch payment to cancel if all it's payment are in cancel state
+        """
+        batch_payment_ids = self.mapped('batch_payment_id')
+        mark_to_cancel = self.env['account.batch.payment']
+        res = super(AccountPayment,self).action_cancel()
+        for batch_payment in batch_payment_ids:
+            payment_states = batch_payment.payment_ids.mapped('state')
+            if all(state == 'cancel' for state in payment_states):
+                mark_to_cancel |= batch_payment
+
+        mark_to_cancel.write({'state' : 'cancel'})
+        return res
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

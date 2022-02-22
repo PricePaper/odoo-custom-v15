@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--Invoice without payment stock picking batch-->
+        <record id="paperformat_inv_batch" model="report.paperformat">
+            <field name="name">Invoices without Payment</field>
+            <field name="default" eval="True"/>
+            <field name="format">custom</field>
+          <!--  <field name="page_height">323</field>
+            <field name="page_width">300</field>-->
+            <field name="page_height">323</field>
+            <field name="page_width">290</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">55</field>
+            <field name="margin_bottom">35</field>
+            <field name="margin_left">1</field>
+            <field name="margin_right">1</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">50</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <record id="paperformat_inv_std" model="report.paperformat">
+            <field name="name">Invoices Std</field>
+            <field name="default" eval="True"/>
+           <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">49</field>
+            <field name="margin_bottom">35</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">45</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <record id="paperformat_batch_picking_ticket" model="report.paperformat">
+            <field name="name">Batch Picking Ticket</field>
+            <field name="default" eval="False"/>
+            <field name="format">custom</field>
+            <field name="page_height">290</field>
+            <field name="page_width">250</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">30</field>
+            <field name="margin_bottom">0</field>
+            <field name="margin_left">10</field>
+            <field name="margin_right">10</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">25</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <record id="print_product_label_paperformat" model="report.paperformat">
+            <field name="name">Product label Report Paper Format</field>
+            <field name="format">custom</field>
+            <field name="page_height">51</field>
+            <field name="page_width">102</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">0</field>
+            <field name="margin_bottom">0</field>
+            <field name="margin_left">5</field>
+            <field name="margin_right">0</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <record id="paperformat_driver_batch_delivery_slip" model="report.paperformat">
+            <field name="name">Driver Batch delivery Slip</field>
+            <field name="default" eval="False"/>
+            <field name="format">Letter</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">10</field>
+            <field name="margin_bottom">0</field>
+            <field name="margin_left">10</field>
+            <field name="margin_right">0</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <!--to-do Menu hide-->
+        <record id="ppt_account_batch_invoices_report" model="ir.actions.report">
+            <field name="name">Invoices without Payment</field>
+            <field name="model">stock.picking.batch</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">batch_delivery.report_ppt_batch_invoice</field>
+            <field name="report_file">batch_delivery.report_ppt_batch_invoice</field>
+            <field name="print_report_name">(object._get_report_base_filename())</field>
+            <field name="binding_model_id" eval="False"/>
+            <field name="paperformat_id" ref="batch_delivery.paperformat_inv_batch"/>
+        </record>
+
+
+        <record id="ppt_account_selected_invoices_report" model="ir.actions.report">
+            <field name="name">Invoices without Payment</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">batch_delivery.report_ppt_selected_invoice</field>
+            <field name="report_file">batch_delivery.report_ppt_selected_invoice</field>
+            <field name="print_report_name">object.picking_ids.mapped('batch_id') and 'Invoice - %s - %s' % (object.picking_ids.mapped('batch_id').truck_driver_id and object.picking_ids.mapped('batch_id').truck_driver_id.name, object.picking_ids.mapped('batch_id').date) or (object._get_report_base_filename())</field>
+            <field name="paperformat_id" ref="batch_delivery.paperformat_inv_batch"/>
+        </record>
+
+        <record id="batch_picking_active_report" model="ir.actions.report">
+            <field name="name">Pick Ticket</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">batch_delivery.report_batch_picking_active</field>
+            <field name="report_file">batch_delivery.report_batch_picking_active</field>
+            <field name="print_report_name">object.batch_id and 'Pick - %s - %s' % (object.batch_id.truck_driver_id and  object.batch_id.truck_driver_id.name or '', object.batch_id.date) or ('Pick - %s - %s' % (object.partner_id and object.partner_id.name or '',object.purchase_id and object.name + '-' +object.purchase_id.name or object.name))</field>
+            <field name="paperformat_id" ref="batch_delivery.paperformat_batch_picking_ticket"/>
+        </record>
+
+
+        <record id="batch_picking_all_report" model="ir.actions.report">
+            <field name="name">Batch Pick Ticket</field>
+            <field name="model">stock.picking.batch</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">batch_delivery.report_batch_picking_all</field>
+            <field name="report_file">batch_delivery.report_batch_picking_all</field>
+            <field name="print_report_name">'Pick - %s - %s' % (object.truck_driver_id and  object.truck_driver_id.name or '', object.date)</field>
+            <field name="paperformat_id" ref="batch_delivery.paperformat_batch_picking_ticket"/>
+            <field name="binding_model_id" ref="model_stock_picking_batch"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="product_label_report" model="ir.actions.report">
+            <field name="name">Product Labels</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">batch_delivery.report_product_label</field>
+            <field name="report_file">batch_delivery.report_product_label</field>
+            <field name="print_report_name">object.batch_id and 'Labels - %s - %s' % (object.batch_id.truck_driver_id and object.batch_id.truck_driver_id.name or '', object.batch_id.date) or ('Labels - %s - %s' % (object.partner_id and object.partner_id.name or '',object.name))</field>
+            <field name="paperformat_id" ref="print_product_label_paperformat"/>
+        </record>
+
+        <record id="batch_product_label_report" model="ir.actions.report">
+            <field name="name">Product Labels</field>
+            <field name="model">stock.picking.batch</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">batch_delivery.report_batch_product_label</field>
+            <field name="report_file">batch_delivery.report_product_label</field>
+            <field name="print_report_name">'Labels - %s - %s' % (object.truck_driver_id and object.truck_driver_id.name or '', object.date)</field>
+            <field name="paperformat_id" ref="print_product_label_paperformat"/>
+            <field name="binding_model_id" ref="model_stock_picking_batch"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="batch_delivery.report_master_pick_ticket" model="ir.actions.report">
+            <field name="name">Master Pick Ticket</field>
+            <field name="model">stock.picking.batch</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">batch_delivery.master_pick_ticket_report</field>
+            <field name="report_file">batch_delivery.master_pick_ticket_report</field>
+            <field name="print_report_name">'Master Pick Ticket'</field>
+            <field name="binding_model_id" ref="model_stock_picking_batch"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="batch_driver_report" model="ir.actions.report">
+            <field name="name">Drivers Delivery Report</field>
+            <field name="model">stock.picking.batch</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">batch_delivery.report_batch_driver</field>
+            <field name="report_file">batch_delivery.report_batch_driver</field>
+            <field name="print_report_name">'%s - %s' % (object.truck_driver_id.name or '', object.name)</field>
+            <field name="binding_model_id" ref="model_stock_picking_batch"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="paperformat_driver_batch_delivery_slip"/>
+        </record>
+
+        <!--Couldn't find any call for this report in version 12 code for both the below reports-->
+
+        <record id="batch_deliveryslip_report" model="ir.actions.report">
+            <field name="name">Delivery Slip</field>
+            <field name="model">stock.picking.batch</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">batch_delivery.report_batch_delivery_slip</field>
+            <field name="report_file">batch_delivery.report_batch_delivery_slip</field>
+            <field name="print_report_name">'Delivery Slip - %s' % (object.name)</field>
+            <field name="paperformat_id" ref="paperformat_driver_batch_delivery_slip"/>
+        </record>
+
+        <record id="batch_picking_deliveryslip_report" model="ir.actions.report">
+            <field name="name">Delivery Slip</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">batch_delivery.report_batch_delivery_slip</field>
+            <field name="report_file">batch_delivery.report_batch_picking_delivery_slip</field>
+            <field name="print_report_name">'Delivery Slip - %s - %s' % (object.partner_id.name or '', object.name)</field>
+            <field name="paperformat_id" ref="paperformat_driver_batch_delivery_slip"/>
+        </record>
+
+       <record id="stock.action_report_delivery" model="ir.actions.report">
+            <field name="name">Delivery Slip</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">stock.report_deliveryslip</field>
+            <field name="report_file">stock.report_deliveryslip</field>
+            <field name="print_report_name">'Delivery Slip - %s - %s' % (object.partner_id.name or '', object.name)</field>
+            <field name="binding_model_id" eval="False"/>
+        </record>
+
+        <record id="account.account_invoices_without_payment" model="ir.actions.report">
+            <field name="name">Invoices without Payment</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">account.report_invoice</field>
+            <field name="report_file">account.report_invoice</field>
+            <field name="print_report_name">(object._get_report_base_filename())</field>
+            <field name="attachment">(object.state == 'posted') and ((object.name or 'INV').replace('/','_')+'.pdf')</field>
+            <field name="binding_model_id" eval="False"/>
+        </record>
+
+        <record id="ppt_account_selected_invoices_report_standard" model="ir.actions.report">
+            <field name="name">Invoices without Payment</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">batch_delivery.report_ppt_selected_invoice_standard</field>
+            <field name="report_file">batch_delivery.report_ppt_selected_invoice_standard</field>
+            <field name="print_report_name">object.picking_ids.mapped('batch_id') and 'Invoice - %s - %s' % (object.picking_ids.mapped('batch_id').truck_driver_id and object.picking_ids.mapped('batch_id').truck_driver_id.name, object.picking_ids.mapped('batch_id').date) or (object._get_report_base_filename())</field>
+            <field name="binding_model_id" ref="model_account_move"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="batch_delivery.paperformat_inv_std"/>
+        </record>
+
+        <record id="ppt_account_selected_invoices_with_payment_report" model="ir.actions.report">
+            <field name="name">Invoice</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">batch_delivery.report_ppt_selected_invoice_with_payment</field>
+            <field name="report_file">batch_delivery.report_ppt_selected_invoice_with_payment</field>
+            <field name="print_report_name">object.picking_ids.mapped('batch_id') and 'Invoice - %s - %s' % (object.picking_ids.mapped('batch_id').truck_driver_id and object.picking_ids.mapped('batch_id').truck_driver_id.name, object.picking_ids.mapped('batch_id').date) or (object._get_report_base_filename())</field>
+            <field name="binding_model_id" ref="model_account_move"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="batch_delivery.paperformat_inv_std"/>
+        </record>
+
+         <record id="account.account_invoices" model="ir.actions.report">
+            <field name="name">Invoices</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">account.report_invoice_with_payments</field>
+            <field name="report_file">account.report_invoice_with_payments</field>
+            <field name="print_report_name">(object._get_report_base_filename())</field>
+            <field name="attachment">(object.state == 'posted') and ((object.name or 'INV').replace('/','_')+'.pdf')</field>
+            <field name="binding_model_id" eval="False"/>
+        </record>
+
+        <record id="stock.action_report_picking" model="ir.actions.report">
+            <field name="name">Picking Operations</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">stock.report_picking</field>
+            <field name="report_file">stock.report_picking_operations</field>
+            <field name="print_report_name">'Picking Operations - %s - %s' % (object.partner_id.name or '', object.name)</field>
+            <field name="binding_model_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

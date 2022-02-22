@@ -326,8 +326,8 @@ class StockPicking(models.Model):
                 picking.mapped('sale_id').write({'batch_warning': '', 'state': 'sale'})
         return super().write(vals)
 
-    def action_done(self):
-        res = super().action_done()
+    def _action_done(self):
+        res = super()._action_done()
         for pick in self:
             pick.is_transit = False
             pick.move_lines.write({'is_transit': False})

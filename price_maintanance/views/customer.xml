@@ -46,8 +46,8 @@
                             </group>
                             <group>
                                 <field name='customer_code' readonly="1"/>
-<!--                                # TODO: FIX THIS FOR ODOO-15 MIGRATION-->
-<!--                                add this field from sales_commission-->
+<!--Note:Removed this field from here and added in sales commission partner view-->
+                                <!--                                add this field from sales_commission-->
 <!--                                <field name='sales_person_ids' readonly="1" widget='many2many_tags'/>-->
                                 <field name='partner_pricelist_id' options='{"no_open": True, "no_create": True}'
                                        domain="[('partner_id', '=', id)]" attrs="{'readonly': False}"/>

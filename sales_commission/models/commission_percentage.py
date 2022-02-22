@@ -17,6 +17,13 @@ class CommissionPercentage(models.Model):
         if self.sale_person_id:
             self.rule_id = self.sale_person_id.default_commission_rule
 
+    @api.constrains('sale_person_id', 'partner_id')
+    def check_duplicates(self):
+        result = self.search([('sale_person_id', '=', self.sale_person_id.id), ('partner_id', '=', self.partner_id.id),
+                              ('id', '!=', self.id)])
+        if result:
+            raise ValidationError('Combination of sales_person_id and partner_id must be unique')
+
 
 
 

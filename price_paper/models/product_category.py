@@ -15,5 +15,3 @@ class ProductCategory(models.Model):
         'account.account',
         string="SC stock liability account"
     )
-
-

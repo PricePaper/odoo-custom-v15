@@ -37,7 +37,7 @@
 <!--                    <attribute name='groups'>base.group_user</attribute>-->
 <!--                </field>-->
                 <page  name="other_info" position="after">
-                  <page string="Sales Commission" groups="base.group_no_one">
+                  <page string="Sales Commission" groups="base.group_no_one" attrs="{'invisible': [('move_type', 'not in', ['out_invoice', 'out_refund'])]}">
                     <field name="commission_rule_ids" invisible='1'/>
                     <field name="sale_commission_ids"/>
                   </page>

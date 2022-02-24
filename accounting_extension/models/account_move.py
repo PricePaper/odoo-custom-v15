@@ -7,9 +7,25 @@ from dateutil.relativedelta import relativedelta
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
+    # field used in search view
     discount_date = fields.Date('Discount Till')
 
+    def js_remove_outstanding_partial(self, partial_id):
+        # remove discount if payment is cancelled
+        discount_move_id = self.env['account.move']
+        partial = self.env['account.partial.reconcile'].browse(partial_id)
+        payment = self.env['account.payment'].search([('move_id', 'in', [partial.debit_move_id.move_id.id, partial.credit_move_id.move_id.id])])
+        if payment and payment.discount_move_id:
+            discount_move_id = payment.discount_move_id
+        res = super().js_remove_outstanding_partial(partial_id)
+        if discount_move_id:
+            discount_move_id.line_ids.remove_move_reconcile()
+            discount_move_id.button_cancel()
+            discount_move_id.unlink()
+        return res
+
     def action_show_discount_popup(self):
+        # add discount
         return {
             'name': 'Customer Discount',
             'view_mode': 'form',
@@ -19,17 +35,23 @@ class AccountMove(models.Model):
             'context': {'type': self.move_type}
         }
 
-    def _get_reconciled_vals(self, partial, amount, counterpart_line):
-        res = super()._get_reconciled_vals(partial, amount, counterpart_line)
-        if not counterpart_line.payment_id and counterpart_line.name == 'Discount':
-            res.update({'is_discount': True})
-        return res
+    # todo not used. We can use the default unreconcile feature for discount
+    # todo golive remove before
+    # def _get_reconciled_vals(self, partial, amount, counterpart_line):
+    #     res = super()._get_reconciled_vals(partial, amount, counterpart_line)
+    #     if not counterpart_line.payment_id and counterpart_line.name == 'Discount':
+    #         res.update({'is_discount': True})
+    #     return res
 
     def compute_taxes(self):
         self.ensure_one()
         self._recompute_tax_lines(recompute_tax_base_amount=True)
 
     def get_discount(self):
+        """
+        called from batch delivery
+        return total discount amount
+        """
         self.ensure_one()
         if self.move_type == 'out_invoice':
             payments = self._get_reconciled_payments()
@@ -46,23 +68,22 @@ class AccountMove(models.Model):
         return 0
 
     def action_post(self):
+        """
+        override to set discount days
+        """
         res = super(AccountMove, self).action_post()
         if self.invoice_payment_term_id and self.invoice_payment_term_id.is_discount:
-            invoice_date = self.invoice_date
-            self.discount_date = invoice_date + relativedelta(days=self.invoice_payment_term_id.due_days)
+            self.discount_date = self.invoice_date + relativedelta(days=self.invoice_payment_term_id.due_days)
         return res
-
-    # Note : action_invoice_draft(V12) functionality handled in V15.No need to migrate.
 
     def button_draft(self):
-        # account.voucher is account.move in V15.
         res = super(AccountMove, self).button_draft()
-        if self.move_type in ['out_receipt', 'in_receipt']:
-            vals = {'discount_date': False}
-            self.write(vals)
+        self.write({'discount_date': False})
         return res
 
 
+"""
+this class is used to remove discount from payemnt if payment un reconciled now this is achived in js_remove_outstanding_partial method
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
@@ -95,3 +116,4 @@ class AccountMoveLine(models.Model):
             discount_lines.mapped('move_id').button_cancel()
             discount_lines.mapped('move_id').unlink()
         return True
+"""

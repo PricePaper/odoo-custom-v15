@@ -8,3 +8,6 @@ class AccountBatchPayment(models.Model):
         for batch in self:
             if batch.payment_ids and all(pay.is_matched and pay.is_move_sent for pay in batch.payment_ids):
                 batch.state = 'reconciled'
+
+
+AccountBatchPayment()

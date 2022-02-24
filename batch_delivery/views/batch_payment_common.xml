@@ -20,33 +20,40 @@
                     <header>
                         <button name="register_payments"
                                 confirm="All payments will be posted and this action can't be undone are you sure you want to proceed?"
-                                string="Register Payments" type="object" class="oe_highlight"
+                                string="Validate" type="object" class="oe_highlight"
                                 attrs="{'invisible': [('state', 'in', ('cancel', 'paid'))]}"
                         />
+                        <button name="action_cancel" string="Cancel" attrs="{'invisible': [('state', 'in', ('cancel', 'paid'))]}"/>
+                        <button name="action_set_to_draft" string="Set to Draft" attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,paid,cancel"/>
                     </header>
                     <field name="show_warning" invisible="1"/>
-                    <div class="alert alert-warning" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('show_warning','=',False)]}">
-                        <bold>Customers who did not render payment must be deleted before being able to post payments.</bold>
+                    <!--                    style="margin-bottom:0px;" -->
+                    <div class="alert alert-warning mb-0" role="alert" attrs="{'invisible': [('show_warning','=',False)]}">
+                        <bold>Remove all zero amount lines before validating</bold>
                     </div>
                     <sheet>
-
                         <div class="oe_button_box" name="button_box">
                             <button name="view_batch_payments"
                                     type="object"
                                     class="oe_stat_button"
                                     icon="fa-pencil-square-o"
                                     attrs="{'invisible': [('payment_ids', '=', [])]}">
-                                <field name="batch_payment_count" widget="statinfo" string="Batch Payments"/>
+                                <field name="batch_payment_count" widget="statinfo" string="Payments"/>
                             </button>
+
+                            <widget name="web_ribbon" title="Posted" attrs="{'invisible': [('state','!=', 'paid')]}"/>
+
                         </div>
                         <div class="oe_title">
-                            <h1><field name="name" class="oe_inline" readonly="1"/></h1>
+                            <h1>
+                                <field name="name" class="oe_inline" readonly="1"/>
+                            </h1>
                         </div>
                         <group>
                             <group>
                                 <field name="actual_returned" attrs="{'readonly':[('state', 'in', ('paid', 'cancel'))]}"/>
-                                <field name="pending_amount" />
+                                <field name="pending_amount"/>
                             </group>
                             <group>
                                 <field name="cash_amount" attrs="{'readonly':[('state', 'in', ('cancel', 'paid'))]}"/>
@@ -54,17 +61,17 @@
                                 <field name="card_amount" attrs="{'readonly':[('state', 'in', ('cancel', 'paid'))]}"/>
                             </group>
                         </group>
-                        <separator string="Cash Collected Lines"/>
+                        <separator string="Payments"/>
                         <field name="payment_ids" invisible="1"/>
-                        <field name="is_posted" invisible="1"/>
                         <field name="cash_collected_lines" attrs="{'readonly': [('state', 'in', ('cancel', 'paid'))]}">
                             <tree editable="bottom">
                                 <field name="sequence" widget="handle"/>
                                 <field name="common_batch_id" invisible="1"/>
                                 <field name="partner_id" domain="[('customer', '=', True)]"/>
-                                <field name="partner_ids" invisible="1"/>
-                                <field name="invoice_id" domain="[('partner_id', '=', partner_id), ('state', '=', 'open'), ('move_type', '=', 'out_invoice')]" context="{'from_batch_payment': True}"/>
-                                <field name="journal_id" required="1"/>
+                                <field name="invoice_id"
+                                       domain="[('partner_id', '=', partner_id), ('state', '=', 'posted'), ('payment_state', 'not in', ('paid', 'in_payment')), ('move_type', '=', 'out_invoice')]"
+                                       context="{'from_batch_payment': True}"/>
+                                <field name="journal_id" required="1" domain="[('type', 'in', ('bank', 'cash'))]"/>
                                 <field name="available_payment_method_line_ids" invisible="1"/>
                                 <field name="payment_method_line_id" domain="[('id','in',available_payment_method_line_ids)]" required="1"/>
                                 <field name="discount"/>
@@ -82,9 +89,9 @@
                                         <field name="communication"/>
                                     </group>
                                     <group>
-                                         <field name="invoice_id"/>
-                                         <field name="amount"/>
-                                         <field name="discount"/>
+                                        <field name="invoice_id"/>
+                                        <field name="amount"/>
+                                        <field name="discount"/>
                                     </group>
                                 </group>
                             </form>
@@ -104,15 +111,14 @@
             <field name="arch" type="xml">
                 <search string="Search Batch Payments">
                     <field name="name"/>
-                    <filter string="Paid" name="is_paid"
-                            domain="[('state', '=', 'paid')]"/>
+                    <filter string="Posted" name="is_paid" domain="[('state', '=', 'paid')]"/>
+                    <filter string="Unposted" name="is_not_paid" domain="[('state', '!=', 'paid')]"/>
                 </search>
             </field>
         </record>
 
         <record id="action_batch_payment_common" model="ir.actions.act_window">
             <field name="name">Batch Payments Common</field>
-            <field name="type">ir.actions.act_window</field>
             <field name="res_model">batch.payment.common</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="view_batch_payment_common_search"/>
@@ -123,8 +129,7 @@
             </field>
         </record>
 
-        <menuitem action="action_batch_payment_common" id="batch_payment_common_menu"
-                  parent="account.menu_finance_receivables" sequence="19"/>
+        <menuitem action="action_batch_payment_common" id="batch_payment_common_menu" parent="account.menu_finance_receivables" sequence="19"/>
 
     </data>
 </odoo>

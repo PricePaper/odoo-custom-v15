@@ -253,6 +253,7 @@
                                 string="Add Payment" type="object" class="oe_highlight"
                                 attrs="{'invisible': [('state', '!=', 'no_payment')]}"
                         />
+                        <field name="state" widget="statusbar" statusbar_visible="done,no_payment,paid,cancel"/>
                     </header>
                     <field name="show_warning" invisible="1"/>
                     <field name="allowed_picking_ids" invisible="1"/>
@@ -264,7 +265,7 @@
                     <sheet>
 
                         <div class="oe_button_box" name="button_box">
-                            <field name="state" invisible="1"/>
+
                             <button class="oe_stat_button"
                                     name="view_invoices"
                                     icon="fa-pencil-square-o"

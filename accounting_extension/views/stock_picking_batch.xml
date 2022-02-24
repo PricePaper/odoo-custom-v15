@@ -7,14 +7,12 @@
             <field name="model">stock.picking.batch</field>
             <field name="inherit_id" ref="batch_delivery.stock_picking_batch_view_form"/>
             <field name="arch" type="xml">
-
                 <xpath expr="//field[@name='cash_collected_lines']" position="before">
-                    <button type="object" name="add_new_partner_line" string="Add Customer" class="oe_edit_only oe_highlight"/>
+                    <button type="object" name="add_new_partner_line" attrs="{'invisible': [('state', '!=', 'done')]}" string="Add Customer" class="oe_edit_only btn-warning"/>
                 </xpath>
                 <xpath expr="//field[@name='cash_collected_lines']//tree/field[@name='discount']" position="after">
                    <field name="discount_amount"/>
                 </xpath>
-
             </field>
         </record>
 
@@ -26,7 +24,6 @@
                 <xpath expr="//field[@name='cash_collected_lines']//tree/field[@name='discount']" position="after">
                    <field name="discount_amount"/>
                 </xpath>
-
             </field>
         </record>
 

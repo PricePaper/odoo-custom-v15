@@ -4,37 +4,27 @@ from odoo import api, fields, models, _
 from odoo.tools import float_round
 from odoo.exceptions import UserError
 
-#todo not migrated we can do after finishing other modules
+
 class BatchPaymentCommon(models.Model):
     _inherit = ['mail.thread']
     _name = 'batch.payment.common'
     _description = "Batch Payment Common"
 
-    name = fields.Char(string='Batch Picking Name', default='New',
-                       copy=False, required=True, help='Name of the batch payment')
-    cash_collected_lines = fields.One2many('cash.collected.lines', 'common_batch_id',
-                                           string='Cash Collected Breakup')
+    name = fields.Char(string='Batch Picking Name', default='New', copy=False, required=True, help='Name of the batch payment')
+    cash_collected_lines = fields.One2many('cash.collected.lines', 'common_batch_id', string='Cash Collected Breakup')
     payment_ids = fields.One2many('account.payment', 'common_batch_id', string='Payments')
-    actual_returned = fields.Float(string='Total Amount',
-                                   help='Total amount returned by the driver.',
-                                   digits='Product Price')
+    actual_returned = fields.Float(string='Total Amount', required=1, digits='Product Price')
     is_posted = fields.Boolean(string="Posted")
-    pending_amount = fields.Float(string="Difference",
-                                  compute='_calculate_pending_amount')
-    batch_payment_count = fields.Integer(string='Batch Payment',
-                                         compute='_compute_batch_payment_count')
-    cash_amount = fields.Float(string='Cash Amount',
-                               digits='Product Price')
-    cheque_amount = fields.Float(string='Check Amount',
-                                 digits='Product Price')
+    pending_amount = fields.Float(string="Difference", compute='_calculate_pending_amount')
+    batch_payment_count = fields.Integer(string='Batch Payment', compute='_compute_batch_payment_count')
+    cash_amount = fields.Float(string='Cash Amount', digits='Product Price')
+    cheque_amount = fields.Float(string='Check Amount', digits='Product Price')
     show_warning = fields.Boolean(string='Pending Line Warning')
     state = state = fields.Selection([
         ('draft', 'Draft'),
-        ('paid', 'Paid'),
-        ('cancel', 'Cancelled')], default='draft',
-        copy=False, tracking=True, required=True)
-    card_amount = fields.Float(string='Credit card Amount',
-                               digits='Product Price')
+        ('paid', 'Posted'),
+        ('cancel', 'Cancelled')], default='draft', copy=False, tracking=True, required=True)
+    card_amount = fields.Float(string='Credit card Amount', digits='Product Price')
 
     @api.depends('payment_ids')
     def _compute_batch_payment_count(self):
@@ -49,20 +39,23 @@ class BatchPaymentCommon(models.Model):
                 real_collected += float_round(cash_line.amount, precision_digits=2)
             batch.pending_amount = float_round(batch.actual_returned - real_collected, precision_digits=2)
 
+
     def register_payments(self):
-        for batch in self:
-            if not batch.actual_returned:
-                raise UserError(_('Please properly enter the returned amount'))
-            if not batch.cash_collected_lines:
-                raise UserError(_('Please add cash collected lines before proceeding.'))
-            if batch.cash_collected_lines and all(l.amount > 0 for l in batch.cash_collected_lines):
-                batch.cash_collected_lines.create_from_common_batch_payment()
-            else:
-                batch.show_warning = True
-                return
-            batch.show_warning = False
-            batch.is_posted = True
-            batch.state = 'paid'
+        self.ensure_one()
+        if not self.actual_returned:
+            raise UserError('You cannot keep total amount field empty')
+        if not self.cash_collected_lines:
+            raise UserError('No lines to process')
+        if self.cash_collected_lines and all(line.amount > 0 for line in self.cash_collected_lines):
+            self.cash_collected_lines.create_payment()
+        else:
+            self.show_warning = True
+            return self
+        return self.write({
+            'show_warning': False,
+            'is_posted': True,
+            'state': 'paid'
+        })
 
     def view_batch_payments(self):
         self.ensure_one()
@@ -79,3 +72,9 @@ class BatchPaymentCommon(models.Model):
             action = {'type': 'ir.actions.act_window_close'}
 
         return action
+
+    def action_set_to_draft(self):
+        return self.write({'state': 'draft'})
+
+    def action_cancel(self):
+        return self.write({'state': 'cancel'})

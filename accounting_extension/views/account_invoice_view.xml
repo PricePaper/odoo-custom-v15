@@ -2,58 +2,40 @@
 <odoo>
     <data>
         <record id="account.partner_view_buttons" model="ir.ui.view">
-           <field name="groups_id" eval="[(4, ref('account.group_account_invoice')),(4, ref('sales_team.group_sale_salesman')),(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
+            <field name="groups_id"
+                   eval="[(4, ref('account.group_account_invoice')),(4, ref('sales_team.group_sale_salesman')),(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
         </record>
 
-        <record id="ed_invoice_form" model="ir.ui.view">
+        <record id="ppt_invoice_form_inherited" model="ir.ui.view">
             <field name="name">account.move.form</field>
             <field name="model">account.move</field>
             <field name="type">form</field>
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//label[@for='invoice_payment_term_id']" position="before">
-                        <field name="discount_date" readonly="1" attrs="{'invisible' : [('move_type','not in',('out_invoice','out_refund'))]}"/>
+                    <field name="discount_date" readonly="1" attrs="{'invisible' : [('move_type','not in',('out_invoice','out_refund'))]}"/>
                 </xpath>
                 <xpath expr="//form/sheet/notebook/page[1]/group" position="after">
-                     <button name='action_show_discount_popup' type='object'
-                             string='Discount' class="fa fa-pencil-square-o oe_right"
-                             attrs="{'invisible': [('state', '!=', 'posted')]}"/>
-                    <button name="compute_taxes"
-                                             type="object" string="Update Tax"
-                                             class="fa fa-pencil-square-o oe_right"
-                                             attrs="{'invisible': [('state', '!=', 'draft')]}"
-                                             groups="account.group_account_user"/>
-
+                    <button name='action_show_discount_popup' type='object' string='Discount' class="fa fa-pencil-square-o oe_right btn-warning"
+                            attrs="{'invisible': [('state', '!=', 'posted')]}"/>
+                    <button name="compute_taxes" type="object" string="Update Tax" class="fa fa-pencil-square-o oe_right btn-danger"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}" groups="account.group_account_user"/>
                 </xpath>
             </field>
         </record>
 
-            <!--TODO migrate this-->
-<!--        <record id="ed_invoice_supplier_form" model="ir.ui.view">-->
-<!--            <field name="name">ed.account.invoice.supplier.form</field>-->
-<!--            <field name="model">account.invoice</field>-->
-<!--            <field name="type">form</field>-->
-<!--            <field name="inherit_id" ref="account.invoice_supplier_form"/>-->
-<!--            <field name="arch" type="xml">-->
-<!--                <field name="payment_term_id" position="attributes">-->
-<!--                    <attribute name="attrs"></attribute>-->
-<!--                </field>-->
-<!--            </field>-->
-<!--        </record>-->
-
-
-        <record id="ed_account_invoice_filter2" model="ir.ui.view">
-            <field name="name">ed.account.invoice.filter</field>
+        <record id="ppt_account_invoice_filter" model="ir.ui.view">
+            <field name="name">account.invoice.filter</field>
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_account_invoice_filter"/>
             <field name="arch" type="xml">
                 <filter name="late" position="after">
                     <filter name="discountable_today" string='Discountable Today'
-                            domain="['&amp;',('discount_date','&gt;=',time.strftime('%Y-%m-%d')),('state','not in',['draft','cancel','paid'])]"/>
+                            domain="['&amp;',('discount_date','&gt;=',time.strftime('%Y-%m-%d')),('state','=','posted'), ('payment_state', 'in', ('paid', 'in_payment'))]"/>
                     <filter name="discountable_this_week" string='Discountable This Week' domain=
-                            "['&amp;','&amp;',('discount_date','&gt;=',time.strftime('%Y-%m-%d')),('discount_date','&lt;=',(context_today()+relativedelta(weeks=0, weekday=-3)).strftime('%Y-%m-%d')),('state','not in',['draft','cancel','paid'])]"/>
+                            "['&amp;','&amp;',('discount_date','&gt;=',time.strftime('%Y-%m-%d')),('discount_date','&lt;=',(context_today()+relativedelta(weeks=0, weekday=-3)).strftime('%Y-%m-%d')),('state','=','posted'), ('payment_state', 'in', ('paid', 'in_payment'))]"/>
                     <filter name="discountable_this_month" string='Discountable This Month' domain=
-                            "['&amp;','&amp;',('discount_date','&gt;=',time.strftime('%Y-%m-%d')),('discount_date','&lt;=',(context_today()+relativedelta(day=31)).strftime('%Y-%m-%d')),('state','not in',['draft','cancel','paid'])]"/>
+                            "['&amp;','&amp;',('discount_date','&gt;=',time.strftime('%Y-%m-%d')),('discount_date','&lt;=',(context_today()+relativedelta(day=31)).strftime('%Y-%m-%d')),('state','=','posted'), ('payment_state', 'in', ('paid', 'in_payment'))]"/>
                 </filter>
             </field>
         </record>
@@ -62,14 +44,22 @@
             <xpath expr="//p[1]" position="before">
                 <p t-if="object._name == 'account.move' and object.move_type == 'out_invoice'">
 
-                     <table style="font-size:12px;text-align:left;margin-top:13px;margin-bottom:10px;" border="0">
+                    <table style="font-size:12px;text-align:left;margin-top:13px;margin-bottom:10px;" border="0">
                         <tr>
-                            <td><b>Customer</b></td>
-                            <td><t t-esc="object.partner_id.name"/></td>
+                            <td>
+                                <b>Customer</b>
+                            </td>
+                            <td>
+                                <t t-esc="object.partner_id.name"/>
+                            </td>
                         </tr>
                         <tr>
-                            <td><b>Invoice Number</b></td>
-                            <td><t t-esc="object.number"/></td>
+                            <td>
+                                <b>Invoice Number</b>
+                            </td>
+                            <td>
+                                <t t-esc="object.number"/>
+                            </td>
                         </tr>
                     </table>
 
@@ -77,8 +67,8 @@
             </xpath>
         </template>
 
-         <record id="res_config_settings_view_form" model="ir.ui.view">
-            <field name="name">res.config.settings.view.form.purchase.inherit.accounting.extension</field>
+        <record id="res_config_settings_view_form_discount" model="ir.ui.view">
+            <field name="name">customer discount</field>
             <field name="model">res.config.settings</field>
             <field name="inherit_id" ref="account.res_config_settings_view_form"/>
             <field name="arch" type="xml">
@@ -91,7 +81,9 @@
                                 Force Limit For Customer Discount.
                             </div>
                             <div class="content-group mt16">
-                                Up to <field name="customer_discount_limit" class="text-center oe_inline" /> %
+                                Up to
+                                <field name="customer_discount_limit" class="text-center oe_inline"/>
+                                %
                             </div>
                         </div>
                     </div>

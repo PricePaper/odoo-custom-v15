@@ -1,6 +1,5 @@
 from odoo import fields, models, api
 
-
 class ReportAccountFinancialReport(models.Model):
     _inherit = "account.financial.html.report"
 

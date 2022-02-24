@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-from odoo.addons import decimal_precision as dp
 from odoo.exceptions import UserError
 
 
@@ -18,10 +17,9 @@ class CashCollectedLinesWizard(models.TransientModel):
     journal_id = fields.Many2one('account.journal', string='Journal', domain=[('type', 'in', ['bank', 'cash'])])
     invoice_id = fields.Many2one('account.move')
     discount = fields.Float(string='Discount(%)')
-    search_wizard_id = fields.Many2one('add.cash.collected.wizard', string='Parent')
+    parent_id = fields.Many2one('add.cash.collected.wizard', string='Parent')
     available_payment_method_line_ids = fields.Many2many('account.payment.method.line', compute='_compute_available_payment_method_ids')
     discount_amount = fields.Float(string='Discount', digits='Product Price')
-
 
     @api.depends('journal_id')
     def _compute_available_payment_method_ids(self):
@@ -59,43 +57,39 @@ class CashCollectedLinesWizard(models.TransientModel):
             self.discount_amount = 0
             self.amount = 0
 
-
     @api.onchange('discount')
     def onchange_discount(self):
-        self = self.with_context(recursive_onchanges=False)
+        self = self.with_context(onchange_discount=False)
         if self.invoice_id:
             self.check_discount_validity(self.invoice_id.amount_residual_signed, discount_per=self.discount)
             self.discount_amount = round(self.invoice_id.amount_residual_signed * (self.discount / 100), 2)
             self.amount = self.invoice_id.amount_residual_signed - self.discount_amount
-        else:
+        elif self.discount:
             self.discount = 0
             self.discount_amount = 0
-            return {'warning': {'message': 'for giving discount you must have a choose an invoice'}}
+            return {'warning': {'message': 'for giving discount you must have choose an invoice'}}
 
     @api.onchange('discount_amount')
     def onchange_discount_amount(self):
-        self = self.with_context(recursive_onchanges=False)
-        if self.invoice_id:
+        if self.invoice_id and not self._context.get('onchange_discount'):
             self.check_discount_validity(self.invoice_id.amount_residual_signed, discount_amount=self.discount_amount)
             self.discount = round((self.discount_amount / self.invoice_id.amount_residual_signed) * 100, 2)
             self.amount = self.invoice_id.amount_residual_signed - self.discount_amount
-        else:
+        elif self.discount_amount and not self._context.get('onchange_discount'):
             self.discount = 0
             self.discount_amount = 0
-            return {'warning': {'message': 'for giving discount you must have a choose an invoice'}}
-
+            return {'warning': {'message': 'for giving discount you must have  choose an invoice'}}
 
     @api.onchange('payment_method_id')
     def _onchange_payment_method_id(self):
         self.is_communication = self.payment_method_id.code == 'check_printing'
 
+
 class CashCollectedWizard(models.TransientModel):
     _name = 'add.cash.collected.wizard'
     _description = "Add Cash Collected Line With partner Not In The Batch Line"
 
-
-    cash_collected_line_ids = fields.One2many('cash.collected.lines.wizard', 'search_wizard_id', string="Cash Collected Lines")
-
+    cash_collected_line_ids = fields.One2many('cash.collected.lines.wizard', 'parent_id', string="Cash Collected Lines")
 
     def add_cash_collected_lines(self):
         """
@@ -104,12 +98,13 @@ class CashCollectedWizard(models.TransientModel):
         self.ensure_one()
         active_id = self._context.get('active_id')
         batch_id = self.env['stock.picking.batch'].browse(active_id)
+        if batch_id.state != 'done':
+            raise UserError("batch picking state should be in shipping done")
         sequence = batch_id.cash_collected_lines.mapped('sequence')
         if sequence:
             sequence = max(sequence) + 1
-        line_ids = self.cash_collected_line_ids
-        for line_id in line_ids:
-            cash_lines = {
+        for line_id in self.cash_collected_line_ids:
+            self.env['cash.collected.lines'].create({
                 'partner_id': line_id.partner_id.id,
                 'amount': line_id.amount,
                 'communication': line_id.communication,
@@ -119,9 +114,7 @@ class CashCollectedWizard(models.TransientModel):
                 'discount': line_id.discount,
                 'payment_method_line_id': line_id.payment_method_line_id.id,
                 'sequence': sequence
-                    }
-
-            self.env['cash.collected.lines'].create(cash_lines)
+            })
         return True
- 
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

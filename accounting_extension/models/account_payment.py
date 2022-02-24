@@ -1,85 +1,96 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
-from datetime import datetime, date
-
 from odoo.exceptions import UserError
-from odoo.tools.misc import formatLang, format_date
 
 
+class AccountRegisterPayment(models.TransientModel):
+    _inherit = "account.payment.register"
+
+    def _post_payments(self, to_process, edit_mode=False):
+        """
+        override to post discount move if exist
+        """
+        res = super()._post_payments(to_process, edit_mode)
+        if edit_mode:
+            for vals in to_process:
+                payment = vals['payment']
+                if payment.discount_move_id:
+                    payment.discount_move_id.action_post()
+        return res
+
+    def _reconcile_payments(self, to_process, edit_mode=False):
+        """
+        reconcile the discount move
+        """
+        res = super()._reconcile_payments(to_process, edit_mode)
+        if edit_mode:
+            vals = to_process[0]
+            payment = vals.get('payment')
+            if payment.partner_type == 'customer' and payment.discount_move_id:
+                discount_limit = self.env['ir.config_parameter'].sudo().get_param('accounting_extension.customer_discount_limit', 5.00)
+                if isinstance(discount_limit, str):
+                    discount_limit = float(discount_limit)
+                discount_limit = sum(payment.reconciled_invoice_ids.mapped('amount_total')) * (discount_limit / 100)
+                if payment.discount_move_id.amount_total > discount_limit:
+                    raise UserError('Invoices can not be discounted more than $ %.2f.\nCreate a credit memo instead.' % discount_limit)
+            counterpart_line = vals.get('to_reconcile')
+            counterpart_line |= payment.discount_move_id.line_ids.filtered(lambda r: r.account_id.user_type_id.type in ('receivable', 'payable'))
+            counterpart_line.reconcile()
+        return res
+
+    def _init_payments(self, to_process, edit_mode=False):
+        """
+        create discount move from write of vals
+        seperating it from payment journal
+        to keep the uniqueness
+        """
+        write_off_vals = False
+        if edit_mode:
+            for vals in to_process:
+                write_off_vals = vals['create_vals'].pop('write_off_line_vals', False)
+        payments = super()._init_payments(to_process, edit_mode)
+        if write_off_vals:
+            destination_account_id = payments.partner_id and payments.partner_id.property_account_receivable_id or self.env['ir.property']._get(
+                'property_account_receivable_id', 'res.partner')
+            if payments.partner_type == 'supplier':
+                destination_account_id = payments.partner_id and payments.partner_id.property_account_payable_id or self.env['ir.property']._get(
+                    'property_account_payable_id', 'res.partner')
+            discount_move = self.env['account.move'].create({
+                'move_type': 'entry',
+                'company_id': payments.company_id.id,
+                'date': fields.Date.today(),
+                'journal_id': payments.journal_id.id,
+                'ref': '%s - Discount' % payments.ref,
+                'line_ids': [(0, 0, {
+                    'account_id': destination_account_id.id,
+                    'company_currency_id': payments.company_id.currency_id.id,
+                    'credit': 0.0 if payments.partner_type == 'supplier' else write_off_vals.get('amount', 0),
+                    'debit': write_off_vals.get('amount', 0) if payments.partner_type == 'supplier' else 0.0,
+                    'journal_id': payments.journal_id.id,
+                    'name': write_off_vals.get('name'),
+                    'partner_id': payments.partner_id.id
+                }), (0, 0, {
+                    'account_id': write_off_vals.get('account_id'),
+                    'company_currency_id': payments.company_id.currency_id.id,
+                    'credit': write_off_vals.get('amount', 0) if payments.partner_type == 'supplier' else 0.0,
+                    'debit': 0.0 if payments.partner_type == 'supplier' else write_off_vals.get('amount', 0),
+                    'journal_id': payments.journal_id.id,
+                    'name': write_off_vals.get('name'),
+                    'partner_id': payments.partner_id.id
+                })]
+            })
+            payments.write({'discount_move_id': discount_move.id})
+        return payments
 
 
-class AccountRegisterPaymentLines(models.TransientModel):
-    """
-        New table to show payment lines and discount amount
-    """
-    _name = "account.register.payment.lines"
-    _description = "Register Payment Lines"
-
-    payment_id = fields.Many2one('account.payment', 'Payment')
-    invoice_id = fields.Many2one('account.move', string='Invoice', required=True)
-    amount_total = fields.Monetary('Invoice Amount', related='invoice_id.amount_residual')
-    currency_id = fields.Many2one('res.currency', 'Currency', related='invoice_id.currency_id')
-    discounted_total = fields.Float('Actual Amount', compute="_get_discount_total")
-    discount = fields.Float('Discount')
-    discount_percentage = fields.Float('T.Disc(%)')
-    reference = fields.Char(string="Reference")
-    invoice_date = fields.Date('Invoice Date')
-    payment_amount = fields.Float('Payment Amount')
-    is_full_reconcile = fields.Boolean('Full')
-
-    @api.depends('discount')
-    def _get_discount_total(self):
-        for line in self:
-            discounted_total = 0.0
-            if line.amount_total >= 0:
-                discounted_total = line.amount_total - line.discount
-            else:
-                discounted_total = line.amount_total + line.discount
-            line.discounted_total = discounted_total
- 
+AccountRegisterPayment()
 
 
 class AccountPayment(models.Model):
     _inherit = "account.payment"
 
-    @api.depends("payment_lines")
-    def _has_lines(self):
-        for record in self:
-            record.has_payment_lines = len(record.payment_lines) > 0 and True or False
-
-    discount_amount = fields.Float('Discount Amount')
-    payment_lines = fields.One2many('account.payment.lines', 'payment_id')
-    has_payment_lines = fields.Boolean('Has Payment Lines?', compute="_has_lines")
-    payment_reference = fields.Char('Payment Reference')
-    discount_journal_id = fields.Many2one('account.move')
-    discount_total = fields.Float('Total', compute="_get_discount")
-    writeoff_account_id = fields.Many2one('account.account', 'Discount Account')
+    discount_move_id = fields.Many2one('account.move', 'Discount Move')
 
 
-    @api.depends("payment_lines.discounted_total", "payment_lines.discount")
-    def _get_discount(self):
-        """ Update total amount and discount"""
-        amount, discount_amount = 0, 0
-        #TODO migrate this function
-        self.discount_total = amount
-
-class AccountPaymentLines(models.Model):
-    _name = "account.payment.lines"
-    _description = "Payment Lines"
-
-    payment_id = fields.Many2one('account.payment', 'Payment')
-    invoice_id = fields.Many2one('account.move', string='Invoice', required=True)
-    amount_total = fields.Monetary('Invoice Amount')
-    currency_id = fields.Many2one('res.currency', 'Currency', related='invoice_id.currency_id')
-    discounted_total = fields.Float('Actual Amount')
-    discount = fields.Float('Discount')
-    discount_percentage = fields.Float('T.Disc(%)')
-    reference = fields.Char(string="Reference")
-    invoice_date = fields.Datetime('Invoice Date')
-    payment_amount = fields.Float('Payment Total')
-    is_full_reconcile = fields.Boolean('Full')
-    discount_journal_id = fields.Many2one('account.move', 'Discount Journal')
-
-
-
+AccountPayment()

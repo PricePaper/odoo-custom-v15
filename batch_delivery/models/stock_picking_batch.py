@@ -516,6 +516,7 @@ class CashCollectedLines(models.Model):
 
     @api.onchange('invoice_id')
     def onchange_invoice_id(self):
+        print(self.invoice_id)
         if self.invoice_id:
             self.amount = self.invoice_id.amount_total
             days = (self.invoice_id.date_invoice - fields.Date.context_today(self)).days
@@ -535,7 +536,7 @@ class CashCollectedLines(models.Model):
 
     @api.onchange('payment_method_line_id')
     def _onchange_payment_method_id(self):
-        self.is_communication = self.payment_method_line_id.code == 'check_printing'
+        self.is_communication = self.payment_method_line_id.payment_method_id.code == 'check_printing'
 
 # todo not tested same copy is ther in accounting extension
     def create_payment(self):

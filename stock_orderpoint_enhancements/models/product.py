@@ -251,6 +251,16 @@ class ProductProduct(models.Model):
             name = name1+name
             product.with_delay(description=name, channel='root.Product_Orderpoint').job_queue_forecast()
 
+    def action_reset_order_point(self):
+        """
+        Action menu from product view to reset orderpoint
+        """
+        name1 = 'Order Point: '
+        for product in self:
+            name = product.default_code and product.default_code or product.name
+            name = name1+name
+            product.with_delay(description=name, channel='root.Product_Orderpoint').job_queue_forecast()
+
     def show_forecast(self, no_of_days=31):
         """
         Return a graph and pivot views which are
@@ -286,16 +296,6 @@ class SupplierInfo(models.Model):
                 rec.delay = rec.name.delay
             else:
                 rec.delay = rec.manual_delay
-
-    # @api.multi
-    # def reset_orderpoint(self, product):
-    #     """
-    #     Reset min_qty and max_quantity in orderpoints
-    #     based on the updated delivery lead time
-    #     """
-    #     self.ensure_one()
-    #     forecast = product.job_queue_forecast()
-
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

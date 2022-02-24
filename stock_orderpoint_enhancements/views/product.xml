@@ -70,5 +70,14 @@
                 </xpath>
             </field>
         </record>
+        <record id="action_reset_order_point" model="ir.actions.server">
+            <field name="name">Reset Reordering Rule</field>
+            <field name="model_id" ref="product.model_product_product"/>
+            <field name="binding_model_id" ref="product.model_product_product"/>
+            <field name="state">code</field>
+            <field name="code">
+                action = records.action_reset_order_point()
+            </field>
+        </record>
     </data>
 </odoo>

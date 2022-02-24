@@ -23,7 +23,7 @@ class AccountInvoice(models.Model):
     def compute_discount_due_date(self):
         for invoice in self:
             if invoice.invoice_date and invoice.invoice_payment_term_id and invoice.invoice_payment_term_id.due_days:
-                invoice.discount_due_date = invoice.invoice_date + relativedelta(days=invoice.payment_term_id.due_days)
+                invoice.discount_due_date = invoice.invoice_date + relativedelta(days=invoice.invoice_payment_term_id.due_days)
             else:
                 invoice.discount_due_date = False
 

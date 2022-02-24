@@ -23,7 +23,6 @@
         'security/ir.model.access.csv',
         'data/data.xml',
         'wizard/product_forecast_views.xml',
-        'wizard/order_point_reset.xml',
         'wizard/forecast_days.xml',
         'views/res_company.xml',
         'views/product.xml',

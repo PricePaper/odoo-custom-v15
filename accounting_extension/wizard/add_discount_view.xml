@@ -19,8 +19,8 @@
                           </div>
                         </group>
                         <footer class="oe_edit_only">
-                            <button string="Confirm" type="object" name="create_discount" class="oe_highlight"/>
-                            <button string="Discard" special="cancel"/>
+                            <button string="Confirm" type="object" name="create_discount" class="btn-success"/>
+                            <button string="Discard" special="cancel" class="btn-danger"/>
                         </footer>
                     </sheet>
                 </form>

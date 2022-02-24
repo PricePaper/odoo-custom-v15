@@ -46,6 +46,6 @@ class ResPartner(models.Model):
         }
 
     # Todo don't know the usage'
-    def open_action_followup(self):
-        return {}
+    # def open_action_followup(self):
+    #     return {}
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

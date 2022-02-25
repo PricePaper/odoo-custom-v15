@@ -20,7 +20,7 @@
     'depends': ['base'],
 
     'external_dependencies': {
-        'python': ['pandas', 'fbprophet'],
+        'python': ['pandas', 'prophet'],
     },
 
     'data': [

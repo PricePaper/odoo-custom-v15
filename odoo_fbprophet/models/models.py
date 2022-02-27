@@ -12,7 +12,7 @@ from odoo.exceptions import ValidationError
 try:
     import pandas as pd
     #    import numpy as np
-    from prophet import Prophet
+    from fbprophet import Prophet
     from pandas.tseries.holiday import USFederalHolidayCalendar
     import holidays as pypiholidays
 except ImportError as e:

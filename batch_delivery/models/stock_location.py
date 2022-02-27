@@ -6,6 +6,6 @@ from odoo import models, fields
 class StockLocation(models.Model):
     _inherit = 'stock.location'
 
-    is_transit_location = fields.Boolean(string='Truck Transit Location')
+    is_transit_location = fields.Boolean(string='Transit Location')
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

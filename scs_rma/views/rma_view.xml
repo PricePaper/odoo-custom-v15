@@ -1,0 +1,386 @@
+<odoo>
+
+   <!--Form View: RMA Form view-->
+   <record id="exchange_rma_ret_mer_auth_form" model="ir.ui.view">
+        <field name="name">exchange.rma.ret.mer.auth.form</field>
+        <field name="model">rma.ret.mer.auth</field>
+        <field name="arch" type="xml">
+            <form string="RMA">
+                <header>
+                    <button name="rma_submit" states='new' string="Submit" type="object" class="oe_highlight"/>
+                    <button name="create_receive_picking" states='verification' string="Approve RMA" type="object" class="oe_highlight"/>                
+                    <button name="rma_approve" attrs="{'invisible':['|',('state','!=','resolved'),('type','=','exchange')]}" string="Approve" type="object" class="oe_highlight"/>
+                    <button name="rma_close" states='approve' string="Done" type="object" class="oe_highlight"/>
+                    <button name="rma_set_draft" attrs="{'invisible':[('state','in',['new', 'approve', 'close', 'cancelled'])]}" string="Set To Draft" type="object" class="oe_highlight"/>
+                    <button name="rma_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '=', 'cancelled')]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,verification,approve,close"/>
+                    
+                </header>
+                <sheet string="RMA">
+                    <div class="oe_button_box" name="button_box_rma">
+                        <button type="object" name="count_stock_picking" class="oe_stat_button" icon="fa-truck" attrs="{'invisible': [('state', 'in', ('new','verification'))]}">
+                           <field name="pick_count" widget="statinfo" string="Stock Pickings"/>
+                       </button>
+                        <button type="object" name="count_invoice_ids" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible': [('state', 'in', ('new','verification'))]}">
+                           <field name="inv_count" widget="statinfo" string="Invoices"/>
+                       </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1" force_save="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="rma_type" widget="radio" attrs="{'readonly':[('state','!=', 'new')]}"/>
+                            <field name="partner_id" attrs="{
+                                'required':[('rma_type', '=', 'customer')], 'invisible':[('rma_type', 'in', ('supplier' , 'picking' ,'lot'))], 'readonly':[('state','!=','new')]}" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="supplier_id" attrs="{
+                                'required':[('rma_type', '=', 'supplier')], 'invisible':[('rma_type', 'in', ('customer' ,'picking','lot'))], 'readonly':[('state','!=','new')]}" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="picking_partner_id" attrs="{
+                                'required':[('rma_type', '=', 'picking')], 'invisible':[('rma_type', 'in', ('customer' , 'supplier','lot'))], 'readonly':[('state','!=','new')]}" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="currency_id" invisible="1" force_save="1"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="invoice_status" readonly="1" force_save="1"/>
+                            <field name="picking_customer_id" invisible="1"/>
+                            <field name="picking_supplier_id" invisible="1"/>
+                            </group>
+                        <group>
+                            <field name="rma_date" attrs="{'readonly':[('state','!=','new')]}"/>
+                            <field name="sale_order_id" domain="[('partner_id', '=',partner_id), ('state', '=','sale'), ('picking_ids.state', '=','done'), ('rma_done', '=', False)]" attrs="{
+                                'invisible' :[('rma_type','in',('picking','supplier','lot'))], 'required':[('rma_type','=','customer')], 
+                                'readonly':[('state','!=','new')]} " 
+                                options="{'no_create': True, 'no_open': True}"/>
+                            <field name="purchase_order_id" domain="[('partner_id', '=',supplier_id), ('state', '=','purchase'), ('picking_ids.state', '=','done'), ('rma_done', '=', False)]"
+                             attrs="{
+                                'invisible' :[('rma_type','in',('customer','picking','lot'))], 'required':[('rma_type','=','supplier')],
+                                'readonly':[('state','!=','new')]}"
+                            options="{'no_create': True, 'no_open': True}" />
+                        
+                            <field name="picking_rma_id" domain="[('origin', 'ilike', 'RMA'),
+                                ('state', '=', 'done'), ('partner_id', '=', picking_partner_id), ('rma_done', '=', False)
+                                ]" attrs="{
+                                'invisible' :[('rma_type','in',('customer','supplier','lot'))], 'required':[('rma_type','=','picking')],
+                                'readonly':[('state','!=','new')]}"
+                                options="{'no_create': True, 'no_open': True}" />
+                            <field name="lot_picking_id" domain="[('origin', 'ilike', 'RMA'),
+                                ('state', '=', 'done'), ('partner_id', '=', picking_partner_id), ('rma_done', '=', False)
+                                ]" attrs="{
+                                'invisible' :[('rma_type','in',('customer','supplier', 'picking'))],
+                                'readonly':[('state','!=','new')]}"
+                                options="{'no_create': True, 'no_open': True}" />
+                            <field name="type" invisible="1"/>
+                            <field name="pick_origin" attrs="{
+                                'invisible' :[('rma_type','in',('customer','supplier','lot'))], 
+                                }" readonly="1" 
+                            options="{'no_create': True, 'no_open': True}" />
+                        </group>
+                    </group>
+                    <div class="row ml4">
+                        <div class="col-xs-9">
+                            <group>
+                            <field name="rma_lot"  attrs="{
+                                'required':[('rma_type', '=', 'lot')],
+                                'invisible':[('rma_type', 'in', ('customer' , 'supplier', 'picking'))],
+                                'readonly':[('state','!=','new')]}" />
+                            </group>
+                            </div>
+                            <div class="col-xs-3">
+                                <group>
+                            <button name="check_serial" class="btn btn-primary"
+                                    string="Check Serial No" type="object" attrs="{
+                                'invisible':['|', ('rma_type', 'in', ('customer' , 'supplier', 'picking')), ('state', '!=', 'new')], 'readonly':[('state', '!=','new')]}" />
+                            </group>
+                            </div>
+                        </div>
+                    <notebook >
+                        <page  string="Order Lines" name="order_lines" attrs="{'invisible': [('rma_type', 'in', ('supplier', 'picking', 'lot'))]}" >
+                            <field name="rma_sale_lines_ids" nolabel="1" attrs="{'readonly':[('state','not in', ('new','verification'))]}" context="{'rma_so_line': True}" default_focus="1">
+                                <tree create="false">
+                                    <field name="product_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="type"/>
+                                    <field name="source_location_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="destination_location_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="order_quantity"/>
+                                    <field name="delivered_quantity"/>
+                                    <field name="refund_qty" required="1" />
+                                    <field name="price_unit"/>
+                                    <field name="reason_id" required="1" invisible="1"/>
+                                    <field name="tax_id" widget="many2many_tags"  domain="[('type_tax_use','=','sale')]" options="{'no_create': True, 'no_open': True}" />
+                                    <field name="discount" string="Disc.%"/>
+                                    <field name="price_tax" invisible="1"/>
+                                    <field name="refund_price" required="1" force_save="1"/>
+                                </tree>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total_rma">
+                                <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}" force_save="1"/>
+                                <field name="amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                    <label for="amount_total" />
+                                </div>
+                                <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}" force_save="1"/>
+                            </group>
+                            <field name="problem" invisible="1"/>
+                        </page>
+                    
+                        <page string="Order Lines" name="purchase_order_lines"  attrs="{'invisible': [('rma_type', 'in', ('customer', 'picking', 'lot'))]}">
+                            <field name="rma_purchase_lines_ids" nolabel="1" context="{'rma_purchase_line': True}" attrs="{'readonly':[('state','not in', ('new','verification'))]}" default_focus="1">
+        
+                            </field>
+                            <group class="oe_subtotal_footer oe_right" colspan="2" name="purchase_total_rma">
+                                <field name="purchase_amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}" force_save="1"/>
+                                <field name="purchase_amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                    <label for="purchase_amount_total" />
+                                </div>
+                                <field name="purchase_amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}" force_save="1"/>
+                            </group>
+                        </page>
+                        <page  string="Order Lines" name="order_lines" attrs="{'invisible': [('rma_type', 'in', ('customer', 'supplier'))]}" autofocus="autofocus">
+                            <field name="rma_picking_lines_ids" nolabel="1" attrs="{'readonly':[('state','not in', ('new','verification'))]}" context="{'rma_picking_line': True}" default_focus="1">
+                                <tree create="false">
+                                    <field name="product_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="type"/>
+                                    <field name="source_location_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="destination_location_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="order_quantity"/>
+                                    <field name="delivered_quantity"/>
+                                    <field name="refund_qty" required="1" />
+                                    <field name="price_unit"/>
+                                    <field name="reason_id" required="1" invisible="1"/>
+                                    <field name="tax_id" widget="many2many_tags"  domain="[('type_tax_use','=','sale')]" options="{'no_create': True, 'no_open': True}" />
+                                    <field name="discount" string="Disc.%"/>
+                                    <field name="price_tax" invisible="1"/>
+                                    <field name="refund_price" required="1" force_save="1"/>
+                                </tree>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total_rma">
+                                <field name="picking_amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}" force_save="1"/>
+                                <field name="picking_amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                    <label for="picking_amount_total" />
+                                </div>
+                                <field name="picking_amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}" force_save="1"/>
+                            </group>
+                            <field name="problem" invisible="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+   <!--Tree View: RMA Tree view-->
+   <record id="exchange_rma_ret_mer_auth_tree" model="ir.ui.view">
+        <field name="name">exchange.rma.ret.mer.auth.tree</field>
+        <field name="model">rma.ret.mer.auth</field>
+        <field name="arch" type="xml">
+            <tree string="RMA">
+                <field name="name"/>
+                <field name="rma_date"/>
+                <field name="picking_customer_id"/>
+                <field name="picking_supplier_id"/>
+                <field name="state" widget="badge"
+                    decoration-success="state == 'close'" decoration-primary="state == 'approve'" decoration-warning="state == 'verification'" decoration-info="state == 'new' or state == 'resolved'"/>
+            </tree>
+        </field>
+    </record>
+
+   <!--Search View: RMA search view-->
+    <record id="rma_ret_mer_auth_search" model="ir.ui.view">
+        <field name="name">rma.ret.mer.auth.search</field>
+        <field name="model">rma.ret.mer.auth</field>
+        <field name="arch" type="xml">
+            <search string=" Search RMA">
+                <field name="name"/>
+                <filter name="cancel_state" string="Done RMA" domain="[('state', '=', 'close')]"/>
+                <filter name="draft_state" string="New RMA" domain="[('state', '=', 'new')]"/>
+                <group expand="0" string="Group By...">
+                    <filter name="partner_id" string="Customer" domain="[]" context="{'group_by':'partner_id'}"/>
+                    <filter name="state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+   <!--Action: Action For RMA-->
+    <record id="action_rma_ret_mer_auth_rma" model="ir.actions.act_window">
+        <field name="name">RMA</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">rma.ret.mer.auth</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="exchange_rma_ret_mer_auth_tree"/>
+    </record>
+
+    <!-- Menus -->
+    <menuitem id="menu_main_rma"  name="RMA"/>
+    <menuitem id="menu_sub_rma" action="action_rma_ret_mer_auth_rma" parent="menu_main_rma" name="RMA" sequence="1"/>
+    <menuitem id="menu_rma_config" parent="menu_main_rma" name="Configuration" sequence="2"/>
+
+   <!--Form view: Rma Reason Form view-->
+   <record id="view_rma_reasons_form" model="ir.ui.view">
+        <field name="name">view.rma.reasons.form</field>
+        <field name="model">rma.reasons</field>
+        <field name="arch" type="xml">
+            <form string="Reason">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+   <!--Tree view: Rma Reason Tree view-->
+   <record id="view_rma_reasons_tree" model="ir.ui.view">
+        <field name="name">view.rma.reasons.tree</field>
+        <field name="model">rma.reasons</field>
+        <field name="arch" type="xml">
+            <tree string="Reasons">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+   <!--Search view: Rma Reason search view-->
+    <record id="view_rma_reasons_search" model="ir.ui.view">
+        <field name="name">view.rma.reasons.search</field>
+        <field name="model">rma.reasons</field>
+        <field name="arch" type="xml">
+            <search string=" Search reasons">
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <!--Action: Action for Reasons-->
+    <record id="action_rma_reasons" model="ir.actions.act_window">
+        <field name="name">Reasons</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">rma.reasons</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_rma_reasons_tree"/>
+    </record>
+
+    <menuitem action="action_rma_reasons" id="menu_rma_reasons" parent="menu_rma_config" name="Reasons" sequence="2"/>
+
+    <!--Form View: rma purchase line form view-->
+    <record id="view_rma_purchase_lines_form" model="ir.ui.view">
+        <field name="name">view.rma.purchase.lines.form</field>
+        <field name="model">rma.purchase.lines</field>
+        <field name="arch" type="xml">
+            <form string="RMA Purchase" create="false">
+                <sheet string="RMA Supplier">
+                    <group>
+                        <group>
+                            <field name="product_id"/>
+                            <field name="tax_id" widget="many2many_tags"/>
+                            <field name="type" required="1"/>
+                            <field name="exchange_product_id" attrs="{'invisible':[('type','=','return')],'required':[('type','=','exchange')]}" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="refund_qty" required="1"/>
+                            <field name="order_quantity" readonly="1" force_save="1"/>
+                            <field name="delivered_quantity" readonly="1" force_save="1"/>
+                        </group>
+                        <group>
+                            <field name="reason_id"/>
+                            <field name="source_location_id" />
+                            <field name="destination_location_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rma_purchase_lines_tree" model="ir.ui.view">
+        <field name="name">view.rma.purchase.lines.tree</field>
+        <field name="model">rma.purchase.lines</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="product_id" required="True"/>
+                <field name="type"/>
+                <field name="source_location_id" options="{'no_create': True, 'no_open': True}" />
+                <field name="destination_location_id" required="True" options="{'no_create': True, 'no_open': True}"/>
+                <field name="price_unit"/>
+                <field name="order_quantity"/>
+                <field name="delivered_quantity"/>
+                <field name="refund_qty" required="1" />
+                <field name="reason_id" required="1" invisible="1"/>
+                <field name="tax_id" widget="many2many_tags" domain="[('type_tax_use','=','purchase')]" options="{'no_create': True, 'no_open': True}" />
+                <field name="price_tax" invisible="1"/>
+                <field name="refund_price" required="1" force_save="1"/>
+            </tree>
+        </field>
+    </record>
+
+   <!--Form view: Form View For rma sale lines-->
+   <record id="view_rma_sale_lines_form" model="ir.ui.view">
+        <field name="name">view.rma.sale.lines.form</field>
+        <field name="model">rma.sale.lines</field>
+        <field name="arch" type="xml">
+            <form string="RMA Sales" create="false">
+                <sheet string="RMA Sales">
+                    <group>
+                        <group>
+                            <field name="product_id"/>
+                            <field name="tax_id" widget="many2many_tags"/>
+                            <field name="discount"/>
+                            <field name="type" required="1"/>
+                            <field name="exchange_product_id" attrs="{'invisible':[('type','=','return')],'required':[('type','=','exchange')]}" options="{'no_create': True, 'no_open': True}"/>
+                        </group>
+                        <group>
+                            <field name="order_quantity" readonly="1" force_save="1"/>
+                            <field name="delivered_quantity" readonly="1" force_save="1"/>
+                            <field name="refund_qty" required="1"/>
+                            <field name="source_location_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="destination_location_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="reason_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!--Form View: rma picking line form view-->
+    <record id="view_rma_picking_lines_form" model="ir.ui.view">
+        <field name="name">view.rma.picking.lines.form</field>
+        <field name="model">rma.picking.lines</field>
+        <field name="arch" type="xml">
+            <form string="RMA Picking" create="false">
+                <sheet string="RMA Picking">
+                    <group>
+                        <group>
+                            <field name="product_id"/>
+                            <field name="tax_id" widget="many2many_tags"/>
+                            <field name="discount"/>
+                            <field name="type" required="1"/>
+                            <field name="exchange_product_id" attrs="{'invisible':[('type','=','return')],'required':[('type','=','exchange')]}" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="refund_qty" required="1"/>
+                            <field name="order_quantity" readonly="1" force_save="1"/>
+                            <field name="delivered_quantity" readonly="1" force_save="1"/>
+                        </group>
+                        <group>
+                            <field name="reason_id"/>
+                            <field name="source_location_id" />
+                            <field name="destination_location_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+<record id="view_company_form_inherit_scs_rma" model="ir.ui.view">
+        <field name="name">view.company.form.inherit.scs.rma</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
+        <field name="arch" type="xml">
+        <xpath expr="//tree/field[@name='lot_id']" position="attributes">
+            <attribute name='invisible'>0</attribute>
+        </xpath>
+    </field>
+</record>
+
+</odoo>

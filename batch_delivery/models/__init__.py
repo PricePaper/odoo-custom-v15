@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+from . import res_company
 from . import truck_route
-from . import account
+from . import account_batch_payment
 from . import stock_picking_batch
 from . import stock_picking
 from . import account_payment

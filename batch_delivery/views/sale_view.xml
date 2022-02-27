@@ -8,16 +8,13 @@
             <field name="type">form</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-
                 <sheet position='before'>
-                    <div class="oe_form_box_info oe_text_center"
-                         attrs="{'invisible':[('batch_warning', '=', False)]}">
-                        <p attrs="{'invisible':[('batch_warning', '=', False)]}">
+                    <div class="oe_text_center">
+                        <p>
                             <b>
-                                <field name='batch_warning'/>
+                                <field name='batch_warning' attrs="{'invisible':[('batch_warning', '=', False)]}" class="alert alert-success mb-0" role="alert"/>
                             </b>
                         </p>
-
                     </div>
 
                 </sheet>

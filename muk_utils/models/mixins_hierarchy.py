@@ -47,7 +47,7 @@ class Hierarchy(models.AbstractModel):
     parent_path_names = fields.Char(
         _module=lambda self: self._module,
         compute="_compute_parent_paths",
-        compute_sudo=lambda self: self._parent_path_sudo,
+        compute_sudo=False,
         store=lambda self: self._parent_path_store,
         search="_search_parent_path_names",
         string="Path Names",
@@ -57,7 +57,7 @@ class Hierarchy(models.AbstractModel):
     parent_path_json = fields.Text(
         _module=lambda self: self._module,
         compute="_compute_parent_paths",
-        compute_sudo=lambda self: self._parent_path_sudo,
+        compute_sudo=False,
         store=lambda self: self._parent_path_store,
         string="Path Json",
         readonly=True,

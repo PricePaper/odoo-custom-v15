@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_rma_purchase_lines,access_rma_purchase_lines,model_rma_purchase_lines,base.group_user,1,1,1,1
+access_rma_ret_mer_auth,access_rma_ret_mer_auth,model_rma_ret_mer_auth,base.group_user,1,1,1,1
+access_rma_sale_lines,access_rma_sale_lines,model_rma_sale_lines,base.group_user,1,1,1,1
+access_rma_reasons,access_rma_reasons,model_rma_reasons,base.group_user,1,1,1,1
+access_ir_rule,access_rma_ir_rule,base.model_ir_rule,base.group_user,1,1,1,0
+access_ir_model_model,access_rma_ir_model_model,base.model_ir_module_module,base.group_user,1,1,1,0
+access_rma_picking_lines,access_rma_picking_lines,model_rma_picking_lines,base.group_user,1,1,1,1

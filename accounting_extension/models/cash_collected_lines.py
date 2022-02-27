@@ -5,7 +5,6 @@ from odoo.exceptions import UserError
 class CashCollectedLines(models.Model):
     _inherit = 'cash.collected.lines'
 
-    discount = fields.Float(string='Discount(%)')
     discount_amount = fields.Float(string='Discount', digits='Product Price')
 
     @api.model

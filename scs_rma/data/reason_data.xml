@@ -1,0 +1,20 @@
+<odoo noupdate="1">
+
+    <!-- RMA Reasons -->
+    <record id="rma_reason_change_color_size" model="rma.reasons">
+        <field name="name">change size or colour</field>
+    </record>
+    
+    <record id="rma_reason_defective_products" model="rma.reasons">
+        <field name="name">defective products</field>
+    </record>
+    
+    <record id="rma_reason_wrongly_delivered_order" model="rma.reasons">
+        <field name="name">wrongly delivered order</field>
+    </record>
+    
+    <record id="rma_reason_stock_ageing" model="rma.reasons">
+        <field name="name">stock ageing</field>
+    </record>
+
+</odoo>

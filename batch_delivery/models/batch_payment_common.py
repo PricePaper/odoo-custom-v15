@@ -10,7 +10,7 @@ class BatchPaymentCommon(models.Model):
     _name = 'batch.payment.common'
     _description = "Batch Payment Common"
 
-    name = fields.Char(string='Batch Picking Name', default='New', copy=False, required=True, help='Name of the batch payment')
+    name = fields.Char(string='Batch Name', default='New', copy=False, required=True, help='Name of the batch payment')
     cash_collected_lines = fields.One2many('cash.collected.lines', 'common_batch_id', string='Cash Collected Breakup')
     payment_ids = fields.One2many('account.payment', 'common_batch_id', string='Payments')
     actual_returned = fields.Float(string='Total Amount', required=1, digits='Product Price')
@@ -38,7 +38,6 @@ class BatchPaymentCommon(models.Model):
             for cash_line in batch.cash_collected_lines:
                 real_collected += float_round(cash_line.amount, precision_digits=2)
             batch.pending_amount = float_round(batch.actual_returned - real_collected, precision_digits=2)
-
 
     def register_payments(self):
         self.ensure_one()

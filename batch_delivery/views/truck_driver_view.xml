@@ -36,15 +36,15 @@
 <!--                                <field name="partner_ledger_label"/>-->
 <!--                            </button>-->
 
-<!--                             <button type="object" class="oe_stat_button" name="open_action_followup"
-                                    groups="account.group_account_user" icon="fa-list"
-                                    attrs="{'invisible': [('credit', '=', 0)]}">
-                                <div class="o_field_widget o_stat_info">
-                                    <span class="o_stat_value"><field name="credit" widget="monetary"
-                                                                      options="{'currency_field': 'currency_id'}"/></span>
-                                    <span class="o_stat_text">Due</span>
-                                </div>
-                            </button> -->
+<!--                            <button type="object" class="oe_stat_button" name="open_action_followup"-->
+<!--                                    groups="account.group_account_user" icon="fa-list"-->
+<!--                                    attrs="{'invisible': [('credit', '=', 0)]}">-->
+<!--                                <div class="o_field_widget o_stat_info">-->
+<!--                                    <span class="o_stat_value"><field name="credit" widget="monetary"-->
+<!--                                                                      options="{'currency_field': 'currency_id'}"/></span>-->
+<!--                                    <span class="o_stat_text">Due</span>-->
+<!--                                </div>-->
+<!--                            </button>-->
 
 
                         </div>

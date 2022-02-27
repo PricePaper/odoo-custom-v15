@@ -1,0 +1,22 @@
+<odoo>
+
+    <!-- Inherited Stock Picking Form -->
+    
+    <record id="view_stock_order_form_inherit" model="ir.ui.view">
+        <field name="name">view.stock.order.form.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='picking_type_id']" position="after">
+                <field name="rma_done" readonly="1" force_save="1"/>
+                <field name="rma_id" invisible="1"/>
+            </xpath>
+            <xpath expr="//button[@name='%(stock.act_stock_return_picking)d']" position="attributes">
+                <attribute name="attrs">
+                    {'invisible': ['|', ('state', '!=', 'done'), ('rma_id', '!=', False)]}
+                </attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -9,7 +9,7 @@
             <field name="arch" type="xml">
 
                 <field name="return_location" position="after">
-                    <field name="is_transit_location" attrs="{'invisible':[('usage', '!=', 'transit')]}"/>
+                    <field name="is_transit_location"/>
                 </field>
 
             </field>

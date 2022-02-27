@@ -36,7 +36,7 @@ class ResPartner(models.Model):
         Method to view the location in google map.
         """
         if not self.location_url:
-            raise UserError(_("Map not available, check latitude and longitude"))
+            raise UserError("Map not available, check latitude and longitude")
         return {
             'name': 'Partner Location',
             'res_model': 'ir.actions.act_url',

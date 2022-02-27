@@ -11,41 +11,16 @@ class StockMove(models.Model):
     _name = "stock.move"
     _inherit = ["stock.move", "mail.thread", "mail.activity.mixin"]
 
-    # picking_status = fields.Char(string='Picking Status', compute='_compute_picking_state')
     delivery_notes = fields.Text(string='Delivery Notes', related='partner_id.delivery_notes')
-    # delivery_move_id = fields.Many2one('stock.move', string='Delivery for Move')
-    # delivery_picking_id = fields.Many2one('stock.picking', string='Delivery for Picking', readonly=True,
-    #                                       related='delivery_move_id.picking_id')
     is_transit = fields.Boolean(string='Transit')
     qty_update = fields.Float(string="Reset Logic")
-    # todo availability field is replaced this logic
-    # qty_available = fields.Float(string="Available Quantity", compute='_compute_qty_available')
-    # partner_id = fields.Many2one('res.partner', compute='_compute_partner_id', string="Partner", readonly=True)
     reason_id = fields.Many2one('stock.picking.return.reason', string='Reason  For Return (Stock)')
-    # todo similar to availability
     qty_to_transfer = fields.Float(string="Qty in Location", compute='_compute_qty_to_transfer', store=False)
     unit_price = fields.Float(string="Unit Price", copy=False, compute='_compute_total_price')
     total = fields.Float(string="Subtotal", copy=False, compute='_compute_total_price', store=False)
-    product_uom_qty = fields.Float(
-        'Demand',
-        digits='Product Unit of Measure',
-        default=1.0, required=True, states={'done': [('readonly', True)]},
-        help="This is the quantity of products from an inventory "
-             "point of view. For moves in the state 'done', this is the "
-             "quantity of products that were actually moved. For other "
-             "moves, this is the quantity of product that is planned to "
-             "be moved. Lowering this quantity does not generate a "
-             "backorder. Changing this quantity on assigned moves affects "
-             "the product reservation, and should be done with care.", tracking=True)
-    reserved_availability = fields.Float(
-        'Quantity Reserved', compute='_compute_reserved_availability',
-        digits='Product Unit of Measure',
-        readonly=True, help='Quantity that has already been reserved for this move', tracking=True)
-    quantity_done = fields.Float('Quantity Done', compute='_quantity_done_compute', digits='Product Unit of Measure',
-                                 inverse='_quantity_done_set', tracking=True)
-
-    invoice_line_ids = fields.Many2many(comodel_name='account.move.line', compute="_get_aml_ids",
-                                        string="Invoice Lines")
+    product_uom_qty = fields.Float(tracking=True)
+    quantity_done = fields.Float(tracking=True)
+    invoice_line_ids = fields.Many2many(comodel_name='account.move.line', compute="_get_aml_ids", string="Invoice Lines")
 
     def _get_aml_ids(self):
         for line in self:
@@ -54,33 +29,18 @@ class StockMove(models.Model):
                 line.invoice_line_ids = [[6, 0, line.sale_line_id.mapped('invoice_lines').ids]]
         return {}
 
-    # todo usage not found! test the entries of old and new and then make changes
-    # def _run_valuation(self, quantity=None):
-    #     pass
-
-    # def receipt_move_price_fix_search(self):
-    # def receipt_move_price_fix(self):
-    # todo not used omitting
     def _account_entry_move(self, qty, description, svl_id, cost):
-        # todo below method replaced with this one
-        # def _create_account_move_line(self, credit_account_id, debit_account_id, journal_id):
-        # fixed for version 15:commented and replaced the below method super()._create_account_move_line(qty, description, svl_id, cost)
         self.ensure_one()
         if self.picking_id.transit_date:
-            return super(StockMove,
-                         self.with_context(force_period_date=self.picking_id.transit_date))._account_entry_move(qty,
-                                                                                                                description,
-                                                                                                                svl_id,
-                                                                                                                cost)
-        # return super()._create_account_move_line(qty, description, svl_id, cost)
+            return super(StockMove, self.with_context(force_period_date=self.picking_id.transit_date))._account_entry_move(qty, description, svl_id,
+                                                                                                                           cost)
         return super()._account_entry_move(qty, description, svl_id, cost)
 
     @api.onchange('product_id')
     def onchange_product_id_internal_transfer(self):
         if self.picking_id and self.picking_id.is_internal_transfer:
             if self.product_id:
-                product_loc_id = self.product_id.property_stock_location.id or self.product_id.categ_id.property_stock_location.id or ''
-                self.location_dest_id = product_loc_id
+                self.location_dest_id = self.product_id.property_stock_location.id or self.product_id.categ_id.property_stock_location.id or ''
                 self.location_id = self.picking_id.location_id and self.picking_id.location_id or False
             else:
                 self.location_dest_id = False
@@ -96,40 +56,21 @@ class StockMove(models.Model):
             if move.state != 'cancel':
                 move.total = move.unit_price * move.quantity_done
 
-    @api.depends('sale_line_id.order_id.partner_shipping_id')
-    def _compute_partner_id(self):
-        for move in self:
-            move.partner_id = move.sale_line_id.order_id.partner_shipping_id
-
     @api.depends('product_id', 'picking_id.location_id')
     def _compute_qty_to_transfer(self):
         quant = self.env['stock.quant']
         for move in self:
+            move.qty_to_transfer = 0
             if move.product_id and move.picking_id and move.picking_id.location_id:
-                quant = quant.search(
-                    [('product_id', '=', move.product_id.id), ('location_id', '=', move.picking_id.location_id.id)],
-                    limit=1)
+                quant = quant.search([('product_id', '=', move.product_id.id), ('location_id', '=', move.picking_id.location_id.id)], limit=1)
                 if quant:
                     qty = quant.quantity - quant.reserved_quantity
-                    move.qty_to_transfer = move.product_id.uom_id._compute_quantity(qty, move.product_uom,
-                                                                                    rounding_method='HALF-UP')
-                else:
-                    move.qty_to_transfer = 0
-            else:
-                move.qty_to_transfer = 0
-
-    def _compute_qty_available(self):
-        quant = self.env['stock.quant']
-        for move in self:
-            qty = quant._get_available_quantity(product_id=move.product_id, location_id=move.location_id)
-            move.qty_available = move.product_id.uom_id._compute_quantity(qty, move.product_uom,
-                                                                          rounding_method='HALF-UP')
-
-    def _compute_picking_state(self):
-        for move in self:
-            move.picking_status = move.picking_id and move.picking_id.state or ''
+                    move.qty_to_transfer = move.product_id.uom_id._compute_quantity(qty, move.product_uom, rounding_method='HALF-UP')
 
     def action_cancel_move(self):
+        """
+        wrapper class for _action_cancel private method
+        """
         self._action_cancel()
         return True
 
@@ -145,33 +86,29 @@ class StockMove(models.Model):
             reserved_qty = move.reserved_availability
             move._do_unreserve()
             available_qty = move.availability
-            print(available_qty, qty)
             if available_qty < qty:
-                raise UserError(_(
-                    'It is not possible to reserve more products of %s than you have in stock.') % move.product_id.display_name)
+                raise UserError('It is not possible to reserve more products of %s than you have in stock.' % move.product_id.display_name)
             elif move.reserved_availability <= 0 and qty < 0:
-                raise UserError(_(
-                    'It is not possible to unreserve more products of %s than you have in stock.') % move.product_id.display_name)
+                raise UserError('It is not possible to unreserve more products of %s than you have in stock.' % move.product_id.display_name)
             elif move.availability < qty:
-                raise UserError(_('Choose a value less than available quantity.'))
+                raise UserError('Choose a value less than available quantity.')
             elif qty < 0 and move.reserved_availability < abs(qty):
-                raise UserError(_('Not enough reserved quantity..!'))
+                raise UserError('Not enough reserved quantity..!')
             elif move.product_uom_qty < qty:
-                raise UserError(_("Can't reserve more product than requested..!"))
+                raise UserError("Can't reserve more product than requested..!")
             else:
                 if qty != 0:
                     move._action_assign_reset_qty(qty)
                 msg = """<ul><li>
-                    %s Quantity Reserved: %s <span aria-label='Changed' class='fa fa-long-arrow-right' role='img' title='Changed'/> %s </li></ul>""" % (
-                    move.product_id.display_name, reserved_qty, qty,)
+                    %s Quantity Reserved: %s <span aria-label='Changed' class='fa fa-long-arrow-right' role='img' title='Changed'/> %s 
+                    </li></ul>""" % (move.product_id.display_name, reserved_qty, qty,)
                 move.message_post(
                     body=msg,
                     subtype_id=self.env.ref('mail.mt_note').id)
                 move.picking_id.message_post(
                     body=msg,
                     subtype_id=self.env.ref('mail.mt_note').id)
-                if move.is_transit:
-                    move.quantity_done = move.reserved_availability
+        return self
 
     def _action_assign_reset_qty(self, qty=0):
         """ Reserve stock moves by creating their stock move lines. A stock move is
@@ -200,7 +137,7 @@ class StockMove(models.Model):
             # could be moves to consider in what our siblings already took.
             moves_out_siblings = move.move_orig_ids.mapped('move_dest_ids') - move
             moves_out_siblings_to_consider = moves_out_siblings & (
-                        StockMove.browse(assigned_moves_ids) + StockMove.browse(partially_available_moves_ids))
+                    StockMove.browse(assigned_moves_ids) + StockMove.browse(partially_available_moves_ids))
             reserved_moves_out_siblings = moves_out_siblings.filtered(
                 lambda m: m.state in ['partially_available', 'assigned'])
             move_lines_out_reserved = (reserved_moves_out_siblings | moves_out_siblings_to_consider).mapped(
@@ -334,8 +271,6 @@ class StockMove(models.Model):
                             assigned_moves_ids.add(move.id)
                             break
                         partially_available_moves_ids.add(move.id)
-            # if move.product_id.tracking == 'serial':
-            #     move.next_serial_count = move.product_uom_qty
 
         self.env['stock.move.line'].create(move_line_vals_list)
         StockMove.browse(partially_available_moves_ids).write({'state': 'partially_available'})
@@ -352,7 +287,6 @@ class StockMove(models.Model):
             'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'stock.reset.quantity',
-            # 'res_id': self.id,
             'view_id': self.env.ref('batch_delivery.view_stock_move_rest_window').id,
             'type': 'ir.actions.act_window',
             'target': 'new',
@@ -372,20 +306,17 @@ class StockMove(models.Model):
 
     def update_invoice_line(self):
         self.ensure_one()
-        invoice_lines = self.invoice_line_ids.filtered(
-            lambda rec: rec.move_id.state == 'draft' and rec.product_id == self.product_id)
-        invoice = invoice_lines.mapped('move_id') or self.sale_line_id.order_id.invoice_ids.filtered(
-            lambda rec: rec.state == 'draft')
+        invoice_lines = self.invoice_line_ids.filtered(lambda rec: rec.move_id.state == 'draft' and rec.product_id == self.product_id)
+        invoice = invoice_lines.mapped('move_id') or self.sale_line_id.order_id.invoice_ids.filtered(lambda rec: rec.state == 'draft')
         if len(invoice_lines) > 1:
             invoice_lines = invoice_lines[0]
         if invoice_lines:
-            print(invoice_lines)
-            invoice_lines.move_id.sudo().with_context(default_move_type='out_invoice').write(
-                {'invoice_line_ids': [[1, invoice_lines.id, {'quantity': self.quantity_done}]]})
+            invoice_lines.move_id.sudo().with_context(default_move_type='out_invoice').write({
+                'invoice_line_ids': [[1, invoice_lines.id, {'quantity': self.quantity_done}]]
+            })
         elif invoice:
             vals = self.sale_line_id._prepare_invoice_line()
-            invoice_lines = invoice.sudo().with_context(default_move_type='out_invoice').write(
-                {'invoice_line_ids': [[0, 0, vals]]})
+            invoice_lines = invoice.sudo().with_context(default_move_type='out_invoice').write({'invoice_line_ids': [[0, 0, vals]]})
         return invoice_lines
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

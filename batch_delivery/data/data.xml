@@ -34,11 +34,14 @@
                         <strong>Short Ship!</strong>
                         <br/>
                         <p style="margin: 0px;">
-                            <span>Customer:</span><t t-out="object.picking_id.partner_id.name"></t>
+                            <span>Customer:</span>
+                            <t t-out="object.picking_id.partner_id.name"/>
                             <br/>
-                            <span style="margin-top: 8px;">SO: </span><t t-out="object.sale_id.name"></t>
+                            <span style="margin-top: 8px;">SO:</span>
+                            <t t-out="object.sale_id.name"/>
                             <br/>
-                            <span style="margin-top: 8px;">Date:  </span><t t-out="ctx['return_date']"></t>
+                            <span style="margin-top: 8px;">Date:</span>
+                            <t t-out="ctx['return_date']"/>
                             <br/>
                         </p>
                         <br/>
@@ -61,7 +64,7 @@
                     </p>
                 </div>
             </field>
-            <field name="auto_delete" eval="False"/>
+            <field name="auto_delete" eval="True"/>
         </record>
 
         <record id="email_price_paper_pending_product_mail" model="mail.template">
@@ -126,7 +129,6 @@
                                                 </tr>
                                                 <t t-if="ctx.get('summery_list',[])">
                                                     <t t-foreach="ctx.get('summery_list',[])" t-as="line">
-                                                        <!--                    % for line in ctx['summery_list']:-->
                                                         <tr valign="top" style="font-size: 11px;">
                                                             <td t-out="line.picking_id.partner_id.name"/>
                                                             <td t-out="line.picking_id.sale_id.display_name"/>

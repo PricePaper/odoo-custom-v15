@@ -29,7 +29,7 @@ This module sets up the batch delivery process for price paper.
         'report/report_batch_driver.xml',
         'report/reports.xml',
         'views/truck_driver_view.xml',
-       'views/account_view.xml',
+        'views/account_view.xml',
         'wizard/assign_route_wizard_view.xml',
         'wizard/driver_invoice_wizard_view.xml',
         'wizard/picking_full_return_wizard_view.xml',
@@ -37,6 +37,7 @@ This module sets up the batch delivery process for price paper.
         'wizard/reset_quantity_view.xml',
         'wizard/so_cancel_reason.xml',
         'wizard/pending_product_view.xml',
+        'views/res_company_view.xml',
         'views/truck_route_view.xml',
         'views/batch_delivery_view.xml',
         'views/product_view.xml',
@@ -47,9 +48,8 @@ This module sets up the batch delivery process for price paper.
         'views/delivery_carrier_view.xml',
         'views/partner_view.xml',
         'views/picking_product_pending.xml',
-        'views/stock_quant_views.xml',
         'views/stock_location_view.xml',
-       'views/stock_picking_view.xml',
+        'views/stock_picking_view.xml',
         'views/website_asset.xml',
     ],
     'depends': [
@@ -61,13 +61,14 @@ This module sets up the batch delivery process for price paper.
         'account_reports',
         'stock_product_location',
         'account_batch_payment',
-         'purchase_extension'
+        'purchase_extension'
     ],
     'assets': {
         'web.assets_backend': [
-                # 'batch_delivery/static/src/js/kanban_reset_button.js',
-                'batch_delivery/static/src/css/card_block_border.css',
-            ],
+
+            'batch_delivery/static/src/js/kanban_reset_button.js',
+            'batch_delivery/static/src/css/card_block_border.css',
+        ],
         'web.assets_qweb': [
         ],
     },

@@ -1,37 +1,50 @@
 odoo.define('batch_delivery.kanban_reset_button', function (require) {
 
+
     var KanbanController = require('web.KanbanController');
     var KanbanView = require('web.KanbanView');
     var viewRegistry = require('web.view_registry');
     var framework = require('web.framework');
+    const {_t} = require('web.core');
 
 
     var KanbanButtonController = KanbanController.extend({
 
-        renderButtons: function ($node) {
-            this._super.apply(this, arguments);
-            this.$buttons = $('<button/>', {
-                class: ['btn btn-primary o_kanban_discard']
-                }).text(_('RESET')).on('click', this._onKanbanReset.bind(this)).appendTo($node);
+       renderButtons: function ($node) {
+       this._super.apply(this, arguments);
+        this.$buttons = $('<button/>', {
+            class: ['btn btn-primary o_kanban_discard']
+        }).text(_t('RESET'))
+        this.$buttons.on('click', this._onKanbanReset.bind(this));
+        ;
+
+        this.controlPanelProps.cp_content = {
+            $buttons: this.$buttons,
+        };
+
+         },
+
+        _reloadPage: function () {
+            window.location.reload();
         },
 
         _onKanbanReset: function () {
+
             framework.blockUI();
             var self = this;
-            this.do_notify(_t("Resetting"), 'Please Wait..!');
+            self.displayNotification({ title: _t('Resetting'), message: _t('Please Wait..!'), sticky: true, type: 'info' });
             this._rpc({
                 model: 'stock.picking',
                 method: 'reset_picking_with_route'
-            }).then(function () {
-                self.reload();
-            }).always(framework.unblockUI.bind(framework));
+            });
+            this._reloadPage();
         },
 
         _onDeleteColumn: function (event) {
             var self = this;
             var column = event.target;
             if (!column.isEmpty()) {
-                 self.do_warn(_t("Alert!!"), 'Please remove pickings from route before delete.');
+                 self.displayNotification({ title: _t('Alert!!'), message: _t('Please remove pickings from route before delete.'), sticky: true, type: 'danger' });
                  return;
             }
             this._rpc({
@@ -39,9 +52,8 @@ odoo.define('batch_delivery.kanban_reset_button', function (require) {
                 method: 'write',
                 args: [[column.id], {set_active: false}],
                 context: {}
-            }).then(function(r){
-                self.reload();
             });
+            this._reloadPage();
     },
 
     });

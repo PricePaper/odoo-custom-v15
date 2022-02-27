@@ -32,7 +32,7 @@ class StockBackorderConfirmation(models.TransientModel):
                     if move.quantity_done <= 0 and move.procure_method == 'make_to_order':
                         make2order_moves |= move
                         continue
-                    move.sale_line_id.pre_delivered_qty += move.quantity_done
+                    # move.sale_line_id.pre_delivered_qty += move.quantity_done
         if make2order_moves:
             self = self.with_context(skip_backorder=False)
             self.backorder_confirmation_line_ids.filtered(

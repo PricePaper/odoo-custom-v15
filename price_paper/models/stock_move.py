@@ -26,6 +26,7 @@ class StockMove(models.Model):
         for domain in res:
             if domain[0] == 'location_id':
                 res.remove(domain)
+                res.remove('&')
         return res
 
 

@@ -265,8 +265,30 @@ class SaleOrder(models.Model):
             raise UserError(msg)
         return True
 
+    def activate_views(self):
+        except_view = []
+        for view in self.env['ir.ui.view'].search([('active', '=', False)]):
+            name = ['account_batch_payment_extension', 'odoov12_theme2', 'account_financial_data', 'payment_gateway_ui', 'accounting_extension',
+                    'price_maintanance', 'account_partial_payment', 'price_paper', 'purchase_extension', 'audian_theme', 'purge_old_open_credits',
+                    'authorize_net_integration', 'quick_create_disable', 'batch_delivery', 'rma_extension', 'crm_enhancements', 'sale_line_reports',
+                    'customer_contract', 'saleperson_payment_collection', 'customer_statement_report', 'sales_analysis_report',
+                    'deviated_cost_sale_report', 'sales_commission', 'global_price_increase', 'special_item_requests', 'instant_invoice',
+                    'stock_orderpoint_enhancements', 'inventory_adjustment_extension', 'stock_product_location', 'inventory_warning',
+                    'web_listview_sticky_header', 'kpi_dashboard', 'website_scraping', 'odoo_fbprophet', 'web_widget_color', 'odoov12_theme']
+            if view.xml_id.split('.')[0] in name:
+                try:
+                    view.write({'active': True})
+                except Exception as e:
+                    except_view.append(view.xml_id)
+        import logging
+        logging.error('************************************')
+        logging.error(except_view)
+        return True
+
     def action_cancel(self):
 
+
+        return False
         # todo not finished some confusions in PO relation
         self.ensure_one()
         self.write({

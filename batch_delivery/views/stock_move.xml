@@ -7,8 +7,8 @@
         <field name="model">stock.move</field>
         <field name="arch" type="xml">
             <form>
-                 <div class="alert alert-info" role="alert" style="margin-bottom:0px;">
-                    Are you sure you want to cancel this move ?
+                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;">
+                    Are you sure you want to cancel this move ? You cannot roll back this action
                 </div>
                 <group>
                     <group>
@@ -19,33 +19,13 @@
                     </group>
                 </group>
                 <footer class="oe_edit_only">
-                        <button string="Cancel" type="object" name="action_cancel_move" class="oe_highlight"/>
-                        <button string="Discard" special="cancel"/>
+                        <button string="Proceed" type="object" name="action_cancel_move" class="btn-danger"/>
+                        <button string="Discard" special="cancel" class="btn-success"/>
                 </footer>
             </form>
          </field>
      </record>
 
-<!--        <record id="view_stock_move_rest_window" model="ir.ui.view">-->
-<!--        <field name="name">stock.move.reset.logic.window</field>-->
-<!--        <field name="model">stock.move</field>-->
-<!--        <field name="arch" type="xml">-->
-<!--            <form>-->
-<!--                <p class="text-muted" style="width:350px;">-->
-<!--                      &#10148; Please enter the required quantities for reset.-->
-<!--                </p>-->
-<!--                <group>-->
-<!--                    <group>-->
-<!--                        <field name="qty_update"/>-->
-<!--                    </group>-->
-<!--                </group>-->
-<!--                <footer class="oe_edit_only">-->
-<!--                        <button string="Reset" type="object" name="action_reset" class="oe_highlight"/>-->
-<!--                        <button string="Discard" special="cancel"/>-->
-<!--                </footer>-->
-<!--            </form>-->
-<!--         </field>-->
-<!--     </record>-->
 
         <record id="view_stock_move_nosuggest_reson_for_return_operations" model="ir.ui.view">
             <field name="name">stock.move.operations.reason.for.return.form</field>

@@ -8,8 +8,7 @@ class Product(models.Model):
 
     transit_qty = fields.Float("Transit Qty", compute='_compute_quantities', store=True)
 
-    @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done',
-                 'stock_move_ids.is_transit')
+    @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done', 'stock_move_ids.is_transit')
     def _compute_quantities(self):
         res = super(Product, self)._compute_quantities()
         for product in self:
@@ -33,11 +32,10 @@ class Product(models.Model):
         action['context'] = {'search_default_groupby_location_id': 1}
         return action
 
+    # TODO MAKE ACHNAGES ACCORDING TO NEW TRANSIT LOGIC
     def get_quantity_in_sale(self):
         self.ensure_one()
-        moves = self.stock_move_ids.filtered(
-            lambda move: move.sale_line_id and move.state not in ['cancel',
-                                                                  'done'] and not move.is_transit and move.picking_code == 'outgoing')
+        moves = self.stock_move_ids.filtered(lambda move: move.sale_line_id and move.state not in ['cancel', 'done'] and not move.is_transit and move.picking_code == 'outgoing')
 
         moves |= self.stock_move_ids.filtered(
             lambda move: move.sale_line_id and move.state not in ['cancel',

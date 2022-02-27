@@ -2,30 +2,115 @@
 <odoo>
     <data>
 
-        <record id="account_batch_payment.action_batch_payment_in" model="ir.actions.act_window">
-            <field name="context">{'search_default_open': 1, 'default_batch_type': 'inbound', 'prevent_post': True}</field>
+        <!--        <record id="account_batch_payment.action_batch_payment_in" model="ir.actions.act_window">-->
+        <!--            <field name="context">{'search_default_open': 1, 'default_batch_type': 'inbound', 'prevent_post': True}</field>-->
+        <!--        </record>-->
+
+        <!--        <record id="account_batch_payment.action_batch_payment_out" model="ir.actions.act_window">-->
+        <!--            <field name="context">{'search_default_open': 1, 'default_batch_type': 'outbound', 'prevent_post': True}</field>-->
+        <!--        </record>-->
+
+        <record id="batch_payment_add_payment_wizard" model="ir.ui.view">
+            <field name="name">account.payment.form</field>
+            <field name="model">account.payment</field>
+            <field name="arch" type="xml">
+                <form string="Register Payment">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                    </header>
+                    <sheet>
+                        <!-- Invisible fields -->
+                        <field name="id" invisible="1"/>
+                        <field name="is_move_sent" invisible="1"/>
+                        <field name="is_reconciled" invisible="1"/>
+                        <field name="is_matched" invisible="1"/>
+                        <field name="payment_method_code" invisible="1"/>
+                        <field name="show_partner_bank_account" invisible="1"/>
+                        <field name="require_partner_bank_account" invisible="1"/>
+                        <field name="hide_payment_method_line" invisible="1"/>
+                        <field name="available_payment_method_line_ids" invisible="1"/>
+                        <field name="available_partner_bank_ids" invisible="1"/>
+                        <field name="suitable_journal_ids" invisible="1"/>
+                        <field name="country_code" invisible="1"/>
+                        <field name="partner_type" invisible="1"/>
+                        <field name="posted_before" invisible="1"/>
+                        <field name="reconciled_invoices_type" invisible="1"/>
+                        <field name="company_id" invisible="1"/>
+                        <field name="paired_internal_transfer_payment_id" invisible="1"/>
+
+                        <div class="oe_title">
+                            <h1 attrs="{'invisible': [('state', '!=', 'draft')]}">
+                                <span>Draft</span>
+                            </h1>
+                            <h1 attrs="{'invisible': [('state', '=', 'draft')]}">
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group name="group1">
+                                <field name="payment_type" widget="radio" options="{'horizontal': True}"
+                                       readonly="1" forcesave="1"/>
+                                <field name="partner_id" context="{'default_is_company': True}" string="Customer" attrs="{'readonly':[('state', '!=', 'draft')],
+                                        'invisible':[('partner_type','!=','customer')], 'required': [('partner_type','!=','supplier')]}"
+                                       domain="['|', ('type', '=', 'invoice'),  ('parent_id', '=', False), ('type', '=', 'contact')]"/>
+                                <field name="partner_id" context="{'default_is_company': True}" string="Vendor" attrs="{'readonly':[('state', '!=', 'draft')],
+                                               'invisible':[('partner_type','!=','supplier')], 'required': [('partner_type','=','supplier')]}"
+                                       domain="['|', ('type', '=', 'invoice'),  ('parent_id', '=', False), ('type', '=', 'contact')]"/>
+                                <label for="amount"/>
+                                <div name="amount_div" class="o_row">
+                                    <field name="amount"
+                                           attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                    <field name="currency_id"
+                                           options="{'no_create': True, 'no_open': True}"
+                                           required="1"
+                                           attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                           groups="base.group_multi_currency"/>
+                                </div>
+                                <field name="date"
+                                       attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="ref" string="Memo"/>
+                            </group>
+                            <group name="group2">
+                                <field name="journal_id" domain="[('type', 'in', ('bank', 'cash'))]"/>
+                                <field name="payment_method_line_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="batch_payment_id" readonly="1" forcesave="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="action_post" string="Confirm" type="object" data-hotkey="v" class="btn-success"/>
+                        <button string="Discard" special="cancel" class="btn-danger"/>
+                    </footer>
+                </form>
+            </field>
         </record>
 
-        <record id="account_batch_payment.action_batch_payment_out" model="ir.actions.act_window">
-            <field name="context">{'search_default_open': 1, 'default_batch_type': 'outbound', 'prevent_post': True}</field>
-        </record>
 
         <record id="view_batch_payment_form_inherit_ppt" model="ir.ui.view">
             <field name="name">account.batch.payment.form.inherit.ppt</field>
             <field name="model">account.batch.payment</field>
             <field name="inherit_id" ref="account_batch_payment.view_batch_payment_form"/>
             <field name="arch" type="xml">
-
-                 <field name="batch_type" position="after">
+                <xpath expr="//field[@name='payment_ids']/tree/field[@name='state']" position="before">
+                    <control>
+                        <create name="add_product_control" string="Add an existing payment"/>
+                    </control>
+                </xpath>
+                <field name="batch_type" position="after">
                     <field name="is_posted" invisible="1"/>
                 </field>
-                <!--TODO no form view in odoo 15 view_batch_payment_form-->
-<!--                <xpath expr="//field[@name='payment_ids']/tree//field[@name='partner_id']" position="attributes">-->
-<!--                    <attribute name="domain">['|', ('type', '=', 'invoice'),  ('parent_id', '=', False), ('type', '=', 'contact')]</attribute>-->
-<!--                </xpath>-->
-                <xpath expr="//button[@name='print_batch_payment']" position="before">
-                    <button name="post_payments" class="oe_highlight" string="POST" type="object" attrs="{'invisible': [('is_posted', '=', True)]}"/>
-                </xpath>
+                <field name="payment_ids" position="after">
+                    <button name="add_payment" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}" class="btn-success"
+                            string="Create Payment"/>
+                </field>
+                <field name="payment_method_id" position="after">
+                    <field name="available_payment_method_line_ids" invisible="1"/>
+                    <field name="payment_method_line_id"/>
+                </field>
+                <field name="payment_method_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
 
                 <xpath expr="//field[@name='payment_ids']/tree" position="attributes">
                     <attribute name="delete">0</attribute>
@@ -34,18 +119,19 @@
                 <xpath expr="//field[@name='state']" position="attributes">
                     <attribute name="statusbar_visible">draft,sent,reconciled</attribute>
                 </xpath>
-
                 <xpath expr="//field[@name='payment_ids']/tree/field[@name='currency_id']" position="after">
-                  <button class="fa fa-times"
-                          name="action_remove_from_batch"
-                          type="object" aria-label="Remove row"
-                          style="float:right;"
-                          attrs="{'invisible': ['|', ('parent.state', 'in', ('reconciled')), ('parent.state', '=', 'draft'), ('state', '!=', 'cancelled')]}"
-                          groups="account_batch_payment_extension.group_remove_payment_from_batch"/>
+                    <button class="fa fa-times"
+                            name="action_remove_from_batch"
+                            type="object" aria-label="Remove row"
+                            help="remove from batch"
+                            style="float:right;"
+                            attrs="{'invisible': ['|', ('parent.state', 'in', ('draft','reconciled')), ('state', '!=', 'cancelled')]}"
+                            groups="account_batch_payment_extension.group_remove_payment_from_batch"/>
                     <button class="fa fa-trash-o"
                             name="action_delete_from_db"
                             type="object" aria-label="Remove row"
                             style="float:right;"
+                            help="delete payment"
                             attrs="{'invisible': [('parent.state', '!=', 'draft')]}"/>
                 </xpath>
             </field>

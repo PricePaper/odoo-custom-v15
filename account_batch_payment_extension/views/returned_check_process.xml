@@ -6,10 +6,10 @@
             <field name="model">process.returned.check</field>
             <field name="arch" type="xml">
                 <tree string="Process Returned Check" delete="0">
-                  <field name="bank_stmt_line_id" />
-                  <field name="payment_ids" widget="many2many_tags"/>
-                  <field name="partner_ids" widget="many2many_tags"/>
-                  <field name="state" />
+                    <field name="bank_stmt_line_id"/>
+                    <field name="payment_ids" widget="many2many_tags"/>
+                    <field name="partner_ids" widget="many2many_tags"/>
+                    <field name="state" widget="badge"/>
                 </tree>
             </field>
         </record>
@@ -19,10 +19,9 @@
             <field name="model">process.returned.check</field>
             <field name="arch" type="xml">
                 <search string="Search Process Returned Check">
-                  <field name="bank_stmt_line_id"/>
-                  <field name="partner_ids"/>
-                  <filter string="ToDo" name="is_draft"
-                          domain="[('state', '=', 'draft')]"/>
+                    <field name="bank_stmt_line_id"/>
+                    <field name="partner_ids"/>
+                    <filter string="ToDo" name="is_draft" domain="[('state', '=', 'draft')]"/>
                 </search>
             </field>
         </record>
@@ -32,45 +31,36 @@
             <field name="model">process.returned.check</field>
             <field name="arch" type="xml">
                 <form string="Process Returned Check" delete="0">
-                  <header>
-                      <button name="process_payment"
-                              string="Process" type="object" class="oe_highlight"
-                              attrs="{'invisible':[('state', 'in', ('done', 'cancel'))]}"
-                      />
-                      <button name="action_cancel"
-                              string="Cancel" type="object"
-                              attrs="{'invisible':[('state', 'in', ('done', 'cancel'))]}"
-                      />
-
-                      <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"/>
-                  </header>
+                    <header>
+                        <button name="process_payment" string="Process" type="object" class="oe_highlight"
+                                attrs="{'invisible':[('state', 'in', ('done', 'cancel'))]}"/>
+                        <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible':[('state', 'in', ('done', 'cancel'))]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"/>
+                    </header>
                     <sheet>
-                      <div class="oe_button_box" name="button_box">
-                          <button name="action_view_invoice"
-                              type="object"
-                              class="oe_stat_button"
-                              icon="fa-pencil-square-o"
-                              attrs="{'invisible': [('invoice_count', '=', 0)]}">
-                              <field name="invoice_count" widget="statinfo" string="Invoices"/>
-                          </button>
-                      </div>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_invoice" type="object" class="oe_stat_button"
+                                    icon="fa-pencil-square-o" attrs="{'invisible': [('invoice_count', '=', 0)]}">
+                                <field name="invoice_count" widget="statinfo" string="Invoices"/>
+                            </button>
+                        </div>
 
                         <group>
                             <group>
                                 <field name="bank_stmt_line_id" required='1' attrs="{'readonly':[('state', 'in', ('done', 'cancel'))]}"
-                                    domain="[('payment_ref', 'like', 'DEPOSITED ITEM RETURNED'), ('is_return_cleared', '=', False),
+                                       domain="[('payment_ref', 'like', 'DEPOSITED ITEM RETURNED'), ('is_return_cleared', '=', False),
                                     ('move_id', '!=', False)]"/><!--TODO name replaced with payment_ref as the name is not in V15 payment_ref using now, move_name repleced with move_id-->
                                 <field name="amount" readonly='1'/>
                                 <field name="journal_currency_id" invisible='1'/>
                                 <field name="partner_ids" required='1' attrs="{'readonly':[('state', 'in', ('done', 'cancel'))]}" force_save="1"
-                                    widget="many2many_tags" options="{'no_create': True}"/>
+                                       widget="many2many_tags" options="{'no_create': True}"/>
                             </group>
                         </group>
                         <separator string="Payments"/>
                         <field name="payment_ids" required='1' attrs="{'readonly':[('state', 'in', ('done', 'cancel'))]}"
-                                 ptions="{'no_create': True}" force_save="1"
-                                 context="{'from_return_check_process': True}"
-                                 domain="['|', '&amp;', '&amp;', '&amp;', '&amp;', ('payment_type', '=', 'inbound'), ('partner_id', '=', partner_ids),
+                               ptions="{'no_create': True}" force_save="1"
+                               context="{'from_return_check_process': True}"
+                               domain="['|', '&amp;', '&amp;', '&amp;', '&amp;', ('payment_type', '=', 'inbound'), ('partner_id', '=', partner_ids),
                                      ('payment_method_id.code', 'in', ('check_printing_in', 'batch_payment')),
                                      ('is_return_cleared', '=', False), ('state', 'not in', ('done', 'cancelled')), '&amp;',
                                      ('is_return_cleared', '=', True), ('state', '=', 'done')
@@ -99,7 +89,6 @@
             </field>
         </record>
         <menuitem action="action_process_returned_check" id="menu_process_returned_check"
-                  name="Process Returned Check"
-                  parent="account.menu_finance_receivables" sequence="20"/>
+                  name="Process Returned Check" parent="account.menu_finance_receivables" sequence="20"/>
     </data>
 </odoo>

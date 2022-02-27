@@ -82,14 +82,14 @@ class AccountReconciliation(models.AbstractModel):
                         }
                         self.env['account.move'].create(move_vals).action_post()
         for stmt in res['statement_line_ids']:
-            if 'DEPOSITED ITEM RETURNED' in stmt.name:
-                cheque_no = stmt.name and stmt.name.split('CK#:')
+            if 'DEPOSITED ITEM RETURNED' in stmt.payment_ref:
+                cheque_no = stmt.payment_ref and stmt.payment_ref.split('CK#:')
                 if cheque_no and len(cheque_no) > 1:
                     cheque_no = cheque_no[1].split(' ', 1)[0]
                     cheque_no_strip = cheque_no.lstrip('0')
                     payment = self.env['account.payment'].search(['|',
-                                                                  ('communication', '=', cheque_no_strip),
-                                                                  ('communication', '=', cheque_no),
+                                                                  ('ref', '=', cheque_no_strip),
+                                                                  ('ref', '=', cheque_no),
                                                                   ('amount', '=', abs(stmt.amount))])
                     vals = {'bank_stmt_line_id': stmt.id}
                     if payment and len(payment) == 1:

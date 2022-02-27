@@ -6,10 +6,10 @@
     'license': 'LGPL-3',
     'category': 'Accounting',
     'description': """
-Allows filtering Batch PaymentMoveLines ..
-==============================================================================
+Allows filtering Batch PaymentMoveLines
+=======================================
 
-This module help to filter out the move lines from existing batch payments
+Customization of odoo account batch payment
 
 """,
     'author': 'Confianz Global',

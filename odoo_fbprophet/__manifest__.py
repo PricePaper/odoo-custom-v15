@@ -20,13 +20,13 @@
     'depends': ['base'],
 
     'external_dependencies': {
-        'python': ['pandas', ]#'fbprophet'],
+        'python': ['pandas','prophet'],
     },
 
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
-        #        'views/templates.xml',
+                            #'views/templates.xml',
     ],
 
 }

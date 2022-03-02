@@ -3,7 +3,7 @@
 from odoo import fields, models, api, _
 
 
-class StockMove(models.Model):
+class MrpProduction(models.Model):
     _inherit = 'mrp.production'
 
     @api.onchange('product_id')
@@ -16,3 +16,6 @@ class StockMove(models.Model):
                 self.location_dest_id = self.product_id.property_stock_location.id
             else:
                 self.location_dest_id = self._get_default_location_dest_id()
+
+
+MrpProduction()

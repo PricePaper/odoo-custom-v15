@@ -12,6 +12,4 @@ class ProductNotes(models.Model):
     notes = fields.Text(string='Notes')
     expiry_date = fields.Date('Valid Upto')
 
-
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

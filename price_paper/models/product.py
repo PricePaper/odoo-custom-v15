@@ -45,7 +45,6 @@ class ProductProduct(models.Model):
     is_bel_min_qty = fields.Boolean(string='Below Minimum Quantity', compute='compute_qty_status', search='_search_bel_min_qty')
     is_bel_crit_qty = fields.Boolean(string='Below Critical Quantity', compute='compute_qty_status', search='_search_bel_crit_qty')
     is_abv_max_qty = fields.Boolean(string='Above Max Quantity', compute='compute_qty_status', search='_search_abv_max_qty')
-    is_storage_contract = fields.Boolean(string='Storage Contract Product')
     storage_contract_account_id = fields.Many2one('account.account', company_dependent=True,
                                                   string="Storage Contract Income Account",
                                                   domain=[('deprecated', '=', False)])
@@ -106,79 +105,6 @@ class ProductProduct(models.Model):
                 return res
         return res
 
-    # TODO: alglo saxon will do later
-    # TODO: need migration for this method
-    # @api.model
-    # def _anglo_saxon_sale_move_lines(self, name, product, uom, qty, price_unit, currency=False, amount_currency=False,
-    #                                  fiscal_position=False, account_analytic=False, analytic_tags=False):
-    #     """Prepare dicts describing new journal COGS journal items for a product sale.
-    #
-    #     Returns a dict that should be passed to `_convert_prepared_anglosaxon_line()` to
-    #     obtain the creation value for the new journal items.
-    #
-    #     :param Model product: a product.product record of the product being sold
-    #     :param Model uom: a product.uom record of the UoM of the sale line
-    #     :param Integer qty: quantity of the product being sold
-    #     :param Integer price_unit: unit price of the product being sold
-    #     :param Model currency: a res.currency record from the order of the product being sold
-    #     :param Interger amount_currency: unit price in the currency from the order of the product being sold
-    #     :param Model fiscal_position: a account.fiscal.position record from the order of the product being sold
-    #     :param Model account_analytic: a account.account.analytic record from the line of the product being sold
-    #     """
-    #     if not self._context.get('sc_move', False):
-    #         return super(ProductProduct, self)._anglo_saxon_sale_move_lines(
-    #             name, product, uom, qty,
-    #             price_unit, currency, amount_currency,
-    #             fiscal_position, account_analytic, analytic_tags
-    #         )
-    #
-    #     if (product.valuation == 'real_time'
-    #             and (product.type == 'product' or (product.type == 'consu' and product._is_phantom_bom()))):
-    #         accounts = product.product_tmpl_id.get_product_accounts(fiscal_pos=fiscal_position)
-    #         # debit account dacc will be the output account
-    #         if not accounts['sc_liability_out']:
-    #             raise UserError(
-    #                 _('Cannot find a SC Stock Liability Account in product category: %s' % product.categ_id.name))
-    #         dacc = accounts['sc_liability_out'].id
-    #         # credit account cacc will be the expense account
-    #         cacc = accounts['expense'].id
-    #         if self._context.get('sc_move', '') == 'sc_order':
-    #             #if it is storage order reverse the move lines
-    #             dacc = accounts['stock_output'].id
-    #             cacc = accounts['sc_liability_out'].id
-    #         if dacc and cacc:
-    #             return [
-    #                 {
-    #                     'type': 'src',
-    #                     'name': name[:64],
-    #                     'price_unit': price_unit,
-    #                     'quantity': qty,
-    #                     'price': price_unit * qty,
-    #                     'currency_id': currency and currency.id,
-    #                     'amount_currency': amount_currency,
-    #                     'account_id': dacc,
-    #                     'product_id': product.id,
-    #                     'uom_id': uom.id,
-    #                 },
-    #
-    #                 {
-    #                     'type': 'src',
-    #                     'name': name[:64],
-    #                     'price_unit': price_unit,
-    #                     'quantity': qty,
-    #                     'price': -1 * price_unit * qty,
-    #                     'currency_id': currency and currency.id,
-    #                     'amount_currency': -1 * amount_currency,
-    #                     'account_id': cacc,
-    #                     'product_id': product.id,
-    #                     'uom_id': uom.id,
-    #                     'account_analytic_id': account_analytic and account_analytic.id,
-    #                     'analytic_tag_ids': analytic_tags and analytic_tags.ids and [
-    #                         (6, 0, analytic_tags.ids)] or False,
-    #                 },
-    #             ]
-    #     return []
-
     @api.depends('qty_available', 'orderpoint_ids.product_max_qty', 'orderpoint_ids.product_min_qty')
     def compute_qty_status(self):
         for product in self:
@@ -225,14 +151,14 @@ class ProductProduct(models.Model):
         archive reordering rules before archiving product
         """
         if self.qty_available > 0 and self.active:
-            raise ValidationError(_("Can't archive product with inventory on hand"))
+            raise ValidationError("Can't archive product with inventory on hand")
         if self.active:
             self.env['product.superseded'].search([('old_product', '=', self.id)]).unlink()
         return super(ProductProduct, self).toggle_active()
 
     def write(self, vals):
         """
-        overriden to update the customer product price when
+        override to update the customer product price when
         lst_price or burden_percent changes
         """
         # TODO Update price_list when standard price change
@@ -273,11 +199,6 @@ class ProductProduct(models.Model):
                 if product.qty_available > 0:
                     raise ValidationError(_("Can't archive product with inventory on hand"))
 
-                # not needed by default odoo doing this operation
-                # reordering_rules = self.env['stock.warehouse.orderpoint'].search(
-                #     [('product_id', 'in', self.ids), ('active', '=', True)])
-                # reordering_rules.toggle_active()
-
             if vals.get('burden_percent') or vals.get('standard_price'):
                 for rec in product.uom_standard_prices:
                     if rec.cost > rec.price:
@@ -317,7 +238,7 @@ class ProductProduct(models.Model):
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):
         """
-        overriden to display the superseded product when
+        override to display the superseded product when
         default code of archived product is entered.
         """
         if name:
@@ -332,7 +253,6 @@ class ProductProduct(models.Model):
     def compute_product_vendor(self):
         """
         Compute vendor of the product
-        # todo not used anywhere
         """
         for rec in self:
             rec.vendor_id = rec.seller_ids and rec.seller_ids[0].name.id or False
@@ -366,29 +286,6 @@ class ProductProduct(models.Model):
                 raise ValidationError('Weight should be greater than Zero')
             if rec.volume <= 0 and rec.type == 'product':
                 raise ValidationError('Volume should be greater than Zero')
-
-
-class ProductCategory(models.Model):
-    _inherit = "product.category"
-
-    repacking_upcharge = fields.Float(string="Repacking Charge %")
-    categ_code = fields.Char(string='Category Code')
-    standard_price = fields.Float(
-        string="Class Standard Price Percent",
-        digits='Product Price')
-
-    inv_adj_output_account_id = fields.Many2one(
-        'account.account',
-        company_dependent=True,
-        string="Inventory Adjustment Output Account",
-        domain=[('deprecated', '=', False)]
-    )
-    inv_adj_input_account_id = fields.Many2one(
-        'account.account',
-        company_dependent=True,
-        string="Inventory Adjustment Input Account",
-        domain=[('deprecated', '=', False)]
-    )
 
 
 class ProductUom(models.Model):

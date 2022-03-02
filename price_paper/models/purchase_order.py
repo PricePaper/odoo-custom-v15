@@ -60,5 +60,18 @@ class PurchaseOrder(models.Model):
 
 
 
-
+class PurchaseOrderLine(models.Model):
+    _inherit = 'purchase.order.line'
+    @api.model
+    def _prepare_purchase_order_line_from_procurement(self, product_id, product_qty, product_uom, company_id, values, po):
+        res = super()._prepare_purchase_order_line_from_procurement(product_id, product_qty, product_uom, company_id, values, po)
+        if values.get('sale_line_id'):
+            sale_line = self.env['sale.order.line'].browse(values.get('sale_line_id'))
+            if sale_line.order_id.storage_contract:
+                res['sale_line_id'] = sale_line.id
+        elif values.get('move_dest_ids') and values.get('move_dest_ids').sale_line_id and values.get('move_dest_ids').sale_line_id.order_id.storage_contract:
+            res['sale_line_id'] = values.get('move_dest_ids').sale_line_id.id
+        input((res,'9999999999999999999999',values.get('sale_line_id'),'\n\n', values.get('move_dest_ids').sale_line_id))
+        return res
+PurchaseOrderLine()
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

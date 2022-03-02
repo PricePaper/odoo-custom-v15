@@ -16,7 +16,6 @@ Customer Contract
         'data/sequence.xml',
         'views/customer_contract.xml',
         'views/sale_order.xml',
-        'views/menu.xml'
     ],
     'depends': ['sale_management', 'account', 'price_paper'],
     'installable': True,

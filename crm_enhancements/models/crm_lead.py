@@ -11,7 +11,7 @@ class Lead(models.Model):
     business_freq = fields.Selection(selection=[('week', 'Weekly'),
                                                 ('biweek', 'Biweekly'),
                                                 ('month', 'Monthly')], string="Frequency")
-#    planned_revenue = fields.Float(compute="_calc_expected_revenue", string='Monthly Revenue Expected', store=True)#Planned_revenue changed to expected revenue v15
+#    planned_revenue = fields.Float() #Planned_revenue changed to expected revenue v15
     expected_revenue = fields.Float(compute="_calc_expected_revenue", string='Monthly Revenue Expected', store=True)
     sales_person_ids = fields.Many2many('res.partner', string="Sales Persons")
 
@@ -40,10 +40,11 @@ class Lead(models.Model):
         """
         res = super(Lead, self).write(vals)
         for lead in self:
-            if lead.partner_id and (vals.get('rev_per_trans', False) or vals.get('business_freq', '')): #note: check this condition is as per the requirement
+            if lead.partner_id and (vals.get('rev_per_trans', False) or vals.get('business_freq', '')):
                 partner = lead.partner_id
                 partner.rev_per_trans = lead.rev_per_trans or vals.get('rev_per_trans', 0.00)
                 partner.business_freq = lead.business_freq or vals.get('business_freq', '')
+        return res
 
 
     def _prepare_customer_values(self, partner_name, is_company=False, parent_id=False):

@@ -6,7 +6,6 @@
             <field name="arch" type="xml">
                 <form string="Assign Routes Selector">
                     <sheet>
-<!--                        <separator string="Assign Routes Selector"/>-->
                         <field name="line_ids">
                             <tree editable="bottom">
                                 <field name="route_id" required="1" domain="[('set_active', '=', False)]"/>
@@ -15,9 +14,9 @@
                         </field>
                     </sheet>
                     <footer>
-                        <button string="Assign" type="object" class="oe_highlight" name="assign_routes" data-hotkey="shift+a"/>
+                        <button string="Assign" type="object" class="btn-success" name="assign_routes" data-hotkey="shift+a"/>
                         or
-                        <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="c"/>
+                        <button string="Cancel" class="btn-danger" special="cancel" data-hotkey="c"/>
                     </footer>
                 </form>
             </field>

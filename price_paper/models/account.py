@@ -9,8 +9,7 @@ from odoo.exceptions import ValidationError, UserError
 class AccountPaymentTermLine(models.Model):
     _inherit = "account.payment.term.line"
 
-    grace_period = fields.Integer(help="Gives the number of days extended for the customer after defaulting payments.",
-                                  string='Customer Grace Period')
+    grace_period = fields.Integer(help="Gives the number of days extended for the customer after defaulting payments.", string='Customer Grace Period')
 
 
 class AccountFiscalPosition(models.Model):
@@ -49,10 +48,11 @@ class AccountMove(models.Model):
     def action_post(self):
         for move in self:
             if move.is_sale_document() and not move.invoice_payment_term_id:
-                raise ValidationError(_('Payment term is not set for invoice %s' % (move.name)))
+                raise ValidationError('Payment term is not set for invoice %s' % move.name)
         return super().action_post()
 
     # todo sc in anglo saxon
+    # todo Anglo saxon is not working
     # def _anglo_saxon_sale_move_lines(self, i_line):
     #     """override for stock contract.
     #     passing extra context value to identify the sc stock liability account.
@@ -78,15 +78,10 @@ class AccountMove(models.Model):
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
-    # TODO not used anywhere ported from old version
-    # date_maturity_grace = fields.Date(string='Grace period Date')
 
     profit_margin = fields.Monetary(compute='calculate_profit_margin', string="Profit Margin")
-    # comment the below 2 lines while running sale order line import scripts
-    lst_price = fields.Float(string='Standard Price', digits='Product Price', store=True,
-                             compute='_compute_lst_cost_prices')
-    working_cost = fields.Float(string='Working Cost', digits='Product Price', store=True,
-                                compute='_compute_lst_cost_prices')
+    lst_price = fields.Float(string='Standard Price', digits='Product Price', store=True, compute='_compute_lst_cost_prices')
+    working_cost = fields.Float(string='Working Cost', digits='Product Price', store=True, compute='_compute_lst_cost_prices')
     is_storage_contract = fields.Boolean(compute='_compute_is_storage_contract', store=True)
 
     @api.depends('sale_line_ids.storage_contract_line_id', 'sale_line_ids.order_id.storage_contract')
@@ -187,8 +182,7 @@ class AccountMoveLine(models.Model):
             res = product_price
 
             sale_tax_history = self.env['sale.tax.history'].search(
-                [('partner_id', '=', self.invoice_id.partner_shipping_id.id), ('product_id', '=', self.product_id.id)],
-                limit=1)
+                [('partner_id', '=', self.invoice_id.partner_shipping_id.id), ('product_id', '=', self.product_id.id)], limit=1)
             if sale_tax_history and not sale_tax_history.tax:
                 self.tax_id = [(5, _, _)]
 
@@ -221,29 +215,5 @@ class PaymentTerm(models.Model):
             self.due_days = False
             self.discount_per = False
 
-# todo payment is not migrated
-# class account_abstract_payment(models.AbstractModel):
-#     _inherit = "account.abstract.payment"
-#
-#     @api.depends('invoice_ids', 'amount', 'payment_date', 'currency_id')
-#     def _compute_payment_difference(self):
-#         for pay in self.filtered(lambda p: p.invoice_ids):
-#             payment_amount = -pay.amount if pay.payment_type == 'outbound' else pay.amount
-#             flag = False
-#             for inv in pay.invoice_ids:
-#                 days = (inv.date_invoice - fields.Date.context_today(inv)).days
-#                 if abs(days) < inv.payment_term_id.due_days and inv.type in ['out_invoice', 'in_invoice']:
-#                     flag = True
-#                     break
-#                 elif inv.discount_from_batch:
-#                     flag = True
-#                     break
-#             currency = pay.currency_id
-#
-#             pay.payment_difference = pay.with_context(exclude_discount=True)._compute_payment_amount(invoices=pay.invoice_ids, currency=currency) - payment_amount
-#             if pay.payment_type in ['inbound', 'outbound'] and flag:
-#                 company = self.env.user.company_id
-#                 pay.payment_difference_handling = 'reconcile'
-#                 pay.writeoff_label = ','.join(pay.invoice_ids.mapped('payment_term_id').mapped('name'))
-#                 pay.writeoff_account_id = company.purchase_writeoff_account_id if pay.payment_type == 'outbound' else company.discount_account_id
+PaymentTerm()
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

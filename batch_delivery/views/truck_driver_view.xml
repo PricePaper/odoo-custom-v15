@@ -21,34 +21,16 @@
                 <form string="Truck Driver">
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                                <!--TODO purpose in V15?--><!--TODO Fixed-->
                             <button type="object"
-                                class="oe_stat_button"
-                                id="partner_ledger_button"
-                                icon="fa-pencil-square-o"
-                                name="open_partner_ledger"
-                                string="Partner Ledger"
-                                context="{'default_partner_id': active_id}">
+                                    class="oe_stat_button"
+                                    id="partner_ledger_button"
+                                    icon="fa-pencil-square-o"
+                                    name="open_partner_ledger"
+                                    string="Partner Ledger"
+                                    context="{'default_partner_id': active_id}">
                             </button>
-<!--                            <button type="object" class="oe_stat_button" id="partner_ledger_button"-->
-<!--                                    icon="fa-pencil-square-o" name="open_partner_ledger"-->
-<!--                                    context="{'default_partner_id': active_id}">-->
-<!--                                <field name="partner_ledger_label"/>-->
-<!--                            </button>-->
-
-<!--                            <button type="object" class="oe_stat_button" name="open_action_followup"-->
-<!--                                    groups="account.group_account_user" icon="fa-list"-->
-<!--                                    attrs="{'invisible': [('credit', '=', 0)]}">-->
-<!--                                <div class="o_field_widget o_stat_info">-->
-<!--                                    <span class="o_stat_value"><field name="credit" widget="monetary"-->
-<!--                                                                      options="{'currency_field': 'currency_id'}"/></span>-->
-<!--                                    <span class="o_stat_text">Due</span>-->
-<!--                                </div>-->
-<!--                            </button>-->
-
-
                         </div>
-                            <field name="image_1920" widget='image' class="oe_avatar" options='{"preview_image": "avatar_128"}'/>
+                        <field name="image_1920" widget='image' class="oe_avatar" options='{"preview_image": "avatar_128"}'/>
                         <div class="oe_title">
                             <field name="is_company" invisible="1"/>
                             <field name="commercial_partner_id" invisible="1"/>

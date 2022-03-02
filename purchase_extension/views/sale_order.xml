@@ -9,10 +9,11 @@
                 <field name='payment_term_id' position='attributes'>
                     <attribute name='domain'>[('order_type', '=', 'sale')]</attribute>
                 </field>
-                <xpath expr="//field[@name='product_onhand']" position="after">
-                    <field name="product_arrival_date" readonly='1'
-                           attrs="{'invisible': [('display_type', '!=', False)]}"/>
-                </xpath>
+<!--                <todo override priceppaer sale view and add this feild-->
+<!--                <xpath expr="//field[@name='product_onhand']" position="after">-->
+<!--                    <field name="product_arrival_date" readonly='1'-->
+<!--                           attrs="{'invisible': [('display_type', '!=', False)]}"/>-->
+<!--                </xpath>-->
             </field>
         </record>
     </data>

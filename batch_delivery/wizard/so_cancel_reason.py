@@ -27,4 +27,5 @@ class SaleOrderCancel(models.TransientModel):
         self.order_id.write({'cancel_reason': reason})
         return self.order_id.with_context({'disable_cancel_warning': True, 'from_cancel_wizard': True}).action_cancel()
 
+
 SaleOrderCancel()

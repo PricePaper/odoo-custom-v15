@@ -31,12 +31,14 @@ Sales commission module implemented for Price Papers.
         'views/saleorder_report.xml',
         'views/invoice_report.xml',
         'views/res_partner.xml',
+        'views/crm_lead.xml',
         'views/account_invoice.xml',
         'views/commission_rules.xml',
         'views/commission_percentage.xml',
         'views/sale_view.xml',
         'views/res_company.xml',
         'views/menu.xml',
+        'wizard/crm_lead_to_opportunity_views.xml'
     ],
 
     'depends': ['price_paper','price_maintanance'],

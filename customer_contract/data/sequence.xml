@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
-
     <record id="id_rma_sequence2" model="ir.sequence">
         <field name="name">CUSTOMER CONTRACT SEQUENCE</field>
         <field name="code">customer.contract</field>

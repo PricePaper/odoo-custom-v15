@@ -38,10 +38,10 @@
             <field name="arch" type="xml">
                 <form>
                     <script>
-                            $(document).ready(function(){
-                                $('.modal-dialog').css({'max-width':'90%'});
-                            });
-                        </script>
+                        $(document).ready(function(){
+                        $('.modal-dialog').css({'max-width':'90%'});
+                        });
+                    </script>
                     <sheet>
                         <field name="batch_ids" invisible="1"/>
                         <field name="picking_ids" invisible="1"/>
@@ -52,7 +52,8 @@
                                 <field name="product_uom_qty" readonly="1" force_save="1"/>
                                 <field name="reserved_available_qty" readonly="1" options="{'no_open': True}" style="width: 156px;" force_save="1"/>
                                 <field name="product_uom" readonly="1" options="{'no_open': True}" style="width: 156px;" force_save="1"/>
-                                <field name="same_product_ids" readonly="1" widget="many2many_tags" force_save="1" invisible="0" style="width: 200px;"/>
+                                <field name="same_product_ids" readonly="1" widget="many2many_tags" force_save="1" invisible="0"
+                                       style="width: 200px;"/>
                                 <field name="followers" readonly="1" widget="many2many_tags" force_save="1" invisible="1"/>
                                 <field name="note" style="width: 350px;"/>
                             </tree>
@@ -102,7 +103,7 @@
             <field name="context">{'default_picking_ids': active_ids}</field>
         </record>
 
-<record id="action_pending_product_view_batch" model="ir.actions.act_window">
+        <record id="action_pending_product_view_batch" model="ir.actions.act_window">
             <field name="name">Pending Products</field>
             <field name="res_model">pending.product.view</field>
             <field name="view_mode">form</field>
@@ -120,14 +121,14 @@
             <field name="act_window_id" ref="action_pending_product_picking_email_view"/>
         </record>
 
-         <record model="ir.actions.act_window.view" id="action_pending_product_batch_email_view_form">
+        <record model="ir.actions.act_window.view" id="action_pending_product_batch_email_view_form">
             <field name="sequence" eval="1"/>
             <field name="view_mode">form</field>
             <field name="view_id" ref="batch_delivery.pending_product_email_view_form"/>
             <field name="act_window_id" ref="action_pending_product_batch_email_view"/>
         </record>
 
-         <record model="ir.actions.act_window.view" id="action_pending_product_view_form_batch">
+        <record model="ir.actions.act_window.view" id="action_pending_product_view_form_batch">
             <field name="sequence" eval="1"/>
             <field name="view_mode">form</field>
             <field name="view_id" ref="batch_delivery.pending_product_view_form"/>
@@ -135,7 +136,7 @@
         </record>
 
 
-         <record model="ir.actions.act_window.view" id="action_pending_product_view_form">
+        <record model="ir.actions.act_window.view" id="action_pending_product_view_form">
             <field name="sequence" eval="1"/>
             <field name="view_mode">form</field>
             <field name="view_id" ref="batch_delivery.pending_product_view_form"/>

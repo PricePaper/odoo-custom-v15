@@ -14,7 +14,7 @@
                 </xpath>
 
                 <xpath expr="//field[@name='name']" position="before">
-                    <field name="categ_id"/>
+                    <field name="categ_id" optional="hide"/>
                 </xpath>
                 <xpath expr="//field[@name='barcode']" position="attributes">
                     <attribute name="invisible">1</attribute>
@@ -22,16 +22,16 @@
 
                 <xpath expr="//field[@name='barcode']" position="after">
                     <field name="vendor_id"/>
-                    <field name="property_stock_location"/>
+                    <field name="property_stock_location" optional="hide"/>
                     <field name="value_svl" sum="Stock Valuation" widget="monetary" string="Total Value"/>
                 </xpath>
 
                 <xpath expr="//field[@name='qty_available']" position="after">
-                    <field name="incoming_qty"/>
-                    <field name="outgoing_qty"/>
+                    <field name="incoming_qty" optional="hide"/>
+                    <field name="outgoing_qty" optional="hide"/>
                 </xpath>
                 <xpath expr="//field[@name='qty_available']" position="after">
-                    <field name="reordering_min_qty" string="Min Qty"/>
+                    <field name="reordering_min_qty" string="Min Qty" optional="show"/>
                 </xpath>
             </field>
         </record>

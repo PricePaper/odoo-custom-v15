@@ -22,9 +22,8 @@
     'data': [
         'data/data.xml',
         'views/res_partner.xml',
-        # 'views/crm_lead.xml',
+        'views/crm_lead.xml',
         'views/res_company.xml',
-        'wizard/crm_lead_to_opportunity_views.xml'
     ],
 
 }

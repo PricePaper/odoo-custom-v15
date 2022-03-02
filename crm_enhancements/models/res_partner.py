@@ -40,14 +40,14 @@ class ResPartner(models.Model):
         end_date = datetime.datetime(end_date.year, end_date.month, calendar.mdays[end_date.month], 00, 00, 00)
 
         last_year_sale_orders = self.env['sale.order'].search(
-            [('state', 'in', ['sale', 'done']), ('confirmation_date', '>=', last_year_start_date),
-             ('confirmation_date', '<=', end_date)])
+            [('state', 'in', ['sale', 'done']), ('date_order', '>=', last_year_start_date),
+             ('date_order', '<=', end_date)])
 
         last_3_month_sale_orders = self.env['sale.order'].search(
-            [('state', 'in', ['sale', 'done']), ('confirmation_date', '>=', last_3_month_start_date),
-             ('confirmation_date', '<=', end_date)])
+            [('state', 'in', ['sale', 'done']), ('date_order', '>=', last_3_month_start_date),
+             ('date_order', '<=', end_date)])
 
-        for customer in self.env['res.partner'].search([('customer_rank', '>', 0)]):
+        for customer in self.env['res.partner'].search([('customer', '=', True)]):
             customer_last_year_sale_order = last_year_sale_orders.filtered(lambda so: so.partner_id == customer)
             customer_last_3_month_sale_orders = last_3_month_sale_orders.filtered(lambda so: so.partner_id == customer)
 
@@ -99,13 +99,11 @@ class ResPartner(models.Model):
         by seaching his current month sales transactions
         """
         for partner in self:
-            orders = self.env['sale.order'].search(
-                [('confirmation_date', '!=', False), ('partner_id', 'child_of', partner.id),
+            orders = self.env['sale.order'].search([('date_order', '!=', False), ('partner_id', 'child_of', partner.id),
                  ('state', 'in', ['sale', 'done'])])
             date_today = datetime.date.today()
             start_date_this_mon, end_date_this_mon = self.get_month_start_end_date(date_today)
-            orders_this_month = orders.filtered(
-                lambda so: so.confirmation_date > start_date_this_mon and so.confirmation_date < end_date_this_mon)
+            orders_this_month = orders.filtered(lambda so: so.date_order > start_date_this_mon and so.date_order < end_date_this_mon)
             partner.rev_this_mon = sum([so.amount_untaxed for so in orders_this_month]) or 0
 
     @api.model
@@ -141,11 +139,24 @@ class ResPartner(models.Model):
 
 
     @api.returns('mail.message', lambda value: value.id)
-    def message_post(self, **kwargs):
+    def message_post(self, *,
+                     body='', subject=None, message_type='notification',
+                     email_from=None, author_id=None, parent_id=False,
+                     subtype_xmlid=None, subtype_id=False, partner_ids=None,
+                     attachments=None, attachment_ids=None,
+                     add_sign=True, record_name=False,
+                     **kwargs):
         """
-        mail_post_autofollow=False
+         usually oddo adds the partner as a follower
+         we are removing this feature for partner model
         """
-        return super(ResPartner, self.with_context(mail_post_autofollow=False)).message_post(**kwargs)
+        return super(ResPartner, self.with_context(mail_post_autofollow=False)).message_post(
+                     body=body, subject=subject, message_type=message_type,
+                     email_from=email_from, author_id=author_id, parent_id=parent_id,
+                     subtype_xmlid=subtype_xmlid, subtype_id=subtype_id, partner_ids=partner_ids,
+                     attachments=attachments, attachment_ids=attachment_ids,
+                     add_sign=add_sign, record_name=record_name,
+                     **kwargs)
 
 
 

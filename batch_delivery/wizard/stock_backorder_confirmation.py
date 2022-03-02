@@ -29,19 +29,25 @@ class StockBackorderConfirmation(models.TransientModel):
                     }) for move in picking.move_lines if move.quantity_done != move.product_uom_qty]
                 })
                 for move in picking.move_lines:
-                    if move.quantity_done <= 0 and move.procure_method == 'make_to_order':
+                    if move.quantity_done <= 0 and move.procure_method == 'make_to_order' and not move.location_id.is_transit_location:
                         make2order_moves |= move
+                        print('make2order\'***************', move.location_id.name, move.location_id.is_transit_location)
                         continue
+        skip_backorder = self.pick_ids
                     # move.sale_line_id.pre_delivered_qty += move.quantity_done
         if make2order_moves:
             self = self.with_context(skip_backorder=False)
             self.backorder_confirmation_line_ids.filtered(
                 lambda rec: rec.picking_id in make2order_moves.mapped('picking_id')).write({'to_backorder': True})
+            skip_backorder = skip_backorder-make2order_moves.mapped('picking_id')
+        self = self.with_context(picking_ids_not_to_backorder=skip_backorder.ids)
         super(StockBackorderConfirmation, self).process()
         if make2order_moves:
             move_lines = self.pick_ids.mapped('backorder_ids').mapped('move_lines')
             (move_lines - make2order_moves)._action_cancel()
-
+            for move in make2order_moves:
+                move.move_orig_ids.write({'transit_picking_id': move.picking_id.id})
+        if input(make2order_moves) == 'y':print(k)
 
 StockBackorderConfirmation()
 

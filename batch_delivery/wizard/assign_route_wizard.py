@@ -10,10 +10,11 @@ class AssignRouteWizard(models.TransientModel):
     line_ids = fields.One2many('assign.route.wizard.line', 'parent_id', string='Assign Route Lines')
 
     def assign_routes(self):
-
-        pickings = self.env['stock.picking'].search(
-            [('state', 'in', ['confirmed', 'assigned', 'in_transit']), ('picking_type_code', '=', 'outgoing'),
-             ('route_id', '=', False)])
+        pickings = self.env['stock.picking'].search([
+            ('state', 'in', ['confirmed', 'waiting', 'assigned', 'in_transit']),
+            ('picking_type_code', '=', 'outgoing'),
+            ('route_id', '=', False)
+        ])
 
         # group all potential pickings into a dictionary based on partner_id.
         # this dictionary is later used to assign routes for pickings
@@ -52,6 +53,6 @@ class AssignRouteWizardLines(models.TransientModel):
 
     @api.onchange('route_id')
     def onchange_route_id(self):
-        return {'domain': {'prior_batch_id': ([('route_id', '=', self.route_id.id)])}}
+        return {'domain': {'prior_batch_id': ([('route_id', '=', self.route_id.id), ('state', 'in', ('done', 'paid', 'no_payment'))])}}
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -37,6 +37,7 @@ class HelpDeskTicket(models.Model):
 
     def _compute_stage_code(self):
         for ticket in self:
+            ticket.stage_code = ''
             if not ticket.is_special_order_ticket:
                 continue
             stage_ext_id = self.stage_id.get_external_id()

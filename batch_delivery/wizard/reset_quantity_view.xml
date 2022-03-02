@@ -15,8 +15,8 @@
                         </group>
                     </group>
                     <footer class="oe_edit_only">
-                        <button string="Reset" type="object" name="action_reset" class="oe_highlight"/>
-                        <button string="Discard" special="cancel"/>
+                        <button string="Reset" type="object" name="action_reset" class="btn-success"/>
+                        <button string="Discard" special="cancel" class="btn-danger"/>
                     </footer>
                 </form>
             </field>

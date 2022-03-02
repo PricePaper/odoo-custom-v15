@@ -51,7 +51,7 @@ class SaleOrder(models.Model):
     sc_child_order_count = fields.Integer(compute='_compute_sc_child_order_count')
     delivery_cost = fields.Float(string='Estimated Delivery Cost', readonly=True, copy=False)
     # po_count = fields.Integer(compute='_compute_po_count', readonly=True)
-    active = fields.Boolean(tracking=True)
+    active = fields.Boolean(tracking=True, default=True)
     # todo below field is not needed use date_order
     confirmation_date = fields.Datetime(string='Confirmation Date', readonly=True, index=True,
                                         help="Date on which the sales order is confirmed.", copy=False)
@@ -68,15 +68,20 @@ class SaleOrder(models.Model):
     def compute_credit_warning(self):
 
         for order in self:
-            pending_invoices = order.partner_id.invoice_ids.filtered(
-                lambda rec: rec.is_sale_document() and rec.state == 'posted' and rec.payment_state not in (
-                'paid', 'in_payment') and (
-                                    rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
+            pending_invoices = order.partner_id.invoice_ids.filtered(lambda rec: rec.is_sale_document() and rec.state == 'posted' and rec.payment_state not in ('paid', 'in_payment') and (rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
 
             msg = ''
             msg1 = ''
-            if pending_invoices:
-                msg += 'Customer has pending invoices.\n %s ' % '\n'.join(pending_invoices.mapped('name'))
+            invoice_name = []
+            for invoice in pending_invoices:
+                term_line = invoice.invoice_payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
+                date_due = invoice.invoice_date_due
+                if term_line and term_line.grace_period:
+                    date_due = date_due + timedelta(days=term_line.grace_period)
+                if date_due and date_due < date.today():
+                    invoice_name.append(invoice.name)
+            if invoice_name:
+                msg += 'Customer has pending invoices.\n %s ' % '\n'.join(invoice_name)
             if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
                 msg += "\nCustomer Credit limit Exceeded.\n %s 's Credit limit is  %.2f  and due amount is %.2f\n" % (
                     order.partner_id.name, order.partner_id.credit_limit,
@@ -265,6 +270,7 @@ class SaleOrder(models.Model):
             raise UserError(msg)
         return True
 
+
     def activate_views(self):
         except_view = []
         for view in self.env['ir.ui.view'].search([('active', '=', False)]):
@@ -288,7 +294,7 @@ class SaleOrder(models.Model):
     def action_cancel(self):
 
 
-        return False
+        # return False
         # todo not finished some confusions in PO relation
         self.ensure_one()
         self.write({
@@ -414,6 +420,8 @@ class SaleOrder(models.Model):
     # todo above methods are not used
 
     def run_storage(self):
+        #logic is wrong it is creating stock moves fro SC main order
+        # create PO directly
         for order in self:
             route = self.env.ref('stock.route_warehouse0_mto', raise_if_not_found=True)
             so_lines = order.order_line.filtered(
@@ -426,6 +434,7 @@ class SaleOrder(models.Model):
             order.write({'state': 'waiting'})
             # service line update
             purchase_orders = order._get_purchase_orders().filtered(lambda rec: rec.state == 'draft')
+
             for service_line in order.order_line.filtered(
                     lambda r: r.product_id.type == 'service' and not r.display_type and not r.is_downpayment):
                 for po in purchase_orders:
@@ -998,18 +1007,18 @@ class SaleOrderLine(models.Model):
                     if po_line.state in ('purchase', 'done', 'received'):
                         qty += sum(po_line.move_ids.filtered(lambda s: s.state != 'cancel').mapped('quantity_done'))
                 line.qty_delivered = qty
-            else:
-                if line.qty_delivered_method == 'stock_move':
-                    qty = 0.0
-                    for move in line.move_ids.filtered(
-                            lambda r: r.state == 'done' or r.is_transit is True and not r.scrapped and line.product_id == r.product_id):
-                        if move.location_dest_id.usage == "customer":
-                            if not move.origin_returned_move_id or (move.origin_returned_move_id and move.to_refund):
-                                qty += move.product_uom._compute_quantity(
-                                    move.quantity_done or move.reserved_availability, line.product_uom)
-                        elif move.location_dest_id.usage != "customer" and move.to_refund:
-                            qty -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)
-                    line.qty_delivered = qty
+            # else:
+            #     if line.qty_delivered_method == 'stock_move':
+            #         qty = 0.0
+            #         # todo is transit is not available
+            #         for move in line.move_ids.filtered(lambda r: r.state == 'done' or r.is_transit is True and not r.scrapped and line.product_id == r.product_id):
+            #             if move.location_dest_id.usage == "customer":
+            #                 if not move.origin_returned_move_id or (move.origin_returned_move_id and move.to_refund):
+            #                     qty += move.product_uom._compute_quantity(
+            #                         move.quantity_done or move.reserved_availability, line.product_uom)
+            #             elif move.location_dest_id.usage != "customer" and move.to_refund:
+            #                 qty -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)
+            #         line.qty_delivered = qty
 
     @api.depends('product_id.qty_available', 'product_id.outgoing_qty')
     def compute_available_qty(self):
@@ -1394,9 +1403,9 @@ class SaleOrderLine(models.Model):
     @api.model
     def create(self, vals):
         line = super(SaleOrderLine, self).create(vals)
-        if line.state == 'sale':
+        if line.state == 'sale' and line.move_ids:
             msg = "Extra line with %s " % line.product_id.display_name
-            line.move_ids.mapped('picking_id').message_post(body=msg)
+            line.move_ids.mapped('picking_id').filtered(lambda rec: rec.state != 'cancel').message_post(body=msg)
         if line.product_id.need_sub_product and line.product_id.product_addons_list:
             for product_addon in line.product_id.product_addons_list.filtered(
                     lambda rec: rec.id not in [line.order_id.order_line.mapped('product_id').ids]):

@@ -9,7 +9,7 @@
                     <attribute name='colspan'>2</attribute>
                 </xpath>
                 <xpath expr="//form[1]/sheet[1]/notebook[1]" position="inside">
-                    <page string='Customer Ranking'>
+                    <page string='Customer Ranking' name="customer_ranking">
                         <group>
                             <group>
                                 <field name="amount_a"/>

@@ -33,7 +33,7 @@ class PickingFullReturnWizard(models.TransientModel):
 
         for move in picking.move_lines:
             move.sale_line_id.qty_delivered -= move.quantity_done
-        picking.mapped('move_lines').write({'is_transit': False, 'quantity_done': 0})
+        picking.mapped('move_lines').write({'quantity_done': 0})
         # order = self.env['sale.order.line'].search([('order_id', '=', picking.sale_id.id), ('is_delivery', '=', True)])
         delivery_line = sale.mapped('order_line').filtered(lambda rec: rec.is_delivery is True)
         delivery_line.write({'product_uom_qty': delivery_line.product_uom_qty + 1})

@@ -11,11 +11,14 @@
                     <div attrs="{'invisible': [('display_invoice_alert', '=', False)]}">
                         Draft invoices for this order will be cancelled.
                     </div>
+                    <field name="display_delivery_alert" invisible="1"/>
+                    <div attrs="{'invisible': [('display_delivery_alert', '=', False)]}">
+                        Some products have already been delivered. Returns can be created from the Delivery Orders.
+                    </div>
                     <field name="reason" help='Reason for cancelling the order' placeholder="Cancel reason"/>
                     <footer>
-                        <button string="Confirm" name="action_cancel" type="object" class="oe_highlight"
-                                data-hotkey="q"/>
-                        <button string="Cancel" class="btn btn-default" special="cancel" data-hotkey="z"/>
+                        <button string="Confirm" name="action_cancel" type="object" class="btn-success" data-hotkey="q"/>
+                        <button string="Cancel" class="btn-danger" special="cancel" data-hotkey="z" />
                     </footer>
                 </form>
             </field>

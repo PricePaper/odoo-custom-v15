@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="crm_enhancement_lead_to_opportunity_form_inherit" model="ir.ui.view">
+            <field name="name">crm.lead2opportunity.partner.form.inherit</field>
+            <field name="model">crm.lead2opportunity.partner</field>
+            <field name="inherit_id" ref="crm.view_crm_lead2opportunity_partner"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='user_id']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <field name="sales_person_ids" widget="many2many_tags" domain="[('is_sales_person', '=', True)]"
+                           options="{'no_create_edit': True}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

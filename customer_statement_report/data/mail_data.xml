@@ -4,7 +4,7 @@
 
          <record id="email_template_customer_statement" model="mail.template">
             <field name="name">Customer Statement</field>
-            <field name="subject">${ctx['subject']}</field>
+            <field name="subject">${ctx.get('subject')}</field>
             <field name="email_to">${object.email | safe}</field>
             <field name="model_id" ref="base.model_res_partner"/>
             <field name="auto_delete" eval="True"/>

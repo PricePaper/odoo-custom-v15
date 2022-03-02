@@ -12,12 +12,13 @@ class StockMove(models.Model):
     _inherit = ["stock.move", "mail.thread", "mail.activity.mixin"]
 
     delivery_notes = fields.Text(string='Delivery Notes', related='partner_id.delivery_notes')
-    is_transit = fields.Boolean(string='Transit')
+    # is_transit = fields.Boolean(string='Transit')
     qty_update = fields.Float(string="Reset Logic")
     reason_id = fields.Many2one('stock.picking.return.reason', string='Reason  For Return (Stock)')
     qty_to_transfer = fields.Float(string="Qty in Location", compute='_compute_qty_to_transfer', store=False)
     unit_price = fields.Float(string="Unit Price", copy=False, compute='_compute_total_price')
     total = fields.Float(string="Subtotal", copy=False, compute='_compute_total_price', store=False)
+    transit_picking_id = fields.Many2one('stock.picking', 'Transit Picking', copy=False)
     product_uom_qty = fields.Float(tracking=True)
     quantity_done = fields.Float(tracking=True)
     invoice_line_ids = fields.Many2many(comodel_name='account.move.line', compute="_get_aml_ids", string="Invoice Lines")
@@ -73,6 +74,14 @@ class StockMove(models.Model):
         """
         self._action_cancel()
         return True
+
+    def _should_be_assigned(self):
+        res = super()._should_be_assigned()
+        if res and self.location_dest_id.is_transit_location and self.picking_type_id.code == 'outgoing' and self._context.get('from_sale'):
+            return False
+        if self._context.get('is_transit'):
+            return False
+        return res
 
     def action_reset(self, qty=0):
         """
@@ -311,9 +320,9 @@ class StockMove(models.Model):
         if len(invoice_lines) > 1:
             invoice_lines = invoice_lines[0]
         if invoice_lines:
-            invoice_lines.move_id.sudo().with_context(default_move_type='out_invoice').write({
-                'invoice_line_ids': [[1, invoice_lines.id, {'quantity': self.quantity_done}]]
-            })
+            invoice_lines.move_id.sudo().with_context(default_move_type='out_invoice').write(
+                {'invoice_line_ids': [[1, invoice_lines.id, {'quantity': self.quantity_done}]]})
+
         elif invoice:
             vals = self.sale_line_id._prepare_invoice_line()
             invoice_lines = invoice.sudo().with_context(default_move_type='out_invoice').write({'invoice_line_ids': [[0, 0, vals]]})

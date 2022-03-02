@@ -10,9 +10,9 @@
                 <div style="margin: 0px; padding: 0px;">
                     <p style="margin: 0px; padding: 0px; font-size: 13px;">
                         <t t-set="doc_name" t-value="'quotation' if object.state in ('draft', 'sent') else 'order'"/>
-                        Dear <t t-out="object.partner_id.name or ''"></t>,
+                        Dear <t t-out="object.partner_id.name or ''"/>,
                         <t t-if="object.partner_id.parent_id">
-                            (<t t-out="object.partner_id.parent_id.name or ''"></t>)
+                            (<t t-out="object.partner_id.parent_id.name or ''"/>)
                         </t>
                         <br /><br />
                         Here is
@@ -20,13 +20,13 @@
                             in attachment your pro-forma invoice
                         </t>
                         <t t-else="">
-                            the <t t-out="doc_name or ''"></t> <strong t-out="object.name or ''"></strong>
+                            the <t t-out="doc_name or ''"/> <strong t-out="object.name or ''"/>
                         </t>
                         <t t-if="object.origin">
-                            (with reference: <t t-out="object.origin or ''"></t> )
+                            (with reference: <t t-out="object.origin or ''"/> )
                         </t>
-                        amounting in <strong t-out="format_amount(object.amount_total, object.currency_id) or ''"></strong>
-                        from <t t-out="object.company_id.name or ''"></t>.
+                        amounting in <strong t-out="format_amount(object.amount_total, object.currency_id) or ''"/>
+                        from <t t-out="object.company_id.name or ''"/>.
                         <br /><br />
                         Do not hesitate to contact us if you have any question.
                     </p>

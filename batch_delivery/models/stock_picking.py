@@ -42,6 +42,9 @@ class StockPicking(models.Model):
         help='Batch associated to this picking', copy=False, tracking=True)
     is_internal_transfer = fields.Boolean(string='Internal transfer')
     transit_date = fields.Date()
+    transit_move_lines = fields.One2many('stock.move', 'transit_picking_id', string="Stock Moves", copy=False)
+
+
 
     @api.depends('state')
     def _compute_show_validate(self):
@@ -143,12 +146,13 @@ class StockPicking(models.Model):
 
     @api.model
     def create(self, vals):
-        # todo donno why this method
         if vals.get('is_internal_transfer'):
             if vals.get('location_dest_id'):
                 vals['location_dest_id'] = False
         return super().create(vals)
 
+    # def action_transit_validate(self):
+    #     self.
     def _action_generate_backorder_wizard(self, show_transfers=False):
         """
           Delivery order don't need to create an active back order. Always cancel back order
@@ -168,11 +172,12 @@ class StockPicking(models.Model):
             return res
         return super()._action_generate_backorder_wizard(show_transfers)
 
-    def validate_multiple_delivery(self, records):
-        for rec in records:
+    def validate_multiple_delivery(self):
+        for rec in self:
             if rec.state != 'in_transit' and not rec.purchase_id:
                 raise UserError("Some of the selected Delivery order is not in transit state")
             rec.button_validate()
+        return self
 
     def load_products(self):
         self.ensure_one()
@@ -195,20 +200,27 @@ class StockPicking(models.Model):
                                            'product_uom_qty': qty
                                            })
 
+    def action_assign_transit(self):
+        if not self.transit_move_lines:
+            raise UserError("Nothing to check the availability for.")
+        return self.transit_move_lines._action_assign()
+
     def action_make_transit(self):
-        for pick in self:
-            if pick.state not in ['in_transit', 'done']:
-                pick.write({
+        for picking in self:
+            if picking.state not in ['in_transit', 'done']:
+                if not any(picking.transit_move_lines.mapped('quantity_done')):
+                    raise UserError("You cannot transit if no quantities are  done.\nTo force the transit, switch in edit mode and encode the done quantities.")
+                picking.transit_move_lines.filtered(lambda rec: rec.quantity_done > 0).with_context(is_transit=True)._action_done(cancel_backorder=True)
+                # picking.transit_move_lines.filtered(lambda rec: rec.quantity_done == 0)._action_cancel()
+                for move in picking.transit_move_lines.filtered(lambda rec: rec.state =='done'):
+                    move.move_dest_ids.write({'quantity_done': move.product_uom_qty})
+                picking.write({
                     'is_transit': True,
-                    'transit_date': fields.Date.context_today(pick)
+                    'transit_date': fields.Date.context_today(picking)
                 })
-                pick.move_lines.write({'is_transit': True})
-                for line in pick.move_lines:
-                    line.quantity_done = line.availability
-                    if line.sale_line_id:
-                        line.sale_line_id.qty_delivered = line.quantity_done
-                if pick.batch_id:
-                    pick.sale_id.write({'delivery_date': pick.batch_id.date})
+                if picking.batch_id:
+                    picking.sale_id.write({'delivery_date': picking.batch_id.date})
+        return True
 
     @api.model
     def default_get(self, default_fields):
@@ -287,7 +299,6 @@ class StockPicking(models.Model):
                     vals.get('route_id', False)) and picking.batch_id and picking.batch_id.state == 'draft':
                 vals.update({'batch_id': False})
             if 'route_id' in vals.keys() and not vals.get('route_id', False):
-                picking.mapped('move_lines').write({'is_transit': False})
                 vals.update({'batch_id': False, 'is_late_order': False, 'is_transit': False})
                 picking.mapped('sale_id').write({'batch_warning': '', 'state': 'sale'})
         return super().write(vals)
@@ -296,7 +307,6 @@ class StockPicking(models.Model):
         res = super()._action_done()
         for pick in self:
             pick.is_transit = False
-            pick.move_lines.write({'is_transit': False})
         for line in self.move_line_ids.filtered(lambda r: r.state == 'done'):
             line.product_onhand_qty = line.product_id.qty_available + line.product_id.transit_qty
         return res
@@ -365,29 +375,6 @@ class StockPicking(models.Model):
                 #     line.quantity_done = line.reserved_availability
 
 
-    #todo not migrated
-    # def button_validate(self):
-    #     """
-    #     if there are movelines with reserved quantities
-    #     and not validated, automatically validate them.
-    #     """
-    #     self.ensure_one()
-    #
-    #     if self.picking_type_id.code == 'outgoing':
-    #         for line in self.move_line_ids:
-    #             if line.lot_id and line.pref_lot_id and line.lot_id != line.pref_lot_id:
-    #                 raise UserError(_(
-    #                     "This Delivery for product %s is supposed to use products from the lot %s please clear the Preferred Lot field to override" % (
-    #                         line.product_id.name, line.pref_lot_id.name)))
-    #
-    #         no_quantities_done_lines = self.move_line_ids.filtered(lambda l: l.qty_done == 0.0 and not l.is_transit)
-    #         for line in no_quantities_done_lines:
-    #             if line.move_id and line.move_id.product_uom_qty == line.move_id.reserved_availability:
-    #                 line.qty_done = line.product_uom_qty
-    #
-    #     res = super(StockPicking, self).button_validate()
-    #     return res
-    #
     @api.model
     def reset_picking_with_route(self):
         picking = self.env['stock.picking'].search(

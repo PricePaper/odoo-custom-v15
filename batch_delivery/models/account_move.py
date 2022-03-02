@@ -164,12 +164,12 @@ class AccountMove(models.Model):
         res = super().action_post()
         for move in self.filtered(lambda rec: rec.move_type in ('out_invoice', 'out_refund')):
             move.remove_zero_qty_line()
-            if move.picking_ids.filtered(lambda rec: rec.state == 'cancel'):
-                raise UserError(
-                    'There is a Cancelled Picking (%s) linked to this invoice.' % move.picking_ids.filtered(lambda rec: rec.state == 'cancel').mapped(
-                        'name'))
+            # if move.picking_ids.filtered(lambda rec: rec.state == 'cancel'):
+            #     raise UserError(
+            #         'There is a Cancelled Picking (%s) linked to this invoice.' % move.picking_ids.filtered(lambda rec: rec.state == 'cancel').mapped(
+            #             'name'))
             if move.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')):
-                move.picking_ids.make_picking_done()
+                move.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')).make_picking_done()
             move.line_ids.mapped('sale_line_ids').mapped('order_id').filtered(lambda rec: rec.storage_contract is False).action_done()
         return res
 

@@ -31,4 +31,5 @@ class StockImmediateTransfer(models.TransientModel):
         storage_contract = self.pick_ids.mapped('purchase_id').mapped('order_line.sale_order_id').filtered(
             lambda s: s.storage_contract)
         storage_contract.write({'state': 'received'})
+        input((storage_contract,'*******************', self.pick_ids.mapped('purchase_id'), self.pick_ids.mapped('purchase_id').mapped('order_line.sale_order_id')))
         return res

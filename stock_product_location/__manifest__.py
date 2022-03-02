@@ -14,7 +14,7 @@
            """,
     'author': 'Confianz Global',
     'website': 'http://www.confianzit.com',
-    'depends': ['product', 'stock', 'sale', 'purchase'],
+    'depends': ['product', 'stock', 'sale', 'purchase', 'stock_dropshipping'],
     'data': ['security/ir.model.access.csv',
              'views/product_view.xml',
              'views/stock_move_by_location_view.xml',

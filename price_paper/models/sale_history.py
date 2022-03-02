@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api
+
+
 # from odoo.addons.queue_job.job import job
 
 class SaleOrderHistory(models.Model):
@@ -16,13 +18,13 @@ class SaleOrderHistory(models.Model):
     order_date = fields.Datetime(string='Order Date', related='order_line_id.order_id.confirmation_date')
     active = fields.Boolean('Active', default=True)
 
-    #commented the below code
-    #tracking for active field doesn't work with this function and couldn't be visibile as this model doesn't have form view
+    # commented the below code
+    # tracking for active field doesn't work with this function and couldn't be visibile as this model doesn't have form view
     # def _valid_field_parameter(self, field, name):
     #     return name == 'track_visibility' or super()._valid_field_parameter(field, name)
 
     # @job
-    #removed job decorator as it isn't useful in 15 version
+    # removed job decorator as it isn't useful in 15 version
     def job_queue_create_purchase_history(self, line):
         """
         Queue Job
@@ -49,12 +51,11 @@ class SaleOrderHistory(models.Model):
         """
 
         self.env['sale.history'].search([]).unlink()
-        self._cr.execute(
-            "select distinct on (so.partner_id,sol.product_id, sol.product_uom) sol.id,sol.product_id,sol.product_uom,so.partner_id  from sale_order_line sol join sale_order so on sol.order_id = so.id where so.state in ('done', 'sale') order by so.partner_id, sol.product_id, sol.product_uom, so.confirmation_date desc")
+        self._cr.execute("""select distinct on (so.partner_id,sol.product_id, sol.product_uom) sol.id,sol.product_id,sol.product_uom,so.partner_id  
+        from sale_order_line sol join sale_order so on sol.order_id = so.id where so.state in ('done', 'sale') order by so.partner_id, sol.product_id,
+         sol.product_uom, so.confirmation_date desc""")
         line_ids = self._cr.fetchall()
         for line in line_ids:
             self.with_delay(channel='root.Sales_History').job_queue_create_purchase_history(line)
-
-
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

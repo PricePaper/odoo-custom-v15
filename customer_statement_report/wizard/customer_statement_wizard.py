@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, api, registry,SUPERUSER_ID, _
+from odoo import fields, models, api, registry, SUPERUSER_ID, _
 from odoo.exceptions import UserError
 import threading
 import logging
 
 _logger = logging.getLogger(__name__)
+
 
 class CustomerStatementWizard(models.TransientModel):
     _name = 'customer.statement.wizard'
@@ -19,8 +20,6 @@ class CustomerStatementWizard(models.TransientModel):
         result = super(CustomerStatementWizard, self).default_get(fields)
         result['date_from'] = self.env.user.company_id.last_statement_date
         return result
-
-
 
     def mail_loop(self, invoices, customers, date_from, date_to, uid):
 
@@ -38,7 +37,7 @@ class CustomerStatementWizard(models.TransientModel):
                         'd_from': date_from,
                         'd_to': date_to,
                         'past_due': past_due,
-                        'subject': "Customer Statement [PAST DUE] - %s" %p.name if past_due else "Customer Statement - %s" %p.name
+                        'subject': "Customer Statement [PAST DUE] - %s" % p.name if past_due else "Customer Statement - %s" % p.name
                     }).send_mail(p.id, force_send=False, notif_layout='mail.mail_notification_light')
                     _logger.info("Mail loop activated: %s %s %s.", threading.current_thread().name, p.id, t)
                 except Exception as e:
@@ -63,17 +62,16 @@ class CustomerStatementWizard(models.TransientModel):
 
         return True
 
-
     def action_generate_statement(self):
         """
         process customer against with there invoices, payment with in a range of date.
         """
         inv_domain = [
-                ('move_type', 'in', ['out_invoice', 'in_refund']),
-                ('invoice_date', '>=', self.date_from),
-                ('invoice_date', '<=', self.date_to),
-                ('state', 'not in', ['draft', 'cancel'])
-            ]
+            ('move_type', 'in', ['out_invoice', 'in_refund']),
+            ('invoice_date', '>=', self.date_from),
+            ('invoice_date', '<=', self.date_to),
+            ('state', 'not in', ['draft', 'cancel'])
+        ]
 
         payment_domain = [
             ('date', '>=', self.date_from),
@@ -87,7 +85,8 @@ class CustomerStatementWizard(models.TransientModel):
             payment_domain.append(('partner_id', 'in', active_ids))
 
         invoices = self.env['account.move'].search(inv_domain)
-        invoices_open_with_credit = invoices.filtered(lambda r: r.invoice_has_outstanding and r.state in ['posted'] and r.payment_state in ['not_paid', 'partial'])
+        invoices_open_with_credit = invoices.filtered(
+            lambda r: r.invoice_has_outstanding and r.state in ['posted'] and r.payment_state in ['not_paid', 'partial'])
         invoices_paid = invoices.filtered(lambda r: r.payment_state in ('paid', 'in_payment'))
 
         payment = self.env['account.payment'].search(payment_domain)

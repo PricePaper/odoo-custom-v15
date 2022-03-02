@@ -31,7 +31,7 @@ class CustomerContract(models.Model):
 class CustomerContractLine(models.Model):
     _name = 'customer.contract.line'
     _description = 'Customer Contract Line'
-
+    _rec_name = "contract_id"
     product_id = fields.Many2one('product.product')
     product_qty = fields.Float('Quantity')
     remaining_qty = fields.Float('Remaining Qty', compute='_compute_remaining_qty', store=True)
@@ -39,7 +39,6 @@ class CustomerContractLine(models.Model):
     contract_id = fields.Many2one('customer.contract')
     state = fields.Selection(related='contract_id.state', readonly=True, store=True)
     sale_line_ids = fields.One2many('sale.order.line', 'customer_contract_line_id')
-
 
     @api.depends('sale_line_ids.product_uom_qty', 'product_qty')
     def _compute_remaining_qty(self):
@@ -51,7 +50,6 @@ class CustomerContractLine(models.Model):
         for record in self:
             result.append((record.id, "%s (%s)" % (record.contract_id.name, record.product_id.default_code)))
         return result
-
 
 
 

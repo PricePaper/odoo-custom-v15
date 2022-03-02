@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
-from odoo.exceptions import Warning
+from odoo.exceptions import UserError
 
 
 class HelpDeskTeam(models.Model):
@@ -16,8 +16,8 @@ class HelpDeskTicket(models.Model):
 
     def assign_ticket_to_self(self):
         self.ensure_one()
-        if self.user_id:
-            raise Warning(_('Ticket already assigned to %s') % self.user_id.name)
+        if self.user_id and self.user_id != self.env.user:
+            raise UserError('Ticket already assigned to %s' % self.user_id.name)
         super(HelpDeskTicket, self).assign_ticket_to_self()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

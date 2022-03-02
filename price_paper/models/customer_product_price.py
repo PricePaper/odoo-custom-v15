@@ -27,29 +27,24 @@ class CustomerProductPrice(models.Model):
     @api.depends('pricelist_id')
     def _compute_partner(self):
         for rec in self:
+            rec.partner_id = False
             if rec.pricelist_id and rec.pricelist_id.type == 'customer':
                 partner_id = rec.pricelist_id.mapped('partner_ids')
                 if partner_id and len(partner_id) == 1:
                     rec.partner_id = partner_id.id
-                else:
-                    rec.partner_id = False
-            else:
-                rec.partner_id = False
 
     @api.constrains('pricelist_id', 'product_id', 'product_uom')
     def _check_unique_constrain(self):
         for rec in self:
             if rec.pricelist_id and rec.product_id and rec.product_uom:
                 result = rec.pricelist_id.customer_product_price_ids.filtered(
-                    lambda r: r.product_id.id == rec.product_id.id and
-                              r.product_uom.id == rec.product_uom.id and r.id != rec.id)
+                    lambda r: r.product_id.id == rec.product_id.id and r.product_uom.id == rec.product_uom.id and r.id != rec.id)
                 if result:
-                    raise ValidationError(
-                        _('Already a record with same product and same UOM exists in Pricelist'))
+                    raise ValidationError('Already a record with same product and same UOM exists in Pricelist')
 
     def write(self, vals):
         """
-        overriden to update price_last_updated
+        override to update price_last_updated
         """
         if 'price' in vals:
             partners = self.pricelist_id.partner_ids.ids

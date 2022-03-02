@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <record id="view_sale_order_form_inherit_deviated_cost" model="ir.ui.view">
             <field name="name">sale.order.form.inherit</field>
             <field name="model">sale.order</field>
@@ -14,7 +13,7 @@
                 <xpath expr="//field[@name='order_line']/form//label[@for='qty_delivered']" position="before">
                     <field name="customer_contract_line_id" options="{'no_create': False}"
                            attrs="{'invisible': [('parent.show_customer_contract_line', '=', False)]}"
-/><!--Note  removed domain from here and added in py code-->
+                           domain="[('remaining_qty', '&gt;', 0), ('contract_id.partner_ids', '=', parent.partner_id), ('state', '=', 'confirmed')]"/>
                 </xpath>
             </field>
         </record>

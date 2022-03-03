@@ -27,7 +27,7 @@
                     <field name="is_all_service" invisible="1"/>
                     <field name="recompute_delivery_price" invisible="1"/>
 
-                    <label for="carrier_id"/>
+                    
                     <div name="carrier_price">
                         <button name="action_open_delivery_wizard" type="object" class="oe_inline oe_link"
                                 attrs="{'invisible': ['|', '|',('is_all_service', '=', True), ('order_line', '=', []), ('delivery_set', '=', True)]}">

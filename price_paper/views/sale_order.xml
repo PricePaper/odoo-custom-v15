@@ -29,7 +29,6 @@
 
                     <label for="carrier_id"/>
                     <div name="carrier_price">
-                        <field name="carrier_id"/>
                         <button name="action_open_delivery_wizard" type="object" class="oe_inline oe_link"
                                 attrs="{'invisible': ['|', '|',('is_all_service', '=', True), ('order_line', '=', []), ('delivery_set', '=', True)]}">
                             <i class="fa fa-arrow-right"/>

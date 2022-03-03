@@ -134,7 +134,7 @@ class AccountMove(models.Model):
         res = super()._compute_show_reset_to_draft_button()
         for move in self:
             move.show_reset_to_draft_button = not move.picking_ids.filtered(
-                lambda rec: rec.state in ('in_transit', 'done')) and self.env.user.has_group('account.group_account_manager')
+                lambda rec: rec.state in ('done')) and self.env.user.has_group('account.group_account_manager')
         return res
 
     def name_get(self):

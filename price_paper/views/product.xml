@@ -55,14 +55,7 @@
                 </xpath>
 
                 <field name="detailed_type" position="before">
-                    <field name="is_storage_contract"/>
                     <field name="need_sub_product"/>
-                </field>
-
-                <field name="property_account_income_id" position="before">
-                    <field name="storage_contract_account_id"
-                           attrs="{'required':[('is_storage_contract', '=', True)],
-                      'invisible':[('is_storage_contract', '=', False)]}"/>
                 </field>
 
                 <!--                TODO uncomment below one check the purpose of below code in odoo 15--><!--TODO Fixed ,found no use-->

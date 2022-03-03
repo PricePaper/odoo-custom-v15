@@ -13,7 +13,7 @@ class inactive_customer_wizard(models.TransientModel):
         latest_sale_date = "%s 00:00:00" % (str(self.latest_sale_date))
 
         self._cr.execute(
-            "select id from res_partner where id not in (select partner_id from sale_order where confirmation_date > '%s' and state in ('sale', 'done')) and customer='t' and supplier='f' and active='t'" % (
+            "select id from res_partner where id not in (select partner_id from sale_order where date_order > '%s' and state in ('sale', 'done')) and customer='t' and supplier='f' and active='t'" % (
                 latest_sale_date))
 
         par_ids = self._cr.fetchall()

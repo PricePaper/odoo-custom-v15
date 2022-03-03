@@ -50,13 +50,8 @@ class SaleOrder(models.Model):
     invoice_address_id = fields.Many2one('res.partner', string="Billing Address")
     sc_child_order_count = fields.Integer(compute='_compute_sc_child_order_count')
     delivery_cost = fields.Float(string='Estimated Delivery Cost', readonly=True, copy=False)
-    # po_count = fields.Integer(compute='_compute_po_count', readonly=True)
     active = fields.Boolean(tracking=True, default=True)
-    # todo below field is not needed use date_order
-    confirmation_date = fields.Datetime(string='Confirmation Date', readonly=True, index=True,
-                                        help="Date on which the sales order is confirmed.", copy=False)
-
-    # sales_person_ids = fields.Many2many('res.partner', string='Associated Sales Persons')
+    date_order = fields.Datetime(string='Confirmation Date')
 
     @api.model
     def get_release_deliver_default_date(self):
@@ -68,7 +63,9 @@ class SaleOrder(models.Model):
     def compute_credit_warning(self):
 
         for order in self:
-            pending_invoices = order.partner_id.invoice_ids.filtered(lambda rec: rec.is_sale_document() and rec.state == 'posted' and rec.payment_state not in ('paid', 'in_payment') and (rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
+            pending_invoices = order.partner_id.invoice_ids.filtered(
+                lambda rec: rec.move_type == 'out_invoice' and rec.state == 'posted' and rec.payment_state not in ('paid', 'in_payment') and (
+                            rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
 
             msg = ''
             msg1 = ''
@@ -87,10 +84,8 @@ class SaleOrder(models.Model):
                     order.partner_id.name, order.partner_id.credit_limit,
                     (order.partner_id.credit + order.amount_total))
             for order_line in order.order_line.filtered(lambda r: not r.storage_contract_line_id):
-                if order_line.price_unit < order_line.working_cost and not (
-                        'rebate_contract_id' in order_line and order_line.rebate_contract_id):
-                    msg1 += '[%s]%s ' % (order_line.product_id.default_code,
-                                         order_line.product_id.name) + "Unit Price is less than  Product Cost Price.\n"
+                if order_line.price_unit < order_line.working_cost and not order_line.rebate_contract_id:
+                    msg1 += '[%s]%s unit price is less than  product cost price.\n' % (order_line.product_id.default_code, order_line.product_id.name)
             if order.carrier_id and order.gross_profit < order.carrier_id.min_profit:
                 msg1 += 'Order profit is less than minimum profit'
             order.credit_warning = msg
@@ -104,7 +99,6 @@ class SaleOrder(models.Model):
         """
         for order in self:
             if order.credit_warning:
-                # todo ticket creation is blocked from 12 itself.
                 order.write({'is_creditexceed': True, 'ready_to_release': False})
                 order.message_post(body=order.credit_warning)
                 return order.credit_warning
@@ -182,7 +176,6 @@ class SaleOrder(models.Model):
         res = super(SaleOrder, self).action_confirm()
 
         for order in self:
-            # order.confirmation_date = fields.Datetime.now()
             for order_line in order.order_line:
                 if order_line.is_delivery:
                     continue
@@ -215,7 +208,6 @@ class SaleOrder(models.Model):
         for order in self:
             order.sc_child_order_count = len(order.order_line.mapped('storage_contract_line_ids.order_id').filtered(
                 lambda r: r.state not in ['sent', 'cancel']))
-
 
     # todo not used anywhere
     # def make_done_orders(self):
@@ -270,7 +262,6 @@ class SaleOrder(models.Model):
             raise UserError(msg)
         return True
 
-
     def activate_views(self):
         except_view = []
         for view in self.env['ir.ui.view'].search([('active', '=', False)]):
@@ -292,7 +283,6 @@ class SaleOrder(models.Model):
         return True
 
     def action_cancel(self):
-
 
         # return False
         # todo not finished some confusions in PO relation
@@ -420,7 +410,7 @@ class SaleOrder(models.Model):
     # todo above methods are not used
 
     def run_storage(self):
-        #logic is wrong it is creating stock moves fro SC main order
+        # logic is wrong it is creating stock moves fro SC main order
         # create PO directly
         for order in self:
             route = self.env.ref('stock.route_warehouse0_mto', raise_if_not_found=True)
@@ -602,26 +592,18 @@ class SaleOrder(models.Model):
                     if order.picking_ids.filtered(lambda r: r.state == 'in_transit'):
                         raise UserError('You can not add product to a Order which has a DO in transit state')
                     order.action_cancel()
-                    self.action_draft()
-                    self.action_confirm()
+                    order.action_draft()
+                    order.action_confirm()
 
         if not self._context.get('from_import'):
             self.check_payment_term()
-        #            Note following odoo V15 defaut Add shipping logic.
-        #            for order in self:
-        #                if order.state != 'done' and ('state' not in vals or 'state' in vals and vals['state'] != 'done'):
-        #                    if order.carrier_id:
-        #                        order.adjust_delivery_line()
-        #                    else:
-        #                        order._remove_delivery_line()
-
         if 'sales_person_ids' in vals and vals['sales_person_ids']:
             self.message_subscribe(partner_ids=vals['sales_person_ids'][0][-1])
         return res
 
     def copy(self, default=None):
-        ctx = dict(self.env.context)
-        self = self.with_context(ctx)
+        # ctx = dict(self.env.context)
+        # self = self.with_context(ctx)
         new_so = super(SaleOrder, self).copy(default=default)
         for line in new_so.order_line:
             if line.is_delivery:
@@ -636,8 +618,6 @@ class SaleOrder(models.Model):
             return records
         if self._context.get('my_draft') or self._context.get('my_orders'):
             return records.filtered(lambda s: s.user_id == user or user.partner_id in s.sales_person_ids)
-        # elif self._context.get('my_orders'):
-        #     return records.filtered(lambda s: s.user_id == user or user.partner_id in s.sales_person_ids)
         return records
 
     def get_delivery_price_not_used(self):
@@ -661,39 +641,21 @@ class SaleOrder(models.Model):
                 if order.carrier_id.delivery_type not in ['fixed', 'base_on_rule']:
                     order.delivery_cost = 0.0
 
-    #     Note following odoo V15 defaut Add shipping logic.
-    #    def adjust_delivery_line(self):
-    #        """
-    #        method written to adjust delivery charges line in order line
-    #        upon form save with changes in delivery method in sale order record
-    #        """
-    #        for order in self:
-    #            if not order.delivery_rating_success and order.order_line:
-    #                raise UserError(_('Please use "Check price" in order to compute a shipping price for this quotation.'))
+    def adjust_delivery_line(self):
+        """
+        method written to adjust delivery charges line in order line
+        upon form save with changes in delivery method in sale order record
+        """
+        res = self.carrier_id.rate_shipment(self)
+        price_unit = res.get('price', 0)
+        if price_unit != self._get_delivery_line_price() or not self._get_delivery_line_price():
+            self._remove_delivery_line()
+            self._create_delivery_line(self.carrier_id, price_unit)
 
-    #            res = order.carrier_id.rate_shipment(order)
-    #            price_unit = res.get('price', 0)
-    #            delivery_line = self.env['sale.order.line'].search(
-    #                [('order_id', '=', order.id), ('is_delivery', '=', True)], limit=1)
+        return True
 
-    #            if delivery_line:
-    # Apply fiscal position to get taxes to be applied
-    # taxes = order.carrier_id.product_id.taxes_id.filtered(lambda t: t.company_id.id == order.company_id.id)
-    # taxes_ids = taxes.ids
-    # if order.partner_id and order.fiscal_position_id:
-    #     taxes_ids = order.fiscal_position_id.map_tax(taxes, order.carrier_id.product_id,
-    #                                                  order.partner_id).ids
-
-    # reset delivery line
-    #                delivery_line.product_id = order.carrier_id.product_id.id
-    #                delivery_line.price_unit = price_unit
-    #                delivery_line.name = order.carrier_id.name
-    #                delivery_line.product_uom_qty = delivery_line.product_uom_qty if delivery_line.product_uom_qty > 1 else 1
-    #                delivery_line.product_uom = order.carrier_id.product_id.uom_id.id
-    #            else:
-    #                order._create_delivery_line(order.carrier_id, price_unit)
-
-    #        return True
+    def _get_delivery_line_price(self):
+        return sum(self.env['sale.order.line'].search([('order_id', 'in', self.ids), ('is_delivery', '=', True)]).mapped('price_subtotal')) or 0
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):
@@ -929,7 +891,6 @@ class SaleOrderLine(models.Model):
     note_expiry_date = fields.Date('Note Valid Upto')
     scraped_qty = fields.Float(compute='_compute_scrape_qty', string='Quantity Scraped', store=False)
     date_planned = fields.Date(related='order_id.release_date', store=False, readonly=True, string='Date Planned')
-
 
     @api.depends('product_id', 'product_uom_qty', 'price_unit', 'order_id.delivery_cost')
     def calculate_profit_margin(self):
@@ -1229,8 +1190,9 @@ class SaleOrderLine(models.Model):
                 lines_exist = len(delivery_lines)
             for line in self:
 
-                if line.is_delivery and line.order_id.state == 'sale' and lines_exist==1:
-                    raise ValidationError('You cannot delete a Delivery line,since the sale order is already confirmed,please refresh the page to undo')
+                if line.is_delivery and line.order_id.state == 'sale' and lines_exist == 1:
+                    raise ValidationError(
+                        'You cannot delete a Delivery line,since the sale order is already confirmed,please refresh the page to undo')
                 if line.is_delivery and base:
                     base.unlink(line)
                     unlinked_lines |= line

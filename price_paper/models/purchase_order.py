@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-#todo starts from here
 from odoo import models, fields, registry, api, _
-from datetime import date, datetime
-from dateutil.relativedelta import relativedelta
-from odoo.exceptions import ValidationError, AccessError
 
 
 class PurchaseOrder(models.Model):
@@ -24,7 +20,6 @@ class PurchaseOrder(models.Model):
         po = self.env['sale.order'].serach([('id', operator, value)])._get_purchase_orders()
         return [('id', 'in', po.ids)]
 
-
     @api.depends('order_line', 'order_line.sale_line_id')
     def _compute_storage_contract_po(self):
         for order in self:
@@ -38,7 +33,6 @@ class PurchaseOrder(models.Model):
         res = super(PurchaseOrder, self).button_cancel()
         storage_contract = self.mapped('order_line.sale_order_id').filtered(lambda s: s.storage_contract)
         if storage_contract:
-            #todo check storage contract satte changes
             storage_contract.write({'sc_po_done': False, 'state': 'sale'})
         return res
 
@@ -51,17 +45,17 @@ class PurchaseOrder(models.Model):
 
     def button_confirm(self):
         """
-        cancel all other RFQ under the same purchase agreement
+        mark SC order are PO ordered state
         """
-        #todo it may make issues in maketoorder buy oirders relation is not stable
-
-        self.mapped('order_line.sale_order_id').write({'state': 'ordered'})
+        storage_contract = self.order_line.mapped('sale_order_id').filtered(lambda s: s.storage_contract)
+        if storage_contract:
+            storage_contract.write({'state': 'ordered'})
         return super(PurchaseOrder, self).button_confirm()
-
 
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
+
     @api.model
     def _prepare_purchase_order_line_from_procurement(self, product_id, product_qty, product_uom, company_id, values, po):
         res = super()._prepare_purchase_order_line_from_procurement(product_id, product_qty, product_uom, company_id, values, po)
@@ -69,9 +63,11 @@ class PurchaseOrderLine(models.Model):
             sale_line = self.env['sale.order.line'].browse(values.get('sale_line_id'))
             if sale_line.order_id.storage_contract:
                 res['sale_line_id'] = sale_line.id
-        elif values.get('move_dest_ids') and values.get('move_dest_ids').sale_line_id and values.get('move_dest_ids').sale_line_id.order_id.storage_contract:
+        elif values.get('move_dest_ids') and values.get('move_dest_ids').sale_line_id and values.get(
+                'move_dest_ids').sale_line_id.order_id.storage_contract:
             res['sale_line_id'] = values.get('move_dest_ids').sale_line_id.id
-        input((res,'9999999999999999999999',values.get('sale_line_id'),'\n\n', values.get('move_dest_ids').sale_line_id))
         return res
+
+
 PurchaseOrderLine()
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

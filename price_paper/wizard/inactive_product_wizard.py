@@ -13,7 +13,7 @@ class inactive_product_wizard(models.TransientModel):
         latest_sale_date = "%s 00:00:00" % (str(self.latest_sale_date))
 
         self.env.cr.execute(
-            "select sol.product_id from sale_order_line sol join sale_order so ON (so.id = sol.order_id) where so.confirmation_date > '%s' and so.state in ('sale', 'done')" % (
+            "select sol.product_id from sale_order_line sol join sale_order so ON (so.id = sol.order_id) where so.date_order > '%s' and so.state in ('sale', 'done')" % (
                 latest_sale_date))
 
         pro_ids = self._cr.fetchall()

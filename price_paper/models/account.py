@@ -132,7 +132,7 @@ class AccountMove(models.Model):
             for sale_order in self.mapped('invoice_line_ids').mapped('sale_line_ids').mapped('order_id'):
                 if sale_order.storage_contract and sale_order.state == 'released':
                     sale_order.write({'state': 'done'})
-        return super().action_invoice_cancel()
+        return super().button_cancel()
 
 
 class AccountMoveLine(models.Model):

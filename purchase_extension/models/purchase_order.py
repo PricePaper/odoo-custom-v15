@@ -216,10 +216,10 @@ class PurchaseOrder(models.Model):
             first_day = current_date.replace(day=1)
             date_limit = str(first_day + relativedelta(months=-15))
             self._cr.execute(
-                "SELECT date_trunc('month', so.confirmation_date) AS cnf_date, "
+                "SELECT date_trunc('month', so.date_order) AS cnf_date, "
                 "sol.product_id, sol.product_uom, sum(sol.product_uom_qty) "
                 "FROM sale_order_line sol JOIN sale_order so on so.id=sol.order_id "
-                "WHERE so.state in ('sale', 'done') AND sol.product_id %s %s and so.confirmation_date >= '%s' "
+                "WHERE so.state in ('sale', 'done') AND sol.product_id %s %s and so.date_order >= '%s' "
                 "GROUP BY sol.product_id, sol.product_uom, cnf_date "
                 "ORDER BY sol.product_id, sol.product_uom, cnf_date desc" % (operator, product_ids, str(date_limit)))
 
@@ -420,7 +420,7 @@ class PurchaseOrderLine(models.Model):
         first_day = current_date.replace(day=1)
         date_limit = str(first_day + relativedelta(months=-15))
         self._cr.execute(
-            "SELECT sol.id FROM sale_order_line sol JOIN sale_order so on so.id=sol.order_id WHERE sol.product_id=%s AND so.confirmation_date>='%s' and so.state in ('sale', 'done')" % (
+            "SELECT sol.id FROM sale_order_line sol JOIN sale_order so on so.id=sol.order_id WHERE sol.product_id=%s AND so.date_order>='%s' and so.state in ('sale', 'done')" % (
             self.product_id.id, date_limit))
         res = self._cr.dictfetchall()
         sale_lines = [ele['id'] for ele in res]
@@ -434,7 +434,7 @@ class PurchaseOrderLine(models.Model):
             if ele.product_uom.id != ele.product_id.uom_po_id.id:
                 uom_qty = ele.product_uom._compute_quantity(uom_qty, ele.product_id.uom_po_id)
             created_ids += self.env['view.sales.history.po'].create({'product_id': ele.product_id.id,
-                                                                     'date': ele.order_id.confirmation_date,
+                                                                     'date': ele.order_id.date_order,
                                                                      'quantity': uom_qty,
                                                                      'uom': ele.product_id.uom_po_id.id,
                                                                      'partner_id': ele.order_id.partner_id.id,

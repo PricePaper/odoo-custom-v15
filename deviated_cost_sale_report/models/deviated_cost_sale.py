@@ -10,8 +10,8 @@ class ReportDeviatedCost(models.AbstractModel):
 
     def get_sale_order_lines(self, data):
         res = []
-        domain = [('state', '=', 'sale'), ('confirmation_date', '>=', data.get('from_date')),
-                  ('confirmation_date', '<=', data.get('to_date'))]
+        domain = [('state', '=', 'sale'), ('date_order', '>=', data.get('from_date')),
+                  ('date_order', '<=', data.get('to_date'))]
         sale_orders = self.env['sale.order'].search(domain)
 
         order_lines = sale_orders.mapped('order_line').filtered(
@@ -27,7 +27,7 @@ class ReportDeviatedCost(models.AbstractModel):
 
             line_dict = {
                 'so_number': line.order_id.name,
-                'date': line.order_id.confirmation_date,
+                'date': line.order_id.date_order,
                 'product': "[%s]%s" % (line.product_id.default_code, line.product_id.name),
                 'qty': line.product_uom_qty,
                 'unit_cost_purchased': line.product_cost and line.product_cost or False,

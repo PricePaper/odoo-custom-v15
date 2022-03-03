@@ -34,9 +34,9 @@ class AccountRegisterPayment(models.TransientModel):
                 discount_limit = sum(payment.reconciled_invoice_ids.mapped('amount_total')) * (discount_limit / 100)
                 if payment.discount_move_id.amount_total > discount_limit:
                     raise UserError('Invoices can not be discounted more than $ %.2f.\nCreate a credit memo instead.' % discount_limit)
-            counterpart_line = vals.get('to_reconcile')
-            counterpart_line |= payment.discount_move_id.line_ids.filtered(lambda r: r.account_id.user_type_id.type in ('receivable', 'payable'))
-            counterpart_line.reconcile()
+                counterpart_line = vals.get('to_reconcile')
+                counterpart_line |= payment.discount_move_id.line_ids.filtered(lambda r: r.account_id.user_type_id.type in ('receivable', 'payable'))
+                counterpart_line.reconcile()
         return res
 
     def _init_payments(self, to_process, edit_mode=False):

@@ -74,8 +74,8 @@ class VendorProductReportWizard(models.TransientModel):
                 return True
             query = """
                     SELECT l.product_id, sum(l.product_uom_qty), sum(l.qty_delivered), l.product_uom from sale_order o, sale_order_line
-                    l WHERE o.confirmation_date >= '%s'
-                    AND o.confirmation_date <= '%s' AND o.id=l.order_id AND
+                    l WHERE o.date_order >= '%s'
+                    AND o.date_order <= '%s' AND o.id=l.order_id AND
                     l.product_id in (%s) AND l.product_uom_qty>0 AND o.state IN ('sale', 'done') GROUP BY l.product_id, l.product_uom;""" % (
                 str(rec.start_date), str(rec.end_date), (",".join(str(x) for x in products)))
 

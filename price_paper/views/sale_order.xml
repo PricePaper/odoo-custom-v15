@@ -21,6 +21,37 @@
                     </div>
                 </sheet>
 
+                <field name="payment_term_id" position="after">
+                    <field name="carrier_id"/>
+                    <field name="delivery_set" invisible="1"/>
+                    <field name="is_all_service" invisible="1"/>
+                    <field name="recompute_delivery_price" invisible="1"/>
+
+                    <label for="carrier_id"/>
+                    <div name="carrier_price">
+                        <field name="carrier_id"/>
+                        <button name="action_open_delivery_wizard" type="object" class="oe_inline oe_link"
+                                attrs="{'invisible': ['|', '|',('is_all_service', '=', True), ('order_line', '=', []), ('delivery_set', '=', True)]}">
+                            <i class="fa fa-arrow-right"/>
+                            Get rate
+                        </button>
+                        <button
+                                string="Update shipping cost"
+                                name="action_open_delivery_wizard"
+                                context="{'carrier_recompute':True}"
+                                type="object"
+                                class="text-warning btn-secondary"
+                                attrs="{'invisible': ['|', '|',('is_all_service', '=', True), ('recompute_delivery_price', '=', False), ('delivery_set', '=', False)]}"
+                        />
+                        <button
+                                string="Update shipping cost"
+                                name="action_open_delivery_wizard"
+                                context="{'carrier_recompute':True}"
+                                type="object"
+                                attrs="{'invisible': ['|', '|',('is_all_service', '=', True), ('recompute_delivery_price', '=', True), ('delivery_set', '=', False)]}"
+                        />
+                    </div>
+                </field>
                 <xpath expr="//field[@name='validity_date']" position="after">
                     <field name="storage_contract" invisible="1"/>
                     <field name="hold_state" invisible='1'/>
@@ -32,11 +63,9 @@
 
                 <field name="partner_id" position="attributes">
                     <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
-                    <attribute name="domain">[('type', '=', 'contact'), ('customer', '=', True), ('parent_id', '=',
-                        False)]
-                    </attribute>
-                    <attribute name="context">{'search_default_customer': 1, 'show_address': 1, 'tree_view_ref':
-                        'view_partner_tree_search_more',
+                    <attribute name="domain">[('type', '=', 'contact'), ('customer', '=', True), ('parent_id', '=', False)]</attribute>
+                    <attribute name="context">{'search_default_customer': 1, 'show_address': 1,
+                        'tree_view_ref': 'view_partner_tree_search_more',
                         'address_inline': 1, 'show_partner_code': 1, 'show_vat': 0}
                     </attribute>
                 </field>
@@ -521,8 +550,8 @@
                               <span attrs="{'invisible':[('active', '=', True)]}">Unarchive</span>
                               <span attrs="{'invisible':[('active', '!=', True)]}">Archive</span>
                               </field>
-                                <field name="confirmation_date"
-                                       attrs="{'invisible': [('confirmation_date', '=', False)]}"/>
+<!--                                <field name="confirmation_date"-->
+<!--                                       attrs="{'invisible': [('confirmation_date', '=', False)]}"/>-->
                                 <field name="currency_id" invisible="1"/>
                                 <field name="payment_term_id" options="{'no_create': True}"
                                        attrs="{'readonly': [('state', '!=', 'draft')]}"/>

@@ -15,7 +15,7 @@ class SaleOrderHistory(models.Model):
     uom_id = fields.Many2one('uom.uom', related='order_line_id.product_uom', string='UOM')
     order_id = fields.Many2one('sale.order', related='order_line_id.order_id', string='Order')
     order_line_id = fields.Many2one('sale.order.line', string='Order Line')
-    order_date = fields.Datetime(string='Order Date', related='order_line_id.order_id.confirmation_date')
+    order_date = fields.Datetime(string='Order Date', related='order_line_id.order_id.date_order')
     active = fields.Boolean('Active', default=True)
 
     # commented the below code
@@ -53,7 +53,7 @@ class SaleOrderHistory(models.Model):
         self.env['sale.history'].search([]).unlink()
         self._cr.execute("""select distinct on (so.partner_id,sol.product_id, sol.product_uom) sol.id,sol.product_id,sol.product_uom,so.partner_id  
         from sale_order_line sol join sale_order so on sol.order_id = so.id where so.state in ('done', 'sale') order by so.partner_id, sol.product_id,
-         sol.product_uom, so.confirmation_date desc""")
+         sol.product_uom, so.date_order desc""")
         line_ids = self._cr.fetchall()
         for line in line_ids:
             self.with_delay(channel='root.Sales_History').job_queue_create_purchase_history(line)

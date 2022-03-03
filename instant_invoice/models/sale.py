@@ -9,32 +9,33 @@ class SaleOrder(models.Model):
 
     quick_sale = fields.Boolean(string='is_quick_sale', default=False, copy=False)
 
+    # Note V15 following odoo's default Delivery method logic by Add Shipping button
 
-    #Note V15 following odoo's default Delivery method logic by Add Shipping button
-#    def compute_credit_warning(self):
-#        for order in self:
-#            if not order.quick_sale and order.carrier_id:
-#                order.adjust_delivery_line()
-#        res = super(SaleOrder, self).compute_credit_warning()
+    def compute_credit_warning(self):
+        for order in self:
+            if not order.quick_sale and order.carrier_id:
+                order.adjust_delivery_line()
+        return super(SaleOrder, self).compute_credit_warning()
 
-#    def write(self, vals):
-#        """
-#        auto save the delivery line.
-#        """
-#        for order in self:
-#            if vals.get('state', '') == 'done' and not order.state == 'done':
-#                if not order.quick_sale and order.carrier_id:
-#                    order.adjust_delivery_line()
-#                else:
-#                    order._remove_delivery_line()
-#        res = super(SaleOrder, self).write(vals)
-#        for order in self:
-#            if order.state != 'done' and ('state' not in vals or vals.get('state', '') != 'done'):
-#                if not order.quick_sale and order.carrier_id:
-#                    order.adjust_delivery_line()
-#                else:
-#                    order._remove_delivery_line()
+    def write(self, vals):
+        """
+        auto save the delivery line.
+        """
+        for order in self:
+            if vals.get('state', '') == 'done' and not order.state == 'done':
+                if not order.quick_sale and order.carrier_id:
+                    order.adjust_delivery_line()
+                else:
+                    order._remove_delivery_line()
 
+        res = super(SaleOrder, self).write(vals)
+        for order in self:
+            if order.state != 'done' and ('state' not in vals or vals.get('state', '') != 'done'):
+                if not order.quick_sale and order.carrier_id:
+                    order.adjust_delivery_line()
+                else:
+                    order._remove_delivery_line()
+        return res
 
     def action_quick_sale(self):
         for rec in self.sudo():
@@ -59,7 +60,6 @@ class SaleOrder(models.Model):
         picking = self.picking_ids
         return picking.print_product_label()
 
-
     def action_print_invoice(self):
         invoice = self.invoice_ids
         invoice.filtered(lambda inv: not inv.is_move_sent).write({'is_move_sent': True})
@@ -70,7 +70,6 @@ class SaleOrder(models.Model):
             return self.env.ref('instant_invoice.action_report_quick_saleorder') \
                 .with_context(discard_logo_check=True).report_action(self)
         return super(SaleOrder, self).print_quotation()
-
 
     def action_release_credit_hold(self):
         """

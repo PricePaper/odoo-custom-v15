@@ -48,17 +48,17 @@ class ResPartner(models.Model):
                                                                   'rule_id': self.env.user.partner_id.default_commission_rule and self.env.user.partner_id.default_commission_rule.id or False})]})
         return res
 
-    @api.depends('sale_order_ids.confirmation_date')
+    @api.depends('sale_order_ids.date_order')
     def get_last_sale_order(self):
         for record in self:
             last_so = last_so_date = False
             if record.sale_order_ids:
                 order = record.sale_order_ids.search(
-                    [('partner_id', '=', record.id), ('state', 'in', ['sale', 'done'])], order='confirmation_date desc',
+                    [('partner_id', '=', record.id), ('state', 'in', ['sale', 'done'])], order='date_order desc',
                     limit=1)
                 if order:
                     last_so = order.name
-                    last_so_date = order.confirmation_date
+                    last_so_date = order.date_order
             record.last_so = last_so
             record.last_so_date = last_so_date
 

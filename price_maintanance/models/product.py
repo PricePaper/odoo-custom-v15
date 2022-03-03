@@ -84,8 +84,8 @@ class ProductProduct(models.Model):
 
         unit_price_median_10_day = 100
         orders = self.env['sale.order'].search(
-            [('state', 'in', ['sale', 'done']), ('confirmation_date', '>=', str(date_90_days_back_start_date)),
-             ('confirmation_date', '<=', str(today))])
+            [('state', 'in', ['sale', 'done']), ('date_order', '>=', str(date_90_days_back_start_date)),
+             ('date_order', '<=', str(today))])
         order_lines = self.env['sale.order.line']
 
         for order in orders:
@@ -94,13 +94,13 @@ class ProductProduct(models.Model):
         products = self.env['product.product'].search([])
         for product in products:
             sale_order_lines_10_day_back = order_lines.filtered(lambda
-                                                                    line: line.product_id.id == product.id and line.order_id.confirmation_date >= date_10_days_back_start_date)
+                                                                    line: line.product_id.id == product.id and line.order_id.date_order >= date_10_days_back_start_date)
             sale_order_lines_30_day_back = order_lines.filtered(lambda
-                                                                    line: line.product_id.id == product.id and line.order_id.confirmation_date >= date_30_days_back_start_date)
+                                                                    line: line.product_id.id == product.id and line.order_id.date_order >= date_30_days_back_start_date)
             sale_order_lines_60_day_back = order_lines.filtered(lambda
-                                                                    line: line.product_id.id == product.id and line.order_id.confirmation_date >= date_60_days_back_start_date)
+                                                                    line: line.product_id.id == product.id and line.order_id.date_order >= date_60_days_back_start_date)
             sale_order_lines_90_day_back = order_lines.filtered(lambda
-                                                                    line: line.product_id.id == product.id and line.order_id.confirmation_date >= date_90_days_back_start_date)
+                                                                    line: line.product_id.id == product.id and line.order_id.date_order >= date_90_days_back_start_date)
             unit_price_median_10_day = product.get_median(sale_order_lines_10_day_back)
             unit_price_median_30_day = product.get_median(sale_order_lines_30_day_back)
             unit_price_median_60_day = product.get_median(sale_order_lines_60_day_back)
@@ -189,7 +189,7 @@ class ProductProduct(models.Model):
                 ('product_id', 'in', product_list.ids)
             ]
             OrderLine = self.env['sale.order.line']
-            lines = OrderLine.search(domain, order="confirmation_date desc")
+            lines = OrderLine.search(domain, order="date_order desc")
             partners = lines.mapped('order_id.partner_id')
             partner_count = len(partners)
             partner_count_company = self.env.user.company_id.partner_count or 0

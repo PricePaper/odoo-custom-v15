@@ -186,17 +186,26 @@
                 </button>
                 <button name="button_validate" position="after">
                     <field name="is_return" invisible="1"/>
-                    <button name="action_assign_transit" type="object" string="check availability" class="oe_highlight"/>
-                    <button name="action_make_transit" type="object" string="Mark as Transit" groups="account.group_account_invoice"  class="oe_highlight"/>
-<!--                            attrs="{'invisible': ['|', '|',  '|',('is_return', '=', True), ('state', 'not in', ['assigned', 'waiting']), ('picking_type_code', 'in', ['incoming', 'internal']), '&amp;',('picking_type_code', '=', 'outgoing'), ('purchase_id', '!=', False)]}" class="oe_highlight"/>-->
-                    <button name="create_invoice" type="object" string="Create Invoice" groups="account.group_account_invoice"
-                            attrs="{'invisible': ['|', '|',  ('is_return', '=', True), ('state', 'not in', ['in_transit']), ('is_invoiced', '=', True)]}"
-                            class="oe_highlight"/>
+                    <button name="action_assign_transit" type="object"
+                      string="check availability" class="oe_highlight"
+                      attrs="{'invisible': ['|', '|',  ('state', 'in', ['done', 'cancel', 'in_transit']),
+                      ('picking_type_code', 'in', ['incoming', 'internal']),
+                      '&amp;',('picking_type_code', '=', 'outgoing'),
+                      ('purchase_id', '!=', False)]}"/>
+                    <button name="action_make_transit" type="object"
+                          string="Mark as Transit" groups="account.group_account_invoice"
+                          attrs="{'invisible': ['|',
+                          ('state', 'not in', ['assigned', 'waiting']),
+                          ('picking_type_code', 'in', ['incoming', 'internal'])]}"
+                          class="oe_highlight"/>
+                    <button name="create_invoice" type="object" string="Create Invoice" groups="account.group_account_invoice" class="oe_highlight"
+                         attrs="{'invisible': ['|', ('state', 'not in', ['in_transit']), ('is_invoiced', '=', True)]}" />
 
+
+                    <!-- <button name="action_validate" type="object" string="Confirm Transfer" groups="account.group_account_invoice"
+                            attrs="{'invisible': ['|', ('is_transit', '=',False), ('is_invoiced', '=', False)]}" class="oe_highlight"/> -->
                     <button name="action_validate" type="object" string="Confirm Transfer" groups="account.group_account_invoice"
-                            attrs="{'invisible': ['|', ('is_transit', '=',False), ('is_invoiced', '=', False)]}" class="oe_highlight"/>
-                    <button name="action_validate" type="object" string="Confirm Transfer" groups="account.group_account_invoice"
-                            attrs="{'invisible': ['|', ('state', '=', 'done'), ('is_return', '=', False)]}" class="oe_highlight"/>
+                            attrs="{'invisible': ['|', ('state', '!=', 'in_transit'), ('is_invoiced', '=', False)]}" class="oe_highlight"/>
                     <button name="%(action_view_picking_full_reeturn_wizard_form)d" type="action" string="Full Return"
                             attrs="{'invisible': ['|', '|', ('is_return', '=', True), ('is_transit', '=', False), ('is_invoiced', '=', False)]}"
                             class="oe_highlight"/>
@@ -204,10 +213,23 @@
                             attrs="{'invisible': ['|', '|', ('state', 'in', ('waiting','confirmed')), ('show_validate', '=', False), ('picking_type_code', '!=', 'internal')]}"
                             string="Validate" type="object" class="oe_highlight" groups="stock.group_stock_user, account.group_account_invoice"/>
                 </button>
-                <button name="button_validate" position="attributes">
+                <xpath expr="//button[@name='button_validate'][1]" position="attributes">
+                  <attribute name="attrs">{'invisible':['|', '|',('picking_type_code', '!=', 'incoming'),('state', 'in', ('waiting','confirmed',
+                      'done', 'cancel')), ('show_validate', '=', False)]}
+                  </attribute>
+               </xpath>
+               <xpath expr="//button[@name='button_validate'][2]" position="attributes">
+                 <attribute name="attrs">{'invisible':['|', '|',('picking_type_code', '!=', 'incoming'),('state', 'in', ('waiting','confirmed',
+                     'done', 'cancel')), ('show_validate', '=', False)]}
+                 </attribute>
+              </xpath>
+                <!-- <button name="button_validate" position="attributes">
                     <attribute name="attrs">{'invisible':['|', '|',('picking_type_code', '!=', 'incoming'),('state', 'in', ('waiting','confirmed',
                         'done', 'cancel')), ('show_validate', '=', False)]}
                     </attribute>
+                </button> -->
+                <button name="action_assign" position="attributes">
+                    <attribute name="attrs">{'invisible':[('picking_type_code', '=', 'outgoing')]}</attribute>
                 </button>
                 <field name="state" position="attributes">
                     <attribute name="statusbar_visible">
@@ -276,7 +298,7 @@
                                         attrs="{'invisible': ['|', ('forecast_availability', '&gt;=', 0), '|', ('parent.immediate_transfer', '=', True), '&amp;', ('parent.picking_type_code', '=', 'outgoing'), ('state', '!=', 'draft')]}"/>
                                 <field name="forecast_expected_date" invisible="1"/>
                                 <field name="forecast_availability" string="Reserved"
-                                       attrs="{'column_invisible': ['|', '|', ('parent.state', 'in', ['draft', 'done']), ('parent.picking_type_code', '!=', 'outgoing'), ('parent.immediate_transfer', '=', True)]}"
+                                       attrs="{'column_invisible': ['|', '|', ('parent.state', 'in', ['draft', 'done', 'in_transit']), ('parent.picking_type_code', '!=', 'outgoing'), ('parent.immediate_transfer', '=', True)]}"
                                        widget="forecast_widget"/>
                                 <field name="reserved_availability" string="Reserved"
                                        attrs="{'column_invisible': ['|', '|', ('parent.state', 'in', ['draft', 'done']), ('parent.picking_type_code', 'in', ['incoming', 'outgoing']), ('parent.immediate_transfer', '=', True)]}"/>

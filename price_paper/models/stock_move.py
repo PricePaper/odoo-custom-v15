@@ -40,6 +40,7 @@ class StockMove(models.Model):
             if not acc_valuation:
                 raise UserError(
                     'Cannot find a SC Stock Valuation Account in product category: %s' % self.product_id.categ_id.name)
+            acc_valuation = acc_valuation.id
         return journal_id, acc_src, acc_dest, acc_valuation
 
 

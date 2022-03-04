@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="automatic_backup_record" model="automatic.backup"/>
+
+       <!-- <template id="assets_backend" name="account assets" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/automatic_backup/static/src/js/automatic_backup.js"></script>
+            </xpath>
+        </template>-->
+
+    </data>
+</odoo>

@@ -59,11 +59,15 @@ class StockPicking(models.Model):
         self.ensure_one()
         result = super(StockPicking, self).button_validate()
         if self.picking_type_code == 'incoming':
+            so = self.env['sale.order']
             for line in self.move_lines:
                 if line.is_storage_contract and line.purchase_line_id:
                     line.sale_line_id.qty_delivered = line.quantity_done
-        return result
+                    so |= line.sale_line_id.order_id
+            if so:
+                so.action_received()
 
+        return result
 
 class StockRule(models.Model):
     _inherit = 'stock.rule'
@@ -81,6 +85,7 @@ class StockRule(models.Model):
         """
         copy paste override to avoid adding lines to make2order PO
         """
+        if input(procurements) == 'y': print(i)
         procurements_by_po_domain = defaultdict(list)
         errors = []
         for procurement, rule in procurements:

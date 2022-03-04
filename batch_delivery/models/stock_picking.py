@@ -288,7 +288,7 @@ class StockPicking(models.Model):
                         picking.mapped('sale_id').write({'batch_warning': 'This order has already been processed for shipment', 'state': 'done'})
                     if picking.is_invoiced:
                         invoice = picking.sale_id.invoice_ids.filtered(lambda rec: picking in rec.picking_ids)
-                        invoice.write({'date_invoice': batch.date})
+                        invoice.write({'invoice_date': batch.date})
 
                 if not batch:
                     batch = self.env['stock.picking.batch'].create({'route_id': route_id})

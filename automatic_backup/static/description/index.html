@@ -1,0 +1,279 @@
+<center>
+    <section class="oe_container">
+        <div class="oe_row oe_spaced">
+            <h2 class="oe_slogan" style="color:#875A7B;">Odoo Automatic Database Backups</h2>
+            <h3 class="oe_slogan">Manage automatic backup rules</h3>
+            <div class="oe_demo oe_picture oe_screenshot">
+            <img src="ab_main_menu.png">
+            </div>
+        </div>
+    </section>
+
+    <section class="oe_container oe_dark">
+        <div class="oe_row oe_spaced">
+            <h2 class="oe_slogan" style="color:#875A7B;">Backup only database or database and all files</h2>
+            <div class="oe_demo oe_picture oe_screenshot">
+            <img src="rule_folder.png">
+            </div>
+        </div>
+    </section>
+
+    <section class="oe_container oe_dark">
+        <div class="oe_row oe_spaced">
+            <h2 class="oe_slogan" style="color:#875A7B;">Backup to selected folder or to remote server via FTP or SFTP</h2>
+            <div class="oe_demo oe_picture oe_screenshot">
+            <img src="rule_ftp.png">
+            </div>
+        </div>
+    </section>
+
+    <section class="oe_container oe_dark">
+        <div class="oe_row oe_spaced">
+            <h2 class="oe_slogan" style="color:#875A7B;">Backup to your Dropbox cloud storage</h2>
+            <div class="oe_demo oe_picture oe_screenshot">
+            <img src="rule_dropbox.png">
+            </div>
+        </div>
+    </section>
+
+    <section class="oe_container oe_dark">
+        <div class="oe_row oe_spaced">
+            <h2 class="oe_slogan" style="color:#875A7B;">Backup to your Google Drive</h2>
+            <div class="oe_demo oe_picture oe_screenshot">
+            <img src="rule_google_drive.png">
+            </div>
+        </div>
+    </section>
+
+    <section class="oe_container oe_dark">
+        <div class="oe_row oe_spaced">
+            <h2 class="oe_slogan" style="color:#875A7B;">Backup to Amazon S3</h2>
+            <div class="oe_demo oe_picture oe_screenshot">
+            <img src="rule_s3.png">
+            </div>
+        </div>
+    </section>
+
+    <section class="oe_container oe_dark">
+        <div class="oe_row oe_spaced">
+            <h2 class="oe_slogan" style="color:#875A7B;">Easy settings visible only to Administrators</h2>
+            <h3 class="oe_slogan">(Requires active developer mode)</h3>
+            <img src="ab_menu.png">
+        </div>
+    </section>
+
+    <section class="oe_container oe_dark">
+        <div class="oe_row oe_spaced">
+            <h2 class="oe_slogan" style="color:#875A7B;">Chatter and detailed e-mail messages support</h2>
+            <img src="ab_chatter.png">
+        </div>
+    </section>
+</center>
+
+<section class="oe_container oe_dark">
+    <h2 class="oe_slogan" style="color:#875A7B;">All Futures</h2>
+    <ul>
+        <li>Backup database or database and files</li>
+        <li><b>Backup types: local folder, FTP, SFTP, Dropbox, Google Drive, Amazon S3</b></li>
+        <li>Chatter with information about all created backups</li>
+        <li>Mail messages: success backups, failed backups (with cause), deleted old backups</li>
+        <li>Possibility to delete old backups</li>
+        <li>Easy settings</li>
+        <li><b>Backup via SFTP requires additional python package: pysftp</b></li>
+        <li><b>Backup via Dropbox requires additional python package: dropbox</b></li>
+        <li><b>Backup via Amazon S3 requires additional python package: boto3</b></li>
+        <li><b>Email me for test server!</b></li>
+    </ul>
+</section>
+
+<section class="oe_container oe_dark">
+    <h2 class="oe_slogan" style="color:#875A7B;">Contact / Support</h2>
+    <ul>
+        For support / details / suggestions / questions please email me: <a href="mailto:grzegorzgk1@gmail.com" target="_top">grzegorzgk1@gmail.com</a><br/>
+        I am also creating custom modules.
+    </ul>
+</section>
+
+<section class="oe_container oe_dark">
+    <h2 class="oe_slogan" style="color:#875A7B;">Changelog</h2>
+
+    <b>1.6.2 [2020-08-13]</b><br/>
+    <ul>
+        <li>Fix issue with deleting old backups via Google Drive</li>
+    </ul>
+
+    <b>1.6.1 [2020-08-02]</b><br/>
+    <ul>
+        <li>Increase Dropbox data chunk size for better performance</li>
+    </ul>
+
+    <b>1.6.0 [2020-07-29]</b><br/>
+    <ul>
+        <li>Update Google Drive Backup</li>
+        <li>Added Google Drive and Odoo Server settings to backup view</li>
+        <li>Folder backups use less memory</li>
+    </ul>
+
+    <b>1.5.6 [2019-05-18]</b><br/>
+    <ul>
+        <li>Rewrite part of the code. Removed calling tell() method because it is causing problems for some users.</li>
+    </ul>
+
+    <b>1.5.5 [2019-05-01]</b><br/>
+    <ul>
+        <li>Fix issue with to small backups and dropbox</li>
+    </ul>
+
+    <b>1.5.4 [2019-01-06]</b><br/>
+    <ul>
+        <li>Added support for big backups over Dropbox</li>
+        <li>Moved changelog from manifest.py to changelog.rst and description</li>
+    </ul>
+
+    <b>1.5.3 [2018-11-24]</b><br/>
+    <ul>
+        <li>Removed decorator from dump_db method</li>
+        <li>Added possibility to create backup with list_db = False option</li>
+    </ul>
+
+    <b>1.5.2 [2018-05-13]</b><br/>
+    <ul>
+        <li>Use the same method for Google Drive database and filestore backups</li>
+    </ul>
+
+    <b>1.5.1 [2018-05-08]</b><br/>
+    <ul>
+        <li>Fixed issue with Google Drive database only backup</li>
+    </ul>
+
+    <b>1.5.0 [2018-01-26]</b><br/>
+    <ul>
+        <li>Added Amazon S3 backup option</li>
+    </ul>
+
+    <b>1.4.5 [2018-01-26]</b><br/>
+    <ul>
+        <li>Fixed compatibility issue with Google Drive and Windows</li>
+    </ul>
+
+    <b>1.4.4 [2018-01-24]</b><br/>
+    <ul>
+        <li>Fixed typo in code</li>
+    </ul>
+
+    <b>1.4.3 [2018-01-18]</b><br/>
+    <ul>
+        <li>Changed name of the module</li>
+    </ul>
+
+    <b>1.4.2 [2017-12-16]</b><br/>
+    <ul>
+        <li>Added support for custom Google Drive backup path</li>
+    </ul>
+
+    <b>1.4.1 [2017-12-01]</b><br/>
+    <ul>
+        <li>Updated ir.model search to new version</li>
+    </ul>
+
+    <b>1.4.0 [2017-11-04]</b><br/>
+    <ul>
+        <li>Added SFTP backup option</li>
+    </ul>
+
+    <b>1.3.1 [2017-10-29]</b><br/>
+    <ul>
+        <li>Storing flow/auth files in Odoo filestore instead of database or Odoo folder</li>
+    </ul>
+
+    <b>1.3.0 [2017-10-15]</b><br/>
+    <ul>
+        <li>Updated to Dropbox API v2</li>
+    </ul>
+
+    <b>1.2.5 [2017-10-15]</b><br/>
+    <ul>
+        <li>Removed testing information</li>
+    </ul>
+
+    <b>1.2.4 [2017-07-27]</b><br/>
+    <ul>
+        <li>Added testing information</li>
+    </ul>
+
+    <b>1.2.3 [2017-07-26]</b><br/>
+    <ul>
+        <li>Specified required Dropbox python package version, compatibility issues with the newest one</li>
+    </ul>
+
+    <b>1.2.2 [2017-07-25]</b><br/>
+    <ul>
+        <li>Fixed: Error with finding date of existing backups</li>
+    </ul>
+
+    <b>1.2.1 [2017-07-09]</b><br/>
+    <ul>
+        <li>Fixed: writing args to other cron jobs</li>
+    </ul>
+
+    <b>1.2.0 [2017-05-28]</b><br/>
+    <ul>
+        <li>Added Google Drive backup option</li>
+    </ul>
+
+    <b>1.1.8 [2017-05-23]</b><br/>
+    <ul>
+        <li>Added option to change backup filename</li>
+    </ul>
+
+    <b>1.1.7 [2017-05-18]</b><br/>
+    <ul>
+        <li>Fixed cron argument in Odoo 8</li>
+    </ul>
+
+    <b>1.1.6 [2017-05-18]</b><br/>
+    <ul>
+        <li>Support for Dropbox Python Package v7.3.0</li>
+    </ul>
+
+    <b>1.1.5 [2017-05-11]</b><br/>
+    <ul>
+        <li>Better filename validation</li>
+    </ul>
+
+    <b>1.1.4 [2017-05-10]</b><br/>
+    <ul>
+        <li>Showing inactive backup rules</li>
+    </ul>
+
+    <b>1.1.3 [2017-05-10]</b><br/>
+    <ul>
+        <li>Fixed bug with creating FTP backup on Windows</li>
+    </ul>
+
+    <b>1.1.2 [2017-05-09]</b><br/>
+    <ul>
+        <li>Fixed bug with creating backup on Windows</li>
+    </ul>
+
+    <b>1.1.1 [2017-05-04]</b><br/>
+    <ul>
+        <li>Windows-friendly backups</li>
+    </ul>
+
+    <b>1.1.0 [2017-05-03]</b><br/>
+    <ul>
+        <li>Added Dropbox backup option</li>
+    </ul>
+
+    <b>1.0.1 [2017-05-01]</b><br/>
+    <ul>
+        <li>Fixed bug - ignoring delete_old_backups False flag</li>
+    </ul>
+
+    <b>1.0.0 [2017-01-05]</b><br/>
+    <ul>
+        <li>Initial release</li>
+    </ul>
+
+</section>

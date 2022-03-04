@@ -9,7 +9,6 @@ class SaleOrder(models.Model):
 
     have_price_lock = fields.Boolean(compute='_compute_price_lock')
     delivery_date = fields.Date(string="Delivery Date")
-    cancel_reason = fields.Text(string='Cancel Reason')
     batch_warning = fields.Text(string='Shipment Progress wrarning Message', copy=False)
 
     @api.depends('order_line.price_lock')
@@ -60,7 +59,16 @@ class SaleOrderLine(models.Model):
     def _compute_qty_delivered(self):
         super(SaleOrderLine, self)._compute_qty_delivered()
         for line in self:  # TODO: maybe one day, this should be done in SQL for performance sake
-            if line.qty_delivered_method == 'stock_move':
+            if line.order_id.storage_contract:
+                qty = 0.0
+                print(line.sudo().purchase_line_ids)
+                for po_line in line.sudo().purchase_line_ids:
+                    print(po_line, po_line.state, sum(po_line.move_ids.filtered(lambda s: s.state != 'cancel').mapped('quantity_done')))
+                    if po_line.state in ('purchase', 'done', 'received'):
+                        qty += sum(po_line.move_ids.filtered(lambda s: s.state != 'cancel').mapped('quantity_done'))
+                line.qty_delivered = qty
+
+            elif line.qty_delivered_method == 'stock_move':
                 qty = 0.0
                 outgoing_moves, incoming_moves = line._get_outgoing_incoming_moves()
                 for move in outgoing_moves:

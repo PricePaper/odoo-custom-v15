@@ -1,0 +1,15 @@
+<odoo>
+    <data>
+
+        <record id="automatic_backup_access" model="ir.model.access">
+            <field name="name">Automatic Backup Access</field>
+            <field name="model_id" ref="model_automatic_backup"/>
+            <field name="group_id" ref="base.group_no_one"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_create" eval="0"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_unlink" eval="0"/>
+        </record>
+
+    </data>
+</odoo>

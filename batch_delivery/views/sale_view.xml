@@ -25,12 +25,6 @@
                 <xpath expr="//field[@name='order_line']/tree/field[@name='qty_invoiced']" position="attributes">
                     <attribute name="optional">hide</attribute>
                 </xpath>
-
-                <group name="note_group" position="after">
-                    <group attrs="{'invisible': [('cancel_reason', '=', False)]}" colspan="4" string="Cancel Reason">
-                        <field name="cancel_reason" readonly='1' nolabel="1"/>
-                    </group>
-                </group>
                 <xpath expr="//field[@name='payment_term_id']" position="after">
                     <field name="have_price_lock" invisible="1"/>
                 </xpath>

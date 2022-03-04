@@ -74,7 +74,6 @@ class CashCollectedLines(models.Model):
                     'invoice_id': line.invoice_id,
                     'ref': line.communication,
                     'batch_id': line.batch_id.id,
-                    'discount_amount': line.discount_amount,
                 })
             else:
                 batch_payment_info.setdefault(line.journal_id, {}).setdefault(line.payment_method_line_id, []).append({

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="automatic_backup_rule_form_view" model="ir.ui.view">
+            <field name="name">Automatic Backup Rule Form View</field>
+            <field name="model">ir.cron</field>
+            <field name="arch" type="xml">
+                <form string="Automatic Backup Rule">
+                    <field name="id" invisible="1"/>
+                    <header attrs="{'invisible': [('id', '=', False)]}">
+                        <button name="check_settings" string="Check Settings" class="oe_highlight" type="object"/>
+                        <button name="backup_btn" string="Backup" class="oe_highlight" type="object"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="backup_type" required="1"/>
+                            <field name="backup_destination" required="1"/>
+                        </group>
+                        <group attrs="{'invisible': [('backup_destination', '!=', 'folder')]}">
+                            <field name="folder_path"
+                                   attrs="{'required': [('backup_destination', '=', 'folder')],
+                                           'invisible': [('backup_destination', '!=', 'folder')]}"/>
+                        </group>
+                        <group attrs="{'invisible': [('backup_destination', 'not in', ['ftp', 'sftp'])]}">
+                            <field name="ftp_address"
+                                   attrs="{'required': [('backup_destination', 'in', ['ftp', 'sftp'])],
+                                           'invisible': [('backup_destination', 'not in', ['ftp', 'sftp'])]}"/>
+                            <field name="ftp_port"
+                                   attrs="{'required': [('backup_destination', 'in', ['ftp', 'sftp'])],
+                                           'invisible': [('backup_destination', 'not in', ['ftp', 'sftp'])]}"/>
+                            <field name="ftp_login"
+                                   attrs="{'required': [('backup_destination', 'in', ['ftp', 'sftp'])],
+                                           'invisible': [('backup_destination', 'not in', ['ftp', 'sftp'])]}"/>
+                            <field name="ftp_password" password="True"
+                                   attrs="{'required': [('backup_destination', 'in', ['ftp', 'sftp'])],
+                                           'invisible': [('backup_destination', 'not in', ['ftp', 'sftp'])]}"/>
+                            <field name="ftp_path"
+                                   attrs="{'required': [('backup_destination', 'in', ['ftp', 'sftp'])],
+                                           'invisible': [('backup_destination', 'not in', ['ftp', 'sftp'])]}"/>
+                        </group>
+                        <b attrs="{'invisible': [('backup_destination', 'not in', ['dropbox'])]}">Please visit this URL for the Authentication Code<br/></b>
+                        <field name="dropbox_authorize_url" widget="url" readonly="1"
+                               attrs="{'invisible': [('backup_destination', 'not in', ['dropbox'])]}"/>
+                        <field name="dropbox_authorize_url_rel" invisible="1"/>
+                        <group attrs="{'invisible': [('backup_destination', 'not in', ['dropbox'])]}">
+                            <field name="dropbox_authorization_code"
+                                   attrs="{'required': [('backup_destination', 'in', ['dropbox'])],
+                                           'invisible': [('backup_destination', 'not in', ['dropbox'])]}"/>
+                            <field name="dropbox_flow" invisible="1"/>
+                        </group>
+                        <group attrs="{'invisible': [('backup_destination', '!=', 's3')]}">
+                            <field name="s3_bucket_name" attrs="{'required': [('backup_destination', '=', 's3')]}"/>
+                            <field name="s3_username" attrs="{'required': [('backup_destination', '=', 's3')]}"/>
+                            <field name="s3_access_key" attrs="{'required': [('backup_destination', '=', 's3')]}"/>
+                            <field name="s3_access_key_secret" attrs="{'required': [('backup_destination', '=', 's3')]}"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                            <field name="interval_number" required="1"/>
+                            <field name="interval_type" required="1"/>
+                            <field name="nextcall" required="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="automatic_backup_form_view" model="ir.ui.view">
+            <field name="name">Automatic Backup Form View</field>
+            <field name="model">automatic.backup</field>
+            <field name="arch" type="xml">
+                <form string="Automatic Backup" create="0" delete="0">
+                    <sheet>
+                        <group>
+                            <field name="successful_backup_notify_emails" placeholder="Emails separated by comma"/>
+                            <field name="failed_backup_notify_emails" placeholder="Emails separated by comma"/>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="delete_old_backups"/>
+                                <field name="filename" required="1"/>
+                            </group>
+                            <group>
+                                <field name="delete_days"
+                                       attrs="{'invisible': [('delete_old_backups', '=', False)],
+                                               'required': [('delete_old_backups', '=', True)]}"/>
+                            </group>
+                        </group>
+                        <label for="automatic_backup_rule_ids"/>
+                        <field name="automatic_backup_rule_ids">
+                            <tree>
+                                <button icon="fa-file-o" type="object" name="show_rule_form"/>
+                                <field name="active"/>
+                                <field name="backup_type"/>
+                                <field name="backup_destination"/>
+                                <field name="nextcall"/>
+                                <button name="check_settings" string="Check Settings" class="oe_highlight" type="object"/>
+                                <button name="backup_btn" string="Backup" class="oe_highlight" type="object"/>
+                            </tree>
+                        </field>
+                        <notebook>
+                            <page string="Odoo Server Settings">
+                                <b style="color:red">
+                                    It is suggested to increase time limits in case of big backups.
+                                </b>
+                                <group>
+                                    <field name="limit_time_cpu" required="1"/>
+                                    <field name="limit_time_real" required="1"/>
+                                    <field name="limit_time_real_cron" required="1"/>
+                                </group>
+                            </page>
+                            <page string="Google Drive Settings">
+                                <b style="color:red" attrs="{'invisible': [('google_drive_access_token', '!=', False)]}">
+                                    Please visit "Google Drive Uri" to get the Authorization Code
+                                </b>
+                                <group>
+                                    <field name="google_drive_client_id"/>
+                                    <field name="google_drive_client_secret"/>
+                                    <field name="google_drive_redirect_uri"/>
+                                    <field name="google_drive_scopes"/>
+                                    <field name="google_drive_uri" widget="url" readonly="1"/>
+                                    <field name="google_drive_authorization_code"/>
+                                    <field name="google_drive_refresh_token" readonly="1" force_save="1"/>
+                                    <field name="google_drive_access_token" readonly="1" force_save="1"/>
+                                    <field name="google_drive_access_token_expire_date" readonly="1" force_save="1" invisible="0"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="automatic_backup_action" model="ir.actions.act_window">
+            <field name="name">Automatic Backup</field>
+            <field name="res_model">automatic.backup</field>
+            <field name="view_mode">form</field>
+            <field name="res_id" ref="automatic_backup_record"/>
+            <field name="context">{'backup_rule': 1}</field>
+        </record>
+
+        <menuitem id="automatic_backup_menu"
+                  parent="base.menu_automation"
+                  action="automatic_backup_action"
+                  groups="base.group_no_one"/>
+
+        <record id="default_cron_action_view_tree" model="ir.actions.act_window.view">
+            <field name="view_mode">tree</field>
+            <field name="act_window_id" ref="base.ir_cron_act"/>
+            <field name="view_id" ref="base.ir_cron_view_tree"/>
+        </record>
+
+        <record id="default_cron_action_view_form" model="ir.actions.act_window.view">
+            <field name="view_mode">form</field>
+            <field name="act_window_id" ref="base.ir_cron_act"/>
+            <field name="view_id" ref="base.ir_cron_view_form"/>
+        </record>
+
+    </data>
+</odoo>

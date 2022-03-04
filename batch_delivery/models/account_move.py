@@ -153,8 +153,8 @@ class AccountMove(models.Model):
             move.invoice_line_ids.filtered(lambda rec: rec.quantity == 0).sudo().unlink()
             # if an invoice have only one line we need to make sure it's not a delivery charge.
             # if it's a delivery charge, remove it from invoice.
-            if len(move.invoice_line_ids) == 1 and move.invoice_line_ids.mapped('sale_line_ids') and \
-                    move.invoice_line_ids.mapped('sale_line_ids').mapped('is_delivery'):
+            if len(move.invoice_line_ids) == 1 and move.invoice_line_ids.mapped('sale_line_ids') and any(
+                    move.invoice_line_ids.mapped('sale_line_ids').mapped('is_delivery')):
                 move.invoice_line_ids.sudo().unlink()
 
     def action_post(self):

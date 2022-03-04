@@ -27,12 +27,12 @@
                     <field name="is_all_service" invisible="1"/>
                     <field name="recompute_delivery_price" invisible="1"/>
 
-                    
+
                     <div name="carrier_price">
                         <button name="action_open_delivery_wizard" type="object" class="oe_inline oe_link"
                                 attrs="{'invisible': ['|', '|',('is_all_service', '=', True), ('order_line', '=', []), ('delivery_set', '=', True)]}">
                             <i class="fa fa-arrow-right"/>
-                            Get rate
+                            Add shipping cost
                         </button>
                         <button
                                 string="Update shipping cost"

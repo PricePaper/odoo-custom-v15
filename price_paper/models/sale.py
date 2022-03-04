@@ -97,13 +97,12 @@ class SaleOrder(models.Model):
         partner has pending invoices block the sale order confirmation
         and display warning message.
         """
-        for order in self:
-            if order.credit_warning:
-                order.write({'is_creditexceed': True, 'ready_to_release': False})
-                order.message_post(body=order.credit_warning)
-                return order.credit_warning
-            order.write({'is_creditexceed': False, 'ready_to_release': True})
-            return ''
+        if self.credit_warning:
+            self.write({'is_creditexceed': True, 'ready_to_release': False})
+            self.message_post(body=order.credit_warning)
+            return self.credit_warning
+        self.write({'is_creditexceed': False, 'ready_to_release': True})
+        return ''
 
     def check_low_price(self):
         """
@@ -166,8 +165,7 @@ class SaleOrder(models.Model):
                     [name[:-22] for name in sc_not_avl.mapped('display_name')]))
 
             for line in sc_line:
-                qty = sum(line.storage_contract_line_ids.filtered(lambda r: r.id in order.order_line.ids).mapped(
-                    'product_uom_qty'))
+                qty = sum(line.storage_contract_line_ids.filtered(lambda r: r.id in order.order_line.ids).mapped('product_uom_qty'))
                 if line.storage_remaining_qty < qty:
                     raise ValidationError(
                         'You are planning to sell more than available qty in Storage Contract: \n ➤ {0} \n There is only {1:.2f} left.'.format(
@@ -182,7 +180,6 @@ class SaleOrder(models.Model):
                 if not order_line.update_pricelist:
                     continue
                 order_line.update_price_list()
-
         return res
 
     @api.depends('state', 'order_line.invoice_status', 'order_line.invoice_lines')
@@ -199,47 +196,23 @@ class SaleOrder(models.Model):
                 else:
                     order.invoice_status = 'no'
 
-    # todo not needed
-    # def _valid_field_parameter(self, field, name):
-    #     return name in ['track_visibility', 'track_sequence'] or super()._valid_field_parameter(field, name)
-
-    # todo why excluding sent orders?
     def _compute_sc_child_order_count(self):
         for order in self:
-            order.sc_child_order_count = len(order.order_line.mapped('storage_contract_line_ids.order_id').filtered(
-                lambda r: r.state not in ['sent', 'cancel']))
-
-    # todo not used anywhere
-    # def make_done_orders(self):
-    #     # orders = self.env['sale.order'].search([('state', '=', 'sale'), ('invoice_status', '=', 'invoiced')])
-    #     for order in self:
-    #         picking_status = order.picking_ids.mapped('state')
-    #         invoice_state = order.invoice_ids.mapped('state')
-    #         if picking_status and any(state not in ('done', 'cancel') for state in picking_status):
-    #             continue
-    #         if invoice_state and any(state in ('draft') for state in invoice_state):
-    #             continue
-    #         order.action_done()
-    #     return True
+            order.sc_child_order_count = len(order.order_line.mapped('storage_contract_line_ids.order_id').filtered(lambda r: r.state !='cancel'))
 
     @api.depends('partner_id')
     def _compute_show_contract_line(self):
         for order in self:
-            show_contract_line = False
+            order.show_contract_line =  False
             if order.partner_id:
-                sc_order = self.env['sale.order'].with_context(sc=True).search(
-                    [('state', '=', 'released'), ('partner_id', '=', order.partner_id.id)])
+                sc_order = self.env['sale.order'].search([('storage_contract', '=', True), ('state', '=', 'released'), ('partner_id', '=', order.partner_id.id)])
                 count = sc_order.mapped('order_line').filtered(lambda r: r.storage_remaining_qty > 0)
-                if len(count) > 0:
-                    show_contract_line = True
-            order.show_contract_line = show_contract_line
+                order.show_contract_line = len(count) > 0
 
     @api.depends('order_line.product_id', 'order_line.product_uom_qty')
     def _compute_total_weight_volume(self):
         for order in self:
-            volume = 0
-            weight = 0
-            qty = 0
+            qty = volume = weight = 0
             for line in order.order_line:
                 if not line.is_delivery:
                     volume += line.gross_volume
@@ -250,6 +223,7 @@ class SaleOrder(models.Model):
             order.total_qty = qty
 
     def confirm_multiple_orders(self, records):
+
         msg = ''
         for order in records:
             if order.state != 'draft':
@@ -265,8 +239,8 @@ class SaleOrder(models.Model):
     def activate_views(self):
         except_view = []
         for view in self.env['ir.ui.view'].search([('active', '=', False)]):
-            name = ['account_batch_payment_extension', 'odoov12_theme2', 'account_financial_data', 'payment_gateway_ui', 'accounting_extension',
-                    'price_maintanance', 'account_partial_payment', 'price_paper', 'purchase_extension', 'audian_theme', 'purge_old_open_credits',
+            name = ['account_batch_payment_extension', 'account_financial_data', 'payment_gateway_ui', 'accounting_extension',
+                    'price_maintanance', 'account_partial_payment', 'price_paper', 'purchase_extension', 'purge_old_open_credits',
                     'authorize_net_integration', 'quick_create_disable', 'batch_delivery', 'rma_extension', 'crm_enhancements', 'sale_line_reports',
                     'customer_contract', 'saleperson_payment_collection', 'customer_statement_report', 'sales_analysis_report',
                     'deviated_cost_sale_report', 'sales_commission', 'global_price_increase', 'special_item_requests', 'instant_invoice',
@@ -283,9 +257,7 @@ class SaleOrder(models.Model):
         return True
 
     def action_cancel(self):
-
-        # return False
-        # todo not finished some confusions in PO relation
+        return self.order_line._compute_qty_delivered()
         self.ensure_one()
         self.write({
             'is_creditexceed': False,
@@ -295,165 +267,82 @@ class SaleOrder(models.Model):
             'hold_state': False
         })
         purchase_order = self._get_purchase_orders()
+        po_not_to_do = self.env['purchase.order']
         if purchase_order.mapped('state') in ['purchase', 'done', 'received']:
             raise UserError('You can not cancel this order since the purchase order is already processed.')
-        purchase_order.button_cancel()
+        else:
+            for line in self.order_line:
+                for po_line in line.mapped('move_ids').filtered(lambda r: r.state != 'cancel').mapped('created_purchase_line_id'):
+                    if len(po_line.order_id.origin.split(',')) > 1 or len(po_line.order_id.origin.split(', ')) > 1:
+                        po_line.write({'product_qty': po_line.product_qty - line.product_uom_qty})
+                        po_line.order_id.message_post(body=_("sale order %s has been cancelled by the user %s." % (self.name, self.env.user.name)),
+                                                  subtype_id=self.env.ref('mail.mt_note').id)
+                        po_not_to_do |=  po_line.order_id
+        (purchase_order - po_not_to_do).button_cancel()
         self.order_line.filtered('storage_contract_line_id').write({'product_uom_qty': 0})
-        # todo sc things need to check
-        # for sale_order in self:
-        # else:
-        #     sale_order.sudo().order_line.mapped('move_ids.created_purchase_line_id.order_id').button_cancel()
-        # if sale_order.storage_contract:
-        #     sale_order.order_line.mapped('purchase_line_ids.order_id').button_cancel()
-        # else:
-        #     for so_line in sale_order.order_line:
-        #         for po_line in so_line.mapped('move_ids').filtered(lambda r: r.state != 'cancel').mapped(
-        #                 'created_purchase_line_id'):
-        #             if po_line.order_id.state in ['purchase', 'done', 'received']:
-        #                 raise UserError(_('You cannot cancel this order.'))
-        #             else:
-        #                 if len(po_line.order_id.origin.split(',')) > 1 or len(
-        #                         po_line.order_id.origin.split(', ')) > 1:
-        #                     po_line.write({'product_qty': po_line.product_qty - so_line.product_uom_qty})
-        #                     po_line.order_id.message_post(body=_(
-        #                         "sale order %s has been cancelled by the user %s." % (
-        #                             sale_order.name, self.env.user.name)),
-        #                         subtype_id=self.env.ref('mail.mt_note').id)
-        #                 else:
-        #                     po_line.order_id.button_cancel()
-
-        # sc_having_lines = sale_order.order_line.filtered('storage_contract_line_id')
-        # if sc_having_lines:
-        #     sc_having_lines.write({'product_uom_qty': 0})
         return super(SaleOrder, self).action_cancel()
 
-    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
-    # TODO: re-implement for account logic
-    def _create_storage_downpayment_invoice(self, order, so_lines):
-        pass
+    def action_waiting(self):
+        self.ensure_one()
+        return self.write({'state': 'waiting'})
 
-    # todo what is the use of it
-    def action_create_open_invoice_xmlrpc(self, invoice_date):
-        # sale_amount = self.amount_total or 0
-        # invoice_amount = round(sum(rec.amount_total_signed for rec in self.invoice_ids) or 0.0, 2)
-        # data = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
-        # if sale_amount == invoice_amount or sale_amount == -invoice_amount:
-        #     return self.invoice_ids and self.invoice_ids.ids or False, data
-        # else:
-        #     self.action_invoice_create(final=True)
-        #     self.invoice_ids.write({'move_name': self.note, 'date_invoice': invoice_date or False})
-        #     self.invoice_ids.action_invoice_open()
-        #     invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
-        #     data = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
-        #     return self.invoice_ids.ids, data
+    def action_received(self):
+        self.write({'state': 'received'})
+        return self._get_invoiced()
 
-        data = {'sale_amount': 0.00, 'invoice_amount': 0.00}
-        return [], data
-
-    # TODO :: FIX THIS FOR ODOO-15 MIGRATION
-    def import_draft_invoice(self, data):
-
-        # if self.invoice_ids:
-        #     sale_amount = self.amount_total or 0
-        #     invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
-        #     res = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount}
-        #     return res
-        #
-        # missing_msg = ''
-        #
-        # picking_ids = self.picking_ids
-        # move_lines = self.picking_ids.mapped('move_line_ids')
-        # picking_ids.is_transit = True
-        # picking_ids.move_ids_without_package.write({'is_transit': True})
-        # for line in data['do_lines']:
-        #     product_id = line.get('product_id')
-        #     product_uom_qty = line.get('quantity_ordered')
-        #     qty_done = line.get('quantity_shipped')
-        #     if qty_done != 0:
-        #         move_line = move_lines.filtered(lambda r: r.product_id.id == product_id)
-        #         if move_line:
-        #             move_line.qty_done = qty_done
-        #             move_line.move_id.sale_line_id.qty_delivered = qty_done
-        #         else:
-        #             missing_msg += 'Invoice : ' + data.get('name') + ' Product_id : ' + str(product_id) + '\n'
-        # delivery_line = self.order_line.filtered(lambda r: r.product_id.default_code == 'misc')
-        # if delivery_line:
-        #     delivery_line.qty_delivered_method = 'manual'
-        #     delivery_line.qty_delivered_manual = 1
-        # if missing_msg:
-        #     return {'missing_msg': missing_msg}
-        #
-        # res = self.action_invoice_create(final=True)
-        # invoice = self.env['account.invoice'].browse(res)
-        # invoice.write({'move_name': data.get('name'), 'date_invoice': data.get('date')})
-        # picking_ids.write({'is_invoiced': True})
-        # sale_amount = self.amount_total or 0
-        # invoice_amount = sum(rec.amount_total for rec in self.invoice_ids) or 0
-        # res = {'sale_amount': sale_amount, 'invoice_amount': invoice_amount, 'missing_msg': missing_msg}
-
-        res = {'sale_amount': 0.00, 'invoice_amount': 0.00, 'missing_msg': 0.00}
-        return res
-
-    def action_create_order_line_xmlrpc(self, vals):
-        order_line = self.env['sale.order.line'].create(vals)
-        order_line.qty_delivered_method = 'manual'
-        order_line.qty_delivered_manual = vals.get('qty_delivered_manual')
-        order_line.qty_to_invoice = vals.get('qty_delivered_manual')
-        return order_line.id
-
-    def fix_for_do(self):
-        self.action_cancel()
-        self.action_draft()
-        self.action_confirm()
-        return True
-
-    # todo above methods are not used
+    def create_sc_po(self, seller):
+        self.ensure_one()
+        return self.env['purchase.order'].create({
+            'partner_id': seller.name.id,
+            'user_id': self.env.user.id,
+            'picking_type_id': self.env.ref('stock.picking_type_in').id,
+            'origin': self.name,
+            'payment_term_id': seller.name.property_supplier_payment_term_id.id,
+            'date_order': fields.Datetime.now() + relativedelta(days=seller.delay),
+            'fiscal_position_id': self.env['account.fiscal.position'].get_fiscal_position(seller.name.id).id,
+        })
 
     def run_storage(self):
-        # logic is wrong it is creating stock moves fro SC main order
-        # create PO directly
-        for order in self:
-            route = self.env.ref('stock.route_warehouse0_mto', raise_if_not_found=True)
-            so_lines = order.order_line.filtered(
-                lambda r: r.product_id.type != 'service' and not r.display_type and not r.is_downpayment)
-            so_lines.write({'route_id': route.id, 'state': 'sale'})
-            errors = []
-            order.order_line._action_launch_stock_rule()
-            for line in so_lines:
-                line.move_ids.created_purchase_line_id.write({'sale_line_id': line.id})
-            order.write({'state': 'waiting'})
-            # service line update
-            purchase_orders = order._get_purchase_orders().filtered(lambda rec: rec.state == 'draft')
+        self.ensure_one()
+        po_ids = {}
+        for line in self.order_line.filtered(lambda r: r.product_id.type != 'service' and not r.display_type and not r.is_downpayment):
+            supplier = line.get_seller()
+            if supplier.name not in po_ids:
+                po_ids.update({supplier.name: self.create_sc_po(supplier)})
+            po = po_ids[supplier.name]
+            vals = self.env['purchase.order.line']._prepare_purchase_order_line(line.product_id, line.product_uom_qty, line.product_uom,
+                                                                                self.company_id, supplier, po)
+            vals.update({'sale_line_id': line.id})
+            self.env['purchase.order.line'].create(vals)
+        self.action_waiting()
 
-            for service_line in order.order_line.filtered(
-                    lambda r: r.product_id.type == 'service' and not r.display_type and not r.is_downpayment):
-                for po in purchase_orders:
-                    product_taxes = service_line.product_id.supplier_taxes_id.filtered(
-                        lambda x: x.company_id.id == po.company_id.id)
-                    taxes = po.fiscal_position_id.map_tax(product_taxes)
-                    price_unit = self.env['account.tax'].sudo()._fix_tax_included_price_company(
-                        service_line.price_unit,
-                        service_line.product_id.supplier_taxes_id,
-                        taxes,
-                        self.company_id
-                    )
-                    if po.currency_id and po.partner_id.currency_id != po.currency_id:
-                        price_unit = po.partner_id.currency_id.compute(price_unit, po.currency_id)
-                    purchase_qty_uom = service_line.product_uom._compute_quantity(service_line.product_uom_qty,
-                                                                                  service_line.product_id.uom_po_id)
-                    self.env['purchase.order.line'].create({
-                        'name': service_line.name,
-                        'product_qty': purchase_qty_uom,
-                        'product_id': service_line.product_id.id,
-                        'product_uom': service_line.product_id.uom_po_id.id,
-                        'price_unit': price_unit,
-                        'date_planned': po.date_planned,
-                        'taxes_id': [(6, 0, taxes.ids)],
-                        'order_id': po.id,
-                        'sale_line_id': service_line.id,
-                    })
-            if purchase_orders:
-                order.message_post(body='PO Created by : %s' % self.env.user.name)
+        for service_line in self.order_line.filtered(lambda r: r.product_id.type == 'service' and not r.display_type and not r.is_downpayment):
+            for po in po_ids.values():
+                product_taxes = service_line.product_id.supplier_taxes_id
+                taxes = po.fiscal_position_id.map_tax(product_taxes)
+                price_unit = self.env['account.tax'].sudo()._fix_tax_included_price_company(
+                    service_line.price_unit,
+                    service_line.product_id.supplier_taxes_id,
+                    taxes,
+                    self.company_id
+                )
+                if po.currency_id and po.partner_id.currency_id != po.currency_id:
+                    price_unit = po.partner_id.currency_id.compute(price_unit, po.currency_id)
+                purchase_qty_uom = service_line.product_uom._compute_quantity(service_line.product_uom_qty,
+                                                                              service_line.product_id.uom_po_id)
+                self.env['purchase.order.line'].create({
+                    'name': service_line.name,
+                    'product_qty': purchase_qty_uom,
+                    'product_id': service_line.product_id.id,
+                    'product_uom': service_line.product_id.uom_po_id.id,
+                    'price_unit': price_unit,
+                    'date_planned': po.date_planned,
+                    'taxes_id': [(6, 0, taxes.ids)],
+                    'order_id': po.id,
+                    'sale_line_id': service_line.id,
+                })
+        if po_ids:
+            self.message_post(body='PO Created by : %s' % self.env.user.name)
         return True
 
     def action_create_storage_do(self):
@@ -925,8 +814,7 @@ class SaleOrderLine(models.Model):
             so_line.scraped_qty = sum(so_line.move_ids.mapped('picking_id').mapped('move_lines').filtered(
                 lambda r: r.scrapped and r.product_id.id == so_line.product_id.id).mapped('quantity_done'))
 
-    @api.depends('state', 'product_uom_qty', 'qty_delivered', 'qty_to_invoice', 'qty_invoiced',
-                 'order_id.storage_contract')
+    @api.depends('state', 'product_uom_qty', 'qty_delivered', 'qty_to_invoice', 'qty_invoiced', 'order_id.storage_contract')
     def _compute_invoice_status(self):
         super(SaleOrderLine, self)._compute_invoice_status()
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
@@ -934,8 +822,7 @@ class SaleOrderLine(models.Model):
             if line.order_id.storage_contract:
                 if float_compare(line.qty_invoiced, line.product_uom_qty, precision_digits=precision) >= 0:
                     line.invoice_status = 'invoiced'
-                elif float_compare(line.qty_delivered, line.product_uom_qty,
-                                   precision_digits=precision) <= 0 and line.state in ['received', 'done']:
+                elif float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) <= 0 and line.state in ['received', 'done']:
                     line.invoice_status = 'to invoice'
                 elif float_compare(line.qty_delivered, line.product_uom_qty, precision_digits=precision) == 1:
                     line.invoice_status = 'upselling'
@@ -961,10 +848,14 @@ class SaleOrderLine(models.Model):
                  'analytic_line_ids.unit_amount', 'analytic_line_ids.product_uom_id')
     def _compute_qty_delivered(self):
         super(SaleOrderLine, self)._compute_qty_delivered()
+        print('\n\n\n\nline qty\n\n')
         for line in self:
+            print(line.order_id.storage_contract)
             if line.order_id.storage_contract:
                 qty = 0.0
+                print(line.sudo().purchase_line_ids)
                 for po_line in line.sudo().purchase_line_ids:
+                    print(po_line, po_line.state, sum(po_line.move_ids.filtered(lambda s: s.state != 'cancel').mapped('quantity_done')))
                     if po_line.state in ('purchase', 'done', 'received'):
                         qty += sum(po_line.move_ids.filtered(lambda s: s.state != 'cancel').mapped('quantity_done'))
                 line.qty_delivered = qty
@@ -1593,5 +1484,20 @@ class SaleOrderLine(models.Model):
                     (100 + self.product_id.categ_id.repacking_upcharge) / 100))) / self.product_uom_qty
         product_price = float_round(product_price, precision_digits=2)
         return msg, product_price, price_from
+
+
+    def get_seller(self):
+        self.ensure_one()
+        seller = self.product_id._select_seller(
+            quantity=self.product_uom_qty,
+            date=fields.Datetime.now().date(),
+            uom_id=self.product_uom)
+        if not seller:
+            seller = self.product_id._prepare_sellers(False)[:1]
+        if not seller:
+            raise UserError("""There is no matching vendor price to generate the purchase order for product %s 
+                    (no vendor defined, minimum quantity not reached, dates not valid, ...). Go on the product form and complete the list of vendors.""") % (
+                self.product_id.display_name)
+        return seller
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

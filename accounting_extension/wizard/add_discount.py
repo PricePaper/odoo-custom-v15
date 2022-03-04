@@ -22,7 +22,7 @@ class AddDiscount(models.TransientModel):
         if not account_payable:
             account_payable = self.env['ir.property']._get('property_account_payable_id', 'res.partner')
 
-        if move.type == 'in_invoice':
+        if move.move_type == 'in_invoice':
             discount_account = move.company_id.purchase_writeoff_account_id
         else:
             discount_account = move.company_id.discount_account_id
@@ -38,7 +38,7 @@ class AddDiscount(models.TransientModel):
         discount_amount = self.discount
         if self.discount_type == 'percentage':
             discount_amount = move.amount_total * (self.discount / 100)
-        if move.type == 'out_invoice' and discount_amount > discount_limit:
+        if move.move_type == 'out_invoice' and discount_amount > discount_limit:
             raise UserError('Invoices can not be discounted more than $ %.2f. \nCreate a credit memo instead.' % discount_limit)
 
         if float_compare(discount_amount, move.amount_residual, precision_digits=2) > 0:
@@ -53,16 +53,16 @@ class AddDiscount(models.TransientModel):
             'line_ids': [(0, 0, {
                 'account_id': account_payable.id if self.env.context.get('type') == 'in_invoice' else account_receivable.id,
                 'company_currency_id': company_currency.id,
-                'credit': 0.0 if move.type == 'in_invoice' else discount_amount,
-                'debit': discount_amount if move.type == 'in_invoice' else 0.0,
+                'credit': 0.0 if move.move_type == 'in_invoice' else discount_amount,
+                'debit': discount_amount if move.move_type == 'in_invoice' else 0.0,
                 'journal_id': move.journal_id.id,
                 'name': 'Discount',
                 'partner_id': move.partner_id.id
             }), (0, 0, {
                 'account_id': discount_account.id,
                 'company_currency_id': company_currency.id,
-                'credit': discount_amount if move.type == 'in_invoice' else 0.0,
-                'debit': 0.0 if move.type == 'in_invoice' else discount_amount,
+                'credit': discount_amount if move.move_type == 'in_invoice' else 0.0,
+                'debit': 0.0 if move.move_type == 'in_invoice' else discount_amount,
                 'journal_id': move.journal_id.id,
                 'name': 'Discount',
                 'partner_id': move.partner_id.id

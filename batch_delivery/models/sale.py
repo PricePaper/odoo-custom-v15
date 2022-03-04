@@ -61,9 +61,7 @@ class SaleOrderLine(models.Model):
         for line in self:  # TODO: maybe one day, this should be done in SQL for performance sake
             if line.order_id.storage_contract:
                 qty = 0.0
-                print(line.sudo().purchase_line_ids)
                 for po_line in line.sudo().purchase_line_ids:
-                    print(po_line, po_line.state, sum(po_line.move_ids.filtered(lambda s: s.state != 'cancel').mapped('quantity_done')))
                     if po_line.state in ('purchase', 'done', 'received'):
                         qty += sum(po_line.move_ids.filtered(lambda s: s.state != 'cancel').mapped('quantity_done'))
                 line.qty_delivered = qty

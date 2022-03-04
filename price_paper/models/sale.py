@@ -257,7 +257,6 @@ class SaleOrder(models.Model):
         return True
 
     def action_cancel(self):
-        return self.order_line._compute_qty_delivered()
         self.ensure_one()
         self.write({
             'is_creditexceed': False,
@@ -442,10 +441,10 @@ class SaleOrder(models.Model):
                 shipping_date = date.today() + relativedelta(days=day_diff)
             self.release_date = shipping_date
             self.deliver_by = shipping_date
-            # todo carrier is not updating if user is not using the add wizard
-            # self.carrier_id = self.partner_shipping_id.property_delivery_carrier_id
-        # else:
-        # self.carrier_id = self.partner_id and self.partner_id.property_delivery_carrier_id or False
+            if self.partner_shipping_id.property_delivery_carrier_id:
+                self.carrier_id = self.partner_shipping_id.property_delivery_carrier_id
+            else:
+                self.carrier_id = self.partner_id and self.partner_id.property_delivery_carrier_id or False
 
     # @api.onchange('carrier_id', 'order_line')
     # def onchange_delivery_carrier_method(self):
@@ -1495,7 +1494,7 @@ class SaleOrderLine(models.Model):
         if not seller:
             seller = self.product_id._prepare_sellers(False)[:1]
         if not seller:
-            raise UserError("""There is no matching vendor price to generate the purchase order for product %s 
+            raise UserError("""There is no matching vendor price to generate the purchase order for product %s
                     (no vendor defined, minimum quantity not reached, dates not valid, ...). Go on the product form and complete the list of vendors.""") % (
                 self.product_id.display_name)
         return seller

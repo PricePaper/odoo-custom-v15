@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="check_wizard_form">
+            <field name="name">check.settings.form</field>
+            <field name="model">check.settings</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Success">
+                    <field name="yes_no" readonly="1" />
+                    <footer>
+                        <button string="OK" class="btn-primary" special="cancel" data-hotkey="z"/>
+
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

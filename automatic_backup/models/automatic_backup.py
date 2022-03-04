@@ -301,7 +301,15 @@ class Cron(models.Model):
 
     def check_settings(self):
         for rec in self:
-            rec.create_backup(True)
+            res = rec.create_backup(True)
+            return {
+                'name': 'Success',
+                'type': 'ir.actions.act_window',
+                'res_model': 'check.settings',
+                'view_mode': 'form',
+                'view_type': 'form',
+                'target': 'new',
+            }
 
 
     def backup_btn(self):
@@ -529,8 +537,16 @@ class Cron(models.Model):
                             o.delete()
 
         backup_binary.close()
-        if check is True:
-            raise exceptions.Warning(_('Settings are correct.'))
+        # if check is True:
+        #     return {
+        #         'name': 'Success',
+        #         'type': 'ir.actions.act_window',
+        #         'res_model': '',
+        #         'view_mode': 'form',
+        #         'view_type': 'form',
+        #         'target': 'new',
+        #     }
+            #raise exceptions.Warning(_('Settings are correct.'))
         self.success_message(filename)
 
     def success_message(self, filename):

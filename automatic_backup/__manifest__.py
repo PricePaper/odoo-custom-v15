@@ -10,6 +10,7 @@
     'data': [
         'data/data.xml',
         'security/ir.model.access.csv',
+        'wizard/check_settings.xml',
         'views/automatic_backup.xml',
         'security/security.xml'
     ],

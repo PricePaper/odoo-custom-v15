@@ -1342,7 +1342,6 @@ class SaleOrderLine(models.Model):
             if not self.order_id.storage_contract and sum(
                     [1 for line in self.order_id.order_line if line.product_id.id == self.product_id.id]) > 1:
                 warn_msg += "\n{} is already in SO.".format(self.product_id.name)
-
             if self.order_id:
                 partner_history = self.env['sale.tax.history'].search(
                     [('partner_id', '=', self.order_id and self.order_id.partner_shipping_id.id or False),
@@ -1373,7 +1372,16 @@ class SaleOrderLine(models.Model):
             # for uom only show those applicable uoms
             domain = res.get('domain', {})
             product_uom_domain = domain.get('product_uom', [])
+            uom_ids = self.product_id.sale_uoms.ids
             product_uom_domain.append(('id', 'in', self.product_id.sale_uoms.ids))
+            if res:
+                if res.get('domain', False):
+                    res['domain']['product_uom'] = product_uom_domain
+                else:
+                    res['domain'] = {'product_uom': product_uom_domain}
+            else:
+                res = {'domain': {'product_uom': product_uom_domain}}
+
 
             # get this customers last time sale description for this product and update it in the line
             note = self.env['product.notes'].search(
@@ -1386,7 +1394,6 @@ class SaleOrderLine(models.Model):
             else:
                 self.note = ''
         self.update(vals)
-
         return res
 
     @api.onchange('product_uom', 'product_uom_qty')

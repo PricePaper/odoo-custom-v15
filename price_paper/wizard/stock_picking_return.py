@@ -8,5 +8,3 @@ class ReturnPickingLine(models.TransientModel):
     _inherit = "stock.return.picking.line"
 
     to_refund = fields.Boolean(default=True)
-
-

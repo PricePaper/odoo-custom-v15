@@ -7,7 +7,7 @@
             <field name="model">sc.popup.window</field>
             <field name="arch" type="xml">
                 <form string="Warning">
-                     <sheet>
+                    <sheet>
                         <script>
                             $(document).ready(function(){
                             $('.modal-dialog').css({'width': '550PX', 'height': '450PX'});
@@ -16,19 +16,25 @@
 
                         <field name="partner_id" invisible="1"/>
 
+                        <group>
                             <group>
-                              <group>
-                                <field name="contract_line_id" style="width: 450px;" required="1" nolabel="1" placeholder="Select Contract Line" domain="[('order_id.state', '=', 'released'), ('order_id.storage_contract', '=', True), ('is_downpayment', '=', False), ('storage_remaining_qty', '&gt;', 0), ('order_id.partner_id', '=', partner_id)]"/>
-                              </group>
-                              <group>
-                                <field name="order_qty" required="1" style="width: 85px;"/>
-                              </group>
+                                <field name="contract_line_id" style="width: 450px;" required="1" nolabel="1" placeholder="Select Contract Line"
+                                       domain="[('order_id.state', '=', 'released'), (
+                                       'order_id.storage_contract', '=', True),
+                                       ('is_downpayment', '=', False),
+                                       ('storage_remaining_qty', '&gt;', 0),
+                                       ('order_id.partner_id', '=', partner_id)]"/>
                             </group>
+                            <group>
+                                <field name="order_qty" required="1" style="width: 85px;"/>
+                            </group>
+                        </group>
 
                     </sheet>
                     <footer>
-                        <button string="Add" type="object" name="add_sc_line" class="oe_highlight"/>
-                        <button string="Cancel" special="cancel" class="btn-secondary"/>
+                        <button string="Add" type="object" name="add_sc_line" class="btn-success"/>
+                        <span>or</span>
+                        <button string="Cancel" special="cancel" class="btn-danger"/>
                     </footer>
                 </form>
             </field>
@@ -39,6 +45,6 @@
             <field name="res_model">sc.popup.window</field>
             <field name="view_mode">form</field>
             <field name="target">new</field>
-    </record>
+        </record>
     </data>
 </odoo>

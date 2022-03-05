@@ -55,11 +55,7 @@
                   action="action_zip_delivery_days"
                   parent="stock.menu_stock_inventory_control"
                   groups="stock.group_stock_manager"/>
-        <!-- <menuitem id="menu_report_product_all_today"
-            name="Sales Today"
-            action="menu_report_product_all_today"
-            parent="menu_sale_report"
-            sequence="2"/> -->
+
 
         <record model="ir.ui.menu" id="sale.menu_product_template_action">
             <field name="action" eval="False"/>

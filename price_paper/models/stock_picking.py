@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-
-from odoo.exceptions import UserError
 from collections import defaultdict
-from datetime import datetime
 from itertools import groupby
 from odoo.tools import float_compare
 from odoo import api, fields, models, SUPERUSER_ID, _
@@ -85,7 +82,6 @@ class StockRule(models.Model):
         """
         copy paste override to avoid adding lines to make2order PO
         """
-        if input(procurements) == 'y': print(i)
         procurements_by_po_domain = defaultdict(list)
         errors = []
         for procurement, rule in procurements:

@@ -39,8 +39,7 @@ class ProcurementGroup(models.Model):
                 'warehouse_id').lot_stock_id.child_internal_location_ids:
             for domain in res:
                 if domain[0] == 'location_id':
-                    res.insert(res.index(domain),
-                               ('location_id', domain[1], values.get('warehouse_id').lot_stock_id.id))
+                    res.insert(res.index(domain), ('location_id', domain[1], values.get('warehouse_id').lot_stock_id.id))
                     res.remove(domain)
         return res
 

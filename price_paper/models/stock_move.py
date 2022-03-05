@@ -29,7 +29,6 @@ class StockMove(models.Model):
                 res.remove('&')
         return res
 
-
     def _get_accounting_data_for_valuation(self):
         """
         override to chnage account valuation of storage contract
@@ -38,11 +37,9 @@ class StockMove(models.Model):
         if self.is_storage_contract:
             acc_valuation = self.product_id.categ_id.sc_stock_valuation_account_id
             if not acc_valuation:
-                raise UserError(
-                    'Cannot find a SC Stock Valuation Account in product category: %s' % self.product_id.categ_id.name)
+                raise UserError('Cannot find a SC Stock Valuation Account in product category: %s' % self.product_id.categ_id.name)
             acc_valuation = acc_valuation.id
         return journal_id, acc_src, acc_dest, acc_valuation
-
 
     def _get_src_account(self, accounts_data):
         if self._context.get('from_inv_adj', False) or self._context.get('is_scrap', False):
@@ -50,8 +47,7 @@ class StockMove(models.Model):
             if not acc_src:
                 raise UserError(
                     'Cannot find a Invenotry Adjustment stock input account for the product %s. You must define one on\
-                     the product category, before processing this operation.' %
-                    self.product_id.display_name)
+                     the product category, before processing this operation.' % self.product_id.display_name)
             return acc_src
         return super()._get_src_account(accounts_data)
 
@@ -60,9 +56,8 @@ class StockMove(models.Model):
             acc_dest = self.product_id.categ_id.inv_adj_output_account_id.id
             if not acc_dest:
                 raise UserError(
-                    'Cannot find a Invenotry Adjustment stock input account for the product %s. You must define one on\
-                     the product category, before processing this operation.' %
-                    self.product_id.display_name)
+                    'Cannot find a Invenotry Adjustment stock output account for the product %s. You must define one on\
+                     the product category, before processing this operation.' % self.product_id.display_name)
             return acc_dest
         return super()._get_dest_account(accounts_data)
 

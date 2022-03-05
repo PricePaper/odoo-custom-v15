@@ -47,7 +47,7 @@ class StockBackorderConfirmation(models.TransientModel):
             (move_lines - make2order_moves)._action_cancel()
             for move in make2order_moves:
                 move.move_orig_ids.write({'transit_picking_id': move.picking_id.id})
-        if input(make2order_moves) == 'y':print(k)
+
 
 StockBackorderConfirmation()
 

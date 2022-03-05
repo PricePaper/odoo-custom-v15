@@ -11,24 +11,27 @@ class StorageContractPopUpWindow(models.TransientModel):
 
     @api.onchange('contract_line_id')
     def _onchange_contract_line(self):
-        self.order_qty = self.contract_line_id.storage_remaining_qty if self.contract_line_id.storage_remaining_qty < self.contract_line_id.selling_min_qty else self.contract_line_id.selling_min_qty
+        if self.contract_line_id.storage_remaining_qty < self.contract_line_id.selling_min_qty:
+            self.order_qty = self.contract_line_id.storage_remaining_qty
+        else:
+            self.order_qty = self.contract_line_id.selling_min_qty
+        # self.order_qty = self.contract_line_id.storage_remaining_qty if self.contract_line_id.storage_remaining_qty < self.contract_line_id.selling_min_qty else self.contract_line_id.selling_min_qty
 
     @api.onchange('order_qty')
     def _onchange_order_qty(self):
         res = {}
         if self.order_qty < self.contract_line_id.selling_min_qty:
             warning_mess = {
-                'title': _('Less than Minimum qty'),
-                'message': _('You are going to sell less than minimum qty in the contract.')
+                'title': 'Less than Minimum qty',
+                'message': 'You are going to sell less than minimum qty in the contract.'
             }
             self.order_qty = 0
             res.update({'warning': warning_mess})
         elif self.order_qty > self.contract_line_id.storage_remaining_qty:
             warning_mess = {
-                'title': _('More than Storage contract'),
-                'message': _(
-                    'You are going to Sell more than in storage contract.Only %s is remaining in this contract.' % (
-                        self.contract_line_id.storage_remaining_qty))
+                'title': 'More than Storage contract',
+                'message': 'You are going to Sell more than in storage contract.Only %s is remaining in this contract.' %
+                           self.contract_line_id.storage_remaining_qty
             }
             self.order_qty = 0
             res.update({'warning': warning_mess})

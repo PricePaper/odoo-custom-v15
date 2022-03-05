@@ -58,11 +58,6 @@
                     <field name="need_sub_product"/>
                 </field>
 
-                <!--                TODO uncomment below one check the purpose of below code in odoo 15--><!--TODO Fixed ,found no use-->
-                <!--                <xpath expr="//div[@name='pricelist_item']" position="attributes">-->
-                <!--                    <attribute name="invisible">1</attribute>-->
-                <!--                </xpath>-->
-
                 <xpath expr="//group[@name='group_standard_price']" position="attributes">
                     <attribute name='groups'>sales_team.group_sale_manager</attribute>
                 </xpath>
@@ -176,8 +171,8 @@
                             </group>
                         </group>
                         <group>
-                                <field name="same_product_ids" widget="many2many_tags"/>
-                                <field name="same_product_rel_ids" widget="many2many_tags" invisible="1"/>
+                            <field name="same_product_ids" widget="many2many_tags"/>
+                            <field name="same_product_rel_ids" widget="many2many_tags" invisible="1"/>
                         </group>
                     </page>
                 </xpath>

@@ -10,7 +10,7 @@
                         <field name="warning_message" readonly='1'/>
                     </sheet>
                     <footer>
-                        <button string="Close" type="object" name="close_window" class="oe_highlight"/>
+                        <button string="Close" type="object" name="close_window" class="btn-warning"/>
                     </footer>
                 </form>
             </field>

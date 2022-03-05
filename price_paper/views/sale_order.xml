@@ -223,10 +223,11 @@
                 <xpath expr="//field[@name='order_line']" position="before">
                     <field name="show_contract_line" invisible="1"/>
                     <button type="object" name="add_purchase_history_to_so_line" string="Browse History Lines"
-                            context="{'partner':partner_id}" class="oe_edit_only oe_highlight"/>
+                            context="{'partner':partner_id}" class="oe_edit_only btn-warning"/>
+                    <span class="text-white"> or  </span>
                     <button type="action" name="%(action_sc_popup_windows)d" string="Browse Storage Contract"
                             attrs="{'invisible': [('show_contract_line', '=', False)]}"
-                            context="{'default_partner_id':partner_id}" class="oe_edit_only oe_highlight"
+                            context="{'default_partner_id':partner_id}" class="oe_edit_only btn-warning"
                     />
 
                 </xpath>
@@ -246,10 +247,10 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">sale.order</field>
             <field name="view_mode">tree,form</field>
-            <!--            <field name="search_view_id" ref="sale_order_view_search_credit_exceeded"/>-->
+            <field name="search_view_id" ref="sale_order_view_search_credit_exceeded"/>
             <field name="context">{"search_default_ready_to_release": 1, "search_default_release_price_hold": 1}</field>
             <field name="help" type="html">
-                <p>
+                <p class="o_view_nocontent_smiling_face">
                     No Holded Sale Order Found.
                 </p>
             </field>
@@ -466,6 +467,7 @@
                 <form string="Sales Order" class="o_sale_order">
                     <header>
                         <field name="sc_po_done" invisible="1"/>
+                        <field name="active" invisible="1"/>
                         <field name="invoice_status" invisible="1"/>
                         <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice"
                                 type="action" class="btn-primary"
@@ -476,9 +478,11 @@
                         <button name="action_storage_contract_confirm" type="object" string="Confirm"
                                 class="oe_highlight"
                                 attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('active', '=', False)]}"/>
-                        <button name="action_create_storage_do" type="object" string="Create PO" class="oe_highlight" groups="account.group_account_manager, purchase.group_purchase_manager" attrs="{'invisible': ['|', '|', ('active', '=', False), ('state', '!=', 'sale'), ('sc_po_done', '=', True)]}"/>
-<!--                                attrs="{'invisible': ['|', '|', ('active', '=', False), ('state', '!=', 'sale'), ('sc_po_done', '=', True)]}"-->
-                                groups="account.group_account_manager, purchase.group_purchase_manager"/>
+                        <button name="action_create_storage_do" type="object" string="Create PO" class="oe_highlight"
+                                groups="account.group_account_manager, purchase.group_purchase_manager"
+                                attrs="{'invisible': ['|', '|', ('active', '=', False), ('state', '!=', 'sale'), ('sc_po_done', '=', True)]}"/>
+                        <!--                                attrs="{'invisible': ['|', '|', ('active', '=', False), ('state', '!=', 'sale'), ('sc_po_done', '=', True)]}"-->
+                        groups="account.group_account_manager, purchase.group_purchase_manager"/>
                         <button name="action_release" groups="account.group_account_manager" type="object"
                                 string="Release"
                                 class="oe_highlight"
@@ -522,11 +526,10 @@
                                     icon="fa-usd">
                                 <field string="Sales" name="sc_child_order_count" widget="statinfo"/>
                             </button>
-                          <!--  <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
-                                <field name="active" widget="boolean_button" options="{'terminology': 'archive'}"/>
-                            </button>-->
-                            <button type="object" class="oe_stat_button" icon="fa-archive" name="toggle_active" string="Archive" attrs="{'invisible': [('active', '=', False)]}"/>
-                            <button type="object" class="oe_stat_button" icon="fa-archive" name="toggle_active" string="Restore" attrs="{'invisible': [('active', '=', True)]}"/>
+                            <button type="object" class="oe_stat_button" icon="fa-archive" name="toggle_active" string="Archive"
+                                    attrs="{'invisible': [('active', '=', False)]}"/>
+                            <button type="object" class="oe_stat_button" icon="fa-archive" name="toggle_active" string="Restore"
+                                    attrs="{'invisible': [('active', '=', True)]}"/>
                         </div>
                         <div class="oe_title">
                             <h1>
@@ -545,12 +548,6 @@
                                 <field name="company_id" invisible="1"/>
                             </group>
                             <group>
-                                <field name="active"  widget="boolean_toggle" class="oe_stat_button" icon="fa-archive" >
-                              <span attrs="{'invisible':[('active', '=', True)]}">Unarchive</span>
-                              <span attrs="{'invisible':[('active', '!=', True)]}">Archive</span>
-                              </field>
-<!--                                <field name="confirmation_date"-->
-<!--                                       attrs="{'invisible': [('confirmation_date', '=', False)]}"/>-->
                                 <field name="currency_id" invisible="1"/>
                                 <field name="payment_term_id" options="{'no_create': True}"
                                        attrs="{'readonly': [('state', '!=', 'draft')]}"/>
@@ -560,16 +557,9 @@
                         </group>
                         <notebook>
                             <page string="Order Lines" name="order_lines">
-                                <field
-                                        name="order_line"
-                                        widget="section_and_note_one2many"
-                                        mode="tree"
-                                        attrs="{'readonly': [('state', 'in', ('waiting', 'ordered', 'received', 'done','cancel'))]}"
-                                >
-                                    <tree
-                                            string="Sales Order Lines"
-                                            editable="bottom"
-                                    >
+                                <field name="order_line" widget="section_and_note_one2many" mode="tree"
+                                       attrs="{'readonly': [('state', 'in', ('waiting', 'ordered', 'received', 'done','cancel'))]}">
+                                    <tree string="Sales Order Lines" ditable="bottom">
                                         <control>
                                             <create string="Add a product"/>
                                             <create string="Configure a product"
@@ -781,7 +771,7 @@
             <field name="domain">[('storage_contract', '=', True)]</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
-                <p>
+                <p class="o_view_nocontent_smiling_face">
                     No Storage Contract.
                 </p>
             </field>

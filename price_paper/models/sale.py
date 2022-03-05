@@ -664,8 +664,7 @@ class SaleOrder(models.Model):
              ('product_id', 'not in', products), ('product_id', '!=', False)]).filtered(
             lambda r: not r.product_id.categ_id.is_storage_contract)
         # addons product filtering
-        addons_products = sales_history.mapped('product_id').filtered(lambda rec: rec.need_sub_product).mapped(
-            'product_addons_list')
+        addons_products = sales_history.mapped('product_id').filtered(lambda rec: rec.need_sub_product).mapped('product_addons_list')
         if addons_products:
             sales_history = sales_history.filtered(lambda rec: rec.product_id not in addons_products)
 
@@ -676,7 +675,7 @@ class SaleOrder(models.Model):
         }
 
         return {
-            'name': _('%s' % self.partner_id.display_name + ' #' + self.name),
+            'name': '%s # %s' % (self.partner_id.display_name, self.name),
             'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'add.purchase.history.so',
@@ -897,10 +896,8 @@ class SaleOrderLine(models.Model):
                 lang=self.order_id.partner_id.lang or self.env.user.lang or 'en_US'
             )
             product_qty = self.product_uom._compute_quantity(self.product_uom_qty, self.product_id.uom_id)
-            if float_compare(product.qty_available - product.outgoing_qty, product_qty,
-                             precision_digits=precision) == -1:
-                is_available = self.is_mto
-                if not is_available:
+            if float_compare(product.qty_available - product.outgoing_qty, product_qty, precision_digits=precision) == -1:
+                if not self.is_mto:
                     message = _('You plan to sell %.2f %s of %s but you only have %.2f %s available in %s warehouse.') % \
                               (self.product_uom_qty, self.product_uom.name, self.product_id.name,
                                product.qty_available - product.outgoing_qty, product.uom_id.name,
@@ -941,7 +938,7 @@ class SaleOrderLine(models.Model):
                     lang=self.order_id.partner_id.lang or self.env.user.lang or 'en_US'
                 )
                 product_qty = self.product_uom._compute_quantity(self.product_uom_qty, self.product_id.uom_id)
-                if float_compare(product.virtual_available, product_qty, precision_digits=precision) == -1:
+                if float_compare(product.qty_available - product.outgoing_qty, product_qty, precision_digits=precision) == -1:
                     is_available = self.is_mto
                     if not is_available:
                         products = product.same_product_ids + product.same_product_rel_ids

@@ -97,4 +97,3 @@ class UploadFileWizard(models.TransientModel):
 UploadFileWizard()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
-

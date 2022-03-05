@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-
 from dateutil.relativedelta import relativedelta
-
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from odoo.tools import float_compare
@@ -40,8 +38,7 @@ class SaleHistoryLinesWizard(models.TransientModel):
         else:
             mto_route = False
             try:
-                mto_route = self.env['stock.warehouse']._find_global_route('stock.route_warehouse0_mto',
-                                                                           _('Make To Order'))
+                mto_route = self.env['stock.warehouse']._find_global_route('stock.route_warehouse0_mto',  _('Make To Order'))
             except UserError:
                 # if route MTO not found in ir_model_data, we treat the product as in MTS
                 pass
@@ -66,29 +63,24 @@ class SaleHistoryLinesWizard(models.TransientModel):
         product = self.order_line.product_id
 
         if product.type == 'product':
-            active_id = self._context.get('active_id')
-            order_id = self.env['sale.order'].browse(active_id)
+            order_id = self.env['sale.order'].browse(self._context.get('active_id'))
             message = ''
-
             precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-            active_id = self._context.get('active_id')
-            order_id = self.env['sale.order'].browse(active_id)
-            product = self.order_line.product_id.with_context(
+            product = product.with_context(
                 warehouse=order_id.warehouse_id.id,
                 lang=order_id.partner_id.lang or self.env.user.lang or 'en_US'
             )
-            product_qty = self.product_uom._compute_quantity(self.qty_to_be, self.order_line.product_id.uom_id)
+            product_qty = self.product_uom._compute_quantity(self.qty_to_be, product.uom_id)
             if float_compare(product.qty_available - product.outgoing_qty, product_qty, precision_digits=precision) == -1:
-                is_available = self._check_routing(order_id, product)
-                if not is_available:
+                is_mto = self.order_line.is_mto
+                if not self.order_line.is_mto:
                     message += _(
                         'You plan to sell %s %s of %s but you only have %s %s available in %s warehouse.\n\n') % \
                                (self.qty_to_be, self.product_uom.name, self.product_name,
                                 product.qty_available - product.outgoing_qty, product.uom_id.name, order_id.warehouse_id.name)
                     # We check if some products are available in other warehouses.
                     if float_compare(product.qty_available - product.outgoing_qty,
-                        self.order_line.product_id.qty_available - self.order_line.product_id.outgoing_qty,
-                                     precision_digits=precision) == -1:
+                        self.order_line.product_id.qty_available - self.order_line.product_id.outgoing_qty, precision_digits=precision) == -1:
                         message += _('There are %s %s available across all warehouses.\n\n') % \
                                    (self.order_line.product_id.qty_available - self.order_line.product_id.outgoing_qty, product.uom_id.name)
                         for warehouse in self.env['stock.warehouse'].search([]):

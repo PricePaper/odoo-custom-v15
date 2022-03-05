@@ -71,7 +71,7 @@
                         <button string="Cancel" class="oe_link" special="cancel"/>
                         <a string="" class="pull-right" onclick="$('main.modal-body').scrollTop(0);"><span
                                 aria-label="scroll-top" title='scrolltop'
-                                class="fa fa-arrow-circle-o-up fa-2x"></span></a>
+                                class="fa fa-arrow-circle-o-up fa-2x"/></a>
                     </footer>
                 </form>
             </field>

@@ -7,7 +7,6 @@ from . import inactive_product_wizard
 from . import release_sale_order
 from . import sale_warning
 from . import upload_pricelist_wizard
-from . import stock_overprocessed_transfer
 from . import sc_popup_window
 from . import stock_backorder_confirmation
 from . import stock_picking_return

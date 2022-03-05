@@ -4,13 +4,13 @@
         <record id="res_partner_inherit_stock_orderpoint" model="ir.ui.view">
             <field name="name">res.partner.stock.orderpoint.pricepaper</field>
             <field name="model">res.partner</field>
-            <field name="inherit_id" ref="account.view_partner_property_form"/>
+            <field name="inherit_id" ref="price_paper.res_partner_pricelist_inherit_pricepaper"/>
             <field name="arch" type="xml">
-                <xpath expr="//notebook/page[@name='sales_purchases']/group/group[2]/field[@name='property_supplier_payment_term_id']"
-                       position="before">
+                <xpath expr="//field[@name='supplier']"
+                       position="after">
                     <field name="supplier_rank" invisible="1"/>
-                    <field name="delay" attrs="{'invisible': [('supplier_rank', '=', 0)]}"/>
-                    <field name="order_freq" attrs="{'invisible': [('supplier_rank', '=', 0)]}"/>
+                    <field name="delay" attrs="{'invisible': [('supplier', '=', False)]}"/>
+                    <field name="order_freq" attrs="{'invisible': [('supplier', '=', False)]}"/>
                 </xpath>
             </field>
         </record>

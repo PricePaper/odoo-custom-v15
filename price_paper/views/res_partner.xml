@@ -210,7 +210,7 @@
                                     <field name="property_account_position_id"
                                            options="{'no_create': True, 'no_open': True}"
                                            readonly="0"
-                                           
+
                                           />
                                 </group>
                         </group>
@@ -262,6 +262,10 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="product.view_partner_property_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//notebook/page[@name='sales_purchases']/group/group[2]/field[@name='property_supplier_payment_term_id']"
+                       position="before">
+                    <field name="supplier" />
+                </xpath>
                 <xpath expr="//field[@name='property_product_pricelist']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>

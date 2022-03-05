@@ -223,11 +223,11 @@
                 <xpath expr="//field[@name='order_line']" position="before">
                     <field name="show_contract_line" invisible="1"/>
                     <button type="object" name="add_purchase_history_to_so_line" string="Browse History Lines"
-                            context="{'partner':partner_id}" class="oe_edit_only btn-warning"/>
+                            context="{'partner':partner_id}" class="oe_edit_only btn-info"/>
                     <span class="text-white"> or  </span>
                     <button type="action" name="%(action_sc_popup_windows)d" string="Browse Storage Contract"
                             attrs="{'invisible': [('show_contract_line', '=', False)]}"
-                            context="{'default_partner_id':partner_id}" class="oe_edit_only btn-warning"
+                            context="{'default_partner_id':partner_id}" class="oe_edit_only btn-info"
                     />
 
                 </xpath>

@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
-import json
-import time
 from datetime import datetime, date
 from datetime import timedelta
-from collections import Counter
 import pytz
 from dateutil.relativedelta import relativedelta
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, float_compare, float_is_zero
-from odoo.tools import float_round
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, float_compare, float_is_zero, float_round
 
 
 class SaleOrder(models.Model):
@@ -65,7 +61,7 @@ class SaleOrder(models.Model):
         for order in self:
             pending_invoices = order.partner_id.invoice_ids.filtered(
                 lambda rec: rec.move_type == 'out_invoice' and rec.state == 'posted' and rec.payment_state not in ('paid', 'in_payment') and (
-                            rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
+                        rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
 
             msg = ''
             msg1 = ''
@@ -198,14 +194,15 @@ class SaleOrder(models.Model):
 
     def _compute_sc_child_order_count(self):
         for order in self:
-            order.sc_child_order_count = len(order.order_line.mapped('storage_contract_line_ids.order_id').filtered(lambda r: r.state !='cancel'))
+            order.sc_child_order_count = len(order.order_line.mapped('storage_contract_line_ids.order_id').filtered(lambda r: r.state != 'cancel'))
 
     @api.depends('partner_id')
     def _compute_show_contract_line(self):
         for order in self:
-            order.show_contract_line =  False
+            order.show_contract_line = False
             if order.partner_id:
-                sc_order = self.env['sale.order'].search([('storage_contract', '=', True), ('state', '=', 'released'), ('partner_id', '=', order.partner_id.id)])
+                sc_order = self.env['sale.order'].search([('storage_contract', '=', True), ('state', '=', 'released'),
+                                                          ('partner_id', '=', order.partner_id.id)])
                 count = sc_order.mapped('order_line').filtered(lambda r: r.storage_remaining_qty > 0)
                 order.show_contract_line = len(count) > 0
 
@@ -257,7 +254,6 @@ class SaleOrder(models.Model):
         return True
 
     def action_cancel(self):
-        return self.order_line._compute_qty_delivered()
         self.ensure_one()
         self.write({
             'is_creditexceed': False,
@@ -276,8 +272,8 @@ class SaleOrder(models.Model):
                     if len(po_line.order_id.origin.split(',')) > 1 or len(po_line.order_id.origin.split(', ')) > 1:
                         po_line.write({'product_qty': po_line.product_qty - line.product_uom_qty})
                         po_line.order_id.message_post(body=_("sale order %s has been cancelled by the user %s." % (self.name, self.env.user.name)),
-                                                  subtype_id=self.env.ref('mail.mt_note').id)
-                        po_not_to_do |=  po_line.order_id
+                                                      subtype_id=self.env.ref('mail.mt_note').id)
+                        po_not_to_do |= po_line.order_id
         (purchase_order - po_not_to_do).button_cancel()
         self.order_line.filtered('storage_contract_line_id').write({'product_uom_qty': 0})
         return super(SaleOrder, self).action_cancel()
@@ -359,8 +355,7 @@ class SaleOrder(models.Model):
         for sc in self:
             orders = sc.order_line.mapped('storage_contract_line_ids.order_id')
             if any([order.state != 'cancel' for order in orders]):
-                raise ValidationError(
-                    'Cannot UnRelease contract with active sale orders %s' % (', '.join(orders.mapped('name'))))
+                raise ValidationError('Cannot UnRelease contract with active sale orders %s' % (', '.join(orders.mapped('name'))))
         return self.write({'state': 'done'})
 
     @api.depends('picking_policy', 'order_line.customer_lead', 'date_order', 'order_line.state')
@@ -442,10 +437,9 @@ class SaleOrder(models.Model):
                 shipping_date = date.today() + relativedelta(days=day_diff)
             self.release_date = shipping_date
             self.deliver_by = shipping_date
-            # todo carrier is not updating if user is not using the add wizard
-            # self.carrier_id = self.partner_shipping_id.property_delivery_carrier_id
-        # else:
-        # self.carrier_id = self.partner_id and self.partner_id.property_delivery_carrier_id or False
+            self.carrier_id = self.partner_shipping_id.property_delivery_carrier_id
+        else:
+            self.carrier_id = self.partner_id and self.partner_id.property_delivery_carrier_id or False
 
     # @api.onchange('carrier_id', 'order_line')
     # def onchange_delivery_carrier_method(self):
@@ -491,8 +485,6 @@ class SaleOrder(models.Model):
         return res
 
     def copy(self, default=None):
-        # ctx = dict(self.env.context)
-        # self = self.with_context(ctx)
         new_so = super(SaleOrder, self).copy(default=default)
         for line in new_so.order_line:
             if line.is_delivery:
@@ -553,14 +545,14 @@ class SaleOrder(models.Model):
             addr = self.partner_id.address_get(['delivery', 'invoice'])
             self.partner_invoice_id = self.partner_id.id
             self.invoice_address_id = addr['invoice']
-            shipping_addr = self.partner_id.child_ids.filtered(
-                lambda rec: rec.type == 'delivery' and rec.default_shipping == True)
+            shipping_addr = self.partner_id.child_ids.filtered(lambda rec: rec.type == 'delivery' and rec.default_shipping)
             if shipping_addr:
                 self.partner_shipping_id = shipping_addr.id
             else:
-                self.partner_shipping_id = self.partner_id.id
+                self.partner_shipping_id = addr['delivery']
         else:
             self.invoice_address_id = False
+            self.partner_shipping_id = False
         return res
 
     def _prepare_invoice(self):
@@ -576,10 +568,8 @@ class SaleOrder(models.Model):
 
         for order in self:
             gross_profit = sum([line.profit_margin for line in order.order_line])
-            # TODO:: remove payment method field from sales_commission.
             if order.partner_id.payment_method == 'credit_card':
                 gross_profit -= order.amount_total * 0.03
-            # TODO:: remove discount_per,code,oder_type,due_date,is_discount,discount_per field from purchase_extension.
             if order.payment_term_id.discount_per > 0:
                 gross_profit -= order.amount_total * (order.payment_term_id.discount_per / 100)
             order.update({'gross_profit': round(gross_profit, 2)})
@@ -591,7 +581,6 @@ class SaleOrder(models.Model):
             self.release_date = date.today() + timedelta(days=1)
         if not self.deliver_by:
             self.deliver_by = date.today() + timedelta(days=1)
-
         if self.release_date and self.release_date < date.today():
             raise ValidationError('Earliest Delivery Date should be greater than Current Date')
 
@@ -626,34 +615,22 @@ class SaleOrder(models.Model):
             else:
                 order.hold_state = 'credit_hold'
 
-    # TODO :: odoo default will do this
-    # def action_view_purchase(self):
-    #     action = self.env.ref('purchase.purchase_rfq').read()[0]
-    #     action['domain'] = [('id', 'in', self.mapped('order_line.purchase_line_ids.order_id').ids)]
-    #     action.pop('context')
-    #     return action
-
     @api.onchange('payment_term_id')
     def onchange_payment_term(self):
         user = self.env.user
         for order in self:
             partner_payment_term = order.partner_id and order.partner_id.property_payment_term_id
-            if (order.payment_term_id.id != partner_payment_term.id) and not user.has_group(
-                    'account.group_account_manager'):
+            if (order.payment_term_id.id != partner_payment_term.id) and not user.has_group('account.group_account_manager'):
                 order.payment_term_id = partner_payment_term.id
-                return {'warning': {'title': 'Invalid Action!',
-                                    'message': "You dont have the rights to change the payment terms of this customer."}}
+                return {'warning': {'title': 'Invalid Action!', 'message': "You don't have the rights to change the payment terms of this customer."}}
 
     def check_payment_term(self):
         """
         Can only proceed with order if payment term is set
         """
-        user = self.env.user
-        for order in self:
-            if not order.payment_term_id:
-                raise ValidationError('Payment term is not set for this order please set to proceed.')
+        if not self.payment_term_id:
+            raise ValidationError('Payment term is not set for this order please set to proceed.')
 
-    # todo check for unlock
     def action_unlock(self):
         self.filtered(lambda s: s.storage_contract and s.state == 'done').write({'state': 'received'})
         self.filtered(lambda s: not s.storage_contract and s.state == 'done').write({'state': 'sale'})
@@ -670,8 +647,9 @@ class SaleOrder(models.Model):
             action.update({
                 'domain': [
                     ('id', 'in', ids),
-                    ('state', 'not in', ('cancel')),
-                    ('storage_contract', '=', False)]
+                    ('state', '!=', 'cancel'),
+                    ('storage_contract', '=', False)
+                ]
             })
             return action
 
@@ -709,8 +687,7 @@ class SaleOrder(models.Model):
         }
 
     def action_storage_contract_confirm(self):
-        self.write({'state': 'sale', 'date_order': fields.Datetime.today()})
-        return True
+        return self.write({'state': 'sale', 'date_order': fields.Datetime.today()})
 
     def so_duplicate(self):
         new_records = self.env['sale.order']
@@ -727,8 +704,7 @@ class SaleOrder(models.Model):
 
     @api.model
     def sc_archive_cron(self):
-        records = self.env['sale.order'].search(
-            [('active', '=', True), ('storage_contract', '=', True), ('state', 'in', ['released', 'done'])])
+        records = self.env['sale.order'].search([('active', '=', True), ('storage_contract', '=', True), ('state', 'in', ['released', 'done'])])
         for record in records:
             if not any(record.order_line.mapped(lambda l: l.storage_remaining_qty)):
                 record.write({'active': False})
@@ -743,8 +719,7 @@ class SaleOrderLine(models.Model):
     profit_margin = fields.Monetary(compute='calculate_profit_margin', string="Profit")
     price_from = fields.Many2one('customer.product.price', string='Product Pricelist')
     last_sale = fields.Text(string='Last sale details')
-    product_onhand = fields.Float(string='Product Qty Available', compute='compute_available_qty', store=False,
-                                  digits='Product Unit of Measure')
+    product_onhand = fields.Float(string='Product Qty Available', compute='compute_available_qty', store=False, digits='Product Unit of Measure')
     new_product = fields.Boolean(string='New Product', copy=False)
     manual_price = fields.Boolean(string='Manual Price Change', copy=False)
     is_last = fields.Boolean(string='Is last Purchase', copy=False)
@@ -772,8 +747,7 @@ class SaleOrderLine(models.Model):
     remaining_qty = fields.Float(string="Remaining Quantity", compute='_compute_remaining_qty')
     similar_product_price = fields.Html(string='Similar Product Prices')
     sale_uom_ids = fields.Many2many('uom.uom', compute='_compute_sale_uom_ids')
-    storage_remaining_qty = fields.Float(string="Remaining qty", compute='_compute_storage_delivered_qty',
-                                         search='_search_storage_remaining_qty')
+    storage_remaining_qty = fields.Float(string="Remaining qty", compute='_compute_storage_delivered_qty', search='_search_storage_remaining_qty')
     storage_contract_line_id = fields.Many2one('sale.order.line', string='Contract Line')
     storage_contract_line_ids = fields.One2many('sale.order.line', 'storage_contract_line_id')
     selling_min_qty = fields.Float(string="Minimum Qty")
@@ -843,34 +817,22 @@ class SaleOrderLine(models.Model):
             else:
                 break
 
-    # TODO is_transit is in batch delivery module === dp that's fine
-    @api.depends('qty_delivered_method', 'qty_delivered_manual', 'analytic_line_ids.so_line',
-                 'analytic_line_ids.unit_amount', 'analytic_line_ids.product_uom_id')
-    def _compute_qty_delivered(self):
-        super(SaleOrderLine, self)._compute_qty_delivered()
-        print('\n\n\n\nline qty\n\n')
-        for line in self:
-            print(line.order_id.storage_contract)
-            if line.order_id.storage_contract:
-                qty = 0.0
-                print(line.sudo().purchase_line_ids)
-                for po_line in line.sudo().purchase_line_ids:
-                    print(po_line, po_line.state, sum(po_line.move_ids.filtered(lambda s: s.state != 'cancel').mapped('quantity_done')))
-                    if po_line.state in ('purchase', 'done', 'received'):
-                        qty += sum(po_line.move_ids.filtered(lambda s: s.state != 'cancel').mapped('quantity_done'))
-                line.qty_delivered = qty
-            # else:
-            #     if line.qty_delivered_method == 'stock_move':
-            #         qty = 0.0
-            #         # todo is transit is not available
-            #         for move in line.move_ids.filtered(lambda r: r.state == 'done' or r.is_transit is True and not r.scrapped and line.product_id == r.product_id):
-            #             if move.location_dest_id.usage == "customer":
-            #                 if not move.origin_returned_move_id or (move.origin_returned_move_id and move.to_refund):
-            #                     qty += move.product_uom._compute_quantity(
-            #                         move.quantity_done or move.reserved_availability, line.product_uom)
-            #             elif move.location_dest_id.usage != "customer" and move.to_refund:
-            #                 qty -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom)
-            #         line.qty_delivered = qty
+    # # TODO moved to batch delivery remove before go live
+    # @api.depends('qty_delivered_method', 'qty_delivered_manual', 'analytic_line_ids.so_line', 'analytic_line_ids.unit_amount',
+    #              'analytic_line_ids.product_uom_id')
+    # def _compute_qty_delivered(self):
+    #     super(SaleOrderLine, self)._compute_qty_delivered()
+    #     print('\n\n\n\nline qty\n\n')
+    #     for line in self:
+    #         print(line.order_id.storage_contract)
+    #         if line.order_id.storage_contract:
+    #             qty = 0.0
+    #             print(line.sudo().purchase_line_ids)
+    #             for po_line in line.sudo().purchase_line_ids:
+    #                 print(po_line, po_line.state, sum(po_line.move_ids.filtered(lambda s: s.state != 'cancel').mapped('quantity_done')))
+    #                 if po_line.state in ('purchase', 'done', 'received'):
+    #                     qty += sum(po_line.move_ids.filtered(lambda s: s.state != 'cancel').mapped('quantity_done'))
+    #             line.qty_delivered = qty
 
     @api.depends('product_id.qty_available', 'product_id.outgoing_qty')
     def compute_available_qty(self):
@@ -926,9 +888,7 @@ class SaleOrderLine(models.Model):
                 rec.sale_uom_ids = False
 
     def product_id_check_availability(self):
-        if not self.product_id or not self.product_uom_qty or not self.product_uom:
-            # TODO::fix this this field is not available in odoo-15, field removed from sale_stock (12).
-            # self.product_packaging = False
+        if not self.product_id or not self.product_uom_qty or not self.product_uom or self.order_id.storage_contract:
             return {}
         if self.product_id.type == 'product' and self.is_mto is False:
             precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
@@ -967,13 +927,8 @@ class SaleOrderLine(models.Model):
     @api.onchange('tax_id')
     def _onchange_tax(self):
         if not self.tax_id:
-            if self.product_id and self.order_id and self.order_id.partner_id \
-                    and not self.order_id.partner_id.vat:
+            if self.product_id and self.order_id and self.order_id.partner_id and not self.order_id.partner_id.vat:
                 raise UserError('You can not remove Tax for this Partner.')
-
-    # todo replaced with is_mto compute feild
-    # def _check_routing(self):
-    #     return {}
 
     @api.onchange('product_uom_qty', 'product_uom', 'route_id')
     def _onchange_product_id_check_availability(self):
@@ -1220,11 +1175,9 @@ class SaleOrderLine(models.Model):
             if vals.get('price_unit') and line.order_id.state == 'sale':
                 if not self.env.user.has_group('sales_team.group_sale_manager') and line.product_id.type != 'service':
                     if line.working_cost > line.price_unit > vals.get('price_unit'):
-                        raise ValidationError(
-                            _('You are not allowed to reduce price below product cost. Contact your sales Manager.'))
+                        raise ValidationError('You are not allowed to reduce price below product cost. Contact your sales Manager.')
                     if line.price_unit >= line.working_cost > vals.get('price_unit'):
-                        raise ValidationError(
-                            _('You are not allowed to reduce price below product cost. Contact your sales Manager.'))
+                        raise ValidationError('You are not allowed to reduce price below product cost. Contact your sales Manager.')
         res = super().write(vals)
         for line in self:
             if vals.get('price_unit') and line.order_id.state == 'sale':
@@ -1399,8 +1352,7 @@ class SaleOrderLine(models.Model):
         """
 
         old_unit_price = self.price_unit
-        res = super(SaleOrderLine, self).product_uom_change()
-        res = res and res or {}
+        res = super(SaleOrderLine, self).product_uom_change() or {}
         warning, product_price, price_from = self.calculate_customer_price()
         if self.product_id and self.storage_contract_line_id:
             contract_line = self.storage_contract_line_id
@@ -1433,7 +1385,6 @@ class SaleOrderLine(models.Model):
             else:
                 self.price_unit = product_price
             self.price_from = price_from
-            res = res and res or {}
             if self.product_uom_qty % 1 != 0.0:
                 warning_mess = {
                     'title': _('Fractional Qty Alert!'),
@@ -1484,7 +1435,6 @@ class SaleOrderLine(models.Model):
                     (100 + self.product_id.categ_id.repacking_upcharge) / 100))) / self.product_uom_qty
         product_price = float_round(product_price, precision_digits=2)
         return msg, product_price, price_from
-
 
     def get_seller(self):
         self.ensure_one()

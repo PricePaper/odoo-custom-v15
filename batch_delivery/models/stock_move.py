@@ -320,12 +320,57 @@ class StockMove(models.Model):
         if len(invoice_lines) > 1:
             invoice_lines = invoice_lines[0]
         if invoice_lines:
+            quantity = self.quantity_done
+            if self._context.get('is_transit') and self.state == 'done':
+                quantity = sum(self.sale_line_id.move_ids.filtered(lambda rec: rec.state == 'done').mapped('product_uom_qty'))
             invoice_lines.move_id.sudo().with_context(default_move_type='out_invoice').write(
-                {'invoice_line_ids': [[1, invoice_lines.id, {'quantity': self.quantity_done}]]})
+                {'invoice_line_ids': [[1, invoice_lines.id, {'quantity': quantity}]]})
 
         elif invoice:
             vals = self.sale_line_id._prepare_invoice_line()
             invoice_lines = invoice.sudo().with_context(default_move_type='out_invoice').write({'invoice_line_ids': [[0, 0, vals]]})
         return invoice_lines
 
+    def _action_done(self, cancel_backorder=False):
+        if 'outgoing' in self.mapped('picking_type_id.code') and any(self.mapped('picking_id')) and not self._context.get('transit_qty_update'):
+            for move in self:
+                if move.picking_id and move.move_orig_ids and move.location_id.is_transit_location and move.quantity_done != sum(
+                        move.move_orig_ids.filtered(lambda rec: rec.state == 'done').mapped('quantity_done')):
+                    remining_qty = move.quantity_done - sum(move.move_orig_ids.filtered(lambda rec: rec.state == 'done').mapped('quantity_done'))
+                    location_id = move.move_orig_ids.mapped('location_id')[0]
+                    location_src_id = move.location_id
+                    if remining_qty > 0:
+                        location_id, location_src_id = location_src_id, location_id
+                    move_vals = {
+                        'name': move.name,
+                        'company_id': self.company_id.id,
+                        'product_id': move.product_id.id,
+                        'product_uom': move.product_uom.id,
+                        'product_uom_qty': abs(remining_qty),
+                        'partner_id': move.partner_id.id,
+                        'location_id': location_src_id.id,
+                        'location_dest_id': location_id.id,
+                        'rule_id': self.rule_id.id,
+                        'procure_method': 'make_to_stock',
+                        'origin': move.origin,
+                        'picking_type_id': self.picking_type_id.id,
+                        'group_id': move.group_id.id,
+                        'route_ids': [(4, route.id) for route in move.route_ids],
+                        'warehouse_id': move.warehouse_id.id,
+                        'date': fields.Datetime.now().date(),
+                        'date_deadline': False,
+                        'propagate_cancel': move.propagate_cancel,
+                        'description_picking': move.description_picking,
+                        'priority': move.priority,
+                        'transit_picking_id': move.picking_id.id,
+                        'move_dest_ids': [(4, move.id)]
+                    }
+                    move = self.create(move_vals)
+                    move.with_context(is_transit=True)._action_confirm()
+                    move.write({'quantity_done': abs(remining_qty)})
+                    move.with_context(is_transit=True)._action_done()
+        res = super()._action_done(cancel_backorder)
+        for move in self.filtered(lambda rec: rec.state == 'done'):
+            move.update_invoice_line()
+        return res
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

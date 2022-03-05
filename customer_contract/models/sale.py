@@ -40,7 +40,7 @@ class SaleOrderLine(models.Model):
         if self.customer_contract_line_id:
             self.product_id = self.customer_contract_line_id.product_id
 
-    @api.onchange('order_id.partner_id', 'customer_contract_line_id')
+    @api.onchange('order_partner_id', 'customer_contract_line_id')
     def onchange_customer_id(self):
         """
         Return domain for customer_contract_line_id 

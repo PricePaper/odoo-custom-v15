@@ -76,16 +76,14 @@ class SaleOrderLine(models.Model):
                         qty += move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom,
                                                                   rounding_method='HALF-UP')
                     elif move.picking_id.state == 'in_transit':
-                        qty_done = sum(move.move_orig_ids.filtered(lambda rec: rec.state == 'done').mapped('product_uom_qty'))
-                        qty += move.product_uom._compute_quantity(qty_done, line.product_uom,
-                                                                  rounding_method='HALF-UP')
+                        # qty_done = sum(move.move_orig_ids.filtered(lambda rec: rec.state == 'done').mapped('product_uom_qty'))
+                        qty += move.product_uom._compute_quantity(move.quantity_done, line.product_uom, rounding_method='HALF-UP')
                 for move in incoming_moves:
                     if move.state == 'done':
                         qty -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom,
                                                                   rounding_method='HALF-UP')
                     elif move.picking_id.state == 'in_transit':
-                        qty -= move.product_uom._compute_quantity(move.quantity_done, line.product_uom,
-                                                                  rounding_method='HALF-UP')
+                        qty -= move.product_uom._compute_quantity(move.quantity_done, line.product_uom, rounding_method='HALF-UP')
                 line.qty_delivered = qty
 
     def _action_launch_stock_rule(self, previous_product_uom_qty=False):

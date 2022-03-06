@@ -2,20 +2,19 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
-
 import json
 import io
 from odoo.tools import date_utils
+
 try:
     from odoo.tools.misc import xlsxwriter
 except ImportError:
     import xlsxwriter
 
-class VendorProductLines(models.TransientModel):
 
+class VendorProductLines(models.TransientModel):
     _name = 'vedor.product.lines'
     _description = 'Vendor Product Report Wizard Lines'
-
 
     parent_id = fields.Many2one('vedor.product.report.wizard', string="Parent Record")
     product_code = fields.Char(string='Product Code', related='product_id.default_code')
@@ -27,20 +26,18 @@ class VendorProductLines(models.TransientModel):
 
 
 class VendorProductReportWizard(models.TransientModel):
-
     _name = 'vedor.product.report.wizard'
     _description = "Vendor Product Report Wizard"
-
+    _rec_name = "start_date"
     vendor_ids = fields.Many2many('res.partner', string="Vendors")
     categ_ids = fields.Many2many('product.category', string="Category")
     start_date = fields.Datetime(string='Start Date')
     end_date = fields.Datetime(string='End Date')
     product_ids = fields.Many2many('product.product', string="Products")
-    qty_selection = fields.Selection([('ordered', "Ordered Qty"), ('delivered', "Delivered Qty"),],
-        string="Type", default='ordered')
+    qty_selection = fields.Selection([('ordered', "Ordered Qty"), ('delivered', "Delivered Qty"), ],
+                                     string="Type", default='ordered')
 
     report_lines = fields.One2many('vedor.product.lines', 'parent_id', string="Sale Report")
-
 
     def generate_products(self):
         if self.vendor_ids:
@@ -51,14 +48,14 @@ class VendorProductReportWizard(models.TransientModel):
             products = self.env['product.supplierinfo'].search(domain).mapped('product_id')
             for product in products:
                 vend_seq = product.seller_ids.filtered(lambda r: r.name in self.vendor_ids).mapped('sequence')
-                non_seq = product.seller_ids.filtered(lambda r: r.name not in self.vendor_ids and (not r.date_end or r.date_end > fields.Date.today())).mapped('sequence')
+                non_seq = product.seller_ids.filtered(
+                    lambda r: r.name not in self.vendor_ids and (not r.date_end or r.date_end > fields.Date.today())).mapped('sequence')
                 if not non_seq or min(vend_seq) <= min(non_seq):
                     res_prd |= product
-            self.product_ids  = res_prd
+            self.product_ids = res_prd
         else:
             self.product_ids = False
             raise UserError(_('Vendor should be selected'))
-
 
     def generate_lines(self):
         if not self.product_ids:
@@ -97,8 +94,8 @@ class VendorProductReportWizard(models.TransientModel):
                 product = self.env['product.product'].browse(result_line[0])
                 if product.uom_id.id == result_line[3]:
                     if product in out_lines:
-                        out_lines[product]['ordered_qty'] =  out_lines[product]['ordered_qty'] + result_line[1]
-                        out_lines[product]['delivered_qty'] =  out_lines[product]['delivered_qty'] + result_line[2]
+                        out_lines[product]['ordered_qty'] = out_lines[product]['ordered_qty'] + result_line[1]
+                        out_lines[product]['delivered_qty'] = out_lines[product]['delivered_qty'] + result_line[2]
                     else:
                         out_lines[product] = {'ordered_qty': result_line[1], 'delivered_qty': result_line[2]}
 
@@ -107,29 +104,27 @@ class VendorProductReportWizard(models.TransientModel):
                     ordered_qty = uom._compute_quantity(result_line[1], product.uom_id)
                     delivered_qty = uom._compute_quantity(result_line[2], product.uom_id)
                     if product in out_lines:
-                        out_lines[product]['ordered_qty'] =  out_lines[product]['ordered_qty'] + ordered_qty
-                        out_lines[product]['delivered_qty'] =  out_lines[product]['delivered_qty'] + delivered_qty
+                        out_lines[product]['ordered_qty'] = out_lines[product]['ordered_qty'] + ordered_qty
+                        out_lines[product]['delivered_qty'] = out_lines[product]['delivered_qty'] + delivered_qty
                     else:
                         out_lines[product] = {'ordered_qty': ordered_qty, 'delivered_qty': delivered_qty}
-            report_lines=[]
+            report_lines = []
             for prd, value in out_lines.items():
                 report_lines.append((0, 0, {
-                                'product_id': prd.id,
-                                'ordered_qty': value['ordered_qty'],
-                                'delivered_qty': value['delivered_qty'],
-                                'parent_id': rec.id,
-                                }))
+                    'product_id': prd.id,
+                    'ordered_qty': value['ordered_qty'],
+                    'delivered_qty': value['delivered_qty'],
+                    'parent_id': rec.id,
+                }))
             self.report_lines = False
             self.report_lines = report_lines
-
 
     def print_pdf(self):
         return self.env.ref('purchase_extension.vendor_product_report').report_action(self)
 
-
     def print_xlxs(self):
-
-        data = {'rec' : self.id}
+        # todo not working
+        data = {'rec': self.id}
         return {
             'type': 'ir_actions_xlsx_download',
             'data': {'model': 'vedor.product.report.wizard',
@@ -138,25 +133,24 @@ class VendorProductReportWizard(models.TransientModel):
                      'report_name': 'Excel Report',
                      },
             'report_type': 'xlsx',
-            }
+        }
 
     def get_xlsx_report(self, data, response):
         output = io.BytesIO()
         workbook = xlsxwriter.Workbook(output, {'in_memory': True})
         sheet = workbook.add_worksheet()
         cell_format = workbook.add_format({'font_size': '12px'})
-        head = workbook.add_format({'align': 'center', 'bold': True,'font_size':'20px'})
+        head = workbook.add_format({'align': 'center', 'bold': True, 'font_size': '20px'})
         txt = workbook.add_format({'font_size': '10px'})
-        row, col = 0,0
+        row, col = 0, 0
         sheet.write(row, col, 'Product Code', cell_format)
-        col+=1
+        col += 1
         sheet.write(row, col, 'Product Name', cell_format)
-        col+=1
+        col += 1
         sheet.write(row, col, 'UOM', cell_format)
-        col+=1
+        col += 1
         sheet.write(row, col, 'Qty', cell_format)
-        col+=1
-
+        col += 1
 
         rec = self.env['vedor.product.report.wizard'].browse(data['rec'])
         row += 1
@@ -179,5 +173,3 @@ class VendorProductReportWizard(models.TransientModel):
         output.seek(0)
         response.stream.write(output.read())
         output.close()
-
-

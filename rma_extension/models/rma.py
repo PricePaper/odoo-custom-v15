@@ -139,7 +139,7 @@ class RMARetMerAuth(models.Model):
 
     def _extract_picking_line_info(self):
         order_line_lst = []
-        for order_line in self.picking_rma_id.move_ids_without_package.filtered(lambda l: l.state == 'done' and l.product_id.id not in self.rma_picking_lines_ids.mapped('product_id').ids):
+        for order_line in self.picking_rma_id.move_lines.filtered(lambda l: l.state == 'done' and l.product_id.id not in self.rma_picking_lines_ids.mapped('product_id').ids):
             if self.rma_type == 'picking':
                 move = self.env['stock.move'].search([
                     ('picking_id', '=', self.picking_rma_id.id),

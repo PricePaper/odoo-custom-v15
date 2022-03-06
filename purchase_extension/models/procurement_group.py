@@ -2,6 +2,7 @@
 
 from odoo import models, _
 
+
 class ProcurementGroup(models.Model):
     _inherit = 'procurement.group'
 
@@ -11,5 +12,6 @@ class ProcurementGroup(models.Model):
         if domain:
             domain += [('product_id.purchase_ok', '=', True)]
         return domain
+
 
 ProcurementGroup()

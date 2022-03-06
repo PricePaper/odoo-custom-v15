@@ -17,9 +17,8 @@
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_in_invoice_bill_tree"/>
             <field name="arch" type="xml">
-
                 <xpath expr="//field[@name='ref']" position="after">
-                   <field name="discount_due_date"/>
+                    <field name="discount_due_date"/>
                 </xpath>
 
             </field>
@@ -31,15 +30,19 @@
             <field name="groups_id" eval="[(4,ref('purchase.group_purchase_user'))]"/>
             <field name="arch" type="xml">
                 <field name="purchase_vendor_bill_id" position="after">
-                    <field name="vendor_bill_receipt_id" attrs="{'invisible': ['|', '|', ('state','not in',['draft']), ('state', '=', 'purchase'), ('move_type', 'in', ('in_refund','out_invoice','out_refund'))]}"
-                        class="oe_edit_only" domain="[('partner_id','child_of',[partner_id]), ('state', '=', 'done'), ('picking_type_code', '=', 'incoming')]"
-                        placeholder="Select a receipt"
-                        options="{'no_create': True, 'no_open': True}"/>
-                        <!--                        ('move_ids_without_package.purchase_line_id', '!=', False) TODO this condition handle in bill_receipt_id's domain'-->
-                    <field name="bill_receipt_id" attrs="{'invisible': ['|', '|', ('state','not in',['draft']), ('state', '=', 'purchase'), ('move_type', 'in', ('in_invoice','in_refund'))]}"
-                        class="oe_edit_only" domain="[('partner_id','child_of',[partner_id]), ('state', '=', 'done'), ('picking_type_code', '=', 'outgoing'), ]"
-                        placeholder="Select a receipt"
-                        options="{'no_create': True, 'no_open': True}"/>
+                    <field name="vendor_bill_receipt_id"
+                           attrs="{'invisible': ['|', '|', ('state','not in',['draft']), ('state', '=', 'purchase'), ('move_type', 'in', ('in_refund','out_invoice','out_refund'))]}"
+                           class="oe_edit_only"
+                           domain="[('partner_id','child_of',[partner_id]), ('state', '=', 'done'), ('picking_type_code', '=', 'incoming')]"
+                           placeholder="Select a receipt"
+                           options="{'no_create': True, 'no_open': True}"/>
+
+                    <field name="bill_receipt_id"
+                           attrs="{'invisible': ['|', '|', ('state','not in',['draft']), ('state', '=', 'purchase'), ('move_type', 'in', ('in_invoice','in_refund'))]}"
+                           class="oe_edit_only"
+                           domain="[('partner_id','child_of',[partner_id]), ('state', '=', 'done'), ('picking_type_code', '=', 'outgoing'), ('move_lines.purchase_line_id', '!=', False)]"
+                           placeholder="Select a receipt"
+                           options="{'no_create': True, 'no_open': True}"/>
                 </field>
             </field>
         </record>

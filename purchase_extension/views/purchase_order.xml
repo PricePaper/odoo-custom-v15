@@ -8,29 +8,36 @@
                 <field name='payment_term_id' position='attributes'>
                     <attribute name='domain'>[('order_type', '=', 'purchase')]</attribute>
                 </field>
-                 <xpath expr="//label[@for='date_planned']" position="attributes">
+                <xpath expr="//label[@for='date_planned']" position="attributes">
                     <attribute name="string">Date Wanted</attribute>
                 </xpath>
-<!--                <xpath expr="/form/sheet/group/group[2]" position="after">-->
-<!--                    <xpath expr="//notebook/page[@name='purchase_delivery_invoice']/group/group[1]" position="move"/>-->
-<!--                </xpath>-->
+                <!--                <xpath expr="/form/sheet/group/group[2]" position="after">-->
+                <!--                    <xpath expr="//notebook/page[@name='purchase_delivery_invoice']/group/group[1]" position="move"/>-->
+                <!--                </xpath>-->
                 <xpath expr="//button[@name='action_view_invoice']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ('purchase', 'received', 'done')), ('invoice_status', 'in', ('no', 'invoiced'))]}</attribute>
+                    <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ('purchase', 'received', 'done')), ('invoice_status', 'in', ('no',
+                        'invoiced'))]}
+                    </attribute>
                 </xpath>
-                 <xpath expr="//button[10]" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ('purchase', 'received', 'done')), ('invoice_status', 'in', ('no', 'invoiced'))]}</attribute>
+                <xpath expr="//button[10]" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ('purchase', 'received', 'done')), ('invoice_status', 'in', ('no',
+                        'invoiced'))]}
+                    </attribute>
                 </xpath>
                 <xpath expr="//button[@name='button_done']" position="attributes">
                     <attribute name="states">purchase,received</attribute>
+                </xpath>
+                <xpath expr="//button[@name='button_confirm']" position="before">
+                    <button name="action_in_progress" type="object" states="draft" string="In Progress" class="oe_highlight"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="attributes">
                     <attribute name="domain">[('supplier', '=', True), ('parent_id', '=', False)]</attribute>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
-                     <field name="pickup_address_id"
-                            domain="['|', ('id', '=', partner_id), ('parent_id','=', partner_id)]"
-                            context="{'default_type': 'invoice', 'show_address': 1, 'tree_view_ref': 'view_partner_tree_search_more', 'show_partner_code': 1}"
-                            options="{'no_create': 1, 'no_create_edit': 1, 'always_reload': True}"/>
+                    <field name="pickup_address_id"
+                           domain="['|', ('id', '=', partner_id), ('parent_id','=', partner_id)]"
+                           context="{'default_type': 'invoice', 'show_address': 1, 'tree_view_ref': 'view_partner_tree_search_more', 'show_partner_code': 1}"
+                           options="{'no_create': 1, 'no_create_edit': 1, 'always_reload': True}"/>
                 </xpath>
                 <xpath expr="//group[hasclass('oe_subtotal_footer')]" position="before">
                     <group name="weight_volume">
@@ -41,7 +48,7 @@
                 </xpath>
                 <xpath expr="//field[@name='order_line']" position="before">
                     <button type="object" name="add_sale_history_to_po_line"
-                            string="ADD ADDITIONAL PRODUCTS" icon="fa-history" class="oe_edit_only oe_highlight"/>
+                            string="Add additional products" icon="fa-history" class="oe_edit_only btn-info"/>
                 </xpath>
 
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_subtotal']" position="before">
@@ -68,31 +75,33 @@
             <field name="context">{'search_default_my_purchases':1, 'search_default_draft':1}</field>
         </record>
 
-         <record id="res_config_settings_view_form_purchase" model="ir.ui.view">
-        <field name="name">res.config.settings.view.form.purchase.inherit.purchase.extension</field>
-        <field name="model">res.config.settings</field>
-        <field name="inherit_id" ref="purchase.res_config_settings_view_form_purchase"/>
-        <field name="arch" type="xml">
-            <xpath expr="//div[@data-string='Purchase']/div[3]" position="after">
-                <h2>Supplier Info</h2>
-                <div class="row mt16 o_settings_container">
-                    <div class="col-12 col-lg-6 o_setting_box" title="Number of Months used to calculate supplier end date, these values are automatically updated to system parameters.">
-                        <div class="o_setting_left_pane"/>
-                        <div class="o_setting_right_pane">
-                            <label for="supplier_month_increment"/>
-                            <div class="text-muted">
-                                Number of months used to calculate supplier end date.
+        <record id="res_config_settings_view_form_purchase" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.purchase.inherit.purchase.extension</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="purchase.res_config_settings_view_form_purchase"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@data-string='Purchase']/div[3]" position="after">
+                    <h2>Supplier Info</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box"
+                             title="Number of Months used to calculate supplier end date, these values are automatically updated to system parameters.">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="supplier_month_increment"/>
+                                <div class="text-muted">
+                                    Number of months used to calculate supplier end date.
+                                </div>
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <field name="supplier_month_increment" placeholder="Number of months used to calculate End Date"
+                                               style="width:300px;margin-left:10px;"/>
+                                    </div>
+                                </div>
                             </div>
-                           <div class="content-group">
-                            <div class="row mt16">
-                                <field name="supplier_month_increment" placeholder="Number of months used to calculate End Date" style="width:300px;margin-left:10px;"/>
-                            </div>
-                        </div>
                         </div>
                     </div>
-                </div>
-            </xpath>
-        </field>
-    </record>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

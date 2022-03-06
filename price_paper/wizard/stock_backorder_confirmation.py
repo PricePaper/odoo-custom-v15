@@ -9,7 +9,7 @@ class StockBackorderConfirmation(models.TransientModel):
     def _process(self, cancel_backorder=False):
         so = self.env['sale.order']
         for pick_id in self.pick_ids:
-            for move in pick_id.move_ids_without_package:
+            for move in pick_id.move_lines:
                 if move.is_storage_contract and move.purchase_line_id:
                     so |= move.purchase_line_id.order_id
                     move.purchase_line_id.order_id.message_post(

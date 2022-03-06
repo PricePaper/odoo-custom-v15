@@ -13,14 +13,18 @@ class StockMove(models.Model):
             if 'price_unit' in res:
                 res.remove('price_unit')
         return res
+
+
 StockMove()
 
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
+    # todo don't know the usage
     def _log_activity_get_documents(self, orig_obj_changes, stream_field, stream, sorted_method=False, groupby_method=False):
-        res = super(StockPicking, self)._log_activity_get_documents(orig_obj_changes, stream_field, stream, sorted_method=sorted_method, groupby_method=groupby_method)
+        res = super(StockPicking, self)._log_activity_get_documents(orig_obj_changes, stream_field, stream, sorted_method=sorted_method,
+                                                                    groupby_method=groupby_method)
         result = {}
         if list(orig_obj_changes.keys())[0]._name == 'purchase.order.line' and stream == 'DOWN':
             for picking, moves in res.items():
@@ -35,7 +39,6 @@ class StockPicking(models.Model):
                                 result[picking] = {move: qty}
                 else:
                     result[picking] = moves
-        return result
-
+        return result or res
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

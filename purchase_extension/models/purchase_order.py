@@ -2,12 +2,10 @@
 
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
-
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo import models, fields, registry, api, _
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 from odoo.exceptions import ValidationError, AccessError
-
 
 
 class PurchaseOrder(models.Model):
@@ -22,94 +20,38 @@ class PurchaseOrder(models.Model):
     vendor_order_freq = fields.Integer(related='partner_id.order_freq', string="Vendor Order Frequency", readonly=True)
     pickup_address_id = fields.Many2one('res.partner', string="Delivery Address")
     sale_order_count = fields.Integer(string="Sale Order Count", readonly=True, compute='_compute_sale_order_count')
-    state = fields.Selection([
-        ('draft', 'RFQ'),
+    state = fields.Selection(selection_add=[
         ('in_progress', 'In Progress RFQ'),
-        ('sent', 'RFQ Sent'),
-        ('received', 'Received'),
-        ('to approve', 'To Approve'),
-        ('purchase', 'Purchase Order'),
-        ('done', 'Locked'),
-        ('cancel', 'Cancelled')
-    ], string='Status', readonly=True, index=True, copy=False, default='draft', track_visibility=True)
+        ('received', 'Received')])
 
     def action_rfq_send(self):
-        '''
-        This function opens a window to compose an email, with the edi purchase template message loaded by default
-        '''
-        self.ensure_one()
-        ir_model_data = self.env['ir.model.data']
-        try:
-            if self.env.context.get('send_rfq', False):
-                template_id = ir_model_data._xmlid_lookup('purchase.email_template_edi_purchase')[2]
-            else:
-                template_id = ir_model_data._xmlid_lookup('purchase.email_template_edi_purchase_done')[2]
-        except ValueError:
-            template_id = False
-        try:
-            compose_form_id = ir_model_data._xmlid_lookup('mail.email_compose_message_wizard_form')[2]
-        except ValueError:
-            compose_form_id = False
-        ctx = dict(self.env.context or {})
-        ctx.update({
-            'default_model': 'purchase.order',
-            'active_model': 'purchase.order',
-            'active_id': self.ids[0],
-            'default_res_id': self.ids[0],
-            'default_use_template': bool(template_id),
-            'default_template_id': template_id,
-            'default_composition_mode': 'comment',
-            'custom_layout': "mail.mail_notification_paynow",
-            'force_email': True,
-            'mark_rfq_as_sent': True,
-        })
-
-        # In the case of a RFQ or a PO, we want the "View..." button in line with the state of the
-        # object. Therefore, we pass the model description in the context, in the language in which
-        # the template is rendered.
-        lang = self.env.context.get('lang')
-        if {'default_template_id', 'default_model', 'default_res_id'} <= ctx.keys():
-            template = self.env['mail.template'].browse(ctx['default_template_id'])
-            if template and template.lang:
-                lang = template._render_lang([ctx['default_res_id']])[ctx['default_res_id']]
-
-        self = self.with_context(lang=lang)
-        if self.state in ['draft', 'sent', 'in_progres']:
-            ctx['model_description'] = _('Request for Quotation')
-        else:
-            ctx['model_description'] = _('Purchase Order')
-
-        return {
-            'name': _('Compose Email'),
-            'type': 'ir.actions.act_window',
-            'view_mode': 'form',
-            'res_model': 'mail.compose.message',
-            'views': [(compose_form_id, 'form')],
-            'view_id': compose_form_id,
-            'target': 'new',
-            'context': ctx,
-        }
+        """
+         override to change model description for in progress
+        """
+        res = super().action_rfq_send()
+        if self.state == 'in_progress':
+            res['context']['model_description'] = 'Request for Quotation'
+        return res
 
     @api.returns('mail.message', lambda value: value.id)
     def message_post(self, **kwargs):
         if self.env.context.get('mark_rfq_as_sent'):
-            self.filtered(lambda o: o.state in ('draft', 'in_progress')).write({'state': 'sent'})
+            self.filtered(lambda rec: rec.state in ('draft', 'in_progress')).write({'state': 'sent'})
         return super(PurchaseOrder, self.with_context(mail_post_autofollow=self.env.context.get('mail_post_autofollow', True))).message_post(**kwargs)
 
     def action_in_progress(self):
-        self.write({'state': 'in_progress'})
-
+        return self.write({'state': 'in_progress'})
 
     @api.depends('order_line.sale_order_id')
     def _compute_sale_order_count(self):
         for rec in self:
-            rec.sale_order_count = len(rec.order_line.mapped('sale_order_id').ids) or len(rec.order_line.mapped('move_dest_ids.sale_line_id.order_id').ids)
+            rec.sale_order_count = len(rec.order_line.mapped('sale_order_id').ids) or len(
+                rec.order_line.mapped('move_dest_ids.sale_line_id.order_id').ids)
 
     @api.model
     def create(self, vals):
-        vendor = vals.get('partner_id')
-        if vendor:
-            purchase_rep = self.env['res.partner'].browse(vendor).seller_partner_ids
+        if vals.get('partner_id'):
+            purchase_rep = self.env['res.partner'].browse(vals.get('partner_id')).seller_partner_ids
             purchase_rep = purchase_rep and purchase_rep[0].user_ids
             if purchase_rep:
                 vals['user_id'] = purchase_rep[0].id
@@ -242,7 +184,7 @@ class PurchaseOrder(models.Model):
                                                     'uom': element['product_uom'],
                                                     })
             result_list = self.sanitize_uom(result_dict)
-
+        input(result_list)
         context = {'data': result_list, 'default_vendor_id': self.partner_id.id}
         view_id = self.env.ref('purchase_extension.view_sale_history_add_po_wiz').id
         return {
@@ -254,7 +196,7 @@ class PurchaseOrder(models.Model):
             'type': 'ir.actions.act_window',
             'context': context,
             'target': 'new'
-            }
+        }
 
     def button_confirm(self):
         """
@@ -285,9 +227,9 @@ class PurchaseOrder(models.Model):
                 </table>
                 '''.format(tr)
                 activity_vals = {
-                        'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
-                        'user_id': purchase_order.user_id.id if purchase_order.user_id else self.env.user.id
-                    }
+                    'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
+                    'user_id': purchase_order.user_id.id if purchase_order.user_id else self.env.user.id
+                }
                 purchase_order.activity_schedule(summary="Cost Discrepancy", note=note, **activity_vals)
         return super(PurchaseOrder, self).button_confirm()
 
@@ -300,16 +242,16 @@ class PurchaseOrder(models.Model):
                 continue
 
             if any(
-                not float_is_zero(line.qty_to_invoice, precision_digits=precision)
-                for line in order.order_line.filtered(lambda l: not l.display_type)
+                    not float_is_zero(line.qty_to_invoice, precision_digits=precision)
+                    for line in order.order_line.filtered(lambda l: not l.display_type)
             ):
                 order.invoice_status = 'to invoice'
             elif (
-                all(
-                    float_is_zero(line.qty_to_invoice, precision_digits=precision)
-                    for line in order.order_line.filtered(lambda l: not l.display_type)
-                )
-                and order.invoice_ids
+                    all(
+                        float_is_zero(line.qty_to_invoice, precision_digits=precision)
+                        for line in order.order_line.filtered(lambda l: not l.display_type)
+                    )
+                    and order.invoice_ids
             ):
                 order.invoice_status = 'invoiced'
             else:
@@ -322,7 +264,7 @@ class PurchaseOrder(models.Model):
             # Do not add a contact as a supplier
             partner = self.partner_id if not self.partner_id.parent_id else self.partner_id.parent_id
 
-            vendor_prices =  line.product_id.seller_ids.filtered(
+            vendor_prices = line.product_id.seller_ids.filtered(
                 lambda r: r.name == self.partner_id and r.min_qty <= line.product_qty)
 
             # Convert the price in the right currency.
@@ -333,16 +275,15 @@ class PurchaseOrder(models.Model):
                 default_uom = line.product_id.product_tmpl_id.uom_po_id
                 price = line.product_uom._compute_price(price, default_uom)
 
-            supplierinfo = {
-                'name': partner.id,
-                'sequence': max(line.product_id.seller_ids.mapped('sequence')) + 1 if line.product_id.seller_ids else 1,
-                'min_qty': 0.0,
-                'price': price,
-                'currency_id': currency.id,
-                'delay': 0,
-                'product_id': line.product_id.id
-            }
-
+            supplierinfo = self._prepare_supplier_info(partner, line, price, currency)
+            seller = line.product_id._select_seller(
+                partner_id=line.partner_id,
+                quantity=line.product_qty,
+                date=line.order_id.date_order and line.order_id.date_order.date(),
+                uom_id=line.product_uom)
+            if seller:
+                supplierinfo['product_name'] = seller.product_name
+                supplierinfo['product_code'] = seller.product_code
             vals = {
                 'seller_ids': [(0, 0, supplierinfo)],
             }
@@ -355,6 +296,9 @@ class PurchaseOrder(models.Model):
 
             except AccessError:  # no write access rights -> just ignore
                 break
+
+    def button_received(self):
+        return self.write({'state': 'received'})
 
 
 class PurchaseOrderLine(models.Model):
@@ -421,7 +365,7 @@ class PurchaseOrderLine(models.Model):
         date_limit = str(first_day + relativedelta(months=-15))
         self._cr.execute(
             "SELECT sol.id FROM sale_order_line sol JOIN sale_order so on so.id=sol.order_id WHERE sol.product_id=%s AND so.date_order>='%s' and so.state in ('sale', 'done')" % (
-            self.product_id.id, date_limit))
+                self.product_id.id, date_limit))
         res = self._cr.dictfetchall()
         sale_lines = [ele['id'] for ele in res]
         sale_lines = self.env['sale.order.line'].browse(sale_lines)
@@ -433,19 +377,18 @@ class PurchaseOrderLine(models.Model):
             # change uom to purchase units
             if ele.product_uom.id != ele.product_id.uom_po_id.id:
                 uom_qty = ele.product_uom._compute_quantity(uom_qty, ele.product_id.uom_po_id)
-            created_ids += self.env['view.sales.history.po'].create({'product_id': ele.product_id.id,
-                                                                     'date': ele.order_id.date_order,
-                                                                     'quantity': uom_qty,
-                                                                     'uom': ele.product_id.uom_po_id.id,
-                                                                     'partner_id': ele.order_id.partner_id.id,
-                                                                     'sale_line_id': ele.id,
-                                                                     })
+            created_ids += self.env['view.sales.history.po'].create({
+                'product_id': ele.product_id.id,
+                'date': ele.order_id.date_order,
+                'quantity': uom_qty,
+                'uom': ele.product_id.uom_po_id.id,
+                'partner_id': ele.order_id.partner_id.id,
+                'sale_line_id': ele.id,
+            })
         action = self.env.ref('purchase_extension.action_view_sales_history_po').read()[0]
         action['domain'] = [("id", "in", [r.id for r in created_ids])]
         action['target'] = 'new'
         return action
-
-
 
     @api.depends('product_id.volume', 'product_id.weight')
     def _compute_gross_weight_volume(self):
@@ -454,6 +397,5 @@ class PurchaseOrderLine(models.Model):
             weight = line.product_id.weight * line.product_qty
             line.gross_volume = volume
             line.gross_weight = weight
-
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

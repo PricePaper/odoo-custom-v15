@@ -28,8 +28,7 @@ class SaleOrderLine(models.Model):
                 else:
                     line.product_arrival_date = False
         else:
-            line.product_arrival_date = False
-
-
+            for line in self:
+                line.product_arrival_date = False
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

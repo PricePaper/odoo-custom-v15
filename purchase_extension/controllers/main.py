@@ -4,6 +4,7 @@ from odoo.http import content_disposition, request
 from odoo.addons.web.controllers.main import _serialize_exception
 from odoo.tools import html_escape
 
+
 class XLSXReportController(http.Controller):
     @http.route('/xlsx_reports', type='http', auth='user', methods=['POST'], csrf=False)
     def get_report_xlsx(self, model, options, output_format, token, report_name, **kw):
@@ -15,7 +16,7 @@ class XLSXReportController(http.Controller):
                 response = request.make_response(
                     None,
                     headers=[('Content-Type', 'application/vnd.ms-excel'), ('Content-Disposition', content_disposition(report_name + '.xlsx'))
-                    ]
+                             ]
                 )
                 report_obj.get_xlsx_report(options, response)
             response.set_cookie('fileToken', token)

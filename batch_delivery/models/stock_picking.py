@@ -371,8 +371,8 @@ class StockPicking(models.Model):
             if not line.quantity_done and line.state != 'cancel':
                 if self.picking_type_code == 'incoming':
                     line.quantity_done = line.product_uom_qty
-                # elif self.picking_type_code == 'outgoing':
-                #     line.quantity_done = line.reserved_availability
+                elif self.picking_type_code == 'outgoing':
+                    line.quantity_done = line.reserved_availability
 
 
     @api.model

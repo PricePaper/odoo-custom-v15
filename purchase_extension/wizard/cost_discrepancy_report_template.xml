@@ -8,9 +8,9 @@
                 <form string="Vendor Product QTY Report">
                     <sheet>
                         <script>
-                          $(document).ready(function(){
-                              $('.modal-dialog').css({'width': '500px', 'height': '450px'});
-                          });
+                            $(document).ready(function(){
+                            $('.modal-dialog').css({'width': '500px', 'height': '450px'});
+                            });
                         </script>
                         <div class="row">
                             <field name="start_date" required="1" class="col" placeholder="Start Date.."/>
@@ -18,8 +18,8 @@
                         </div>
                     </sheet>
                     <footer>
-                      <button string="Print(xlsx)" type="object" name="print_xlxs" class="btn btn-primary"/>
-                  </footer>
+                        <button string="Print(xlsx)" type="object" name="print_xlxs" class="btn btn-primary"/>
+                    </footer>
                 </form>
             </field>
         </record>

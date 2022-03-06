@@ -23,9 +23,9 @@
 
                     </sheet>
                     <footer>
-                        <button string="Update Pricelists" type="object" name="update_pricelists"/>
+                        <button string="Update Pricelists" type="object" name="update_pricelists" class="btn-success"/>
                         or
-                        <button string="Cancel" class="oe_link" special="cancel"/>
+                        <button string="Cancel" class="btn-danger" special="cancel"/>
                     </footer>
                 </form>
             </field>

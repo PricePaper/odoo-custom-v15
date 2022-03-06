@@ -20,5 +20,4 @@ class PurchaseRequisition(models.Model):
         super(PurchaseRequisition, self).action_in_progress()
         purchase_order_obj = self.env['purchase.order']
         for supplier in self.supplier_ids:
-            purchase_order_obj.create({'partner_id': supplier.id,
-                                       'requisition_id': self.id})._onchange_requisition_id()
+            purchase_order_obj.create({'partner_id': supplier.id, 'requisition_id': self.id})._onchange_requisition_id()

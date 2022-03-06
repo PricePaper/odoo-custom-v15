@@ -6,18 +6,18 @@
             <field name="model">vedor.product.report.wizard</field>
             <field name="arch" type="xml">
                 <form string="Vendor Product QTY Report">
-                  <header>
-                      <button string="Generate Products" type="object" name="generate_products"/>
-                      <button string="Generate Report Lines" type="object" name="generate_lines"/>
-                      <button string="Print(pdf)" type="object" name="print_pdf"/>
-                      <button string="Print(xlsx)" type="object" name="print_xlxs"/>
-                  </header>
+                    <header>
+                        <button string="Generate Products" type="object" name="generate_products"/>
+                        <button string="Generate Report Lines" type="object" name="generate_lines"/>
+                        <button string="Print(pdf)" type="object" name="print_pdf"/>
+                        <button string="Print(xlsx)" type="object" name="print_xlxs"/>
+                    </header>
                     <sheet>
                         <group>
                             <group>
                                 <field name="vendor_ids" widget="many2many_tags" domain="[('supplier', '=', True)]"/>
                                 <field name="categ_ids" widget="many2many_tags"/>
-                                <field name="qty_selection" />
+                                <field name="qty_selection"/>
                             </group>
                             <group>
                                 <field name="start_date"/>

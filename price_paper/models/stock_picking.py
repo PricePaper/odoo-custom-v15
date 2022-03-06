@@ -11,7 +11,7 @@ class StockPicking(models.Model):
 
     over_processed = fields.Boolean(string='Over Processed', compute='_compute_over_processed')
 
-    @api.depends('move_ids_without_package.po_original_qty', 'move_ids_without_package.is_storage_contract')
+    @api.depends('move_lines.po_original_qty', 'move_lines.is_storage_contract')
     def _compute_over_processed(self):
         for record in self:
             if any([move.po_original_qty < move.quantity_done for move in record.move_lines if
@@ -56,6 +56,7 @@ class StockPicking(models.Model):
         self.ensure_one()
         result = super(StockPicking, self).button_validate()
         if self.picking_type_code == 'incoming':
+            self.mapped('purchase_id').button_received()
             so = self.env['sale.order']
             for line in self.move_lines:
                 if line.is_storage_contract and line.purchase_line_id:

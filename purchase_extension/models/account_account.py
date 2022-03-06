@@ -2,7 +2,6 @@
 
 from odoo import models, fields, api, _
 from dateutil.relativedelta import relativedelta
-from datetime import datetime
 
 
 class AccountInvoice(models.Model):
@@ -17,7 +16,6 @@ class AccountInvoice(models.Model):
         comodel_name='stock.picking',
         string='Autocomplete From Receipt'
     )
-
 
     @api.depends('invoice_payment_term_id.due_days', 'invoice_date')
     def compute_discount_due_date(self):
@@ -57,28 +55,27 @@ class AccountInvoice(models.Model):
         if not self.bill_receipt_id:
             return {}
         self.receipt_change_bill(self.bill_receipt_id)
-        return{}
+        return {}
 
     @api.onchange('vendor_bill_receipt_id')
     def receipt_change(self):
         if not self.vendor_bill_receipt_id:
             return {}
         self.receipt_change_bill(self.vendor_bill_receipt_id)
-        return{}
+        return {}
 
     def receipt_change_bill(self, receipt):
         if not self.partner_id:
-            self.partner_id = receipt.partner_id.parent_id\
-                and receipt.partner_id.parent_id.id\
-                or receipt.partner_id.id
+            self.partner_id = receipt.partner_id.parent_id \
+                              and receipt.partner_id.parent_id.id \
+                              or receipt.partner_id.id
 
         if not self.invoice_line_ids:
-            #as there's no invoice line yet, we keep the currency of the PO
-            self.currency_id = receipt.mapped(
-                'move_ids_without_package').mapped('purchase_line_id').mapped('order_id').currency_id
+            # as there's no invoice line yet, we keep the currency of the PO
+            self.currency_id = receipt.mapped('move_lines').mapped('purchase_line_id').mapped('order_id').currency_id
 
         new_lines = self.env['account.move.line']
-        for line in receipt.mapped('move_ids_without_package'):
+        for line in receipt.mapped('move_lines'):
             data = self._prepare_invoice_line_from_stock_move_line(line)
             new_line = new_lines.new(data)
             new_lines += new_line

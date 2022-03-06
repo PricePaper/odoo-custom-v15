@@ -16,7 +16,7 @@ class PickingPendingProduct(models.Model):
     @api.depends('batch_id', 'product_id')
     def _compute_quantity(self):
         for rec in self:
-            moves = rec.batch_id.picking_ids.mapped('move_ids_without_package').filtered(
+            moves = rec.batch_id.picking_ids.mapped('move_lines').filtered(
                 lambda move: move.product_id == rec.product_id and move.state != 'cancel')
             total = sum(moves.mapped('product_uom_qty'))
             reserved = sum(moves.mapped(lambda
@@ -28,7 +28,7 @@ class PickingPendingProduct(models.Model):
         pickings = []
         for rec in self:
             for picking in rec.batch_id.picking_ids:
-                if self.product_id in picking.move_ids_without_package.mapped('product_id'):
+                if self.product_id in picking.move_lines.mapped('product_id'):
                     pickings.append(picking.id)
         list_id = self.env.ref('stock.vpicktree').id
         form_id = self.env.ref('stock.view_picking_form').id

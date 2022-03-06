@@ -2,11 +2,9 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-
 import json
 import io
 from odoo.tools import date_utils
-
 from itertools import groupby
 
 try:
@@ -34,12 +32,11 @@ class CostDiscrepancyReport(models.TransientModel):
             raise UserError(_('Nothing to print.'))
 
         for xls_group_key, xls_lines in groupby(po_lines.sorted(
-                    key=lambda sort_key: sort_key.product_id.id
-                ), key=lambda group_key: (group_key.product_id, group_key.order_id.user_id)):
+                key=lambda sort_key: sort_key.product_id.id
+        ), key=lambda group_key: (group_key.product_id, group_key.order_id.user_id)):
             for line in xls_lines:
                 if line.price_unit - xls_group_key[0].standard_price:
                     yield xls_group_key, line
-
 
     def print_xlxs(self):
         data = {'start_date': self.start_date, 'end_date': self.end_date}

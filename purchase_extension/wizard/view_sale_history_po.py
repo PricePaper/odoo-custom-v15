@@ -5,7 +5,6 @@
 from odoo import models, fields, api
 
 
-
 class ViewSalesHistoryPo(models.TransientModel):
     _name = 'view.sales.history.po'
     _description = 'View Sales History'
@@ -18,4 +17,3 @@ class ViewSalesHistoryPo(models.TransientModel):
     quantity = fields.Float(string="Product Quantity")
     uom = fields.Many2one('uom.uom', string="UOM")
     sale_line_id = fields.Many2one('sale.order.line', string="Sale Line")
-

@@ -9,7 +9,8 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="duplicate_pricelist" widget='boolean_toggle' help="Duplicate customer product priclist lines with new product"/>
+                                <field name="duplicate_pricelist" widget='boolean_toggle'
+                                       help="Duplicate customer product priclist lines with new product"/>
                             </group>
                             <group>
                                 <field name="product_id" readonly='1'/>
@@ -22,18 +23,18 @@
                                 <field name="new_default_code" required='1'/>
                             </group>
                             <group>
-                              <field name="new_cost" required='1'/>
-                              <field name="new_sale_uoms" widget="many2many_tags" required='1'/>
-                              <field name="new_uom" required='1'/>
-                              <field name="volume" />
-                              <field name="weight" />
+                                <field name="new_cost" required='1'/>
+                                <field name="new_sale_uoms" widget="many2many_tags" required='1'/>
+                                <field name="new_uom" required='1'/>
+                                <field name="volume"/>
+                                <field name="weight"/>
                             </group>
                         </group>
 
                         <footer>
-                            <button string="Create New Product" type="object" name="create_duplicate_product"/>
+                            <button string="Create New Product" type="object" name="create_duplicate_product" calss="btn-success"/>
                             or
-                            <button string="Cancel" class="oe_link" special="cancel"/>
+                            <button string="Cancel" class="btn-danger" special="cancel"/>
                         </footer>
                     </sheet>
                 </form>

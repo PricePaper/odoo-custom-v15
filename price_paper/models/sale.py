@@ -126,8 +126,6 @@ class SaleOrder(models.Model):
         for order in self:
             if not order.carrier_id:
                 raise ValidationError('Delivery method should be set before confirming an order')
-            if not any(order_lines.is_delivery for order_lines in order.order_line):
-                raise ValidationError('Delivery lines should be added in order lines before confirming an order')
             price_warning = ''
             credit_warning = ''
             if not order.ready_to_release:

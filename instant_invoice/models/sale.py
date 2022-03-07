@@ -38,18 +38,22 @@ class SaleOrder(models.Model):
         return res
 
     def action_quick_sale(self):
+
         for rec in self.sudo():
             if all(line.product_id.type == 'service' for line in rec.order_line):
                 raise Warning("You cannot confirm a quick Sales Order with only having Service products.")
             rec.quick_sale = True
+            if not rec.quick_sale:
+                if not any(order_lines.is_delivery for order_lines in order.order_line):
+                    raise ValidationError('Delivery lines should be added in order lines before confirming an order')
             res = rec.action_confirm()
             if res and res != True and res.get('context') and res.get('context').get('warning_message'):
                 return res
             picking_ids = rec.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done', 'in_transit'))
             for picking in picking_ids:
+                picking.receive_product_in_lines()
                 picking.action_make_transit()
                 picking.create_invoice()
-            # rec.quick_sale = True
         return True
 
     def action_print_pick_ticket(self):

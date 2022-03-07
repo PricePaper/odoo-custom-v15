@@ -367,7 +367,8 @@ class StockPicking(models.Model):
         return self.env.ref('batch_delivery.batch_picking_active_report').report_action(self)
 
     def receive_product_in_lines(self):
-        for line in self.move_lines:
+
+        for line in self.transit_move_lines:
             if not line.quantity_done and line.state != 'cancel':
                 if self.picking_type_code == 'incoming':
                     line.quantity_done = line.product_uom_qty

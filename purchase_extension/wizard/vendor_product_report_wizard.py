@@ -134,19 +134,6 @@ class VendorProductReportWizard(models.TransientModel):
                          }
                 }
 
-    #
-    # def print_xlxs(self):
-    #     # todo not working
-    #     data = {'rec': self.id}
-    #     return {
-    #         'type': 'ir_actions_xlsx_download',
-    #         'data': {'model': 'vedor.product.report.wizard',
-    #                  'options': json.dumps(data, default=date_utils.json_default),
-    #                  'output_format': 'xlsx',
-    #                  'report_name': 'Excel Report',
-    #                  },
-    #         'report_type': 'xlsx',
-    #     }
 
     def get_xlsx_report(self, data, response):
         output = io.BytesIO()

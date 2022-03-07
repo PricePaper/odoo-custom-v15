@@ -122,18 +122,18 @@ class VendorProductReportWizard(models.TransientModel):
     def print_pdf(self):
         return self.env.ref('purchase_extension.vendor_product_report').report_action(self)
 
+
     def print_xlxs(self):
-        # todo not working
         data = {'rec': self.id}
         return {
-            'type': 'ir_actions_xlsx_download',
-            'data': {'model': 'vedor.product.report.wizard',
-                     'options': json.dumps(data, default=date_utils.json_default),
-                     'output_format': 'xlsx',
-                     'report_name': 'Excel Report',
-                     },
-            'report_type': 'xlsx',
-        }
+                'type': 'ir_actions_xlsx_download',
+                'data': {'model': 'vedor.product.report.wizard',
+                         'options': json.dumps(data, default=date_utils.json_default),
+                         'output_format': 'xlsx',
+                         'report_name': 'Excel Report',
+                         }
+                }
+
 
     def get_xlsx_report(self, data, response):
         output = io.BytesIO()
@@ -154,7 +154,6 @@ class VendorProductReportWizard(models.TransientModel):
 
         rec = self.env['vedor.product.report.wizard'].browse(data['rec'])
         row += 1
-
         for res in rec.report_lines:
             col = 0
             sheet.write(row, col, res.product_code, cell_format)

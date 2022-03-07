@@ -120,12 +120,14 @@ class SaleOrder(models.Model):
         and also update the customer pricelist if needed.
         create invoice for bill_with_goods customers.
         """
-
+        self = self.with_context(action_confrim=True)
         if self._context.get('from_import'):
             return super(SaleOrder, self).action_confirm()
+
         for order in self:
             if not order.carrier_id:
                 raise ValidationError('Delivery method should be set before confirming an order')
+            order.adjust_delivery_line()
             if not any(order_lines.is_delivery for order_lines in order.order_line):
                 raise ValidationError('Delivery lines should be added in order lines before confirming an order')
             price_warning = ''
@@ -529,8 +531,9 @@ class SaleOrder(models.Model):
         """
         res = self.carrier_id.rate_shipment(self)
         price_unit = res.get('price', 0)
+
         if price_unit != self._get_delivery_line_price() or not self._get_delivery_line_price():
-            self._remove_delivery_line()
+            self.with_context(adjust_delivery=True)._remove_delivery_line()
             self._create_delivery_line(self.carrier_id, price_unit)
 
         return True
@@ -1033,7 +1036,7 @@ class SaleOrderLine(models.Model):
                 lines_exist = len(delivery_lines)
             for line in self:
 
-                if line.is_delivery and line.order_id.state == 'sale' and lines_exist == 1:
+                if line.is_delivery and line.order_id.state == 'sale' and lines_exist == 1 and not self._context.get('adjust_delivery'):
                     raise ValidationError(
                         'You cannot delete a Delivery line,since the sale order is already confirmed,please refresh the page to undo')
                 if line.is_delivery and base:
@@ -1050,7 +1053,6 @@ class SaleOrderLine(models.Model):
                             "Product {} must be sold with \n\n {} \n\ncan't be removed without removing {}. \n\n Please refresh the page...!").format(
                             master_product.name, '\n'.join(['➥ ' + product.name for product in addon_products]),
                             master_product.name))
-
             return super(SaleOrderLine, (self - unlinked_lines) + cascade_line).unlink()
 
     def name_get(self):

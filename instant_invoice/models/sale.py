@@ -11,7 +11,7 @@ class SaleOrder(models.Model):
 
     # Note V15 following odoo's default Delivery method logic by Add Shipping button
 
-    def compute_credit_warning(self):
+    def compute_credit_warning_old(self):
         for order in self:
             if not order.quick_sale and order.carrier_id:
                 order.adjust_delivery_line()
@@ -21,16 +21,15 @@ class SaleOrder(models.Model):
         """
         auto save the delivery line.
         """
-        for order in self:
-            if vals.get('state', '') == 'done' and not order.state == 'done':
-                if not order.quick_sale and order.carrier_id:
-                    order.adjust_delivery_line()
-                else:
-                    order._remove_delivery_line()
-
+        # for order in self:
+        #     if vals.get('state', '') == 'done' and not order.state == 'done':
+        #         if not order.quick_sale and order.carrier_id:
+        #             order.adjust_delivery_line()
+        #         else:
+        #             order._remove_delivery_line()
         res = super(SaleOrder, self).write(vals)
         for order in self:
-            if order.state != 'done' and ('state' not in vals or vals.get('state', '') != 'done'):
+            if order.state != 'done' and ('state' not in vals or vals.get('state', '') != 'done') and not self._context.get('action_confrim'):
                 if not order.quick_sale and order.carrier_id:
                     order.adjust_delivery_line()
                 else:

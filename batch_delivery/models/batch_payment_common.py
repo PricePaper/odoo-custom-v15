@@ -41,6 +41,22 @@ class BatchPaymentCommon(models.Model):
 
     def register_payments(self):
         self.ensure_one()
+        msg = ''
+        cc_lines = self.cash_collected_lines.filtered(lambda r:r.payment_method_line_id.code == 'credit_card')
+        if cc_lines and float_round(sum(cc_lines.mapped('amount')), precision_digits=2) != float_round(self.card_amount, precision_digits=2):
+            msg += 'Credit card Amount mismatch.\n'
+        check_lines = self.cash_collected_lines.filtered(lambda r:r.payment_method_line_id.code in ('check_printing_in', 'batch_payment'))
+        if check_lines and float_round(sum(check_lines.mapped('amount')), precision_digits=2) != float_round(self.cheque_amount, precision_digits=2):
+            msg += 'Check Amount mismatch.\n'
+        cash_lines = self.cash_collected_lines.filtered(lambda r:r.payment_method_line_id.code in ('manual', 'housecash'))
+        if cash_lines and float_round(sum(cash_lines.mapped('amount')), precision_digits=2) != float_round(self.cash_amount, precision_digits=2):
+            msg += 'Cash Amount mismatch.\n'
+        if self.pending_amount:
+            msg += 'Total Amount mismatch.\n'
+        if float_round(self.cheque_amount + self.cash_amount + self.card_amount, precision_digits=2) != float_round(self.actual_returned, precision_digits=2):
+            msg += 'Total amount and sum of Cash,Check,Credit Card does not match.\n'
+        if msg:
+            raise UserError(_(msg))
         if not self.actual_returned:
             raise UserError('You cannot keep total amount field empty')
         if not self.cash_collected_lines:

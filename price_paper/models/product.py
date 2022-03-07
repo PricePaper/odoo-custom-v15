@@ -68,6 +68,19 @@ class ProductProduct(models.Model):
         'Standard Price', compute='_compute_lst_price_std_price',
         digits='Product Price')
 
+    def action_view_sales(self):
+        action = self.env["ir.actions.actions"]._for_xml_id("sale.report_all_channels_sales_action")
+        action['domain'] = [('product_id', 'in', self.ids)]
+        action['context'] = {
+            'pivot_measures': ['product_uom_qty'],
+            'active_id': self._context.get('active_id'),
+            'search_default_last_year': 1,
+            'search_default_current_month':1,
+            'active_model': 'sale.report',
+            'time_ranges': {'field': 'date', 'range': 'last_365_days'},
+        }
+        return action
+
     def _compute_lst_price_std_price(self):
         for product in self:
             price = product.uom_standard_prices.filtered(lambda r: r.uom_id == product.uom_id)

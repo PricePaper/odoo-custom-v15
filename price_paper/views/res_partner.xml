@@ -19,7 +19,7 @@
                 </xpath>
 
                 <xpath expr="//notebook/page[@name='sales_purchases']/group//field[@name='user_id']" position="after">
-                    <!--                    <field name="is_sales_person"/>-->
+                    <field name="customer"/>
                     <field name="customer_code" readonly="1"/>
                     <field name="established_date"/>
                     <field name="last_sold_date"/>

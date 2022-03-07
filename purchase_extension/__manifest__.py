@@ -31,6 +31,9 @@ Custom module implemented for Purchase extension.
              'wizard/change_product_uom.xml',
     ],
     'depends': ['purchase_requisition', 'stock_orderpoint_enhancements'],
+    'assets': {
+        'web.assets_backend': ['/purchase_extension/static/src/js/action_manager.js'],
+        },
     'installable': True,
     'auto_install': False,
     'application': False,

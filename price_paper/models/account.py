@@ -219,12 +219,12 @@ class AccountMoveLine(models.Model):
         res = super()._get_computed_price_unit()
         if self.move_id.is_sale_document():
             prices_all = self.env['customer.product.price']
-            for rec in self.invoice_id.partner_id.customer_pricelist_ids:
+            for rec in self.move_id.partner_id.customer_pricelist_ids:
                 if not rec.pricelist_id.expiry_date or rec.pricelist_id.expiry_date >= str(date.today()):
                     prices_all |= rec.pricelist_id.customer_product_price_ids
             prices_all = prices_all.filtered(
                 lambda r: r.product_id.id == self.product_id.id and r.product_uom.id == self.uom_id.id and (
-                        not r.partner_id or r.partner_id.id == self.invoice_id.partner_id.id))
+                        not r.partner_id or r.partner_id.id == self.move_id.partner_id.id))
             product_price = 0.0
             for price_rec in prices_all:
                 if not price_rec.partner_id and prices_all.filtered(lambda r: r.partner_id):
@@ -232,19 +232,19 @@ class AccountMoveLine(models.Model):
                 product_price = price_rec.price
                 break
             if not product_price:
-                if self.uom_id and self.product_id:
-                    uom_price = self.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == self.uom_id)
+                if self.product_uom_id and self.product_id:
+                    uom_price = self.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == self.product_uom_id)
                     if uom_price:
                         product_price = uom_price[0].price
-            if self.product_id.uom_id == self.uom_id and self.quantity % 1 != 0.0:
+            if self.product_id.uom_id == self.product_uom_id and self.quantity % 1 != 0.0:
                 product_price = ((int(self.quantity / 1) * product_price) + ((self.quantity % 1) * product_price * (
                         (100 + self.product_id.categ_id.repacking_upcharge) / 100))) / self.quantity
             res = product_price
 
             sale_tax_history = self.env['sale.tax.history'].search(
-                [('partner_id', '=', self.invoice_id.partner_shipping_id.id), ('product_id', '=', self.product_id.id)], limit=1)
+                [('partner_id', '=', self.move_id.partner_shipping_id.id), ('product_id', '=', self.product_id.id)], limit=1)
             if sale_tax_history and not sale_tax_history.tax:
-                self.tax_id = [(5, _, _)]
+                self.tax_ids = [(5, _, _)]
 
         return res
 

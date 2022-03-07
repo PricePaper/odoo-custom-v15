@@ -301,14 +301,16 @@ class Cron(models.Model):
 
     def check_settings(self):
         for rec in self:
-            res = rec.create_backup(True)
-            return {
-                'name': 'Success',
-                'type': 'ir.actions.act_window',
-                'res_model': 'check.settings',
-                'view_mode': 'form',
-                'view_type': 'form',
-                'target': 'new',
+            rec.create_backup(True)
+            return{
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': ('Success'),
+                    'message': 'All Settings are correct',
+                    'type': 'success',
+                    'sticky': True,
+                },
             }
 
 

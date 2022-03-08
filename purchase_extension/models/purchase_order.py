@@ -185,7 +185,7 @@ class PurchaseOrder(models.Model):
                                                     })
             result_list = self.sanitize_uom(result_dict)
         context = {'data': result_list, 'default_vendor_id': self.partner_id.id}
-        view_id = self.sudo.env.ref('purchase_extension.view_sale_history_add_po_wiz').id
+        view_id = self.sudo().env.ref('purchase_extension.view_sale_history_add_po_wiz').id
         return {
             'name': _('Add sale history to PO'),
             'view_type': 'form',

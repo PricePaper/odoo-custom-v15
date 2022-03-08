@@ -316,7 +316,7 @@ class StockPickingBatch(models.Model):
     def view_invoices(self):
         pickings = self.picking_ids
         invoices = pickings.mapped('invoice_ids')
-        action = self.sudo.env.ref("account.action_move_out_invoice_type").read()[0]
+        action = self.sudo().env.ref("account.action_move_out_invoice_type").read()[0]
         if len(invoices) > 1:
             action['domain'] = [('id', 'in', invoices.ids)]
         elif len(invoices) == 1:
@@ -326,7 +326,7 @@ class StockPickingBatch(models.Model):
 
     def view_payments(self):
         payments = self.payment_ids
-        action = self.sudo.env.ref('account.action_account_payments').read()[0]
+        action = self.sudo().env.ref('account.action_account_payments').read()[0]
         if len(payments) > 1:
             action['domain'] = [('id', 'in', payments.ids)]
         elif len(payments) == 1:
@@ -341,7 +341,7 @@ class StockPickingBatch(models.Model):
         self.ensure_one()
         payments = self.payment_ids
         batch_payments = payments.mapped('batch_payment_id')
-        action = self.sudo.env.ref('account_batch_payment.action_batch_payment_in').read()[0]
+        action = self.sudo().env.ref('account_batch_payment.action_batch_payment_in').read()[0]
 
         if len(batch_payments) > 1:
             action['domain'] = [('id', 'in', batch_payments.ids)]

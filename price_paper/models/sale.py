@@ -631,7 +631,7 @@ class SaleOrder(models.Model):
         """
         Can only proceed with order if payment term is set
         """
-        if not self.payment_term_id:
+        if self and not self.payment_term_id:
             raise ValidationError('Payment term is not set for this order please set to proceed.')
 
     def action_unlock(self):

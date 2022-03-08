@@ -9,7 +9,7 @@ class AccountBatchPayment(models.Model):
 
     is_posted = fields.Boolean(compute='_compute_is_posted')
     state = fields.Selection(selection_add=[('cancel', 'Cancelled')])
-    payment_method_line_id = fields.Many2one('account.payment.method.line', string='Payment Method', readonly=False, store=True, copy=False,
+    payment_method_line_id = fields.Many2one('account.payment.method.line', string='Payment Method', readonly=False, store=True, copy=False, required=True,
                                              tracking=True, domain="[('id', 'in', available_payment_method_line_ids)]")
     payment_method_id = fields.Many2one(related='payment_method_line_id.payment_method_id', string="Method", store=True)
     available_payment_method_line_ids = fields.Many2many('account.payment.method.line', compute='_compute_payment_method_line_fields')

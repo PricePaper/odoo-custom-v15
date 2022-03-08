@@ -55,7 +55,6 @@
                   action="action_purchase_line_price_paper"
                   parent="purchase.menu_procurement_management"
                   groups="purchase.group_purchase_manager"
-                  sequence="1000"
-        />
+                  sequence="1000"/>
     </data>
 </odoo>

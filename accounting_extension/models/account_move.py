@@ -47,6 +47,20 @@ class AccountMove(models.Model):
         self.ensure_one()
         self._recompute_tax_lines(recompute_tax_base_amount=True)
 
+    def get_discount_line(self):
+        self.ensure_one()
+        if self.move_type == 'out_invoice':
+            payments = self._get_reconciled_payments()
+            discount_account = self.company_id.discount_account_id
+            discount_line = payments.mapped('line_ids').filtered(lambda rec: rec.account_id.id == discount_account.id)
+            return discount_line
+        elif self.move_type == 'in_invoice':
+            payments = self._get_reconciled_payments()
+            discount_account = self.company_id.purchase_writeoff_account_id
+            discount_line = payments.mapped('line_ids').filtered(lambda rec: rec.account_id.id == discount_account.id)
+            return discount_line
+        return self.env['account.move.line']
+
     def get_discount(self):
         """
         called from batch delivery

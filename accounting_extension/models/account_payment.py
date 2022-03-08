@@ -4,6 +4,8 @@ from odoo import fields, models, api, _
 from odoo.exceptions import UserError
 from odoo.tools.misc import formatLang, format_date
 
+INV_LINES_PER_STUB = 9
+
 
 class AccountRegisterPayment(models.TransientModel):
     _inherit = "account.payment.register"
@@ -127,29 +129,8 @@ class AccountPayment(models.Model):
                 'amount_paid': formatLang(self.env, invoice_sign * sum(partials.mapped(partial_field)), currency_obj=self.currency_id),
                 'currency': invoice.currency_id,
             }
-
-            # discount = sum(self.env['account.payment.lines'].search([('invoice_id', '=', invoice.id)]).mapped('discount'))
-
-            discount_move = self.discount_move_id
-            discount_lines = discount_move and discount_move.line_ids.filtered(lambda r: r.cerdit != 0)
-            discount = 0
-            if discount_lines:
-                discount = sum(line.credit for line in discount_lines)
+            discount = invoice.get_discount()
             result.update({'discount': formatLang(self.env, discount, currency_obj=invoice.currency_id)})
-            if discount:
-                if invoice.type in ['in_invoice', 'out_refund']:
-                    invoice_sign = 1
-                    invoice_payment_reconcile = invoice.move_id.line_ids.mapped('matched_debit_ids').filtered(lambda r: r.debit_move_id in self.move_line_ids)
-                else:
-                    invoice_sign = -1
-                    invoice_payment_reconcile = invoice.move_id.line_ids.mapped('matched_credit_ids').filtered(lambda r: r.credit_move_id in self.move_line_ids)
-
-                if self.currency_id != self.journal_id.company_id.currency_id:
-                    amount_paid = abs(sum(invoice_payment_reconcile.mapped('amount_currency')))
-                else:
-                    amount_paid = abs(sum(invoice_payment_reconcile.mapped('amount')))
-
-                result.update({'amount_paid': formatLang(self.env, (invoice_sign * amount_paid), currency_obj=invoice.currency_id)})
             return result
 
         # Decode the reconciliation to keep only invoices.

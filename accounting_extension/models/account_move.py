@@ -48,36 +48,34 @@ class AccountMove(models.Model):
         self._recompute_tax_lines(recompute_tax_base_amount=True)
 
     def get_discount_line(self):
+        """
+        return discount move lines
+        """
         self.ensure_one()
+        reconciled_lines = self.line_ids.filtered(lambda line: line.account_id.user_type_id.type in ('receivable', 'payable'))
+        reconciled_amls = reconciled_lines.mapped('matched_debit_ids.debit_move_id') + \
+                          reconciled_lines.mapped('matched_credit_ids.credit_move_id')
+        moves = reconciled_amls.move_id
         if self.move_type == 'out_invoice':
-            payments = self._get_reconciled_payments()
             discount_account = self.company_id.discount_account_id
-            discount_line = payments.mapped('line_ids').filtered(lambda rec: rec.account_id.id == discount_account.id)
+            discount_line = moves.mapped('line_ids').filtered(lambda rec: rec.account_id.id == discount_account.id)
             return discount_line
         elif self.move_type == 'in_invoice':
-            payments = self._get_reconciled_payments()
             discount_account = self.company_id.purchase_writeoff_account_id
-            discount_line = payments.mapped('line_ids').filtered(lambda rec: rec.account_id.id == discount_account.id)
+            discount_line = moves.mapped('line_ids').filtered(lambda rec: rec.account_id.id == discount_account.id)
             return discount_line
         return self.env['account.move.line']
 
     def get_discount(self):
         """
-        called from batch delivery
         return total discount amount
         """
         self.ensure_one()
-        if self.move_type == 'out_invoice':
-            payments = self._get_reconciled_payments()
-            discount_account = self.company_id.discount_account_id
-            discount_line = payments.mapped('line_ids').filtered(lambda rec: rec.account_id.id == discount_account.id)
-            if discount_line:
+        discount_line = self.get_discount_line()
+        if discount_line:
+            if self.move_type == 'out_invoice':
                 return sum(discount_line.mapped('debit'))
-        elif self.move_type == 'in_invoice':
-            payments = self._get_reconciled_payments()
-            discount_account = self.company_id.purchase_writeoff_account_id
-            discount_line = payments.mapped('line_ids').filtered(lambda rec: rec.account_id.id == discount_account.id)
-            if discount_line:
+            elif self.move_type == 'in_invoice':
                 return sum(discount_line.mapped('credit'))
         return 0
 

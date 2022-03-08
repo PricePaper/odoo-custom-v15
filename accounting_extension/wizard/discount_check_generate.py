@@ -59,7 +59,7 @@ class GenerateDiscountCheck(models.TransientModel):
         for invoice in self.wizard_invoice_ids.filtered(lambda rec: rec.select):
             bill = invoice.invoice_id
             if bill.discount_due_date and bill.discount_due_date >= fields.Date.today():
-                self.env['add.discount'].with_context(active_id=bill.id).create({
+                discount_move = self.env['add.discount'].with_context(active_id=bill.id).create({
                     'discount_type': 'amount',
                     'discount': invoice.discount_amount
                 }).create_discount()

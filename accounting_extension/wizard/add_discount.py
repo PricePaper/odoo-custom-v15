@@ -21,7 +21,6 @@ class AddDiscount(models.TransientModel):
             account_receivable = self.env['ir.property']._get('property_account_receivable_id', 'res.partner')
         if not account_payable:
             account_payable = self.env['ir.property']._get('property_account_payable_id', 'res.partner')
-
         if move.move_type == 'in_invoice':
             discount_account = move.company_id.purchase_writeoff_account_id
         else:
@@ -51,7 +50,7 @@ class AddDiscount(models.TransientModel):
             'journal_id': move.journal_id.id,
             'ref': '%s - Discount' % move.name,
             'line_ids': [(0, 0, {
-                'account_id': account_payable.id if self.env.context.get('type') == 'in_invoice' else account_receivable.id,
+                'account_id': account_payable.id if move.move_type == 'in_invoice' else account_receivable.id,
                 'company_currency_id': company_currency.id,
                 'credit': 0.0 if move.move_type == 'in_invoice' else discount_amount,
                 'debit': discount_amount if move.move_type == 'in_invoice' else 0.0,

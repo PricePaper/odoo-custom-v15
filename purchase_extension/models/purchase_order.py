@@ -184,7 +184,6 @@ class PurchaseOrder(models.Model):
                                                     'uom': element['product_uom'],
                                                     })
             result_list = self.sanitize_uom(result_dict)
-        input(result_list)
         context = {'data': result_list, 'default_vendor_id': self.partner_id.id}
         view_id = self.env.ref('purchase_extension.view_sale_history_add_po_wiz').id
         return {

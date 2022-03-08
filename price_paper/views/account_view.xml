@@ -23,6 +23,17 @@
             </field>
         </record>
 
+        <record id="view_account_move_filter_ppt" model="ir.ui.view">
+            <field name="name">account.move.selected.inherit</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search/group/filter[@name='status']" position="after">
+                    <filter string="Partner" name="partner_grouping" context="{'group_by': 'partner_id'}" />
+                </xpath>
+            </field>
+        </record>
+
         <record id="inherit_account_invoice_form_view" model="ir.ui.view">
             <field name="name">inherited.account.invoice.form.view</field>
             <field name="model">account.move</field>

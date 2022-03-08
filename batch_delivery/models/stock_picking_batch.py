@@ -160,6 +160,17 @@ class StockPickingBatch(models.Model):
             result.append((batch.id, '%s' % batch.name))
         return result
 
+    def _sanity_check(self):
+        for batch in self:
+            if len(batch.picking_ids.mapped('picking_type_id')) > 1:
+                picking_out = self.env.ref('stock.picking_type_out')
+                erroneous_pickings = batch.picking_ids.filtered(lambda rec: rec.picking_type_id != picking_out)
+                raise UserError(_(
+                    "The following transfers cannot be added to batch transfer %s. "
+                    "Please check their states and operation types, if they aren't immediate "
+                    "transfers.\n\n"
+                    "Incompatibilities: %s", batch.name, ', '.join(erroneous_pickings.mapped('name'))))
+
     def view_pending_products(self):
         self.ensure_one()
         pending_view = self.env['pending.product.view'].create({'batch_ids': [(6, 0, self.ids)]})

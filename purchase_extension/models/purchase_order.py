@@ -384,7 +384,7 @@ class PurchaseOrderLine(models.Model):
                 'partner_id': ele.order_id.partner_id.id,
                 'sale_line_id': ele.id,
             })
-        action = self.env.ref('purchase_extension.action_view_sales_history_po').read()[0]
+        action = self.sudo().env.ref('purchase_extension.action_view_sales_history_po').read()[0]
         action['domain'] = [("id", "in", [r.id for r in created_ids])]
         action['target'] = 'new'
         return action

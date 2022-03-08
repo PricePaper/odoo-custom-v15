@@ -798,7 +798,7 @@
             <field name="inherit_id" ref="sale.view_order_product_search"/>
             <field name="arch" type="xml">
                 <filter name="year" position="after">
-                    <filter string="Last 365 Days" name= "last_year" domain="[('date','&gt;=',(context_today()-relativedelta(months=12)).strftime('%%Y-%%m-01')),
+                    <filter string="Last 12 Months" name= "last_year" domain="[('date','&gt;=',(context_today()-relativedelta(months=12)).strftime('%%Y-%%m-01')),
                 ('date','&lt;',time.strftime('%%Y-%%m-01')),('state','not in',('draft', 'cancel', 'sent'))]" />
                  <filter string="Current Month" name="current_month" domain="[('date','&lt;',(context_today()+relativedelta(months=1)).strftime('%%Y-%%m-01')),
                   ('date','&gt;=',time.strftime('%%Y-%%m-01')),('state','not in',('draft', 'cancel', 'sent'))]"/>

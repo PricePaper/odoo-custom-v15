@@ -644,7 +644,7 @@ class SaleOrder(models.Model):
 
     def view_sc_child_orders(self):
         self.ensure_one()
-        action = self.env.ref('sale.action_orders').read()[0]
+        action = self.sudo.env.ref('sale.action_orders').read()[0]
         if action:
             ids = self.order_line.mapped('storage_contract_line_ids.order_id').ids
             action.update({
@@ -695,7 +695,7 @@ class SaleOrder(models.Model):
         new_records = self.env['sale.order']
         for rec in self:
             new_records |= rec.copy()
-        action_rec = self.env.ref('sale.action_quotations_with_onboarding')
+        action_rec = self.sudo.env.ref('sale.action_quotations_with_onboarding')
         action = action_rec.read()[0]
         if len(new_records) > 1:
             action['domain'] = [('id', 'in', new_records.ids)]

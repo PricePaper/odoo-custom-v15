@@ -19,7 +19,7 @@ class InactiveCustomerWizard(models.TransientModel):
         par_ids = self._cr.fetchall()
         partner_ids = [par_id and par_id[0] for par_id in par_ids]
 
-        action = self.env.ref('account.res_partner_action_customer').read()[0]
+        action = self.sudo.env.ref('account.res_partner_action_customer').read()[0]
         if action:
             action.update({
                 'domain': [["id", "in", partner_ids]],

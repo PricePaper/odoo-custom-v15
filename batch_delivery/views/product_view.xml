@@ -47,20 +47,11 @@
                 <xpath expr="//button[@name='action_product_forecast_report']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
-
+                <xpath expr="//button[@name='action_view_stock_move_lines']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
                 <xpath expr="//button[@name='action_product_forecast_report']" position="after">
-                    <button class="oe_stat_button"
-                            name="action_open_transit_moves"
-                            icon="fa-building-o"
-                            type="object" attrs="{'invisible':[('type', '!=', 'product')]}">
-                        <div class="o_field_widget o_stat_info">
-                            <span class="o_stat_value">
-                                <field name="transit_qty" widget="statinfo" nolabel="1" class="mr4"/>
-                                <field name="uom_name"/>
-                            </span>
-                            <span class="o_stat_text">Transit Qty</span>
-                        </div>
-                    </button>
+
                     <button type="object"
                             name="get_quantity_in_sale"
                             attrs="{'invisible':[('type', '!=', 'product')]}"
@@ -85,7 +76,73 @@
                             <span class="o_stat_text">Qty In Purchase</span>
                         </div>
                     </button>
+                    <button class="oe_stat_button"
+                            name="action_open_transit_moves"
+                            icon="fa-building-o"
+                            type="object" attrs="{'invisible':[('type', '!=', 'product')]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="transit_qty" widget="statinfo" nolabel="1" class="mr4"/>
+                                <field name="uom_name"/>
+                            </span>
+                            <span class="o_stat_text">Transit Qty</span>
+                        </div>
+                    </button>
                 </xpath>
+            </field>
+        </record>
+
+
+        <record id="product_product_form_view_sold_batch" model="ir.ui.view">
+            <field name="name">product.product.form.inherit.sold</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="sale.product_form_view_sale_order_button"/>
+            <field name="arch" type="xml">
+              <xpath expr="//button[@name='action_view_sales']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+              </xpath>
+                <xpath expr="//button[@name='action_open_transit_moves']" position="after">
+                     <button class="oe_stat_button" name="action_view_sales"
+                        type="object" icon="fa-signal" groups="sales_team.group_sale_salesman" help="Sold in the last 365 days" attrs="{'invisible': [('sale_ok', '=', False)]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="sales_count" widget="statinfo" nolabel="1" class="mr4"/>
+                                <field name="uom_name"/>
+                            </span>
+                            <span class="o_stat_text">Sold</span>
+                        </div>
+                    </button>
+              </xpath>
+            </field>
+        </record>
+
+        <record id="product_template_form_view_inheitettd_bd" model="ir.ui.view">
+            <field name="name">product.template.pricelist</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='open_pricelist_rules']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <!--<xpath expr="//button[@name='action_open_transit_moves']" position="after">
+                    <button class="oe_stat_button"
+                               name="open_pricelist_rules"
+                               icon="fa-list-ul"
+                               groups="product.group_product_pricelist"
+                               type="object">
+                               <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="pricelist_item_count"/>
+                                    </span>
+                                    <span attrs="{'invisible': [('pricelist_item_count', '=', 1)]}">
+                                        Extra Prices
+                                    </span>
+                                    <span attrs="{'invisible': [('pricelist_item_count', '!=', 1)]}">
+                                        Extra Price
+                                    </span>
+                               </div>
+                        </button>
+                </xpath>-->
             </field>
         </record>
 
@@ -99,5 +156,7 @@
                 </xpath>
             </field>
         </record>
+
+
     </data>
 </odoo>

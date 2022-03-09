@@ -177,7 +177,8 @@ class StockPicking(models.Model):
             if rec.state != 'in_transit' and not rec.purchase_id:
                 raise UserError("Some of the selected Delivery order is not in transit state")
             rec.button_validate()
-        return self
+        return {'type': 'ir.actions.act_window_close'}
+        #return self
 
     def load_products(self):
         self.ensure_one()

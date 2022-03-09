@@ -13,4 +13,4 @@ class StockPicking(models.Model):
                 raise UserError(_(
                     "Some of the selected Delivery order is not in transit state"))
             rec.button_validate()
-        return self
+        return {'type': 'ir.actions.act_window_close'}

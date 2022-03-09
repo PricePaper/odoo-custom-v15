@@ -20,20 +20,20 @@ ListRenderer.include({
         return $row;
     },
 
-     _onCellClick: function (event) {
-       this._super(event);
-       if(this._isEditable() && this.arch.attrs.quick_selection === 'active'){
-            var $td = $(event.currentTarget);
-            var $tr = $td.parent();
-            var $checkbox = $tr.find('input[type=checkbox]');
-            if (!$checkbox.prop('checked')){
-                $checkbox.trigger('click');
-                if($checkbox.prop('checked')){
-                    $tr.css('background-color', '#faebd7');
-                }
-            }
-       }
-    },
+//     _onCellClick: function (event) {
+//       this._super(event);
+//       if(this._isEditable() && this.arch.attrs.quick_selection === 'active'){
+//            var $td = $(event.currentTarget);
+//            var $tr = $td.parent();
+//            var $checkbox = $tr.find('input[type=checkbox]');
+//            if (!$checkbox.prop('checked')){
+//                $checkbox.trigger('click');
+//                if($checkbox.prop('checked')){
+//                    $tr.css('background-color', '#faebd7');
+//                }
+//            }
+//       }
+//    },
 });
 
 });

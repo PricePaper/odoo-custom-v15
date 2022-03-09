@@ -177,7 +177,8 @@ class StockPicking(models.Model):
             if rec.state != 'in_transit' and not rec.purchase_id:
                 raise UserError("Some of the selected Delivery order is not in transit state")
             rec.button_validate()
-        return self
+        return {'type': 'ir.actions.act_window_close'}
+        #return self
 
     def load_products(self):
         self.ensure_one()
@@ -384,8 +385,9 @@ class StockPicking(models.Model):
         picking.mapped('route_id').write({'set_active': False})
         # removed newly created batch with empty pciking lines.
         picking.mapped('batch_id').sudo().unlink()
-        picking.write({'route_id': False})
-
+        self.env.cr.commit()
+        for rec in picking:
+            rec.write({'route_id': False})
         return True
 
 
@@ -417,13 +419,13 @@ class StockPicking(models.Model):
 
         return super(StockPicking, self).button_validate()
 
-    @api.model
-    def reset_picking_with_route(self):
-        picking = self.env['stock.picking'].search(
-            [('state', 'in', ['confirmed', 'waiting', 'assigned', 'in_transit']), ('batch_id', '!=', False), ('batch_id.state', '=', 'draft')])
-        picking.mapped('route_id').write({'set_active': False})
-        # removed newly created batch with empty pciking lines.
-        picking.mapped('batch_id').sudo().unlink()
-        return picking.write({'route_id': False})
+    # @api.model
+    # def reset_picking_with_route(self):
+    #     picking = self.env['stock.picking'].search(
+    #         [('state', 'in', ['confirmed', 'waiting', 'assigned', 'in_transit']), ('batch_id', '!=', False), ('batch_id.state', '=', 'draft')])
+    #     picking.mapped('route_id').write({'set_active': False})
+    #     # removed newly created batch with empty pciking lines.
+    #     picking.mapped('batch_id').sudo().unlink()
+    #     return picking.write({'route_id': False})
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -57,7 +57,7 @@ class AccountMove(models.Model):
         return [('partner_id', 'in', partner_ids), ('state', '=', 'posted')]
 
     def action_view_picking(self):
-        action = self.env.ref('stock.action_picking_tree_all').read()[0]
+        action = self.sudo().env.ref('stock.action_picking_tree_all').read()[0]
         pickings = self.mapped('picking_ids')
         if len(pickings) > 1:
             action['domain'] = [('id', 'in', pickings.ids)]

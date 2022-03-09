@@ -9,8 +9,8 @@ class StockPicking(models.Model):
 
     def validate_multiple_delivery(self):
         for rec in self:
-            if rec.state != 'in_transit' and not rec.rma_id and not rec.pucrchase_id:
+            if rec.state != 'in_transit' and not rec.rma_id and not rec.purchase_id:
                 raise UserError(_(
                     "Some of the selected Delivery order is not in transit state"))
             rec.button_validate()
-        return self
+        return {'type': 'ir.actions.act_window_close'}

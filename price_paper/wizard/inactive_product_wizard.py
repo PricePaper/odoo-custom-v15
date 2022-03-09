@@ -22,7 +22,7 @@ class InactiveProductWizard(models.TransientModel):
         products = self.env['product.product'].search([('sale_ok', '=', True), ('type', '!=', 'service'), ('id', 'not in', product_ids)])
             # .filtered(lambda r : r.id not in product_ids)
 
-        action = self.env.ref('product.product_normal_action_sell').read()[0]
+        action = self.sudo().env.ref('product.product_normal_action_sell').read()[0]
         if action:
             action.update({
                 'name': 'Inactive Products Since %s' % self.latest_sale_date,

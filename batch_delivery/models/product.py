@@ -26,7 +26,7 @@ class Product(models.Model):
                                                           and not move.transit_picking_id and move.picking_code == 'outgoing')
         sale_lines = moves.mapped('sale_line_id').ids
 
-        action = self.env.ref('price_paper.act_product_2_sale_order_line').read()[0]
+        action = self.sudo().env.ref('price_paper.act_product_2_sale_order_line').read()[0]
         action['domain'] = [('id', 'in', sale_lines)]
         return action
 
@@ -34,7 +34,7 @@ class Product(models.Model):
         self.ensure_one()
         purchase_line_ids = self.stock_move_ids.filtered(lambda move: move.purchase_line_id and \
                                                                       move.state not in ['cancel', 'done']).mapped('purchase_line_id').ids
-        action = self.env.ref('price_paper.act_res_partner_2_purchase_order_line').read()[0]
+        action = self.sudo().env.ref('price_paper.act_res_partner_2_purchase_order_line').read()[0]
         action['domain'] = [('id', 'in', purchase_line_ids)]
         return action
 

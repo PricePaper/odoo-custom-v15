@@ -40,7 +40,7 @@ class AssignRouteWizard(models.TransientModel):
                     partners_assigned.append(partner_id)
 
         # it will preserve the context and domain value for view transition.
-        return self.env.ref('batch_delivery.stock_picking_act_route_assign').read()[0]
+        return self.sudo().env.ref('batch_delivery.stock_picking_act_route_assign').read()[0]
 
 
 class AssignRouteWizardLines(models.TransientModel):

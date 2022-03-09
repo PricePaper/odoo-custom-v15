@@ -76,7 +76,7 @@ class BatchPaymentCommon(models.Model):
         self.ensure_one()
         payments = self.payment_ids
         batch_payments = payments.mapped('batch_payment_id')
-        action = self.env.ref('account_batch_payment.action_batch_payment_in').read()[0]
+        action = self.sudo().env.ref('account_batch_payment.action_batch_payment_in').read()[0]
 
         if len(batch_payments) > 1:
             action['domain'] = [('id', 'in', batch_payments.ids)]

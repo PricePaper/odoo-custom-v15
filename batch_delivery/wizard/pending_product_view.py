@@ -17,7 +17,7 @@ class PendingProductView(models.TransientModel):
         """
         records = self.batch_ids.mapped('picking_ids') if self.batch_ids else self.picking_ids
         move_lines = records.filtered(lambda pick: pick.state not in ['done', 'cancel']).mapped('move_lines').ids
-        action = self.env.ref('batch_delivery.stock_move_pending_product_action').read()[0]
+        action = self.sudo().env.ref('batch_delivery.stock_move_pending_product_action').read()[0]
         action['domain'] = [('id', 'in', move_lines)]
         return action
 

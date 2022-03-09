@@ -5,3 +5,4 @@ from . import so_cancel_reason
 from . import pending_product_view
 from . import reset_quantity
 from . import stock_backorder_confirmation
+from . import product_location_change

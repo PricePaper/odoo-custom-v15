@@ -7,7 +7,7 @@
             <field name="groups_id" eval="[(4, ref('stock.group_stock_user'))]"/>
             <field name="inherit_id" ref="product.product_normal_form_view"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='categ_id']" position="after">
+                <xpath expr="//field[@name='uom_po_id']" position="after">
                     <field name="forecast_days"/>
                     <field name="orderpoint_update_date"/>
                     <field name="past_days"/>

@@ -17,5 +17,4 @@ access_assign_route_wizard_line_user,assign_route_wizard_line,model_assign_route
 access_assign_route_wizard_user,assign_route_wizard,model_assign_route_wizard,base.group_user,1,1,1,0
 access_pending_product_view_user,pending_product_view,model_pending_product_view,base.group_user,1,1,1,0
 access_pending_product_email_view_user,pending_product_email_view,model_pending_product_email_view,base.group_user,1,1,1,0
-
-
+access_product_location_change_view_user,product_location_change,model_product_location_change,base.group_user,1,1,1,0

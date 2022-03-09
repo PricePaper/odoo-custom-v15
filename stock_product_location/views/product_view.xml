@@ -7,7 +7,7 @@
             <field name="model">product.product</field>
             <field name="inherit_id" ref="product.product_normal_form_view"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='barcode']" position="after">
+                <xpath expr="//field[@name='detailed_type']" position="after">
                     <field name="property_stock_location" string="Stock Location" domain="[('usage','=','internal')]"
                            attrs="{'invisible':[('type','=','service')]}"/>
                 </xpath>

@@ -46,23 +46,26 @@ class ProductTemplate(models.TransientModel):
                 'partner_id': False,
                 'origin': False,
                 'owner_id': False,
-                'move_ids_without_package': [[0, 0,
-                        {'state': 'draft',
-                         'picking_type_id': 5,
-                         'additional': False,
-                         'name': rec.product_id.name,
-                         'product_id': rec.product_id.id,
-                         'location_id': rec.source_location_id.id,
-                         'location_dest_id': rec.dest_location_id.id,
-                         'product_uom': rec.product_id.uom_id.id}]],
                 }
             internal_transfer = self.env['stock.picking'].create(vals)
+
+            self.env['stock.move'].create({'product_id': rec.product_id.id,
+                                           'picking_id': internal_transfer.id,
+                                           'name': rec.product_id.name,
+                                           'location_id': rec.source_location_id.id,
+                                           'product_uom': rec.product_id.uom_id.id,
+                                           'location_dest_id': rec.dest_location_id.id,
+                                           })
+
             transfer_move = internal_transfer.move_ids_without_package
-            transfer_move.product_uom_qty = transfer_move.qty_to_transfer
-            internal_transfer.action_confirm()
-            internal_transfer.action_assign()
-            transfer_move.move_line_ids.qty_done =  transfer_move.product_uom_qty
-            internal_transfer.button_validate()
+            if transfer_move.qty_to_transfer != 0:
+                transfer_move.product_uom_qty = transfer_move.qty_to_transfer
+                internal_transfer.action_confirm()
+                internal_transfer.action_assign()
+                transfer_move.move_line_ids.qty_done =  transfer_move.product_uom_qty
+                internal_transfer.button_validate()
+            else:
+                internal_transfer.action_cancel()
             for to_do_move, qty in reserve_qty_dict.items():
                 to_do_move.qty_update = qty
                 to_do_move._action_assign_reset_qty()

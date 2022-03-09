@@ -25,15 +25,15 @@
              <field name="model">product.product</field>
              <field name="inherit_id" ref="stock_product_location.product_normal_stock_loc_form_view"/>
              <field name="arch" type="xml">
-                 <field name="property_stock_location" position="after">
+                 <field name="property_stock_location" position="replace">
                      <field name="property_stock_location"
                          attrs="{'readonly':[('property_stock_location','!=', False)]}"
                          force_save='1'/>
                      <div name="update_product_location" class="col-lg-2">
                          <button string="Update Location" type="action"
                          name="%(action_product_location_change)d"
-                         class="oe_link oe_read_only"/>
-                                                  <!-- attrs="{'invisible':[('property_stock_location','=', False)]}" -->
+                         class="oe_link oe_read_only"
+                         attrs="{'invisible':[('property_stock_location','=', False)]}"/>
                      </div>
                  </field>
              </field>

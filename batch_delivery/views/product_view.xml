@@ -157,17 +157,6 @@
             </field>
         </record>
 
-        <record id="product_tree_view_in_transit_qty_inhr" model="ir.ui.view">
-            <field name="name">product.product.tree.inherit</field>
-            <field name="model">product.product</field>
-            <field name="inherit_id" ref="product.product_product_tree_view"/>
-            <field name="arch" type="xml">
-                <field name="categ_id" position="attributes">
-                    <attribute name="optional">show</attribute>
-                </field>
-            </field>
-        </record>
-
 
     </data>
 </odoo>

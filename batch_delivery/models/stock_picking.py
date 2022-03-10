@@ -33,7 +33,7 @@ class StockPicking(models.Model):
     sequence = fields.Integer(string='Order', default=1)
     is_invoiced = fields.Boolean(string="Invoiced", compute='_compute_state_flags')
     invoice_ref = fields.Char(string="Invoice Reference", compute='_compute_invoice_ref')
-    invoice_ids = fields.Many2many('account.move', compute='_compute_invoice_ids')
+    invoice_ids = fields.Many2many('account.move', compute='_compute_invoice_ids',store=True)
     is_return = fields.Boolean(compute='_compute_state_flags')
     carrier_id = fields.Many2one("delivery.carrier", string="Carrier", tracking=True)
     batch_id = fields.Many2one(

@@ -384,9 +384,9 @@ class StockPicking(models.Model):
              ('batch_id.state', '=', 'draft')])
         picking.mapped('route_id').write({'set_active': False})
         # removed newly created batch with empty pciking lines.
-        picking.mapped('batch_id').sudo().unlink()
-        self.env.cr.commit()
+        picking.mapped('batch_id').unlink()
         for rec in picking:
+            rec.write({'batch_id':False})
             rec.write({'route_id': False})
         return True
 

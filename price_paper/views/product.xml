@@ -12,23 +12,29 @@
                 <xpath expr="//field[@name='lst_price']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
-
-                <xpath expr="//field[@name='name']" position="before">
-                    <field name="categ_id" optional="hide"/>
+                <xpath expr="//field[@name='name']" position="attributes">
+                   <attribute name="invisible">1</attribute>
+                </xpath>
+                 <xpath expr="//field[@name='categ_id']" position="attributes">
+                   <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='default_code']" position="after">
+                    <field name="categ_id"/>
+                    <field name="name"/>
                 </xpath>
                 <xpath expr="//field[@name='barcode']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
 
-                <xpath expr="//field[@name='barcode']" position="after">
+                <xpath expr="//field[@name='uom_id']" position="after">
                     <field name="vendor_id"/>
-                    <field name="property_stock_location" optional="hide"/>
-                    <field name="value_svl" sum="Stock Valuation" widget="monetary" string="Total Value"/>
+                    <field name="property_stock_location"/>
+                    <field name="value_svl" sum="Stock Valuation" widget="monetary" string="Total Value" optional="hide"/>
                 </xpath>
 
                 <xpath expr="//field[@name='qty_available']" position="after">
-                    <field name="incoming_qty" optional="hide"/>
-                    <field name="outgoing_qty" optional="hide"/>
+                    <field name="incoming_qty"/>
+                    <field name="outgoing_qty"/>
                 </xpath>
                 <xpath expr="//field[@name='qty_available']" position="after">
                     <field name="reordering_min_qty" string="Min Qty" optional="show"/>
@@ -182,7 +188,7 @@
                 <xpath expr="//label[@for='list_price']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
-                <field name="tax_string" sposition="attributes">
+                <field name="tax_string" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </field>
             </field>

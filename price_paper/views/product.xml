@@ -19,7 +19,7 @@
                    <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//field[@name='default_code']" position="after">
-                    <field name="categ_id" optional="show"/>
+                    <field name="categ_id"/>
                     <field name="name"/>
                 </xpath>
                 <xpath expr="//field[@name='barcode']" position="attributes">
@@ -33,8 +33,8 @@
                 </xpath>
 
                 <xpath expr="//field[@name='qty_available']" position="after">
-                    <field name="incoming_qty" optional="show"/>
-                    <field name="outgoing_qty" optional="show"/>
+                    <field name="incoming_qty"/>
+                    <field name="outgoing_qty"/>
                 </xpath>
                 <xpath expr="//field[@name='qty_available']" position="after">
                     <field name="reordering_min_qty" string="Min Qty" optional="show"/>

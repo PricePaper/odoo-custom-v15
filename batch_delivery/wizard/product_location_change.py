@@ -67,9 +67,9 @@ class ProductTemplate(models.TransientModel):
                 internal_transfer.button_validate()
             else:
                 internal_transfer.action_cancel()
-            for to_do_move, qty in reserve_qty_dict.items():
-                to_do_move.qty_update = qty
-                to_do_move._action_assign_reset_qty()
+            # for to_do_move, qty in reserve_qty_dict.items():
+            #     to_do_move.qty_update = qty
+            #     to_do_move._action_assign_reset_qty()
         return True
 
 

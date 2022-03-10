@@ -109,7 +109,7 @@ class StockMove(models.Model):
                 if qty != 0:
                     move._action_assign_reset_qty(qty)
                 msg = """<ul><li>
-                    %s Quantity Reserved: %s <span aria-label='Changed' class='fa fa-long-arrow-right' role='img' title='Changed'/> %s 
+                    %s Quantity Reserved: %s <span aria-label='Changed' class='fa fa-long-arrow-right' role='img' title='Changed'/> %s
                     </li></ul>""" % (move.product_id.display_name, reserved_qty, qty,)
                 move.message_post(
                     body=msg,
@@ -180,7 +180,7 @@ class StockMove(models.Model):
         move_line_vals_list = []
         for move in self.filtered(lambda m: m.state not in ['done', 'cancel']):
             rounding = roundings[move]
-            missing_reserved_uom_quantity = qty - reserved_availability[move]
+            missing_reserved_uom_quantity = move.qty_update - reserved_availability[move]
             missing_reserved_quantity = move.product_uom._compute_quantity(missing_reserved_uom_quantity,
                                                                            move.product_id.uom_id,
                                                                            rounding_method='HALF-UP')

@@ -28,7 +28,8 @@ class ProductTemplate(models.TransientModel):
 
     def action_change(self):
         for rec in self:
-            stock_moves = rec.product_id.stock_move_ids.filtered(lambda r: r.state not in ('done', 'cancel') and r.location_id == rec.source_location_id)
+            stock_moves = rec.product_id.stock_move_ids.filtered(lambda r: r.state not in ('done', 'cancel') and r.location_id == rec.source_location_id
+                and r.transit_picking_id and r.transit_picking_id.state != 'cancel')
             reserve_qty_dict = {}
             for move in stock_moves:
                 if move.reserved_availability > 0:
@@ -69,8 +70,6 @@ class ProductTemplate(models.TransientModel):
             for to_do_move, qty in reserve_qty_dict.items():
                 to_do_move.qty_update = qty
                 to_do_move._action_assign_reset_qty()
-                if to_do_move.is_transit:
-                    to_do_move.quantity_done = to_do_move.reserved_availability
         return True
 
 

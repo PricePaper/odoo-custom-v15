@@ -12,17 +12,23 @@
                 <xpath expr="//field[@name='lst_price']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
-
-                <!--<xpath expr="//field[@name='name']" position="before">
-                    <field name="categ_id" optional="hide"/>
-                </xpath>-->
+                <xpath expr="//field[@name='name']" position="attributes">
+                   <attribute name="invisible">1</attribute>
+                </xpath>
+                 <xpath expr="//field[@name='categ_id']" position="attributes">
+                   <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='default_code']" position="after">
+                    <field name="categ_id" optional="show"/>
+                    <field name="name"/>
+                </xpath>
                 <xpath expr="//field[@name='barcode']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
 
-                <xpath expr="//field[@name='barcode']" position="after">
+                <xpath expr="//field[@name='uom_id']" position="after">
                     <field name="vendor_id"/>
-                    <field name="property_stock_location" optional="show"/>
+                    <field name="property_stock_location"/>
                     <field name="value_svl" sum="Stock Valuation" widget="monetary" string="Total Value" optional="hide"/>
                 </xpath>
 
@@ -182,7 +188,7 @@
                 <xpath expr="//label[@for='list_price']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
-                <field name="tax_string" sposition="attributes">
+                <field name="tax_string" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </field>
             </field>

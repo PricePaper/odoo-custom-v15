@@ -19,7 +19,7 @@ class ProcessReturnedCheck(models.Model):
         ('cancel', 'Cancelled')], default='draft', copy=False, tracking=True, required=True)
     invoice_count = fields.Integer(string='Invoice Count', compute='_get_invoice_count', readonly=True)
     notes = fields.Text(string='Notes')
-    amount = fields.Monetary(related='bank_stmt_line_id.amount', string='Amount', digits=0, currency_field='journal_currency_id')
+    amount = fields.Monetary(related='bank_stmt_line_id.amount', string='Amount',currency_field='journal_currency_id')
     journal_currency_id = fields.Many2one('res.currency', string="Journal's Currency", related='bank_stmt_line_id.currency_id', readonly=True,
                                           help='Utility field to express amount currency')
 

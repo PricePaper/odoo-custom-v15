@@ -11,7 +11,7 @@ class RMARetMerAuth(models.Model):
         ('resolved', 'Waiting For Delivery'),
         ('approve', 'Approved'),
         ('close', 'Done'),
-        ('cancelled', 'Cancel')], string='Status', default='new', track_visibility='onchange')
+        ('cancelled', 'Cancel')], string='Status', default='new',tracking=True,)
     rma_type = fields.Selection(
         selection='_get_valid_rma',
         default='customer')

@@ -2,6 +2,7 @@
 {
     'name': 'Automatic Backup (Dropbox, Google Drive, Amazon S3, SFTP)',
     'version': '15.0.0',
+    'license': 'LGPL-3',
     'summary': 'Automatic Backup',
     'author': 'Grzegorz Krukar (grzegorzgk1@gmail.com)',
     'description': """

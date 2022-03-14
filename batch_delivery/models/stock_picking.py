@@ -388,8 +388,7 @@ class StockPicking(models.Model):
         # removed newly created batch with empty pciking lines.
         picking.mapped('batch_id').unlink()
         for rec in picking:
-            rec.write({'batch_id':False})
-            rec.write({'route_id': False})
+            rec.write({'batch_id':False,'route_id':False})
         return True
 
 

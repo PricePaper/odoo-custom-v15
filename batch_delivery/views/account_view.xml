@@ -104,6 +104,9 @@
                 <xpath expr="//field[@name='amount_total_signed']" position="after">
                     <field name="out_standing_credit"/>
                 </xpath>
+                <xpath expr="//field[@name='ref']" position="attributes">
+                    <attribute name="attrs">{'optional': 'show'}</attribute>
+                </xpath>
             </field>
         </record>
     </data>

@@ -163,11 +163,14 @@ class ProductProduct(models.Model):
             if delivery_lead_time != max_delivery_lead_time:
                 max_forecast = self.forecast_sales(config, str(from_date), periods=max_delivery_lead_time, freq='d', to_date=str(to_date))
                 max_quantity = self.calculate_qty(max_forecast, to_date, max_to_date_plus_delay)
-            orderpoint = self.orderpoint_ids and self.orderpoint_ids[0] or False
+
+            orderpoint = self.env['stock.warehouse.orderpoint'].search(['|', ('active', '=', False), ('active', '=',True), ('product_id', '=', self.id)])
+            orderpoint = orderpoint and orderpoint[0] or False
             if orderpoint:
                 if not self.orderpoint_update_date or self.orderpoint_update_date < str(datetime.date.today()):
                     orderpoint.write({'product_min_qty': ceil(min_quantity),
                                       'product_max_qty': ceil(max_quantity),
+                                      'active': True
                                       })
             else:
                 self.env['stock.warehouse.orderpoint'].create({

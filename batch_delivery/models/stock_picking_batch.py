@@ -151,13 +151,15 @@ class StockPickingBatch(models.Model):
                     result.append((batch.id, '%s (%s) (%s)' % (
                         batch.name, batch.date or '',
                         batch.route_id and batch.route_id.name or '')))
-                result.append((batch.id, '%s (%s)' % (batch.name, batch.date or '')))
-            return result
-        for batch in self:
-            if batch.route_id:
-                result.append(
-                    (batch.id, '%s (%s)' % (batch.name, batch.route_id.name and batch.route_id.name or '')))
-            result.append((batch.id, '%s' % batch.name))
+                else:
+                    result.append((batch.id, '%s (%s)' % (batch.name, batch.date or '')))
+        else:
+            for batch in self:
+                if batch.route_id:
+                    result.append(
+                        (batch.id, '%s (%s)' % (batch.name, batch.route_id.name and batch.route_id.name or '')))
+                else:
+                    result.append((batch.id, '%s' % batch.name))
         return result
 
     def _sanity_check(self):

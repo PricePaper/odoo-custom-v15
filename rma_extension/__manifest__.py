@@ -3,6 +3,7 @@
 {
     'name': 'RMA Extension',
     'version': '1.0',
+    'license': 'LGPL-3',
     'category': 'Warehouse',
     'summary': '''Return merchandise authorization
     RMA Return goods

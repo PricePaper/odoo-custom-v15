@@ -219,7 +219,7 @@
                   </attribute>
                </xpath>
                <xpath expr="//button[@name='button_validate'][2]" position="attributes">
-                 <attribute name="attrs">{'invisible':['|', '|',('picking_type_code', '!=', 'incoming'),('state', 'in', ('waiting','confirmed',
+                 <attribute name="attrs">{'invisible':['|', '|',('picking_type_code', '!=', 'incoming'),('state', 'not in', ('waiting','confirmed',
                      'done', 'cancel')), ('show_validate', '=', False)]}
                  </attribute>
               </xpath>

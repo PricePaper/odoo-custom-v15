@@ -237,7 +237,7 @@ class StockPickingBatch(models.Model):
             pick.action_make_transit()
             invoice = pick.sale_id.invoice_ids.filtered(lambda rec: pick in rec.picking_ids)
             if invoice:
-                invoice.write({'date_invoice': pick.batch_id.date})
+                invoice.write({'invoice_date': pick.batch_id.date})
         return self.write({'state': 'in_progress'})
 
     def action_done(self):
@@ -462,7 +462,7 @@ class CashCollectedLines(models.Model):
         self.amount = 0
         if self.invoice_id:
             self.amount = self.invoice_id.amount_total
-            days = (self.invoice_id.date_invoice - fields.Date.context_today(self)).days
+            days = (self.invoice_id.invoice_date - fields.Date.context_today(self)).days
             if abs(days) < self.invoice_id.payment_term_id.due_days:
                 self.discount = self.invoice_id.payment_term_id.discount_per
             else:

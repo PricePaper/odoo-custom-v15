@@ -54,10 +54,14 @@ class CashCollectedLines(models.Model):
         for line in self:
             if not line.amount:
                 continue
-
+            picking_batch = False
+            common_batch = False
+            if self._context.get('from_common_batch'):
+                common_batch = line.common_batch_id.id
+            else:
+                picking_batch = line.batch_id.id
             if line.discount and not self.env.user.company_id.discount_account_id:
                 raise UserError('Please choose a discount account in company.')
-            print(line.invoice_id, line.discount_amount)
             if line.invoice_id:
                 am_rec = self.env['account.move']
                 if line.invoice_id and line.discount_amount:
@@ -73,7 +77,8 @@ class CashCollectedLines(models.Model):
                     'journal_id': line.journal_id.id,
                     'invoice_id': line.invoice_id,
                     'ref': line.communication,
-                    'batch_id': line.batch_id.id,
+                    'batch_id': picking_batch,
+                    'common_batch_id': common_batch,
                 })
             else:
                 batch_payment_info.setdefault(line.journal_id, {}).setdefault(line.payment_method_line_id, []).append({
@@ -84,20 +89,20 @@ class CashCollectedLines(models.Model):
                     'amount': line.amount,
                     'journal_id': line.journal_id.id,
                     'ref': line.communication,
-                    'batch_id': line.batch_id.id,
+                    'batch_id': picking_batch,
+                    'common_batch_id': common_batch,
                 })
         for journal, batch_vals in batch_payment_info.items():
             for payment_method, payment_vals in batch_vals.items():
                 batch_id = self.env['account.batch.payment'].create({
                     'batch_type': 'inbound',
                     'journal_id': journal.id,
-                    'payment_method_id': payment_method.payment_method_id.id,
+                    'payment_method_line_id': payment_method.id,
                 })
                 for vals in payment_vals:
                     invoice_id = vals.pop('invoice_id', False)
                     vals['batch_payment_id'] = batch_id.id
                     payment = self.env['account.payment'].create(vals)
-
                     payment.action_post()
                     if invoice_id:
                         line = invoice_id.line_ids.filtered(

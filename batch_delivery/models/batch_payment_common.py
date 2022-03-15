@@ -62,7 +62,7 @@ class BatchPaymentCommon(models.Model):
         if not self.cash_collected_lines:
             raise UserError('No lines to process')
         if self.cash_collected_lines and all(line.amount > 0 for line in self.cash_collected_lines):
-            self.cash_collected_lines.create_payment()
+            self.cash_collected_lines.with_context(from_common_batch=True).create_payment()
         else:
             self.show_warning = True
             return self

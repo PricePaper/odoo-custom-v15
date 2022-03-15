@@ -114,7 +114,7 @@ class AccountInvoice(models.Model):
                             'invoice_type': 'aging',
                             'is_paid': True,
                             'invoice_amount': self.amount_total,
-                            'commission_date': self.date_invoice and self.date_invoice
+                            'commission_date': self.invoice_date and self.invoice_date
                         }
                         commission_rec = self.env['sale.commission'].create(vals)
 

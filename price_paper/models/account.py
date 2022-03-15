@@ -47,7 +47,7 @@ class AccountMove(models.Model):
 
     def action_post(self):
         for move in self:
-            if move.is_sale_document() and not move.invoice_payment_term_id:
+            if move.is_sale_document() and not move.invoice_payment_term_id and not move.rma_id:
                 raise ValidationError('Payment term is not set for invoice %s' % move.name)
         return super().action_post()
 

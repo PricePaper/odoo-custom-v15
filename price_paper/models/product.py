@@ -81,6 +81,14 @@ class ProductProduct(models.Model):
         }
         return action
 
+
+    #over ride to not setting uom_po_id
+    @api.onchange('uom_id')
+    def _onchange_uom_id(self):
+        pass
+        # if self.uom_id:
+        #     self.uom_po_id = self.uom_id.id
+
     def _compute_lst_price_std_price(self):
         for product in self:
             price = product.uom_standard_prices.filtered(lambda r: r.uom_id == product.uom_id)

@@ -24,10 +24,10 @@ class ProductStandardPrice(models.Model):
                 price_margin = margin.get_margin(rec.price, rec.cost, percent=True)
             rec.price_margin = price_margin
 
-    @api.depends('product_id.cost', 'uom_id')
+    @api.depends('product_id.cost', 'uom_id', 'product_id.uom_id')
     def compute_cost(self):
         for rec in self:
-            if rec.product_id and rec.product_id.cost:
+            if rec.product_id and rec.product_id.cost and rec.product_id.uom_id:
                 if rec.uom_id != rec.product_id.uom_id:
                     cost = rec.product_id.uom_id._compute_price(rec.product_id.cost, rec.uom_id)
                     rec.cost = float_round(cost * (1 + (rec.product_id.categ_id.repacking_upcharge / 100)),

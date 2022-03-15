@@ -340,6 +340,8 @@ class StockPicking(models.Model):
                 self.mapped('invoice_ids').filtered(lambda r: rec in r.picking_ids).sudo().button_cancel()
             else:
                 self.mapped('invoice_ids').remove_zero_qty_line()
+            if rec.transit_move_lines:
+                rec.transit_move_lines._action_cancel()
         res = super(StockPicking, self).action_cancel()
         self.write({'batch_id': False, 'is_late_order': False})
         return res
@@ -386,8 +388,7 @@ class StockPicking(models.Model):
         # removed newly created batch with empty pciking lines.
         picking.mapped('batch_id').unlink()
         for rec in picking:
-            rec.write({'batch_id':False})
-            rec.write({'route_id': False})
+            rec.write({'batch_id':False,'route_id':False})
         return True
 
 

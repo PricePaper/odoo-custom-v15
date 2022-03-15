@@ -58,7 +58,7 @@
                                 <b>Invoice Number</b>
                             </td>
                             <td>
-                                <t t-esc="object.number"/>
+                                <t t-esc="object.name"/>
                             </td>
                         </tr>
                     </table>

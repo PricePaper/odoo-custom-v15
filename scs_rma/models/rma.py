@@ -1075,10 +1075,10 @@ class RMARetMerAuth(models.Model):
         """
         for rec in self:
             if rec.rma_type == 'customer':
-                action = self.env.ref(
+                action = self.sudo().env.ref(
                     'account.action_move_out_invoice_type').read()[0]
             if rec.rma_type in ['supplier', 'picking', 'lot']:
-                action = self.env.ref(
+                action = self.sudo().env.ref(
                     'account.action_move_in_invoice_type').read()[0]
 
             invoice_ids = self.env["account.move"

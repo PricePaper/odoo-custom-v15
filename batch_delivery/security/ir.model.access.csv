@@ -18,3 +18,5 @@ access_assign_route_wizard_user,assign_route_wizard,model_assign_route_wizard,ba
 access_pending_product_view_user,pending_product_view,model_pending_product_view,base.group_user,1,1,1,0
 access_pending_product_email_view_user,pending_product_email_view,model_pending_product_email_view,base.group_user,1,1,1,0
 access_product_location_change_view_user,product_location_change,model_product_location_change,base.group_user,1,1,1,0
+access_stock_backorder_confirmation_line,access.stock.backorder.confirmation.line,stock.model_stock_backorder_confirmation_line,base.group_user,1,1,1,0
+access_stock_backorder_confirmation,access.stock.backorder.confirmation,stock.model_stock_backorder_confirmation,base.group_user,1,1,1,0

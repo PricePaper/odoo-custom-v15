@@ -18,6 +18,7 @@ This module sets up the batch delivery process for price paper.
     'data': [
         'data/data.xml',
         'security/ir.model.access.csv',
+        'security/price_paper_security.xml',
         'report/invoice_report_standard.xml',
         'report/report_stockpicking_operations.xml',
         'report/report_master_pick_ticket.xml',

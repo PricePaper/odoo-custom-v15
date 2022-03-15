@@ -24,7 +24,7 @@
         <record id="email_invoice_online_link" model="mail.template">
             <field name="name">Online Invoice Payment</field>
             <field name="email_from"></field>
-            <field name="subject">${object.company_id.name} invoice ${object.number or 'n/a' }</field>
+            <field name="subject">${object.company_id.name} invoice ${object.name or 'n/a' }</field>
             <field name="email_to">${object.partner_id.email or ''}</field>
             <field name="model_id" ref="account.model_account_move"/>
             <field name="auto_delete" eval="True"/>
@@ -38,7 +38,7 @@
 
 				<div style="border-width: 2px;border-left-style: solid;border-left-color:#BA8144;margin-left: 0px;margin-top: 20px;">
 				   &nbsp;&nbsp;<strong>REFERENCES</strong><br />
-				   &nbsp;&nbsp;Invoice number: <strong>${object.number or ''}</strong><br />
+				   &nbsp;&nbsp;Invoice number: <strong>${object.name or ''}</strong><br />
 				   &nbsp;&nbsp;Ship date:  ${object.invoice_date or ''}<br />
 				</div>
 
@@ -99,7 +99,7 @@
 
         <record id="email_template_payment_notifications_inside_invoice" model="mail.template">
             <field name="name">Payment Notification</field>
-            <field name="subject">Payment Received - ${object.number}</field>
+            <field name="subject">Payment Received - ${object.name}</field>
             <field name="email_to">shibi.thambi@confianzit.com</field>
             <field name="model_id" ref="account.model_account_move"/>
             <field name="auto_delete" eval="True"/>
@@ -109,12 +109,12 @@
 
                 <p>Hello,</p>
                 <p style="margin-top: 20px;">
-                ${object.partner_id.name or ''} has made a payment for the invoice ${object.number or ''}.  Please check the status of the invoice.<br/>
+                ${object.partner_id.name or ''} has made a payment for the invoice ${object.name or ''}.  Please check the status of the invoice.<br/>
                 </p>
                 <br/>
                 <div style="border-width: 2px;border-left-style: solid;border-left-color:#BA8144;margin-left: 0px;margin-top: 20px;">
            &nbsp;&nbsp;<strong>REFERENCES</strong><br />
-           &nbsp;&nbsp;Invoice number         : <strong>${object.number}</strong><br />
+           &nbsp;&nbsp;Invoice number         : <strong>${object.name}</strong><br />
            &nbsp;&nbsp;Invoice date           : ${object.invoice_date or ''}<br />
         </div>
             </div>

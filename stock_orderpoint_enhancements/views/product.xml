@@ -93,6 +93,15 @@
                 <xpath expr="//field[@name='date_end']" position="after">
                     <field name="is_available" invisible="1"/>
                 </xpath>
+                <xpath expr="//field[@name='currency_id']" position="attributes">
+                  <attribute name="optional">hide</attribute>
+                </xpath>
+                <xpath expr="//field[@name='date_end']" position="attributes">
+                  <attribute name="optional">show</attribute>
+                </xpath>
+                <xpath expr="//field[@name='date_start']" position="attributes">
+                  <attribute name="optional">show</attribute>
+                </xpath>
                 <xpath expr="//tree" position="attributes">
                     <attribute name="decoration-danger">is_available==False</attribute>
                 </xpath>

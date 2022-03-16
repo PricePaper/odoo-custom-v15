@@ -67,7 +67,7 @@
                             <tree editable="bottom">
                                 <field name="sequence" widget="handle"/>
                                 <field name="common_batch_id" invisible="1"/>
-                                <field name="partner_id" domain="[('customer', '=', True)]"/>
+                                <field name="partner_id" domain="[('customer', '=', True), ('parent_id', '=', False)]"/>
                                 <field name="invoice_id"
                                        domain="[('partner_id', '=', partner_id), ('state', '=', 'posted'), ('payment_state', 'not in', ('paid', 'in_payment')), ('move_type', '=', 'out_invoice')]"
                                        context="{'from_batch_payment': True}"/>

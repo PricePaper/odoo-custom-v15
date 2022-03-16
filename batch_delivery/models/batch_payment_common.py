@@ -31,6 +31,12 @@ class BatchPaymentCommon(models.Model):
         for rec in self:
             rec.batch_payment_count = len(rec.payment_ids.mapped('batch_payment_id'))
 
+    @api.model
+    def create(self, vals):
+        if vals.get('name', 'new') == 'new':
+            vals['name'] = self.env['ir.sequence'].next_by_code('batch.payment.common') or 'new'
+        return super(BatchPaymentCommon, self).create(vals)
+
     @api.depends('actual_returned', 'cash_collected_lines', 'cash_collected_lines.amount')
     def _calculate_pending_amount(self):
         for batch in self:

@@ -3,6 +3,7 @@ from odoo import fields, models, api, _
 from odoo.exceptions import UserError, ValidationError
 import json
 from collections import defaultdict
+from odoo.tools.misc import formatLang, format_date, get_lang
 
 
 class AccountMove(models.Model):
@@ -13,9 +14,19 @@ class AccountMove(models.Model):
     invoice_has_outstanding = fields.Boolean(search="_search_has_outstanding")
     out_standing_credit = fields.Float(compute='_compute_out_standing_credit', string="Out Standing")
 
+    def _get_mail_template(self):
+        """
+        :return: the correct mail template based on the current move type
+        """
+        return (
+            'account.email_template_edi_credit_note'
+            if all(move.move_type == 'out_refund' for move in self)
+            else 'batch_delivery.email_template_edi_invoices'
+        )
+
     def action_invoice_sent(self):
         self.ensure_one()
-        template = self.env.ref('account.email_template_edi_invoice', False)
+        template = self.env.ref('batch_delivery.email_template_edi_invoice', False)
         report_template = self.env.ref('batch_delivery.ppt_account_selected_invoices_with_payment_report')
         if template and report_template and template.report_template.id != report_template.id:
             template.write({'report_template': report_template.id})

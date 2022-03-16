@@ -17,6 +17,7 @@ This module sets up the batch delivery process for price paper.
     # TODO :: FIX THIS FOR ODOO-15 MIGRATION
     'data': [
         'data/data.xml',
+        'data/mail_template.xml',
         'security/ir.model.access.csv',
         'security/price_paper_security.xml',
         'report/invoice_report_standard.xml',

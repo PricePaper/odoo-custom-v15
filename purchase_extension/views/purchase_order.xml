@@ -33,6 +33,10 @@
                 <xpath expr="//field[@name='partner_id']" position="attributes">
                     <attribute name="domain">[('supplier', '=', True), ('parent_id', '=', False)]</attribute>
                 </xpath>
+                 <xpath expr="//div[hasclass('oe_button_box')]/button[@name='action_view_picking']" position="attributes">
+                    <attribute name="groups">stock.group_stock_user,account.group_account_invoice</attribute>
+                 </xpath>
+
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="pickup_address_id"
                            domain="['|', ('id', '=', partner_id), ('parent_id','=', partner_id)]"
@@ -67,6 +71,7 @@
                     <field name="vendor_delay"/>
                     <field name="vendor_order_freq"/>
                 </xpath>
+
 
             </field>
         </record>

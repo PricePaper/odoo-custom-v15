@@ -19,7 +19,44 @@ class RMARetMerAuth(models.Model):
     invoice_address_id = fields.Many2one(related='sale_order_id.partner_invoice_id', readonly=True)
     pickup_address_id = fields.Many2one(related='purchase_order_id.pickup_address_id', readonly=True)
 
-    @api.model
+
+    def count_invoice_ids(self):
+        """
+            Counting the number of invoice created from RMA.
+            Redirect to invoice form view and tree views based on count.
+        """
+        for rec in self:
+            if rec.rma_type == 'customer':
+                action = self.sudo().env.ref(
+                    'account.action_move_out_invoice_type').read()[0]
+            if rec.rma_type in ['supplier', 'picking', 'lot']:
+                action = self.sudo().env.ref(
+                    'account.action_move_in_invoice_type').read()[0]
+
+            invoice_ids = self.env["account.move"
+                                   ].search([('rma_id', '=', rec.id)])
+
+            if len(invoice_ids.ids) > 1:
+                action['domain'] = [('id', 'in', invoice_ids.ids)]
+            elif len(invoice_ids.ids) == 1:
+                if rec.rma_type in ['customer', 'supplier']:
+                    action['views'] = [
+                        (self.env.ref('account.view_move_form').id, 'form')]
+
+                if rec.picking_rma_id.picking_type_id.code in ['incoming', 'outgoing']:
+                    action['views'] = [
+                        (self.env.ref('account.view_move_form').id, 'form')]
+
+                if rec.lot_picking_id.picking_type_id.code in ['incoming', 'outgoing']:
+                    action['views'] = [
+                        (self.env.ref('account.view_move_form').id, 'form')]
+
+                action['res_id'] = invoice_ids[0].id
+            else:
+                action = {'type': 'ir.actions.act_window_close'}
+            return action
+
+    api.model
     def _get_valid_rma(self):
         selection = [('customer', 'Sale Order'),
          ('picking', 'Picking'), ('lot', 'Serial No')]

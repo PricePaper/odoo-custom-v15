@@ -102,6 +102,9 @@
                 <xpath expr="//field[@name='date_start']" position="attributes">
                   <attribute name="optional">show</attribute>
                 </xpath>
+                <xpath expr="//field[@name='product_code']" position="attributes">
+                  <attribute name="optional">show</attribute>
+                </xpath>
                 <xpath expr="//tree" position="attributes">
                     <attribute name="decoration-danger">is_available==False</attribute>
                 </xpath>

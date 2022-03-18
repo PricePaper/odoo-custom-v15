@@ -17,13 +17,14 @@ class UpdateVendorPricelist(models.TransientModel):
         if self.vendor_id:
             pricelists = self.env['product.supplierinfo'].search([('name', '=', self.vendor_id.id)])
             res = []
+            self.line_ids = False
             for ele in pricelists:
-                res.append({
+                res.append((0, 0, {
                     'pricelist_id': ele.id,
                     'product_id': ele.product_id and ele.product_id.id,
                     'qty_min': ele.min_qty,
                     'price': ele.price,
-                })
+                }))
             self.line_ids = res
 
     def update_pricelists(self):

@@ -194,16 +194,14 @@
                       ('purchase_id', '!=', False)]}"/>
                     <button name="action_make_transit" type="object"
                           string="Mark as Transit" groups="account.group_account_invoice"
-                          attrs="{'invisible': ['|',
+                          attrs="{'invisible': ['|', '|', ('is_return', '=', True),
                           ('state', 'not in', ['assigned', 'waiting']),
                           ('picking_type_code', 'in', ['incoming', 'internal'])]}"
                           class="oe_highlight"/>
                     <button name="create_invoice" type="object" string="Create Invoice" groups="account.group_account_invoice" class="oe_highlight"
                          attrs="{'invisible': ['|', ('state', 'not in', ['in_transit']), ('is_invoiced', '=', True)]}" />
-
-
-                    <!-- <button name="action_validate" type="object" string="Confirm Transfer" groups="account.group_account_invoice"
-                            attrs="{'invisible': ['|', ('is_transit', '=',False), ('is_invoiced', '=', False)]}" class="oe_highlight"/> -->
+                    <button name="action_validate" type="object" string="Confirm Transfer" groups="account.group_account_invoice"
+                            attrs="{'invisible': ['|', '|', ('state', '=', 'done'), ('is_return', '=', False), ('picking_type_code', '!=', 'outgoing')]}" class="oe_highlight"/>
                     <button name="action_validate" type="object" string="Confirm Transfer" groups="account.group_account_invoice"
                             attrs="{'invisible': ['|', ('state', '!=', 'in_transit'), ('is_invoiced', '=', False)]}" class="oe_highlight"/>
                     <button name="%(action_view_picking_full_reeturn_wizard_form)d" type="action" string="Full Return"
@@ -241,7 +239,7 @@
                     <button class="oe_highlight oe_right"
                             name="receive_product_in_lines"
                             type="object" string="Set quantities"
-                            attrs="{'invisible': ['|', ('picking_type_code', '!=', 'outgoing'), ('state', 'in',  ['cancel', 'draft', 'done'])]}"/>
+                            attrs="{'invisible': ['|', '|', ('is_return', '=', True), ('picking_type_code', '!=', 'outgoing'), ('state', 'in',  ['cancel', 'draft', 'done'])]}"/>
                 </button>
 
 
@@ -391,7 +389,7 @@
                     <button class="oe_highlight oe_right"
                             name="receive_product_in_lines"
                             type="object" string="Receive"
-                            attrs="{'invisible': ['|', '|', ('purchase_id', '=', False), ('picking_type_code', '!=', 'incoming'), ('state', 'in',  ['cancel', 'draft', 'waiting', 'done'])]}"/>
+                            attrs="{'invisible': ['|', '|', '|', ('is_return', '=', True), ('purchase_id', '=', False), ('picking_type_code', '!=', 'incoming'), ('state', 'in',  ['cancel', 'draft', 'waiting', 'done'])]}"/>
 
                 </xpath>
                 <xpath expr="//field[@name='origin']" position="after">

@@ -232,11 +232,18 @@
                     <attribute name="attrs">{'invisible':[('picking_type_code', 'in', ('outgoing', 'incoming'))]}</attribute>
                 </button>
                 <button name="action_set_quantities_to_reservation" position="attributes">
-                    <attribute name="attrs">{'invisible':['|', '|',  ('picking_type_code', 'in', ('incoming')), ('show_validate', '=', False), ('immediate_transfer', '=', True)]}</attribute>
+                    <attribute name="attrs">{'invisible':['|', '|',  ('picking_type_code', 'in', ('incoming', 'outgoing')), ('show_validate', '=', False), ('immediate_transfer', '=', True)]}</attribute>
                 </button>
                 <button name="action_open_label_layout" position="attributes">
-                    <attribute name="attrs">{'invisible':[('picking_type_code', 'in', ('incoming'))]}</attribute>
+                    <attribute name="attrs">{'invisible':[('picking_type_code', 'in', ('incoming', 'outgoing'))]}</attribute>
                 </button>
+                <button name="action_open_label_layout" position="after">
+                    <button class="oe_highlight oe_right"
+                            name="receive_product_in_lines"
+                            type="object" string="Set quantities"
+                            attrs="{'invisible': ['|', ('picking_type_code', '!=', 'outgoing'), ('state', 'in',  ['cancel', 'draft', 'done'])]}"/>
+                </button>
+
 
                 <field name="state" position="attributes">
                     <attribute name="statusbar_visible">

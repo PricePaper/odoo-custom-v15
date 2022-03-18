@@ -64,7 +64,7 @@
                     <field name="need_sub_product"/>
                 </field>
 
-                <xpath expr="//group[@name='group_standard_price']" position="attributes">
+                <xpath expr="//field[@name='standard_price']" position="attributes">
                     <attribute name='groups'>sales_team.group_sale_manager</attribute>
                 </xpath>
                 <xpath expr="//field[@name='uom_id']" position="before">

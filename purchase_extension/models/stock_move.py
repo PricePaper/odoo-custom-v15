@@ -21,8 +21,11 @@ StockMove()
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    # todo don't know the usage
-    def _log_activity_get_documents_old(self, orig_obj_changes, stream_field, stream, sorted_method=False, groupby_method=False):
+
+    def _log_activity_get_documents(self, orig_obj_changes, stream_field, stream, sorted_method=False, groupby_method=False):
+        """
+        For PO line qty chnage to reflect in the Stock picking
+        """
         res = super(StockPicking, self)._log_activity_get_documents(orig_obj_changes, stream_field, stream, sorted_method=sorted_method,
                                                                     groupby_method=groupby_method)
         result = {}

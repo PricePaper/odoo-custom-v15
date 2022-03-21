@@ -4,6 +4,8 @@ class ReportAccountFinancialReport(models.Model):
     _inherit = "account.financial.html.report"
 
     def _get_table(self, options):
+        if self == self.env.ref('account_reports.account_financial_report_balancesheet0'):
+            self = self.with_context(exclude_from_date=True)
         headers, lines = super(ReportAccountFinancialReport, self.with_context(print_mode=False))._get_table(options)
 
         income = {}
@@ -100,3 +102,39 @@ class ReportAccountFinancialReport(models.Model):
                                 })
 
         return lines
+
+
+
+    @api.model
+    def _get_options_date_domain(self, options):
+        if not options.get('exclude_from_date'):
+            return super()._get_options_date_domain(options)
+        def create_date_domain(options_date):
+            date_field = options_date.get('date_field', 'date')
+            domain = [(date_field, '<=', options_date['date_to'])]
+            if options_date['mode'] == 'range' and options_date['date_from'] and not options.get('exclude_from_date'):
+                strict_range = options_date.get('strict_range')
+                if not strict_range:
+                    domain += [
+                        '|',
+                        (date_field, '>=', options_date['date_from']),
+                        ('account_id.user_type_id.include_initial_balance', '=', True)
+                    ]
+                else:
+                    domain += [(date_field, '>=', options_date['date_from'])]
+            return domain
+
+        if not options.get('date'):
+            return []
+        return create_date_domain(options['date'])
+
+
+class AccountFinancialReportLine(models.Model):
+    _inherit = "account.financial.html.report.line"
+
+    def _get_options_financial_line(self, options, calling_financial_report, parent_financial_report):
+        res = super()._get_options_financial_line(options, calling_financial_report, parent_financial_report)
+        # input((self.code, self._context.get('exclude_from_date')))
+        if self. code  in ('PREV_YEAR_EARNINGS', 'NEP', 'CURR_YEAR_EARNINGS', 'OPINC', 'OIN', 'COS', 'EXP', 'DEP') and self._context.get('exclude_from_date'):
+            res.update({'exclude_from_date': True})
+        return res

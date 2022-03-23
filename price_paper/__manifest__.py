@@ -27,6 +27,7 @@ Custom module implemented for Price Paper.
         'data/fax_data.xml',
         'data/data.xml',
         'wizard/sale_warning.xml',
+        'wizard/stock_picking_return.xml',
         'wizard/upload_pricelist.xml',
         'wizard/inactive_product_report_wizard.xml',
         'wizard/release_sale_order_view.xml',

@@ -19,9 +19,10 @@ class ReturnPicking(models.TransientModel):
         quantity = stock_move.product_qty
         price_unit = 0
         if stock_move.picking_id.picking_type_id.code == 'outgoing':
-            price_unit = -stock_move.price_unit
-        elif stock_move.picking_id.picking_type_id.code == 'incoming':
             price_unit = stock_move.price_unit
+        elif stock_move.picking_id.picking_type_id.code == 'incoming':
+            price_unit = -stock_move.price_unit
+
         for move in stock_move.move_dest_ids:
             if move.origin_returned_move_id and move.origin_returned_move_id != stock_move:
                 continue
@@ -41,6 +42,7 @@ class ReturnPicking(models.TransientModel):
 
 
     def _prepare_move_default_values(self, return_line, new_picking):
+
         vals = {
             'product_id': return_line.product_id.id,
             'product_uom_qty': return_line.quantity,

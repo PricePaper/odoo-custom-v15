@@ -3,8 +3,8 @@ import os, ssl
 
 username = '<user>'  # the user
 pwd = 'confianzpricepaper'  # the password of the user
-dbname12 = 'pricepaper_v5'  # the database
-dbname15 = "pricepaper15_v1"
+dbname12 = 'pricepaper_v5'  # the reference database
+dbname15 = "pricepaper15_v1" # destination database
 
 sock12 = xmlrpc.client.ServerProxy('http://127.0.0.65:10010/xmlrpc/2/object')
 sock15 = xmlrpc.client.ServerProxy('http://127.0.0.65:10070/xmlrpc/2/object')

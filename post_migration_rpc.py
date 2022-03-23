@@ -21,7 +21,7 @@ limit = 100
 offset = 0
 count = sock12.execute(dbname12, 2, pwd, 'account.invoice', 'search_count', [])
 sock15.execute(dbname15, 2, pwd, 'ir.config_parameter', 'set_param', 'sequence.mixin.constraint_start_date', '2022-03-28')
-offset = count+10
+# offset = count+10
 while offset <= count:
     print(offset, '\n\n\n\n')
     for invoice in sock12.execute(dbname12, 2, pwd, 'account.invoice', 'search_read', [],

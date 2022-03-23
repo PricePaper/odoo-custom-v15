@@ -100,6 +100,8 @@ class StockPicking(models.Model):
         for rec in self:
             rec.invoice_ids = rec.sale_id.invoice_ids.filtered(lambda r: rec in r.picking_ids)
 
+
+
     def _compute_invoice_ref(self):
         for rec in self:
             rec.invoice_ref = False

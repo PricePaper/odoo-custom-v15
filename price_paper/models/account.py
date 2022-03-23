@@ -29,7 +29,7 @@ class AccountMove(models.Model):
 
     gross_profit = fields.Monetary(compute='calculate_gross_profit', string='Predicted Profit')
     storage_down_payment = fields.Boolean(copy=False)
-    discount_from_batch = fields.Float('WriteOff Discount')
+    # discount_from_batch = fields.Float('WriteOff Discount')
     invoice_address_id = fields.Many2one('res.partner', string="Billing Address")
 
     @api.model

@@ -19,6 +19,17 @@ class RMARetMerAuth(models.Model):
     invoice_address_id = fields.Many2one(related='sale_order_id.partner_invoice_id', readonly=True)
     pickup_address_id = fields.Many2one(related='purchase_order_id.pickup_address_id', readonly=True)
 
+    @api.model
+    def set_filed_value(self, field_name="refund_qty"):
+        env = self.env
+        from odoo.tools import sql
+        newname = (field_name + '_moved{}').format
+        i = 0
+        while sql.column_exists(env.cr, "rma_sale_lines", newname(i)):
+            env.cr.execute("update rma_sale_lines set %s=%s where %s is not null" % (field_name, newname(i), newname(i)))
+            i += 1
+        env.cr.commit()
+        return True
 
     def count_invoice_ids(self):
         """
@@ -948,6 +959,7 @@ class RMARetMerAuth(models.Model):
 
 
 class RmaSaleLines(models.Model):
+    _name = "rma.sale.lines"
     _inherit = "rma.sale.lines"
 
     so_line_id = fields.Many2one('sale.order.line')

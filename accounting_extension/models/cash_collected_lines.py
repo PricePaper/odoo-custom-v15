@@ -65,7 +65,7 @@ class CashCollectedLines(models.Model):
             if line.invoice_id:
                 am_rec = self.env['account.move']
                 if line.invoice_id and line.discount_amount:
-                    line.invoice_id.write({'discount_from_batch': line.discount_amount})
+                    # line.invoice_id.write({'discount_from_batch': line.discount_amount})
                     self.env['add.discount'].with_context(active_id=line.invoice_id.id).create_truck_discount(
                         batch_discount=line.discount_amount)
                 batch_payment_info.setdefault(line.journal_id, {}).setdefault(line.payment_method_line_id, []).append({

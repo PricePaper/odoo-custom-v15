@@ -110,7 +110,7 @@ class AccountMove(models.Model):
                 continue
             if move.payment_state in ('paid', 'in_payment'):
                 gross_profit = 0
-                for line in move.line_ids:
+                for line in move.invoice_line_ids:
                     gross_profit += line.profit_margin
                 card_amount = 0
                 for partial, amount, counterpart_line in move._get_reconciled_invoices_partials():
@@ -121,8 +121,6 @@ class AccountMove(models.Model):
                 discount = move.get_discount()
                 if discount:
                     gross_profit -= discount
-                # if invoice.discount_from_batch:
-                #     gross_profit -= invoice.discount_from_batch
                 if move.move_type == 'out_refund':
                     if gross_profit < 0:
                         gross_profit = 0
@@ -130,7 +128,7 @@ class AccountMove(models.Model):
 
             else:
                 gross_profit = 0
-                for line in move.line_ids:
+                for line in move.invoice_line_ids:
                     gross_profit += line.profit_margin
                 if move.partner_id.payment_method == 'credit_card':
                     gross_profit -= move.amount_total * 0.03

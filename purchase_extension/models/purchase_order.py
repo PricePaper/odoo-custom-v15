@@ -291,7 +291,8 @@ class PurchaseOrder(models.Model):
                     line.product_id.with_context({'user': self.user_id and self.user_id.id, 'from_purchase': True}).write(vals)
                 else:
                     vendor_line = vendor_prices.sorted(key=lambda r: r.min_qty, reverse=True)[0]
-                    vendor_line.with_context({'user': self.user_id and self.user_id.id, 'from_purchase': True}).price = price
+                    if vendor_line.price != price:
+                        vendor_line.with_context({'user': self.env.user.id and self.env.user.id, 'from_purchase': True}).price = price
 
             except AccessError:  # no write access rights -> just ignore
                 break
@@ -320,8 +321,49 @@ class PurchaseOrderLine(models.Model):
     def create(self, vals):
         res = super(PurchaseOrderLine, self).create(vals)
         if res.order_id and res.order_id.state == 'purchase':
-            res.order_id._add_supplier_to_product()
+            self._add_supplier_to_product()
         return res
+
+    def _add_supplier_to_product(self):
+        # Add the partner in the supplier list of the product if the supplier is not registered for
+        # this product.
+        for line in self:
+            # Do not add a contact as a supplier
+            partner = self.order_id.partner_id if not self.order_id.partner_id.parent_id else self.order_id.partner_id.parent_id
+
+            vendor_prices = line.product_id.seller_ids.filtered(
+                lambda r: r.name == self.order_id.partner_id and r.min_qty <= line.product_qty)
+
+            # Convert the price in the right currency.
+            currency = partner.property_purchase_currency_id or self.env.user.company_id.currency_id
+            price = self.order_id.currency_id._convert(line.price_unit, currency, line.company_id, line.date_order or fields.Date.today(), round=False)
+            # Compute the price for the template's UoM, because the supplier's UoM is related to that UoM.
+            if line.product_id.product_tmpl_id.uom_po_id != line.product_uom:
+                default_uom = line.product_id.product_tmpl_id.uom_po_id
+                price = line.product_uom._compute_price(price, default_uom)
+
+            supplierinfo = self.order_id._prepare_supplier_info(partner, line, price, currency)
+            seller = line.product_id._select_seller(
+                partner_id=line.partner_id,
+                quantity=line.product_qty,
+                date=line.order_id.date_order and line.order_id.date_order.date(),
+                uom_id=line.product_uom)
+            if seller:
+                supplierinfo['product_name'] = seller.product_name
+                supplierinfo['product_code'] = seller.product_code
+            vals = {
+                'seller_ids': [(0, 0, supplierinfo)],
+            }
+            try:
+                if not vendor_prices:
+                    line.product_id.with_context({'user': self.env.user.id and self.env.user.id, 'from_purchase': True}).write(vals)
+                else:
+                    vendor_line = vendor_prices.sorted(key=lambda r: r.min_qty, reverse=True)[0]
+                    if vendor_line.price != price:
+                        vendor_line.with_context({'user': self.env.user.id and self.env.user.id, 'from_purchase': True}).price = price
+
+            except AccessError:  # no write access rights -> just ignore
+                break
 
     def write(self, vals):
         res = super(PurchaseOrderLine, self.with_context({'from_purchase_write': True})).write(vals)
@@ -332,7 +374,7 @@ class PurchaseOrderLine(models.Model):
                         move.price_unit = move._get_price_unit()
         if vals.get('price_unit'):
             if self.order_id and self.order_id.state == 'purchase':
-                self.order_id._add_supplier_to_product()
+                self._add_supplier_to_product()
         return res
 
     @api.model

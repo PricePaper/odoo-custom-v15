@@ -23,6 +23,14 @@ class StockMove(models.Model):
     quantity_done = fields.Float(tracking=True)
     invoice_line_ids = fields.Many2many(comodel_name='account.move.line', compute="_get_aml_ids", string="Invoice Lines")
 
+    @api.model
+    def _prepare_merge_moves_distinct_fields(self):
+        res = super()._prepare_merge_moves_distinct_fields()
+        for field in ['description_picking', 'date_deadline']:
+            if field in res:
+                res.remove(field)
+        return res
+
     def _get_aml_ids(self):
         for line in self:
             line.invoice_line_ids = []

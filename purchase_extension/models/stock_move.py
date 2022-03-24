@@ -22,7 +22,7 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
 
-    def _log_activity_get_documents(self, orig_obj_changes, stream_field, stream, sorted_method=False, groupby_method=False):
+    def _log_activity_get_documents_old(self, orig_obj_changes, stream_field, stream, sorted_method=False, groupby_method=False):
         """
         For PO line qty chnage to reflect in the Stock picking
         """

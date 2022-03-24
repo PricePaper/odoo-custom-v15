@@ -25,6 +25,7 @@ class StockMove(models.Model):
 
     @api.model
     def _prepare_merge_moves_distinct_fields(self):
+        #todo remove after go live (odo can't proces the current move and old move
         res = super()._prepare_merge_moves_distinct_fields()
         for field in ['description_picking', 'date_deadline']:
             if field in res:

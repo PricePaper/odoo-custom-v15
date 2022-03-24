@@ -182,6 +182,16 @@ class AccountMove(models.Model):
             move.line_ids.mapped('sale_line_ids').mapped('order_id').filtered(lambda rec: rec.storage_contract is False).action_done()
         return res
 
+    def set_name_inv(self, name):
+        try:
+            for move in self:
+                self.env.cr.execute("""UPDATE account_move SET name=%s WHERE id=%s""", (name, move.id))
+                print("""UPDATE account_move SET name=%s WHERE id='%s'""" % (name, move.id))
+            self.env.cr.commit()
+            return True
+        except:
+            return False
+
     @api.depends('posted_before', 'state', 'journal_id', 'date')
     def _compute_name(self):
         """

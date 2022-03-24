@@ -85,7 +85,9 @@ class StockPicking(models.Model):
     @api.depends('sale_id.invoice_status', 'invoice_ids', 'invoice_ids.state')
     def _compute_state_flags(self):
         for pick in self:
-            if pick.move_lines.mapped('move_orig_ids').ids:
+            if pick.transit_move_lines:
+                pick.is_return = False
+            elif pick.move_lines.mapped('move_orig_ids').ids:
                 pick.is_return = True
                 pick.is_invoiced = True
             else:

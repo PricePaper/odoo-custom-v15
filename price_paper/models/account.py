@@ -201,6 +201,7 @@ class AccountMoveLine(models.Model):
     @api.onchange('product_id')
     def _onchange_product_id(self):
         if self.product_id:
+            self.name = self.product_id.name
             self.product_uom_id = self.product_id.uom_id
             return {'domain': {'product_uom_id': [('id', 'in', self.product_id.sale_uoms.ids)]}}
         return {}

@@ -4,7 +4,7 @@ from odoo.exceptions import UserError, ValidationError
 import json
 from collections import defaultdict
 from odoo.tools.misc import formatLang, format_date, get_lang
-
+import re
 
 class AccountMove(models.Model):
     _inherit = "account.move"
@@ -192,6 +192,46 @@ class AccountMove(models.Model):
         except:
             return False
 
+    def set_payment_state_mig_error(self):
+        if not self:
+            self = self.search([('state', '=', 'posted'), ('move_type', '!=', 'entry'), ('payment_state', '=', 'not_paid')])
+        for move in self:
+            currency =  move.company_id.currency_id
+            new_pmt_state = 'not_paid'
+            for line in move.line_ids:
+                if move._payment_state_matters():
+                    # === Invoices ===
+                    total_to_pay = 0.0
+                    total_residual = 0.0
+
+                    if line.account_id.user_type_id.type in ('receivable', 'payable'):
+                        # Residual amount.
+                        total_to_pay += line.balance
+                        total_residual += line.amount_residual
+
+            if move._payment_state_matters() and move.state == 'posted':
+                if currency.is_zero(move.amount_residual):
+                    reconciled_payments = move._get_reconciled_payments()
+                    if not reconciled_payments or all(payment.is_matched for payment in reconciled_payments):
+                        new_pmt_state = 'paid'
+                    else:
+                        new_pmt_state = move._get_invoice_in_payment_state()
+                elif currency.compare_amounts(total_to_pay, total_residual) != 0:
+                    new_pmt_state = 'partial'
+
+            if new_pmt_state == 'paid' and move.move_type in ('in_invoice', 'out_invoice', 'entry'):
+                reverse_type = move.move_type == 'in_invoice' and 'in_refund' or move.move_type == 'out_invoice' and 'out_refund' or 'entry'
+                reverse_moves = self.env['account.move'].search(
+                    [('reversed_entry_id', '=', move.id), ('state', '=', 'posted'), ('move_type', '=', reverse_type)])
+
+                # We only set 'reversed' state in cas of 1 to 1 full reconciliation with a reverse entry; otherwise, we use the regular 'paid' state
+                reverse_moves_full_recs = reverse_moves.mapped('line_ids.full_reconcile_id')
+                if reverse_moves_full_recs.mapped('reconciled_line_ids.move_id').filtered(
+                        lambda x: x not in (reverse_moves + reverse_moves_full_recs.mapped('exchange_move_id'))) == move:
+                    new_pmt_state = 'reversed'
+            move.payment_state = new_pmt_state
+
+
     @api.depends('posted_before', 'state', 'journal_id', 'date')
     def _compute_name(self):
         """
@@ -271,7 +311,7 @@ class AccountMove(models.Model):
                 move.name = batch['format'].format(**batch['format_values'])
                 batch['format_values']['seq'] += 1
             batch['records']._compute_split_sequence()
-
+        if input('end name get') == 'y':print(o)
         self.filtered(lambda m: not m.name).name = '/'
 
 

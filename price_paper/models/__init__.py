@@ -24,5 +24,5 @@ from . import stock_picking
 from . import stock_scrap
 from . import mrp_production
 from . import mail_channel
-
+from . import ir_mail_server
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

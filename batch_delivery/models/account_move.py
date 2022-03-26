@@ -311,7 +311,6 @@ class AccountMove(models.Model):
                 move.name = batch['format'].format(**batch['format_values'])
                 batch['format_values']['seq'] += 1
             batch['records']._compute_split_sequence()
-        if input('end name get') == 'y':print(o)
         self.filtered(lambda m: not m.name).name = '/'
 
 

@@ -35,7 +35,7 @@ class AccountMove(models.Model):
     @api.depends('line_ids.stock_move_ids')
     def _compute_picking_ids(self):
         for rec in self:
-            pickings = rec.line_ids.mapped('stock_move_ids').mapped('picking_id')
+            pickings = rec.invoice_line_ids.mapped('stock_move_ids').mapped('picking_id').filtered(lambda r: r.state != 'cancel')
             rec.picking_ids = pickings
             rec.picking_count = len(pickings)
         return {}

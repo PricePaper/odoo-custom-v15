@@ -128,10 +128,11 @@ class AccountMove(models.Model):
         return lines_vals_list + res
 
     def button_cancel(self):
-        if self.is_sale_document():
-            for sale_order in self.mapped('invoice_line_ids').mapped('sale_line_ids').mapped('order_id'):
-                if sale_order.storage_contract and sale_order.state == 'released':
-                    sale_order.write({'state': 'done'})
+        for move in self:
+            if move.is_sale_document():
+                for sale_order in move.mapped('invoice_line_ids').mapped('sale_line_ids').mapped('order_id'):
+                    if sale_order.storage_contract and sale_order.state == 'released':
+                        sale_order.write({'state': 'done'})
         return super().button_cancel()
 
 

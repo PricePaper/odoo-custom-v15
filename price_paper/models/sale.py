@@ -257,6 +257,7 @@ class SaleOrder(models.Model):
 
     def action_cancel(self):
         self.ensure_one()
+        self = self.with_context(action_cancel=True)
         self.write({
             'is_creditexceed': False,
             'ready_to_release': False,
@@ -1037,6 +1038,7 @@ class SaleOrderLine(models.Model):
             for line in self:
 
                 if line.is_delivery and line.order_id.state == 'sale' and lines_exist == 1 and not self._context.get('adjust_delivery'):
+                    print(g)
                     raise ValidationError(
                         'You cannot delete a Delivery line,since the sale order is already confirmed,please refresh the page to undo')
                 if line.is_delivery and base:

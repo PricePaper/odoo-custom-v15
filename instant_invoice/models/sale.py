@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-from odoo.exceptions import Warning
+from odoo.exceptions import Warning, ValidationError
 
 
 class SaleOrder(models.Model):
@@ -28,6 +28,8 @@ class SaleOrder(models.Model):
         #         else:
         #             order._remove_delivery_line()
         res = super(SaleOrder, self).write(vals)
+        if self._context.get('action_cancel'):
+            return res
         for order in self:
             if order.state != 'done' and ('state' not in vals or vals.get('state', '') != 'done') and not self._context.get('action_confrim'):
                 if not order.quick_sale and order.carrier_id:
@@ -43,13 +45,14 @@ class SaleOrder(models.Model):
                 raise Warning("You cannot confirm a quick Sales Order with only having Service products.")
             rec.quick_sale = True
             if not rec.quick_sale:
-                if not any(order_lines.is_delivery for order_lines in order.order_line):
+                if not any(order_lines.is_delivery for order_lines in rec.order_line):
                     raise ValidationError('Delivery lines should be added in order lines before confirming an order')
             res = rec.action_confirm()
             if res and res != True and res.get('context') and res.get('context').get('warning_message'):
                 return res
             picking_ids = rec.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done', 'in_transit'))
             for picking in picking_ids:
+                picking.action_assign_transit()
                 picking.receive_product_in_lines()
                 picking.action_make_transit()
                 picking.create_invoice()

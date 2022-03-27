@@ -382,4 +382,37 @@ class StockMove(models.Model):
         for move in self.filtered(lambda rec: rec.state == 'done'):
             move.update_invoice_line()
         return res
+
+
+    def _transit_return(self):
+        for move in self.filtered(lambda rec: rec.state == 'done'):
+            if move.transit_picking_id and move.move_dest_ids:
+                move_vals = {
+                    'name': move.name,
+                    'company_id': self.company_id.id,
+                    'product_id': move.product_id.id,
+                    'product_uom': move.product_uom.id,
+                    'product_uom_qty': move.product_uom_qty,
+                    'partner_id': move.partner_id.id,
+                    'location_id': move.location_dest_id.id,
+                    'location_dest_id': move.location_id.id,
+                    'rule_id': self.rule_id.id,
+                    'procure_method': 'make_to_stock',
+                    'origin': move.origin,
+                    'picking_type_id': self.picking_type_id.id,
+                    'group_id': move.group_id.id,
+                    'route_ids': [(4, route.id) for route in move.route_ids],
+                    'warehouse_id': move.warehouse_id.id,
+                    'date': fields.Datetime.now().date(),
+                    'date_deadline': False,
+                    'propagate_cancel': move.propagate_cancel,
+                    'description_picking': move.description_picking,
+                    'priority': move.priority,
+                    'transit_picking_id': move.transit_picking_id.id,
+                }
+                move = self.create(move_vals)
+                move.with_context(is_transit=True)._action_confirm()
+                move.write({'quantity_done': move.product_uom_qty})
+                move.with_context(is_transit=True)._action_done()
+        return True
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

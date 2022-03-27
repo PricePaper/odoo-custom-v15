@@ -152,12 +152,19 @@
                                             <span t-field="move.product_uom"/>
                                         </td>
                                         <td>
-                                            <span t-field="move.reserved_availability"/>
+                                            <t t-if="move.reserved_availability" >
+                                                <span t-field="move.reserved_availability"/>
+                                            </t>
+                                            <t t-if="not move.reserved_availability" >
+                                                <span t-if="len(move.move_orig_ids) > 0" t-field="move.move_orig_ids[0].reserved_availability"/>
+                                            </t>
                                         </td>
                                         <td style="border-left: 1px solid black;border-right: 1px solid black;padding-right: 30px">
                                         </td>
                                         <td>
-                                            <span t-field="move.location_id" t-if="move.picking_code == 'outgoing'"/>
+                                            <t t-if="move.picking_code == 'outgoing'">
+                                                    <span t-if="len(move.move_orig_ids) > 0" t-field="move.move_orig_ids[0].location_id"/>
+                                            </t>
                                             <span t-field="move.location_dest_id" t-if="move.picking_code == 'incoming'"/>
                                         </td>
 

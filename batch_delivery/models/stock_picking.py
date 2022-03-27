@@ -33,7 +33,7 @@ class StockPicking(models.Model):
     sequence = fields.Integer(string='Order', default=1)
     is_invoiced = fields.Boolean(string="Invoiced", compute='_compute_state_flags')
     invoice_ref = fields.Char(string="Invoice Reference", compute='_compute_invoice_ref')
-    invoice_ids = fields.Many2many('account.move', compute='_compute_invoice_ids',store=True)
+    invoice_ids = fields.Many2many('account.move', compute='_compute_invoice_ids')
     is_return = fields.Boolean(compute='_compute_state_flags')
     carrier_id = fields.Many2one("delivery.carrier", string="Carrier", tracking=True)
     batch_id = fields.Many2one(
@@ -100,7 +100,7 @@ class StockPicking(models.Model):
     @api.depends('sale_id.invoice_ids', 'move_lines')
     def _compute_invoice_ids(self):
         for rec in self:
-            rec.invoice_ids = rec.sale_id.invoice_ids.filtered(lambda r: rec in r.picking_ids)
+            rec.invoice_ids = rec.sale_id.invoice_ids
 
 
 
@@ -345,7 +345,9 @@ class StockPicking(models.Model):
             else:
                 self.mapped('invoice_ids').remove_zero_qty_line()
             if rec.transit_move_lines:
-                rec.transit_move_lines._action_cancel()
+                done_moves = rec.transit_move_lines.filtered(lambda move: move.state == 'done')
+                (rec.transit_move_lines - done_moves)._action_cancel()
+                # done_moves._transit_return()
         res = super(StockPicking, self).action_cancel()
         self.write({'batch_id': False, 'is_late_order': False})
         return res

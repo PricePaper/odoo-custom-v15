@@ -154,7 +154,7 @@ class StockPicking(models.Model):
                     picking_moves_state_map = defaultdict(dict)
                     picking_move_lines = defaultdict(set)
                     for move in picking.transit_move_lines:
-                        picking_id = move.picking_id
+                        picking_id = move.transit_picking_id
                         move_state = move.state
                         picking_moves_state_map[picking_id.id].update({
                             'any_draft': picking_moves_state_map[picking_id.id].get('any_draft', False) or move_state == 'draft',
@@ -162,8 +162,6 @@ class StockPicking(models.Model):
                             'all_cancel_done': picking_moves_state_map[picking_id.id].get('all_cancel_done', True) and move_state in ('cancel', 'done'),
                         })
                         picking_move_lines[picking_id.id].add(move.id)
-
-
                     picking_id = (picking.ids and picking.ids[0]) or picking.id
                     relevant_move_state = self.env['stock.move'].browse(picking_move_lines[picking_id])._get_relevant_state_among_moves()
                     if picking.immediate_transfer and relevant_move_state not in ('draft', 'cancel', 'done'):

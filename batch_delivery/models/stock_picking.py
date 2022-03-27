@@ -3,6 +3,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from datetime import datetime
+from collections import defaultdict
 
 
 class StockPicking(models.Model):
@@ -43,8 +44,6 @@ class StockPicking(models.Model):
     is_internal_transfer = fields.Boolean(string='Internal transfer')
     transit_date = fields.Date()
     transit_move_lines = fields.One2many('stock.move', 'transit_picking_id', string="Stock Moves", copy=False)
-
-
 
     @api.depends('state')
     def _compute_show_validate(self):
@@ -135,7 +134,7 @@ class StockPicking(models.Model):
                 count += line.product_uom_qty
             picking.item_count = count
 
-    @api.depends('move_type', 'is_delivered', 'move_lines.picking_id', 'is_transit', 'immediate_transfer', 'move_lines.state', )
+    @api.depends('move_type', 'is_delivered', 'move_lines.picking_id', 'is_transit', 'immediate_transfer', 'move_lines.state', 'transit_move_lines.state')
     def _compute_state(self):
         """
             override state compute method for adding transit in selection
@@ -146,7 +145,34 @@ class StockPicking(models.Model):
                 picking.state = 'in_transit'
             else:
                 not_in_transit |= picking
-        return super(StockPicking, not_in_transit)._compute_state()
+
+        super(StockPicking, not_in_transit)._compute_state()
+
+        for picking in not_in_transit:
+            if picking.state == 'waiting':
+                if picking.transit_move_lines:
+                    picking_moves_state_map = defaultdict(dict)
+                    picking_move_lines = defaultdict(set)
+                    for move in picking.transit_move_lines:
+                        picking_id = move.picking_id
+                        move_state = move.state
+                        picking_moves_state_map[picking_id.id].update({
+                            'any_draft': picking_moves_state_map[picking_id.id].get('any_draft', False) or move_state == 'draft',
+                            'all_cancel': picking_moves_state_map[picking_id.id].get('all_cancel', True) and move_state == 'cancel',
+                            'all_cancel_done': picking_moves_state_map[picking_id.id].get('all_cancel_done', True) and move_state in ('cancel', 'done'),
+                        })
+                        picking_move_lines[picking_id.id].add(move.id)
+
+
+                    picking_id = (picking.ids and picking.ids[0]) or picking.id
+                    relevant_move_state = self.env['stock.move'].browse(picking_move_lines[picking_id])._get_relevant_state_among_moves()
+                    if picking.immediate_transfer and relevant_move_state not in ('draft', 'cancel', 'done'):
+                        picking.state = 'assigned'
+                    elif relevant_move_state == 'partially_available':
+                        picking.state = 'assigned'
+                    else:
+                        picking.state = relevant_move_state
+
 
     @api.model
     def create(self, vals):

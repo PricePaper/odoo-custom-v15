@@ -232,6 +232,14 @@
 
                 </xpath>
 
+                <xpath expr="//field[@name='order_line']" position="after">
+                  <group name="weight_volume">
+                      <field name="total_volume"/>
+                      <field name="total_weight"/>
+                      <field name="total_qty"/>
+                  </group>
+                </xpath>
+
                 <xpath expr="//field[@name='order_line']/form" position="inside">
                     <script>
                         var $footer = $('.modal footer');

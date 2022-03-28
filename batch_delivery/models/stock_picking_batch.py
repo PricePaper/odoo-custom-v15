@@ -222,11 +222,11 @@ class StockPickingBatch(models.Model):
         # fetch all unassigned pickings and try to assign
         unassigned_pickings = self.mapped('picking_ids').filtered(lambda picking: picking.state in ('draft', 'waiting', 'confirmed'))
         for pick in unassigned_pickings:
-            pick.action_assign()
+            pick.action_assign_transit()
 
         # if least one picking not assigned, don't allow proceeding
 
-        if any(picking.state not in ('assigned', 'waiting', 'in_transit', 'done') for picking in self.picking_ids):
+        if any(picking.state not in ('assigned', 'in_transit', 'done') for picking in self.picking_ids):
             raise UserError('Some pickings are still waiting for goods. Please check or force their availability before setting this batch to done.')
         # invoice creation from batch processing
         # move every shipment to transit location(default done state of odoo picking)

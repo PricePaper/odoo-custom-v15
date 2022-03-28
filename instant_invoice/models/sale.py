@@ -56,6 +56,8 @@ class SaleOrder(models.Model):
                 picking.receive_product_in_lines()
                 picking.action_make_transit()
                 picking.create_invoice()
+                invoice = picking.invoice_ids
+                invoice.write({'invoice_date': fields.Date.today()})
         return True
 
     def action_print_pick_ticket(self):

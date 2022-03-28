@@ -218,6 +218,8 @@ class StockPickingBatch(models.Model):
             raise UserError('Driver should be assigned before confirmation.')
         if not self.route_id:
             raise UserError('Route should be assigned before confirmation.')
+        if not self.date:
+                raise UserError(_('Scheduled date should be assigned before confirmation.'))
         self.truck_driver_id.is_driver_available = False
         # fetch all unassigned pickings and try to assign
         unassigned_pickings = self.mapped('picking_ids').filtered(lambda picking: picking.state in ('draft', 'waiting', 'confirmed'))
@@ -271,7 +273,7 @@ class StockPickingBatch(models.Model):
         self.ensure_one()
         if not self.picking_ids:
             raise ValidationError("No delivery order to process")
-        self.write({'state': 'in_truck', 'date': fields.Date.today()})
+        self.write({'state': 'in_truck'})
         sale_orders = self.mapped('picking_ids').mapped('sale_id')
         if sale_orders:
             sale_orders.write({'batch_warning': 'This order has already been processed for shipment'})

@@ -117,7 +117,7 @@ class ProductProduct(models.Model):
 
     def copy(self, default=None):
         res = super(ProductProduct, self).copy(default)
-        res._check_weight_and_volume()
+        res.with_context(from_copy=True)._check_weight_and_volume()
         if not self._context.get('from_change_uom'):
             res.standard_price = self.standard_price
             # Duplicate price_list line
@@ -318,6 +318,8 @@ class ProductProduct(models.Model):
     @api.constrains('weight', 'volume')
     def _check_weight_and_volume(self):
         for rec in self:
+            if self._context.get('from_change_uom') and not self._context.get('from_copy', False):
+                continue
             if rec.weight <= 0 and rec.type == 'product':
                 raise ValidationError('Weight should be greater than Zero')
             if rec.volume <= 0 and rec.type == 'product':

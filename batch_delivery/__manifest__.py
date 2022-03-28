@@ -63,7 +63,8 @@ This module sets up the batch delivery process for price paper.
         'account_reports',
         'stock_product_location',
         'account_batch_payment',
-        'purchase_extension'
+        'purchase_extension',
+        'account_followup'
     ],
     'assets': {
         'web.assets_backend': [

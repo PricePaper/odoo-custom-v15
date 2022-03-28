@@ -30,6 +30,15 @@
                 <xpath expr="//field[@name='scheduled_date']" position="attributes">
                     <attribute name="invisible">True</attribute>
                 </xpath>
+                <xpath expr="//field[@name='location_id']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='origin']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='state']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
                 <xpath expr="//field[@name='origin']" position="after">
                     <field name="release_date" readonly="True" optional="hide"/>
                     <field name="deliver_by" readonly="True" optional="hide"/>

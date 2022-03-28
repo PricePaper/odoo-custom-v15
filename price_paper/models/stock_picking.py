@@ -67,6 +67,7 @@ class StockPicking(models.Model):
 
         return result
 
+
 class StockRule(models.Model):
     _inherit = 'stock.rule'
 
@@ -75,7 +76,7 @@ class StockRule(models.Model):
         if values.get('move_dest_ids', self.env['stock.move']).is_storage_contract:
             domain += (('storage_contract_po', '=', True),)
         elif values.get('orderpoint_id'):
-            domain += (('storage_contract_po', '=', False), ('sale_order_ids', '=', False))
+            domain += (('storage_contract_po', '=', False), ('sale_order_ids', '=', False), ('is_orderpoint', '=', True))
         return domain
 
     @api.model
@@ -131,7 +132,7 @@ class StockRule(models.Model):
             origins = set([p.origin for p in procurements])
             # Check if a PO exists for the current domain.
             po = False
-            for order in self.env['purchase.order'].sudo().search([domain[0]]):
+            for order in self.env['purchase.order'].sudo().search(domain):
                 if procurements[0].values.get('orderpoint_id') and not order.sale_order_count:
                     po = order
                     break

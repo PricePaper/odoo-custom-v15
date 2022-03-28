@@ -8,6 +8,20 @@ class PurchaseOrder(models.Model):
     storage_contract_po = fields.Boolean(compute='_compute_storage_contract_po', store=True, string='Storage Contract PO')
     sale_order_ids = fields.Many2many('sale.order', 'Sale orders', compute="_get_sale_order", search="search_sale_order")
     is_make2order_po = fields.Boolean('Is make2order PO')
+    is_orderpoint = fields.Boolean("Is created from orderpoint?", compute="compute_orderpoint", search="search_orderpoint")
+
+    def compute_orderpoint(self):
+        for order in self:
+            order.is_orderpoint = False
+            if order.order_line.filtered(lambda rec: rec.orderpoint_id):
+                order.is_orderpoint = True
+
+    def search_orderpoint(self, operator, value):
+        if value is True:
+            po = self.env['purchase.order.line'].search([('orderpoint_id', '!=', False)]).mapped('order_id')
+            return [('id', 'in', po.ids)]
+        po = self.env['purchase.order.line'].search([('orderpoint_id', operator, value)]).mapped('order_id')
+        return [('id', 'in', po.ids)]
 
     @api.depends('order_line.sale_line_id')
     def _compute_sale_order(self):
@@ -16,7 +30,7 @@ class PurchaseOrder(models.Model):
     def search_sale_order(self, operator, value):
         if value == False:
             po = self.env['purchase.order.line'].search([('sale_line_id', '=', value)]).mapped('order_id')
-            return [('id', operator, po.ids)]
+            return [('id', 'in', po.ids)]
         po = self.env['sale.order'].serach([('id', operator, value)])._get_purchase_orders()
         return [('id', 'in', po.ids)]
 

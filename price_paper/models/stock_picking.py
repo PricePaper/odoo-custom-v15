@@ -132,7 +132,7 @@ class StockRule(models.Model):
             origins = set([p.origin for p in procurements])
             # Check if a PO exists for the current domain.
             po = False
-            for order in self.env['purchase.order'].sudo().search(domain):
+            for order in self.env['purchase.order'].sudo().search([dom for dom in domain]):
                 if procurements[0].values.get('orderpoint_id') and not order.sale_order_count:
                     po = order
                     break

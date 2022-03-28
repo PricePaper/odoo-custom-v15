@@ -36,7 +36,7 @@
                             attrs="{'invisible': [('state', 'not in', ['new', 'verification'])]}"/>
                 </xpath>
                 <xpath expr="//field[@name='sale_order_id']" position="attributes">
-                    <attribute name="domain">[('partner_id', '=', partner_id),('state', '=', 'done'),('invoice_status', '=', 'invoiced')]</attribute>
+                    <attribute name="domain">[('partner_id', '=', partner_id),('state', '=', 'done')]</attribute>
                 </xpath>
                 <xpath expr="//field[@name='purchase_order_id']" position="attributes">
                     <attribute name="invisible">True</attribute>

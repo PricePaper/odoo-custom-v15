@@ -237,6 +237,8 @@ class StockPicking(models.Model):
     def action_make_transit(self):
         for picking in self:
             if picking.state not in ['in_transit', 'done']:
+                for line in picking.transit_move_lines:
+                    line.quantity_done = line.reserved_availability
                 if not any(picking.transit_move_lines.mapped('quantity_done')):
                     raise UserError("You cannot transit if no quantities are  done.\nTo force the transit, switch in edit mode and encode the done quantities.")
                 picking.transit_move_lines.filtered(lambda rec: rec.quantity_done > 0).with_context(is_transit=True)._action_done(cancel_backorder=True)

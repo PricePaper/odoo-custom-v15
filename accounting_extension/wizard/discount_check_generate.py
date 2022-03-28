@@ -68,7 +68,7 @@ class GenerateDiscountCheck(models.TransientModel):
             'default_journal_id': bank_journal.id,
             'default_payment_method_line_id': payment_method_line.id,
             'active_ids': self.wizard_invoice_ids.filtered(lambda rec: rec.select).mapped('invoice_id').ids
-        }).create({}).action_create_payments()
+        }).create({'group_payment': True}).action_create_payments()
 
 
 GenerateDiscountCheck()

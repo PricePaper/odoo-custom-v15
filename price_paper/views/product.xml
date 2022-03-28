@@ -48,9 +48,25 @@
             <field name="inherit_id" ref="product.product_normal_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//div[@name='button_box']" position="inside">
+                    <field name="is_base_user" invisible="1"/>
                     <button class="oe_stat_button"
                             type="action" name="%(price_paper.act_product_2_product_notes)d"
                             string=" Product Notes" icon="fa-sticky-note"/>
+                     <button class="oe_stat_button"
+                             readonly="True"
+                             attrs="{'invisible':[('is_base_user', '=', False)]}"
+                             name="action_open_quants"
+                             icon="fa-cubes"
+                             type="object"
+                               >
+                         <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="qty_available" widget="statinfo" nolabel="1" class="mr4"/>
+                                        <field name="uom_name"/>
+                                    </span>
+                                    <span class="o_stat_text">On Hand</span>
+                         </div>
+                        </button>
                 </xpath>
 
                 <xpath expr="//div[@name='standard_price_uom']" position="after">

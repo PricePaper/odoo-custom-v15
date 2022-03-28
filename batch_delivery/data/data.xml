@@ -213,5 +213,42 @@
             </field>
             <field name="auto_delete" eval="True"/>
         </record>
+
+        <function name="write" model="ir.model.data">
+          <function name="search" model="ir.model.data">
+              <value eval="[('module', '=', 'account_followup'), ('name', '=', 'demo_followup_line1')]"/>
+          </function>
+          <value eval="{'noupdate': False}"/>
+        </function>
+
+        <record id="account_followup.demo_followup_line1" model="account_followup.followup.line" forcecreate="False">
+            <field name="name">First reminder email</field>
+            <field name="delay">15</field>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="send_email">True</field>
+            <field name="description">
+                Dear Sir/Madam,
+
+                 Our records indicate that some payments on your account are still due. Please find details below.
+                 If the amount has already been paid, please disregard this notice. Otherwise, please forward us the total amount stated below.
+                 If you have any queries regarding your account, please contact us.
+
+                 Thank you in advance for your cooperation.
+                 Best Regards,
+            </field>
+        </record>
+
+        <record id="account_followup.action_account_followup" model="ir.actions.client">
+            <field name="name">Customers Statement</field>
+            <field name="tag">account_report_followup</field>
+            <field name="context" eval="{'model': 'account.followup.report'}" />
+        </record>
+
+        <function name="write" model="ir.model.data">
+          <function name="search" model="ir.model.data">
+              <value eval="[('module', '=', 'account_followup'), ('name', '=', 'demo_followup_line1')]"/>
+          </function>
+          <value eval="{'noupdate': True}"/>
+        </function>
     </data>
 </odoo>

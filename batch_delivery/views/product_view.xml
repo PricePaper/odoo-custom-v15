@@ -89,7 +89,7 @@
                         </div>
                     </button>
                     <button class="oe_stat_button" name="action_view_sales"
-                        type="object" icon="fa-signal" groups="sales_team.group_sale_salesman" help="Sold in the last 365 days" attrs="{'invisible': [('sale_ok', '=', False)]}">
+                        type="object" icon="fa-signal" groups="sales_team.group_sale_salesman" help="Sold in the last 365 days">
                         <div class="o_field_widget o_stat_info">
                             <span class="o_stat_value">
                                 <field name="sales_count" widget="statinfo" nolabel="1" class="mr4"/>
@@ -113,6 +113,26 @@
               </xpath>
             </field>
         </record>-->
+
+        <record id="product_template_form_view_saleok_sold" model="ir.ui.view">
+            <field name="name">product.template.form.inheritss</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="sale.product_template_form_view_sale_order_button"/>
+            <field name="arch" type="xml">
+              <xpath expr="//button[@name='action_view_sales']" position="replace">
+                  <button class="oe_stat_button" name="action_view_sales"
+                        type="object" icon="fa-signal" groups="sales_team.group_sale_salesman" help="Sold in the last 365 days">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="sales_count" widget="statinfo" nolabel="1" class="mr4"/>
+                                <field name="uom_name"/>
+                            </span>
+                            <span class="o_stat_text">Sold</span>
+                        </div>
+                    </button>
+              </xpath>
+            </field>
+        </record>
 
         <record id="product_template_form_view_inheitettd_bd" model="ir.ui.view">
             <field name="name">product.template.pricelist</field>

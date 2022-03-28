@@ -42,6 +42,7 @@ class ProductProduct(models.Model):
     vendor_id = fields.Many2one('res.partner', compute='compute_product_vendor', string="Vendor", store=True)
     uom_standard_prices = fields.One2many('product.standard.price', 'product_id', string="UOM STD Prices")
 
+    is_base_user = fields.Boolean(string='Below Minimum Quantity', compute='compute_is_base_user')
     is_bel_min_qty = fields.Boolean(string='Below Minimum Quantity', compute='compute_qty_status', search='_search_bel_min_qty')
     is_bel_crit_qty = fields.Boolean(string='Below Critical Quantity', compute='compute_qty_status', search='_search_bel_crit_qty')
     is_abv_max_qty = fields.Boolean(string='Above Max Quantity', compute='compute_qty_status', search='_search_abv_max_qty')
@@ -67,6 +68,20 @@ class ProductProduct(models.Model):
     lst_from_std_price = fields.Float(
         'Standard Price', compute='_compute_lst_price_std_price',
         digits='Product Price')
+
+    def action_open_quants(self):
+        # Override to make the button readonly for non-inventory users.
+        if not self.env.user.has_group('stock.group_stock_user') and self.env.user.has_group('base.group_user'):
+            return
+        return super().action_open_quants()
+
+    def compute_is_base_user(self):
+        #domain to clone the qty on hand button for non-inventory users
+        for rec in self:
+            rec.is_base_user = False
+            if not self.env.user.has_group('stock.group_stock_user') and self.env.user.has_group('base.group_user'):
+                rec.is_base_user = True
+
 
     def action_view_sales(self):
         action = self.env["ir.actions.actions"]._for_xml_id("sale.report_all_channels_sales_action")

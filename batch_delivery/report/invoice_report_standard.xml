@@ -298,7 +298,11 @@
                     <br/>
                     <span t-if="o.partner_shipping_id.delivery_notes" t-field="o.partner_shipping_id.delivery_notes">
                     </span>
-
+                     <br/>
+                    <strong t-if="not is_html_empty(o.narration)" class="mr16">Terms and Conditions:</strong>
+                    <br/>
+                    <span t-if="not is_html_empty(o.narration)" t-field="o.narration">
+                    </span>
                 </div>
             </div>
 

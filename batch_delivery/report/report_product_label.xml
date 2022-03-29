@@ -2,14 +2,14 @@
 <odoo>
     <template id="product_labels_template">
         <t t-call="web.basic_layout">
-            <t t-set="qty" t-value="int(line[0].move_orig_ids[0].reserved_availability)"/>
-            <t t-if='line[0].move_orig_ids[0].reserved_availability % 1 != 0'>
+            <t t-set="qty" t-value="int(line[0].move_orig_ids.get_quantity('reserved_availability'))"/>
+            <t t-if='line[0].move_orig_ids.get_quantity("reserved_availability") % 1 != 0'>
                 <t t-set="qty" t-value="qty+1"/>
             </t>
             <t t-if="line[0].sale_line_id">
                 <t t-if="line[0].sale_line_id.order_id.quick_sale">
-                    <t t-set="qty" t-value="int(line[0].move_orig_ids[0].quantity_done)"/>
-                    <t t-if='line[0].move_orig_ids[0].quantity_done % 1 != 0'>
+                    <t t-set="qty" t-value="int(line[0].move_orig_ids.get_quantity('quantity_done'))"/>
+                    <t t-if='line[0].move_orig_ids.get_quantity("quantity_done") % 1 != 0'>
                         <t t-set="qty" t-value="qty+1"/>
                     </t>
                 </t>

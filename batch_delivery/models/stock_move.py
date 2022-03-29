@@ -23,6 +23,9 @@ class StockMove(models.Model):
     quantity_done = fields.Float(tracking=True)
     invoice_line_ids = fields.Many2many(comodel_name='account.move.line', compute="_get_aml_ids", string="Invoice Lines")
 
+    def get_quantity(self, field='quantity_done'):
+        return sum(self.mapped(field))
+
     @api.model
     def _prepare_merge_moves_distinct_fields(self):
         #todo remove after go live (odo can't proces the current move and old move

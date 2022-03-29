@@ -156,7 +156,7 @@
                                                 <span t-field="move.reserved_availability"/>
                                             </t>
                                             <t t-if="not move.reserved_availability" >
-                                                <span t-if="len(move.move_orig_ids) > 0" t-field="move.move_orig_ids[0].reserved_availability"/>
+                                                <span t-if="len(move.move_orig_ids) > 0" t-esc="move.move_orig_ids.get_quantity('reserved_availability')"/>
                                             </t>
                                         </td>
                                         <td style="border-left: 1px solid black;border-right: 1px solid black;padding-right: 30px">

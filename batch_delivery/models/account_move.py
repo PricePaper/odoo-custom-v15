@@ -180,7 +180,15 @@ class AccountMove(models.Model):
             #         'There is a Cancelled Picking (%s) linked to this invoice.' % move.picking_ids.filtered(lambda rec: rec.state == 'cancel').mapped(
             #             'name'))
             if move.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')):
-                move.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')).make_picking_done()
+                #move.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')).make_picking_done()
+                stock_picking = self.env['stock.picking']
+                for pick in move.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')):
+                    move_info = pick.move_ids_without_package.filtered(lambda m: m.quantity_done < m.product_uom_qty)
+                    if move_info.ids:
+                        stock_picking |= pick
+                    else:
+                        pick.button_validate()
+                    stock_picking.make_picking_done()
             move.line_ids.mapped('sale_line_ids').mapped('order_id').filtered(lambda rec: rec.storage_contract is False).action_done()
         return res
 

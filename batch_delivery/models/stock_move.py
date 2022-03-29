@@ -23,8 +23,14 @@ class StockMove(models.Model):
     quantity_done = fields.Float(tracking=True)
     invoice_line_ids = fields.Many2many(comodel_name='account.move.line', compute="_get_aml_ids", string="Invoice Lines")
 
-    def get_quantity(self, field='quantity_done'):
-        return sum(self.mapped(field))
+    def get_quantity(self, field='quantity_done', alternative_feild='quantity_done'):
+        qty = 0
+        for move in self:
+            if getattr(move, field):
+                qty += getattr(move, field)
+            elif getattr(move, alternative_feild):
+                qty += getattr(move, alternative_feild)
+        return qty
 
     @api.model
     def _prepare_merge_moves_distinct_fields(self):

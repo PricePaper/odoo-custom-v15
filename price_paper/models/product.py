@@ -202,6 +202,8 @@ class ProductProduct(models.Model):
         """
         # TODO Update price_list when standard price change
         for product in self:
+            if 'standard_price' in vals and self.env.context.get('disable_auto_svl'):
+                vals.pop('standard_price')
             if 'standard_price' in vals:
                 log_vals = {
                     'change_date': fields.Datetime.now(),

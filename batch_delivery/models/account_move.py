@@ -170,9 +170,11 @@ class AccountMove(models.Model):
         """
         Override super method to check some custom conditions before posting a move
         """
-        res = super().action_post()
         for move in self.filtered(lambda rec: rec.move_type in ('out_invoice', 'out_refund')):
             move.remove_zero_qty_line()
+        res = super().action_post()
+        for move in self.filtered(lambda rec: rec.move_type in ('out_invoice', 'out_refund')):
+            # move.remove_zero_qty_line()
             # if move.picking_ids.filtered(lambda rec: rec.state == 'cancel'):
             #     raise UserError(
             #         'There is a Cancelled Picking (%s) linked to this invoice.' % move.picking_ids.filtered(lambda rec: rec.state == 'cancel').mapped(

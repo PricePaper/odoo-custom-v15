@@ -32,6 +32,8 @@ class CustomerContractLine(models.Model):
     _name = 'customer.contract.line'
     _description = 'Customer Contract Line'
     _rec_name = "contract_id"
+
+
     product_id = fields.Many2one('product.product')
     product_qty = fields.Float('Quantity')
     remaining_qty = fields.Float('Remaining Qty', compute='_compute_remaining_qty', store=True)
@@ -48,7 +50,7 @@ class CustomerContractLine(models.Model):
     def name_get(self):
         result = []
         for record in self:
-            result.append((record.id, "%s (%s)" % (record.contract_id.name, record.product_id.default_code)))
+            result.append((record.id, "%s (%s)" % (record.contract_id.name, record.product_id.default_code or record.product_id.name)))
         return result
 
 

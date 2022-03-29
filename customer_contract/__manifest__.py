@@ -14,6 +14,7 @@ Customer Contract
     'data': [
         'security/ir.model.access.csv',
         'data/sequence.xml',
+        'views/res_partner.xml',
         'views/customer_contract.xml',
         'views/sale_order.xml',
     ],

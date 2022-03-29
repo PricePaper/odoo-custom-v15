@@ -48,6 +48,14 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('customer_contract_line_id')
     def contract_line_id_change(self):
+        domain = {}
+        if not self.product_id:
+            domain = {
+                'domain': {'customer_contract_line_id': [
+                    ('contract_id.expiration_date', '>', fields.Datetime.now()),
+                    ('remaining_qty', '>', 0),
+                    ('contract_id.partner_ids', 'in', self.order_id.partner_id.ids),
+                    ('state', '=', 'confirmed')]}}
         if self.customer_contract_line_id:
             self.product_id = self.customer_contract_line_id.product_id
             self.product_uom = self.customer_contract_line_id.product_id.uom_id
@@ -55,13 +63,7 @@ class SaleOrderLine(models.Model):
         else:
             msg, product_price, price_from = super(SaleOrderLine, self).calculate_customer_price()
             self.price_unit = product_price
-        return {
-            'domain': {'customer_contract_line_id': [
-                ('contract_id.expiration_date', '>', fields.Datetime.now()),
-                ('remaining_qty', '>', 0),
-                ('contract_id.partner_ids', 'in', self.order_id.partner_id.ids),
-                ('state', '=', 'confirmed')]}
-        }
+        return domain
 
     def calculate_customer_contract(self):
         """
@@ -93,6 +95,16 @@ class SaleOrderLine(models.Model):
         if self.product_id and self.order_id.show_customer_contract_line:
             unit_price, contract_id = self.calculate_customer_contract()
             if unit_price or contract_id:
+                domain = [
+                    ('contract_id.expiration_date', '>', fields.Datetime.now()),
+                    ('product_id', '=', self.product_id.id),
+                    ('remaining_qty', '>', 0),
+                    ('contract_id.partner_ids', 'in', self.order_id.partner_id.ids),
+                    ('state', '=', 'confirmed')]
+                if res.get('domain', False):
+                    res['domain']['customer_contract_line_id'] = domain
+                else:
+                    res['domain'] = {'customer_contract_line_id': domain}
                 res.update({'value': {'price_unit': unit_price, 'customer_contract_line_id': contract_id}})
         return res
 

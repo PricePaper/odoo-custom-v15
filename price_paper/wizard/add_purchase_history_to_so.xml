@@ -29,6 +29,7 @@
                         </group>
                         <field name="purchase_history_ids" mode="tree">
                             <tree create="0" delete="0" editable="top" decoration-muted="archived==True or sale_ok==False" limit="10">
+                                <field name="sale_ok" invisible="1"/>
                                 <field name="qty_to_be" style="color:blue" sum="Total Quantity" attrs="{'readonly':['|', ('sale_ok','=', False), ('archived','=', True)]}" />
                                 <field name="product_name" readonly='1' tabindex="0"/>
                                 <field name="product_uom_qty" readonly='1' tabindex="0"/>
@@ -40,7 +41,6 @@
                                 <field name="product_category" readonly='1' tabindex="0" widget="selection"/>
                                 <field name="order_line" invisible="1"/>
                                 <field name="archived" invisible="1"/>
-                                <field name="sale_ok" invisible="1"/>
                             </tree>
                         </field>
 

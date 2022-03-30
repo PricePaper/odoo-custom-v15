@@ -177,6 +177,10 @@
                 </xpath>
 
                 <xpath expr="//field[@name='picking_ids']" position="attributes">
+                   <attribute name="widget">one2many</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='picking_ids']" position="attributes">
                     <attribute name="attrs">{'readonly': [('state', 'in', ('done', 'in_truck'))]}</attribute>
                 </xpath>
 

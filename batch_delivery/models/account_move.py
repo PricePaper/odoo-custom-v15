@@ -6,6 +6,7 @@ from collections import defaultdict
 from odoo.tools.misc import formatLang, format_date, get_lang
 import re
 
+
 class AccountMove(models.Model):
     _inherit = "account.move"
 
@@ -35,7 +36,8 @@ class AccountMove(models.Model):
     @api.depends('line_ids.stock_move_ids')
     def _compute_picking_ids(self):
         for rec in self:
-            pickings = rec.invoice_line_ids.mapped('stock_move_ids').mapped('picking_id').filtered(lambda r: r.state != 'cancel')
+            pickings = rec.invoice_line_ids.mapped('stock_move_id').mapped('picking_id').filtered(lambda r: r.state != 'cancel') or \
+                       rec.invoice_line_ids.mapped('stock_move_ids').mapped('picking_id').filtered(lambda r: r.state != 'cancel')
             rec.picking_ids = pickings
             rec.picking_count = len(pickings)
         return {}
@@ -180,10 +182,10 @@ class AccountMove(models.Model):
             #         'There is a Cancelled Picking (%s) linked to this invoice.' % move.picking_ids.filtered(lambda rec: rec.state == 'cancel').mapped(
             #             'name'))
             if move.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')):
-                #move.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')).make_picking_done()
+                # move.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')).make_picking_done()
                 stock_picking = self.env['stock.picking']
                 for pick in move.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')):
-                    move_info = pick.move_ids_without_package.filtered(lambda m: m.quantity_done < m.product_uom_qty)
+                    move_info = pick.move_lines.filtered(lambda m: m.quantity_done < m.product_uom_qty)
                     if move_info.ids:
                         stock_picking |= pick
                     else:
@@ -206,7 +208,7 @@ class AccountMove(models.Model):
         if not self:
             self = self.search([('state', '=', 'posted'), ('move_type', '!=', 'entry'), ('payment_state', '=', 'not_paid')])
         for move in self:
-            currency =  move.company_id.currency_id
+            currency = move.company_id.currency_id
             new_pmt_state = 'not_paid'
             for line in move.line_ids:
                 if move._payment_state_matters():
@@ -240,7 +242,6 @@ class AccountMove(models.Model):
                         lambda x: x not in (reverse_moves + reverse_moves_full_recs.mapped('exchange_move_id'))) == move:
                     new_pmt_state = 'reversed'
             move.payment_state = new_pmt_state
-
 
     @api.depends('posted_before', 'state', 'journal_id', 'date')
     def _compute_name(self):
@@ -328,6 +329,7 @@ class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
     stock_move_ids = fields.Many2many(comodel_name='stock.move', compute="_get_stock_move_ids", string="Stock Moves")
+    stock_move_id = fields.Many2one('stock.move', 'Stock Move')
 
     def _get_stock_move_ids(self):
         for line in self:

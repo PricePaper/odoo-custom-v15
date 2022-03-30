@@ -44,8 +44,11 @@ class StockMove(models.Model):
     def _get_aml_ids(self):
         for line in self:
             line.invoice_line_ids = []
-            if line.sale_line_id:
-                line.invoice_line_ids = [[6, 0, line.sale_line_id.mapped('invoice_lines').ids]]
+            aml_ids = self.env['account.move.line'].search([('stock_move_id', '=', line.id)]).ids
+            if not aml_ids and line.sale_line_id:
+                aml_ids = line.sale_line_id.mapped('invoice_lines').ids
+            if aml_ids:
+                line.invoice_line_ids = [[6, 0, aml_ids]]
         return {}
 
     def _account_entry_move(self, qty, description, svl_id, cost):

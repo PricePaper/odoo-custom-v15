@@ -125,4 +125,11 @@ class SaleOrderLine(models.Model):
                     }
                 }
 
+    def _prepare_invoice_line(self, **optional_values):
+        res = super()._prepare_invoice_line(**optional_values)
+        move_id = self.move_ids.filtered(lambda rec: rec.quantity_done == self.qty_to_invoice and rec.picking_id.is_return is False and rec.state != 'cancel')
+        if len(move_id) > 1:
+            move_id = move_id[0]
+        res.update({'stock_move_id': move_id.id})
+        return res
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

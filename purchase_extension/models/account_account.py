@@ -43,10 +43,11 @@ class AccountInvoice(models.Model):
             'analytic_account_id': po_line.account_analytic_id.id,
             'analytic_tag_ids': [(6, 0, po_line.analytic_tag_ids.ids)],
             'purchase_line_id': po_line.id,
-            'move_id': self.id,
+            # 'move_id': self.id,
         }
         accounts = line.product_id.product_tmpl_id.get_product_accounts(fiscal_pos=line.purchase_line_id.order_id.fiscal_position_id)
         account = accounts['expense']
+
         if account:
             data['account_id'] = account.id
         return data
@@ -71,26 +72,8 @@ class AccountInvoice(models.Model):
                               and receipt.partner_id.parent_id.id \
                               or receipt.partner_id.id
         purchase = receipt.mapped('move_lines').mapped('purchase_line_id').mapped('order_id')
-        partner_invoice_id = purchase.partner_id.address_get(['invoice'])['invoice']
 
-        if not self.invoice_line_ids:
-            # as there's no invoice line yet, we keep the currency of the PO
-            self.currency_id = purchase.currency_id
-
-        invoice_vals = {
-            'ref': purchase.partner_ref or '',
-            'move_type': self.move_type,
-            'narration': purchase.notes,
-            'currency_id': purchase.currency_id.id,
-            'invoice_user_id': self.user_id and self.user_id.id or self.env.user.id,
-            'fiscal_position_id': (purchase.fiscal_position_id or purchase.fiscal_position_id.get_fiscal_position(partner_invoice_id)).id,
-            'payment_reference': purchase.partner_ref or '',
-            'partner_bank_id': purchase.partner_id.bank_ids[:1].id,
-            'invoice_origin': purchase.name,
-            'invoice_payment_term_id': purchase.payment_term_id.id,
-            'invoice_line_ids': [],
-            'company_id': purchase.company_id.id,
-        }
+        invoice_vals = purchase.with_company(purchase.company_id)._prepare_invoice()
         invoice_vals['currency_id'] = self.line_ids and self.currency_id or invoice_vals.get('currency_id')
         del invoice_vals['ref']
         self.update(invoice_vals)
@@ -102,7 +85,8 @@ class AccountInvoice(models.Model):
             new_line.account_id = new_line._get_computed_account()
             new_line._onchange_price_subtotal()
             new_lines += new_line
-        new_lines._onchange_mark_recompute_taxes()
+        self.invoice_line_ids += new_lines
+
 
 
         return {}

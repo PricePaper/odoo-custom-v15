@@ -81,6 +81,7 @@ class AccountInvoice(models.Model):
             'ref': purchase.partner_ref or '',
             'move_type': self.move_type,
             'narration': purchase.notes,
+            'currency_id': purchase.currency_id.id,
             'invoice_user_id': self.user_id and self.user_id.id or self.env.user.id,
             'fiscal_position_id': (purchase.fiscal_position_id or purchase.fiscal_position_id.get_fiscal_position(partner_invoice_id)).id,
             'payment_reference': purchase.partner_ref or '',

@@ -273,16 +273,18 @@
                     <page name="transit_lines" string="Transit Lines"
                           attrs="{'invisible': [('picking_type_code', '!=', 'outgoing')]}" >
 <!--                        autofocus="autofocus"-->
+
                         <button class="oe_highlight oe_right"
                             name="receive_product_in_lines"
                             type="object" string="Set Quantity Done"
                             attrs="{'invisible': ['|', ('picking_type_code', '=', 'incoming'), ('state', 'in',  ['cancel', 'draft', 'in_transit', 'done'])]}"/>
                         <field name="transit_move_lines" mode="tree,kanban"
                                attrs="{'readonly': ['&amp;', ('state', '=', 'done'), ('is_locked', '=', True)]}">
-                            <tree string="Stock Moves" editable="bottom" create="false">
+                            <tree string="Stock Moves" editable="bottom" create="false" decoration-muted="state == 'cancel'"
+                            decoration-success="state == 'done'">
                                 <field name="company_id" invisible="1"/>
                                 <field name="name" invisible="1"/>
-                                <field name="state" invisible="1" readonly="1"/>
+                                <field name="state" readonly="1" invisible="1"/>
                                 <field name="picking_type_id" invisible="1"/>
                                 <field name="location_id" readonly="1"/>
                                 <field name="location_dest_id" invisible="1"/>
@@ -326,6 +328,7 @@
                                        attrs="{'readonly': [('state', '!=', 'draft'), ('additional', '=', False)]}"
                                        options="{'no_open': True, 'no_create': True}" string="Unit of Measure"
                                        groups="uom.group_uom"/>
+                                <field name="state" readonly="1"/>
                                 <field name="lot_ids" widget="many2many_tags" groups="stock.group_production_lot"
                                        attrs="{'invisible': ['|', ('show_details_visible', '=', False), ('has_tracking', '!=', 'serial')]}"
                                        optional="hide" options="{'create': [('parent.use_create_lots', '=', True)]}"
@@ -375,10 +378,17 @@
                 <xpath expr="//form/sheet/notebook/page[3]/field[@name='move_ids_without_package']/tree/field[@name='location_id']" position="replace">
                     <field name="location_id" attrs="{'column_invisible': [('parent.picking_type_code', '=', 'incoming')]}"/>
                 </xpath>
+                <xpath expr="//form/sheet/notebook/page[3]/field[@name='move_ids_without_package']/tree/field[@name='location_id']" position="attributes">
+                    <attribute name="attrs">{'readonly':True}</attribute>
+                    <attribute name="optional">hide</attribute>
+                </xpath>
                  <xpath expr="//form/sheet/notebook/page[3]/field[@name='move_ids_without_package']/tree/button[@name='action_show_details']" position="before">
                     <button name="action_cancel_popup" string="Cancel" type="object" icon="fa-times-circle text-danger" attrs="{'invisible': ['|', ('state', 'in', ['cancel', 'done']), ('parent.picking_type_code', '=', 'outgoing')]}" options='{"warn": true}'/>
                 </xpath>
-                 <xpath expr="//form/sheet/notebook/page[3]/field[@name='move_ids_without_package']/tree/field[@name='location_dest_id']" position="replace">
+                <xpath expr="//form/sheet/notebook/page[3]/field[@name='move_ids_without_package']/tree/button[@name='action_show_details']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('parent.state', '!=', 'in_transit')]}</attribute>
+                </xpath>
+                <xpath expr="//form/sheet/notebook/page[3]/field[@name='move_ids_without_package']/tree/field[@name='location_dest_id']" position="replace">
                      <field name="location_dest_id" attrs="{'column_invisible': [('parent.picking_type_code', '=', 'outgoing')]}" readonly="1"/>
                  </xpath>
                  <xpath expr="//form/sheet/notebook/page[3]/field[@name='move_ids_without_package']/tree/field[@name='location_id']" position="before">

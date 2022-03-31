@@ -79,6 +79,9 @@ class StockRule(models.Model):
             domain += (('storage_contract_po', '=', False), ('sale_order_ids', '=', False), ('is_orderpoint', '=', True))
         return domain
 
+    def _exclude_from_po_domain(self, procurements):
+        return ['user_id', 'date_order']
+
     @api.model
     def _run_buy(self, procurements):
         """
@@ -86,6 +89,7 @@ class StockRule(models.Model):
         """
         procurements_by_po_domain = defaultdict(list)
         errors = []
+        exclude_from_domain = self._exclude_from_po_domain(procurements)
         for procurement, rule in procurements:
 
             # Get the schedule date in order to find a valid seller
@@ -132,7 +136,7 @@ class StockRule(models.Model):
             origins = set([p.origin for p in procurements])
             # Check if a PO exists for the current domain.
             po = False
-            for order in self.env['purchase.order'].sudo().search([dom for dom in domain]):
+            for order in self.env['purchase.order'].sudo().search([dom for dom in domain if dom[0] not in exclude_from_domain]):
                 if procurements[0].values.get('orderpoint_id') and not order.sale_order_count:
                     po = order
                     break

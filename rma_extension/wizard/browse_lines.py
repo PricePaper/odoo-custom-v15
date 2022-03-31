@@ -34,6 +34,14 @@ class BrowseLines(models.TransientModel):
     def add_sale_line(self, lines):
         order_line_lst = []
         for order_line in lines:
+            order_lines = order_line.so_line_id
+            move_line = order_lines.mapped('move_ids').filtered(
+                lambda m: m.state == 'done' and m.picking_id.is_return == False and m.picking_id.state == 'done')
+            if not move_line:
+                product_name= order_line.product_id.name
+                raise ValidationError("Selected product %s is not delivered in the delivery order" % product_name)
+
+
             rma_sale_line = (0, 0, {
                 'product_id': order_line.product_id and order_line.product_id.id or False,
                 'total_qty': order_line.total_qty or 0,

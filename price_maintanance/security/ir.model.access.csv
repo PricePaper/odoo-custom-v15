@@ -1,7 +1,10 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_price_maintanace_customer_pricelist_user,access_price_maintanace_customer_pricelist_user,model_price_maintanace_customer_pricelist,website_scraping.group_website_scraping,1,1,1,1
 access_vendor_price_edit_user,access_vendor_price_edit_user,model_price_edit_notes,base.group_user,1,1,1,1
+access_vendor_price_edit_userr,access_vendor_price_edit_userr,model_vendor_price_edit,base.group_user,1,1,1,1
 access_price_maintanace_edit_user,access_price_maintanace_edit_user,model_price_maintanace_edit,base.group_user,1,1,1,1
+access_add_pricelist,access_add_pricelist,model_add_pricelist,base.group_user,1,1,1,1
+
 
 
 

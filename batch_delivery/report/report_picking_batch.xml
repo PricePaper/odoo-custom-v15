@@ -125,7 +125,56 @@
                             </div>
 
                             <br/>
-                            <table class="table table-sm o_main_table">
+                            <table class="table table-sm o_main_table" t-if="ob.picking_type_code == 'outgoing' and not ob.is_return">
+                                <tbody>
+                                    <t t-set="index" t-value="1"/>
+                                    <tr t-foreach="ob.move_ids_without_package.filtered(lambda r: r.state != 'cancel').sorted(key=lambda r: r.move_orig_ids[0].location_id.display_name.split('/')[-1])" t-as="move"
+                                        style="font-family: Roboto, Odoo Unicode Support Noto, sans-serif;font-size: 18px;">
+                                        <t t-set='seller' t-value="move.product_id.seller_ids.filtered(lambda s: s.name.id == ob.partner_id.id)"/>
+                                        <td>
+                                            <span t-esc="index"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="move.product_id.default_code"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="move.product_id.name"/>
+                                            <t t-if="move.sale_line_id and move.sale_line_id.note and move.sale_line_id.note != move.sale_line_id.name" >
+                                              <br/>
+                                              <span t-field="move.sale_line_id.note" />
+                                            </t>
+                                        </td>
+                                        <td>
+                                            <span t-field="move.product_id.description_pickingout" t-if="not ob.purchase_id.id and ob.picking_type_code == 'outgoing'"/>
+                                            <span t-field="seller and seller[-1].product_name" t-if="ob.purchase_id.id and ob.picking_type_code in ['incoming', 'outgoing']"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="move.product_uom"/>
+                                        </td>
+                                        <td>
+                                            <t t-if="move.reserved_availability" >
+                                                <span t-field="move.reserved_availability"/>
+                                            </t>
+                                            <t t-if="not move.reserved_availability" >
+                                                <span t-if="len(move.move_orig_ids) > 0" t-esc="move.move_orig_ids.get_quantity('reserved_availability')"/>
+                                            </t>
+                                        </td>
+                                        <td style="border-left: 1px solid black;border-right: 1px solid black;padding-right: 30px">
+                                        </td>
+                                        <td>
+                                            <t t-if="move.picking_code == 'outgoing'">
+                                                    <span t-if="len(move.move_orig_ids) > 0" t-esc="move.move_orig_ids[0].location_id.display_name.split('/')[-1]"/>
+                                            </t>
+                                            <span t-esc="move.location_dest_id.display_name.split('/')[-1]" t-if="move.picking_code == 'incoming'"/>
+                                        </td>
+
+                                        <t t-if="move">
+                                            <t t-set="index" t-value="index + 1"/>
+                                        </t>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="table table-sm o_main_table" t-if="(ob.picking_type_code == 'outgoing' and ob.is_return) or ob.picking_type_code == 'incoming'">
                                 <tbody>
                                     <t t-set="index" t-value="1"/>
                                     <tr t-foreach="ob.move_ids_without_package.filtered(lambda r: r.state != 'cancel').sorted(key=lambda r: r.location_id.display_name.split('/')[-1])" t-as="move"
@@ -156,16 +205,16 @@
                                                 <span t-field="move.reserved_availability"/>
                                             </t>
                                             <t t-if="not move.reserved_availability" >
-                                                <span t-if="len(move.move_orig_ids) > 0" t-field="move.move_orig_ids[0].reserved_availability"/>
+                                                <span t-if="len(move.move_orig_ids) > 0" t-esc="move.move_orig_ids.get_quantity('reserved_availability')"/>
                                             </t>
                                         </td>
                                         <td style="border-left: 1px solid black;border-right: 1px solid black;padding-right: 30px">
                                         </td>
                                         <td>
                                             <t t-if="move.picking_code == 'outgoing'">
-                                                    <span t-if="len(move.move_orig_ids) > 0" t-field="move.move_orig_ids[0].location_id"/>
+                                                    <span t-esc="move.location_id.display_name.split('/')[-1]"/>
                                             </t>
-                                            <span t-field="move.location_dest_id" t-if="move.picking_code == 'incoming'"/>
+                                            <span t-esc="move.location_dest_id.display_name.split('/')[-1]" t-if="move.picking_code == 'incoming'"/>
                                         </td>
 
                                         <t t-if="move">

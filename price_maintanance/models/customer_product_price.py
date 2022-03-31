@@ -19,6 +19,12 @@ class CustomerProductPrice(models.Model):
     deviation = fields.Integer(string='Deviation%', compute="get_deviation")
     lastsale_history_date = fields.Datetime(compute='_get_last_sale_date', string='Last Sale Date')
 
+    def action_remove_pricelist(self):
+        for record in self:
+            pricelist = record.partner_id.partner_pricelist_id.pricelist_id.customer_product_price_ids.filtered(lambda r: r.id == record.id)
+            if pricelist:
+                pricelist.unlink()
+
     def _get_last_sale_date(self):
         for record in self:
             lastsale_history_date = False

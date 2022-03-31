@@ -17,7 +17,15 @@ class AccountMove(models.Model):
         payment = self.env['account.payment'].search([('move_id', 'in', [partial.debit_move_id.move_id.id, partial.credit_move_id.move_id.id])])
         if payment and payment.discount_move_id:
             discount_move_id = payment.discount_move_id
+        if not discount_move_id:
+            moves = partial.debit_move_id.move_id + partial.credit_move_id.move_id
+            discount_accounts = self.env.user.company_id.discount_account_id + self.env.user.company_id.purchase_writeoff_account_id
+            for move in moves:
+                if len(move.line_ids) == 2 and all(line.name == 'Discount' for line in move.line_ids) and any(line.account_id.id in discount_accounts.ids for line in move.line_ids):
+                    discount_move_id = move
+                    break
         res = super().js_remove_outstanding_partial(partial_id)
+
         if discount_move_id:
             discount_move_id.line_ids.remove_move_reconcile()
             discount_move_id.button_cancel()

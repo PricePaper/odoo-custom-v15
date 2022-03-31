@@ -2,7 +2,7 @@
 import json
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-
+from odoo.tools import float_compare
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -84,14 +84,33 @@ class SaleOrderLine(models.Model):
                         qty -= move.product_uom._compute_quantity(move.quantity_done, line.product_uom, rounding_method='HALF-UP')
                 line.qty_delivered = qty
 
+    def update_move_quantity(self, previous_product_uom_qty):
+        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        for line in self:
+            qty = line._get_qty_procurement(previous_product_uom_qty)
+            if float_compare(qty, line.product_uom_qty, precision_digits=precision) == 0:
+                continue
+            product_qty = line.product_uom_qty - qty
+            outgoing_moves, incoming_moves = line._get_outgoing_incoming_moves()
+            for move in outgoing_moves.filtered(lambda rec: rec.state not in ('cancel', 'done')):
+                need_to_process = True
+                for transit_move in move.mapped('move_orig_ids').filtered(lambda rec: rec.state not in ('cancel', 'done')):
+                    transit_move.write({'product_uom_qty': transit_move.product_uom_qty + product_qty})
+                    need_to_process = False
+                    break
+                if not (need_to_process and move.mapped('move_orig_ids')):
+                    move.write({'product_uom_qty': move.product_uom_qty + product_qty})
+
+
     def _action_launch_stock_rule(self, previous_product_uom_qty=False):
         """
         Override to add a context value to identify in transit
         """
+        self.update_move_quantity(previous_product_uom_qty)
         self = self.with_context(from_sale=True)
         res =  super(SaleOrderLine, self)._action_launch_stock_rule(previous_product_uom_qty)
-        for line  in self:
-            transit_move = line.move_ids.mapped('move_orig_ids')
+        for line in self:
+            transit_move = line.move_ids.mapped('move_orig_ids').filtered(lambda rec: not rec.transit_picking_id)
             transit_move.write({'transit_picking_id': transit_move.mapped('move_dest_ids').mapped('picking_id')})
         return res
 
@@ -125,4 +144,11 @@ class SaleOrderLine(models.Model):
                     }
                 }
 
+    def _prepare_invoice_line(self, **optional_values):
+        res = super()._prepare_invoice_line(**optional_values)
+        move_id = self.move_ids.filtered(lambda rec: rec.quantity_done == self.qty_to_invoice and rec.picking_id.is_return is False and rec.state != 'cancel')
+        if len(move_id) > 1:
+            move_id = move_id[0]
+        res.update({'stock_move_id': move_id.id})
+        return res
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

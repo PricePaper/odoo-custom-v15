@@ -1,6 +1,6 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
 access_account_payment_lines,account.payment.lines,model_account_payment_lines,account.group_account_user,1,1,1,0
-access_add_discount,add.discount,model_add_discount,account.group_account_user,1,1,1,0
+access_add_discount,add.discount,model_add_discount,account.group_account_invoice,1,1,1,1
 access_sales_team_account_payment_method,"account.payment.method",account.model_account_payment_method,sales_team.group_sale_salesman,1,0,0,0
 access_cash_collected_lines_wizard,access_cash_collected_lines_wizard,model_cash_collected_lines_wizard,account.group_account_user,1,1,1,0
 access_add_cash_collected_wizard,access_add_cash_collected_wizard,model_add_cash_collected_wizard,account.group_account_user,1,1,1,0

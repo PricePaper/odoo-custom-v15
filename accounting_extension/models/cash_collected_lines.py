@@ -20,7 +20,7 @@ class CashCollectedLines(models.Model):
     @api.onchange('invoice_id')
     def onchange_invoice_id(self):
         if self.invoice_id:
-            self.amount = self.invoice_id.amount_total
+            self.amount = self.invoice_id.amount_residual
             days = (self.invoice_id.invoice_date - fields.Date.context_today(self)).days
             if self.invoice_id.invoice_payment_term_id.is_discount and abs(
                     days) < self.invoice_id.invoice_payment_term_id.due_days:

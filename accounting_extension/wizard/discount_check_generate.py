@@ -32,7 +32,7 @@ class GenerateDiscountCheck(models.TransientModel):
                 if bill.discount_due_date and bill.discount_due_date >= fields.Date.today():
                     discount = bill.amount_residual * (100 - bill.invoice_payment_term_id.discount_per) / 100
                 else:
-                    discount = 0.00
+                    discount = bill.amount_residual
                 lines.append((0, 0, {
                     'total_amount': bill.amount_residual,
                     'partner_id': bill.partner_id.id,

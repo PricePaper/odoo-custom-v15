@@ -14,6 +14,21 @@ class ResPartner(models.Model):
     partner_pricelist_id = fields.Many2one('customer.pricelist', string="Customer Pricelist", store=False,
                                            compute='_compute_pricelist')
 
+    def create_pricelist(self):
+        view_id = self.env.ref('price_maintanance.add_new_pricelist_wiz').id
+        context = {'record':self.id}
+        return {
+            'name': 'Add Resource Lines',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'add.pricelist',
+            'view_id': view_id,
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+            'context':context
+        }
+
+
     def _compute_pricelist(self):
         for partner in self:
             pricelist = False

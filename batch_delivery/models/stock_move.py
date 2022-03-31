@@ -23,6 +23,15 @@ class StockMove(models.Model):
     quantity_done = fields.Float(tracking=True)
     invoice_line_ids = fields.Many2many(comodel_name='account.move.line', compute="_get_aml_ids", string="Invoice Lines")
 
+    def get_quantity(self, field='quantity_done', alternative_feild='quantity_done'):
+        qty = 0
+        for move in self:
+            if getattr(move, field):
+                qty += getattr(move, field)
+            elif getattr(move, alternative_feild):
+                qty += getattr(move, alternative_feild)
+        return qty
+
     @api.model
     def _prepare_merge_moves_distinct_fields(self):
         #todo remove after go live (odo can't proces the current move and old move
@@ -35,8 +44,11 @@ class StockMove(models.Model):
     def _get_aml_ids(self):
         for line in self:
             line.invoice_line_ids = []
-            if line.sale_line_id:
-                line.invoice_line_ids = [[6, 0, line.sale_line_id.mapped('invoice_lines').ids]]
+            aml_ids = self.env['account.move.line'].search([('stock_move_id', '=', line.id)]).ids
+            if not aml_ids and line.sale_line_id:
+                aml_ids = line.sale_line_id.mapped('invoice_lines').ids
+            if aml_ids:
+                line.invoice_line_ids = [[6, 0, aml_ids]]
         return {}
 
     def _account_entry_move(self, qty, description, svl_id, cost):

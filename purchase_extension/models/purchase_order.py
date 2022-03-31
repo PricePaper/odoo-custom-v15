@@ -307,6 +307,26 @@ class PurchaseOrderLine(models.Model):
     gross_volume = fields.Float(string="Gross Volume", compute='_compute_gross_weight_volume')
     gross_weight = fields.Float(string="Gross Weight", compute='_compute_gross_weight_volume')
 
+
+    def _get_stock_move_price_unit(self):
+
+        self.ensure_one()
+        order = self.order_id
+        price_unit = self.price_unit
+        price_unit_prec = self.env['decimal.precision'].precision_get('Product Price')
+        if self.taxes_id:
+            qty = self.product_qty or 1
+            price_unit = self.taxes_id.with_context(round=False).compute_all(
+                price_unit, currency=self.order_id.currency_id, quantity=qty, product=self.product_id, partner=self.order_id.partner_id
+            )['total_void']
+            price_unit = float_round(price_unit / qty, precision_digits=price_unit_prec)
+        # if self.product_uom.id != self.product_id.uom_id.id:
+        #     price_unit *= self.product_uom.factor / self.product_id.uom_id.factor
+        if order.currency_id != order.company_id.currency_id:
+            price_unit = order.currency_id._convert(
+                price_unit, order.company_id.currency_id, self.company_id, self.date_order or fields.Date.today(), round=False)
+        return price_unit
+
     @api.onchange('product_qty', 'product_uom')
     def _onchange_quantity(self):
         res = super(PurchaseOrderLine, self)._onchange_quantity()
@@ -322,6 +342,7 @@ class PurchaseOrderLine(models.Model):
         res = super(PurchaseOrderLine, self).create(vals)
         if res.order_id and res.order_id.state == 'purchase':
             self._add_supplier_to_product()
+        res.filtered(lambda l: l.order_id.state == 'received')._create_or_update_picking()
         return res
 
     def _add_supplier_to_product(self):
@@ -366,7 +387,11 @@ class PurchaseOrderLine(models.Model):
                 break
 
     def write(self, vals):
+        lines = self.filtered(lambda l: l.order_id.state == 'received')
+        previous_product_qty = {line.id: line.product_uom_qty for line in lines}
         res = super(PurchaseOrderLine, self.with_context({'from_purchase_write': True})).write(vals)
+        if 'product_qty' in vals:
+            lines.with_context(previous_product_qty=previous_product_qty)._create_or_update_picking()
         for rec in self:
             if rec.order_id and rec.order_id.picking_ids:
                 for picking in rec.order_id.picking_ids.filtered(lambda r: r.state != 'done'):

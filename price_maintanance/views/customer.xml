@@ -53,8 +53,8 @@
                                        domain="[('partner_id', '=', id)]" attrs="{'readonly': False}"/>
                             </group>
                         </group>
-                        <group string="Customer Product Price">
-                            <field name="partner_pricelist_line_ids" nolabel="1" attrs="{'readonly': False}" mode="tree,kanban" options="{'custom_search': True}">
+                        <b>Customer Product Price</b>
+                            <field name="partner_pricelist_line_ids" nolabel="1" attrs="{'readonly': False}" mode="tree,kanban" options="{'custom_search': True}" readonly="1">
                                 <tree decoration-danger="deviation&lt;0" decoration-info="deviation==0"
                                       decoration-success="deviation&gt;0">
                                     <field name="product_id" required="1"/>
@@ -66,6 +66,8 @@
                                     <field name="price_lock"/>
                                     <field name="lock_expiry_date"
                                            attrs="{'invisible': [('price_lock', '=', False)], 'required': [('price_lock', '=', True)]}"/>
+                                    <button name="action_remove_pricelist" type="object" aria-label="Remove row" class="fa fa-trash-o"
+                                     confirm="Are you sure want to remove this price line"/>
                                 </tree>
                                 <kanban class="o_kanban_mobile" limit="500">
                                     <field name="product_id"/>
@@ -221,13 +223,14 @@
                                     </group>
                                 </form>
                             </field>
-                        </group>
+
                         <group>
                             <field name="change_flag"/>
                             <field name="audit_notes" placeholder="Enter Notes Here..."
                                    attrs="{'invisible':[('change_flag', '=', False)], 'required': [('change_flag', '=', True)]}"/>
                         </group>
 
+                          <button name="create_pricelist" string="Create Pricelist" class="oe_highlight" type="object"/>
                     </sheet>
                 </form>
             </field>

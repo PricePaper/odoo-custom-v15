@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="add_new_pricelist_wiz" model="ir.ui.view">
+            <field name="name">add.new.wiz.form</field>
+            <field name="model">add.pricelist</field>
+            <field name="arch" type="xml">
+                <form string="Add Pricelist Lines">
+                    <sheet>
+                      <field name="partner_pricelist_line_ids" nolabel="1" attrs="{'readonly': False}" mode="tree,kanban" options="{'custom_search': True}">
+                                <tree>
+                                    <field name="product_id" required="1"/>
+                                    <field name="product_uom" required="1"/>
+                                    <field name="price" required="1"/>
+                                    <field name="std_price" readonly="1"/>
+                                    <field name="deviation"/>
+                                    <field name="price_last_updated"/>
+                                    <field name="price_lock"/>
+                                    <field name="lock_expiry_date"
+                                           />
+                                </tree>
+                      </field>
+                    </sheet>
+                    <footer>
+                        <button name="add_pricelist_lines" type="object" string="Add Line" class='btn-primary'/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -67,7 +67,7 @@
                                     <field name="lock_expiry_date"
                                            attrs="{'invisible': [('price_lock', '=', False)], 'required': [('price_lock', '=', True)]}"/>
                                     <button name="action_remove_pricelist" type="object" aria-label="Remove row" class="fa fa-trash-o"
-                                     confirm="Are you sure want to remove this DO from batch"/>
+                                     confirm="Are you sure want to remove this price line"/>
                                 </tree>
                                 <kanban class="o_kanban_mobile" limit="500">
                                     <field name="product_id"/>

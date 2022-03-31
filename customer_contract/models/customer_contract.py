@@ -42,10 +42,11 @@ class CustomerContractLine(models.Model):
     state = fields.Selection(related='contract_id.state', readonly=True, store=True)
     sale_line_ids = fields.One2many('sale.order.line', 'customer_contract_line_id')
 
-    @api.depends('sale_line_ids.product_uom_qty', 'product_qty')
+    @api.depends('sale_line_ids.product_uom_qty', 'product_qty', 'sale_line_ids.order_id.state')
     def _compute_remaining_qty(self):
         for line in self:
-            line.remaining_qty = line.product_qty - sum(line.sale_line_ids.mapped('product_uom_qty'))
+            line.sale_line_ids.filtered(lambda r: r.order_id.state in ('done', 'sale')).mapped('product_uom_qty')
+            line.remaining_qty = line.product_qty - sum(line.sale_line_ids.filtered(lambda r: r.order_id.state in ('done', 'sale')).mapped('product_uom_qty'))
 
     def name_get(self):
         result = []

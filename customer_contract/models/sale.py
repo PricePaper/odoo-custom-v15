@@ -3,6 +3,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from datetime import datetime
+from odoo.exceptions import ValidationError, UserError
 
 
 class SaleOrder(models.Model):
@@ -38,6 +39,17 @@ class SaleOrder(models.Model):
             ])
             lines.mapped('contract_id').action_expire()
         return res
+
+    def action_confirm(self):
+        """
+        Do
+        """
+        if self.show_customer_contract_line:
+            for line in self.order_line.filtered(lambda r: r.customer_contract_line_id):
+                if line.customer_contract_line_id.remaining_qty < line.product_uom_qty:
+                    raise ValidationError('There is not enough quantity remaining in the contract %s for product %s. Please remove the line in order to confirm this Sales Order.'\
+                     %(line.customer_contract_line_id.contract_id.name, line.product_id.name))
+        return super(SaleOrder, self).action_confirm()
 
 
 class SaleOrderLine(models.Model):
@@ -114,7 +126,7 @@ class SaleOrderLine(models.Model):
         if self.customer_contract_line_id:
             self.price_unit = self.customer_contract_line_id.price
             remaining = self.customer_contract_line_id.remaining_qty
-            if self._origin in self.customer_contract_line_id.sale_line_ids:
+            if self.order_id.state == 'sale' and self._origin in self.customer_contract_line_id.sale_line_ids:
                 remaining = self.customer_contract_line_id.remaining_qty + self._origin.product_uom_qty
             if self.product_uom_qty > remaining:
                 warning_mess = {
@@ -122,10 +134,9 @@ class SaleOrderLine(models.Model):
                     'message': _(
                         'You are going to Sell more than in customer contract.Only %s is remaining in this contract.' % (remaining))
                 }
-                self.product_uom_qty = 0
+                self.product_uom_qty = self._origin.product_uom_qty
                 result.update({'warning': warning_mess})
         return result
-
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

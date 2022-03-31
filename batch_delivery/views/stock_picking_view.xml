@@ -387,7 +387,7 @@
                 </xpath>
                 <xpath expr="//form/sheet/notebook/page[3]/field[@name='move_ids_without_package']/tree/button[@name='action_show_details']" position="replace">
                     <button name="action_show_details" type="object" icon="fa-list" width="0.1"
-                                                      attrs="{'invisible': ['&amp;',('parent.is_return','=',False),('parent.picking_type_code', '=', 'outgoing'),('parent.state', '!=', 'in_transit')]}" options='{"warn": true}'/>
+                                                      attrs="{'invisible': ['&amp;',('parent.is_return','=',False),('parent.picking_type_code', '=', 'outgoing'),('parent.state', '!=', 'in_transit'),('show_details_visible', '=', False)]}" options='{"warn": true}'/>
                 </xpath>
 
                 <xpath expr="//form/sheet/notebook/page[3]/field[@name='move_ids_without_package']/tree/field[@name='location_dest_id']" position="replace">

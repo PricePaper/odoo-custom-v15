@@ -62,7 +62,81 @@
                         <span t-if="o.name != '/'" t-field="o.name"/>
                     </h2>
 
-                    <div id="informations" class="row mt32 mb32" style= "width:100%">
+                    <table style="font-size:13px;width:100%;" >
+                      <tr>
+                        <th t-if="o.sales_person_ids">
+                          <strong>Salespersons:</strong>
+                        </th>
+                        <th t-if="o.invoice_origin" name="origin">
+                            <strong>Source:</strong>
+                        </th>
+                        <th  t-if="SO and SO.client_order_ref" name="origin">
+                           <strong>Customer Reference:</strong>
+                       </th>
+                       <th name="payment_term"   t-if="o.invoice_payment_term_id">
+                           <strong>Payment Terms:</strong>
+                       </th>
+                       <th  t-if="o.name" name="description">
+                           <strong>Description:</strong>
+                       </th>
+                       <th  t-if="o.move_type == 'out_invoice'" name="due_date">
+                           <t t-set="pterm_list"
+                              t-value="o.invoice_payment_term_id.with_context(currency_id=o.company_id.currency_id.id).compute(value=1, date_ref=date_invoice)"/>
+                           <strong>Due Date:</strong>
+                       </th>
+                       <th  t-if="o.partner_shipping_id.phone" name="description">
+                           <strong>Contact Phone:</strong>
+                       </th>
+                       <th  t-if="o.partner_id.vat" name="description">
+                           <strong>Resale Number:</strong>
+                       </th>
+                       <t t-set="SO" t-value="o.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')"/>
+                       <t t-set="driver" t-value="o.picking_ids and o.picking_ids.mapped('batch_id') and o.picking_ids.mapped('batch_id')[-1].truck_driver_id or ''"/>
+                       <th  t-if="SO and SO.carrier_id" name="description">
+                           <strong>Shipping Method:</strong>
+                       </th>
+                       <th  t-if="driver" name="description">
+                           <strong>Driver:</strong>
+                       </th>
+                      </tr>
+                      <tr>
+                        <td t-if="o.sales_person_ids" style="vertical-align: top;">
+                          <p t-esc="','.join([str(s.id) for s in o.sales_person_ids])"/>
+                        </td>
+                        <td t-if="o.invoice_origin" name="origin" style="vertical-align: top;">
+                            <p class="m-0" t-field="o.invoice_origin"/>
+                        </td>
+                        <td  t-if="SO and SO.client_order_ref" name="origin" style="vertical-align: top;">
+                           <p class="m-0" t-field="SO.client_order_ref"/>
+                       </td>
+                       <td name="payment_term"   t-if="o.invoice_payment_term_id" style="vertical-align: top;">
+                           <p class="m-0" t-field="o.invoice_payment_term_id.note"/>
+                       </td>
+                       <td  t-if="o.name" name="description" style="vertical-align: top;">
+                           <p class="m-0" t-field="o.name"/>
+                       </td>
+                       <td  t-if="o.move_type == 'out_invoice'" name="due_date" style="vertical-align: top;">
+                           <t t-set="duedate" t-value="max(line for line in pterm_list)"/>
+                           <p class="m-0" t-esc="duedate[0]"/>
+                       </td>
+                       <td  t-if="o.partner_shipping_id.phone" name="description" style="vertical-align: top;">
+                           <p class="m-0" t-field="o.partner_shipping_id.phone"/>
+                       </td>
+                       <td  t-if="o.partner_id.vat" name="description" style="vertical-align: top;">
+                           <p class="m-0" t-field="o.partner_id.vat"/>
+                       </td>
+                       <t t-set="SO" t-value="o.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')"/>
+                       <t t-set="driver" t-value="o.picking_ids and o.picking_ids.mapped('batch_id') and o.picking_ids.mapped('batch_id')[-1].truck_driver_id or ''"/>
+                       <td  t-if="SO and SO.carrier_id" name="description" style="vertical-align: top;">
+                           <p class="m-0" t-field="SO.carrier_id"/>
+                       </td>
+                       <td  t-if="driver" name="description" style="vertical-align: top;">
+                           <p class="m-0" t-esc="driver.firstname +' '+ (driver.lastname and driver.lastname[0] or '')" style="padding-left:10px;"/>
+                       </td>
+                      </tr>
+                    </table>
+
+                    <!-- <div id="informations" class="row mt32 mb32" style= "width:100%;font-size:10px">
                         <div class="col-auto col-3 mw-100 mb-2" t-if="o.sales_person_ids">
                             <strong>Salespersons:</strong>
                             <p t-esc="','.join([str(s.id) for s in o.sales_person_ids])"/>
@@ -87,8 +161,8 @@
                             <t t-set="pterm_list"
                                t-value="o.invoice_payment_term_id.with_context(currency_id=o.company_id.currency_id.id).compute(value=1, date_ref=date_invoice)"/>
                             <strong>Due Date:</strong>
-                          <!--  <span t-esc="pterm_list"/>-->
-                            <t t-set="duedate" t-value="max(line for line in pterm_list)"/>
+                          <span t-esc="pterm_list"/>-->
+                            <!-- <t t-set="duedate" t-value="max(line for line in pterm_list)"/>
                             <p class="m-0" t-esc="duedate[0]"/>
                         </div>
                         <div class="col-auto col-3 mw-100 mb-2" t-if="o.partner_shipping_id.phone" name="description">
@@ -109,7 +183,7 @@
                             <strong>Driver:</strong>
                             <p class="m-0" t-esc="driver.firstname +' '+ (driver.lastname and driver.lastname[0] or '')" style="padding-left:10px;"/>
                         </div>
-                    </div>
+                    </div>  -->
 
                     <t t-set="display_discount" t-value="any([l.discount for l in o.invoice_line_ids])"/>
 

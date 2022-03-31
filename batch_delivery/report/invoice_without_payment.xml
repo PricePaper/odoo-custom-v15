@@ -136,55 +136,6 @@
                       </tr>
                     </table>
 
-                    <!-- <div id="informations" class="row mt32 mb32" style= "width:100%;font-size:10px">
-                        <div class="col-auto col-3 mw-100 mb-2" t-if="o.sales_person_ids">
-                            <strong>Salespersons:</strong>
-                            <p t-esc="','.join([str(s.id) for s in o.sales_person_ids])"/>
-                        </div>
-                        <div class="col-auto col-3 mw-100 mb-2" t-if="o.invoice_origin" name="origin">
-                            <strong>Source:</strong>
-                            <p class="m-0" t-field="o.invoice_origin"/>
-                        </div>
-                         <div class="col-auto col-3 mw-100 mb-2" t-if="SO and SO.client_order_ref" name="origin">
-                            <strong>Customer Reference:</strong>
-                            <p class="m-0" t-field="SO.client_order_ref"/>
-                        </div>
-                        <div name="payment_term"  class="col-auto col-3 mw-100 mb-2" t-if="o.invoice_payment_term_id">
-                            <strong>Payment Terms:</strong>
-                            <p class="m-0" t-field="o.invoice_payment_term_id.note"/>
-                        </div>
-                        <div class="col-auto col-3 mw-100 mb-2" t-if="o.name" name="description">
-                            <strong>Description:</strong>
-                            <p class="m-0" t-field="o.name"/>
-                        </div>
-                        <div class="col-auto col-3 mw-100 mb-2" t-if="o.move_type == 'out_invoice'" name="due_date">
-                            <t t-set="pterm_list"
-                               t-value="o.invoice_payment_term_id.with_context(currency_id=o.company_id.currency_id.id).compute(value=1, date_ref=date_invoice)"/>
-                            <strong>Due Date:</strong>
-                          <span t-esc="pterm_list"/>-->
-                            <!-- <t t-set="duedate" t-value="max(line for line in pterm_list)"/>
-                            <p class="m-0" t-esc="duedate[0]"/>
-                        </div>
-                        <div class="col-auto col-3 mw-100 mb-2" t-if="o.partner_shipping_id.phone" name="description">
-                            <strong>Contact Phone:</strong>
-                            <p class="m-0" t-field="o.partner_shipping_id.phone"/>
-                        </div>
-                        <div class="col-auto col-3 mw-100 mb-2" t-if="o.partner_id.vat" name="description">
-                            <strong>Resale Number:</strong>
-                            <p class="m-0" t-field="o.partner_id.vat"/>
-                        </div>
-                        <t t-set="SO" t-value="o.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')"/>
-                        <t t-set="driver" t-value="o.picking_ids and o.picking_ids.mapped('batch_id') and o.picking_ids.mapped('batch_id')[-1].truck_driver_id or ''"/>
-                        <div class="col-auto col-3 mw-100 mb-2" t-if="SO and SO.carrier_id" name="description">
-                            <strong>Shipping Method:</strong>
-                            <p class="m-0" t-field="SO.carrier_id"/>
-                        </div>
-                        <div class="col-auto col-3 mw-100 mb-2" t-if="driver" name="description">
-                            <strong>Driver:</strong>
-                            <p class="m-0" t-esc="driver.firstname +' '+ (driver.lastname and driver.lastname[0] or '')" style="padding-left:10px;"/>
-                        </div>
-                    </div>  -->
-
                     <t t-set="display_discount" t-value="any([l.discount for l in o.invoice_line_ids])"/>
 
                     <table class="table table-sm o_main_table" name="invoice_line_table">

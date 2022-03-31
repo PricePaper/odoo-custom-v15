@@ -28,7 +28,7 @@
             <field name="report_name">batch_delivery.report_ppt_selected_invoice_with_payment_quick_sale</field>
             <field name="report_file">batch_delivery.report_ppt_selected_invoice_with_payment_quick_sale</field>
             <field name="print_report_name">(object._get_report_base_filename())</field>
-            <field name="paperformat_id" ref="batch_delivery.paperformat_inv_std"/>
+            <!-- <field name="paperformat_id" ref="batch_delivery.paperformat_inv_std"/> -->
         </record>
 
         <record id="quick_sale_batch_picking_active_report" model="ir.actions.report">

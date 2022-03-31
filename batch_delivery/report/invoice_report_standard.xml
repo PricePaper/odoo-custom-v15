@@ -9,8 +9,8 @@
                     <div>
                         <strong t-field="company.partner_id.name"/>
                     </div>
-                    <div><t t-if="company.partner_id.street"><t t-esc="company.partner_id.street"/></t> <t t-if="company.partner_id.street2"><t t-esc="company.partner_id.street2"/></t></div>
-                    <div><t t-if="company.partner_id.city"><t t-esc="company.partner_id.city"/></t><t t-if="company.partner_id.state_id"><t t-esc="company.partner_id.state_id.name"/></t><t t-if="company.partner_id.zip"><t t-esc="company.partner_id.zip"/></t></div>
+                    <div><span t-if="company.partner_id.street"><t t-esc="company.partner_id.street"/></span> <span t-if="company.partner_id.street2">, <t t-esc="company.partner_id.street2"/></span></div>
+                    <div><span t-if="company.partner_id.city"><t t-esc="company.partner_id.city"/>,</span><span t-if="company.partner_id.state_id"><t t-esc="company.partner_id.state_id.name"/>,</span><span t-if="company.partner_id.zip"><t t-esc="company.partner_id.zip"/></span></div>
                     <div style="color:grey;font-style: italic;" t-field="company.report_header" name="moto"/>
                 </div>
                 <div class="text-right" style="font-weight: bold;">
@@ -35,14 +35,14 @@
                     <div class="col-6">
                         <span><b>Delivery Address:</b></span><br></br>
                         <div><span t-if="o.partner_shipping_id.customer_code">[<t t-esc="o.partner_shipping_id.customer_code"/>]</span><t t-esc="o.partner_shipping_id.name"></t></div>
-                        <div><t t-if="o.partner_shipping_id.street"><t t-esc="o.partner_shipping_id.street"/></t> <t t-if="o.partner_shipping_id.street2"><t t-esc="o.partner_shipping_id.street2"/></t></div>
-                        <div><t t-if="o.partner_shipping_id.city"><t t-esc="o.partner_shipping_id.city"/></t><t t-if="o.partner_shipping_id.state_id"><t t-esc="o.partner_shipping_id.state_id.name"/></t><t t-if="o.partner_shipping_id.zip"><t t-esc="o.partner_shipping_id.zip"/></t></div>
+                        <div><span t-if="o.partner_shipping_id.street"><t t-esc="o.partner_shipping_id.street"/>,</span> <span t-if="o.partner_shipping_id.street2"><t t-esc="o.partner_shipping_id.street2"/>,</span></div>
+                        <div><span t-if="o.partner_shipping_id.city"><t t-esc="o.partner_shipping_id.city"/>,</span><span t-if="o.partner_shipping_id.state_id"><t t-esc="o.partner_shipping_id.state_id.name"/>,</span><span t-if="o.partner_shipping_id.zip"><t t-esc="o.partner_shipping_id.zip"/></span></div>
                     </div>
                    <div class="col-6 text-left">
                        <span><b>Billing Address:</b></span><br></br>
                        <div><span t-if="o.partner_id.customer_code">[<t t-esc="o.partner_id.customer_code"/>]</span><t t-esc="o.partner_id.name"></t></div>
-                       <div><t t-if="o.partner_id.street"><t t-esc="o.partner_id.street"/></t> <t t-if="o.partner_id.street2"><t t-esc="o.partner_id.street2"/></t></div>
-                       <div><t t-if="o.partner_id.city"><t t-esc="o.partner_id.city"/></t><t t-if="o.partner_id.state_id"><t t-esc="o.partner_id.state_id.name"/></t><t t-if="o.partner_id.zip"><t t-esc="o.partner_id.zip"/></t></div>
+                       <div><span t-if="o.partner_id.street"><t t-esc="o.partner_id.street"/>,</span> <span t-if="o.partner_id.street2"><t t-esc="o.partner_id.street2"/>,</span></div>
+                       <div><span t-if="o.partner_id.city"><t t-esc="o.partner_id.city"/>,</span><span t-if="o.partner_id.state_id"><t t-esc="o.partner_id.state_id.name"/>,</span><span t-if="o.partner_id.zip"><t t-esc="o.partner_id.zip"/></span></div>
                     </div>
                 </div>
                 <div class="page">

@@ -489,7 +489,12 @@ class RMARetMerAuth(models.Model):
                         inv_values['sales_person_ids'] = [(6, 0, salereps.ids)]
                     if commission_rule_ids:
                         inv_values['commission_rule_ids'] = [(6, 0, commission_rule_ids.ids)]
-                    self.env['account.move'].with_context(mail_create_nosubscribe=True).create(inv_values)
+                    inv = self.env['account.move'].with_context(mail_create_nosubscribe=True).create(inv_values)
+                    for inv_line in inv.invoice_line_ids:
+                        for move_line in PK_IN.move_lines:
+                            if inv_line.product_id == move_line.product_id and inv_line.quantity == move_line.product_uom_qty:
+                                inv_line.write({'stock_move_id': move_line.id})
+                                break
 
                 if exchange_inv_line_vals:
                     ex_inv_vals = {

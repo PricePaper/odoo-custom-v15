@@ -98,8 +98,11 @@ class StockPicking(models.Model):
 
     @api.depends('sale_id.invoice_ids', 'move_lines')
     def _compute_invoice_ids(self):
-        for rec in self:
-            rec.invoice_ids = rec.sale_id.invoice_ids
+        for picking in self:
+            invoice_ids = picking.move_lines.mapped('invoice_line_ids').mapped('move_id')
+            if not invoice_ids:
+                invoice_ids = picking.sale_id.invoice_ids
+            picking.invoice_ids = invoice_ids
 
 
 
@@ -294,11 +297,9 @@ class StockPicking(models.Model):
                 picking.sale_id._create_invoices(final=True)
                 picking.is_invoiced = True
             if picking.batch_id:
-                invoice = picking.sale_id.invoice_ids.filtered(lambda rec: picking in rec.picking_ids)
+                invoice = picking.invoice_ids.filtered(lambda rec: rec.state not in ('posted', 'cancel' ))
                 invoice.write({'invoice_date': picking.batch_id.date})
-            for inv in picking.sale_id.invoice_ids.filtered(lambda rec: rec.state == 'draft'):
-                # if not inv.journal_id.sequence_id:
-                #     raise UserError(_('Please define sequence on the journal related to this invoice.'))
+            for inv in picking.invoice_ids.filtered(lambda rec: rec.state == 'draft'):
                 picking.invoice_ref = inv.name
 
     def write(self, vals):
@@ -318,7 +319,7 @@ class StockPicking(models.Model):
                     if batch.state in ('in_truck', 'in_progress'):
                         picking.mapped('sale_id').write({'batch_warning': 'This order has already been processed for shipment', 'state': 'done'})
                     if picking.is_invoiced:
-                        invoice = picking.sale_id.invoice_ids.filtered(lambda rec: picking in rec.picking_ids)
+                        invoice = picking.invoice_ids.filtered(lambda rec:  rec.state not in ('posted', 'cancel'))
                         invoice.write({'invoice_date': batch.date})
 
                 if not batch:
@@ -364,10 +365,10 @@ class StockPicking(models.Model):
 
     def action_cancel(self):
         for rec in self:
-            if self.mapped('invoice_ids').filtered(lambda r: rec in r.picking_ids and r.state == 'posted'):
+            if self.mapped('invoice_ids').filtered(lambda r:  r.state == 'posted'):
                 raise UserError("Cannot perform this action, invoice not in draft state")
             if not self._context.get('back_order_cancel', False):
-                self.mapped('invoice_ids').filtered(lambda r: rec in r.picking_ids).sudo().button_cancel()
+                self.mapped('invoice_ids').sudo().button_cancel()
             else:
                 self.mapped('invoice_ids').remove_zero_qty_line()
             if rec.transit_move_lines:

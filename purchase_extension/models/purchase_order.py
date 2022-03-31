@@ -309,7 +309,7 @@ class PurchaseOrderLine(models.Model):
 
 
     def _get_stock_move_price_unit(self):
-            
+
         self.ensure_one()
         order = self.order_id
         price_unit = self.price_unit
@@ -342,6 +342,7 @@ class PurchaseOrderLine(models.Model):
         res = super(PurchaseOrderLine, self).create(vals)
         if res.order_id and res.order_id.state == 'purchase':
             self._add_supplier_to_product()
+        res.filtered(lambda l: l.order_id.state == 'received')._create_or_update_picking()
         return res
 
     def _add_supplier_to_product(self):
@@ -386,7 +387,11 @@ class PurchaseOrderLine(models.Model):
                 break
 
     def write(self, vals):
+        lines = self.filtered(lambda l: l.order_id.state == 'received')
+        previous_product_qty = {line.id: line.product_uom_qty for line in lines}
         res = super(PurchaseOrderLine, self.with_context({'from_purchase_write': True})).write(vals)
+        if 'product_qty' in vals:
+            lines.with_context(previous_product_qty=previous_product_qty)._create_or_update_picking()
         for rec in self:
             if rec.order_id and rec.order_id.picking_ids:
                 for picking in rec.order_id.picking_ids.filtered(lambda r: r.state != 'done'):

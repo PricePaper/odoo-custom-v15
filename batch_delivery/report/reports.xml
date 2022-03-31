@@ -2,12 +2,10 @@
 <odoo>
     <data>
         <!--Invoice without payment stock picking batch-->
-        <record id="paperformat_inv_batch" model="report.paperformat">
+        <!-- <record id="paperformat_inv_batch" model="report.paperformat">
             <field name="name">Invoices without Payment</field>
             <field name="default" eval="True"/>
             <field name="format">custom</field>
-          <!--  <field name="page_height">323</field>
-            <field name="page_width">300</field>-->
             <field name="page_height">323</field>
             <field name="page_width">290</field>
             <field name="orientation">Portrait</field>
@@ -18,9 +16,9 @@
             <field name="header_line" eval="False"/>
             <field name="header_spacing">50</field>
             <field name="dpi">90</field>
-        </record>
+        </record> -->
 
-        <record id="paperformat_inv_std" model="report.paperformat">
+        <!-- <record id="paperformat_inv_std" model="report.paperformat">
             <field name="name">Invoices Std</field>
             <field name="default" eval="True"/>
            <field name="format">A4</field>
@@ -34,14 +32,14 @@
             <field name="header_line" eval="False"/>
             <field name="header_spacing">45</field>
             <field name="dpi">90</field>
-        </record>
+        </record> -->
 
         <record id="paperformat_batch_picking_ticket" model="report.paperformat">
             <field name="name">Batch Picking Ticket</field>
             <field name="default" eval="False"/>
-            <field name="format">custom</field>
-            <field name="page_height">290</field>
-            <field name="page_width">250</field>
+            <field name="format">Letter</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
             <field name="orientation">Portrait</field>
             <field name="margin_top">30</field>
             <field name="margin_bottom">0</field>
@@ -94,7 +92,7 @@
             <field name="report_file">batch_delivery.report_ppt_batch_invoice</field>
             <field name="print_report_name">(object._get_report_base_filename())</field>
             <field name="binding_model_id" eval="False"/>
-            <field name="paperformat_id" ref="batch_delivery.paperformat_inv_batch"/>
+            <!-- <field name="paperformat_id" ref="batch_delivery.paperformat_inv_batch"/> -->
         </record>
 
 
@@ -105,7 +103,7 @@
             <field name="report_name">batch_delivery.report_ppt_selected_invoice</field>
             <field name="report_file">batch_delivery.report_ppt_selected_invoice</field>
             <field name="print_report_name">object.picking_ids.mapped('batch_id') and 'Invoice - %s - %s' % (object.picking_ids.mapped('batch_id').truck_driver_id and object.picking_ids.mapped('batch_id').truck_driver_id.name, object.picking_ids.mapped('batch_id').date) or (object._get_report_base_filename())</field>
-            <field name="paperformat_id" ref="batch_delivery.paperformat_inv_batch"/>
+            <!-- <field name="paperformat_id" ref="batch_delivery.paperformat_inv_batch"/> -->
         </record>
 
         <record id="batch_picking_active_report" model="ir.actions.report">
@@ -228,7 +226,7 @@
             <field name="print_report_name">object.picking_ids.mapped('batch_id') and 'Invoice - %s - %s' % (object.picking_ids.mapped('batch_id').truck_driver_id and object.picking_ids.mapped('batch_id').truck_driver_id.name, object.picking_ids.mapped('batch_id').date) or (object._get_report_base_filename())</field>
             <field name="binding_model_id" ref="model_account_move"/>
             <field name="binding_type">report</field>
-            <field name="paperformat_id" ref="batch_delivery.paperformat_inv_std"/>
+            <!-- <field name="paperformat_id" ref="batch_delivery.paperformat_inv_std"/> -->
         </record>
 
         <record id="ppt_account_selected_invoices_with_payment_report" model="ir.actions.report">
@@ -240,7 +238,7 @@
             <field name="print_report_name">object.picking_ids.mapped('batch_id') and 'Invoice - %s - %s' % (object.picking_ids.mapped('batch_id').truck_driver_id and object.picking_ids.mapped('batch_id').truck_driver_id.name, object.picking_ids.mapped('batch_id').date) or (object._get_report_base_filename())</field>
             <field name="binding_model_id" ref="model_account_move"/>
             <field name="binding_type">report</field>
-            <field name="paperformat_id" ref="batch_delivery.paperformat_inv_std"/>
+            <!-- <field name="paperformat_id" ref="batch_delivery.paperformat_inv_std"/> -->
         </record>
 
          <record id="account.account_invoices" model="ir.actions.report">

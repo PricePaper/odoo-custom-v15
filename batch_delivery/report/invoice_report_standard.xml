@@ -9,12 +9,12 @@
                     <div>
                         <strong t-field="company.partner_id.name"/>
                     </div>
-                    <span t-field="company.partner_id"
-                          t-options='{"widget": "contact", "fields": ["address"], "no_marker": true}'/>
+                    <div><span t-if="company.partner_id.street"><t t-esc="company.partner_id.street"/></span> <span t-if="company.partner_id.street2">, <t t-esc="company.partner_id.street2"/></span></div>
+                    <div><span t-if="company.partner_id.city"><t t-esc="company.partner_id.city"/>,</span><span t-if="company.partner_id.state_id"><t t-esc="company.partner_id.state_id.name"/>,</span><span t-if="company.partner_id.zip"><t t-esc="company.partner_id.zip"/></span></div>
                     <div style="color:grey;font-style: italic;" t-field="company.report_header" name="moto"/>
                 </div>
                 <div class="text-right" style="font-weight: bold;">
-                    <span>Invoice(DO) Number:</span> <span t-esc="o.name if o.partner_id.bill_with_goods else ','.join(o.picking_ids.mapped('name'))" style="padding-left:10px;"/><br/>
+                    <span>Invoice Number:</span> <span t-esc="o.name if o.partner_id.bill_with_goods else ','.join(o.picking_ids.mapped('name'))" style="padding-left:10px;"/><br/>
                     <span>Date:</span><span t-field="o.invoice_date" style="padding-left:10px;"/><br/>
                     <span t-if="o.partner_id.customer_code">Partner Code: </span><span t-field="o.partner_id.customer_code" style="padding-left:10px;" t-if="o.partner_id.customer_code"/>
                 </div>
@@ -34,28 +34,17 @@
                 <div class="row">
                     <div class="col-6">
                         <span><b>Delivery Address:</b></span><br></br>
-                        <address t-field="o.partner_shipping_id"
-                             t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
-
+                        <div><span t-if="o.partner_shipping_id.customer_code">[<t t-esc="o.partner_shipping_id.customer_code"/>]</span><t t-esc="o.partner_shipping_id.name"></t></div>
+                        <div><span t-if="o.partner_shipping_id.street"><t t-esc="o.partner_shipping_id.street"/>,</span> <span t-if="o.partner_shipping_id.street2"><t t-esc="o.partner_shipping_id.street2"/>,</span></div>
+                        <div><span t-if="o.partner_shipping_id.city"><t t-esc="o.partner_shipping_id.city"/>,</span><span t-if="o.partner_shipping_id.state_id"><t t-esc="o.partner_shipping_id.state_id.name"/>,</span><span t-if="o.partner_shipping_id.zip"><t t-esc="o.partner_shipping_id.zip"/></span></div>
                     </div>
                    <div class="col-6 text-left">
                        <span><b>Billing Address:</b></span><br></br>
-                        <address t-field="o.partner_id"
-                             t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                       <div><span t-if="o.partner_id.customer_code">[<t t-esc="o.partner_id.customer_code"/>]</span><t t-esc="o.partner_id.name"></t></div>
+                       <div><span t-if="o.partner_id.street"><t t-esc="o.partner_id.street"/>,</span> <span t-if="o.partner_id.street2"><t t-esc="o.partner_id.street2"/>,</span></div>
+                       <div><span t-if="o.partner_id.city"><t t-esc="o.partner_id.city"/>,</span><span t-if="o.partner_id.state_id"><t t-esc="o.partner_id.state_id.name"/>,</span><span t-if="o.partner_id.zip"><t t-esc="o.partner_id.zip"/></span></div>
                     </div>
                 </div>
-
-                    <!--<t t-set="address">
-                    <span><b>Billing Address:</b></span><br></br>
-                    <address t-field="o.partner_id"
-                             t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
-                </t>-->
-                    <!--<t t-set="delivery_address">
-                    <span><b>Delivery Address:</b></span><br></br>
-                    <address t-field="o.partner_shipping_id"
-                             t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
-                </t>-->
-             <!--   <t t-call="web.address_layout"/>-->
                 <div class="page">
                      <h2>
                         <span t-if="o.move_type == 'out_invoice' and o.state == 'posted'">Invoice</span>
@@ -80,9 +69,6 @@
                        </th>
                        <th name="payment_term"   t-if="o.invoice_payment_term_id">
                            <strong>Payment Terms:</strong>
-                       </th>
-                       <th  t-if="o.name" name="description">
-                           <strong>Description:</strong>
                        </th>
                        <th  t-if="o.move_type == 'out_invoice'" name="due_date">
                            <t t-set="pterm_list"
@@ -116,9 +102,6 @@
                        </td>
                        <td name="payment_term"   t-if="o.invoice_payment_term_id" style="vertical-align: top;">
                            <p class="m-0" t-field="o.invoice_payment_term_id.note"/>
-                       </td>
-                       <td  t-if="o.name" name="description" style="vertical-align: top;">
-                           <p class="m-0" t-field="o.name"/>
                        </td>
                        <td  t-if="o.move_type == 'out_invoice'" name="due_date" style="vertical-align: top;">
                            <t t-set="duedate" t-value="max(line for line in pterm_list)"/>

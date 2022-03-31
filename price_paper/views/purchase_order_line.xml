@@ -20,6 +20,25 @@
                 </tree>
             </field>
         </record>
+
+        <record id="purchase.purchase_form_action" model="ir.actions.act_window">
+            <field name="name">Purchase Orders</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">purchase.order</field>
+            <field name="view_mode">tree,kanban,form,pivot,graph,calendar,activity</field>
+            <field name="view_id" ref="purchase.purchase_order_view_tree"/>
+            <field name="domain">[('state','not in',('cancel', 'draft', 'sent', 'in_progress'))]</field>
+            <field name="search_view_id" ref="purchase.purchase_order_view_search"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                No purchase order found. Let's create one!
+              </p><p>
+                Once you ordered your products to your supplier, confirm your request for quotation and it will turn into a purchase order.
+              </p>
+            </field>
+        </record>
+
         <record id="act_res_partner_2_purchase_order_line" model="ir.actions.act_window">
             <field name="name">Purchase Order Lines</field>
             <field name="res_model">purchase.order.line</field>

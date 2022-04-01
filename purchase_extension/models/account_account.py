@@ -43,7 +43,7 @@ class AccountInvoice(models.Model):
             'analytic_account_id': po_line.account_analytic_id.id,
             'analytic_tag_ids': [(6, 0, po_line.analytic_tag_ids.ids)],
             'purchase_line_id': po_line.id,
-            # 'move_id': self.id,
+            'move_id': self.id,
         }
         accounts = line.product_id.product_tmpl_id.get_product_accounts(fiscal_pos=line.purchase_line_id.order_id.fiscal_position_id)
         account = accounts['expense']
@@ -57,6 +57,7 @@ class AccountInvoice(models.Model):
         if not self.bill_receipt_id:
             return {}
         self.receipt_change_bill(self.bill_receipt_id)
+        self.bill_receipt_id = False
         return {}
 
     @api.onchange('vendor_bill_receipt_id')
@@ -64,6 +65,7 @@ class AccountInvoice(models.Model):
         if not self.vendor_bill_receipt_id:
             return {}
         self.receipt_change_bill(self.vendor_bill_receipt_id)
+        self.vendor_bill_receipt_id = False
         return {}
 
     def receipt_change_bill(self, receipt):
@@ -85,10 +87,22 @@ class AccountInvoice(models.Model):
             new_line.account_id = new_line._get_computed_account()
             new_line._onchange_price_subtotal()
             new_lines += new_line
-        self.invoice_line_ids += new_lines
+        # self.invoice_line_ids += new_lines
+        new_lines._onchange_mark_recompute_taxes()
 
+        # Compute invoice_origin.
+        origins = set(self.line_ids.mapped('purchase_line_id.order_id.name'))
+        self.invoice_origin = ','.join(list(origins))
 
+        # Compute ref.
+        refs = self._get_invoice_reference()
+        self.ref = ', '.join(refs)
 
+        # Compute payment_reference.
+        if len(refs) == 1:
+            self.payment_reference = refs[0]
+
+        self._onchange_currency()
         return {}
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

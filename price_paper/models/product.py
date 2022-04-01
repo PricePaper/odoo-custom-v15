@@ -74,7 +74,7 @@ class ProductProduct(models.Model):
 
     def action_open_quants(self):
         # Override to make the button readonly for non-inventory users.
-        if not self.env.user.has_group('stock.group_stock_user') and self.env.user.has_group('base.group_user'):
+        if not self.env.user.has_group('stock.group_stock_user'):
             return {}
         return super().action_open_quants()
 

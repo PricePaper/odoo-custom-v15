@@ -174,13 +174,14 @@
         <record id="base.res_partner_rule_private_employee" model="ir.rule">
             <field name="name">res.partner.rule.private.employee</field>
             <field name="model_id" ref="base.model_res_partner"/>
-            <field name="domain_force">
-                ['|', ('is_sales_person', '=', True),
-                 '|', '&amp;', ('create_uid', '=', user.id),
-                 ('sales_person_ids', '=', False), '|',
-                 ('sales_person_ids.id', '=', user.partner_id.id),
-                 '|', ('id', '=', user.partner_id.id),
-                 ('id', '=', user.company_id.partner_id.id)]
+            <field name="domain_force">['|', ('is_sales_person', '=', True),
+                                        '|', '&amp;', ('create_uid', '=', user.id),
+                                        ('sales_person_ids', '=', False), '|',
+                                        ('sales_person_ids.id', '=', user.partner_id.id),'|',
+                                        ('parent_id.sales_person_ids.id', '=', user.partner_id.id),
+                                        '|', ('id', '=', user.partner_id.id), '|',
+                                        ('id', '=', user.company_id.partner_id.id),'|',
+                                        ('id', 'in', [2,3]), ('user_ids', '!=', False)]
             </field>
             <field name="groups" eval="[
                 (4, ref('base.group_user')),
@@ -196,8 +197,8 @@
                                         ('sales_person_ids.id', '=', user.partner_id.id),'|',
                                         ('parent_id.sales_person_ids.id', '=', user.partner_id.id),
                                         '|', ('id', '=', user.partner_id.id), '|',
-                                        ('id', '=', user.company_id.partner_id.id),
-                                        ('id', 'in', [2,3])]
+                                        ('id', '=', user.company_id.partner_id.id),'|'
+                                        ('id', 'in', [2,3]), ('user_ids', '!=', False)]
             </field>
             <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
         </record>

@@ -18,7 +18,7 @@ class ResPartner(models.Model):
         view_id = self.env.ref('price_maintanance.add_new_pricelist_wiz').id
         context = {'record':self.id}
         return {
-            'name': 'Add Resource Lines',
+            'name': 'Add Pricelist Lines',
             'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'add.pricelist',

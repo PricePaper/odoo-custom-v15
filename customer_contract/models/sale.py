@@ -14,7 +14,7 @@ class SaleOrder(models.Model):
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         res = super(SaleOrder, self).onchange_partner_id()
-        if self.partner_id:
+        if self.partner_id and not self.storage_contract:
             contract = self.env['customer.contract.line'].search([
                 ('contract_id.expiration_date', '>', fields.Datetime.now()),
                 ('contract_id.partner_ids', 'in', self.partner_id.ids),

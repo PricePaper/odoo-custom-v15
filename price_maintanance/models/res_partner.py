@@ -47,6 +47,8 @@ class ResPartner(models.Model):
                 price_list_lines = partner.partner_pricelist_id.pricelist_id.customer_product_price_ids.ids
                 if price_list_lines:
                     partner.partner_pricelist_line_ids = [(6, 0, price_list_lines)]
+                else:
+                    partner.partner_pricelist_line_ids = False
             else:
                 partner.partner_pricelist_line_ids = False
 

@@ -312,10 +312,16 @@ class StockPickingBatch(models.Model):
         }
 
     def action_no_payment(self):
-        return self.write({'state': 'no_payment'})
+        self.ensure_one()
+        if self.state == 'done':
+            return self.write({'state': 'no_payment'})
+        raise UserError("You cannot do this operation, Batch %s is in an inconsistent state" % self.name)
 
     def action_to_shipping_done(self):
-        return self.write({'state': 'done'})
+        self.ensure_one()
+        if self.state in ('in_progress', 'in_truck', 'draft'):
+            return self.write({'state': 'done'})
+        raise UserError("You cannot do this operation, Batch %s is in an inconsistent state" % self.name)
 
     def view_invoices(self):
         pickings = self.picking_ids
@@ -371,6 +377,8 @@ class StockPickingBatch(models.Model):
             raise UserError(_('Please properly enter the returned amount'))
         if not self.cash_collected_lines:
             raise UserError(_('Please add cash collected lines before proceeding.'))
+        if self.payment_ids:
+            raise UserError('You are not allowed to do this operation')
         if self.cash_collected_lines and all(l.amount > 0 for l in self.cash_collected_lines):
             self.cash_collected_lines.create_payment()
         else:

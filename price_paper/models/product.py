@@ -18,8 +18,8 @@ OPERATORS = {
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    def action_open_quants(self):
-        return {}
+    # def action_open_quants(self):
+    #     return {}
 
     def _get_product_accounts(self):
         """ Add the stock accounts related to product to the result of super()

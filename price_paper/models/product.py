@@ -18,8 +18,8 @@ OPERATORS = {
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    def action_open_quants(self):
-        return {}
+    # def action_open_quants(self):
+    #     return {}
 
     def _get_product_accounts(self):
         """ Add the stock accounts related to product to the result of super()
@@ -74,7 +74,7 @@ class ProductProduct(models.Model):
 
     def action_open_quants(self):
         # Override to make the button readonly for non-inventory users.
-        if not self.env.user.has_group('stock.group_stock_user') and self.env.user.has_group('base.group_user'):
+        if not self.env.user.has_group('stock.group_stock_user'):
             return {}
         return super().action_open_quants()
 

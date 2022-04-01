@@ -90,9 +90,9 @@
                     <attribute name='domain'>[('product_ids.id', '=', active_id)]</attribute>
                 </xpath>
 
-                <xpath expr="//field[@name='uom_po_id']" position="attributes">
+                <!-- <xpath expr="//field[@name='uom_po_id']" position="attributes">
                     <attribute name='domain'>[('product_ids.id', '=', active_id)]</attribute>
-                </xpath>
+                </xpath> -->
 
                 <xpath expr="//notebook" position="inside">
                     <page name='addons_product' string='Addons Products'

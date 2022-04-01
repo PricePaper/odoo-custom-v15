@@ -24,7 +24,7 @@ class CustomerProductPrice(models.Model):
         for record in self:
             pricelist = record.partner_id.partner_pricelist_id.pricelist_id.customer_product_price_ids.filtered(lambda r: r.id == record.id)
             if pricelist:
-                pricelist.unlink()
+                pricelist.write({'pricelist_id':False})
 
     def _get_last_sale_date(self):
         for record in self:

@@ -43,7 +43,7 @@ class CustomerStatementPdfReport(models.AbstractModel):
                 aml_id = self.env['account.move.line'].browse(line['id'])
                 if str(today) > line['columns'][3]['name'] and not aml_id.reconciled and not aml_id.payment_id:
                     data['past_due'] = True
-                if not aml_id.reconciled and (aml_id.payment_id or line['caret_options'] == 'account.invoice.out'):
+                if not aml_id.reconciled and (aml_id.payment_id or line['caret_options'] == 'account.move'):
                     amount += aml_id.balance
                     amount_due = aml_id.balance
                     data['open_credits'].append(
@@ -52,8 +52,8 @@ class CustomerStatementPdfReport(models.AbstractModel):
                             'date': line['name'],
                             'due_date': line['columns'][3]['name'],
                             'amount': line['columns'][6]['name'] or '-' + line['columns'][8]['name'],
-                            'amount_due': ('$ ', '-$ ')[amount_due < 0] + str(float_round(abs(amount_due), 2) or 0.00),
-                            'running_balance': ('$ ', '-$ ')[amount < 0] + str(float_round(abs(amount), 2) or 0.00),
+                            'amount_due': ('$ ', '-$ ')[amount_due < 0] + str(round(abs(amount_due), 2) or 0.00),
+                            'running_balance': ('$ ', '-$ ')[amount < 0] + str(round(abs(amount), 2) or 0.00),
                         }
                     )
                 elif line['caret_options'] == 'account.payment':
@@ -70,7 +70,7 @@ class CustomerStatementPdfReport(models.AbstractModel):
                         }
                     )
         else:
-            data['cumulative'] = ('$ ', '-$ ')[amount < 0] + str(float_round(abs(amount), 2) or 0.0)
+            data['cumulative'] = ('$ ', '-$ ')[amount < 0] + str(round(abs(amount), 2) or 0.0)
         return data
 
     @api.model

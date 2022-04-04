@@ -25,6 +25,14 @@ class ProductProduct(models.Model):
                                help="Days worth of historical data to be taken into consideration for Fbprophet calculation",
                                default=1825)
 
+
+    def action_view_stock_move_lines(self):
+        self.ensure_one()
+        action = self.env["ir.actions.actions"]._for_xml_id("stock.stock_move_line_action")
+        action['domain'] = [('product_id', '=', self.id),('location_dest_id.is_transit_location','=',False)]
+        return action
+
+
     def reset_orderpoint(self):
         """
         Method to set the orderpoints(OP) for single product

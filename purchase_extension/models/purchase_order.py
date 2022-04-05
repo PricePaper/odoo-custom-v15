@@ -45,7 +45,7 @@ class PurchaseOrder(models.Model):
     @api.depends('order_line.sale_order_id')
     def _compute_sale_order_count(self):
         for rec in self:
-            rec.sale_order_count = len(rec.order_line.mapped('sale_order_id').ids) or len(
+            rec.sale_order_count = len(rec._get_sale_orders()) or len(rec.order_line.mapped('sale_order_id').ids) or len(
                 rec.order_line.mapped('move_dest_ids.sale_line_id.order_id').ids)
 
     @api.model

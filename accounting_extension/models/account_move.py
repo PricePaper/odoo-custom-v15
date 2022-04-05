@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from dateutil.relativedelta import relativedelta
+from odoo.exceptions import UserError
 
 
 class AccountMove(models.Model):
@@ -9,6 +10,24 @@ class AccountMove(models.Model):
 
     # field used in search view
     discount_date = fields.Date('Discount Till')
+
+    def button_draft(self):
+        executed_ids = self.env['account.move']
+        if not self.env.user.has_group('base.group_system'):
+            res = super(AccountMove, self).button_draft()
+            self.write({'discount_date': False})
+            return res
+        for move in self:
+            if self.statement_line_id:
+                st_line = move.statement_line_id
+                move.statement_line_id = False
+                super(AccountMove, move).button_draft()
+                move.statement_line_id = st_line.id
+                executed_ids |= move
+        res = super(AccountMove, self-executed_ids).button_draft()
+        self.write({'discount_date': False})
+        return res
+
 
     def js_remove_outstanding_partial(self, partial_id):
         # remove discount if payment is cancelled
@@ -96,10 +115,38 @@ class AccountMove(models.Model):
             self.discount_date = self.invoice_date + relativedelta(days=self.invoice_payment_term_id.due_days)
         return res
 
-    def button_draft(self):
-        res = super(AccountMove, self).button_draft()
-        self.write({'discount_date': False})
-        return res
+    # def button_draftaa(self):
+    #     res = super(AccountMove, self).button_draft()
+    #     self.write({'discount_date': False})
+    #     return res
+
+
+class AccountMoveLine(models.Model):
+    _inherit = 'account.move.line'
+
+    def reconcile(self):
+        ''' Reconcile the current move lines all together.
+        :return: A dictionary representing a summary of what has been done during the reconciliation:
+                * partials:             A recorset of all account.partial.reconcile created during the reconciliation.
+                * full_reconcile:       An account.full.reconcile record created when there is nothing left to reconcile
+                                        in the involved lines.
+                * tax_cash_basis_moves: An account.move recordset representing the tax cash basis journal entries.
+        '''
+
+        results = {}
+
+        if not self:
+            return super(AccountMoveLine, self).reconcile()
+        for line in self:
+            if line.reconciled:
+                raise UserError(_("You are trying to reconcile some entries that are already reconciled."))
+            if not line.account_id.reconcile and line.account_id.internal_type != 'liquidity':
+                raise UserError(_("Account %s does not allow reconciliation. First change the configuration of this account to allow it.")
+                                % line.account_id.display_name)
+            if line.move_id.state != 'posted':
+                raise UserError(_('You can only reconcile posted entries. %s' % line.move_id.name))
+        return super(AccountMoveLine, self).reconcile()
+
 
 
 """

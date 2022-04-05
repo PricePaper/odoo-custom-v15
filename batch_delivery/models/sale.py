@@ -94,7 +94,7 @@ class SaleOrderLine(models.Model):
             outgoing_moves, incoming_moves = line._get_outgoing_incoming_moves()
             for move in outgoing_moves.filtered(lambda rec: rec.state not in ('cancel', 'done')):
                 need_to_process = True
-                if any(move.mapped('move_orig_ids').mapped('created_purchase_line_id').mapped('order_id.state')) != 'draft':
+                if any(move.mapped('move_orig_ids').mapped('created_purchase_line_id').mapped('order_id').filtered(lambda rec: rec.state  != 'draft')):
                     continue
                 for transit_move in move.mapped('move_orig_ids').filtered(lambda rec: rec.state not in ('cancel', 'done')):
                     transit_move._do_unreserve()

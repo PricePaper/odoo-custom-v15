@@ -290,13 +290,14 @@ class ProductProduct(models.Model):
                     return new_products.name_get()
         return super(ProductProduct, self).name_search(name=name, args=args, operator=operator, limit=limit)
 
-    @api.depends('seller_ids')
+    @api.depends('seller_ids','seller_ids.sequence')
     def compute_product_vendor(self):
         """
         Compute vendor of the product
         """
         for rec in self:
-            rec.vendor_id = rec.seller_ids and rec.seller_ids[0].name.id or False
+            vendors_sorted = rec.seller_ids and self.seller_ids.sorted('sequence')
+            rec.vendor_id = vendors_sorted and vendors_sorted[0].name.id or False
 
     @api.depends('standard_price', 'burden_percent')
     def compute_sale_burden(self):

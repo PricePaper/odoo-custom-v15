@@ -296,7 +296,7 @@ class ProductProduct(models.Model):
         Compute vendor of the product
         """
         for rec in self:
-            vendors_sorted = rec.seller_ids and self.seller_ids.sorted('sequence')
+            vendors_sorted = rec.seller_ids and rec.seller_ids.sorted('sequence')
             rec.vendor_id = vendors_sorted and vendors_sorted[0].name.id or False
 
     @api.depends('standard_price', 'burden_percent')

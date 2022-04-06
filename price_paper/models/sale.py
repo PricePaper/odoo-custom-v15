@@ -761,7 +761,10 @@ class SaleOrderLine(models.Model):
     @api.depends('state')
     def _compute_product_uom_readonly(self):
         for line in self:
-            line.product_uom_readonly = line.state in ['done', 'cancel']
+            if line._origin:
+                line.product_uom_readonly = line.state in ['sale','done', 'cancel']
+            else:
+                line.product_uom_readonly = line.state in ['done', 'cancel']
 
     @api.depends('product_id', 'product_uom_qty', 'price_unit', 'order_id.delivery_cost')
     def calculate_profit_margin(self):

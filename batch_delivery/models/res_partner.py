@@ -17,6 +17,7 @@ class ResPartner(models.Model):
     bill_with_goods = fields.Boolean(string='Bill With Goods', default=True)
     location_url = fields.Char(compute='compute_location_url', string="Location URL")
     is_driver_available = fields.Boolean(string='Is Driver Available', default=True)
+    private_partner = fields.Boolean(string='Is Private', default=False)
 
     @api.depends('partner_latitude', 'partner_longitude')
     def compute_location_url(self):

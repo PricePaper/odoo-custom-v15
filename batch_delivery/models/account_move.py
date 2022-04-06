@@ -14,6 +14,7 @@ class AccountMove(models.Model):
     picking_count = fields.Integer(string="Delivery Count", compute='_compute_picking_ids')
     invoice_has_outstanding = fields.Boolean(search="_search_has_outstanding")
     out_standing_credit = fields.Float(compute='_compute_out_standing_credit', string="Out Standing")
+    private_partner = fields.Boolean(string='Is Private', default=False,related='partner_id.private_partner')
 
     def _get_mail_template(self):
         """

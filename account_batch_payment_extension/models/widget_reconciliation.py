@@ -9,18 +9,21 @@ class AccountReconciliation(models.AbstractModel):
 
     @api.model
     def get_move_lines_for_bank_statement_line(self, st_line_id, partner_id=None, excluded_ids=None, search_str=False, offset=0, limit=None, mode=None):
+        print(mode,'***************************************inside \t\n\n\n')
         if mode == 'rp':
             aml_rec = self.env['account.move.line']
             batch_name = {}
             st_line = self.env['account.bank.statement.line'].browse(st_line_id)
             for batch in self.env['account.batch.payment'].search([('state', '!=', 'reconciled')], order='id asc'):
-                if batch.amount == abs(st_line.amount):
+                print('1111loop', batch.id, abs(batch.amount) == abs(st_line.amount), batch.amount , abs(st_line.amount))
+                if abs(batch.amount) == abs(st_line.amount):
                     lines = batch.payment_ids.mapped('move_id').mapped('line_ids').filtered(
                         lambda rec: rec.account_id.internal_type not in (
                             'receivable', 'payable') and rec.id not in excluded_ids or [])
                     batch_name.update({line: batch.name for line in lines})
                     aml_rec |= lines
-
+                    break
+            print(aml_rec)
             if aml_rec:
                 js_vals_list = []
                 recs_count = len(aml_rec)
@@ -28,13 +31,14 @@ class AccountReconciliation(models.AbstractModel):
                     vals = self._prepare_js_reconciliation_widget_move_line(st_line, line, recs_count=recs_count)
                     vals.update({'name': '%s - %s' % (vals['name'], batch_name.get(line))})
                     js_vals_list.append(vals)
-                print(js_vals_list)
+                print('\n--------------------\n\n',js_vals_list)
                 if excluded_ids:
                     excluded_ids += aml_rec.ids
                 else:
                     excluded_ids = aml_rec.ids
 
                 js_vals = super(AccountReconciliation, self).get_move_lines_for_bank_statement_line(st_line_id, partner_id, excluded_ids, search_str, offset, limit, mode)
+                print(js_vals)
                 for val in js_vals:
                     js_vals_list.append(val)
                 return js_vals_list

@@ -758,6 +758,11 @@ class SaleOrderLine(models.Model):
     scraped_qty = fields.Float(compute='_compute_scrape_qty', string='Quantity Scraped', store=False)
     date_planned = fields.Date(related='order_id.release_date', store=False, readonly=True, string='Date Planned')
 
+    @api.depends('state')
+    def _compute_product_uom_readonly(self):
+        for line in self:
+            line.product_uom_readonly = line.state in ['done', 'cancel']
+
     @api.depends('product_id', 'product_uom_qty', 'price_unit', 'order_id.delivery_cost')
     def calculate_profit_margin(self):
         """

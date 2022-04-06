@@ -12,6 +12,8 @@ class StockMove(models.Model):
         if self._context.get('from_purchase_write'):
             if 'price_unit' in res:
                 res.remove('price_unit')
+            if 'propagate_cancel' in res:
+                res.remove('propagate_cancel')
         return res
 
 

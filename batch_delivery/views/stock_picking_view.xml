@@ -411,13 +411,6 @@
                 <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='quantity_done']" position="attributes">
                     <attribute name="sum">Total</attribute>
                 </xpath>
-
-                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='reserved_availability']" position="after">
-                    <field name="procure_method" invisible="1"/>
-                    <button name="action_show_reset_window" help="Reset Reserve Qty" type="object" icon="fa-refresh text-success"
-                            attrs="{'invisible': ['|', '|',('parent.picking_type_code', '=', 'incoming'), ('parent.state', 'in', ['done', 'cancel']), ('procure_method', '!=', 'make_to_stock')]}"/>
-                </xpath>
-
                 <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_uom']" position="after">
                     <field name="unit_price" string="Unit Price"/>
                     <field name="total" sum="Total"/>

@@ -1026,7 +1026,7 @@ class SaleOrderLine(models.Model):
             if line.is_delivery and line.order_id.carrier_id and line.order_id.carrier_id.delivery_type not in [
                 'base_on_rule', 'fixed']:
                 line.working_cost = line.order_id.delivery_cost
-                line.lst_price = line.order_id.delivery_price
+                line.lst_price = line.order_id.delivery_cost
 
     def unlink(self):
         """

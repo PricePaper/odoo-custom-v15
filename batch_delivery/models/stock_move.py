@@ -135,7 +135,7 @@ class StockMove(models.Model):
                 move.message_post(
                     body=msg,
                     subtype_id=self.env.ref('mail.mt_note').id)
-                move.picking_id.message_post(
+                move.transit_picking_id.message_post(
                     body=msg,
                     subtype_id=self.env.ref('mail.mt_note').id)
         return self
@@ -201,11 +201,10 @@ class StockMove(models.Model):
         move_line_vals_list = []
         for move in self.filtered(lambda m: m.state not in ['done', 'cancel']):
             rounding = roundings[move]
-            missing_reserved_uom_quantity = move.qty_update - reserved_availability[move]
+            missing_reserved_uom_quantity = qty - reserved_availability[move]
             missing_reserved_quantity = move.product_uom._compute_quantity(missing_reserved_uom_quantity,
                                                                            move.product_id.uom_id,
                                                                            rounding_method='HALF-UP')
-            print(move, missing_reserved_quantity, qty, reserved_availability)
             if move._should_bypass_reservation():
                 # create the move line(s) but do not impact quants
                 if move.move_orig_ids:

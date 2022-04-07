@@ -35,11 +35,9 @@ class BrowseLines(models.TransientModel):
         order_line_lst = []
         for order_line in lines:
             order_lines = order_line.so_line_id
-            invoice = order_lines.order_id.mapped('invoice_ids').filtered(
-                lambda m: m.state == 'draft')
             move_line = order_lines.mapped('move_ids').filtered(
                 lambda m: m.state == 'done' and m.picking_id.is_return == False and m.picking_id.state == 'done')
-            if not move_line and invoice:
+            if not move_line:
                 product_name= order_line.product_id.name
                 raise ValidationError("Selected product %s is not delivered in the delivery order" % product_name)
 

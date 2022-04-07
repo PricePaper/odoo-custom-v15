@@ -330,7 +330,7 @@ class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
     stock_move_ids = fields.Many2many(comodel_name='stock.move', compute="_get_stock_move_ids", string="Stock Moves")
-    stock_move_id = fields.Many2one('stock.move', 'Stock Move')
+    stock_move_id = fields.Many2one('stock.move', 'Stock Move', index=True)
 
     def _get_stock_move_ids(self):
         for line in self:

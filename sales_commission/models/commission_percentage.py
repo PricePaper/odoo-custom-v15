@@ -19,10 +19,10 @@ class CommissionPercentage(models.Model):
 
     @api.constrains('sale_person_id', 'partner_id')
     def check_duplicates(self):
-        result = self.search([('sale_person_id', '=', self.sale_person_id.id), ('partner_id', '=', self.partner_id.id), ('id', '!=', self.id)])
-
-        if result:
-            raise ValidationError('Combination of sales_person_id and partner_id must be unique')
+        for rec in self:
+            result = self.search([('sale_person_id', '=', rec.sale_person_id.id), ('partner_id', '=', rec.partner_id.id), ('id', '!=', rec.id)])
+            if result:
+                raise ValidationError('Combination of sales_person_id and partner_id must be unique')
 
 
 

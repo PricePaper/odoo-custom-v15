@@ -48,7 +48,7 @@ class PendingProductView(models.TransientModel):
             elif self._context.get('default_batch_ids'):
                 records = self.env['stock.picking.batch'].browse(self._context.get('default_batch_ids')). \
                     mapped('picking_ids').filtered(lambda pick: pick.state not in ['done', 'cancel']). \
-                    mapped('move_lines').filtered(lambda l: l.product_uom_qty != l.reserved_availability)
+                    mapped('transit_move_lines').filtered(lambda l: l.product_uom_qty != l.reserved_availability)
 
             res['pending_line_ids'] = [(0, 0, {
                 'product_id': move.product_id.id,

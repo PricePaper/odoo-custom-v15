@@ -20,6 +20,13 @@ class AccountReconciliation(models.AbstractModel):
                             'receivable', 'payable') and rec.id not in excluded_ids or [])
                     batch_name.update({line: batch.name for line in lines})
                     aml_rec |= lines
+            if not aml_rec:
+                for common in self.env['batch.payment.common'].search([('actual_returned', '=', abs(st_line.amount))]):
+                    lines = common.payment_ids.mapped('move_id').mapped('line_ids').filtered(
+                        lambda rec: rec.account_id.internal_type not in (
+                            'receivable', 'payable') and rec.id not in excluded_ids or [])
+                    batch_name.update({line: common.name for line in lines})
+                    aml_rec |= lines
             if aml_rec:
                 js_vals_list = []
                 recs_count = len(aml_rec)

@@ -42,7 +42,7 @@ class StockPickingBatch(models.Model):
         ('done', 'Shipping Done'),
         ('no_payment', 'No Payment'),
         ('paid', 'Paid'),
-        ('cancel', 'Cancelled')], default='draft',
+        ('cancel', 'Cancelled')], default='draft', compute=False,
         copy=False, tracking=True, required=True)
 
     @api.depends('picking_ids.invoice_ids')

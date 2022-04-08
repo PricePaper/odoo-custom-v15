@@ -184,4 +184,10 @@ class AccountPayment(models.Model):
 
         return stub_pages
 
+    def _synchronize_from_moves(self, changed_fields):
+        self = self - self.filtered(lambda rec: rec.date < self.company_id._get_user_fiscal_lock_date())
+        return super(AccountPayment, self)._synchronize_from_moves(changed_fields)
+
+
+
 AccountPayment()

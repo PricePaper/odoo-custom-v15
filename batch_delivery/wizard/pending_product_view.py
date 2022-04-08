@@ -16,7 +16,7 @@ class PendingProductView(models.TransientModel):
         Extract the pickings from batch and filtered out the pending move lines.
         """
         records = self.batch_ids.mapped('picking_ids') if self.batch_ids else self.picking_ids
-        move_lines = records.filtered(lambda pick: pick.state not in ['done', 'cancel']).mapped('move_lines').ids
+        move_lines = records.filtered(lambda pick: pick.state not in ['done', 'cancel']).mapped('transit_move_lines').ids
         action = self.sudo().env.ref('batch_delivery.stock_move_pending_product_action').read()[0]
         action['domain'] = [('id', 'in', move_lines)]
         return action
@@ -48,7 +48,7 @@ class PendingProductView(models.TransientModel):
             elif self._context.get('default_batch_ids'):
                 records = self.env['stock.picking.batch'].browse(self._context.get('default_batch_ids')). \
                     mapped('picking_ids').filtered(lambda pick: pick.state not in ['done', 'cancel']). \
-                    mapped('move_lines').filtered(lambda l: l.product_uom_qty != l.reserved_availability)
+                    mapped('transit_move_lines').filtered(lambda l: l.product_uom_qty != l.reserved_availability)
 
             res['pending_line_ids'] = [(0, 0, {
                 'product_id': move.product_id.id,

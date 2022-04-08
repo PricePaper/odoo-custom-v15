@@ -33,7 +33,6 @@
                         <bold>Remove all zero amount lines before validating</bold>
                     </div>
                     <sheet>
-                      <widget name="web_ribbon" title="Posted" attrs="{'invisible': [('state','!=', 'paid')]}"/>
                         <div class="oe_button_box" name="button_box">
                             <button name="view_batch_payments"
                                     type="object"
@@ -42,10 +41,8 @@
                                     attrs="{'invisible': [('payment_ids', '=', [])]}">
                                 <field name="batch_payment_count" widget="statinfo" string="Payments"/>
                             </button>
-
-
-
                         </div>
+                        <widget name="web_ribbon" title="Posted" attrs="{'invisible': [('state','!=', 'paid')]}"/>
                         <div class="oe_title">
                             <h1>
                                 <field name="name" class="oe_inline" readonly="1"/>

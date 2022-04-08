@@ -15,6 +15,16 @@ class Product(models.Model):
         for product in self:
             product.transit_qty = qty_dict[product.id]['qty_available']
 
+    @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state')
+    @api.depends_context(
+        'lot_id', 'owner_id', 'package_id', 'from_date', 'to_date',
+        'location', 'warehouse',
+    )
+    def _compute_quantities(self):
+        super(Product, self)._compute_quantities()
+        for product in self:
+            product.outgoing_qty -= product.transit_qty
+
     def action_open_transit_moves(self):
         transit_location = self.env['stock.location'].search([('is_transit_location', '=', True)])
         res = self.with_context(location=transit_location.ids).action_open_quants()
@@ -23,7 +33,7 @@ class Product(models.Model):
     def get_quantity_in_sale(self):
         self.ensure_one()
         moves = self.stock_move_ids.filtered(lambda move: move.sale_line_id and move.state not in ['cancel', 'done'] \
-                                                          and not move.transit_picking_id and move.picking_code == 'outgoing')
+                                                          and not move.transit_picking_id and move.picking_code == 'outgoing' and move.picking_id.state not in ['cancel', 'done', 'in_transit'])
         sale_lines = moves.mapped('sale_line_id').ids
 
         action = self.sudo().env.ref('price_paper.act_product_2_sale_order_line').read()[0]

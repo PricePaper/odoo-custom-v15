@@ -24,7 +24,12 @@ class SaleOrder(models.Model):
     gross_profit = fields.Monetary(compute='calculate_gross_profit', string='Predicted Profit')
     is_quotation = fields.Boolean(string="Create as Quotation", default=False, copy=False)
     profit_final = fields.Monetary(string='Profit')
-    state = fields.Selection(selection_add=[
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('sent', 'Draft Order Sent'),
+        ('sale', 'Sales Order'),
+        ('done', 'Locked'),
+        ('cancel', 'Cancelled'),
         ('waiting', 'Waiting'),
         ('ordered', 'Ordered'),
         ('received', 'Received'),

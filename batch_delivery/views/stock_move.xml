@@ -75,7 +75,8 @@
             <field eval="8" name="priority"/>
             <field name="arch" type="xml">
                 <tree string="Moves" create="0" editable="top">
-                    <field name="reference" readonly="1"/>
+                    <!-- <field name="reference" readonly="1"/> -->
+                    <field name="transit_picking_id" readonly="1" string="Reference"/>
                     <field name="picking_type_id" invisible="1"/>
                     <field name="partner_id"/>
                     <field name="product_id" readonly="1" optional="hide"/>

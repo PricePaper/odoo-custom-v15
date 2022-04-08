@@ -169,30 +169,33 @@ class AccountMove(models.Model):
                     move.invoice_line_ids.mapped('sale_line_ids').mapped('is_delivery')):
                 move.invoice_line_ids.sudo().unlink()
 
-    def action_post(self):
+    def picking_done(self):
+        stock_picking = self.env['stock.picking']
+        for pick in self.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')):
+            move_info = pick.move_lines.filtered(lambda m: m.quantity_done < m.product_uom_qty)
+            if move_info.ids:
+                pick.make_picking_done()
+            else:
+                pick.button_validate()
+        stock_picking.make_picking_done()
+
+    def _post(self, soft=True):
         """
         Override super method to check some custom conditions before posting a move
         """
         for move in self.filtered(lambda rec: rec.move_type in ('out_invoice', 'out_refund')):
             move.remove_zero_qty_line()
-        res = super().action_post()
+        res = super()._post(soft)
         for move in self.filtered(lambda rec: rec.move_type in ('out_invoice', 'out_refund')):
-            # move.remove_zero_qty_line()
-            # if move.picking_ids.filtered(lambda rec: rec.state == 'cancel'):
-            #     raise UserError(
-            #         'There is a Cancelled Picking (%s) linked to this invoice.' % move.picking_ids.filtered(lambda rec: rec.state == 'cancel').mapped(
-            #             'name'))
             if move.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')):
-                # move.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')).make_picking_done()
-                stock_picking = self.env['stock.picking']
-                for pick in move.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')):
-                    move_info = pick.move_lines.filtered(lambda m: m.quantity_done < m.product_uom_qty)
-                    if move_info.ids:
-                        stock_picking |= pick
-                    else:
-                        pick.button_validate()
-                    stock_picking.make_picking_done()
+                move.picking_done()
             move.line_ids.mapped('sale_line_ids').mapped('order_id').filtered(lambda rec: rec.storage_contract is False).action_done()
+
+            if move.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')):
+                move.picking_done()
+
+            if move.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')):
+                raise UserError(_('Picking is not in done state'))
         return res
 
     def set_name_inv(self, name):
@@ -330,7 +333,7 @@ class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
     stock_move_ids = fields.Many2many(comodel_name='stock.move', compute="_get_stock_move_ids", string="Stock Moves")
-    stock_move_id = fields.Many2one('stock.move', 'Stock Move')
+    stock_move_id = fields.Many2one('stock.move', 'Stock Move', index=True)
 
     def _get_stock_move_ids(self):
         for line in self:

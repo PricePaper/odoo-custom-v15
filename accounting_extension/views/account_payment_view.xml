@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+
+        <record id="view_account_payment_form_inherited_price_paper" model="ir.ui.view">
+            <field name="name">account.payment.form.inherited</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account_check_printing.view_account_payment_form_inherited" />
+            <field name="arch" type="xml">
+                <xpath expr="//widget[@name='web_ribbon']" position='attributes'>
+                    <attribute name="attrs">{'invisible': ['|', ('is_move_sent', '!=', True), ('is_reconciled', '=', True)]}</attribute>
+                </xpath>
+            </field>
+        </record>
+
         <template id="custom_ppt_vendor_ckus_stub" inherit_id="l10n_us_check_printing.ckus_stub">
             <xpath expr="//table/thead/tr/th[4]" position="attributes">
                 <attribute name="t-if">not page['have_bills']</attribute>

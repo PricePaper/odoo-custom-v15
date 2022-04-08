@@ -763,6 +763,27 @@ class SaleOrderLine(models.Model):
     scraped_qty = fields.Float(compute='_compute_scrape_qty', string='Quantity Scraped', store=False)
     date_planned = fields.Date(related='order_id.release_date', store=False, readonly=True, string='Date Planned')
 
+    @api.depends('invoice_lines.move_id.state', 'invoice_lines.quantity', 'untaxed_amount_to_invoice')
+    def _compute_qty_invoiced(self):
+        """
+        over ride to fix rounding issue.
+        """
+        for line in self:
+            qty_invoiced = 0.0
+            for invoice_line in line._get_invoice_lines():
+                if invoice_line.move_id.state != 'cancel':
+                    if invoice_line.move_id.move_type == 'out_invoice':
+                        if invoice_line.product_uom_id != line.product_uom:
+                            qty_invoiced += invoice_line.product_uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
+                        else:
+                            qty_invoiced += invoice_line.quantity
+                    elif invoice_line.move_id.move_type == 'out_refund':
+                        if invoice_line.product_uom_id != line.product_uom:
+                            qty_invoiced -= invoice_line.product_uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
+                        else:
+                            qty_invoiced -= invoice_line.quantity
+            line.qty_invoiced = qty_invoiced
+
     @api.depends('state')
     def _compute_product_uom_readonly(self):
         for line in self:

@@ -82,6 +82,25 @@ class AddSaleHistoryPoLine(models.TransientModel):
                     min_qty = seller_record[0].min_qty
             rec.min_qty = min_qty
 
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        """
+        Overriden to dynamically change
+        the field names of the month fields
+        """
+        res = super(AddSaleHistoryPoLine, self).fields_get(allfields, attributes=attributes)
+        current_date = date.today()
+        first_day = current_date.replace(day=1)
+        first_month_list = [str(first_day + relativedelta(months=-x)) for x in range(0, 15)]
+        first_month_list = [datetime.strptime(s, '%Y-%m-%d').strftime('%b%y') for s in first_month_list]
+        date_matrix = {'month' + str(x): ele for x, ele in zip(range(1, 16), first_month_list)}
+
+        for k in date_matrix.keys():
+            if k in res.keys():
+                res[k]['string'] = date_matrix[k]
+        return res
+
+
     @api.depends('product_id')
     def _compute_op_min_max_days(self):
         """

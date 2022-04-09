@@ -13,7 +13,14 @@
                             });
                         </script>
                         <style>
-                            table.o_list_view tbody tr td:nth-child(even){background-color:#e1e1e1 !important;}
+                            .custom_column [data-name="product_pseudo_id"]{
+                            width: 400px !important;
+                            max-width: 400px !important;
+                            }
+                        </style>
+                        <style>
+                            .o_field_widget[name=sale_history_ids] .o_list_view tr  td:nth-child(even){background-color:#D0D0D0 !important;}
+
                         </style>
                         <p class="oe_grey">
                             <b>Please enter the new quantity before pressing ADD LINE button to add the product to the
@@ -33,15 +40,15 @@
                         </group>
                         <field name="sale_history_ids">
                             <tree create="0" delete="0" editable="top" decoration-danger="is_not_lowest_price==True" decoration-muted="is_expired==True"
-                                  limit="10">
+                                  limit="10" class="custom_column">
                                 <field name="new_qty" style="color:blue" help="New quantity to be ordered"/>
                                 <field name="product_pseudo_id" widget="product_external_drilldown" readonly="1"
-                                       tabindex="0" style="width:400px;"/>
+                                       tabindex="0"/>
                                 <field name="product_id" invisible="1"/>
                                 <field name="product_uom" readonly='1' tabindex="0" widget="selection"
                                        help="Unit of measure"/>
                                 <field name="min_qty" readonly='1' tabindex="0" help="Minimum quantity to purchase" style="color:#002780;font-weight: bold;"/>
-                                <field name="product_oh_qty" readonly='1' tabindex="0" help="On hand quantity"/>
+                                <field name="product_oh_qty" readonly='1' tabindex="0" help="On hand quantity" style="background:#FFFF99;" />
                                 <field name="product_ip_qty" readonly='1' tabindex="0" help="In Purchase quantity"/>
                                 <field name="product_price" readonly='1' tabindex="0"
                                        help="Price for which this product is ordered from this vendor"/>

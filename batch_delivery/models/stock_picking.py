@@ -240,6 +240,14 @@ class StockPicking(models.Model):
     def action_make_transit(self):
         for picking in self:
             if picking.state not in ['in_transit', 'done']:
+                if picking.id == int(self.env['ir.config_parameter'].sudo().get_param('exclude_transit_picking', 0)):
+                    picking.write({
+                        'is_transit': True,
+                        'transit_date': fields.Date.context_today(picking)
+                    })
+                    if picking.batch_id:
+                        picking.sale_id.write({'delivery_date': picking.batch_id.date})
+                    continue
                 for line in picking.transit_move_lines:
                     line.quantity_done = line.reserved_availability
                 if not any(picking.transit_move_lines.mapped('quantity_done')):

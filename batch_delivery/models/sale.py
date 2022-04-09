@@ -11,6 +11,20 @@ class SaleOrder(models.Model):
     delivery_date = fields.Date(string="Delivery Date")
     batch_warning = fields.Text(string='Shipment Progress wrarning Message', copy=False)
 
+    def _get_action_view_picking(self, pickings):
+        """
+        view for sales man
+        """
+        action = super(SaleOrder, self)._get_action_view_picking(pickings)
+        if self.env.user.user_has_groups('sales_team.group_sale_salesman') and (not self.env.user.user_has_groups('stock.group_stock_user') or not self.env.user.user_has_groups('account.group_account_invoice')):
+            form_view = [(self.env.ref('batch_delivery.view_picking_form_inherited_pricepaper').id, 'form')]
+            tree_view = [(self.env.ref('stock.vpicktree').id, 'tree')]
+            if len(pickings) > 1:
+                action['views'] = tree_view + form_view
+            elif pickings:
+                action['views'] = form_view
+        return action
+
     @api.depends('order_line.price_lock')
     def _compute_price_lock(self):
         for rec in self:

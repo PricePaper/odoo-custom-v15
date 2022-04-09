@@ -260,7 +260,7 @@ class SaleOrder(models.Model):
         logging.error(except_view)
         return True
 
-    def action_cancel(self):
+    def _action_cancel(self):
         self.ensure_one()
         self = self.with_context(action_cancel=True)
         self.write({
@@ -284,7 +284,7 @@ class SaleOrder(models.Model):
                         po_not_to_do |= po_line.order_id
         (purchase_order - po_not_to_do).button_cancel()
         self.order_line.filtered('storage_contract_line_id').write({'product_uom_qty': 0})
-        return super(SaleOrder, self).action_cancel()
+        return super(SaleOrder, self)._action_cancel()
 
     def action_waiting(self):
         self.ensure_one()
@@ -473,16 +473,18 @@ class SaleOrder(models.Model):
         auto save the delivery line.
         """
         amount = {}
-        for order in self:
-            if order.state == 'sale':
-                amount[order.id] = order.amount_total
+        if vals.get('order_line', False):
+            for order in self:
+                if order.state == 'sale':
+                    amount[order.id] = order.amount_total
         res = super(SaleOrder, self).write(vals)
         for order in self:
             if order.id in amount and amount[order.id] < order.amount_total:
                 if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
                     if order.picking_ids.filtered(lambda r: r.state == 'in_transit'):
                         raise UserError('You can not add product to a Order which has a DO in transit state')
-                    order.action_cancel()
+                    order._action_cancel()
+                    order.message_post(body='Cancel Reason : Credit limit Exceed Auto cancel')
                     order.action_draft()
                     order.action_confirm()
 
@@ -1072,7 +1074,6 @@ class SaleOrderLine(models.Model):
             for line in self:
 
                 if line.is_delivery and line.order_id.state == 'sale' and lines_exist == 1 and not self._context.get('adjust_delivery'):
-                    print(g)
                     raise ValidationError(
                         'You cannot delete a Delivery line,since the sale order is already confirmed,please refresh the page to undo')
                 if line.is_delivery and base:

@@ -258,6 +258,8 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">sale.order</field>
             <field name="view_mode">tree,form</field>
+            <field name="domain">['|', '|', ('hold_state','=', 'price_hold'), ('hold_state','=', 'credit_hold'), ('hold_state','=', 'both_hold')]</field>
+            <field name="view_id" ref="price_paper.sale_order_tree_inherit_price" />
             <field name="search_view_id" ref="sale_order_view_search_credit_exceeded"/>
             <field name="context">{"search_default_ready_to_release": 1, "search_default_release_price_hold": 1}</field>
             <field name="help" type="html">

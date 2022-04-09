@@ -23,6 +23,10 @@ class SaleOrder(models.Model):
                 action['views'] = tree_view + form_view
             elif pickings:
                 action['views'] = form_view
+            if action.get('context'):
+                action['context']['edit'] = False
+            else:
+                action['context'] = {'create': False, 'edit': False}
         return action
 
     @api.depends('order_line.price_lock')

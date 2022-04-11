@@ -10,6 +10,7 @@ class SaleOrder(models.Model):
     have_price_lock = fields.Boolean(compute='_compute_price_lock')
     delivery_date = fields.Date(string="Delivery Date")
     batch_warning = fields.Text(string='Shipment Progress wrarning Message', copy=False)
+    order_banner_id = fields.Many2one('order.banner',string='Shipment Progress warning Message',copy=False)
 
     def _get_action_view_picking(self, pickings):
         """

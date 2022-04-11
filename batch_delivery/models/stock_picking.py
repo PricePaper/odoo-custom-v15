@@ -325,7 +325,9 @@ class StockPicking(models.Model):
                 if batch:
                     picking.sale_id.write({'delivery_date': batch.date})
                     if batch.state in ('in_truck', 'in_progress'):
-                        picking.mapped('sale_id').write({'batch_warning': 'This order has already been processed for shipment', 'state': 'done'})
+                        warning = self.env['order.banner'].search(
+                            [('code', '=', 'ORDER_PROCESSED')], limit=1)
+                        picking.mapped('sale_id').write({'batch_warning': 'This order has already been processed for shipment', 'state': 'done','order_banner_id':warning.id if warning else False})
                     if picking.is_invoiced:
                         invoice = picking.invoice_ids.filtered(lambda rec:  rec.state not in ('posted', 'cancel'))
                         invoice.write({'invoice_date': batch.date})

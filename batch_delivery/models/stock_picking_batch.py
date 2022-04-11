@@ -294,7 +294,7 @@ class StockPickingBatch(models.Model):
         self.write({'state': 'draft', 'date': False})
         sale_orders = self.mapped('picking_ids').mapped('sale_id')
         if sale_orders:
-            sale_orders.write({'batch_warning': '', 'state': 'sale'})
+            sale_orders.write({'batch_warning': '', 'state': 'sale','order_banner_id':False})
         return self
 
     def compute_url(self):

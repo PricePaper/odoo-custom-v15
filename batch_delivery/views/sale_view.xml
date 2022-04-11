@@ -9,11 +9,14 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <sheet position='before'>
+
                     <div class="oe_text_center">
                         <p>
                             <b>
-                                <field name='batch_warning' attrs="{'invisible':[('batch_warning', '=', False)]}" class="alert alert-success mb-0"
-                                       role="alert"/>
+                                <field name='order_banner_id' attrs="{'invisible':[('order_banner_id', '=', False)]}" class="alert alert-success mb-0"
+                                       role="alert" width="100%"/>
+                               <!-- <field name='batch_warning' attrs="{'invisible':[('batch_warning', '=', False)]}" class="alert alert-success mb-0"
+                                       role="alert"/>-->
                             </b>
                         </p>
                     </div>

@@ -342,7 +342,7 @@ class StockPicking(models.Model):
                 vals.update({'batch_id': False})
             if 'route_id' in vals.keys() and not vals.get('route_id', False):
                 vals.update({'batch_id': False, 'is_late_order': False, 'is_transit': False})
-                picking.mapped('sale_id').write({'batch_warning': '', 'state': 'sale'})
+                picking.mapped('sale_id').write({'batch_warning': '', 'state': 'sale','order_banner_id':False})
         return super().write(vals)
 
     def _action_done(self):

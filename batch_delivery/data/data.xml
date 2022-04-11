@@ -4,6 +4,11 @@
             <field name="name">we're short inventory</field>
         </record>
 
+         <record id="default_sale_order_shipment_info" model="order.banner">
+             <field name="name">This order has already been processed for shipment</field>
+            <field name="code">ORDER_PROCESSED</field>
+        </record>
+
         <record id="stock_location_in_transit" model="stock.location">
             <field name="name">Transit Location</field>
             <field name="usage">internal</field>

@@ -2,6 +2,7 @@
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+from odoo.tools import float_round
 
 
 class ProcessReturnedCheck(models.Model):
@@ -35,10 +36,8 @@ class ProcessReturnedCheck(models.Model):
 
             payment = rec.payment_ids
 
-            if abs(rec.amount) != sum(payment.mapped('amount')):
+            if float_round(abs(rec.amount), 2) != float_round(sum(payment.mapped('amount')), 2):
                 raise UserError("Amount mismatch.")
-
-
             invoice = payment.mapped('reconciled_invoice_ids')
 
             for pay in payment:

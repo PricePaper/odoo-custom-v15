@@ -286,7 +286,7 @@ class StockPickingBatch(models.Model):
         if sale_orders:
             warning = self.env['order.banner'].search(
                 [('code', '=', 'ORDER_PROCESSED')], limit=1)
-            sale_orders.write({'batch_warning': 'This order has already been processed for shipment','order_banner_id':warning.id if warning else False})
+            sale_orders.write({'order_banner_id':warning.id if warning else False})
             sale_orders.action_done()
         return self
 
@@ -294,7 +294,7 @@ class StockPickingBatch(models.Model):
         self.write({'state': 'draft', 'date': False})
         sale_orders = self.mapped('picking_ids').mapped('sale_id')
         if sale_orders:
-            sale_orders.write({'batch_warning': '', 'state': 'sale','order_banner_id':False})
+            sale_orders.write({'state': 'sale','order_banner_id':False})
         return self
 
     def compute_url(self):

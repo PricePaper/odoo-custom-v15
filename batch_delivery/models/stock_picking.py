@@ -327,7 +327,7 @@ class StockPicking(models.Model):
                     if batch.state in ('in_truck', 'in_progress'):
                         warning = self.env['order.banner'].search(
                             [('code', '=', 'ORDER_PROCESSED')], limit=1)
-                        picking.mapped('sale_id').write({'batch_warning': 'This order has already been processed for shipment', 'state': 'done','order_banner_id':warning.id if warning else False})
+                        picking.mapped('sale_id').write({'state': 'done','order_banner_id':warning.id if warning else False})
                     if picking.is_invoiced:
                         invoice = picking.invoice_ids.filtered(lambda rec:  rec.state not in ('posted', 'cancel'))
                         invoice.write({'invoice_date': batch.date})
@@ -342,7 +342,7 @@ class StockPicking(models.Model):
                 vals.update({'batch_id': False})
             if 'route_id' in vals.keys() and not vals.get('route_id', False):
                 vals.update({'batch_id': False, 'is_late_order': False, 'is_transit': False})
-                picking.mapped('sale_id').write({'batch_warning': '', 'state': 'sale','order_banner_id':False})
+                picking.mapped('sale_id').write({'state': 'sale','order_banner_id':False})
         return super().write(vals)
 
     def _action_done(self):

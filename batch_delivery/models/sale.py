@@ -9,16 +9,9 @@ class SaleOrder(models.Model):
 
     have_price_lock = fields.Boolean(compute='_compute_price_lock')
     delivery_date = fields.Date(string="Delivery Date")
-    batch_warning = fields.Text(string='Shipment Progress wrarning Message', copy=False)
+    #batch_warning = fields.Text(string='Shipment Progress wrarning Message', copy=False)
     order_banner_id = fields.Many2one('order.banner',string='Shipment Progress warning Message',copy=False)
 
-    def set_banner(self):
-        SaleOrder = self.search([('batch_warning', '!=', '')])
-        warning = self.env['order.banner'].search(
-            [('code', '=', 'ORDER_PROCESSED')], limit=1)
-        for sale in SaleOrder:
-            sale.write({'order_banner_id':warning.id if warning else False})
-        return True
 
 
     def _get_action_view_picking(self, pickings):

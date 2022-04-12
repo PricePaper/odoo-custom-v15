@@ -50,7 +50,7 @@
                                 <tr>
                                     <td>
                                         <span t-if="line.invoice_id">
-                                            <t t-esc="line.invoice_id.number"/>
+                                            <t t-esc="line.invoice_id.name"/>
                                         </span>
                                     </td>
                                     <td>

@@ -54,7 +54,7 @@
                             </group>
                         </group>
                         <b>Customer Product Price</b>
-                            <field name="partner_pricelist_line_ids" nolabel="1" attrs="{'readonly': False}" mode="tree,kanban" options="{'custom_search': True}" readonly="1">
+                            <field name="partner_pricelist_line_ids" nolabel="1" attrs="{'readonly': False}" mode="tree,kanban" options="{'custom_search': True}">
                                 <tree decoration-danger="deviation&lt;0" decoration-info="deviation==0"
                                       decoration-success="deviation&gt;0"  default_order="product_name">
                                     <field name="product_name" invisible="1"/>

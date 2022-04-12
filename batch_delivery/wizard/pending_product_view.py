@@ -55,8 +55,8 @@ class PendingProductView(models.TransientModel):
                 'product_uom_qty': move.product_uom_qty,
                 'reserved_available_qty': move.reserved_availability,
                 'product_uom': move.product_uom.id,
-                'picking_id': move.picking_id.id,
-                'followers': [(6, 0, move.sale_line_id.order_id.message_partner_ids.filtered(lambda u: u.user_ids).ids)],
+                'picking_id': move.transit_picking_id.id,
+                'followers': [(6, 0, move.group_id.sale_id.message_partner_ids.filtered(lambda u: u.user_ids).ids)],
                 'same_product_ids': [(6, 0, move.product_id.same_product_ids.ids)]
             }) for move in records]
         return res

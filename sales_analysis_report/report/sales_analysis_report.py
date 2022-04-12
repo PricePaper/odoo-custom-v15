@@ -7,6 +7,7 @@ from odoo import api, fields, models, tools
 class PosSaleReport(models.Model):
     _name = "sales.analysis.report"
     _description = "Sales Analysis (All in One)"
+    _order = "product_qty asc"
     _auto = False
 
     name = fields.Char('Order Reference', readonly=True)

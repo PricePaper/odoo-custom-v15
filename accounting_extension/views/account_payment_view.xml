@@ -37,9 +37,12 @@
             <field name="model">account.payment</field>
             <field name="inherit_id" ref="account.view_account_payment_form"/>
             <field name="arch" type="xml">
-                <widget name="web_ribbon" position="after">
+                <xpath expr="//field[@name='name']" position='before'>
                     <widget name="web_ribbon" title="Reconciled" attrs="{'invisible': [('reconciled_statements_count','=', 0)]}"/>
-                </widget>
+                </xpath>
+                <!--<widget name="web_ribbon" position="after">
+                    <widget name="web_ribbon" title="Reconciled" attrs="{'invisible': [('reconciled_statements_count','=', 0)]}"/>
+                </widget>-->
             </field>
         </record>
 

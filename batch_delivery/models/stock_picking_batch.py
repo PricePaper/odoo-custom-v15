@@ -210,6 +210,10 @@ class StockPickingBatch(models.Model):
         return self.env.ref('batch_delivery.ppt_account_batch_invoices_report').report_action(self, config=False)
 
     def print_driver_spreadsheet(self):
+        for batch in self:
+            for picking in batch.picking_ids:
+                if not picking.invoice_ids:
+                    raise UserError(_('Please create invoice for %s', picking.name))
         return self.env.ref('batch_delivery.batch_driver_report').report_action(self, config=False)
 
     def print_picking(self):

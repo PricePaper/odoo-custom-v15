@@ -19,6 +19,10 @@ class RMARetMerAuth(models.Model):
     invoice_address_id = fields.Many2one(related='sale_order_id.partner_invoice_id', readonly=True)
     pickup_address_id = fields.Many2one(related='purchase_order_id.pickup_address_id', readonly=True)
 
+    @api.constrains('sale_order_id')
+    def check_sale_order_id_duplicate(self):
+        return {}
+
     @api.model
     def set_filed_value(self, field_name="refund_qty"):
         env = self.env

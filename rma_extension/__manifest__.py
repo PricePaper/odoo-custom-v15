@@ -27,7 +27,8 @@ Custom module implemented for RMA for Price Papers.
         'wizard/browse_lines_view.xml',
         'views/rma_form_view.xml',
         'views/rma_report_enhancement.xml',
-        'views/stock_picking_view.xml'
+        'views/stock_picking_view.xml',
+        'views/sale_order_views.xml'
     ],
     'assets': {
         'web.assets_backend': [

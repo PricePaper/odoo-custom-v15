@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_sale_order_form_inherit_rma" model="ir.ui.view">
+            <field name="name">view.sale.order.form.inherit.rma</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="scs_rma.view_sale_order_form_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='rma_done']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

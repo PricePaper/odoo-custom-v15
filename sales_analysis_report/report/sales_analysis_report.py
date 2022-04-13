@@ -57,7 +57,7 @@ class PosSaleReport(models.Model):
             LEFT JOIN product_template pt ON (pro.product_tmpl_id = pt.id)
             LEFT JOIN uom_uom u on (u.id=inv_line.product_uom_id)
             LEFT JOIN uom_uom u2 on (u2.id=pt.uom_id)
-        WHERE inv.state in ('posted') and inv.payment_state in ('in_payment','paid','partial')
+        WHERE inv.state in ('posted') and inv.payment_state in ('in_payment','paid','partial') and inv.move_type='out_invoice'
         """
         return so_str
 

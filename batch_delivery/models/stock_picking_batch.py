@@ -42,7 +42,7 @@ class StockPickingBatch(models.Model):
         ('done', 'Shipping Done'),
         ('no_payment', 'No Payment'),
         ('paid', 'Paid'),
-        ('cancel', 'Cancelled')], default='draft',
+        ('cancel', 'Cancelled')], default='draft', compute=False,
         copy=False, tracking=True, required=True)
 
     @api.depends('picking_ids.invoice_ids')
@@ -88,11 +88,19 @@ class StockPickingBatch(models.Model):
             batch.total_unit = 0
             batch.total_volume = 0
             batch.total_weight = 0
-            for line in batch.mapped('picking_ids').filtered(lambda rec: rec.state != 'cancel').mapped('move_lines'):
-                product_qty = line.quantity_done if line.quantity_done else line.reserved_availability
-                batch.total_unit += line.product_uom_qty
-                batch.total_volume += line.product_id.volume * product_qty
-                batch.total_weight += line.product_id.weight * product_qty
+            for picking in batch.mapped('picking_ids').filtered(lambda rec: rec.state != 'cancel'):
+                movelines = picking.mapped('transit_move_lines') if picking.state!='in_transit' else picking.mapped('move_lines')
+                for line in movelines:
+                    product_qty = line.quantity_done if line.quantity_done else line.reserved_availability
+                    batch.total_unit += line.product_uom_qty
+                    batch.total_volume += line.product_id.volume * product_qty
+                    batch.total_weight += line.product_id.weight * product_qty
+
+            # for line in batch.mapped('picking_ids').filtered(lambda rec: rec.state != 'cancel').mapped('move_lines'):
+            #     product_qty = line.quantity_done if line.quantity_done else line.reserved_availability
+            #     batch.total_unit += line.product_uom_qty
+            #     batch.total_volume += line.product_id.volume * product_qty
+            #     batch.total_weight += line.product_id.weight * product_qty
 
     @api.depends('picking_ids.is_late_order')
     def _compute_late_order(self):
@@ -276,7 +284,9 @@ class StockPickingBatch(models.Model):
         self.write({'state': 'in_truck'})
         sale_orders = self.mapped('picking_ids').mapped('sale_id')
         if sale_orders:
-            sale_orders.write({'batch_warning': 'This order has already been processed for shipment'})
+            warning = self.env['order.banner'].search(
+                [('code', '=', 'ORDER_PROCESSED')], limit=1)
+            sale_orders.write({'order_banner_id':warning.id if warning else False})
             sale_orders.action_done()
         return self
 
@@ -284,7 +294,7 @@ class StockPickingBatch(models.Model):
         self.write({'state': 'draft', 'date': False})
         sale_orders = self.mapped('picking_ids').mapped('sale_id')
         if sale_orders:
-            sale_orders.write({'batch_warning': '', 'state': 'sale'})
+            sale_orders.write({'state': 'sale','order_banner_id':False})
         return self
 
     def compute_url(self):

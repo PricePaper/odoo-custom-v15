@@ -364,5 +364,16 @@
         <record id="scs_rma.action_rma_ret_mer_auth_rma" model="ir.actions.act_window">
             <field name="context">{'delete': False}</field>
         </record>
+
+        <record id="rma_ret_mer_auth_search_inherited_extension" model="ir.ui.view">
+            <field name="name">rma.ret.mer.auth.search.inherit</field>
+            <field name="model">rma.ret.mer.auth</field>
+            <field name="inherit_id" ref="scs_rma.rma_ret_mer_auth_search"/>
+            <field name="arch" type="xml">
+              <xpath expr="//field[@name='name']" position="after">
+                <field name="partner_id"/>
+              </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

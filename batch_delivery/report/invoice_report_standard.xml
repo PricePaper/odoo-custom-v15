@@ -28,23 +28,22 @@
 
             <div class="article o_report_layout_standard" t-att-data-oe-model="o and o._name"
                  t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')"
-                 style="font-family: 'Lato', 'Noto'; font-size:13px;">
-            <!--    <t t-call="web.address_layout"/>-->
+                 style="font-family: 'Lato', 'Noto'; font-size:16px;">
                 <t t-set="o" t-value="o.with_context(lang=lang)"/>
-                <div class="row">
-                    <div class="col-6">
-                        <span><b>Delivery Address:</b></span><br></br>
-                        <div><span t-if="o.partner_shipping_id.customer_code">[<t t-esc="o.partner_shipping_id.customer_code"/>]</span><t t-esc="o.partner_shipping_id.name"></t></div>
-                        <div><span t-if="o.partner_shipping_id.street"><t t-esc="o.partner_shipping_id.street"/>,</span> <span t-if="o.partner_shipping_id.street2"><t t-esc="o.partner_shipping_id.street2"/>,</span></div>
-                        <div><span t-if="o.partner_shipping_id.city"><t t-esc="o.partner_shipping_id.city"/>,</span><span t-if="o.partner_shipping_id.state_id"><t t-esc="o.partner_shipping_id.state_id.name"/>,</span><span t-if="o.partner_shipping_id.zip"><t t-esc="o.partner_shipping_id.zip"/></span></div>
-                    </div>
-                   <div class="col-6 text-left">
-                       <span><b>Billing Address:</b></span><br></br>
-                       <div><span t-if="o.partner_id.customer_code">[<t t-esc="o.partner_id.customer_code"/>]</span><t t-esc="o.partner_id.name"></t></div>
-                       <div><span t-if="o.partner_id.street"><t t-esc="o.partner_id.street"/>,</span> <span t-if="o.partner_id.street2"><t t-esc="o.partner_id.street2"/>,</span></div>
-                       <div><span t-if="o.partner_id.city"><t t-esc="o.partner_id.city"/>,</span><span t-if="o.partner_id.state_id"><t t-esc="o.partner_id.state_id.name"/>,</span><span t-if="o.partner_id.zip"><t t-esc="o.partner_id.zip"/></span></div>
-                    </div>
-                </div>
+                  <div class="row mt-2 mb-2">
+                      <div class="col-6">
+                          <span><b>Delivery Address:</b></span><br></br>
+                          <div><span t-if="o.partner_shipping_id.customer_code">[<t t-esc="o.partner_shipping_id.customer_code"/>]</span><t t-esc="o.partner_shipping_id.name"></t></div>
+                          <div><span t-if="o.partner_shipping_id.street"><t t-esc="o.partner_shipping_id.street"/>,</span> <span t-if="o.partner_shipping_id.street2"><t t-esc="o.partner_shipping_id.street2"/>,</span></div>
+                          <div><span t-if="o.partner_shipping_id.city"><t t-esc="o.partner_shipping_id.city"/>,</span><span t-if="o.partner_shipping_id.state_id"><t t-esc="o.partner_shipping_id.state_id.name"/>,</span><span t-if="o.partner_shipping_id.zip"><t t-esc="o.partner_shipping_id.zip"/></span></div>
+                      </div>
+                     <div class="col-6 text-left">
+                         <span><b>Billing Address:</b></span><br></br>
+                         <div><span t-if="o.partner_id.customer_code">[<t t-esc="o.partner_id.customer_code"/>]</span><t t-esc="o.partner_id.name"></t></div>
+                         <div><span t-if="o.partner_id.street"><t t-esc="o.partner_id.street"/>,</span> <span t-if="o.partner_id.street2"><t t-esc="o.partner_id.street2"/>,</span></div>
+                         <div><span t-if="o.partner_id.city"><t t-esc="o.partner_id.city"/>,</span><span t-if="o.partner_id.state_id"><t t-esc="o.partner_id.state_id.name"/>,</span><span t-if="o.partner_id.zip"><t t-esc="o.partner_id.zip"/></span></div>
+                      </div>
+                  </div>
                 <div class="page">
                      <h2>
                         <span t-if="o.move_type == 'out_invoice' and o.state == 'posted'">Invoice</span>
@@ -242,8 +241,37 @@
                     </t>
                    <div class="clearfix">
                         <div id="total" class="row">
-                            <div t-attf-class="#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'} ml-auto">
-                                <table class="table table-sm" style="page-break-inside: avoid;">
+                            <div style="width:50%">
+                              <table>
+                                <tr>
+                                  <td>
+                                    <strong>Total Units:</strong>
+                                    <span t-esc="'{0:.02f}'.format(sum([l.quantity for l in o.invoice_line_ids.filtered(lambda r: r.product_id.type != 'service')]))"/>
+                                    <br/>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <t t-if="o.state == 'draft'">
+                                         <p t-if="o.partner_id.total_due &gt;0">
+                                         <strong class="mr16">Previous Balance :</strong>
+                                          <span t-esc="'${0:.02f}'.format(o.partner_id.total_due)"/> as of <span t-esc="context_timestamp(datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%m/%d/%Y')"/>
+                                         </p>
+                                     </t>
+                                     <t t-else="">
+                                         <p t-if="(o.partner_id.total_due - o.amount_residual) &gt; 0">
+                                             <strong class="mr16">Previous Balance :</strong>
+                                              <span t-esc="'${0:.02f}'.format(o.partner_id.total_due - o.amount_residual)"/> as of <span t-esc="context_timestamp(datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%m/%d/%Y')"/>
+                                         </p>
+                                     </t>
+                                  </td>
+                                </tr>
+                              </table>
+
+                            </div>
+                            <!-- <div t-attf-class="#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'} ml-auto"> -->
+                            <div style="width:50%">
+                                <table class="table table-sm" style="page-break-inside: avoid;width::100%">
 
                                     <!--Tax totals-->
                                     <t t-set="tax_totals" t-value="json.loads(o.tax_totals_json)"/>
@@ -274,52 +302,36 @@
                                         </t>
                                     </t>
                                 </table>
-                            </div></div></div>
-                    <strong class="mr16">Total Units:</strong>
-                    <span t-esc="'{0:.02f}'.format(sum([l.quantity for l in o.invoice_line_ids.filtered(lambda r: r.product_id.type != 'service')]))"/>
+                            </div>
+                        </div>
+                   </div>
+                   <p t-if="o.ref">
+                       Please use the following communication for your payment : <b><span t-field="o.ref"/></b>
+                   </p>
+                   <p t-if="o.fiscal_position_id.note" name="note">
+                       <span t-field="o.fiscal_position_id.note"/>
+                   </p>
+                   <div id="qrcode"
+                        t-if="(o.company_id.qr_code) and (o.currency_id.name == 'EUR') and (o.partner_bank_id.acc_number != False)">
+                       <p t-if="(o.partner_bank_id.qr_code_valid)">
+                           <strong class="text-center">Scan me with your banking app.</strong><br/><br/>
+                           <img class="border border-dark rounded"
+                                t-att-src="o.partner_bank_id.build_qr_code_url(o.amount_residual,(o.ref) if (o.ref) else o.name)"/>
+                       </p>
+                       <p t-if="(o.partner_bank_id.qr_code_valid == False)">
+                           <strong class="text-center">The SEPA QR Code informations are not set
+                               correctly.</strong><br/>
+                       </p>
+                   </div>
+                   <strong t-if="o.partner_shipping_id.delivery_notes" class="mr16">Delivery Notes:</strong>
+                   <br/>
+                   <span t-if="o.partner_shipping_id.delivery_notes" t-field="o.partner_shipping_id.delivery_notes">
+                   </span>
                     <br/>
-                    <t t-if="o.state == 'draft'">
-                        <p t-if="((o.partner_id.total_due+o.amount_residual) - o.amount_residual) &gt; 0">
-                        <strong class="mr16">Previous Balance :</strong>
-                         <span t-esc="'${0:.02f}'.format((o.partner_id.total_due+o.amount_residual) - o.amount_residual)"/> as of <span t-esc="context_timestamp(datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%m/%d/%Y')"/>
-                    </p>
-                    </t>
-                    <t t-else="">
-                        <p t-if="(o.partner_id.total_due - o.amount_residual) &gt; 0">
-                            <strong class="mr16">Previous Balance :</strong>
-                             <span t-esc="'${0:.02f}'.format(o.partner_id.total_due - o.amount_residual)"/> as of <span t-esc="context_timestamp(datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%m/%d/%Y')"/>
-                        </p>
-                    </t>
-                    <p t-if="o.ref">
-                        Please use the following communication for your payment : <b><span t-field="o.ref"/></b>
-                    </p>
-                   <!-- <p t-if="o.comment" name="comment">
-                        <span t-field="o.comment"/>
-                    </p>-->
-                    <p t-if="o.fiscal_position_id.note" name="note">
-                        <span t-field="o.fiscal_position_id.note"/>
-                    </p>
-                    <div id="qrcode"
-                         t-if="(o.company_id.qr_code) and (o.currency_id.name == 'EUR') and (o.partner_bank_id.acc_number != False)">
-                        <p t-if="(o.partner_bank_id.qr_code_valid)">
-                            <strong class="text-center">Scan me with your banking app.</strong><br/><br/>
-                            <img class="border border-dark rounded"
-                                 t-att-src="o.partner_bank_id.build_qr_code_url(o.amount_residual,(o.ref) if (o.ref) else o.name)"/>
-                        </p>
-                        <p t-if="(o.partner_bank_id.qr_code_valid == False)">
-                            <strong class="text-center">The SEPA QR Code informations are not set
-                                correctly.</strong><br/>
-                        </p>
-                    </div>
-                    <strong t-if="o.partner_shipping_id.delivery_notes" class="mr16">Delivery Notes:</strong>
-                    <br/>
-                    <span t-if="o.partner_shipping_id.delivery_notes" t-field="o.partner_shipping_id.delivery_notes">
-                    </span>
-                     <br/>
-                    <strong t-if="not is_html_empty(o.narration)" class="mr16">Terms and Conditions:</strong>
-                    <br/>
-                    <span t-if="not is_html_empty(o.narration)" t-field="o.narration">
-                    </span>
+                   <strong t-if="not is_html_empty(o.narration)" class="mr16">Terms and Conditions:</strong>
+                   <br/>
+                   <span t-if="not is_html_empty(o.narration)" t-field="o.narration">
+                   </span>
                 </div>
             </div>
 

@@ -16,7 +16,7 @@ class ReportAccountFinancialReport(models.Model):
         if income:
             t = income['columns'][0].get('no_format')
             for l in lines:
-                if l.get('columns', False) and len(l.get('columns', False)) == 1:
+                if l.get('columns', False) and len(l.get('columns', False)) == 2:
                     if l.get('caret_options') or l.get('id') == 'total_6' or l.get('name') == 'Total Gross Profit' or l.get(
                             'id') == 4 and l.get('class') == 'total':
                         s = l['columns'][0].get('no_format')
@@ -90,7 +90,7 @@ class ReportAccountFinancialReport(models.Model):
                 if income:
                     t = income['columns'][0].get('no_format')
                     for l in lines:
-                        if l.get('columns', False) and len(l.get('columns', False)) == 1:
+                        if l.get('columns', False) and len(l.get('columns', False)) == 2:
                             if l.get('caret_options') or l.get('id') == 'total_6' or l.get('name') == 'Total Gross Profit' or l.get(
                                     'id') == 4 and l.get('class') == 'total':
                                 s = l['columns'][0].get('no_format')

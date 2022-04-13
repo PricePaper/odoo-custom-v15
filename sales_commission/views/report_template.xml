@@ -44,7 +44,7 @@
         </record>
         <record id="settlement_report" model="ir.actions.report">
             <field name="name">Commission Settlement</field>
-            <field name="model">stock.picking</field>
+            <field name="model">sale.commission.settlement</field>
             <field name="report_type">qweb-pdf</field>
             <field name="report_name">sales_commission.report_commission_settlement</field>
             <field name="report_file">sales_commission.report_commission_settlement</field>

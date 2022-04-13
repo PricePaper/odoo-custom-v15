@@ -14,13 +14,19 @@ class AccountReconciliation(models.AbstractModel):
             batch_name = {}
             st_line = self.env['account.bank.statement.line'].browse(st_line_id)
             for batch in self.env['account.batch.payment'].search([('state', '!=', 'reconciled')], order='id asc'):
-                if batch.amount == abs(st_line.amount):
+                if abs(batch.amount) == abs(st_line.amount):
                     lines = batch.payment_ids.mapped('move_id').mapped('line_ids').filtered(
                         lambda rec: rec.account_id.internal_type not in (
                             'receivable', 'payable') and rec.id not in excluded_ids or [])
                     batch_name.update({line: batch.name for line in lines})
                     aml_rec |= lines
-
+            if not aml_rec:
+                for common in self.env['batch.payment.common'].search([('actual_returned', '=', abs(st_line.amount))]):
+                    lines = common.payment_ids.mapped('move_id').mapped('line_ids').filtered(
+                        lambda rec: rec.account_id.internal_type not in (
+                            'receivable', 'payable') and rec.id not in excluded_ids or [])
+                    batch_name.update({line: common.name for line in lines})
+                    aml_rec |= lines
             if aml_rec:
                 js_vals_list = []
                 recs_count = len(aml_rec)
@@ -28,12 +34,10 @@ class AccountReconciliation(models.AbstractModel):
                     vals = self._prepare_js_reconciliation_widget_move_line(st_line, line, recs_count=recs_count)
                     vals.update({'name': '%s - %s' % (vals['name'], batch_name.get(line))})
                     js_vals_list.append(vals)
-                print(js_vals_list)
                 if excluded_ids:
                     excluded_ids += aml_rec.ids
                 else:
                     excluded_ids = aml_rec.ids
-
                 js_vals = super(AccountReconciliation, self).get_move_lines_for_bank_statement_line(st_line_id, partner_id, excluded_ids, search_str, offset, limit, mode)
                 for val in js_vals:
                     js_vals_list.append(val)
@@ -100,6 +104,17 @@ class AccountReconciliation(models.AbstractModel):
                     self.env['process.returned.check'].create(vals)
         return res
 
+
+    @api.model
+    def get_move_lines_by_batch_payment(self, st_line_id, batch_payment_id):
+        st_line = self.env['account.bank.statement.line'].browse(st_line_id)
+        move_lines = self.env['account.move.line']
+        for payment in self.env['account.batch.payment'].browse(batch_payment_id).payment_ids:
+            journal_accounts = [payment.journal_id.default_account_id.id, payment.journal_id.default_account_id.id]
+            move_lines |= payment.line_ids.filtered(lambda r: r.account_id.id in journal_accounts)
+
+        target_currency = st_line.currency_id or st_line.journal_id.currency_id or st_line.journal_id.company_id.currency_id
+        return self._prepare_move_lines(move_lines, target_currency=target_currency, target_date=st_line.date)
 
 AccountReconciliation()
 

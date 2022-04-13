@@ -18,8 +18,8 @@ OPERATORS = {
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    def action_open_quants(self):
-        return {}
+    # def action_open_quants(self):
+    #     return {}
 
     def _get_product_accounts(self):
         """ Add the stock accounts related to product to the result of super()
@@ -74,7 +74,7 @@ class ProductProduct(models.Model):
 
     def action_open_quants(self):
         # Override to make the button readonly for non-inventory users.
-        if not self.env.user.has_group('stock.group_stock_user') and self.env.user.has_group('base.group_user'):
+        if not self.env.user.has_group('stock.group_stock_user'):
             return {}
         return super().action_open_quants()
 
@@ -290,13 +290,14 @@ class ProductProduct(models.Model):
                     return new_products.name_get()
         return super(ProductProduct, self).name_search(name=name, args=args, operator=operator, limit=limit)
 
-    @api.depends('seller_ids')
+    @api.depends('seller_ids','seller_ids.sequence')
     def compute_product_vendor(self):
         """
         Compute vendor of the product
         """
         for rec in self:
-            rec.vendor_id = rec.seller_ids and rec.seller_ids[0].name.id or False
+            vendors_sorted = rec.seller_ids and rec.seller_ids.sorted('sequence')
+            rec.vendor_id = vendors_sorted and vendors_sorted[0].name.id or False
 
     @api.depends('standard_price', 'burden_percent')
     def compute_sale_burden(self):

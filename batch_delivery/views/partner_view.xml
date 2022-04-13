@@ -9,6 +9,7 @@
             <field name="arch" type="xml">
 
                 <field name='category_id' position="after">
+                    <field name="private_partner"/>
                     <field name="is_driver"/>
                     <field name="bill_with_goods"/>
                 </field>

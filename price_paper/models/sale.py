@@ -24,7 +24,12 @@ class SaleOrder(models.Model):
     gross_profit = fields.Monetary(compute='calculate_gross_profit', string='Predicted Profit')
     is_quotation = fields.Boolean(string="Create as Quotation", default=False, copy=False)
     profit_final = fields.Monetary(string='Profit')
-    state = fields.Selection(selection_add=[
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('sent', 'Draft Order Sent'),
+        ('sale', 'Sales Order'),
+        ('done', 'Locked'),
+        ('cancel', 'Cancelled'),
         ('waiting', 'Waiting'),
         ('ordered', 'Ordered'),
         ('received', 'Received'),
@@ -255,7 +260,7 @@ class SaleOrder(models.Model):
         logging.error(except_view)
         return True
 
-    def action_cancel(self):
+    def _action_cancel(self):
         self.ensure_one()
         self = self.with_context(action_cancel=True)
         self.write({
@@ -279,7 +284,7 @@ class SaleOrder(models.Model):
                         po_not_to_do |= po_line.order_id
         (purchase_order - po_not_to_do).button_cancel()
         self.order_line.filtered('storage_contract_line_id').write({'product_uom_qty': 0})
-        return super(SaleOrder, self).action_cancel()
+        return super(SaleOrder, self)._action_cancel()
 
     def action_waiting(self):
         self.ensure_one()
@@ -468,16 +473,18 @@ class SaleOrder(models.Model):
         auto save the delivery line.
         """
         amount = {}
-        for order in self:
-            if order.state == 'sale':
-                amount[order.id] = order.amount_total
+        if vals.get('order_line', False):
+            for order in self:
+                if order.state == 'sale':
+                    amount[order.id] = order.amount_total
         res = super(SaleOrder, self).write(vals)
         for order in self:
             if order.id in amount and amount[order.id] < order.amount_total:
                 if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
                     if order.picking_ids.filtered(lambda r: r.state == 'in_transit'):
                         raise UserError('You can not add product to a Order which has a DO in transit state')
-                    order.action_cancel()
+                    order._action_cancel()
+                    order.message_post(body='Cancel Reason : Credit limit Exceed Auto cancel')
                     order.action_draft()
                     order.action_confirm()
 
@@ -758,6 +765,35 @@ class SaleOrderLine(models.Model):
     scraped_qty = fields.Float(compute='_compute_scrape_qty', string='Quantity Scraped', store=False)
     date_planned = fields.Date(related='order_id.release_date', store=False, readonly=True, string='Date Planned')
 
+    @api.depends('invoice_lines.move_id.state', 'invoice_lines.quantity', 'untaxed_amount_to_invoice')
+    def _compute_qty_invoiced(self):
+        """
+        over ride to fix rounding issue.
+        """
+        for line in self:
+            qty_invoiced = 0.0
+            for invoice_line in line._get_invoice_lines():
+                if invoice_line.move_id.state != 'cancel':
+                    if invoice_line.move_id.move_type == 'out_invoice':
+                        if invoice_line.product_uom_id != line.product_uom:
+                            qty_invoiced += invoice_line.product_uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
+                        else:
+                            qty_invoiced += invoice_line.quantity
+                    elif invoice_line.move_id.move_type == 'out_refund':
+                        if invoice_line.product_uom_id != line.product_uom:
+                            qty_invoiced -= invoice_line.product_uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
+                        else:
+                            qty_invoiced -= invoice_line.quantity
+            line.qty_invoiced = qty_invoiced
+
+    @api.depends('state')
+    def _compute_product_uom_readonly(self):
+        for line in self:
+            if line._origin:
+                line.product_uom_readonly = line.state in ['sale','done', 'cancel']
+            else:
+                line.product_uom_readonly = line.state in ['done', 'cancel']
+
     @api.depends('product_id', 'product_uom_qty', 'price_unit', 'order_id.delivery_cost')
     def calculate_profit_margin(self):
         """
@@ -1018,7 +1054,7 @@ class SaleOrderLine(models.Model):
             if line.is_delivery and line.order_id.carrier_id and line.order_id.carrier_id.delivery_type not in [
                 'base_on_rule', 'fixed']:
                 line.working_cost = line.order_id.delivery_cost
-                line.lst_price = line.order_id.delivery_price
+                line.lst_price = line.order_id.delivery_cost
 
     def unlink(self):
         """
@@ -1038,7 +1074,6 @@ class SaleOrderLine(models.Model):
             for line in self:
 
                 if line.is_delivery and line.order_id.state == 'sale' and lines_exist == 1 and not self._context.get('adjust_delivery'):
-                    print(g)
                     raise ValidationError(
                         'You cannot delete a Delivery line,since the sale order is already confirmed,please refresh the page to undo')
                 if line.is_delivery and base:

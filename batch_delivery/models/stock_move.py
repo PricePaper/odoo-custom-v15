@@ -23,6 +23,42 @@ class StockMove(models.Model):
     quantity_done = fields.Float(tracking=True)
     invoice_line_ids = fields.Many2many(comodel_name='account.move.line', compute="_get_aml_ids", string="Invoice Lines")
 
+    def _prepare_move_line_vals(self, quantity=None, reserved_quant=None):
+        self.ensure_one()
+        vals = {
+            'move_id': self.id,
+            'product_id': self.product_id.id,
+            'product_uom_id': self.product_uom.id,
+            'location_id': self.location_id.id,
+            'picking_id': self.picking_id.id,
+            'company_id': self.company_id.id,
+        }
+        if quantity:
+            rounding = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+            uom_quantity = self.product_id.uom_id._compute_quantity(quantity, self.product_uom, rounding_method='HALF-UP')
+            uom_quantity = float_round(uom_quantity, precision_digits=2)
+            uom_quantity_back_to_product_uom = self.product_uom._compute_quantity(uom_quantity, self.product_id.uom_id, rounding_method='HALF-UP')
+            if float_compare(quantity, uom_quantity_back_to_product_uom, precision_digits=rounding) == 0:
+                vals = dict(vals, product_uom_qty=uom_quantity)
+            else:
+                vals = dict(vals, product_uom_qty=quantity, product_uom_id=self.product_id.uom_id.id)
+        package = None
+        if reserved_quant:
+            package = reserved_quant.package_id
+            vals = dict(
+                vals,
+                location_id=reserved_quant.location_id.id,
+                lot_id=reserved_quant.lot_id.id or False,
+                package_id=package.id or False,
+                owner_id =reserved_quant.owner_id.id or False,
+            )
+        # apply putaway
+        location_dest_id = self.location_dest_id._get_putaway_strategy(self.product_id, quantity=quantity or 0, package=package, packaging=self.product_packaging_id).id
+        vals['location_dest_id'] = location_dest_id
+        return vals
+
+
+
     def get_quantity(self, field='quantity_done', alternative_feild='quantity_done'):
         qty = 0
         for move in self:
@@ -135,7 +171,7 @@ class StockMove(models.Model):
                 move.message_post(
                     body=msg,
                     subtype_id=self.env.ref('mail.mt_note').id)
-                move.picking_id.message_post(
+                move.transit_picking_id.message_post(
                     body=msg,
                     subtype_id=self.env.ref('mail.mt_note').id)
         return self
@@ -201,11 +237,10 @@ class StockMove(models.Model):
         move_line_vals_list = []
         for move in self.filtered(lambda m: m.state not in ['done', 'cancel']):
             rounding = roundings[move]
-            missing_reserved_uom_quantity = move.qty_update - reserved_availability[move]
+            missing_reserved_uom_quantity = qty - reserved_availability[move]
             missing_reserved_quantity = move.product_uom._compute_quantity(missing_reserved_uom_quantity,
                                                                            move.product_id.uom_id,
                                                                            rounding_method='HALF-UP')
-            print(move, missing_reserved_quantity, qty, reserved_availability)
             if move._should_bypass_reservation():
                 # create the move line(s) but do not impact quants
                 if move.move_orig_ids:

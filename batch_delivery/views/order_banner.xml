@@ -1,0 +1,44 @@
+<odoo>
+    <data>
+
+        <record id="order_banner_tree" model="ir.ui.view">
+            <field name="name">Order Banner Tree</field>
+            <field name="model">order.banner</field>
+            <field name="arch" type="xml">
+                <tree string="Order Banner">
+                    <field name="name"/>
+                    <field name="code"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="order_banner_form" model="ir.ui.view">
+            <field name="name">Order Banner form</field>
+            <field name="model">order.banner</field>
+            <field name="arch" type="xml">
+                <form string="Order Banner">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="order_banner_action">
+            <field name="name">Order Banner</field>
+            <field name="res_model">order.banner</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_order_banner"
+                  name="Order Banners"
+                  action="order_banner_action"
+                  parent="sale.sale_order_menu"
+                  sequence="10"
+        />
+
+    </data>
+</odoo>

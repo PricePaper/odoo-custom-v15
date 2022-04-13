@@ -16,7 +16,7 @@ class PendingProductView(models.TransientModel):
         Extract the pickings from batch and filtered out the pending move lines.
         """
         records = self.batch_ids.mapped('picking_ids') if self.batch_ids else self.picking_ids
-        move_lines = records.filtered(lambda pick: pick.state not in ['done', 'cancel']).mapped('move_lines').ids
+        move_lines = records.filtered(lambda pick: pick.state not in ['done', 'cancel']).mapped('transit_move_lines').ids
         action = self.sudo().env.ref('batch_delivery.stock_move_pending_product_action').read()[0]
         action['domain'] = [('id', 'in', move_lines)]
         return action
@@ -48,15 +48,15 @@ class PendingProductView(models.TransientModel):
             elif self._context.get('default_batch_ids'):
                 records = self.env['stock.picking.batch'].browse(self._context.get('default_batch_ids')). \
                     mapped('picking_ids').filtered(lambda pick: pick.state not in ['done', 'cancel']). \
-                    mapped('move_lines').filtered(lambda l: l.product_uom_qty != l.reserved_availability)
+                    mapped('transit_move_lines').filtered(lambda l: l.product_uom_qty != l.reserved_availability)
 
             res['pending_line_ids'] = [(0, 0, {
                 'product_id': move.product_id.id,
                 'product_uom_qty': move.product_uom_qty,
                 'reserved_available_qty': move.reserved_availability,
                 'product_uom': move.product_uom.id,
-                'picking_id': move.picking_id.id,
-                'followers': [(6, 0, move.sale_line_id.order_id.message_partner_ids.filtered(lambda u: u.user_ids).ids)],
+                'picking_id': move.transit_picking_id.id,
+                'followers': [(6, 0, move.group_id.sale_id.message_partner_ids.filtered(lambda u: u.user_ids).ids)],
                 'same_product_ids': [(6, 0, move.product_id.same_product_ids.ids)]
             }) for move in records]
         return res

@@ -67,7 +67,7 @@
                     <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
                     <attribute name="domain">[('type', '=', 'contact'), ('customer', '=', True), ('parent_id', '=', False)]</attribute>
                     <attribute name="context">{'search_default_customer': 1, 'show_address': 1,
-                        'tree_view_ref': 'view_partner_tree_search_more',
+                        'tree_view_ref': 'price_paper.view_partner_tree_search_more',
                         'address_inline': 1, 'show_partner_code': 1, 'show_vat': 0}
                     </attribute>
                 </field>
@@ -79,12 +79,12 @@
                     </attribute>
                     <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
                     <attribute name="context">{'default_type': 'invoice', 'address_inline': 1, 'show_address': 1,
-                        'tree_view_ref': 'view_partner_tree_search_more', 'show_partner_code': 1}
+                        'tree_view_ref': 'price_paper.view_partner_tree_search_more', 'show_partner_code': 1}
                     </attribute>
                 </field>
                 <field name="partner_id" position="after">
                     <field name="invoice_address_id" required='1'
-                           context="{'default_type': 'invoice', 'address_inline': 1, 'show_address': 1, 'tree_view_ref': 'view_partner_tree_search_more'}"
+                           context="{'default_type': 'invoice', 'address_inline': 1, 'show_address': 1, 'tree_view_ref': 'price_paper.view_partner_tree_search_more'}"
                            domain="['|', ('id', '=', partner_id), '&amp;', ('parent_id', '=', partner_id), ('type', '=', 'invoice')]"/>
                 </field>
 
@@ -92,7 +92,7 @@
                     <attribute name="domain">['|', ('id', '=', partner_id), ('parent_id', '=', partner_id)]</attribute>
                     <attribute name="options">{"no_create": 1, "no_create_edit": 1, "always_reload": True}</attribute>
                     <attribute name="context">{'default_type': 'invoice', 'show_address': 1, 'tree_view_ref':
-                        'view_partner_tree_search_more', 'show_partner_code': 1}
+                        'price_paper.view_partner_tree_search_more', 'show_partner_code': 1}
                     </attribute>
                 </field>
 
@@ -258,6 +258,8 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">sale.order</field>
             <field name="view_mode">tree,form</field>
+            <field name="domain">['|', '|', ('hold_state','=', 'price_hold'), ('hold_state','=', 'credit_hold'), ('hold_state','=', 'both_hold')]</field>
+            <field name="view_id" ref="price_paper.sale_order_tree_inherit_price" />
             <field name="search_view_id" ref="sale_order_view_search_credit_exceeded"/>
             <field name="context">{"search_default_ready_to_release": 1, "search_default_release_price_hold": 1}</field>
             <field name="help" type="html">

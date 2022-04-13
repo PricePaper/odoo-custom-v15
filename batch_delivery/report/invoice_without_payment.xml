@@ -27,9 +27,8 @@
             <div class="article o_report_layout_standard" t-att-data-oe-model="o and o._name"
                  t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')"
                  style="font-family: 'Lato', 'Noto'; font-size:16px;">
-               <!-- <t t-call="web.address_layout"/>-->
                 <t t-set="o" t-value="o.with_context(lang=lang)"/>
-                <div class="row">
+                <div class="row mt-2 mb-2">
                     <div class="col-6">
                       <span><b>Delivery Address:</b></span><br></br>
                       <div><span t-if="o.partner_shipping_id.customer_code">[<t t-esc="o.partner_shipping_id.customer_code"/>]</span><t t-esc="o.partner_shipping_id.name"></t></div>
@@ -242,9 +241,36 @@
                     </t>
                     <br></br>
                    <div class="clearfix">
-                        <div id="total" class="row" t-if="o.partner_id.bill_with_goods">
-                            <div t-attf-class="#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'} ml-auto">
-                                <table class="table table-sm" style="page-break-inside: avoid;">
+                     <div id="total" class="row">
+                       <div style="width:50%">
+                           <table>
+                               <tr>
+                                   <td>
+                                       <strong>Total Units:</strong>
+                                       <span t-esc="'{0:.02f}'.format(sum([l.quantity for l in o.invoice_line_ids.filtered(lambda r: r.product_id.type != 'service')]))"/>
+                                       <br/>
+                                   </td>
+                                 </tr>
+                               <tr>
+                                   <td>
+                                     <t t-if="o.state == 'draft'">
+                                         <p t-if="o.partner_id.total_due &gt; 0">
+                                         <strong class="mr16">Previous Balance :</strong>
+                                          <span t-esc="'${0:.02f}'.format(o.partner_id.total_due)"/> as of <span t-esc="context_timestamp(datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%m/%d/%Y')"/>
+                                         </p>
+                                     </t>
+                                     <t t-else="">
+                                         <p t-if="(o.partner_id.total_due - o.amount_residual) &gt; 0">
+                                             <strong class="mr16">Previous Balance :</strong>
+                                              <span t-esc="'${0:.02f}'.format(o.partner_id.total_due - o.amount_residual)"/> as of <span t-esc="context_timestamp(datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%m/%d/%Y')"/>
+                                         </p>
+                                     </t>
+                                   </td>
+                               </tr>
+                           </table>
+                       </div>
+                        <div t-if="o.partner_id.bill_with_goods" style="width:50%">
+                                <table class="table table-sm" style="page-break-inside: avoid;width::100%">
 
                                     <!--Tax totals-->
                                     <t t-set="tax_totals" t-value="json.loads(o.tax_totals_json)"/>
@@ -278,27 +304,9 @@
                             </div>
                         </div>
                     </div>
-                    <strong class="mr16">Total Units:</strong>
-                    <span t-esc="'{0:.02f}'.format(sum([l.quantity for l in o.invoice_line_ids.filtered(lambda r: r.product_id.type != 'service')]))"/>
-                    <br/>
-                     <t t-if="o.state == 'draft'">
-                        <p t-if="((o.partner_id.total_due+o.amount_residual) - o.amount_residual) &gt; 0">
-                        <strong class="mr16">Previous Balance :</strong>
-                         <span t-esc="'${0:.02f}'.format(o.partner_id.total_due - o.amount_residual)"/> as of <span t-esc="context_timestamp(datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%m/%d/%Y')"/>
-                    </p>
-                    </t>
-                    <t t-else="">
-                        <p t-if="(o.partner_id.total_due - o.amount_residual) &gt; 0">
-                            <strong class="mr16">Previous Balance :</strong>
-                             <span t-esc="'${0:.02f}'.format(o.partner_id.total_due - o.amount_residual)"/> as of <span t-esc="context_timestamp(datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%m/%d/%Y')"/>
-                        </p>
-                    </t>
                     <p t-if="o.ref">
                         Please use the following communication for your payment : <b><span t-field="o.ref"/></b>
                     </p>
-                   <!-- <p t-if="o.comment" name="comment">
-                        <span t-field="o.comment"/>
-                    </p>-->
                     <p t-if="o.fiscal_position_id.note" name="note">
                         <span t-field="o.fiscal_position_id.note"/>
                     </p>

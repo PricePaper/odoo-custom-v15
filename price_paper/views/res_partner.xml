@@ -418,5 +418,9 @@
                   groups="account.group_account_invoice"
                   parent="account.menu_finance_receivables" sequence="16"/>
 
+          <record id="account.res_partner_action_customer" model="ir.actions.act_window">
+              <field name="context">{'search_default_customer': 1,'res_partner_search_mode': 'customer', 'default_is_company': True, 'default_customer_rank': 1, 'default_customer':1}</field>
+          </record>
+
     </data>
 </odoo>

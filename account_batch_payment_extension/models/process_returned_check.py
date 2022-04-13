@@ -2,6 +2,7 @@
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+from odoo.tools import float_round
 
 
 class ProcessReturnedCheck(models.Model):
@@ -30,18 +31,23 @@ class ProcessReturnedCheck(models.Model):
 
     def process_payment(self):
         for rec in self:
-            payment = rec.payment_ids
-            invoice = payment.mapped('invoice_ids')
             if not rec.payment_ids:
                 raise UserError("Payment is not selected")
-            if abs(rec.amount) != sum(payment.mapped('amount')):
+
+            payment = rec.payment_ids
+
+            if float_round(abs(rec.amount), 2) != float_round(sum(payment.mapped('amount')), 2):
                 raise UserError("Amount mismatch.")
-            for pay in rec.payment_ids:
+            invoice = payment.mapped('reconciled_invoice_ids')
+
+            for pay in payment:
                 pay.write({'old_invoice_ids': [(6, 0, pay.reconciled_invoice_ids.ids)]})
-                pay.mapped('move_line_ids').remove_move_reconcile()
-            reconcile_lines = (payment.mapped('move_line_ids') | self.bank_stmt_line_id.journal_entry_ids)
+                pay.move_id.mapped('line_ids').remove_move_reconcile()
+
+            reconcile_lines = (payment.mapped('line_ids') | self.bank_stmt_line_id.line_ids)
             reconcile_lines = reconcile_lines.filtered(lambda r: not r.reconciled and r.account_id.internal_type in ('payable', 'receivable'))
             reconcile_lines.reconcile()
+
             if invoice:
                 fine_invoices = invoice.remove_sale_commission(self.bank_stmt_line_id.date)
                 if fine_invoices:
@@ -56,11 +62,11 @@ class ProcessReturnedCheck(models.Model):
 
     def action_view_invoice(self):
         invoices = self.mapped('invoice_ids')
-        action = self.sudo().env.ref('account.action_invoice_tree1').read()[0]
+        action = self.sudo().env.ref('account.action_move_out_invoice_type').read()[0]
         if len(invoices) > 1:
             action['domain'] = [('id', 'in', invoices.ids)]
         elif len(invoices) == 1:
-            form_view = [(self.env.ref('account.invoice_form').id, 'form')]
+            form_view = [(self.env.ref('account.view_move_form').id, 'form')]
             if 'views' in action:
                 action['views'] = form_view + [(state, view) for state, view in action['views'] if view != 'form']
             else:

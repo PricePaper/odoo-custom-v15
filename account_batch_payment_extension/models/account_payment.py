@@ -9,6 +9,11 @@ class AccountPayment(models.Model):
     is_return_cleared = fields.Boolean(string='Return cleared')
     old_invoice_ids = fields.Many2many('account.move', string='Old Invoices')
 
+    @api.depends('state')
+    def _compute_batch_payment_id(self):
+        for payment in self:
+            payment.batch_payment_id = payment.batch_payment_id or None
+
     def action_delete_from_db(self):
         self.batch_payment_id.message_post(body='Payment %s removed.' % self.name)
         self.sudo().unlink()

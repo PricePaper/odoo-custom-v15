@@ -5,7 +5,7 @@
          <field name="name">sales.analysis.report.pivot</field>
          <field name="model">sales.analysis.report</field>
          <field name="arch" type="xml">
-            <pivot default_order="product_qty asc" string="Sales Analysis" disable_linking="True" display_quantity="true">
+            <pivot string="Sales Analysis" disable_linking="True" display_quantity="true">
                 <field name="partner_id" type="row"/>
                 <field name="categ_id" type="row"/>
                 <field name="product_qty" string="Quantity" type="measure"/>

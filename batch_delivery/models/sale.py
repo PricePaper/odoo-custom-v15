@@ -9,7 +9,28 @@ class SaleOrder(models.Model):
 
     have_price_lock = fields.Boolean(compute='_compute_price_lock')
     delivery_date = fields.Date(string="Delivery Date")
-    batch_warning = fields.Text(string='Shipment Progress wrarning Message', copy=False)
+    #batch_warning = fields.Text(string='Shipment Progress wrarning Message', copy=False)
+    order_banner_id = fields.Many2one('order.banner',string='Shipment Progress warning Message',copy=False)
+
+
+
+    def _get_action_view_picking(self, pickings):
+        """
+        view for sales man
+        """
+        action = super(SaleOrder, self)._get_action_view_picking(pickings)
+        if self.env.user.user_has_groups('sales_team.group_sale_salesman') and (not self.env.user.user_has_groups('stock.group_stock_user') or not self.env.user.user_has_groups('account.group_account_invoice')):
+            form_view = [(self.env.ref('batch_delivery.view_picking_form_inherited_pricepaper').id, 'form')]
+            tree_view = [(self.env.ref('stock.vpicktree').id, 'tree')]
+            if len(pickings) > 1:
+                action['views'] = tree_view + form_view
+            elif pickings:
+                action['views'] = form_view
+            if action.get('context'):
+                action['context']['edit'] = False
+            else:
+                action['context'] = {'create': False, 'edit': False}
+        return action
 
     @api.depends('order_line.price_lock')
     def _compute_price_lock(self):
@@ -94,8 +115,14 @@ class SaleOrderLine(models.Model):
             outgoing_moves, incoming_moves = line._get_outgoing_incoming_moves()
             for move in outgoing_moves.filtered(lambda rec: rec.state not in ('cancel', 'done')):
                 need_to_process = True
+                if any(move.mapped('move_orig_ids').mapped('created_purchase_line_id').mapped('order_id').filtered(lambda rec: rec.state  != 'draft')):
+                    continue
                 for transit_move in move.mapped('move_orig_ids').filtered(lambda rec: rec.state not in ('cancel', 'done')):
+                    transit_move._do_unreserve()
                     transit_move.write({'product_uom_qty': transit_move.product_uom_qty + product_qty})
+                    transit_move._action_assign()
+                    if transit_move.created_purchase_line_id and transit_move.created_purchase_line_id.order_id.state == 'draft':
+                        transit_move.created_purchase_line_id.write({'product_qty': transit_move.product_uom_qty})
                     need_to_process = False
                     break
                 if not (need_to_process and move.mapped('move_orig_ids')):
@@ -111,7 +138,10 @@ class SaleOrderLine(models.Model):
         res =  super(SaleOrderLine, self)._action_launch_stock_rule(previous_product_uom_qty)
         for line in self:
             transit_move = line.move_ids.mapped('move_orig_ids').filtered(lambda rec: not rec.transit_picking_id)
-            transit_move.write({'transit_picking_id': transit_move.mapped('move_dest_ids').mapped('picking_id')})
+            picking_id = transit_move.mapped('move_dest_ids').mapped('picking_id').filtered(lambda rec: rec.state not in ('cancel', 'done', 'in_transit'))
+            if len(picking_id) > 1:
+                picking_id = picking_id[0]
+            transit_move.write({'transit_picking_id': picking_id.id})
         return res
 
     @api.onchange('product_id')

@@ -69,7 +69,10 @@
              <field name="model">product.supplierinfo</field>
              <field name="inherit_id" ref="product.product_supplierinfo_form_view"/>
              <field name="arch" type="xml">
-                  <xpath expr="//field[@name='product_code']" position="after">
+                 <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="domain">['|',('parent_id', '=',False),('company_id','in', [company_id,False])]</attribute>
+                </xpath>
+                 <xpath expr="//field[@name='product_code']" position="after">
                     <label for="manual_delay"/>
                     <div>
                         <field name="manual_delay" class="oe_inline"/> days
@@ -90,6 +93,9 @@
             <field name="model">product.supplierinfo</field>
             <field name="inherit_id" ref="product.product_supplierinfo_tree_view"/>
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="domain">['&amp;',('parent_id', '=',False),('company_id','in', [company_id,False])]</attribute>
+                </xpath>
                 <xpath expr="//field[@name='date_end']" position="after">
                     <field name="is_available" invisible="1"/>
                 </xpath>
@@ -107,6 +113,12 @@
                 </xpath>
                 <xpath expr="//tree" position="attributes">
                     <attribute name="decoration-danger">is_available==False</attribute>
+                </xpath>
+                <xpath expr="//field[@name='delay']" position="before">
+                  <field name="manual_delay"/>
+                </xpath>
+                <xpath expr="//field[@name='delay']" position="attributes">
+                   <attribute name="invisible">1</attribute>
                 </xpath>
             </field>
         </record>

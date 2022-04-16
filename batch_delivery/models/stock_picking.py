@@ -29,7 +29,7 @@ class StockPicking(models.Model):
                                          string='Easiness Of Shipping')
     is_transit = fields.Boolean(string='Transit', copy=False)
     is_late_order = fields.Boolean(string='Late Order', copy=False)
-    reserved_qty = fields.Float('Available Quantity', compute='_compute_available_qty')
+    reserved_qty = fields.Float('Available Quantity', compute='_compute_available_qty', store=True)
     low_qty_alert = fields.Boolean(string="Low Qty", compute='_compute_available_qty')
     sequence = fields.Integer(string='Order', default=1)
     is_invoiced = fields.Boolean(string="Invoiced", compute='_compute_state_flags')
@@ -112,10 +112,10 @@ class StockPicking(models.Model):
             if rec.invoice_ids:
                 rec.invoice_ref = rec.invoice_ids[-1].name
 
-    @api.depends('move_lines.reserved_availability')
+    @api.depends('transit_move_lines.reserved_availability')
     def _compute_available_qty(self):
         for pick in self:
-            moves = pick.mapped('move_lines').filtered(lambda move: move.state != 'cancel')
+            moves = pick.mapped('transit_move_lines').filtered(lambda move: move.state != 'cancel')
             pick.reserved_qty = sum(moves.mapped('forecast_availability'))
             pick.low_qty_alert = pick.item_count != pick.reserved_qty and pick.state != 'done'
 
@@ -133,7 +133,7 @@ class StockPicking(models.Model):
     def _compute_item_count(self):
         for picking in self:
             count = 0
-            for line in picking.move_lines:
+            for line in picking.transit_move_lines:
                 count += line.product_uom_qty
             picking.item_count = count
 

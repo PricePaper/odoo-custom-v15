@@ -118,6 +118,10 @@
             <field name="model">stock.picking</field>
             <field name="inherit_id" ref="stock.view_picking_internal_search"/>
             <field name="arch" type="xml">
+                <filter name="cancel" position="after">
+                    <separator/>
+                    <filter string="Qty Available Pickings" name="qty_available" domain="[('reserved_qty', '>', 0)]"/>
+                </filter>
                 <filter name="late" position="after">
                     <filter string="In Transit" name="in_transit" domain="[('state', '=', 'in_transit')]"/>
                     <filter string="Truck Deliveries" name="truck_deliveries" domain="[('carrier_id.show_in_route', '=', True)]"/>
@@ -140,7 +144,7 @@
             <field name="domain">['|', ('batch_id.state', 'in', ('draft', 'in_progress', 'in_truck')), ('batch_id', '=', False), ('state','in',
                 ['confirmed', 'waiting', 'assigned', 'in_transit']), ('picking_type_code', '=', 'outgoing')]
             </field>
-            <field name="context">{'search_default_truck_deliveries': 1}</field>
+            <field name="context">{'search_default_truck_deliveries': 1, 'search_default_qty_available': 1}</field>
             <field name="search_view_id" ref="stock.view_picking_internal_search"/>
 
         </record>

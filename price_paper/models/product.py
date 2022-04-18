@@ -283,9 +283,12 @@ class ProductProduct(models.Model):
         default code of archived product is entered.
         """
         if name:
+            active_products = self.env['product.product'].search([('default_code', 'ilike', name)])
             old_products = self.env['product.product'].search([('default_code', 'ilike', name), ('active', '=', False)])
-            if old_products:
-                new_products = self.env['product.product'].search([('superseded', 'in', old_products.ids)])
+            if old_products and not active_products:
+                new_products = self.env['product.product'].search([('superseded.old_product', 'in', old_products.ids)])
+                # if active_products:
+                #     new_products = active_products + new_products
                 if new_products:
                     return new_products.name_get()
         return super(ProductProduct, self).name_search(name=name, args=args, operator=operator, limit=limit)
@@ -345,7 +348,7 @@ class ProductSuperseded(models.Model):
     old_product = fields.Many2one('product.product', string="Old Product",
                                   domain=[('active', '=', False)], required=True, ondelete='cascade')
     product_child_id = fields.Many2one('product.product', string="New Product",
-                                       readonly=True, required=True)
+                                       readonly=True,required=True)
 
     @api.constrains('old_product', 'product_child_id')
     def check_duplicates(self):

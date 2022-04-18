@@ -26,9 +26,14 @@ class Product(models.Model):
             product.outgoing_qty -= product.transit_qty
 
     def action_open_transit_moves(self):
-        transit_location = self.env['stock.location'].search([('is_transit_location', '=', True)])
-        res = self.with_context(location=transit_location.ids).action_open_quants()
-        return res
+        action = self.sudo().env.ref('stock.stock_move_action').read()[0]
+        moves = self.stock_move_ids.filtered(lambda r: r.picking_id.is_transit and r.quantity_done > 0)
+        action['domain'] = [('id', 'in', moves.ids)]
+        action['context'] = {'search_default_groupby_location_id': 1}
+        return action
+        # transit_location = self.env['stock.location'].search([('is_transit_location', '=', True)])
+        # res = self.with_context(location=transit_location.ids).action_open_quants()
+        # return res
 
     def get_quantity_in_sale(self):
         self.ensure_one()

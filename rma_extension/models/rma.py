@@ -128,8 +128,8 @@ class RMARetMerAuth(models.Model):
             if not any([rma.rma_sale_lines_ids, rma.rma_purchase_lines_ids, rma.rma_picking_lines_ids]):
                 raise ValidationError('There is no lines for process.')
 
-        sequence_val = self.env['ir.sequence'].next_by_code('rma.rma') or '/'
-        self.write({'state': 'verification', 'name': sequence_val})
+        #sequence_val = self.env['ir.sequence'].next_by_code('rma.rma') or '/'
+        self.write({'state': 'verification'})
         return True
 
     def _extract_sale_line_info(self):

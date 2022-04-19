@@ -17,7 +17,7 @@
     'website': 'https://www.confianzit.com',
     'license': 'LGPL-3',
     'depends': ['web'],
-    'data': [],
+    'data': ['security/quick_edit_security.xml',],
     'demo': [],
     'assets': {
         'web.assets_backend': [

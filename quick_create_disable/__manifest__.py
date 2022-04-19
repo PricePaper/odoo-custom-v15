@@ -20,7 +20,7 @@ This module disable the quick create from odoo many2one drop down.
     'author': 'Confianz Global',
     'website': 'http://confianzit.com',
     'images': [],
-    'data': [],
+    'data': ['security/quick_create_security.xml',],
     'depends': ['web'],
     'assets': {
         'web.assets_backend': [

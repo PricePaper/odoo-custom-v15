@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="group_edit_permission" model="res.groups">
+            <field name="name">Enable Permission to Quick Edit</field>
+            <field name="comment">the user will have access to quick edit</field>
+        </record>
+    </data>
+</odoo>

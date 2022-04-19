@@ -253,7 +253,7 @@ class StockPicking(models.Model):
                 if not any(picking.transit_move_lines.mapped('quantity_done')):
                     raise UserError("You cannot transit if no quantities are  done.\nTo force the transit, switch in edit mode and encode the done quantities.")
                 picking.transit_move_lines.filtered(lambda rec: rec.quantity_done > 0).with_context(is_transit=True)._action_done(cancel_backorder=True)
-                # picking.transit_move_lines.filtered(lambda rec: rec.quantity_done == 0)._action_cancel()
+                picking.transit_move_lines.filtered(lambda rec: rec.quantity_done == 0)._action_cancel()
                 for move in picking.transit_move_lines.filtered(lambda rec: rec.state =='done'):
                     move.move_dest_ids.write({'quantity_done': move.product_uom_qty})
                 picking.write({

@@ -3,6 +3,8 @@ from odoo import fields, models, api
 class ReportAccountFinancialReport(models.Model):
     _inherit = "account.financial.html.report"
 
+    income = fields.Float(string='Income')
+
     def _get_table(self, options):
         if self == self.env.ref('account_reports.account_financial_report_balancesheet0'):
             self = self.with_context(exclude_from_date=True)
@@ -36,6 +38,7 @@ class ReportAccountFinancialReport(models.Model):
         '''
 
         lines = []
+        income = {}
         for financial_line in financial_lines:
 
             is_leaf = solver.is_leaf(financial_line)
@@ -82,15 +85,17 @@ class ReportAccountFinancialReport(models.Model):
             if self.env.company.totals_below_sections and (financial_line.children_ids or (is_leaf and financial_report_line['unfolded'] and aml_lines)):
                 lines.append(self._get_financial_total_section_report_line(options_list[0], financial_report_line))
                 financial_report_line["unfolded"] = True  # enables adding "o_js_account_report_parent_row_unfolded" -> hides total amount in head line as it is displayed later in total line
-            if financial_line.id == 4:
-                for line in lines:
-                    if line.get('name') == 'Operating Income' or line.get('id') == 5:
-                        income = line
-                        break
+           # if financial_line.id == 4:
+            for line in lines:
+                if line.get('name') == 'Operating Income' or line.get('id') == 5:
+                    income = line
+                    break
+            if income or self.income:
                 if income:
-                    t = income['columns'][0].get('no_format')
-                    for l in lines:
-                        if l.get('columns', False) and len(l.get('columns', False)) == 2:
+                    self.income = income['columns'][0].get('no_format')
+                t = self.income
+                for l in lines:
+                    if l.get('columns', False) and len(l.get('columns', False)) == 2:
                             if l.get('caret_options') or l.get('id') == 'total_6' or l.get('name') == 'Total Gross Profit' or l.get(
                                     'id') == 4 and l.get('class') == 'total':
                                 s = l['columns'][0].get('no_format')

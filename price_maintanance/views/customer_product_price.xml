@@ -23,5 +23,37 @@
             </field>
         </record>
 
+        <record id="view_customer_product_price_form_custom" model="ir.ui.view">
+            <field name="name">customer.product.price.form.customized</field>
+            <field name="model">customer.product.price</field>
+            <field name="arch" type="xml">
+                <form string="Customer Product Price">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="pricelist_id" required='1'/>
+                                <field name="expiry_date" readonly='1'/>
+                                <field name="lastsale_history_date"/>
+                                <field name="lock_expiry_date"/>
+                                <field name="price_lock"/>
+                                <field name="lock_expiry_date"
+                                       attrs="{'required': [('price_lock', '=', True)], 'invisible': [('price_lock', '=', False)]}"/>
+                            </group>
+                            <group>
+                                <field name="product_id" required='1'/>
+                                <field name="product_uom" required='1'/>
+                                <field name="price" required='1'/>
+                            </group>
+                            <field name="sale_uoms" invisible="1"/>
+                        </group>
+                    </sheet>
+                <footer>
+                    <button string="Save" class="oe_highlight" special="save"/>
+                    <button string="Cancel" class="oe_highlight" special="cancel" />
+                </footer>
+                </form>
+            </field>
+        </record>
+
     </data>
 </odoo>

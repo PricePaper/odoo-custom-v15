@@ -15,7 +15,7 @@ class ResPartner(models.Model):
                                            compute='_compute_pricelist')
 
     def create_pricelist(self):
-        view_id = self.env.ref('price_paper.view_customer_product_price_form').id
+        view_id = self.env.ref('price_maintanance.view_customer_product_price_form_custom').id
         context = {'pricelist_id':self.partner_pricelist_id.pricelist_id.id}
         return {
             'name': 'Add Pricelist Lines',

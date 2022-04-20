@@ -31,7 +31,7 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="pricelist_id" required='1'/>
+                                <field name="pricelist_id" required='1' readonly='1'/>
                                 <field name="expiry_date" readonly='1'/>
                                 <field name="lastsale_history_date"/>
                                 <field name="lock_expiry_date"/>

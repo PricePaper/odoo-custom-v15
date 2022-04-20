@@ -15,18 +15,31 @@ class ResPartner(models.Model):
                                            compute='_compute_pricelist')
 
     def create_pricelist(self):
-        view_id = self.env.ref('price_maintanance.add_new_pricelist_wiz').id
-        context = {'record':self.id}
+        view_id = self.env.ref('price_paper.view_customer_product_price_form').id
+        context = {'pricelist_id':self.partner_pricelist_id.pricelist_id.id}
         return {
             'name': 'Add Pricelist Lines',
             'view_type': 'form',
             'view_mode': 'form',
-            'res_model': 'add.pricelist',
+            'res_model': 'customer.product.price',
             'view_id': view_id,
             'type': 'ir.actions.act_window',
             'target': 'new',
-            'context':context
+            'context': {
+                'default_pricelist_id': self.partner_pricelist_id.pricelist_id.id,
+            }
         }
+
+        # return {
+        #     'name': 'Add Pricelist Lines',
+        #     'view_type': 'form',
+        #     'view_mode': 'form',
+        #     'res_model': 'add.pricelist',
+        #     'view_id': view_id,
+        #     'type': 'ir.actions.act_window',
+        #     'target': 'new',
+        #     'context':context
+        # }
 
 
     def _compute_pricelist(self):

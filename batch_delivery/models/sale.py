@@ -12,6 +12,19 @@ class SaleOrder(models.Model):
     #batch_warning = fields.Text(string='Shipment Progress wrarning Message', copy=False)
     order_banner_id = fields.Many2one('order.banner',string='Shipment Progress warning Message',copy=False)
 
+    def write(self, values):
+        if values.get('partner_shipping_id'):
+            for record in self:
+                new_partner = self.env['res.partner'].browse(values.get('partner_shipping_id'))
+                picking = record.mapped('picking_ids').filtered(lambda x: x.state not in ('done', 'cancel'))
+                if picking:
+                    picking.write({'partner_id':new_partner.id})
+        res = super(SaleOrder, self).write(values)
+        return res
+
+    @api.onchange('partner_shipping_id')
+    def _onchange_partner_shipping_id(self):
+        return {}
 
 
     def _get_action_view_picking(self, pickings):

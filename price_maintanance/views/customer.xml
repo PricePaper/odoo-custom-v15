@@ -55,7 +55,7 @@
                         </group>
                         <b>Customer Product Price</b>
                             <field name="partner_pricelist_line_ids" nolabel="1" attrs="{'readonly': False}" mode="tree,kanban" options="{'custom_search': True}">
-                                <tree decoration-danger="deviation&lt;0" decoration-info="deviation==0"
+                                <tree create="0" decoration-danger="deviation&lt;0" decoration-info="deviation==0"
                                       decoration-success="deviation&gt;0"  default_order="product_name">
                                     <field name="product_name" invisible="1"/>
                                     <field name="product_id" required="1"/>
@@ -231,7 +231,7 @@
                                    attrs="{'invisible':[('change_flag', '=', False)], 'required': [('change_flag', '=', True)]}"/>
                         </group>
 
-                          <button name="create_pricelist" string="Create Pricelist" class="oe_highlight" type="object"/>
+                          <button name="create_pricelist" string="Add Product" class="oe_highlight" type="object"/>
                     </sheet>
                 </form>
             </field>

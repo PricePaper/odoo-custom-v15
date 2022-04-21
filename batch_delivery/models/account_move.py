@@ -3,6 +3,7 @@ from odoo import fields, models, api, _
 from odoo.exceptions import UserError, ValidationError
 import json
 from collections import defaultdict
+from odoo.tools import float_compare
 from odoo.tools.misc import formatLang, format_date, get_lang
 import re
 
@@ -334,6 +335,31 @@ class AccountMoveLine(models.Model):
 
     stock_move_ids = fields.Many2many(comodel_name='stock.move', compute="_get_stock_move_ids", string="Stock Moves")
     stock_move_id = fields.Many2one('stock.move', 'Stock Move', index=True)
+
+    def _update_line_quantityy(self, values):
+        moves = self.mapped('move_id')
+        for move in moves:
+            move_lines = self.filtered(lambda x: x.move_id == move)
+            msg = "<b>" + _("Quantity has been updated.") + "</b><ul>"
+            for line in move_lines:
+                msg += "<li> %s: <br/>" % line.product_id.display_name
+                msg += _(
+                    "Quantity: %(old_qty)s -> %(new_qty)s",
+                    old_qty=line.quantity,
+                    new_qty=values["quantity"]
+                ) + "<br/>"
+            msg += "</ul>"
+            move.message_post(body=msg)
+
+
+    def write(self, vals):
+        if 'quantity' in vals:
+            precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+            self.filtered(
+                lambda r: float_compare(r.quantity, vals['quantity'],
+                                                              precision_digits=precision) != 0)._update_line_quantityy(vals)
+        res = super(AccountMoveLine, self).write(vals)
+        return res
 
     def _get_stock_move_ids(self):
         for line in self:

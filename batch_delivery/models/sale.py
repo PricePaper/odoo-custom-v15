@@ -195,3 +195,45 @@ class SaleOrderLine(models.Model):
         res.update({'stock_move_id': move_id.id})
         return res
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+
+    def _update_price_post(self, values):
+        orders = self.mapped('order_id')
+        for order in orders:
+            order_lines = self.filtered(lambda x: x.order_id == order)
+            msg = "<b>" + _("Price unit has been updated.") + "</b><ul>"
+            for line in order_lines:
+                msg += "<li> %s: <br/>" % line.product_id.display_name
+                msg += _(
+                    "Ordered Quantity: %(old_qty)s -> %(new_qty)s",
+                    old_qty=line.price_unit,
+                    new_qty=values["price_unit"]
+                ) + "<br/>"
+            msg += "</ul>"
+            order.message_post(body=msg)
+
+    def _update_tax_valuess(self, values):
+        orders = self.mapped('order_id')
+        for order in orders:
+            order_lines = self.filtered(lambda x: x.order_id == order)
+            msg = "<b>" + _("Tax has been updated for.") + "</b><ul>"
+            for line in order_lines:
+                msg += "<li> %s: <br/>" % line.product_id.display_name
+            msg += "</ul>"
+            order.message_post(body=msg)
+
+    def write(self, values):
+        if 'product_uom_qty' in values:
+            precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+            self.filtered(
+                lambda r: r.state != 'sale' and float_compare(r.product_uom_qty, values['product_uom_qty'],
+                                                          precision_digits=precision) != 0)._update_line_quantity(values)
+        if 'price_unit' in values:
+            precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+            if float_compare(self.price_unit, values['price_unit'], precision_digits=precision) != 0:
+                self._update_price_post(values)
+
+        tax_id = self.tax_id.ids
+        result = super(SaleOrderLine, self).write(values)
+        if tax_id and tax_id!=self.tax_id.ids:
+            self._update_tax_valuess(values)
+        return result

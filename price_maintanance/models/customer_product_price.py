@@ -5,9 +5,10 @@ from odoo import fields, models, api
 
 class CustomerProductPrice(models.Model):
     _inherit = 'customer.product.price'
-    _order = 'product_name desc'
+
 
     product_name = fields.Char(string="Product name",related='product_id.name')
+    default_code = fields.Char(string="Internal Reference",related='product_id.default_code')
     customer_rank = fields.Char(string='Customer Rank', related='partner_id.rnk_lst_3_mon', readonly=True)
     mrg_per_lst_3_mon = fields.Float(string='Profit Margin %', related='partner_id.mrg_per_lst_3_mon', readonly=True)
     last_sale_date = fields.Datetime(compute='_get_last_sale_details', string='Last Sale')

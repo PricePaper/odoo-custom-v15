@@ -128,14 +128,14 @@ class SaleOrderLine(models.Model):
             outgoing_moves, incoming_moves = line._get_outgoing_incoming_moves()
             for move in outgoing_moves.filtered(lambda rec: rec.state not in ('cancel', 'done')):
                 need_to_process = True
-                if any(move.mapped('move_orig_ids').mapped('created_purchase_line_id').mapped('order_id').filtered(lambda rec: rec.state  != 'draft')):
+                if any(move.mapped('move_orig_ids').sudo().mapped('created_purchase_line_id').mapped('order_id').filtered(lambda rec: rec.state  != 'draft')):
                     continue
                 for transit_move in move.mapped('move_orig_ids').filtered(lambda rec: rec.state not in ('cancel', 'done')):
                     transit_move._do_unreserve()
                     transit_move.write({'product_uom_qty': transit_move.product_uom_qty + product_qty})
                     transit_move._action_assign()
                     if transit_move.created_purchase_line_id and transit_move.created_purchase_line_id.order_id.state == 'draft':
-                        transit_move.created_purchase_line_id.write({'product_qty': transit_move.product_uom_qty})
+                        transit_move.created_purchase_line_id.sudo().write({'product_qty': transit_move.product_uom_qty})
                     need_to_process = False
                     break
                 if not (need_to_process and move.mapped('move_orig_ids')):

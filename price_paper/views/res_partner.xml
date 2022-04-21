@@ -61,7 +61,7 @@
                                nolabel="1">
                             <tree string="Customer Pricelist priority" editable="bottom">
                                 <field name='sequence' widget="handle"/>
-                                <field name='pricelist_id' nolabel="1" required="1"/>
+                                <field name='pricelist_id' nolabel="1" required="1" widget="product_configurator"/>
                             </tree>
                         </field>
                     </group>

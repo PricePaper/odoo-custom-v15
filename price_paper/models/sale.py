@@ -1359,10 +1359,6 @@ class SaleOrderLine(models.Model):
 
             vals.update({'price_unit': product_price, 'price_from': price_from})
 
-            if self.product_id.sale_uoms.ids:
-                vals.update({'product_uom':self.product_id.sale_uoms.ids[0]})
-               
-
             # for uom only show those applicable uoms
             domain = res.get('domain', {})
             product_uom_domain = domain.get('product_uom', [])

@@ -216,7 +216,7 @@ class StockPickingBatch(models.Model):
                     raise UserError(_('Please create invoice for %s', picking.name))
         return self.env.ref('batch_delivery.batch_driver_report').report_action(self, config=False)
 
-    def print_picking(self):
+    def action_print(self):
         pickings = self.mapped('picking_ids')
         if not pickings:
             raise UserError(_('Nothing to print.'))

@@ -65,9 +65,6 @@
             <field name="dpi">90</field>
         </record>
 
-
-
-        <!--to-do Menu hide-->
         <record id="ppt_account_batch_invoices_report" model="ir.actions.report">
             <field name="name">Invoices without Payment</field>
             <field name="model">stock.picking.batch</field>
@@ -78,7 +75,6 @@
             <field name="binding_model_id" eval="False"/>
             <field name="paperformat_id" ref="batch_delivery.paperformat_inv_std"/>
         </record>
-
 
         <record id="ppt_account_selected_invoices_report" model="ir.actions.report">
             <field name="name">Invoices without Payment</field>
@@ -107,9 +103,9 @@
             <field name="report_type">qweb-pdf</field>
             <field name="report_name">batch_delivery.report_batch_picking_all</field>
             <field name="report_file">batch_delivery.report_batch_picking_all</field>
-            <field name="print_report_name">'Pick - %s - %s' % (object.truck_driver_id and  object.truck_driver_id.name or '', object.date)</field>
+            <field name="print_report_name">'Pick - %s - %s' % (object.truck_driver_id and  object.truck_driver_id.name or '', object.date and object.date or '')</field>
             <field name="paperformat_id" ref="batch_delivery.paperformat_batch_picking_ticket"/>
-            <field name="binding_model_id" ref="model_stock_picking_batch"/>
+            <field name="binding_model_id" eval="False"/>
             <field name="binding_type">report</field>
         </record>
 
@@ -131,7 +127,7 @@
             <field name="report_file">batch_delivery.report_product_label</field>
             <field name="print_report_name">'Labels - %s - %s' % (object.truck_driver_id and object.truck_driver_id.name or '', object.date)</field>
             <field name="paperformat_id" ref="print_product_label_paperformat"/>
-            <field name="binding_model_id" ref="model_stock_picking_batch"/>
+            <field name="binding_model_id" eval="False"/>
             <field name="binding_type">report</field>
         </record>
 
@@ -153,7 +149,7 @@
             <field name="report_name">batch_delivery.report_batch_driver</field>
             <field name="report_file">batch_delivery.report_batch_driver</field>
             <field name="print_report_name">'%s - %s' % (object.truck_driver_id.name or '', object.name)</field>
-            <field name="binding_model_id" ref="model_stock_picking_batch"/>
+            <field name="binding_model_id" eval="False"/>
             <field name="binding_type">report</field>
             <field name="paperformat_id" ref="paperformat_driver_batch_delivery_slip"/>
         </record>

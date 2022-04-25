@@ -475,7 +475,6 @@ class RMARetMerAuth(models.Model):
                     inv_values = {
                         'move_type': 'out_refund',
                         'invoice_origin': rma.name or '',
-                        'name': rma.name or '',
                         #'comment': rma.problem or '',
                         'partner_id': rma.invoice_address_id and
                                       rma.invoice_address_id.id or False,
@@ -505,7 +504,7 @@ class RMARetMerAuth(models.Model):
                         'move_type': 'out_invoice',
                         #'comment': rma.problem or '',
                         'invoice_origin': rma.name or '',
-                        'name': rma.name or '',
+                      
                         'partner_id': rma.invoice_address_id and
                                       rma.invoice_address_id.id or False,
                         # 'account_id':
@@ -706,7 +705,7 @@ class RMARetMerAuth(models.Model):
                 if invoice_vals:
                     inv_values = {
                         'move_type': 'in_refund',
-                        'name': rma.name or '',
+
                         'invoice_origin': rma.name or '',
                         #'comment': rma.problem or '',
                         'partner_id': rma.supplier_id and
@@ -724,7 +723,7 @@ class RMARetMerAuth(models.Model):
                 if supp_inv_line_vals:
                     ex_supp_inv_vals = {
                         'move_type': 'in_invoice',
-                        'name': rma.name or '',
+
                        # 'comment': rma.problem or '',
                         'invoice_origin': rma.name or '',
                         'partner_id': rma.supplier_id and
@@ -927,7 +926,7 @@ class RMARetMerAuth(models.Model):
                     inv_values = {
                         'move_type': 'out_refund',
                         'invoice_origin': rma.name or '',
-                        'name': rma.name or '',
+
                         #'comment': rma.problem or '',
                         'partner_id': rma.picking_partner_id and
                                       rma.picking_partner_id.id or
@@ -948,7 +947,7 @@ class RMARetMerAuth(models.Model):
                         'move_type': 'out_invoice',
                         #'comment': rma.problem or '',
                         'invoice_origin': rma.name or '',
-                        'name': rma.name or '',
+
                         'partner_id': rma.picking_partner_id and
                                       rma.picking_partner_id.id or
                                       rma.picking_rma_id.partner_id.id or False,

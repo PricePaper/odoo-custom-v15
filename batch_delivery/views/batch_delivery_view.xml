@@ -95,6 +95,8 @@
             <field name="model">stock.picking.batch</field>
             <field name="inherit_id" ref="stock_picking_batch.stock_picking_batch_form"/>
             <field name="arch" type="xml">
+              <button name="action_print" position="replace">
+              </button>
                 <button name="action_confirm" position="before">
                     <button name="view_pending_products"
                             string="Pending Products" type="object" class="oe_highlight"
@@ -105,12 +107,12 @@
                     <button name="print_master_late_order_pickticket" string="Print Master Late Order PickTicket"
                             type="object" class="oe_highlight"
                             attrs="{'invisible': ['|', ('have_late_order', '=', False), ('state', '=', 'done')]}"/>
+                    <button name="action_print" string="Print Pick Tickets" type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'in_truck')]}"/>
                     <button name="print_product_labels" string="Print Product Labels" type="object"
                             class="oe_highlight"
                             attrs="{'invisible': [('state', '!=', 'in_truck')]}"/>
-                   <!-- <button name="print_delivery_slip" string="Print Delivery Slip" type="object"
-                            class="oe_highlight"
-                            />-->
                 </button>
 
                 <button name="action_confirm" position="after">
@@ -136,16 +138,17 @@
                 <button name="action_open_label_layout" position="attributes">
                     <attribute name="attrs">{'invisible': 1}</attribute>
                 </button>
-                <button name="action_assign" position="attributes">
+                <!-- <button name="action_assign" position="attributes">
                     <attribute name="attrs">{'invisible': 1}</attribute>
-                </button>
+                </button> -->
+                <xpath expr="//button[@name='action_assign'][1]" position="attributes">
+                  <attribute name="attrs">{'invisible': 1}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_assign'][2]" position="attributes">
+                  <attribute name="attrs">{'invisible': 1}</attribute>
+                </xpath>
                 <button name="action_set_quantities_to_reservation" position="attributes">
                     <attribute name="attrs">{'invisible': 1}</attribute>
-                </button>
-
-                <button name="action_print" position="attributes">
-                    <attribute name="string">Print Pick Tickets</attribute>
-                    <attribute name="states">in_truck</attribute>
                 </button>
                 <button name="action_confirm" position="attributes">
                     <attribute name="states">in_truck</attribute>
@@ -154,6 +157,18 @@
                     <attribute name="confirm">Are you sure want to cancel the batch?</attribute>
                     <attribute name="states">draft</attribute>
                 </button>
+                <xpath expr="//button[@name='action_done'][1]" position="attributes">
+                  <attribute name="attrs">{'invisible': ['|', ('invoice_ids', '=', []), '|',
+                    ('state', '!=', 'in_progress'), '|', ('show_check_availability', '=', True),
+                    ('show_validate', '=', False)]}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_done'][2]" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|', ('invoice_ids', '=', []),
+                      '|', ('state', '!=', 'in_progress'), '|',
+                      ('show_check_availability', '=', False),
+                      ('show_validate', '=', False)]}</attribute>
+                </xpath>
+
 
 
                 <field name="company_id" position="after">

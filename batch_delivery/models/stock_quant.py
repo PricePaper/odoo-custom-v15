@@ -21,7 +21,7 @@ class StockQuant(models.Model):
                 ('location_id.usage', 'in', ['internal', 'transit'])], limit=1, order='create_date desc')
             if previous_quants:
                 self.location_id = previous_quants.location_id
-        else:
+        if not self.product_id.tracking in ['lot', 'serial'] or not self.location_id:
             company_id = self.company_id and self.company_id.id or self.env.company.id
             if location_src and not product_id.qty_available:
                 self.location_id = location_src

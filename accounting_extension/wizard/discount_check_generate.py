@@ -39,7 +39,7 @@ class GenerateDiscountCheck(models.TransientModel):
                     'discount_amount': bill.amount_residual - discount,
                     'invoice_id': bill.id,
                     'date_invoice': bill.invoice_date,
-                    'date_due': bill.date,
+                    'date_due': bill.invoice_date_due,
                     'discount_due_date': bill.discount_due_date,
                     'discounted_total': discount,
                 }))

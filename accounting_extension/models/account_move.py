@@ -13,6 +13,13 @@ class AccountMove(models.Model):
 
     def button_draft(self):
         executed_ids = self.env['account.move']
+        for move in self.filtered(lambda r: r.move_type != 'entry'):
+            discount_line = move.get_discount_line()
+            if discount_line:
+                discount_move = discount_line.mapped('move_id')
+                if discount_move:
+                    discount_move.button_draft()
+                    discount_move.button_cancel()
         if not self.env.user.has_group('base.group_system'):
             res = super(AccountMove, self).button_draft()
             self.write({'discount_date': False})

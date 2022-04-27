@@ -8,6 +8,7 @@ from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 class StockQuant(models.Model):
     _inherit = 'stock.quant'
 
+
     @api.onchange('product_id', 'company_id')
     def _onchange_product_id(self):
         product_id = self.product_id

@@ -23,7 +23,7 @@ class StockQuant(models.Model):
                 self.location_id = previous_quants.location_id
         if not self.product_id.tracking in ['lot', 'serial'] or not self.location_id:
             company_id = self.company_id and self.company_id.id or self.env.company.id
-            if location_src and not product_id.qty_available:
+            if location_src:
                 self.location_id = location_src
             else:
                 self.location_id = self.env['stock.warehouse'].search(

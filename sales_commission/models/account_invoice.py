@@ -20,8 +20,11 @@ class AccountInvoice(models.Model):
     def _compute_paid_date(self):
         for rec in self:
             paid_date = False
-            if rec.state == 'paid':
-                paid_date_list = rec.payment_move_line_ids.mapped('date')
+            if rec.move_type in ('out_invoice', 'out_refund') and rec.payment_state in ('in_payment', 'paid'):
+                reconciled_lines = self.line_ids.filtered(lambda line: line.account_id.user_type_id.type in ('receivable', 'payable'))
+                reconciled_amls = reconciled_lines.mapped('matched_debit_ids.debit_move_id') + \
+                                  reconciled_lines.mapped('matched_credit_ids.credit_move_id')
+                paid_date_list = reconciled_amls.mapped('date')
                 if paid_date_list:
                     paid_date = max(paid_date_list)
             rec.paid_date = paid_date

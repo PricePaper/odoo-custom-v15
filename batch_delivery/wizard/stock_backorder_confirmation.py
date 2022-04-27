@@ -12,22 +12,22 @@ class StockBackorderConfirmation(models.TransientModel):
             if picking.sale_id:
                 picking.check_return_reason()
 
-                # todo done qty is not properly working, need thorough testing after price paper migration is finished
-                self.env['stock.picking.return'].create({
-                    'name': 'RETURN-' + picking.name,
-                    'picking_id': picking.id,
-                    'sale_id': picking.sale_id.id,
-                    'sales_person_ids': [
-                        (6, 0, picking.sale_id and
-                         picking.sale_id.sales_person_ids and
-                         picking.sale_id.sales_person_ids.ids)],
-                    'return_line_ids': [(0, 0, {
-                        'product_id': move.product_id.id,
-                        'ordered_qty': move.product_uom_qty,
-                        'delivered_qty': move.quantity_done,
-                        'reason_id': move.reason_id.id
-                    }) for move in picking.move_lines if move.quantity_done != move.product_uom_qty]
-                })
+                if not picking.is_return and picking.picking_type_code == 'outgoing':
+                    self.env['stock.picking.return'].create({
+                        'name': 'RETURN-' + picking.name,
+                        'picking_id': picking.id,
+                        'sale_id': picking.sale_id.id,
+                        'sales_person_ids': [
+                            (6, 0, picking.sale_id and
+                             picking.sale_id.sales_person_ids and
+                             picking.sale_id.sales_person_ids.ids)],
+                        'return_line_ids': [(0, 0, {
+                            'product_id': move.product_id.id,
+                            'ordered_qty': move.product_uom_qty,
+                            'delivered_qty': move.quantity_done,
+                            'reason_id': move.reason_id.id
+                        }) for move in picking.move_lines if move.quantity_done != move.product_uom_qty]
+                    })
                 for move in picking.move_lines:
                     if move.quantity_done <= 0 and move.procure_method == 'make_to_order' and not move.location_id.is_transit_location:
                         make2order_moves |= move

@@ -100,11 +100,17 @@ class AccountInvoice(models.Model):
         """
 
         for line in lines:
-            payment_date = self.paid_date
-            if payment_date and payment_date > self.date_due:
-                extra_days = payment_date - self.date_due
-                if self.partner_id.company_id.commission_ageing_ids:
-                    commission_ageing = self.partner_id.company_id.commission_ageing_ids.filtered(
+            payment_date = False
+            reconciled_lines = self.line_ids.filtered(lambda line: line.account_id.user_type_id.type in ('receivable', 'payable'))
+            reconciled_amls = reconciled_lines.mapped('matched_debit_ids.debit_move_id') + \
+                              reconciled_lines.mapped('matched_credit_ids.credit_move_id')
+            paid_date_list = reconciled_amls.mapped('date')
+            if paid_date_list:
+                payment_date = max(paid_date_list)
+            if payment_date and payment_date > self.invoice_date_due:
+                extra_days = payment_date - self.invoice_date_due
+                if self.env.user.company_id.commission_ageing_ids:
+                    commission_ageing = self.env.user.company_id.commission_ageing_ids.filtered(
                         lambda r: r.delay_days <= extra_days.days)
                     commission_ageing = commission_ageing.sorted(key=lambda r: r.delay_days, reverse=True)
                     if commission_ageing and commission_ageing[0].reduce_percentage:
@@ -120,6 +126,7 @@ class AccountInvoice(models.Model):
                             'commission_date': self.invoice_date and self.invoice_date
                         }
                         commission_rec = self.env['sale.commission'].create(vals)
+
 
     def calculate_commission(self):
 

@@ -18,8 +18,10 @@ Users can create a helpdesk ticket specifically for special orders.
 
     'data': [
         'data/data.xml',
+        'data/mail_template_data.xml',
         'views/helpdesk_view.xml',
         'security/ir.model.access.csv',
+
     ],
 
     'depends': ['helpdesk'],

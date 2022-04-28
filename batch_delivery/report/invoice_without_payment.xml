@@ -145,7 +145,7 @@
                         <tbody class="invoice_tbody" style="font-size:16px;">
                             <t t-set="current_subtotal" t-value="0"/>
                             <t t-set="line_count" t-value="0"/>
-                            <t t-foreach="o.invoice_line_ids.filtered(lambda r: r.quantity>0)" t-as="line">
+                            <t t-foreach="o.invoice_line_ids.filtered(lambda r: r.quantity!=0)" t-as="line">
                                 <t t-if="line.product_id.type != 'service'">
                                      <t t-set="current_subtotal"
                                         t-value="current_subtotal + line.price_subtotal"

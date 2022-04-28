@@ -7,19 +7,19 @@ class Product(models.Model):
     _inherit = 'product.product'
 
     transit_qty = fields.Float("Transit Qty", compute='_compute_transit_quantities', store=True)
-    qty_cancelled = fields.Float("Outgoing Cancelled Qty", compute='_compute_outgoing_quantities',digits=(16,3))
+    qty_cancelled = fields.Float("Outgoing Cancelled Qty",digits=(16,3))
 
-    def _compute_outgoing_quantities(self):
-        for record in self:
-            qty_cancelled = 0
-            qty_cancelled_converted = 0
-            moves = self.stock_move_ids.filtered(lambda move: move.sale_line_id and move.state  not in ['cancel','done'])
-            for move in moves:
-                if move.filtered(lambda rec: rec.product_uom_qty != rec.quantity_done) and move.picking_id.state in ['in_transit','done']:
-                    qty_cancelled=move.product_uom_qty - move.quantity_done
-                    qty_cancelled_converted +=move.product_uom._compute_quantity(
-                        qty_cancelled, move.product_id.uom_id, rounding_method='HALF-UP')
-            record.qty_cancelled = qty_cancelled_converted
+    # def _compute_outgoing_quantities(self):
+    #     for record in self:
+    #         qty_cancelled = 0
+    #         qty_cancelled_converted = 0
+    #         moves = self.stock_move_ids.filtered(lambda move: move.sale_line_id and move.state  not in ['cancel','done'])
+    #         for move in moves:
+    #             if move.filtered(lambda rec: rec.product_uom_qty != rec.quantity_done) and move.picking_id.state in ['in_transit','done']:
+    #                 qty_cancelled=move.product_uom_qty - move.quantity_done
+    #                 qty_cancelled_converted +=move.product_uom._compute_quantity(
+    #                     qty_cancelled, move.product_id.uom_id, rounding_method='HALF-UP')
+    #         record.qty_cancelled = qty_cancelled_converted
 
     @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done')
     def _compute_transit_quantities(self):
@@ -36,7 +36,7 @@ class Product(models.Model):
     def _compute_quantities(self):
         super(Product, self)._compute_quantities()
         for product in self:
-            product.outgoing_qty -= product.transit_qty+product.qty_cancelled
+            product.outgoing_qty -= product.transit_qty
 
     def action_open_transit_moves(self):
         action = self.sudo().env.ref('stock.stock_move_action').read()[0]

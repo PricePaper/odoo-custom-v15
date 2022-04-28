@@ -1,12 +1,25 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-
+from odoo.tools.float_utils import float_round
 
 class Product(models.Model):
     _inherit = 'product.product'
 
     transit_qty = fields.Float("Transit Qty", compute='_compute_transit_quantities', store=True)
+    qty_cancelled = fields.Float("Outgoing Cancelled Qty", compute='_compute_outgoing_quantities',digits=(16,3))
+
+    def _compute_outgoing_quantities(self):
+        for record in self:
+            qty_cancelled = 0
+            qty_cancelled_converted = 0
+            moves = self.stock_move_ids.filtered(lambda move: move.sale_line_id and move.state  not in ['cancel','done'])
+            for move in moves:
+                if move.filtered(lambda rec: rec.product_uom_qty != rec.quantity_done) and move.picking_id.state in ['in_transit','done']:
+                    qty_cancelled=move.product_uom_qty - move.quantity_done
+                    qty_cancelled_converted +=move.product_uom._compute_quantity(
+                        qty_cancelled, move.product_id.uom_id, rounding_method='HALF-UP')
+            record.qty_cancelled = qty_cancelled_converted
 
     @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done')
     def _compute_transit_quantities(self):
@@ -23,7 +36,7 @@ class Product(models.Model):
     def _compute_quantities(self):
         super(Product, self)._compute_quantities()
         for product in self:
-            product.outgoing_qty -= product.transit_qty
+            product.outgoing_qty -= product.transit_qty+product.qty_cancelled
 
     def action_open_transit_moves(self):
         action = self.sudo().env.ref('stock.stock_move_action').read()[0]
@@ -38,7 +51,7 @@ class Product(models.Model):
     def get_quantity_in_sale(self):
         self.ensure_one()
         moves = self.stock_move_ids.filtered(lambda move: move.sale_line_id and move.state not in ['cancel', 'done'] \
-                                                          and not move.transit_picking_id and move.picking_code == 'outgoing' and move.picking_id.state not in ['cancel', 'done', 'in_transit'])
+                                                          and not move.transit_picking_id and move.picking_code == 'outgoing' and move.picking_id.state not in ['cancel', 'done','in_transit'])
         sale_lines = moves.mapped('sale_line_id').ids
 
         action = self.sudo().env.ref('price_paper.act_product_2_sale_order_line').read()[0]

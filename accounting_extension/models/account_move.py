@@ -127,6 +127,13 @@ class AccountMove(models.Model):
     #     self.write({'discount_date': False})
     #     return res
 
+    def _get_last_sequence_domain(self, relaxed=False):
+        where_string, param = super()._get_last_sequence_domain(relaxed)
+        if self.move_type == 'out_refund':
+            where_string += " AND sequence_prefix ilike 'RINV/%%' "
+        return where_string, param
+
+
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'

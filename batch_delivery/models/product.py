@@ -7,7 +7,7 @@ class Product(models.Model):
     _inherit = 'product.product'
 
     transit_qty = fields.Float("Transit Qty", compute='_compute_transit_quantities', store=True)
-    qty_cancelled = fields.Float("Outgoing Cancelled Qty",digits=(16,3))
+
 
     # def _compute_outgoing_quantities(self):
     #     for record in self:

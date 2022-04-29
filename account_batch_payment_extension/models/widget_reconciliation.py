@@ -114,7 +114,9 @@ class AccountReconciliation(models.AbstractModel):
             move_lines |= payment.line_ids.filtered(lambda r: r.account_id.id in journal_accounts)
 
         target_currency = st_line.currency_id or st_line.journal_id.currency_id or st_line.journal_id.company_id.currency_id
-        return self._prepare_move_lines(move_lines, target_currency=target_currency, target_date=st_line.date)
+        if move_lines:
+            return self._prepare_move_lines(move_lines, target_currency=target_currency, target_date=st_line.date)
+        return super().get_move_lines_by_batch_payment(st_line_id, batch_payment_id)
 
 AccountReconciliation()
 

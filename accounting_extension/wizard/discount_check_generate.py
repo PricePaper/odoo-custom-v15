@@ -49,9 +49,14 @@ class GenerateDiscountCheck(models.TransientModel):
         bank_journal = self.env['account.journal'].search([('type', '=', 'bank')], limit=1)
         if not bank_journal:
             raise UserError('Bank journal not defined! \nPlease create a bank journal in the system to process these transactions.')
-        payment_method = self.env['account.payment.method'].search([('code', '=', 'check_printing'), ('payment_type', '=', 'outbound')], limit=1)
-        payment_method_line = self.env['account.payment.method.line'].search([('payment_method_id', '=', payment_method.id),
-                                                                              ('journal_id', '=', bank_journal.id)], limit=1)
+        # payment_method = self.env['account.payment.method'].search([('code', '=', 'check_printing'), ('payment_type', '=', 'outbound')], limit=1)
+        payment_method_line = bank_journal.outbound_payment_method_line_ids.filtered(lambda rec: rec.code == 'check_printing' and rec.payment_type == 'outbound')
+        if not payment_method_line:
+            raise UserError('payment method Check is not defined! \nPlease create a payment method in bank journal to process these transactions.')
+        if len(payment_method_line) > 1:
+            payment_method_line = payment_method_line[0]
+        # self.env['account.payment.method.line'].search([('payment_method_id', '=', payment_method.id),
+        #                                                                   ('journal_id', '=', bank_journal.id)], limit=1)
         purchase_writeoff_account = self.env.user.company_id.purchase_writeoff_account_id
         if not purchase_writeoff_account:
             raise UserError('Please add a purchase writeoff account in the company form page.')

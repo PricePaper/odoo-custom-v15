@@ -38,7 +38,12 @@ class SaleCommission(models.Model):
             paid_date = False
             if rec.is_paid:
                 if rec.invoice_type in ('out_invoice', 'out_refund', 'aging'):
-                    paid_date = rec.invoice_id.paid_date and rec.invoice_id.paid_date
+                    reconciled_lines = rec.invoice_id.line_ids.filtered(lambda line: line.account_id.user_type_id.type in ('receivable', 'payable'))
+                    reconciled_amls = reconciled_lines.mapped('matched_debit_ids.debit_move_id') + \
+                                      reconciled_lines.mapped('matched_credit_ids.credit_move_id')
+                    paid_date_list = reconciled_amls.mapped('date')
+                    if paid_date_list:
+                        paid_date = max(paid_date_list)
                 elif rec.invoice_type in ('draw', 'bounced_cheque', 'cancel', 'unreconcile'):
                     paid_date = rec.commission_date
             rec.paid_date = paid_date

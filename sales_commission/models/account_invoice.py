@@ -164,42 +164,36 @@ class AccountInvoice(models.Model):
                 commission_rec |= self.env['sale.commission'].create(vals)
         return commission_rec
 
-#TODO
-    # @api.model
-    # def _prepare_refund(self, invoice, date_invoice=None, date=None, description=None, journal_id=None):
-    #     values = super(AccountInvoice, self)._prepare_refund(invoice, date_invoice, date, description, journal_id)
-    #     if invoice.sales_person_ids:
-    #         values['sales_person_ids'] = [(6, 0, invoice.sales_person_ids.ids)]
-    #     if invoice.commission_rule_ids:
-    #         values['commission_rule_ids'] = [(6, 0, invoice.commission_rule_ids.ids)]
-    #     return values
-    #
-    # def action_invoice_re_open(self):
-    #     for invoice in self:
-    #         commission_rec = self.env['sale.commission'].search([('invoice_id', '=', invoice.id)])
-    #         settled_rec = commission_rec.filtered(
-    #             lambda r: r.is_settled and r.invoice_type != 'unreconcile' and not r.is_cancelled)
-    #         for rec in settled_rec:
-    #             commission = rec.commission
-    #             vals = {
-    #                 'sale_person_id': rec.sale_person_id.id,
-    #                 'commission': -commission,
-    #                 'invoice_id': invoice.id,
-    #                 'invoice_type': 'unreconcile',
-    #                 'is_paid': True,
-    #                 'invoice_amount': self.amount_total,
-    #                 'commission_date': date.today(),
-    #                 'paid_date': date.today(),
-    #             }
-    #             self.env['sale.commission'].create(vals)
-    #             rec.is_cancelled = True
-    #
-    #         paid_rec = commission_rec.filtered(lambda r: not r.is_settled and r.invoice_type != 'unreconcile')
-    #         paid_rec and paid_rec.unlink()
-    #     res = super(AccountInvoice, self).action_invoice_re_open()
-    #     return res
-    #
-    #
+    def js_remove_outstanding_partial(self, partial_id):
+        print(self, partial_id, 'ppppppppppppppppp')
+        partial = self.env['account.partial.reconcile'].browse(partial_id)
+        moves = partial.debit_move_id.move_id + partial.credit_move_id.move_id - self
+        moves = moves.filtered(lambda r: r.move_type in ('out_refund', 'out_invoice'))
+        for move in moves:
+            commission_rec = self.env['sale.commission'].search([('invoice_id', '=', move.id)])
+            settled_rec = commission_rec.filtered(
+                lambda r: r.is_settled and r.invoice_type != 'unreconcile' and not r.is_cancelled)
+            for rec in settled_rec:
+                commission = rec.commission
+                vals = {
+                    'sale_person_id': rec.sale_person_id.id,
+                    'commission': -commission,
+                    'invoice_id': invoice.id,
+                    'invoice_type': 'unreconcile',
+                    'is_paid': True,
+                    'invoice_amount': self.amount_total,
+                    'commission_date': date.today(),
+                    'paid_date': date.today(),
+                }
+                self.env['sale.commission'].create(vals)
+                rec.is_cancelled = True
+
+            paid_rec = commission_rec.filtered(lambda r: not r.is_settled and r.invoice_type != 'unreconcile')
+            paid_rec and paid_rec.unlink()
+        res = super().js_remove_outstanding_partial(partial_id)
+        return res
+
+
     def button_cancel(self):
         for invoice in self:
             commission_rec = self.env['sale.commission'].search([('invoice_id', '=', invoice.id)])

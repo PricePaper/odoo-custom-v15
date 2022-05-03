@@ -14,6 +14,7 @@
                         <group>
                             <group>
                                 <field name="start_date" required="1"/>
+                                <field name="journal_id"/>
                             </group>
                             <group>
                                 <field name="end_date" required="1"/>

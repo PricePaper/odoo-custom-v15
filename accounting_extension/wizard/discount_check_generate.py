@@ -8,9 +8,21 @@ class GenerateDiscountCheck(models.TransientModel):
     _name = 'generate.discount.check'
     _description = 'Generate Discount Check'
 
+    @api.model
+    def _get_default_journal(self):
+        journal = self.env['account.journal'].search([('type', '=', 'bank')])
+        if journal.filtered(lambda rec: rec.code == 'BNK1'):
+            return journal.filtered(lambda rec: rec.code == 'BNK1')
+        return self.env['account.journal'].search([('type', '=', 'bank')], limit=1)
+
     start_date = fields.Date(string='Start Date')
     end_date = fields.Date(string='End Date')
     wizard_invoice_ids = fields.One2many('vendor.bill.lines.wizard', 'generate_check_id', string='Invoices')
+    journal_id = fields.Many2one('account.journal', string='Journal', required=True,
+        check_company=True, domain="[('type', '=', 'bank')]",
+        default=_get_default_journal)
+
+
 
     @api.onchange('start_date', 'end_date')
     def get_invoices(self):
@@ -46,7 +58,7 @@ class GenerateDiscountCheck(models.TransientModel):
             self.wizard_invoice_ids = lines
 
     def generate_check(self):
-        bank_journal = self.env['account.journal'].search([('type', '=', 'bank')], limit=1)
+        bank_journal = self.journal_id
         if not bank_journal:
             raise UserError('Bank journal not defined! \nPlease create a bank journal in the system to process these transactions.')
         # payment_method = self.env['account.payment.method'].search([('code', '=', 'check_printing'), ('payment_type', '=', 'outbound')], limit=1)
@@ -55,7 +67,7 @@ class GenerateDiscountCheck(models.TransientModel):
             raise UserError('payment method Check is not defined! \nPlease create a payment method in bank journal to process these transactions.')
         if len(payment_method_line) > 1:
             payment_method_line = payment_method_line[0]
-        # self.env['account.payment.method.line'].search([('payment_method_id', '=', payment_method.id),
+        # payment_method_line = self.env['account.payment.method.line'].search([('payment_method_id', '=', payment_method.id),
         #                                                                   ('journal_id', '=', bank_journal.id)], limit=1)
         purchase_writeoff_account = self.env.user.company_id.purchase_writeoff_account_id
         if not purchase_writeoff_account:

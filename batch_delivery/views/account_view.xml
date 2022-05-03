@@ -116,6 +116,13 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        <menuitem id="menu_account_payment_methodline" parent="account.account_account_menu" action="account_payment_methodline_action"/>
+        <record id="account_payment_method_action" model="ir.actions.act_window">
+            <field name="name">Account Payment Method</field>
+            <field name="res_model">account.payment.method</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_account_payment_methodline" sequence="4" parent="account.account_account_menu" action="account_payment_methodline_action" groups="account.group_account_user"/>
+        <menuitem id="menu_account_payment_methods" sequence="3" parent="account.account_account_menu" action="account_payment_method_action" groups="account.group_account_user"/>
     </data>
 </odoo>

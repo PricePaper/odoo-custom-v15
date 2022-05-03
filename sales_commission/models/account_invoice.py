@@ -178,10 +178,10 @@ class AccountInvoice(models.Model):
                 vals = {
                     'sale_person_id': rec.sale_person_id.id,
                     'commission': -commission,
-                    'invoice_id': invoice.id,
+                    'invoice_id': move.id,
                     'invoice_type': 'unreconcile',
                     'is_paid': True,
-                    'invoice_amount': self.amount_total,
+                    'invoice_amount': move.amount_total,
                     'commission_date': date.today(),
                     'paid_date': date.today(),
                 }

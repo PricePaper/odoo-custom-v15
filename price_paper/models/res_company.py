@@ -17,4 +17,12 @@ class ResCompany(models.Model):
     storage_product_id = fields.Many2one('product.product', string='Storage Product')
     discount_account_id = fields.Many2one('account.account', domain=[('deprecated', '=', False)])
 
+class ResConfigSettings(models.TransientModel):
+    _inherit = 'res.config.settings'
+
+    check_printing_journal_id = fields.Many2one('account.journal',
+        string='Journal for check printing',
+        config_parameter='price_paper.check_printing_journal_id')
+
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -165,7 +165,6 @@ class AccountInvoice(models.Model):
         return commission_rec
 
     def js_remove_outstanding_partial(self, partial_id):
-        print(self, partial_id, 'ppppppppppppppppp')
         partial = self.env['account.partial.reconcile'].browse(partial_id)
         moves = partial.debit_move_id.move_id + partial.credit_move_id.move_id - self
         moves = moves.filtered(lambda r: r.move_type in ('out_refund', 'out_invoice'))
@@ -217,6 +216,37 @@ class AccountInvoice(models.Model):
             paid_rec = commission_rec.filtered(lambda r: not r.is_settled and r.invoice_type != 'cancel')
             paid_rec and paid_rec.unlink()
         res = super(AccountInvoice, self).button_cancel()
+        return res
+
+class AccountMoveLine(models.Model):
+    _inherit = 'account.move.line'
+
+    def remove_move_reconcile(self):
+        partial = self.matched_debit_ids + self.matched_credit_ids
+        moves = partial.mapped('debit_move_id').mapped('move_id') + partial.mapped('credit_move_id').mapped('move_id')
+        moves = moves.filtered(lambda r: r.move_type in ('out_refund', 'out_invoice'))
+        for move in moves:
+            commission_rec = self.env['sale.commission'].search([('invoice_id', '=', move.id)])
+            settled_rec = commission_rec.filtered(
+                lambda r: r.is_settled and r.invoice_type != 'unreconcile' and not r.is_cancelled)
+            for rec in settled_rec:
+                commission = rec.commission
+                vals = {
+                    'sale_person_id': rec.sale_person_id.id,
+                    'commission': -commission,
+                    'invoice_id': move.id,
+                    'invoice_type': 'unreconcile',
+                    'is_paid': True,
+                    'invoice_amount': move.amount_total,
+                    'commission_date': date.today(),
+                    'paid_date': date.today(),
+                }
+                self.env['sale.commission'].create(vals)
+                rec.is_cancelled = True
+
+            paid_rec = commission_rec.filtered(lambda r: not r.is_settled and r.invoice_type != 'unreconcile')
+            paid_rec and paid_rec.unlink()
+        res = super(AccountMoveLine, self).remove_move_reconcile()
         return res
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

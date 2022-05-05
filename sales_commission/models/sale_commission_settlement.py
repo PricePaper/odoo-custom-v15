@@ -15,7 +15,7 @@ class SaleCommissionSettlement(models.Model):
     amount_paid = fields.Float(string="Amount", compute='_compute_total_amount', store=True)
     commission_ids = fields.One2many('sale.commission', 'settlement_id', string="Commission Lines", required=True)
     date_from = fields.Date(string="Date From", readonly=True, required=True, states={'draft': [('readonly', False)]})
-    date_to = fields.Date(string="Date From", readonly=True, required=True, states={'draft': [('readonly', False)]})
+    date_to = fields.Date(string="Date To", readonly=True, required=True, states={'draft': [('readonly', False)]})
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),

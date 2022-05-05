@@ -19,6 +19,12 @@ class ResPartner(models.Model):
     is_driver_available = fields.Boolean(string='Is Driver Available', default=True)
     private_partner = fields.Boolean(string='Is Private', default=False)
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        if self._context.get('search_default_customer') and vals_list:
+                vals_list[0]['customer'] = True
+        return super(ResPartner, self).create(vals_list)
+
     @api.depends('partner_latitude', 'partner_longitude')
     def compute_location_url(self):
         """

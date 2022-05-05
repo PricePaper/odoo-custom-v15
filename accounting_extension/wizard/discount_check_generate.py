@@ -8,20 +8,10 @@ class GenerateDiscountCheck(models.TransientModel):
     _name = 'generate.discount.check'
     _description = 'Generate Discount Check'
 
-    @api.model
-    def _get_default_journal(self):
-        journal = self.env['account.journal'].search([('type', '=', 'bank')])
-        if journal.filtered(lambda rec: rec.code == 'BNK1'):
-            return journal.filtered(lambda rec: rec.code == 'BNK1')
-        return self.env['account.journal'].search([('type', '=', 'bank')], limit=1)
 
     start_date = fields.Date(string='Start Date')
     end_date = fields.Date(string='End Date')
     wizard_invoice_ids = fields.One2many('vendor.bill.lines.wizard', 'generate_check_id', string='Invoices')
-    journal_id = fields.Many2one('account.journal', string='Journal', required=True,
-        check_company=True, domain="[('type', '=', 'bank')]",
-        default=_get_default_journal)
-
 
 
     @api.onchange('start_date', 'end_date')
@@ -58,11 +48,14 @@ class GenerateDiscountCheck(models.TransientModel):
             self.wizard_invoice_ids = lines
 
     def generate_check(self):
-        bank_journal = self.journal_id
+
+        bank_journal = self.env['ir.config_parameter'].sudo().get_param('price_paper.check_printing_journal_id')
+
         if not bank_journal:
-            raise UserError('Bank journal not defined! \nPlease create a bank journal in the system to process these transactions.')
+            raise UserError('Journal for check printing not defined in Accounting Configuration! \nPlease create a journal in the system to process these transactions.')
         # payment_method = self.env['account.payment.method'].search([('code', '=', 'check_printing'), ('payment_type', '=', 'outbound')], limit=1)
-        payment_method_line = bank_journal.outbound_payment_method_line_ids.filtered(lambda rec: rec.code == 'check_printing' and rec.payment_type == 'outbound')
+        journal = self.env['account.journal'].browse(int(bank_journal))
+        payment_method_line = journal.outbound_payment_method_line_ids.filtered(lambda rec: rec.code == 'check_printing' and rec.payment_type == 'outbound')
         if not payment_method_line:
             raise UserError('payment method Check is not defined! \nPlease create a payment method in bank journal to process these transactions.')
         if len(payment_method_line) > 1:
@@ -82,7 +75,7 @@ class GenerateDiscountCheck(models.TransientModel):
                 }).create_discount()
         return self.env['account.payment.register'].with_context({
             'active_model': 'account.move',
-            'default_journal_id': bank_journal.id,
+            'default_journal_id': int(bank_journal),
             'default_payment_method_line_id': payment_method_line.id,
             'active_ids': self.wizard_invoice_ids.filtered(lambda rec: rec.select).mapped('invoice_id').ids
         }).create({'group_payment': True}).action_create_payments()

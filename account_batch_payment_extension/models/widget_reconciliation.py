@@ -47,44 +47,44 @@ class AccountReconciliation(models.AbstractModel):
     @api.model
     def process_bank_statement_line(self, st_line_ids, data):
         res = super().process_bank_statement_line(st_line_ids, data)
-        for statement in res['statement_line_ids']:
-            reconciled_lines = statement.move_id.line_ids.mapped(
-                'matched_debit_ids') + statement.move_id.line_ids.mapped('matched_credit_ids')
-            reconciled_lines = (
-                    reconciled_lines.mapped('debit_move_id') + reconciled_lines.mapped('credit_move_id')).filtered(
-                lambda rec: rec.id not in res['moves'].line_ids.ids)
-            if len(reconciled_lines.mapped('journal_id')) == 1 and reconciled_lines.mapped(
-                    'journal_id').id != statement.journal_id.id and reconciled_lines.mapped(
-                'journal_id').type == 'cash':
-                for aml in reconciled_lines:
-                    if aml.journal_id.type == 'cash' and aml.debit > 0:
-                        journal = self.env.ref('account_batch_payment_extension.account_journal_cash_to_bank')
-                        if not journal:
-                            raise UserError("Journal \"Cash to Bank\" is not configured")
-                        move_vals = {
-                            'date': statement.date,
-                            'ref': 'Cash transfer to bank',
-                            'company_id': statement.company_id.id,
-                            'journal_id': journal.id,
-                            'line_ids': [
-                                [0, 0, {
-                                    'partner_id': statement.partner_id.id or False,
-                                    # 'move_id': move_id,
-                                    'debit': 0,
-                                    'credit': aml.debit,
-                                    'journal_id': journal.id,
-                                    'account_id': aml.account_id.id
-                                }],
-                                [0, 0, {
-                                    'partner_id': statement.partner_id.id or False,
-                                    # 'move_id': move_id,
-                                    'debit': aml.debit,
-                                    'credit': 0,
-                                    'journal_id': journal.id,
-                                    'account_id': journal.default_account_id.id
-                                }]]
-                        }
-                        self.env['account.move'].create(move_vals).action_post()
+        # for statement in res['statement_line_ids']:
+        #     reconciled_lines = statement.move_id.line_ids.mapped(
+        #         'matched_debit_ids') + statement.move_id.line_ids.mapped('matched_credit_ids')
+        #     reconciled_lines = (
+        #             reconciled_lines.mapped('debit_move_id') + reconciled_lines.mapped('credit_move_id')).filtered(
+        #         lambda rec: rec.id not in res['moves'].line_ids.ids)
+        #     if len(reconciled_lines.mapped('journal_id')) == 1 and reconciled_lines.mapped(
+        #             'journal_id').id != statement.journal_id.id and reconciled_lines.mapped(
+        #         'journal_id').type == 'cash':
+        #         for aml in reconciled_lines:
+        #             if aml.journal_id.type == 'cash' and aml.debit > 0:
+        #                 journal = self.env.ref('account_batch_payment_extension.account_journal_cash_to_bank')
+        #                 if not journal:
+        #                     raise UserError("Journal \"Cash to Bank\" is not configured")
+        #                 move_vals = {
+        #                     'date': statement.date,
+        #                     'ref': 'Cash transfer to bank',
+        #                     'company_id': statement.company_id.id,
+        #                     'journal_id': journal.id,
+        #                     'line_ids': [
+        #                         [0, 0, {
+        #                             'partner_id': statement.partner_id.id or False,
+        #                             # 'move_id': move_id,
+        #                             'debit': 0,
+        #                             'credit': aml.debit,
+        #                             'journal_id': journal.id,
+        #                             'account_id': aml.account_id.id
+        #                         }],
+        #                         [0, 0, {
+        #                             'partner_id': statement.partner_id.id or False,
+        #                             # 'move_id': move_id,
+        #                             'debit': aml.debit,
+        #                             'credit': 0,
+        #                             'journal_id': journal.id,
+        #                             'account_id': journal.default_account_id.id
+        #                         }]]
+        #                 }
+                        # self.env['account.move'].create(move_vals).action_post()
         for stmt in res['statement_line_ids']:
             if 'DEPOSITED ITEM RETURNED' in stmt.payment_ref:
                 cheque_no = stmt.payment_ref and stmt.payment_ref.split('CK#:')

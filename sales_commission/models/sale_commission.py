@@ -31,6 +31,8 @@ class SaleCommission(models.Model):
     commission_date = fields.Date('Date')
     paid_date = fields.Date('Paid Date', compute='get_invoice_paid_date', store=True)
     partner_id = fields.Many2one(related='invoice_id.partner_id', string="Customer")
+    settlement_date = fields.Date('Settlement Date')
+    partner_active = fields.Boolean('Partner Active', related='sale_person_id.active')
 
     @api.depends('is_paid')
     def get_invoice_paid_date(self):

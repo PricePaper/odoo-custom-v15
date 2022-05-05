@@ -57,7 +57,7 @@ class SaleCommissionSettlement(models.Model):
 
     def action_make_payment(self):
         for rec in self:
-            rec.commission_ids.filtered(lambda rec: not rec.is_removed).write({'is_settled': True})
+            rec.commission_ids.filtered(lambda rec: not rec.is_removed).write({'is_settled': True, 'settlement_date':fields.Date.today()})
             rec.state = 'paid'
 
 

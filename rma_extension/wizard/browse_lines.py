@@ -35,6 +35,22 @@ class BrowseLines(models.TransientModel):
         order_line_lst = []
         for order_line in lines:
             order_lines = order_line.so_line_id
+            duplicate_rma = self.env['rma.ret.mer.auth'].search([
+                ('sale_order_id', '=', self.sale_id.id),
+                ('id', '!=', self.rma_id.id),
+                ('state', '!=', 'cancelled')
+            ])
+            if duplicate_rma:
+                rma_name = ''
+                duplicate_count = 0
+                for rma in duplicate_rma:
+                    duplicate_count += sum(rma.rma_sale_lines_ids.filtered(lambda m: m.product_id == order_line.product_id and(m.refund_qty ==order_line.delivered_quantity or
+                                                                                                                          m.refund_qty < order_line.delivered_quantity)).mapped('refund_qty'))
+                    rma_name += rma.name + ','
+                if duplicate_count==order_line.delivered_quantity or (duplicate_count+order_line.refund_qty)>order_line.delivered_quantity:
+                    raise ValidationError(
+                                     'Duplicate order %s already exist for the same sale order for product %s.' % (rma_name,order_line.product_id.name))
+
             move_line = order_lines.mapped('move_ids').filtered(
                 lambda m: m.state == 'done' and m.picking_id.is_return == False and m.picking_id.state == 'done')
             if not move_line:

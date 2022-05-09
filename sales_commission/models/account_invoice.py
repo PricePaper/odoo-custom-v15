@@ -21,7 +21,7 @@ class AccountInvoice(models.Model):
         for rec in self:
             paid_date = False
             if rec.move_type in ('out_invoice', 'out_refund') and rec.payment_state in ('in_payment', 'paid'):
-                reconciled_lines = self.line_ids.filtered(lambda line: line.account_id.user_type_id.type in ('receivable', 'payable'))
+                reconciled_lines = rec.line_ids.filtered(lambda line: line.account_id.user_type_id.type in ('receivable', 'payable'))
                 reconciled_amls = reconciled_lines.mapped('matched_debit_ids.debit_move_id') + \
                                   reconciled_lines.mapped('matched_credit_ids.credit_move_id')
                 paid_date_list = reconciled_amls.mapped('date')
@@ -59,6 +59,8 @@ class AccountInvoice(models.Model):
             if move.check_bounce_invoice:
                 continue
             rec = move.sudo().calculate_commission()
+            if rec and move.move_type == 'out_refund' and move.amount_total == 0:
+                rec.rec.sudo().write({'is_paid': True, 'paid_date': date.today()})
         return res
 
     def _get_invoice_in_payment_state(self):
@@ -83,7 +85,7 @@ class AccountInvoice(models.Model):
                 lambda r: r.sales_person_id == line.sale_person_id)
             if rule_id:
                 if rule_id.based_on in ['profit', 'profit_delivery']:
-                    if profit <= 0:
+                    if profit <= 0 or self.amount_total == 0:
                         line.write({'commission': 0})
                         continue
                     commission = profit * (rule_id.percentage / 100)
@@ -141,8 +143,8 @@ class AccountInvoice(models.Model):
                 commission = 0
                 if rec.based_on in ['profit', 'profit_delivery']:
                     commission = profit * (rec.percentage / 100)
-                    if profit <= 0:
-                        commission =0
+                    if profit <= 0 or self.amount_total == 0:
+                        commission = 0
                 elif rec.based_on == 'invoice':
                     amount = self.amount_total
                     commission = amount * (rec.percentage / 100)

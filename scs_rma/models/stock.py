@@ -16,7 +16,7 @@ class StockPicking(models.Model):
             incoming_pickings = picking.rma_id.stock_picking_ids.filtered(
                 lambda p: p.picking_type_code == 'incoming' and p.id != picking.id
             )
-            if incoming_pickings and any(p.state != 'done' for p in incoming_pickings):
+            if incoming_pickings and any(p.state not in ['done','cancel'] for p in incoming_pickings):
                 raise UserError(_('Outgoing picking cannot be done before validating incoming picking.'))
         res = super(StockPicking, self)._action_done()
         # Unlink return picking created by odoo, when exchange of products.

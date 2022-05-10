@@ -348,7 +348,7 @@ class ProductSuperseded(models.Model):
     old_product = fields.Many2one('product.product', string="Old Product",
                                   domain=[('active', '=', False)], required=True, ondelete='cascade')
     product_child_id = fields.Many2one('product.product', string="New Product",
-                                       readonly=True,required=True)
+                                       readonly=True,required=False)
 
     @api.constrains('old_product', 'product_child_id')
     def check_duplicates(self):

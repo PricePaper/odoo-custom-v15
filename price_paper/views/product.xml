@@ -101,29 +101,22 @@
                                attrs="{'required': [('need_sub_product', '=', True)]}"/>
                     </page>
                     <page name='superseded' string='Superseded Products'>
-                        <group string="Supersedes">
-                            <field name="new_products" invisible="1"/>
-                            <field name="superseded"
-                                   attrs="{'invisible':[('active', '=', False)]}"
-                                   context="{'default_product_child_id':id}"
-                                   domain="[('product_child_id', '=', id)]"
-                                   help="Select a product that has been archived that this product will replace"
-                                   nolabel="1">
-                                <tree>
+                        <field name="new_products" invisible="1"/>
+                        <field name="superseded"
+                               attrs="{'invisible':[('active', '=', False)]}"
+                               context="{'default_product_child_id':id}"
+                               domain="[('product_child_id', '=', id)]"
+                               help="Select a product that has been archived that this product will replace"
+                               nolabel="1">
+                            <tree>
+                                <field name='old_product'/>
+                            </tree>
+                            <form>
+                                <group>
                                     <field name='old_product'/>
-                                </tree>
-                                <form>
-                                    <group>
-                                        <group>
-                                            <field name='old_product'/>
-                                        </group>
-                                        <group>
-                                            <field name='product_child_id' readonly='1'/>
-                                        </group>
-                                    </group>
-                                </form>
-                            </field>
-                        </group>
+                                </group>
+                            </form>
+                        </field>
                     </page>
                     <page name='standard_price' string='Standard Price'>
                         <group string="Standard Price">

@@ -23,6 +23,15 @@ class AccountTax(models.Model):
 
     code = fields.Char(string='Code')
 
+class AccountMoveReversal(models.TransientModel):
+    _inherit = 'account.move.reversal'
+
+    def _prepare_default_reversal(self, move):
+        res = super(AccountMoveReversal, self)._prepare_default_reversal(move)
+        if move.move_type == 'out_invoice':
+            res['invoice_payment_term_id'] = move.invoice_payment_term_id.id
+        return res
+
 
 class AccountMove(models.Model):
     _inherit = "account.move"
@@ -31,6 +40,8 @@ class AccountMove(models.Model):
     storage_down_payment = fields.Boolean(copy=False)
     # discount_from_batch = fields.Float('WriteOff Discount')
     invoice_address_id = fields.Many2one('res.partner', string="Billing Address")
+
+
 
     @api.model
     def create(self, vals):

@@ -18,7 +18,12 @@ class ReportAccountFinancialReport(models.Model):
         if income:
             t = income['columns'][0].get('no_format')
             for l in lines:
-                if l.get('columns', False) and len(l.get('columns', False)) == 2:
+                style_col = False
+                for dict in l.get('columns'):
+                    if 'percent' in dict.keys():
+                        style_col = True
+                        break
+                if l.get('columns', False) and len(l.get('columns', False)) == 1  or (self.user_has_groups('base.group_no_one') and len(l.get('columns', False))>=2 and not style_col) and (l.get('class') not in ['o_account_reports_totals_below_sections','total'] or l.get('name')=='Total Gross Profit'):
                     if l.get('caret_options') or l.get('id') == 'total_6' or l.get('name') == 'Total Gross Profit' or l.get(
                             'id') == 4 and l.get('class') == 'total':
                         s = l['columns'][0].get('no_format')
@@ -95,7 +100,12 @@ class ReportAccountFinancialReport(models.Model):
                     self.income = income['columns'][0].get('no_format')
                 t = self.income
                 for l in lines:
-                    if l.get('columns', False) and len(l.get('columns', False)) == 2:
+                    style_col = False
+                    for dict in l.get('columns'):
+                        if 'percent' in dict.keys():
+                            style_col = True
+                            break
+                    if l.get('columns', False) and len(l.get('columns', False)) == 1 and l.get('class') not in ['o_account_reports_totals_below_sections','total'] or (self.user_has_groups('base.group_no_one') and len(l.get('columns', False))>=2 and not style_col):
                             if l.get('caret_options') or l.get('id') == 'total_6' or l.get('name') == 'Total Gross Profit' or l.get(
                                     'id') == 4 and l.get('class') == 'total':
                                 s = l['columns'][0].get('no_format')
@@ -103,9 +113,9 @@ class ReportAccountFinancialReport(models.Model):
                                 l['columns'].append({
                                     'name': '{0:0.2f}%'.format(p),
                                     'no_format': p,
-                                    'class': 'number'
+                                    'class': 'number',
+                                    'percent':True
                                 })
-
         return lines
 
 

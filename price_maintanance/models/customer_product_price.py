@@ -33,11 +33,12 @@ class CustomerProductPrice(models.Model):
             lastsale_history_date = False
             history = self.env['sale.history'].search([('product_id', '=', record.product_id.id),
                 ('uom_id', '=', record.product_uom.id),
-                ('partner_id', 'in', record.pricelist_id.partner_ids.ids)],
-                order="order_date desc", limit=1) #TODO order_date in sale_history is not a stored field,sorting not work?.fix
-
-            if history:
-                lastsale_history_date = history.order_date
+                ('partner_id', 'in', record.pricelist_id.partner_ids.ids)])
+            for his in history:
+                if lastsale_history_date == False:
+                    lastsale_history_date = his.order_date
+                elif lastsale_history_date < his.order_date:
+                    lastsale_history_date = his.order_date
             record.lastsale_history_date = lastsale_history_date
 
     @api.depends('product_id', 'product_uom')

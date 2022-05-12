@@ -23,6 +23,54 @@ class RMARetMerAuth(models.Model):
     def check_sale_order_id_duplicate(self):
         return {}
 
+
+    def rma_close(self):
+        """ Set state to Close. if all Pickings are done """
+        for rec in self:
+            # Don't allow to close RMA, if any picking is cancelled.
+
+            picking = rec.stock_picking_ids.filtered(
+                lambda pick: pick.state not in ['done', 'cancel'])
+            if picking:
+                raise ValidationError(
+                    'Please validate all the pickings first.')
+            rec.write({'state': 'close'})
+            if rec.rma_type == 'customer':
+                rma_ids = self.env['rma.ret.mer.auth'].search([
+                    ('sale_order_id', '=', rec.sale_order_id.id),
+                ])
+                # Check if Sale Order is Fully Returned or Not
+                # Prepare all RMA product with return qty
+                rma_product_list = {}
+                for rma in rma_ids:
+                    for line in rma.rma_sale_lines_ids:
+                        if rma_product_list.get(line.product_id.id):
+                            rma_product_list[line.product_id.id] += line.refund_qty
+                        else:
+                            rma_product_list[line.product_id.id] = line.refund_qty
+                # Prepare all SO product with Delivered qty
+                so_product_list = {}
+                for so_line in rma.sale_order_id.order_line:
+                    if so_product_list.get(so_line.product_id.id):
+                        so_product_list[so_line.product_id.id] += so_line.qty_delivered
+                    else:
+                        so_product_list[so_line.product_id.id] = so_line.qty_delivered
+                # Check if RMA's product return qty is equal to sale order delivered
+                flag = False
+                for product, qty in rma_product_list.items():
+                    if so_product_list.get(product) != qty:
+                        flag = True
+                        break
+                if not flag:
+                    rec.sale_order_id.rma_done = True
+            if rec.rma_type == 'supplier' and rec.purchase_order_id:
+                rec.purchase_order_id.rma_done = True
+            if rec.rma_type == 'picking' and rec.picking_rma_id:
+                rec.picking_rma_id.rma_done = True
+            rec.write({'state': 'close'})
+
+
+
     @api.model
     def set_filed_value(self, field_name="refund_qty"):
         env = self.env

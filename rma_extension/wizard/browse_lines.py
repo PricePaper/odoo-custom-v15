@@ -44,7 +44,7 @@ class BrowseLines(models.TransientModel):
                 rma_name = ''
                 duplicate_count = 0
                 for rma in duplicate_rma:
-                    duplicate_count += sum(rma.rma_sale_lines_ids.filtered(lambda m: m.product_id == order_line.product_id and(m.refund_qty ==order_line.delivered_quantity or
+                    duplicate_count += sum(rma.rma_sale_lines_ids.filtered(lambda m: m.product_id == order_line.product_id and m.so_line_id==order_line.so_line_id and(m.refund_qty ==order_line.delivered_quantity or
                                                                                                                           m.refund_qty < order_line.delivered_quantity)).mapped('refund_qty'))
                     rma_name += rma.name + ','
                 if duplicate_count==order_line.delivered_quantity or (duplicate_count+order_line.refund_qty)>order_line.delivered_quantity:

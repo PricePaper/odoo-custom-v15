@@ -33,7 +33,7 @@
                               <tr>
                                   <td>
                                       <span>
-                                      <t t-esc="invoice_id.number"/>
+                                      <t t-esc="invoice_id.name"/>
                                       </span>
                                   </td>
                                   <td>

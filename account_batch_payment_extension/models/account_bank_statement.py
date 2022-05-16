@@ -9,11 +9,11 @@ class AccountBankStatementLine(models.Model):
 
     is_return_cleared = fields.Boolean('Return cleared')
 
-    def button_undo_reconciliation(self):
-        result = super(AccountBankStatementLine, self).button_undo_reconciliation()
-        for st_line in self:
-            st_line.partner_id = False
-        return result
+    # def button_undo_reconciliation(self):
+    #     result = super(AccountBankStatementLine, self).button_undo_reconciliation()
+    #     for st_line in self:
+    #         st_line.partner_id = False
+    #     return result
 
     def _seek_for_lines(self):
         ''' Helper used to dispatch the journal items between:

@@ -133,6 +133,11 @@ class AccountMove(models.Model):
             where_string += " AND sequence_prefix ilike 'RINV/%%' "
         return where_string, param
 
+    def wrapper_cancel_csb(self):
+        for move in self:
+            move.button_draft()
+            move.button_cancel()
+        return self.ids
 
 
 class AccountMoveLine(models.Model):

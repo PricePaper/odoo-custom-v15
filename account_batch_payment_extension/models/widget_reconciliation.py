@@ -104,20 +104,25 @@ class AccountReconciliation(models.AbstractModel):
                     self.env['process.returned.check'].create(vals)
         return res
 
-
     @api.model
     def get_move_lines_by_batch_payment(self, st_line_id, batch_payment_id):
         st_line = self.env['account.bank.statement.line'].browse(st_line_id)
         move_lines = self.env['account.move.line']
         for payment in self.env['account.batch.payment'].browse(batch_payment_id).payment_ids:
-            journal_accounts = [payment.journal_id.default_account_id.id, payment.journal_id.default_account_id.id]
+            journal_accounts = [payment.journal_id.default_account_id.id, payment.payment_method_line_id.payment_account_id.id]
+            if payment.journal_id.type == 'cash':
+                cash_receipt_account = self.env['ir.config_parameter'].sudo().get_param('outstanding_cash_account_id')
+                if cash_receipt_account:
+                    cash_receipt_account = int(cash_receipt_account)
+                    journal_accounts.append(cash_receipt_account)
             move_lines |= payment.line_ids.filtered(lambda r: r.account_id.id in journal_accounts)
-
         target_currency = st_line.currency_id or st_line.journal_id.currency_id or st_line.journal_id.company_id.currency_id
         if move_lines:
             return self._prepare_move_lines(move_lines, target_currency=target_currency, target_date=st_line.date)
         return super().get_move_lines_by_batch_payment(st_line_id, batch_payment_id)
 
+
 AccountReconciliation()
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

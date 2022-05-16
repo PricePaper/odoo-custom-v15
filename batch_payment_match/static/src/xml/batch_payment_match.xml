@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+
+    <t t-extend="batch.payment.tab">
+        <t t-jquery="tr.batch_payment" t-operation="attributes">
+            <attribute name="t-att-style" value="batch.batch_amount_match &amp;&amp; 'color: #44c'" />
+        </t>
+    </t>
+
+</templates>

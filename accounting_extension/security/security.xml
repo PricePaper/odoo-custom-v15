@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="group_access_private_journal" model="res.groups">
+            <field name="name">Allow access to private journal</field>
+            <field name="comment">the user will have access on private journals</field>
+        </record>
+    </data>
+
+    <record id="price_paper_journal_access" model="ir.rule">
+        <field name="name">Allow access private journal</field>
+        <field name="model_id" ref="model_account_journal"/>
+        <field name="groups" eval="[(4, ref('accounting_extension.group_access_private_journal'))]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+
+    <record id="price_paper_journal_no_access" model="ir.rule">
+        <field name="name">Allow no access private journal</field>
+        <field name="model_id" ref="model_account_journal"/>
+        <field name="domain_force">[('private_journal', '=', False)]</field>
+        <field name="groups" eval="[(4, ref('account.group_account_readonly'))]"/>
+    </record>
+
+
+</odoo>

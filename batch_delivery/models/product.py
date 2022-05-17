@@ -1,25 +1,20 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 from odoo.tools.float_utils import float_round
 
 class Product(models.Model):
     _inherit = 'product.product'
 
     transit_qty = fields.Float("Transit Qty", compute='_compute_transit_quantities', store=True)
-
-
-    # def _compute_outgoing_quantities(self):
-    #     for record in self:
-    #         qty_cancelled = 0
-    #         qty_cancelled_converted = 0
-    #         moves = self.stock_move_ids.filtered(lambda move: move.sale_line_id and move.state  not in ['cancel','done'])
-    #         for move in moves:
-    #             if move.filtered(lambda rec: rec.product_uom_qty != rec.quantity_done) and move.picking_id.state in ['in_transit','done']:
-    #                 qty_cancelled=move.product_uom_qty - move.quantity_done
-    #                 qty_cancelled_converted +=move.product_uom._compute_quantity(
-    #                     qty_cancelled, move.product_id.uom_id, rounding_method='HALF-UP')
-    #         record.qty_cancelled = qty_cancelled_converted
+    
+    @api.constrains('sale_uoms')
+    def _check_uoms_sale(self):
+        for record in self:
+            if record.sale_uoms.ids and record.uom_id.id not in record.sale_uoms.ids:
+                raise ValidationError(('You cannot remove the Default Product Unit of Measure %s from Sale Uoms,'
+                                       'If you want to change the Sale Uoms,You should rather change the Default Product Unit of Measure')% record.uom_id.name)
 
     @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done')
     def _compute_transit_quantities(self):

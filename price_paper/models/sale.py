@@ -1359,19 +1359,6 @@ class SaleOrderLine(models.Model):
 
             vals.update({'price_unit': product_price, 'price_from': price_from})
 
-            # for uom only show those applicable uoms
-            domain = res.get('domain', {})
-            product_uom_domain = domain.get('product_uom', [])
-            uom_ids = self.product_id.sale_uoms.ids
-            product_uom_domain.append(('id', 'in', self.product_id.sale_uoms.ids))
-            if res:
-                if res.get('domain', False):
-                    res['domain']['product_uom'] = product_uom_domain
-                else:
-                    res['domain'] = {'product_uom': product_uom_domain}
-            else:
-                res = {'domain': {'product_uom': product_uom_domain}}
-
             # get this customers last time sale description for this product and update it in the line
             note = self.env['product.notes'].search(
                 [('product_id', '=', self.product_id.id),

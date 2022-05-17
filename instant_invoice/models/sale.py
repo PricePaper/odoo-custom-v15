@@ -70,7 +70,7 @@ class SaleOrder(models.Model):
 
     def action_print_invoice(self):
         invoice = self.invoice_ids
-        invoice.filtered(lambda inv: not inv.is_move_sent).write({'is_move_sent': True})
+        invoice.sudo().filtered(lambda inv: not inv.is_move_sent).write({'is_move_sent': True})
         return self.env.ref('instant_invoice.account_invoices_quick_sale').report_action(invoice)
 
     def print_quotation(self):

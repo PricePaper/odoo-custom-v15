@@ -95,6 +95,11 @@ class AccountPayment(models.Model):
 
     discount_move_id = fields.Many2one('account.move', 'Discount Move')
 
+    def warapper_compute_reconciliation_status(self):
+        for pay in self:
+            pay._compute_reconciliation_status()
+
+            
     @api.depends('move_id.line_ids.amount_residual', 'move_id.line_ids.amount_residual_currency', 'move_id.line_ids.account_id')
     def _compute_reconciliation_status(self):
         """

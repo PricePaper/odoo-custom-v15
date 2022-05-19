@@ -186,7 +186,7 @@ class AccountMove(models.Model):
         """
         for move in self.filtered(lambda rec: rec.move_type in ('out_invoice', 'out_refund')):
             move.remove_zero_qty_line()
-        res = super()._post(soft)
+        # res = super()._post(soft)
         for move in self.filtered(lambda rec: rec.move_type in ('out_invoice', 'out_refund')):
             if move.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')):
                 move.picking_done()
@@ -197,7 +197,7 @@ class AccountMove(models.Model):
 
             if move.picking_ids.filtered(lambda rec: rec.state not in ('cancel', 'done')):
                 raise UserError(_('Picking is not in done state'))
-        return res
+        return super()._post(soft)
 
     def set_name_inv(self, name):
         try:

@@ -4,6 +4,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from datetime import datetime
 from collections import defaultdict
+from odoo.tools import float_compare
 
 
 class StockPicking(models.Model):
@@ -447,6 +448,13 @@ class StockPicking(models.Model):
                 'backorder_confirmation_line_ids': [(0, 0, {'to_backorder': True, 'picking_id': p.id}) for p in picking]
             }).process_cancel_backorder()
 
+    def _get_overprocessed_stock_moves(self):
+        self.ensure_one()
+        return self.move_lines.filtered(
+            lambda move: move.product_uom_qty != 0 and float_compare(move.quantity_done, move.product_uom_qty,
+                                                                     precision_rounding=move.product_uom.rounding) == 1
+        )
+
     def button_validate(self):
         """
         if there are movelines with reserved quantities
@@ -460,6 +468,21 @@ class StockPicking(models.Model):
                     raise UserError(
                         "This Delivery for product %s is supposed to use products from the lot %s please clear the Preferred Lot field to override" % (
                             line.product_id.name, line.pref_lot_id.name))
+        if self._get_overprocessed_stock_moves() and not self._context.get('skip_overprocessed_check'):
+                view = self.env.ref('batch_delivery.view_overprocessed_transfer')
+                wiz = self.env['stock.overprocessed.transfer'].create({'picking_id': self.id})
+                return {
+                    'type': 'ir.actions.act_window',
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'res_model': 'stock.overprocessed.transfer',
+                    'views': [(view.id, 'form')],
+                    'view_id': view.id,
+                    'target': 'new',
+                    'res_id': wiz.id,
+                    'context': self.env.context,
+                }
+
             # todo not need this methods now.
             # no_quantities_done_lines = self.move_line_ids.filtered(lambda l: l.qty_done == 0.0 and not l.is_transit)
             # for line in no_quantities_done_lines:

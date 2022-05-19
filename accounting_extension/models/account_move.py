@@ -11,6 +11,14 @@ class AccountMove(models.Model):
     # field used in search view
     discount_date = fields.Date('Discount Till')
 
+    @api.onchange('invoice_date', 'highest_name', 'company_id')
+    def _onchange_invoice_date(self):
+        super(AccountMove, self)._onchange_invoice_date()
+        if self.invoice_date and self.move_type in ['in_invoice', 'in_refund']:
+            user_lock_date = self.company_id._get_user_fiscal_lock_date()
+            if self.invoice_date > user_lock_date:
+                self.date = self.invoice_date
+
     def button_draft(self):
         executed_ids = self.env['account.move']
         for move in self.filtered(lambda r: r.move_type != 'entry'):

@@ -98,6 +98,7 @@ class AccountPayment(models.Model):
     def warapper_compute_reconciliation_status(self):
         for pay in self:
             pay._compute_reconciliation_status()
+        return True
 
             
     @api.depends('move_id.line_ids.amount_residual', 'move_id.line_ids.amount_residual_currency', 'move_id.line_ids.account_id')

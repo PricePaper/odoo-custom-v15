@@ -89,12 +89,13 @@ class StockPickingBatch(models.Model):
             batch.total_volume = 0
             batch.total_weight = 0
             for picking in batch.mapped('picking_ids').filtered(lambda rec: rec.state != 'cancel'):
-                movelines = picking.mapped('transit_move_lines') if picking.state!='in_transit' else picking.mapped('move_lines')
-                for line in movelines:
+                movelines = picking.mapped('transit_move_lines') if picking.state not in['in_transit','done'] else picking.mapped('move_lines')
+                for line in movelines.filtered(lambda rec: rec.state !='cancel'):
                     product_qty = line.quantity_done if line.quantity_done else line.reserved_availability
                     batch.total_unit += line.product_uom_qty
                     batch.total_volume += line.product_id.volume * product_qty
                     batch.total_weight += line.product_id.weight * product_qty
+
 
             # for line in batch.mapped('picking_ids').filtered(lambda rec: rec.state != 'cancel').mapped('move_lines'):
             #     product_qty = line.quantity_done if line.quantity_done else line.reserved_availability

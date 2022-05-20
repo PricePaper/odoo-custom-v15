@@ -764,6 +764,7 @@ class SaleOrderLine(models.Model):
     note_expiry_date = fields.Date('Note Valid Upto')
     scraped_qty = fields.Float(compute='_compute_scrape_qty', string='Quantity Scraped', store=False)
     date_planned = fields.Date(related='order_id.release_date', store=False, readonly=True, string='Date Planned')
+    tax_domain_ids = fields.Many2many('account.tax', compute='_compute_tax_domain')
 
     @api.depends('invoice_lines.move_id.state', 'invoice_lines.quantity', 'untaxed_amount_to_invoice')
     def _compute_qty_invoiced(self):
@@ -925,6 +926,15 @@ class SaleOrderLine(models.Model):
                 rec.sale_uom_ids = rec.product_id.sale_uoms
             else:
                 rec.sale_uom_ids = False
+
+    @api.depends('product_id')
+    def _compute_tax_domain(self):
+        for rec in self:
+            if rec.product_id and rec.order_id.fiscal_position_id:
+                pro_tax_ids = rec.product_id.taxes_id
+                rec.tax_domain_ids = rec.order_id.fiscal_position_id.map_tax(pro_tax_ids).ids
+            else:
+                rec.tax_domain_ids = False
 
     def product_id_check_availability(self):
         if not self.product_id or not self.product_uom_qty or not self.product_uom or self.order_id.storage_contract:
@@ -1342,12 +1352,12 @@ class SaleOrderLine(models.Model):
                     self.tax_id = [(5, _, _)]
 
                 # force domain the tax_id field with only available taxes based on applied fpos
-                if res and not res.get('domain', False):
-                    res.update({'domain': {}})
-                pro_tax_ids = self.product_id.taxes_id
-                if self.order_id.fiscal_position_id:
-                    taxes_ids = self.order_id.fiscal_position_id.map_tax(pro_tax_ids).ids
-                    res.get('domain', {}).update({'tax_id': [('id', 'in', taxes_ids)]})
+                # if not res or (res and not res.get('domain', False)):
+                #     res.update({'domain': {}})
+                # pro_tax_ids = self.product_id.taxes_id
+                # if self.order_id.fiscal_position_id:
+                #     taxes_ids = self.order_id.fiscal_position_id.map_tax(pro_tax_ids).ids
+                #     res.get('domain', {}).update({'tax_id': [('id', 'in', taxes_ids)]})
 
             msg, product_price, price_from = self.calculate_customer_price()
             warn_msg += msg and "\n\n{}".format(msg)

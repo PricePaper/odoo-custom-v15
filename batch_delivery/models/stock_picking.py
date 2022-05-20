@@ -4,6 +4,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from datetime import datetime
 from collections import defaultdict
+from odoo.tools.float_utils import float_round
 
 
 class StockPicking(models.Model):
@@ -44,6 +45,45 @@ class StockPicking(models.Model):
     is_internal_transfer = fields.Boolean(string='Internal transfer')
     transit_date = fields.Date()
     transit_move_lines = fields.One2many('stock.move', 'transit_picking_id', string="Stock Moves", copy=False)
+
+
+    def internal_move_from_customer_returned(self):
+        location = self.env.user.company_id.destination_location_id
+        quants = self.env['stock.quant'].search([('quantity', '>', 0.01), ('location_id', '=', location.id)])
+        if quants:
+            vals = {'is_locked': True,
+                'picking_type_id': 5,
+                'is_internal_transfer': True,
+                'location_id': location.id,
+                'location_dest_id': location.id,
+                'move_type': 'direct',
+                'company_id': 1,
+                'partner_id': False,
+                'origin': False,
+                'owner_id': False,
+                }
+            internal_transfer = self.env['stock.picking'].create(vals)
+            for quant in quants:
+                if quant.product_id.property_stock_location:
+                    self.env['stock.move'].create({'product_id': quant.product_id.id,
+                                                   'picking_id': internal_transfer.id,
+                                                   'name': quant.product_id.name,
+                                                   'location_id': location.id,
+                                                   'product_uom': quant.product_id.uom_id.id,
+                                                   'location_dest_id': quant.product_id.property_stock_location.id,
+                                                   })
+            for transfer_move in internal_transfer.move_ids_without_package:
+                if float_round(transfer_move.qty_to_transfer, 2) > 0:
+                    transfer_move.product_uom_qty = transfer_move.qty_to_transfer
+                    internal_transfer.action_confirm()
+                    internal_transfer.action_assign()
+                    transfer_move.move_line_ids.qty_done =  transfer_move.product_uom_qty
+                    internal_transfer.button_validate()
+                else:
+                    transfer_move.unlink()
+            if not internal_transfer.move_ids_without_package:
+                internal_transfer.unlink()
+        return True
 
     @api.depends('state')
     def _compute_show_validate(self):

@@ -1,5 +1,19 @@
 <odoo>
     <data>
+
+        <record forcecreate="True" id="ir_cron_internal_move_from_customer_returned" model="ir.cron">
+            <field name="name">Internal Move: customer returned to product location</field>
+            <field name="model_id" ref="model_stock_picking"/>
+            <field name="state">code</field>
+            <field name="code">model.internal_move_from_customer_returned()</field>
+            <field eval="True" name="active"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field eval="False" name="doall"/>
+        </record>
+
         <record id="default_stock_picking_return_reason" model="stock.picking.return.reason">
             <field name="name">we're short inventory</field>
         </record>

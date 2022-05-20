@@ -36,7 +36,7 @@ class AccountInvoice(models.Model):
             self.sales_person_ids = self.partner_id.sales_person_ids
         return res
 
-    @api.onchange('sales_person_ids')
+    @api.onchange('sales_person_ids','partner_id')
     def onchange_sales_person_ids(self):
         if self.sales_person_ids:
             rules = self.partner_id.mapped('commission_percentage_ids').filtered(lambda r:r.sale_person_id in self.sales_person_ids).mapped('rule_id')
@@ -155,7 +155,7 @@ class AccountInvoice(models.Model):
                 sale = self.invoice_line_ids.mapped('sale_line_ids')
                 vals = {
                     'sale_person_id': rec.sales_person_id.id,
-                    'sale_id': sale and sale[-1].order_id.id,
+                    'sale_id': sale[-1].order_id.id if sale else False,
                     'commission': commission,
                     'invoice_id': self.id,
                     'invoice_type': self.move_type,

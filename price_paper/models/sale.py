@@ -1215,6 +1215,8 @@ class SaleOrderLine(models.Model):
                     self.new_product = True
                 if price_from:
                     self.price_from = price_from.id
+            if self.price_from:
+                self.price_from.lastsale_history_date = fields.Date.today()
 
     def write(self, vals):
         for line in self:

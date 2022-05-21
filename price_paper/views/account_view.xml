@@ -76,6 +76,7 @@
                     <field name="profit_margin" attrs="{'invisible': [('parent.move_type','!=','out_invoice')]}"/>
                     <field name="lst_price" invisible="1"/>
                     <field name="working_cost" invisible="1"/>
+                    <field name="recompute_tax_line" invisible="1" force_save="1"/>
                 </xpath>
             </field>
         </record>

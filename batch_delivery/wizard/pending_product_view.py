@@ -16,9 +16,22 @@ class PendingProductView(models.TransientModel):
         Extract the pickings from batch and filtered out the pending move lines.
         """
         records = self.batch_ids.mapped('picking_ids') if self.batch_ids else self.picking_ids
-        move_lines = records.filtered(lambda pick: pick.state not in ['done', 'cancel']).mapped('transit_move_lines').ids
+        move_lines = records.filtered(lambda pick: pick.state not in ['done', 'cancel']).mapped('transit_move_lines')
+        pending_moves = move_lines.filtered(lambda r: r.state in ('partially_available', 'confirmed', 'waiting'))
+        pending_products = pending_moves.mapped('product_id')
+        if pending_moves:
+            product_moves = move_lines.filtered(lambda r: r.product_id in pending_products)
+
+            recipient_ids = self.env['helpdesk.team'].search([('name', '=', 'Purchase Team')]).mapped('member_ids').mapped('email')
+
+            recipient_ids = ",".join(recipient_ids)
+
+            mail_template = self.env.ref('batch_delivery.email_price_paper_pending_product_master_mail')
+            mail_template.with_context({'summery_list': product_moves, 'partner_email': recipient_ids}).send_mail(self.env.user.id,
+                                                                                                      force_send=True)
+
         action = self.sudo().env.ref('batch_delivery.stock_move_pending_product_action').read()[0]
-        action['domain'] = [('id', 'in', move_lines)]
+        action['domain'] = [('id', 'in', move_lines.ids)]
         return action
 
     def generate_mails(self):

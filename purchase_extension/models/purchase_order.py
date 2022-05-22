@@ -330,7 +330,7 @@ class PurchaseOrderLine(models.Model):
                             and move.to_refund
                             and move.location_dest_id
                             not in self.env["stock.location"].search(
-                                [("iproduct_configurator</attribute>d", "child_of", move.warehouse_id.view_location_id.id)]
+                                [("id", "child_of", move.warehouse_id.view_location_id.id)]
                             )
                         ):
                             total -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom, rounding_method='HALF-UP')

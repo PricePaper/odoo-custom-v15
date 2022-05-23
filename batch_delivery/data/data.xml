@@ -273,7 +273,7 @@
         <record id="email_price_paper_pending_product_master_mail" model="mail.template">
             <field name="name">Pending Product Master Mail: PricePaper</field>
             <field name="model_id" ref="base.model_res_partner"/>
-            <field name="subject">Master Summury of Pending Product</field>
+            <field name="subject">Master Summary of Pending Products</field>
             <field name="email_from">{{(user.email or '')}}</field>
             <field name="email_to">{{ctx['partner_email']}}</field>
             <field name="body_html" type="html">

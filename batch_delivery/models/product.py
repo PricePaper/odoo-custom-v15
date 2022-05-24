@@ -8,7 +8,7 @@ class Product(models.Model):
     _inherit = 'product.product'
 
     transit_qty = fields.Float("Transit Qty", compute='_compute_transit_quantities', store=True)
-    #last_inventoried_date = fields.Date(string="Last Inventoried Date")
+    last_inventoried_date = fields.Date(string="Last Inventoried Date")
 
 
     @api.constrains('sale_uoms')

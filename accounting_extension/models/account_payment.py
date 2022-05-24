@@ -7,6 +7,12 @@ from odoo.tools.misc import formatLang, format_date
 INV_LINES_PER_STUB = 9
 
 
+class AccountJournal(models.Model):
+    _inherit = 'account.journal'
+
+    old_outstanding_receipt_id = fields.Many2one('account.account', string='Old Outstanding Receipt Account')
+
+
 class AccountRegisterPayment(models.TransientModel):
     _inherit = "account.payment.register"
 
@@ -95,12 +101,15 @@ class AccountPayment(models.Model):
 
     discount_move_id = fields.Many2one('account.move', 'Discount Move')
 
+    def _get_valid_liquidity_accounts(self):
+        result = super()._get_valid_liquidity_accounts()
+        return result + (self.journal_id.old_outstanding_receipt_id,)
+
     def warapper_compute_reconciliation_status(self):
         for pay in self:
             pay._compute_reconciliation_status()
         return True
 
-            
     @api.depends('move_id.line_ids.amount_residual', 'move_id.line_ids.amount_residual_currency', 'move_id.line_ids.account_id')
     def _compute_reconciliation_status(self):
         """

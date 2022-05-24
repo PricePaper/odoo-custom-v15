@@ -2,6 +2,17 @@
 <odoo>
     <data>
 
+        <record id="view_account_journal_form_inherited_price_paper" model="ir.ui.view">
+            <field name="name">account.journal.form.inherited.price</field>
+            <field name="model">account.journal</field>
+            <field name="inherit_id" ref="account.view_account_journal_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='suspense_account_id']" position="after">
+                  <field name="old_outstanding_receipt_id" groups="base.group_no_one"/>
+                </xpath>
+            </field>
+        </record>
+
         <record id="view_account_payment_form_inherited_price_paper" model="ir.ui.view">
             <field name="name">account.payment.form.inherited</field>
             <field name="model">account.payment</field>

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+from odoo.exceptions import UserError
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.tools import float_compare
@@ -76,6 +77,12 @@ class SaleOrderLine(models.Model):
 
     lot_id = fields.Many2one('stock.production.lot', 'Lot')
     info = fields.Char(compute='_get_price_lock_info_JSON')
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_confirmed(self):
+        if self._check_line_unlink() and not self.env.user.has_group('stock.group_stock_manager') and not self.env.user.has_group('sales_team.group_sale_manager'):
+            raise UserError(
+                _('You can not remove an order line once the sales order is confirmed.\nYou should rather set the quantity to 0.'))
 
     @api.depends('product_id')
     def _get_price_lock_info_JSON(self):
@@ -237,3 +244,27 @@ class SaleOrderLine(models.Model):
         if tax_id and tax_id!=self.tax_id.ids:
             self._update_tax_valuess(values)
         return result
+
+    def remove_confirmed_move_lines(self):
+        move = self.mapped('move_ids').filtered(lambda r: r.state != 'cancel')
+        transit_move = self.mapped('move_ids').mapped('move_orig_ids').filtered(lambda r: r.state != 'cancel')
+        if transit_move and transit_move.picking_id.state in ['in_transit','done']:
+            raise UserError(
+                _('You can not remove an order line once the sales order is confirmed'))
+
+        elif (any(transit_moves.state!='draft' for transit_moves in transit_move) and (not self.env.user.has_group('stock.group_stock_manager') or not self.env.user.has_group('sales_team.group_sale_manager'))):
+            raise UserError(_('You can only delete draft moves.'))
+
+        elif (any(moves.state!='draft' for moves in move) and (not self.env.user.has_group('stock.group_stock_manager') or not self.env.user.has_group('sales_team.group_sale_manager'))):
+            raise UserError(_('You can only delete draft moves.'))
+
+        else:
+            cancel_moves  = transit_move+move
+            cancel_moves.sudo()._action_cancel()
+            cancel_moves.sudo().unlink()
+
+    def unlink(self):
+       for record in self:
+           if not record.is_delivery and record.order_id.state!='draft':
+                record.remove_confirmed_move_lines()
+       return super(SaleOrderLine, self).unlink()

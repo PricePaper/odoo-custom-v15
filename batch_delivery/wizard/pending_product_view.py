@@ -26,6 +26,17 @@ class PendingProductView(models.TransientModel):
         generate emails for individual (sales followers) who having pending product moves.
         """
 
+        recipient_ids = self.pending_line_ids.mapped('followers')
+        mail_template = self.env.ref('batch_delivery.email_price_paper_pending_product_mail')
+        mail_group = {}
+        for rep in recipient_ids:
+            for move in self.pending_line_ids:
+                if rep in move.followers:
+                    mail_group.setdefault(rep, []).append(move)
+        for rep, moves in mail_group.items():
+            mail_template.with_context({'summery_list': moves, 'partner_email': rep.email}).send_mail(rep.id,
+                                                                                                      force_send=True)
+
         if self.pending_line_ids:
             pending_products = self.pending_line_ids.mapped('product_id')
             product_moves = self.env['stock.move']
@@ -44,17 +55,6 @@ class PendingProductView(models.TransientModel):
                 mail_template1 = self.env.ref('batch_delivery.email_price_paper_pending_product_master_mail')
                 mail_template1.with_context({'summery_list': product_moves, 'partner_email': recipients}).send_mail(self.env.user.id,
                                                                                                           force_send=True)
-
-        recipient_ids = self.pending_line_ids.mapped('followers')
-        mail_template = self.env.ref('batch_delivery.email_price_paper_pending_product_mail')
-        mail_group = {}
-        for rep in recipient_ids:
-            for move in self.pending_line_ids:
-                if rep in move.followers:
-                    mail_group.setdefault(rep, []).append(move)
-        for rep, moves in mail_group.items():
-            mail_template.with_context({'summery_list': moves, 'partner_email': rep.email}).send_mail(rep.id,
-                                                                                                      force_send=True)
 
     @api.model
     def default_get(self, fields_list):

@@ -16,7 +16,7 @@ class StockOverProcessedTransfer(models.TransientModel):
     def _compute_overprocessed_product_name(self):
         for wizard in self:
             moves = wizard.picking_id._get_overprocessed_stock_moves()
-            wizard.overprocessed_product_name = moves[0].product_id.display_name
+            wizard.overprocessed_product_name = ',  '.join(moves.mapped('product_id').mapped('display_name'))
 
     def action_confirm(self):
         self.ensure_one()
@@ -25,7 +25,7 @@ class StockOverProcessedTransfer(models.TransientModel):
             if move.is_storage_contract and move.purchase_line_id:
                 if move.po_original_qty < move.quantity_done:
                     move.purchase_line_id.order_id.message_post(
-                        body='processed more than what was initially planned for the product %s' % move.product_id.display_name)
+                        body='processed more than what was initially planned for the product(s) %s' % move.product_id.display_name)
                 so |= move.purchase_line_id.order_id.mapped('order_line.sale_order_id')
         if so:
             so.write({'state': 'received'})

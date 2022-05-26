@@ -508,7 +508,8 @@ class StockPicking(models.Model):
                     raise UserError(
                         "This Delivery for product %s is supposed to use products from the lot %s please clear the Preferred Lot field to override" % (
                             line.product_id.name, line.pref_lot_id.name))
-        if self._get_overprocessed_stock_moves() and not self._context.get('skip_overprocessed_check'):
+        if self.picking_type_id.code == 'incoming' and not self.is_return:
+            if self._get_overprocessed_stock_moves() and not self._context.get('skip_overprocessed_check'):
                 view = self.env.ref('batch_delivery.view_overprocessed_transfer')
                 wiz = self.env['stock.overprocessed.transfer'].create({'picking_id': self.id})
                 return {

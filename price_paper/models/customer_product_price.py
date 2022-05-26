@@ -23,6 +23,28 @@ class CustomerProductPrice(models.Model):
     lock_expiry_date = fields.Date(string='Lock Expiry date')
     currency_id = fields.Many2one(related="product_id.currency_id", readonly=True)
     expiry_date = fields.Date('Valid Until', related='pricelist_id.expiry_date')
+    lastsale_history_date = fields.Date(string='Last Sale Date')
+    active = fields.Boolean(string='Active', default=True)
+
+    def update_last_sale(self):
+        pricelists = self.env['product.pricelist'].search([('type', '!=', 'competitor')])
+        for pricelist in pricelists:
+            if pricelist.partner_ids:
+                partners = pricelist.partner_ids.ids
+                for record in pricelist.customer_product_price_ids:
+                    lastsale_history_date = False
+                    history = self.env['sale.history'].search([('product_id', '=', record.product_id.id),
+                        ('uom_id', '=', record.product_uom.id),
+                        ('partner_id', 'in', partners)])
+
+                    for his in history:
+                        if lastsale_history_date == False:
+                            lastsale_history_date = his.order_date
+                        elif lastsale_history_date < his.order_date:
+                            lastsale_history_date = his.order_date
+                    record.lastsale_history_date = lastsale_history_date
+        return True
+
 
     @api.depends('pricelist_id')
     def _compute_partner(self):

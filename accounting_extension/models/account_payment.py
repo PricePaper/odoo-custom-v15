@@ -7,6 +7,12 @@ from odoo.tools.misc import formatLang, format_date
 INV_LINES_PER_STUB = 9
 
 
+class AccountJournal(models.Model):
+    _inherit = 'account.journal'
+
+    old_outstanding_receipt_id = fields.Many2one('account.account', string='Old Outstanding Receipt Account')
+
+
 class AccountRegisterPayment(models.TransientModel):
     _inherit = "account.payment.register"
 
@@ -94,6 +100,38 @@ class AccountPayment(models.Model):
     _inherit = "account.payment"
 
     discount_move_id = fields.Many2one('account.move', 'Discount Move')
+
+    def _get_valid_liquidity_accounts(self):
+        result = super()._get_valid_liquidity_accounts()
+        return result + (self.journal_id.old_outstanding_receipt_id,)
+
+    def warapper_compute_reconciliation_status(self):
+        for pay in self:
+            pay._compute_reconciliation_status()
+        return True
+
+    @api.depends('move_id.line_ids.amount_residual', 'move_id.line_ids.amount_residual_currency', 'move_id.line_ids.account_id')
+    def _compute_reconciliation_status(self):
+        """
+        Override to fix cash account automatic matching
+
+        """
+        cash_payments = self.filtered(lambda rec: rec.journal_id.default_account_id.reconcile)
+        for pay in cash_payments:
+            liquidity_lines, counterpart_lines, writeoff_lines = pay._seek_for_lines()
+            if not pay.currency_id or not pay.id:
+                pay.is_reconciled = False
+                pay.is_matched = False
+            elif pay.currency_id.is_zero(pay.amount):
+                pay.is_reconciled = True
+                pay.is_matched = True
+            else:
+                residual_field = 'amount_residual' if pay.currency_id == pay.company_id.currency_id else 'amount_residual_currency'
+                pay.is_matched = pay.currency_id.is_zero(sum(liquidity_lines.mapped(residual_field)))
+
+                reconcile_lines = (counterpart_lines + writeoff_lines).filtered(lambda line: line.account_id.reconcile)
+                pay.is_reconciled = pay.currency_id.is_zero(sum(reconcile_lines.mapped(residual_field)))
+        return super(AccountPayment, self - cash_payments)._compute_reconciliation_status()
 
     def _check_build_page_info(self, i, p):
         result = super(AccountPayment, self)._check_build_page_info(i, p)

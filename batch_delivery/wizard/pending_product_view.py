@@ -41,8 +41,10 @@ class PendingProductView(models.TransientModel):
             pending_products = self.pending_line_ids.mapped('product_id')
             product_moves = self.env['stock.move']
             if self.batch_ids:
-                records = self.batch_ids.mapped('picking_ids').filtered(lambda pick: pick.state not in ['done', 'cancel']). \
+                records = self.batch_ids.mapped('picking_ids').filtered(lambda pick: pick.state not in ['done', 'cancel', 'in_transit']). \
                     mapped('transit_move_lines')
+                records += self.batch_ids.mapped('picking_ids').filtered(lambda pick: pick.state in ['in_transit']). \
+                    mapped('move_lines')
                 product_moves = records.filtered(lambda r: r.product_id in pending_products)
             elif self.picking_ids:
                 records = self.picking_ids.\
@@ -67,15 +69,18 @@ class PendingProductView(models.TransientModel):
                     mapped('move_lines').filtered(lambda l: l.product_uom_qty != l.reserved_availability)
             elif self._context.get('default_batch_ids'):
                 records = self.env['stock.picking.batch'].browse(self._context.get('default_batch_ids')). \
-                    mapped('picking_ids').filtered(lambda pick: pick.state not in ['done', 'cancel']). \
+                    mapped('picking_ids').filtered(lambda pick: pick.state not in ['done', 'cancel', 'in_transit']). \
                     mapped('transit_move_lines').filtered(lambda l: l.product_uom_qty != l.reserved_availability)
+                records += self.env['stock.picking.batch'].browse(self._context.get('default_batch_ids')). \
+                    mapped('picking_ids').filtered(lambda pick: pick.state in ['in_transit']). \
+                    mapped('move_lines').filtered(lambda l: l.product_uom_qty != l.reserved_availability)
 
             res['pending_line_ids'] = [(0, 0, {
                 'product_id': move.product_id.id,
                 'product_uom_qty': move.product_uom_qty,
                 'reserved_available_qty': move.reserved_availability,
                 'product_uom': move.product_uom.id,
-                'picking_id': move.transit_picking_id.id,
+                'picking_id': move.transit_picking_id.id if move.transit_picking_id else move.picking_id.id,
                 'followers': [(6, 0, move.group_id.sale_id.message_partner_ids.filtered(lambda u: u.user_ids).ids)],
                 'same_product_ids': [(6, 0, move.product_id.same_product_ids.ids)]
             }) for move in records]

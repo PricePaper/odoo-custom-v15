@@ -332,15 +332,30 @@
                                                 </tr>
                                                 <t t-if="ctx.get('summery_list',[])">
                                                     <t t-foreach="ctx.get('summery_list').sorted(key=lambda r: r.product_id.display_name)" t-as="line">
-                                                        <tr valign="top" style="font-size: 11px;">
-                                                            <td t-out="line.product_id.display_name"/>
-                                                            <td t-out="line.transit_picking_id.sale_id.partner_id.name"/>
-                                                            <td t-out="line.transit_picking_id.sale_id.partner_id.rnk_lst_3_mon"/>
-                                                            <td t-out="line.product_uom_qty"/>
-                                                            <td t-out="line.reserved_availability"/>
-                                                            <td t-out="line.product_uom.display_name"/>
-                                                            <td t-out="line.transit_picking_id.sale_id.display_name"/>
-                                                         </tr>
+                                                      <tr valign="top" style="font-size: 11px;">
+                                                          <td t-out="line.product_id.display_name"/>
+                                                          <t t-if='line.transit_picking_id'>
+                                                              <td t-out="line.transit_picking_id.sale_id.partner_id.name"/>
+                                                          </t>
+                                                          <t t-if='line.picking_id'>
+                                                              <td t-out="line.picking_id.sale_id.partner_id.name"/>
+                                                          </t>
+                                                          <t t-if='line.transit_picking_id'>
+                                                              <td t-out="line.transit_picking_id.sale_id.partner_id.rnk_lst_3_mon"/>
+                                                          </t>
+                                                          <t t-if='line.picking_id'>
+                                                              <td t-out="line.picking_id.sale_id.partner_id.rnk_lst_3_mon"/>
+                                                          </t>
+                                                          <td t-out="line.product_uom_qty"/>
+                                                          <td t-out="line.reserved_availability"/>
+                                                          <td t-out="line.product_uom.display_name"/>
+                                                          <t t-if='line.transit_picking_id'>
+                                                              <td t-out="line.transit_picking_id.sale_id.display_name"/>
+                                                          </t>
+                                                          <t t-if='line.picking_id'>
+                                                              <td t-out="line.picking_id.sale_id.display_name"/>
+                                                          </t>
+                                                       </tr>
                                                     </t>
                                                 </t>
                                             </table>

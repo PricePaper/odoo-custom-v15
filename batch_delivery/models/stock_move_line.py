@@ -21,7 +21,7 @@ class StockMoveLine(models.Model):
                 ordered = sum(self.move_id.mapped('product_uom_qty'))
                 reserved = sum((self.move_id.move_line_ids - self).mapped('product_uom_qty'))
                 pending = ordered-reserved
-                if pending < vals['product_uom_qty']:
+                if pending != vals['product_uom_qty']:
                     vals['product_uom_qty'] = pending
         result = super(StockMoveLine, self).write(vals)
         if 'qty_done' in vals:

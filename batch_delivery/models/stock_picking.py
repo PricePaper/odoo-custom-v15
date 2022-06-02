@@ -289,7 +289,7 @@ class StockPicking(models.Model):
                     if picking.batch_id:
                         picking.sale_id.write({'delivery_date': picking.batch_id.date})
                     continue
-                for line in picking.transit_move_lines:
+                for line in picking.transit_move_lines.filtered(lambda r: r.state not in ('cancel', 'done')):
                     line.quantity_done = line.reserved_availability
                 if not any(picking.transit_move_lines.mapped('quantity_done')):
                     raise UserError("You cannot transit if no quantities are  done.\nTo force the transit, switch in edit mode and encode the done quantities.")

@@ -584,7 +584,7 @@
                         <notebook>
                             <page string="Order Lines" name="order_lines">
                                 <field name="order_line" widget="section_and_note_one2many" mode="tree"
-                                       attrs="{'readonly': [('state', 'in', ('waiting', 'ordered', 'received', 'done','cancel'))]}">
+                                       attrs="{'readonly': [('state', 'in', ('cancel'))]}">
                                     <tree string="Sales Order Lines" ditable="bottom">
                                         <control>
                                             <create string="Add a product"/>
@@ -681,6 +681,7 @@
                                     </tree>
                                     <form>
                                         <field name="display_type" invisible="1"/>
+                                        <field name="product_updatable" invisible="1"/>
                                         <!--
                                             We need the sequence field to be here for new lines to be added at the correct position.
                                             TODO: at some point we want to fix this in the framework so that an invisible field is not required.
@@ -688,22 +689,36 @@
                                         <field name="sequence" invisible="1"/>
                                         <group>
                                             <group attrs="{'invisible': [('display_type', '!=', False)]}">
-                                                <field name="product_id"/>
+                                                <field name="product_id"
+                                                  attrs="{
+                                                   'readonly': ['|', ('product_updatable', '=', False), ('state', 'in', ('sale','done', 'cancel', 'released'))],
+                                                   'required': [('display_type', '=', False)],
+                                               }"
+                                                  force_save="1"/>
                                                 <label for="product_uom_qty" string="Ordered Quantity"/>
                                                 <div>
-                                                    <field name="product_uom_qty" class="oe_inline"/>
+                                                    <field name="product_uom_qty" class="oe_inline" attrs="{
+                                                     'readonly': [('state', 'in', ('sale','done', 'cancel', 'released'))]}"
+                                                    force_save="1"/>
                                                     <field name="product_uom_category_id" invisible="1"/>
                                                     <field name="product_uom" force_save="1" groups="uom.group_uom"
-                                                           class="oe_inline oe_no_button"/>
+                                                           class="oe_inline oe_no_button" attrs="{
+                                                            'readonly': [('state', 'in', ('sale','done', 'cancel', 'released'))]}"/>
                                                 </div>
                                                 <field name="selling_min_qty"/>
-                                                <field name="price_unit"/>
-                                                <field name="qty_delivered" string="Received Quantity"/>
+                                                <field name="price_unit" attrs="{
+                                                 'readonly': [('state', 'in', ('sale','done', 'cancel', 'released'))]}"
+                                                force_save="1"/>
+                                                <field name="qty_delivered" string="Received Quantity" attrs="{
+                                                 'readonly': [('state', 'in', ('sale','done', 'cancel', 'released'))]}"
+                                                force_save="1"/>
                                                 <field name="storage_remaining_qty" string="Remaining quantity"/>
                                                 <field name="qty_invoiced" string="Invoiced Quantity"/>
                                                 <label for="discount" groups="product.group_discount_per_so_line"/>
                                                 <div name="discount" groups="product.group_discount_per_so_line">
-                                                    <field name="discount" class="oe_inline"/>
+                                                    <field name="discount" class="oe_inline" attrs="{
+                                                     'readonly': [('state', 'in', ('sale','done', 'cancel', 'released'))]}"
+                                                    force_save="1"/>
                                                     %
                                                 </div>
                                                 <field name="price_subtotal"/>

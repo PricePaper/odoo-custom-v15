@@ -513,6 +513,10 @@
                                 string="Release"
                                 class="oe_highlight"
                                 attrs="{'invisible': ['|', '|', ('active', '=', False), ('invoice_status', '!=', 'invoiced'), ('state', '!=', 'received')]}"/>
+                        <button name="action_release" groups="account.group_account_manager" type="object"
+                                string="Release"
+                                class="oe_highlight"
+                                attrs="{'invisible': ['|', '|', ('active', '=', False), ('invoice_status', '!=', 'invoiced'), ('state', '!=', 'done')]}"/>
                         <button name="action_restore" groups="account.group_account_manager" type="object"
                                 string="UnRelease"
                                 class="oe_highlight"

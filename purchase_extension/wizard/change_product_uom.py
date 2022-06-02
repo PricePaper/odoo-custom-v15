@@ -38,24 +38,30 @@ class ChangeProductUom(models.TransientModel):
         res.sale_uoms = self.new_sale_uoms
         if self.duplicate_pricelist:
             lines = self.env['customer.product.price'].search([('product_id', '=', self.product_id.id)])
-            default_1 = {'product_id': res.id}
 
             for line in lines:
-                product = line.product_id
-                old_working_cost = product.cost
-                old_list_price = line.price
-                if product.uom_id != line.product_uom:
-                    old_working_cost = product.uom_id._compute_price(product.cost, line.product_uom) * (
-                                (100 + product.categ_id.repacking_upcharge) / 100)
-                margin = (old_list_price - old_working_cost) / old_list_price
-                new_working_cost = res.cost
+                default_1 = {'product_id': res.id}
+                if line.product_uom == line.product_id.uom_id:
+                    new_price = line.product_uom._compute_price(line.price, res.uom_id)
+                    default_1['price'] = new_price
+                    default_1['product_uom'] = res.uom_id.id
+                    line.copy(default=default_1)
+                elif line.product_uom in res.sale_uoms:
+                    product = line.product_id
+                    old_working_cost = product.cost
+                    old_list_price = line.price
+                    if product.uom_id != line.product_uom:
+                        old_working_cost = product.uom_id._compute_price(product.cost, line.product_uom) * (
+                                    (100 + product.categ_id.repacking_upcharge) / 100)
+                    margin = (old_list_price - old_working_cost) / old_list_price
+                    new_working_cost = res.cost
 
-                if res.uom_id != line.product_uom:
-                    new_working_cost = res.uom_id._compute_price(new_working_cost, line.product_uom) * ((100 + res.categ_id.repacking_upcharge) / 100)
+                    if res.uom_id != line.product_uom:
+                        new_working_cost = res.uom_id._compute_price(new_working_cost, line.product_uom) * ((100 + res.categ_id.repacking_upcharge) / 100)
 
-                new_price = float_round(new_working_cost / (1 - margin), precision_digits=2)
-                default_1['price'] = new_price
-                line.copy(default=default_1)
+                    new_price = float_round(new_working_cost / (1 - margin), precision_digits=2)
+                    default_1['price'] = new_price
+                    line.copy(default=default_1)
         return {
             'name': 'Product Variants',
             'type': 'ir.actions.act_window',

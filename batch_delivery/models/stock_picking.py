@@ -156,7 +156,9 @@ class StockPicking(models.Model):
     @api.depends('move_lines.reserved_availability')
     def _compute_available_qty(self):
         for pick in self:
-            moves = pick.mapped('move_lines').filtered(lambda move: move.state != 'cancel')
+            moves = pick.mapped('transit_move_lines').filtered(lambda move: move.state != 'cancel')
+            if pick.state == 'in_transit':
+                moves = pick.mapped('move_lines').filtered(lambda move: move.state != 'cancel')
             pick.reserved_qty = sum(moves.mapped('forecast_availability'))
             pick.low_qty_alert = pick.item_count != pick.reserved_qty and pick.state != 'done'
 

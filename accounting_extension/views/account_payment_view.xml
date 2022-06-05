@@ -23,6 +23,7 @@
                 </xpath>
                 <xpath expr="//button[@name='print_checks']" position="before">
                   <button name="mark_as_sent" class="oe_highlight" attrs="{'invisible': ['|', '|', ('payment_method_code', '!=', 'check_printing'), ('state', '!=', 'posted'), ('is_move_sent', '=', True)]}" string="Mark as Sent" type="object" />
+                    <button name="open_partial_payment" type="object" string="Partail payment"/>
                 </xpath>
             </field>
         </record>

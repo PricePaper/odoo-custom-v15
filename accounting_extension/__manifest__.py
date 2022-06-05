@@ -21,6 +21,7 @@ Customisation for PPT
              'wizard/add_new_cash_collected_line_wizard.xml',
              'wizard/add_discount_view.xml',
              'wizard/discount_check_generate.xml',
+             'wizard/partial_payment_view.xml',
              'security/ir.model.access.csv'
 
              ],

@@ -226,6 +226,17 @@ class AccountPayment(models.Model):
         self = self - self.filtered(lambda rec: rec.date < self.company_id._get_user_fiscal_lock_date())
         return super(AccountPayment, self)._synchronize_from_moves(changed_fields)
 
-
+    def open_partial_payment(self):
+        res = self.env['partial.payment.invoice'].create({'payment_id': self.id})
+        return {
+            'name': 'Partial Payment',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'partial.payment.invoice',
+            'res_id': res.id,
+            # 'view_id': self.env.ref('price_paper.view_stock_move_over_processed_window').id,
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+        }
 
 AccountPayment()

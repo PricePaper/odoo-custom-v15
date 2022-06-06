@@ -18,7 +18,7 @@ class PartialPayment(models.TransientModel):
             record.amount_total = sum(self.partial_lines.mapped('amount'))
 
     def add_payment(self):
-        if self.balance_to_pay < self.amount_total:
+        if (-1 * self.balance_to_pay) < self.amount_total:
             raise ValidationError("You cannot pay more than what we have")
         domain = [
             ('parent_state', '=', 'posted'),
@@ -58,4 +58,3 @@ class PartialPaymentLines(models.TransientModel):
 
 
             }
-

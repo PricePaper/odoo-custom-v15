@@ -24,7 +24,7 @@
                 <xpath expr="//button[@name='print_checks']" position="before">
                     <button name="mark_as_sent" class="oe_highlight" attrs="{'invisible': ['|', '|', ('payment_method_code', '!=', 'check_printing'), ('state', '!=', 'posted'), ('is_move_sent', '=', True)]}" string="Mark as Sent" type="object" />
                     <field name="balance_to_pay" invisible="0"/>
-                    <button name="open_invoice_wizard" type="object" string="Add to invoice" attrs="{'invisible': [('payment_type', '=', 'inbound'), ('balance_to_pay', '=', 0)]}"/>
+                    <button name="open_invoice_wizard" type="object" string="Add to invoice" attrs="{'invisible': [('payment_type', '=', 'outbound'), ('balance_to_pay', '=', 0)]}"/>
                 </xpath>
             </field>
         </record>

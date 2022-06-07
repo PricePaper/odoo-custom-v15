@@ -150,7 +150,18 @@ class StockMove(models.Model):
         for move in self:
             # qty_available always shows the quanity in requested (UOM).
             reserved_qty = move.reserved_availability
-            move._do_unreserve()
+            try:
+                move._do_unreserve()
+            except UserError as e:
+                for ml in move.move_line_ids:
+                    quants = self.env['stock.quant']._gather(ml.product_id, ml.location_id, lot_id=ml.lot_id, package_id=ml.package_id,
+                                                             owner_id=ml.owner_id, strict=True)
+                    available_quantity = sum(quants.mapped('reserved_quantity'))
+                    rounding_digit = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+                    available_quantity = float_round(available_quantity, precision_digits=rounding_digit)
+                    if ml.product_uom_qty > available_quantity:
+                        ml.with_context({'bypass_reservation_update': True}).write({'product_uom_qty': available_quantity})
+                move._do_unreserve()
             available_qty = move.availability
             if available_qty < qty:
                 raise UserError('It is not possible to reserve more products of %s than you have in stock.' % move.product_id.display_name)

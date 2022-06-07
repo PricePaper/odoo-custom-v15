@@ -149,6 +149,7 @@ class StockMove(models.Model):
 
         for move in self:
             # qty_available always shows the quanity in requested (UOM).
+            to_qty = qty
             if self.product_uom != self.product_id.uom_id:
                 qty = self.product_uom._compute_quantity(qty, self.product_id.uom_id)
             reserved_qty = move.reserved_availability
@@ -177,10 +178,10 @@ class StockMove(models.Model):
                 raise UserError("Can't reserve more product than requested..!")
             else:
                 if qty != 0:
-                    move._action_assign_reset_qty(qty)
+                    move._action_assign_reset_qty(to_qty)
                 msg = """<ul><li>
                     %s Quantity Reserved: %s <span aria-label='Changed' class='fa fa-long-arrow-right' role='img' title='Changed'/> %s
-                    </li></ul>""" % (move.product_id.display_name, reserved_qty, qty,)
+                    </li></ul>""" % (move.product_id.display_name, reserved_qty, to_qty,)
                 move.message_post(
                     body=msg,
                     subtype_id=self.env.ref('mail.mt_note').id)

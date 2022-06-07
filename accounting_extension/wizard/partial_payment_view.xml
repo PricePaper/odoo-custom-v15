@@ -7,11 +7,6 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
-                        <!--                        <script>-->
-                        <!--                         $(document).ready(function(){-->
-                        <!--                            $('.modal-dialog').css({'max-width':'90%'});-->
-                        <!--                            });-->
-                        <!--                      </script>-->
                         <group>
                             <group>
                                 <field name="balance_to_pay"/>

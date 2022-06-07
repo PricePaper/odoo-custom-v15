@@ -149,6 +149,8 @@ class StockMove(models.Model):
 
         for move in self:
             # qty_available always shows the quanity in requested (UOM).
+            if self.product_uom != self.product_id.uom_id:
+                qty = self.product_uom._compute_quantity(qty, self.product_id.uom_id)
             reserved_qty = move.reserved_availability
             try:
                 move._do_unreserve()

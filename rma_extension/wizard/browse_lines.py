@@ -220,7 +220,7 @@ class BrowseLinesSourceLine(models.TransientModel):
     order_quantity = fields.Float('Ordered Qty')
     delivered_quantity = fields.Float('Delivered Qty')
     price_unit = fields.Float('Unit Price')
-    refund_qty = fields.Float('Return Qty')
+    refund_qty = fields.Float('Return Qty', digits='Product Unit of Measure')
     refund_price = fields.Float(compute='_compute_amount', string='Refund Price', )
     total_price = fields.Float(string='Total Price')
     type = fields.Selection([('return', 'Return'), ('exchange', 'Exchange')], string='Action', default='return')

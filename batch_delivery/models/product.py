@@ -9,6 +9,20 @@ class Product(models.Model):
 
     transit_qty = fields.Float("Transit Qty", compute='_compute_transit_quantities', store=True)
     last_inventoried_date = fields.Date(string="Last Inventoried Date")
+    in_qty = fields.Float("IN Qty", compute='_compute_in_out_quantities', digits='Product Unit of Measure')
+    out_qty = fields.Float("OUT Qty", compute='_compute_in_out_quantities', digits='Product Unit of Measure')
+
+
+    @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done')
+    def _compute_in_out_quantities(self):
+        for product in self:
+            purchase_moves = product.stock_move_ids.filtered(lambda move: move.purchase_line_id and \
+                                                                          move.state not in ['cancel', 'done'])
+            product_qty = 0
+            for move in purchase_moves:
+                product_qty += move.product_qty
+            product.in_qty = product_qty
+
 
     @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done')
     def _compute_transit_quantities(self):

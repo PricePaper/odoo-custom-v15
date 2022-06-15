@@ -36,6 +36,13 @@ class ProductTemplate(models.TransientModel):
                     reserve_qty_dict[move] = move.reserved_availability
                     move._do_unreserve()
                 move.location_id = rec.dest_location_id.id
+            in_stock_moves = rec.product_id.stock_move_ids.filtered(lambda r: r.state not in ('done', 'cancel') and r.location_dest_id == rec.source_location_id
+                and r.picking_id and r.picking_id.state != 'cancel')
+            for move in in_stock_moves:
+                move.location_dest_id = rec.dest_location_id.id
+                for line in move.move_line_ids:
+                    line.location_dest_id = rec.dest_location_id.id
+
             rec.product_id.property_stock_location = rec.dest_location_id.id
             vals = {'is_locked': True,
                 'picking_type_id': 5,

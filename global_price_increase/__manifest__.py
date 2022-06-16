@@ -19,7 +19,7 @@ Custom module implemented for Global price change
         'views/global_price_change.xml',
     ],
 
-    'depends': ['price_paper'],
+    'depends': ['price_paper', 'sales_commission'],
     'installable': True,
     'auto_install': False,
     'application': False,

@@ -149,8 +149,22 @@ class StockMove(models.Model):
 
         for move in self:
             # qty_available always shows the quanity in requested (UOM).
+            to_qty = qty
+            if self.product_uom != self.product_id.uom_id:
+                qty = self.product_uom._compute_quantity(qty, self.product_id.uom_id)
             reserved_qty = move.reserved_availability
-            move._do_unreserve()
+            try:
+                move._do_unreserve()
+            except UserError as e:
+                for ml in move.move_line_ids:
+                    quants = self.env['stock.quant']._gather(ml.product_id, ml.location_id, lot_id=ml.lot_id, package_id=ml.package_id,
+                                                             owner_id=ml.owner_id, strict=True)
+                    available_quantity = sum(quants.mapped('reserved_quantity'))
+                    rounding_digit = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+                    available_quantity = float_round(available_quantity, precision_digits=rounding_digit)
+                    if ml.product_uom_qty > available_quantity:
+                        ml.with_context({'bypass_reservation_update': True}).write({'product_uom_qty': available_quantity})
+                move._do_unreserve()
             available_qty = move.availability
             if available_qty < qty:
                 raise UserError('It is not possible to reserve more products of %s than you have in stock.' % move.product_id.display_name)
@@ -164,10 +178,10 @@ class StockMove(models.Model):
                 raise UserError("Can't reserve more product than requested..!")
             else:
                 if qty != 0:
-                    move._action_assign_reset_qty(qty)
+                    move._action_assign_reset_qty(to_qty)
                 msg = """<ul><li>
                     %s Quantity Reserved: %s <span aria-label='Changed' class='fa fa-long-arrow-right' role='img' title='Changed'/> %s
-                    </li></ul>""" % (move.product_id.display_name, reserved_qty, qty,)
+                    </li></ul>""" % (move.product_id.display_name, reserved_qty, to_qty,)
                 move.message_post(
                     body=msg,
                     subtype_id=self.env.ref('mail.mt_note').id)

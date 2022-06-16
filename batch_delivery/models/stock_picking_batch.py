@@ -471,6 +471,10 @@ class CashCollectedLines(models.Model):
         for pay in self:
             pay.available_payment_method_line_ids = pay.journal_id._get_available_payment_method_lines('inbound')
 
+    @api.onchange('journal_id')
+    def onchange_journal_id(self):
+        self.payment_method_line_id = False
+
     @api.depends('partner_id')
     def _compute_partner_ids(self):
         for line in self:

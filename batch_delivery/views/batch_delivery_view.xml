@@ -8,7 +8,7 @@
             <field name="inherit_id" ref="stock_picking_batch.view_picking_tree_batch"/>
             <field name="arch" type="xml">
                 <field name="name" position="after">
-                    <field name="sequence" widget="handle"/>
+                    <field name="sequence" optional="show"/>
                     <field name="company_id" invisible="1"/>
                     <field name="invoice_ref" readonly="1" optional="show"/>
                     <field name="partner_id" readonly="1" optional="hide"/>
@@ -26,9 +26,6 @@
                     <attribute name="decoration-bf">is_late_order==True</attribute>
                     <attribute name="decoration-it">is_late_order==True</attribute>
 
-                </xpath>
-                <xpath expr="//field[@name='name']" position="before">
-                    <field name="sequence" widget="handle"/>
                 </xpath>
                 <xpath expr="//field[@name='scheduled_date']" position="attributes">
                     <attribute name="invisible">True</attribute>
@@ -167,6 +164,9 @@
                       '|', ('state', '!=', 'in_progress'), '|',
                       ('show_check_availability', '=', False),
                       ('show_validate', '=', False)]}</attribute>
+                </xpath>
+                <xpath expr="//notebook/page[1]" position="before">
+                    <xpath expr="//notebook/page[3]" position="move"/>
                 </xpath>
 
 

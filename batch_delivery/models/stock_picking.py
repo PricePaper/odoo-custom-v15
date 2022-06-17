@@ -44,6 +44,7 @@ class StockPicking(models.Model):
         states={'done': [('readonly', True)], 'cancel': [('readonly', True)]},
         help='Batch associated to this picking', copy=False, tracking=True)
     is_internal_transfer = fields.Boolean(string='Internal transfer')
+    is_customer_return = fields.Boolean(string='Customer Return')
     transit_date = fields.Date()
     transit_move_lines = fields.One2many('stock.move', 'transit_picking_id', string="Stock Moves", copy=False)
 
@@ -310,12 +311,29 @@ class StockPicking(models.Model):
 
     @api.model
     def default_get(self, default_fields):
+        """
+        set appropraite picking type from context
+        """
         result = super(StockPicking, self).default_get(default_fields)
         if self._context.get('from_internal_transfer_action'):
             picking_type = self.env['stock.picking.type'].search([('code', '=', 'internal'), ('name', '=', 'Internal Transfers')], limit=1)
             if picking_type:
                 result['picking_type_id'] = picking_type.id
+        elif self._context.get('from_is_customer_return_action'):
+            picking_type = self.env['stock.picking.type'].search([('code', '=', 'incoming')], limit=1)
+            if picking_type:
+                result['picking_type_id'] = picking_type.id
         return result
+
+    @api.onchange('picking_type_id', 'partner_id')
+    def _onchange_picking_type(self):
+        """
+        set location_dest_id for the customer retun receipt
+        """
+        result = super(StockPicking, self)._onchange_picking_type()
+        if self.is_customer_return and self.env.user.company_id.destination_location_id:
+            self.location_dest_id = self.env.user.company_id.destination_location_id.id
+
 
     # def action_validate(self):
     #     self.ensure_one()

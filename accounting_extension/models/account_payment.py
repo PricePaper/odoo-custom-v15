@@ -104,7 +104,13 @@ class AccountPayment(models.Model):
 
     def _compute_balance(self):
         for payment in self:
-            payment.balance_to_pay = sum(self.move_id.line_ids.filtered(lambda rec: rec.account_id.internal_type in ('receivable', 'payable')).mapped('amount_residual'))
+            for i in self.move_id.line_ids.filtered(lambda rec: rec.account_id.internal_type in ('receivable', 'payable')):
+                print(i, i.amount_residual)
+            balance = sum(self.move_id.line_ids.filtered(lambda rec: rec.account_id.internal_type in ('receivable', 'payable')).mapped('amount_residual'))
+            # todo odoo's bug gives a -ve 0.06 value in Monetary fields until finding a solution added a temp fix
+            if abs(balance) == 0.06:
+                balance = 0.00
+            payment.balance_to_pay =balance
 
     def _get_valid_liquidity_accounts(self):
         result = super()._get_valid_liquidity_accounts()

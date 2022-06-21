@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError,ValidationError
 from datetime import datetime
 from collections import defaultdict
 from odoo.tools import float_compare
@@ -37,6 +37,7 @@ class StockPicking(models.Model):
     is_invoiced = fields.Boolean(string="Invoiced", compute='_compute_state_flags')
     invoice_ref = fields.Char(string="Invoice Reference", compute='_compute_invoice_ref')
     invoice_ids = fields.Many2many('account.move', compute='_compute_invoice_ids')
+    invoice_count = fields.Integer('Invoice count', compute='_compute_invoice_ids')
     is_return = fields.Boolean(compute='_compute_state_flags')
     carrier_id = fields.Many2one("delivery.carrier", string="Carrier", tracking=True)
     batch_id = fields.Many2one(
@@ -145,6 +146,7 @@ class StockPicking(models.Model):
             if not invoice_ids:
                 invoice_ids = picking.sale_id.invoice_ids
             picking.invoice_ids = invoice_ids
+            picking.invoice_count = len(invoice_ids)
 
 
 
@@ -552,6 +554,64 @@ class StockPicking(models.Model):
             #         line.qty_done = line.product_uom_qty
 
         return super(StockPicking, self).button_validate()
+
+    def action_create_refund(self):
+        if all(len(line.invoice_line_ids) > 0 for line in self.move_lines):
+            raise ValidationError("All lines are invoiced")
+        journal = self.env['account.journal'].search([('company_id', '=', self.company_id.id), ('type', '=', 'sale')], limit=1)
+        vals = {
+            'ref': 'Credit Memo of: %s' % self.name,
+            'date': self.scheduled_date,
+            'invoice_date': self.scheduled_date,
+            'journal_id': journal and journal.id,
+            'invoice_user_id': self.user_id.id,
+            'invoice_origin':  self.origin,
+            'move_type': 'out_refund',
+            'partner_id': self.partner_id.id,
+            'fiscal_position_id': self.partner_id.property_account_position_id,
+            'partner_shipping_id': self.partner_id.id,
+            'invoice_address_id': self.partner_id.id,
+            'is_customer_return':True,
+        }
+        line_ids = []
+        sequence = 0
+        for move in self.move_lines:
+            accounts = move.product_id.product_tmpl_id.get_product_accounts()
+            line_ids.append((0, 0, {
+                'account_id': accounts['income'],
+                'sequence': sequence,
+                'name': move.name,
+                'quantity': move.product_uom_qty,
+                'price_unit':move.unit_price,
+                'amount_currency': move.unit_price,
+                'partner_id': self.partner_id.id,
+                'product_uom_id': move.product_uom.id,
+                'product_id': move.product_id.id,
+                'recompute_tax_line': True,
+                'stock_move_id': move.id,
+                 }))
+            sequence += 1
+        vals.update({'invoice_line_ids': line_ids})
+        refund = self.env['account.move'].create(vals)
+        action = self.env["ir.actions.actions"]._for_xml_id("account.action_move_out_refund_type")
+        form_view = [(self.env.ref('account.view_move_form').id, 'form')]
+        action['views'] = form_view
+        action['res_id'] = refund.id
+        return action
+
+    def action_view_invoice(self):
+        action = self.env["ir.actions.actions"]._for_xml_id("account.action_move_out_refund_type")
+        invoices = self.invoice_ids
+        if len(invoices) > 1:
+            action['domain'] = [('id', 'in', invoices.ids)]
+        elif len(invoices) == 1:
+            form_view = [(self.env.ref('account.view_move_form').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state, view) for state, view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
+            action['res_id'] = invoices.id
+        return action
 
     # @api.model
     # def reset_picking_with_route(self):

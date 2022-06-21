@@ -16,6 +16,7 @@ class AccountMove(models.Model):
     invoice_has_outstanding = fields.Boolean(search="_search_has_outstanding")
     out_standing_credit = fields.Float(compute='_compute_out_standing_credit', string="Out Standing")
     private_partner = fields.Boolean(string='Is Private', default=False,related='partner_id.private_partner')
+    is_customer_return = fields.Boolean(string='Customer Return')
 
     def _get_mail_template(self):
         """
@@ -328,6 +329,19 @@ class AccountMove(models.Model):
                 batch['format_values']['seq'] += 1
             batch['records']._compute_split_sequence()
         self.filtered(lambda m: not m.name).name = '/'
+    
+    
+    def _stock_account_prepare_anglo_saxon_out_lines_vals(self):
+        line_vals = super(AccountMove, self)._stock_account_prepare_anglo_saxon_out_lines_vals()
+        if any(self.mapped('is_customer_return')):
+            for line in line_vals:
+                if line.get('debit') > 0:
+                    product = self.env['product.product'].browse(line.get('product_id'))
+                    move = self.browse(line.get('move_id'))
+                    accounts = product.product_tmpl_id.get_product_accounts(fiscal_pos=move.fiscal_position_id)
+                    debit_interim_account = accounts['stock_input']
+                    line.update({'account_id': debit_interim_account.id})
+        return line_vals
 
 
 class AccountMoveLine(models.Model):

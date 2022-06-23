@@ -765,6 +765,16 @@ class SaleOrderLine(models.Model):
     scraped_qty = fields.Float(compute='_compute_scrape_qty', string='Quantity Scraped', store=False)
     date_planned = fields.Date(related='order_id.release_date', store=False, readonly=True, string='Date Planned')
     tax_domain_ids = fields.Many2many('account.tax', compute='_compute_tax_domain')
+    procure_method = fields.Selection(string='Supply Method', selection=[('make_to_stock', 'Take from stock'), ('make_to_order', 'Make to Order')],
+                                      compute="_compute_procure_method")
+
+    def _compute_procure_method(self):
+        for line in self:
+            line.procure_method = 'make_to_stock'
+            if 'make_to_order' in line.move_ids.mapped('move_orig_ids').mapped('procure_method'):
+                line.procure_method = 'make_to_order'
+
+
 
     @api.depends('invoice_lines.move_id.state', 'invoice_lines.quantity', 'untaxed_amount_to_invoice')
     def _compute_qty_invoiced(self):

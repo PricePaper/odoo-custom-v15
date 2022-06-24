@@ -22,15 +22,13 @@ class CostChangePercentage(models.TransientModel):
             domain = []
             if rec.vendor_id:
                 product_ids = self.env['product.supplierinfo'].search(
-                    [('name', '=', rec.vendor_id.id), ('product_id', '!=', False), '|', ('date_end', '=', False),
-                     ('date_end', '>', fields.Date.today())]).mapped('product_id')
+                    [('name', '=', rec.vendor_id.id), ('product_id', '!=', False)]).mapped('product_id')
                 domain.append(('id', 'in', product_ids.ids))
             if rec.category_id:
                 domain.append(('categ_id.id', 'child_of', rec.category_id.ids))
             products = self.env['product.product'].search(domain)
             if products:
                 product_ids = products
-
         for product in product_ids:
             vendor_res = product.seller_ids.filtered(lambda r: r.name == cost_change_parent.vendor_id)
             product_code = vendor_res.mapped('product_code')

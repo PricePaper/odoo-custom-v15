@@ -613,6 +613,34 @@ class StockPicking(models.Model):
             action['res_id'] = invoices.id
         return action
 
+    def reset_picking(self):
+        """
+        Cancel this picking and create a new one
+        link with sales order without cancelling the order
+        link with invoice and PO if any
+        """
+        # raise exception if more than one picking is there bcz we cannot handle multi
+        self.ensure_one()
+        print(self.state,self.transit_move_lines.mapped('procure_method') )
+        if self.state not in ('done', 'in_transit') and 'make_to_order' in self.transit_move_lines.mapped('procure_method'):
+            for move in self.transit_move_lines:
+                print(move.move_orig_ids.mapped('state'), move.move_orig_ids)
+                if move.move_orig_ids and 'done' not in  move.move_orig_ids.mapped('state') or move.created_purchase_line_id:
+                    line = move.move_dest_ids.mapped('sale_line_id')
+                    # move._action_cancel()
+                    # sale_line.with_context({'reset_po_line_id':move.created_purchase_line_id.id})._action_launch_stock_rule()
+                    print(move,line)
+                    qty = line._get_qty_procurement(False)
+                    group_id = line._get_procurement_group()
+                    values = line._prepare_procurement_values(group_id=group_id)
+                    procurements = [self.env['procurement.group'].Procurement(
+                        line.product_id, line.product_uom_qty, line.product_uom,
+                        line.order_id.partner_shipping_id.property_stock_customer,
+                        line.name, line.order_id.name, line.order_id.company_id, values)]
+                    self.env['procurement.group'].run(procurements)
+                    print(line.move_ids, move)
+                    if input('choice') == 'y':print(k)
+
     # @api.model
     # def reset_picking_with_route(self):
     #     picking = self.env['stock.picking'].search(

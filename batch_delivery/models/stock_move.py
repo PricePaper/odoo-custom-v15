@@ -415,14 +415,14 @@ class StockMove(models.Model):
                         location_id, location_src_id = location_src_id, location_id
                     move_vals = {
                         'name': move.name,
-                        'company_id': self.company_id.id,
+                        'company_id': move.company_id.id,
                         'product_id': move.product_id.id,
                         'product_uom': move.product_uom.id,
                         'product_uom_qty': abs(remining_qty),
                         'partner_id': move.partner_id.id,
                         'location_id': location_src_id.id,
                         'location_dest_id': location_id.id,
-                        'rule_id': self.rule_id.id,
+                        'rule_id': move.rule_id.id,
                         'procure_method': 'make_to_stock',
                         'origin': move.origin,
                         'picking_type_id': self.picking_type_id.id,
@@ -452,14 +452,14 @@ class StockMove(models.Model):
             if move.transit_picking_id and move.move_dest_ids:
                 move_vals = {
                     'name': move.name,
-                    'company_id': self.company_id.id,
+                    'company_id': move.company_id.id,
                     'product_id': move.product_id.id,
                     'product_uom': move.product_uom.id,
                     'product_uom_qty': move.product_uom_qty,
                     'partner_id': move.partner_id.id,
                     'location_id': move.location_dest_id.id,
                     'location_dest_id': move.location_id.id,
-                    'rule_id': self.rule_id.id,
+                    'rule_id': move.rule_id.id,
                     'procure_method': 'make_to_stock',
                     'origin': move.origin,
                     'picking_type_id': self.picking_type_id.id,

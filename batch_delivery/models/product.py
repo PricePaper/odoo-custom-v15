@@ -16,12 +16,26 @@ class Product(models.Model):
     @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done')
     def _compute_in_out_quantities(self):
         for product in self:
-            purchase_moves = product.stock_move_ids.filtered(lambda move: move.purchase_line_id and \
-                                                                          move.state not in ['cancel', 'done'])
+            # purchase_moves = product.stock_move_ids.filtered(lambda move: move.purchase_line_id and \
+            #                                                               move.state not in ['cancel', 'done'])
+            purchase_moves = self.env['stock.move'].search([('product_id', '=', product.id),
+                ('picking_code', '=', 'incoming'), ('state', 'not in', ('cancel', 'done')),
+                ('picking_id.is_return', '=', False),
+                ('picking_id.rma_id', '=', False)])
+            sale_moves = self.env['stock.move'].search([('product_id', '=', product.id),
+                ('picking_code', '=', 'outgoing'), ('state', 'not in', ('cancel', 'done')),
+                ('picking_id.is_return', '=', False),
+                ('picking_id.state', 'not in', ('in_transit', 'cancel', 'done')),
+                ('picking_id.rma_id', '=', False)])
             product_qty = 0
             for move in purchase_moves:
                 product_qty += move.product_qty
             product.in_qty = product_qty
+            product_qty = 0
+            for move in sale_moves:
+                product_qty += move.product_qty
+            product.out_qty = product_qty
+
 
 
     @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done')

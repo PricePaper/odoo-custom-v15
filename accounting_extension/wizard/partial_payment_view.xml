@@ -24,6 +24,7 @@
                                        domain="[('partner_id', '=', partner_id), ('payment_state', 'not in', ['paid', 'in_payment']), ('move_type', '=', 'out_invoice'), ('state', '=', 'posted')]"/>
                                 <field name="amount_residual"/>
                                 <field name="amount" sum="Total"/>
+                                <field name="discount"/>
                             </tree>
                         </field>
                         <footer class="oe_edit_only">

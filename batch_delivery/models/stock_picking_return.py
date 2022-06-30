@@ -18,7 +18,7 @@ class StockPickingReturn(models.Model):
         template = self.env.ref('batch_delivery.stock_return_notification_mail')
         email_context = {}
         mail_to = record.sales_person_ids.ids + record.picking_id.message_partner_ids.filtered(
-            lambda r: r.id not in [1, 2]).ids
+            lambda r: r.id not in [1, 2] and r.user_ids).ids
         if mail_to:
             email_context['partner_to'] = ','.join(map(str, set(mail_to)))
             email_context['return_date'] = fields.Date.today()
@@ -32,7 +32,7 @@ class StockPickingReturn(models.Model):
         record = super().create(vals)
         template = self.env.ref('batch_delivery.stock_return_notification_mail')
         email_context = {}
-        mail_to = record.sales_person_ids.ids + record.picking_id.message_partner_ids.filtered(lambda r: r.id not in [1, 2]).ids
+        mail_to = record.sales_person_ids.ids + record.picking_id.message_partner_ids.filtered(lambda r: r.id not in [1, 2] and r.user_ids).ids
         if mail_to:
             email_context['partner_to'] = ','.join(map(str, set(mail_to)))
             email_context['return_date'] = fields.Date.today()

@@ -2,6 +2,7 @@
 
 from odoo import models, fields, api, _
 from dateutil.relativedelta import relativedelta
+from odoo.exceptions import ValidationError
 
 
 class AccountInvoice(models.Model):
@@ -74,6 +75,9 @@ class AccountInvoice(models.Model):
                               and receipt.partner_id.parent_id.id \
                               or receipt.partner_id.id
         purchase = receipt.mapped('move_lines').mapped('purchase_line_id').mapped('order_id')
+
+        if not purchase:
+            raise ValidationError(_('Receipt Does not have any PO.'))
 
         invoice_vals = purchase.with_company(purchase.company_id)._prepare_invoice()
         invoice_vals['currency_id'] = self.line_ids and self.currency_id or invoice_vals.get('currency_id')

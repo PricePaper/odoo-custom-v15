@@ -14,7 +14,7 @@ class StockMoveLine(models.Model):
         res = super(StockMoveLine, self)._onchange_product_id()
         if self.product_id:
             product_loc_id = self.product_id.property_stock_location.id or self.product_id.categ_id.property_stock_location.id or ''
-            if self.location_id.usage == 'supplier':
+            if self.location_id.usage == 'supplier' and self.picking_id and not self.picking_id.is_customer_return:
                 self.location_dest_id = product_loc_id
             else:
                 self.location_id = product_loc_id

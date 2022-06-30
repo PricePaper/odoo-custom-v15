@@ -100,6 +100,15 @@ class AccountPayment(models.Model):
     _inherit = "account.payment"
 
     discount_move_id = fields.Many2one('account.move', 'Discount Move')
+    balance_to_pay  = fields.Float('Balance to register', compute="_compute_balance")
+
+    def _compute_balance(self):
+        for payment in self:
+            balance = sum(self.move_id.line_ids.filtered(lambda rec: rec.account_id.internal_type in ('receivable', 'payable')).mapped('amount_residual'))
+            # todo odoo's bug gives a -ve 0.06 value in Monetary fields until finding a solution added a temp fix
+            if abs(balance) == 0.06:
+                balance = 0.00
+            payment.balance_to_pay = balance
 
     def _get_valid_liquidity_accounts(self):
         result = super()._get_valid_liquidity_accounts()
@@ -226,6 +235,17 @@ class AccountPayment(models.Model):
         self = self - self.filtered(lambda rec: rec.date < self.company_id._get_user_fiscal_lock_date())
         return super(AccountPayment, self)._synchronize_from_moves(changed_fields)
 
-
+    def open_invoice_wizard(self):
+        res = self.env['partial.payment.invoice'].create({'payment_id': self.id})
+        return {
+            'name': 'Partial Payment',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'partial.payment.invoice',
+            'res_id': res.id,
+            # 'view_id': self.env.ref('price_paper.view_stock_move_over_processed_window').id,
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+        }
 
 AccountPayment()

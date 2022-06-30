@@ -111,6 +111,8 @@ class StockMove(models.Model):
                 move.unit_price = -move.price_unit
             elif move.picking_id.picking_type_id.code == 'incoming':
                 move.unit_price = move.price_unit
+            if move.picking_id.is_customer_return:
+                move.unit_price = move.product_id.standard_price
             if move.state != 'cancel':
                 move.total = move.unit_price * move.quantity_done
 

@@ -21,7 +21,7 @@ Sale Line Reports module implemented for Price Papers.
         'views/res_company_view.xml',
     ],
 
-    'depends': ['price_paper'],
+    'depends': ['sales_commission'],
     'installable': True,
     'auto_install': False,
     'application': False,

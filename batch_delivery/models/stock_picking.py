@@ -619,6 +619,7 @@ class StockPicking(models.Model):
         link with sales order without cancelling the order
         link with invoice and PO if any
         """
+        #todo if PO doen the orgin is not mapping in transit state.
         # raise exception if more than one picking is there bcz we cannot handle multi
         self.ensure_one()
         if self.state not in ('done', ''): #in_transit

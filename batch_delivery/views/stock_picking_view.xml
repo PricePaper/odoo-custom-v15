@@ -229,6 +229,10 @@
                             attrs="{'invisible': ['|',  ('state', '!=', 'done'), ('is_customer_return', '=', False)]}"
                             string="Create Refund" type="object" class="oe_highlight" groups="stock.group_stock_user, account.group_account_invoice"/>
                 </button>
+                <button name="action_cancel" position="after">
+                    <field name="show_reset" invisible="1"/>
+                    <button name="reset_picking" type="object" string="Reset Delivery" attrs="{'invisible': [('show_reset', '=',False)]}" groups="base.group_erp_manager"/>
+                </button>
                 <xpath expr="//button[@name='button_validate'][1]" position="attributes">
                   <attribute name="attrs">{'invisible':['|', '|',('picking_type_code', '!=', 'incoming'),('state', 'in', ('waiting','confirmed',
                       'done', 'cancel')), ('show_validate', '=', False)]}

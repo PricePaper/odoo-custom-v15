@@ -48,6 +48,13 @@ class StockPicking(models.Model):
     is_customer_return = fields.Boolean(string='Customer Return')
     transit_date = fields.Date()
     transit_move_lines = fields.One2many('stock.move', 'transit_picking_id', string="Stock Moves", copy=False)
+    show_reset = fields.Boolean('Show reset button',  compute="_compute_show_reset")
+
+    def _compute_show_reset(self):
+        for picking in self:
+            picking.show_reset = False
+            if picking.transit_move_lines.filtered(lambda rec: rec.procure_method == 'make_to_order') and self.state not in ('done', 'cancel'):
+                picking.show_reset = True
 
 
     def internal_move_from_customer_returned(self):
@@ -630,12 +637,19 @@ class StockPicking(models.Model):
             }
             #cancel the existing DO
             self.action_cancel()
-            #if the order is in locked satte we cannot make any changes so cahnge it to sale.
+            #if the order is in locked state we cannot make any changes so cahnge it to sale.
             previous_state = self.sale_id.state
             self.sale_id.write({'state': 'sale'})
             #create new DO
             for move in self.move_lines:
                 move.sale_line_id.with_context({'reset_po_line_id': po_id.get(move.id)})._action_launch_stock_rule()
+                new_move  = move.sale_line_id.move_ids.filtered(lambda rec: rec.state not in ('cancel', 'done'))
+                if new_move.move_orig_ids.procure_method == 'make_to_stock' and po_id.get(move.id)[1]:
+                    new_move.move_orig_ids.write({
+                        'procure_method': 'make_to_order',
+                        'move_orig_ids': [[6, 0, po_id.get(move.id)[1]]]
+                    })
+                    new_move._action_assign()
             self.sale_id.write({'state': previous_state})
 
         # if self.state not in ('done', 'in_transit') and 'make_to_order' in self.transit_move_lines.mapped('procure_method'):

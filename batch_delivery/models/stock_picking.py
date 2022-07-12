@@ -49,7 +49,6 @@ class StockPicking(models.Model):
     transit_date = fields.Date()
     transit_move_lines = fields.One2many('stock.move', 'transit_picking_id', string="Stock Moves", copy=False)
 
-
     def internal_move_from_customer_returned(self):
         location = self.env.user.company_id.destination_location_id
         quants = self.env['stock.quant'].search([('quantity', '>', 0.01), ('location_id', '=', location.id)])
@@ -400,7 +399,7 @@ class StockPicking(models.Model):
                     batch = self.env['stock.picking.batch'].create({'route_id': route_id})
                 picking.batch_id = batch
 
-                vals['is_late_order'] = batch.state == 'in_progress'
+                vals['is_late_order'] = batch.state in ('in_progress', 'in_truck')
             if 'route_id' in vals.keys() and not (
                     vals.get('route_id', False)) and picking.batch_id and picking.batch_id.state == 'draft':
                 vals.update({'batch_id': False})
@@ -423,7 +422,13 @@ class StockPicking(models.Model):
                                         'order_id':sale_order.id}
                                 order_line = self.env['sale.order.line'].create(sale_vals)
                             else:
+                                sale_flag = False
+                                if sale_order.state == 'done':
+                                    sale_order.write({'state': 'sale'})
+                                    sale_flag = True
                                 order_line.write({'product_uom_qty': 1,})
+                                if sale_flag:
+                                    sale_order.write({'state': 'done'})
                         if invoice:
                             invoice_line = invoice.mapped('invoice_line_ids').filtered(lambda r: r.product_id and r.product_id == late_product)
                             if not invoice_line:

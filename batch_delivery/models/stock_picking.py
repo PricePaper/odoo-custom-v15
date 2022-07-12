@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError,ValidationError
 from datetime import datetime
 from collections import defaultdict
+from odoo.tools import float_compare
+from odoo.tools.float_utils import float_round
 
 
 class StockPicking(models.Model):
@@ -35,6 +37,7 @@ class StockPicking(models.Model):
     is_invoiced = fields.Boolean(string="Invoiced", compute='_compute_state_flags')
     invoice_ref = fields.Char(string="Invoice Reference", compute='_compute_invoice_ref')
     invoice_ids = fields.Many2many('account.move', compute='_compute_invoice_ids')
+    invoice_count = fields.Integer('Invoice count', compute='_compute_invoice_ids')
     is_return = fields.Boolean(compute='_compute_state_flags')
     carrier_id = fields.Many2one("delivery.carrier", string="Carrier", tracking=True)
     batch_id = fields.Many2one(
@@ -42,8 +45,48 @@ class StockPicking(models.Model):
         states={'done': [('readonly', True)], 'cancel': [('readonly', True)]},
         help='Batch associated to this picking', copy=False, tracking=True)
     is_internal_transfer = fields.Boolean(string='Internal transfer')
+    is_customer_return = fields.Boolean(string='Customer Return')
     transit_date = fields.Date()
     transit_move_lines = fields.One2many('stock.move', 'transit_picking_id', string="Stock Moves", copy=False)
+
+
+    def internal_move_from_customer_returned(self):
+        location = self.env.user.company_id.destination_location_id
+        quants = self.env['stock.quant'].search([('quantity', '>', 0.01), ('location_id', '=', location.id)])
+        if quants:
+            vals = {'is_locked': True,
+                'picking_type_id': 5,
+                'is_internal_transfer': True,
+                'location_id': location.id,
+                'location_dest_id': location.id,
+                'move_type': 'direct',
+                'company_id': 1,
+                'partner_id': False,
+                'origin': False,
+                'owner_id': False,
+                }
+            internal_transfer = self.env['stock.picking'].create(vals)
+            for quant in quants:
+                if quant.product_id.property_stock_location:
+                    self.env['stock.move'].create({'product_id': quant.product_id.id,
+                                                   'picking_id': internal_transfer.id,
+                                                   'name': quant.product_id.name,
+                                                   'location_id': location.id,
+                                                   'product_uom': quant.product_id.uom_id.id,
+                                                   'location_dest_id': quant.product_id.property_stock_location.id,
+                                                   })
+            for transfer_move in internal_transfer.move_ids_without_package:
+                if float_round(transfer_move.qty_to_transfer, 2) > 0:
+                    transfer_move.product_uom_qty = transfer_move.qty_to_transfer
+                    internal_transfer.action_confirm()
+                    internal_transfer.action_assign()
+                    transfer_move.move_line_ids.qty_done =  transfer_move.product_uom_qty
+                    internal_transfer.button_validate()
+                else:
+                    transfer_move.unlink()
+            if not internal_transfer.move_ids_without_package:
+                internal_transfer.unlink()
+        return True
 
     @api.depends('state')
     def _compute_show_validate(self):
@@ -103,6 +146,7 @@ class StockPicking(models.Model):
             if not invoice_ids:
                 invoice_ids = picking.sale_id.invoice_ids
             picking.invoice_ids = invoice_ids
+            picking.invoice_count = len(invoice_ids)
 
 
 
@@ -115,7 +159,9 @@ class StockPicking(models.Model):
     @api.depends('move_lines.reserved_availability')
     def _compute_available_qty(self):
         for pick in self:
-            moves = pick.mapped('move_lines').filtered(lambda move: move.state != 'cancel')
+            moves = pick.mapped('transit_move_lines').filtered(lambda move: move.state != 'cancel')
+            if pick.state == 'in_transit':
+                moves = pick.mapped('move_lines').filtered(lambda move: move.state != 'cancel')
             pick.reserved_qty = sum(moves.mapped('forecast_availability'))
             pick.low_qty_alert = pick.item_count != pick.reserved_qty and pick.state != 'done'
 
@@ -248,8 +294,9 @@ class StockPicking(models.Model):
                     if picking.batch_id:
                         picking.sale_id.write({'delivery_date': picking.batch_id.date})
                     continue
-                for line in picking.transit_move_lines:
-                    line.quantity_done = line.reserved_availability
+                if not any(picking.transit_move_lines.mapped('quantity_done')):
+                    for line in picking.transit_move_lines.filtered(lambda r: r.state not in ('cancel', 'done')):
+                        line.quantity_done = line.reserved_availability
                 if not any(picking.transit_move_lines.mapped('quantity_done')):
                     raise UserError("You cannot transit if no quantities are  done.\nTo force the transit, switch in edit mode and encode the done quantities.")
                 picking.transit_move_lines.filtered(lambda rec: rec.quantity_done > 0).with_context(is_transit=True)._action_done(cancel_backorder=True)
@@ -266,12 +313,29 @@ class StockPicking(models.Model):
 
     @api.model
     def default_get(self, default_fields):
+        """
+        set appropraite picking type from context
+        """
         result = super(StockPicking, self).default_get(default_fields)
         if self._context.get('from_internal_transfer_action'):
             picking_type = self.env['stock.picking.type'].search([('code', '=', 'internal'), ('name', '=', 'Internal Transfers')], limit=1)
             if picking_type:
                 result['picking_type_id'] = picking_type.id
+        elif self._context.get('from_is_customer_return_action'):
+            picking_type = self.env['stock.picking.type'].search([('code', '=', 'incoming')], limit=1)
+            if picking_type:
+                result['picking_type_id'] = picking_type.id
         return result
+
+    @api.onchange('picking_type_id', 'partner_id')
+    def _onchange_picking_type(self):
+        """
+        set location_dest_id for the customer retun receipt
+        """
+        result = super(StockPicking, self)._onchange_picking_type()
+        if self.is_customer_return and self.env.user.company_id.destination_location_id:
+            self.location_dest_id = self.env.user.company_id.destination_location_id.id
+
 
     # def action_validate(self):
     #     self.ensure_one()
@@ -494,6 +558,13 @@ class StockPicking(models.Model):
                 'backorder_confirmation_line_ids': [(0, 0, {'to_backorder': True, 'picking_id': p.id}) for p in picking]
             }).process_cancel_backorder()
 
+    def _get_overprocessed_stock_moves(self):
+        self.ensure_one()
+        return self.move_lines.filtered(
+            lambda move: move.product_uom_qty != 0 and float_compare(move.quantity_done, move.product_uom_qty,
+                                                                     precision_rounding=move.product_uom.rounding) == 1
+        )
+
     def button_validate(self):
         """
         if there are movelines with reserved quantities
@@ -507,6 +578,22 @@ class StockPicking(models.Model):
                     raise UserError(
                         "This Delivery for product %s is supposed to use products from the lot %s please clear the Preferred Lot field to override" % (
                             line.product_id.name, line.pref_lot_id.name))
+        if self.picking_type_id.code == 'incoming' and not self.is_return:
+            if self._get_overprocessed_stock_moves() and not self._context.get('skip_overprocessed_check'):
+                view = self.env.ref('batch_delivery.view_overprocessed_transfer')
+                wiz = self.env['stock.overprocessed.transfer'].create({'picking_id': self.id})
+                return {
+                    'type': 'ir.actions.act_window',
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'res_model': 'stock.overprocessed.transfer',
+                    'views': [(view.id, 'form')],
+                    'view_id': view.id,
+                    'target': 'new',
+                    'res_id': wiz.id,
+                    'context': self.env.context,
+                }
+
             # todo not need this methods now.
             # no_quantities_done_lines = self.move_line_ids.filtered(lambda l: l.qty_done == 0.0 and not l.is_transit)
             # for line in no_quantities_done_lines:
@@ -514,6 +601,64 @@ class StockPicking(models.Model):
             #         line.qty_done = line.product_uom_qty
 
         return super(StockPicking, self).button_validate()
+
+    def action_create_refund(self):
+        if all(len(line.invoice_line_ids.filtered(lambda rec: rec.move_id.state != 'cancel')) > 0 for line in self.move_lines):
+            raise ValidationError("All lines are invoiced")
+        journal = self.env['account.journal'].search([('company_id', '=', self.company_id.id), ('type', '=', 'sale')], limit=1)
+        vals = {
+            'ref': 'Credit Memo of: %s' % self.name,
+            'date': self.scheduled_date,
+            'invoice_date': self.scheduled_date,
+            'journal_id': journal and journal.id,
+            'invoice_user_id': self.user_id.id,
+            'invoice_origin':  self.origin,
+            'move_type': 'out_refund',
+            'partner_id': self.partner_id.id,
+            'fiscal_position_id': self.partner_id.property_account_position_id,
+            'partner_shipping_id': self.partner_id.id,
+            'invoice_address_id': self.partner_id.id,
+            'is_customer_return':True,
+        }
+        line_ids = []
+        sequence = 0
+        for move in self.move_lines:
+            accounts = move.product_id.product_tmpl_id.get_product_accounts()
+            line_ids.append((0, 0, {
+                'account_id': accounts['income'],
+                'sequence': sequence,
+                'name': move.name,
+                'quantity': move.product_uom_qty,
+                'price_unit':move.unit_price,
+                'amount_currency': move.unit_price,
+                'partner_id': self.partner_id.id,
+                'product_uom_id': move.product_uom.id,
+                'product_id': move.product_id.id,
+                'recompute_tax_line': True,
+                'stock_move_id': move.id,
+                 }))
+            sequence += 1
+        vals.update({'invoice_line_ids': line_ids})
+        refund = self.env['account.move'].create(vals)
+        action = self.env["ir.actions.actions"]._for_xml_id("account.action_move_out_refund_type")
+        form_view = [(self.env.ref('account.view_move_form').id, 'form')]
+        action['views'] = form_view
+        action['res_id'] = refund.id
+        return action
+
+    def action_view_invoice(self):
+        action = self.env["ir.actions.actions"]._for_xml_id("account.action_move_out_refund_type")
+        invoices = self.invoice_ids
+        if len(invoices) > 1:
+            action['domain'] = [('id', 'in', invoices.ids)]
+        elif len(invoices) == 1:
+            form_view = [(self.env.ref('account.view_move_form').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state, view) for state, view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
+            action['res_id'] = invoices.id
+        return action
 
     # @api.model
     # def reset_picking_with_route(self):

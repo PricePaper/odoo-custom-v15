@@ -25,6 +25,7 @@ class PendingProductView(models.TransientModel):
         """
         generate emails for individual (sales followers) who having pending product moves.
         """
+
         recipient_ids = self.pending_line_ids.mapped('followers')
         mail_template = self.env.ref('batch_delivery.email_price_paper_pending_product_mail')
         mail_group = {}
@@ -35,6 +36,27 @@ class PendingProductView(models.TransientModel):
         for rep, moves in mail_group.items():
             mail_template.with_context({'summery_list': moves, 'partner_email': rep.email}).send_mail(rep.id,
                                                                                                       force_send=True)
+
+        if self.pending_line_ids:
+            pending_products = self.pending_line_ids.mapped('product_id')
+            product_moves = self.env['stock.move']
+            if self.batch_ids:
+                records = self.batch_ids.mapped('picking_ids').filtered(lambda pick: pick.state not in ['done', 'cancel', 'in_transit']). \
+                    mapped('transit_move_lines')
+                records += self.batch_ids.mapped('picking_ids').filtered(lambda pick: pick.state in ['in_transit']). \
+                    mapped('move_lines')
+                product_moves = records.filtered(lambda r: r.product_id in pending_products)
+            elif self.picking_ids:
+                records = self.picking_ids.\
+                    filtered(lambda pick: pick.state not in ['done', 'cancel']). \
+                    mapped('move_lines').filtered(lambda l: l.product_uom_qty != l.reserved_availability)
+                product_moves = records.filtered(lambda r: r.product_id in pending_products)
+            if product_moves:
+                recipients = self.env['helpdesk.team'].search([('name', '=', 'Purchase Team')]).mapped('member_ids').mapped('email')
+                recipients = ",".join(recipients)
+                mail_template1 = self.env.ref('batch_delivery.email_price_paper_pending_product_master_mail')
+                mail_template1.with_context({'summery_list': product_moves, 'partner_email': recipients}).send_mail(self.env.user.id,
+                                                                                                          force_send=True)
 
     @api.model
     def default_get(self, fields_list):
@@ -47,15 +69,18 @@ class PendingProductView(models.TransientModel):
                     mapped('move_lines').filtered(lambda l: l.product_uom_qty != l.reserved_availability)
             elif self._context.get('default_batch_ids'):
                 records = self.env['stock.picking.batch'].browse(self._context.get('default_batch_ids')). \
-                    mapped('picking_ids').filtered(lambda pick: pick.state not in ['done', 'cancel']). \
+                    mapped('picking_ids').filtered(lambda pick: pick.state not in ['done', 'cancel', 'in_transit']). \
                     mapped('transit_move_lines').filtered(lambda l: l.product_uom_qty != l.reserved_availability)
+                records += self.env['stock.picking.batch'].browse(self._context.get('default_batch_ids')). \
+                    mapped('picking_ids').filtered(lambda pick: pick.state in ['in_transit']). \
+                    mapped('move_lines').filtered(lambda l: l.product_uom_qty != l.reserved_availability)
 
             res['pending_line_ids'] = [(0, 0, {
                 'product_id': move.product_id.id,
                 'product_uom_qty': move.product_uom_qty,
                 'reserved_available_qty': move.reserved_availability,
                 'product_uom': move.product_uom.id,
-                'picking_id': move.transit_picking_id.id,
+                'picking_id': move.transit_picking_id.id if move.transit_picking_id else move.picking_id.id,
                 'followers': [(6, 0, move.group_id.sale_id.message_partner_ids.filtered(lambda u: u.user_ids).ids)],
                 'same_product_ids': [(6, 0, move.product_id.same_product_ids.ids)]
             }) for move in records]

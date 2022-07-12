@@ -174,6 +174,20 @@
                   parent="stock.menu_stock_warehouse_mgmt"
                   sequence="9"/>
 
+        <record id="view_picking_form_inherit_svl" model="ir.ui.view">
+            <field name="name">stock.picking.batch.delivery</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock_account.stock_valuation_layer_picking"/>
+            <field name="arch" type="xml">
+                <button name="action_view_stock_valuation_layers" position="after">
+                    <button type="object" name="action_view_invoice"
+                            class="oe_stat_button" icon="fa-pencil-square-o" groups="account.group_account_invoice"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['done']), ('invoice_count','=', 0)]}">
+                        <field name="invoice_count" widget="statinfo" string="Invoices"/>
+                    </button>
+                </button>
+            </field>
+        </record>
 
         <record id="view_picking_form_inherit_price_paper" model="ir.ui.view">
             <field name="name">stock.picking.batch.delivery</field>
@@ -186,6 +200,7 @@
                 </button>
                 <button name="button_validate" position="after">
                     <field name="is_return" invisible="1"/>
+                    <field name="invoice_ids" invisible="1"/>
                     <button name="action_assign_transit" type="object"
                       string="check availability" class="oe_highlight"
                       attrs="{'invisible': ['|', '|',  ('state', 'in', ['done', 'cancel', 'in_transit']),
@@ -210,6 +225,9 @@
                     <button name="action_validate_internal"
                             attrs="{'invisible': ['|', '|', ('state', 'in', ('waiting','confirmed')), ('show_validate', '=', False), ('picking_type_code', '!=', 'internal')]}"
                             string="Validate" type="object" class="oe_highlight" groups="stock.group_stock_user, account.group_account_invoice"/>
+                    <button name="action_create_refund"
+                            attrs="{'invisible': ['|',  ('state', '!=', 'done'), ('is_customer_return', '=', False)]}"
+                            string="Create Refund" type="object" class="oe_highlight" groups="stock.group_stock_user, account.group_account_invoice"/>
                 </button>
                 <xpath expr="//button[@name='button_validate'][1]" position="attributes">
                   <attribute name="attrs">{'invisible':['|', '|',('picking_type_code', '!=', 'incoming'),('state', 'in', ('waiting','confirmed',
@@ -256,6 +274,7 @@
                     <attribute name="invisible">True</attribute>
                 </field>
                 <field name="picking_type_id" position="after">
+                    <field name='is_customer_return' invisible='1'/>
                     <field name="location_dest_id" groups="stock.group_stock_multi_locations" required='1'
                            attrs="{'invisible': [('picking_type_code', '=', 'outgoing')]}"
                            domain="['|', ('company_id', '=', company_id), ('company_id', '=', False)]"/>
@@ -392,7 +411,7 @@
                 </xpath>
 
                 <xpath expr="//form/sheet/notebook/page[3]/field[@name='move_ids_without_package']/tree/field[@name='location_dest_id']" position="replace">
-                     <field name="location_dest_id" attrs="{'column_invisible': [('parent.picking_type_code', '=', 'outgoing')]}" readonly="1"/>
+                     <field name="location_dest_id" attrs="{'column_invisible': [('parent.picking_type_code', '=', 'outgoing')]}" readonly="1" force_save='1'/>
                  </xpath>
                  <xpath expr="//form/sheet/notebook/page[3]/field[@name='move_ids_without_package']/tree/field[@name='location_id']" position="before">
                      <xpath expr="//form/sheet/notebook/page[3]/field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="move"/>
@@ -669,15 +688,34 @@
             <field name="act_window_id" ref="action_picking_tree_all_internal_transfers"/>
         </record>
 
-               <record model="ir.actions.act_window.view" id="action_stock_picking_internal_tranfer_form">
-                   <field name="sequence" eval="2"/>
-                   <field name="view_mode">form</field>
-                   <field name="view_id" ref="batch_delivery.view_picking_internal_tranfer_form"/>
-                   <field name="act_window_id" ref="action_picking_tree_all_internal_transfers"/>
-               </record>
+         <record model="ir.actions.act_window.view" id="action_stock_picking_internal_tranfer_form">
+             <field name="sequence" eval="2"/>
+             <field name="view_mode">form</field>
+             <field name="view_id" ref="batch_delivery.view_picking_internal_tranfer_form"/>
+             <field name="act_window_id" ref="action_picking_tree_all_internal_transfers"/>
+         </record>
 
         <menuitem id="all_internal_picking" name="Internal Transfers" parent="stock.menu_stock_warehouse_mgmt" sequence="6"
                   action="action_picking_tree_all_internal_transfers" groups="stock.group_stock_manager,stock.group_stock_user"/>
+
+        <record id="action_picking__customer_return" model="ir.actions.act_window">
+            <field name="name">Customer return</field>
+            <field name="res_model">stock.picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,kanban,form,calendar</field>
+            <field name="domain">[('is_customer_return', '=', True)]</field>
+            <field name="context">{'default_is_customer_return': True, 'contact_display': 'partner_address', 'default_company_id': allowed_company_ids[0], 'from_is_customer_return_action': True}</field>
+            <field name="search_view_id" ref="stock.view_picking_internal_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No transfer found. Let's create one!
+                </p><p>
+                    Transfers allow you to move products from one location to another.
+                </p>
+            </field>
+        </record>
+        <menuitem id="customer_return_receipt" name="Customer Return" parent="stock.menu_stock_warehouse_mgmt" sequence="6"
+            action="action_picking__customer_return" groups="stock.group_stock_manager"/>
 
 
     </data>

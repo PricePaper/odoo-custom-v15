@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_partial_payment_invoice" model="ir.ui.view">
+            <field name="name">partial.payment.invoice</field>
+            <field name="model">partial.payment.invoice</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="balance_to_pay"/>
+                            </group>
+                            <group>
+                                <field name="amount_total"/>
+                            </group>
+                        <field name="payment_id" invisible="1"/>
+                        </group>
+                        <label for="partial_lines" string="Select Invoice and amount"/>
+                        <field name="partial_lines">
+                            <tree editable="bottom">
+                                <field name="partner_id"/>
+                                <field name="invoice_id"
+                                       domain="[('partner_id', '=', partner_id), ('payment_state', 'not in', ['paid', 'in_payment']), ('move_type', '=', 'out_invoice'), ('state', '=', 'posted')]"/>
+                                <field name="amount_residual"/>
+                                <field name="amount" sum="Total"/>
+                                <field name="discount"/>
+                            </tree>
+                        </field>
+                        <footer class="oe_edit_only">
+                            <button string="Register Payment" type="object" name="add_payment" class="btn-success"/>
+                            or
+                            <button string="Discard" special="cancel" class="btn-danger"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,5 +1,19 @@
 <odoo>
     <data>
+
+        <record forcecreate="True" id="ir_cron_internal_move_from_customer_returned" model="ir.cron">
+            <field name="name">Internal Move: customer returned to product location</field>
+            <field name="model_id" ref="model_stock_picking"/>
+            <field name="state">code</field>
+            <field name="code">model.internal_move_from_customer_returned()</field>
+            <field eval="True" name="active"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field eval="False" name="doall"/>
+        </record>
+
         <record id="default_stock_picking_return_reason" model="stock.picking.return.reason">
             <field name="name">we're short inventory</field>
         </record>
@@ -255,5 +269,152 @@
           </function>
           <value eval="{'noupdate': True}"/>
         </function>
+
+        <record id="email_price_paper_pending_product_master_mail" model="mail.template">
+            <field name="name">Pending Product Master Mail: PricePaper</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="subject">Master Summary of Pending Products</field>
+            <field name="email_from">{{(user.email or '')}}</field>
+            <field name="email_to">{{ctx['partner_email']}}</field>
+            <field name="body_html" type="html">
+                <table border="0" cellpadding="0" cellspacing="0"
+                       style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+                    <tr>
+                        <td align="center">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                   style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                                <tbody>
+                                    <!-- HEADER -->
+                                    <tr>
+                                        <td align="center" style="min-width: 590px;">
+                                            <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                                   style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
+                                                <tr>
+                                                    <td valign="middle">
+                                                        <span style="font-size: 20px;">Summary</span>
+                                                        <br/>
+                                                    </td>
+                                                    <td valign="middle" align="right">
+                                                        <img src="/logo.png?company={{user.company_id.id}}"
+                                                             style="padding: 0px; margin: 0px; height: auto; width: 80px;"
+                                                             t-att-alt="'%s' % user.company_id.name"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2" style="text-align:center;">
+                                                        <hr width="100%"
+                                                            style="background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;"/>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <!-- CONTENT -->
+                                    <tr>
+                                        <td colspan="99"
+                                            style="padding: 10px; border-bottom: solid 1px;font-size:25px;">
+                                            <strong>All Moves</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 100%;">
+                                            <table border="0" cellpadding="2" cellspacing="2" width="100%"
+                                                   style="background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
+                                                <tr valign="top" style="font-size: 12px;">
+                                                    <th style="border-bottom: 1px solid black;">Product</th>
+                                                    <th style="border-bottom: 1px solid black;">Customer</th>
+                                                    <th style="border-bottom: 1px solid black;">Customer Rank(3month)</th>
+                                                    <th style="border-bottom: 1px solid black;">Ordered Qty</th>
+                                                    <th style="border-bottom: 1px solid black;">Available Qty</th>
+                                                    <th style="border-bottom: 1px solid black;">Product UOM</th>
+                                                    <th style="border-bottom: 1px solid black;">SO number</th>
+
+                                                </tr>
+                                                <t t-if="ctx.get('summery_list',[])">
+                                                    <t t-foreach="ctx.get('summery_list').sorted(key=lambda r: r.product_id.display_name)" t-as="line">
+                                                      <tr valign="top" style="font-size: 11px;">
+                                                          <td t-out="line.product_id.display_name"/>
+                                                          <t t-if='line.transit_picking_id'>
+                                                              <td t-out="line.transit_picking_id.sale_id.partner_id.name"/>
+                                                          </t>
+                                                          <t t-if='line.picking_id'>
+                                                              <td t-out="line.picking_id.sale_id.partner_id.name"/>
+                                                          </t>
+                                                          <t t-if='line.transit_picking_id'>
+                                                              <td t-out="line.transit_picking_id.sale_id.partner_id.rnk_lst_3_mon"/>
+                                                          </t>
+                                                          <t t-if='line.picking_id'>
+                                                              <td t-out="line.picking_id.sale_id.partner_id.rnk_lst_3_mon"/>
+                                                          </t>
+                                                          <td t-out="line.product_uom_qty"/>
+                                                          <td t-out="line.reserved_availability"/>
+                                                          <td t-out="line.product_uom.display_name"/>
+                                                          <t t-if='line.transit_picking_id'>
+                                                              <td t-out="line.transit_picking_id.sale_id.display_name"/>
+                                                          </t>
+                                                          <t t-if='line.picking_id'>
+                                                              <td t-out="line.picking_id.sale_id.display_name"/>
+                                                          </t>
+                                                       </tr>
+                                                    </t>
+                                                </t>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:center;">
+                                            <hr width="100%"
+                                                style="background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;"/>
+                                        </td>
+                                    </tr>
+                                    <!-- FOOTER -->
+                                    <tr>
+                                        <td style="min-width: 590px;" align="center">
+                                            <table style="min-width: 590px; background-color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;"
+                                                   width="590" cellspacing="0" cellpadding="0" border="0">
+                                                <tr>
+                                                    <td valign="middle" align="left">
+                                                        <t t-out="object.company_id.name or ''" data-oe-t-inline="true"
+                                                           contenteditable="false">YourCompany
+                                                        </t>
+                                                        <br/>
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td style="opacity: 0.7;" valign="middle" align="left">
+                                                        <t t-out="user.company_id.phone or ''" data-oe-t-inline="true"
+                                                           contenteditable="false"/>
+                                                        <t t-if="user.company_id.email" data-oe-t-group="1"
+                                                           data-oe-t-group-active="true" data-oe-t-inline="true">
+                                                            |
+                                                            <a t-attf-href="'mailto:%s' % {{ user.company_id.email }}"
+                                                               style="text-decoration:none; color: #454748;">
+                                                                <t t-out="user.company_id.email or ''"
+                                                                   data-oe-t-inline="true" contenteditable="false"/>
+                                                            </a>
+                                                        </t>
+                                                        <t t-if="user.company_id.website" data-oe-t-group="2"
+                                                           data-oe-t-group-active="true" data-oe-t-inline="true">
+                                                            |
+                                                            <a t-attf-href="'%s' % {{ user.company_id.website }}"
+                                                               style="text-decoration:none; color: #454748;">
+                                                                <t t-out="user.company_id.website or ''"
+                                                                   data-oe-t-inline="true" contenteditable="false"/>
+                                                            </a>
+                                                        </t>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
     </data>
 </odoo>

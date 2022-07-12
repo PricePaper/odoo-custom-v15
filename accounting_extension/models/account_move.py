@@ -11,6 +11,14 @@ class AccountMove(models.Model):
     # field used in search view
     discount_date = fields.Date('Discount Till')
 
+    @api.onchange('invoice_date', 'highest_name', 'company_id')
+    def _onchange_invoice_date(self):
+        super(AccountMove, self)._onchange_invoice_date()
+        if self.invoice_date and self.move_type in ['in_invoice', 'in_refund']:
+            user_lock_date = self.company_id._get_user_fiscal_lock_date()
+            if self.invoice_date > user_lock_date:
+                self.date = self.invoice_date
+
     def button_draft(self):
         executed_ids = self.env['account.move']
         for move in self.filtered(lambda r: r.move_type != 'entry'):
@@ -166,6 +174,142 @@ class AccountMoveLine(models.Model):
                 raise UserError(_('You can only reconcile posted entries. %s' % line.move_id.name))
         return super(AccountMoveLine, self).reconcile()
 
+
+
+    def _prepare_reconciliation_partials(self):
+        """
+            Override to split the payment
+            calling from partial payment wizard
+        """
+
+        if not self._context.get('is_partial_payment', False):
+            return super(AccountMoveLine, self)._prepare_reconciliation_partials()
+        # amount = self._context.get('partial_amount')
+        def fix_remaining_cent(currency, abs_residual, partial_amount):
+            if abs_residual - currency.rounding <= partial_amount <= abs_residual + currency.rounding:
+                return abs_residual
+            else:
+                return partial_amount
+
+        debit_lines = iter(self.filtered(lambda line: line.balance > 0.0 or line.amount_currency > 0.0))
+        credit_lines = iter(self.filtered(lambda line: line.balance < 0.0 or line.amount_currency < 0.0))
+        debit_line = None
+        credit_line = None
+
+        debit_amount_residual = 0.0
+        debit_amount_residual_currency = 0.0
+        credit_amount_residual = 0.0
+        credit_amount_residual_currency = 0.0
+        debit_line_currency = None
+        credit_line_currency = None
+
+        partials_vals_list = []
+
+        while True:
+
+            # Move to the next available debit line.
+            if not debit_line:
+                debit_line = next(debit_lines, None)
+                if not debit_line:
+                    break
+                debit_amount_residual = self._context.get('partial_amount')#debit_line.amount_residual
+
+                if debit_line.currency_id:
+                    debit_amount_residual_currency = self._context.get('partial_amount')#debit_line.amount_residual_currency
+                    debit_line_currency = debit_line.currency_id
+                else:
+                    debit_amount_residual_currency = debit_amount_residual
+                    debit_line_currency = debit_line.company_currency_id
+
+            # Move to the next available credit line.
+            if not credit_line:
+                credit_line = next(credit_lines, None)
+                if not credit_line:
+                    break
+                credit_amount_residual = credit_line.amount_residual
+
+                if credit_line.currency_id:
+                    credit_amount_residual_currency = credit_line.amount_residual_currency
+                    credit_line_currency = credit_line.currency_id
+                else:
+                    credit_amount_residual_currency = credit_amount_residual
+                    credit_line_currency = credit_line.company_currency_id
+
+            min_amount_residual = min(debit_amount_residual, -credit_amount_residual)
+            has_debit_residual_left = not debit_line.company_currency_id.is_zero(debit_amount_residual) and debit_amount_residual > 0.0
+            has_credit_residual_left = not credit_line.company_currency_id.is_zero(credit_amount_residual) and credit_amount_residual < 0.0
+            has_debit_residual_curr_left = not debit_line_currency.is_zero(debit_amount_residual_currency) and debit_amount_residual_currency > 0.0
+            has_credit_residual_curr_left = not credit_line_currency.is_zero(credit_amount_residual_currency) and credit_amount_residual_currency < 0.0
+            if debit_line_currency == credit_line_currency:
+                # Reconcile on the same currency.
+
+                # The debit line is now fully reconciled because:
+                # - either amount_residual & amount_residual_currency are at 0.
+                # - either the credit_line is not an exchange difference one.
+                if not has_debit_residual_curr_left and (has_credit_residual_curr_left or not has_debit_residual_left):
+                    debit_line = None
+                    continue
+
+                # The credit line is now fully reconciled because:
+                # - either amount_residual & amount_residual_currency are at 0.
+                # - either the debit is not an exchange difference one.
+                if not has_credit_residual_curr_left and (has_debit_residual_curr_left or not has_credit_residual_left):
+                    credit_line = None
+                    continue
+
+                min_amount_residual_currency = min(debit_amount_residual_currency, -credit_amount_residual_currency)
+                min_debit_amount_residual_currency = min_amount_residual_currency
+                min_credit_amount_residual_currency = min_amount_residual_currency
+
+            else:
+                # Reconcile on the company's currency.
+
+                # The debit line is now fully reconciled since amount_residual is 0.
+                if not has_debit_residual_left:
+                    debit_line = None
+                    continue
+
+                # The credit line is now fully reconciled since amount_residual is 0.
+                if not has_credit_residual_left:
+                    credit_line = None
+                    continue
+
+                min_debit_amount_residual_currency = credit_line.company_currency_id._convert(
+                    min_amount_residual,
+                    debit_line.currency_id,
+                    credit_line.company_id,
+                    credit_line.date,
+                )
+                min_debit_amount_residual_currency = fix_remaining_cent(
+                    debit_line.currency_id,
+                    debit_amount_residual_currency,
+                    min_debit_amount_residual_currency,
+                )
+                min_credit_amount_residual_currency = debit_line.company_currency_id._convert(
+                    min_amount_residual,
+                    credit_line.currency_id,
+                    debit_line.company_id,
+                    debit_line.date,
+                )
+                min_credit_amount_residual_currency = fix_remaining_cent(
+                    credit_line.currency_id,
+                    -credit_amount_residual_currency,
+                    min_credit_amount_residual_currency,
+                )
+
+            debit_amount_residual -= min_amount_residual
+            debit_amount_residual_currency -= min_debit_amount_residual_currency
+            credit_amount_residual += min_amount_residual
+            credit_amount_residual_currency += min_credit_amount_residual_currency
+
+            partials_vals_list.append({
+                'amount': min_amount_residual,
+                'debit_amount_currency': min_debit_amount_residual_currency,
+                'credit_amount_currency': min_credit_amount_residual_currency,
+                'debit_move_id': debit_line.id,
+                'credit_move_id': credit_line.id,
+            })
+        return partials_vals_list
 
 
 """

@@ -2,6 +2,17 @@
 <odoo>
     <data>
 
+        <record id="view_account_journal_form_inherited_price_paper" model="ir.ui.view">
+            <field name="name">account.journal.form.inherited.price</field>
+            <field name="model">account.journal</field>
+            <field name="inherit_id" ref="account.view_account_journal_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='suspense_account_id']" position="after">
+                  <field name="old_outstanding_receipt_id" groups="base.group_no_one"/>
+                </xpath>
+            </field>
+        </record>
+
         <record id="view_account_payment_form_inherited_price_paper" model="ir.ui.view">
             <field name="name">account.payment.form.inherited</field>
             <field name="model">account.payment</field>
@@ -11,7 +22,9 @@
                     <attribute name="attrs">{'invisible': ['|', ('is_move_sent', '!=', True), ('is_reconciled', '=', True)]}</attribute>
                 </xpath>
                 <xpath expr="//button[@name='print_checks']" position="before">
-                  <button name="mark_as_sent" class="oe_highlight" attrs="{'invisible': ['|', '|', ('payment_method_code', '!=', 'check_printing'), ('state', '!=', 'posted'), ('is_move_sent', '=', True)]}" string="Mark as Sent" type="object" />
+                    <button name="mark_as_sent" class="oe_highlight" attrs="{'invisible': ['|', '|', ('payment_method_code', '!=', 'check_printing'), ('state', '!=', 'posted'), ('is_move_sent', '=', True)]}" string="Mark as Sent" type="object" />
+                    <field name="balance_to_pay" invisible="1"/>
+                    <button name="open_invoice_wizard" type="object" string="Add to invoice" attrs="{'invisible': ['|', ('payment_type', '=', 'outbound'), ('balance_to_pay', '=', 0)]}"/>
                 </xpath>
             </field>
         </record>

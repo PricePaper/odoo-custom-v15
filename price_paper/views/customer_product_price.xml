@@ -12,6 +12,7 @@
                     <field name="price"/>
                     <field name="price_last_updated"/>
                     <field name="expiry_date"/>
+                    <field name="active"/>
                     <field name="price_lock"/>
                     <field name="lock_expiry_date"
                            attrs="{'required': [('price_lock', '=', True)], 'invisible': [('price_lock', '=', False)]}"/>
@@ -52,6 +53,7 @@
                                        attrs="{'required': [('price_lock', '=', True)], 'invisible': [('price_lock', '=', False)]}"/>
                             </group>
                             <group>
+                                <field name="active"/>
                                 <field name="product_id" required='1'/>
                                 <field name="product_uom" required='1'/>
                                 <field name="price" required='1'/>

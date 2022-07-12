@@ -19,11 +19,11 @@ class GenerateDiscountCheck(models.TransientModel):
         if self.start_date and self.end_date:
             vendor_bills = self.env['account.move'].search([('move_type', '=', 'in_invoice'), ('state', '=', 'posted'),
                                                             ('payment_state', 'not in', ('in_payment', 'paid')),
-                                                            ('discount_due_date', '>', self.start_date),
-                                                            ('discount_due_date', '<', self.end_date)])
+                                                            ('discount_due_date', '>=', self.start_date),
+                                                            ('discount_due_date', '<=', self.end_date)])
             vendor_bills |= self.env['account.move'].search(
                 [('move_type', '=', 'in_invoice'), ('payment_state', 'not in', ('in_payment', 'paid')),
-                 ('state', '=', 'posted'), ('invoice_date', '>', self.start_date), ('invoice_date', '<', self.end_date),
+                 ('state', '=', 'posted'), ('invoice_date_due', '>=', self.start_date), ('invoice_date_due', '<=', self.end_date),
                  ('discount_due_date', '=', False)])
 
             self.wizard_invoice_ids = False

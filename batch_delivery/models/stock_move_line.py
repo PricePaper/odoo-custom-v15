@@ -16,6 +16,13 @@ class StockMoveLine(models.Model):
         return result
 
     def write(self, vals):
+        if 'product_uom_qty' in vals:
+            if len(self.ids) == 1 and self.product_uom_id != self.product_id.uom_id:
+                ordered = sum(self.move_id.mapped('product_uom_qty'))
+                reserved = sum((self.move_id.move_line_ids - self).mapped('product_uom_qty'))
+                pending = ordered-reserved
+                if pending != vals['product_uom_qty']:
+                    vals['product_uom_qty'] = pending
         result = super(StockMoveLine, self).write(vals)
         if 'qty_done' in vals:
             for line in self.mapped('move_id'):

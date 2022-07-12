@@ -24,6 +24,12 @@
                 <xpath expr="//button[@name='button_done']" position="attributes">
                     <attribute name="states">purchase,received</attribute>
                 </xpath>
+                <xpath expr="//button[@name='action_create_invoice'][1]" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ('purchase', 'done', 'received')), ('invoice_status', 'in', ('no', 'invoiced'))]}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_create_invoice'][2]" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|', '|', ('state', 'not in', ('purchase', 'done', 'received')), ('invoice_status', 'not in', ('no', 'invoiced')), ('order_line', '=', [])]}</attribute>
+                </xpath>
                 <field name='payment_term_id' position='attributes'>
                     <attribute name='domain'>[('order_type', '=', 'purchase')]</attribute>
                 </field>
@@ -59,8 +65,17 @@
                     <field name="gross_volume"/>
                     <field name="gross_weight"/>
                 </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='qty_received']" position="attributes">
+                      <attribute name="attrs">{'column_invisible':[('parent.state', 'not in', ('purchase', 'done', 'received'))]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='qty_invoiced']" position="attributes">
+                    <attribute name="attrs">{'column_invisible':[('parent.state', 'not in', ('purchase', 'done', 'received'))]}</attribute>
+                </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']" position="attributes">
                     <attribute name="widget">product_configurator</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='qty_invoiced']" position="after">
+                    <field name="qty_owed" attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done', 'received'))], 'readonly': [('qty_received_method', '!=', 'manual')]}" optional="show"/>
                 </xpath>
 
                 <xpath expr="//field[@name='order_line']/tree/field[@name='product_qty']" position="before">

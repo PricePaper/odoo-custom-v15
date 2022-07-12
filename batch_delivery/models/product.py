@@ -8,13 +8,7 @@ class Product(models.Model):
     _inherit = 'product.product'
 
     transit_qty = fields.Float("Transit Qty", compute='_compute_transit_quantities', store=True)
-    
-    @api.constrains('sale_uoms')
-    def _check_uoms_sale(self):
-        for record in self:
-            if record.sale_uoms.ids and record.uom_id.id not in record.sale_uoms.ids:
-                raise ValidationError(('You cannot remove the Default Product Unit of Measure %s from Sale Uoms,'
-                                       'If you want to change the Sale Uoms,You should rather change the Default Product Unit of Measure')% record.uom_id.name)
+    last_inventoried_date = fields.Date(string="Last Inventoried Date")
 
     @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done')
     def _compute_transit_quantities(self):

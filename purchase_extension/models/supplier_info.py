@@ -16,6 +16,11 @@ class SupplierInfo(models.Model):
         months = self.env['ir.config_parameter'].sudo().get_param('purchase_extension.supplier_month_increment')
         for line in self:
             if 'price' in vals:
+                product = False
+                if line.product_id:
+                    product = line.product_id.id
+                elif line.product_tmpl_id:
+                    product = line.product_tmpl_id.product_variant_id.id
                 log_vals = {
                     'change_date': fields.Datetime.now(),
                     'type': 'vendor_price',
@@ -24,7 +29,7 @@ class SupplierInfo(models.Model):
                     'user_id': self.env.user.id,
                     'uom_id': line.product_uom.id,
                     'price_from': 'manual',
-                    'product_id': line.product_id.id,
+                    'product_id': product,
                     'min_qty': line.min_qty,
                     'partner_ids': [(6, 0, [line.name.id])],
                 }
@@ -49,6 +54,11 @@ class SupplierInfo(models.Model):
         """
 
         res = super(SupplierInfo, self).create(vals)
+        product = False
+        if res.product_id:
+            product = res.product_id.id
+        elif res.product_tmpl_id:
+            product = res.product_tmpl_id.product_variant_id.id
         log_vals = {
             'change_date': fields.Datetime.now(),
             'type': 'vendor_price',
@@ -56,10 +66,11 @@ class SupplierInfo(models.Model):
             'user_id': self.env.user.id,
             'uom_id': res.product_uom.id,
             'price_from': 'manual',
-            'product_id': res.product_id.id,
+            'product_id': product,
             'min_qty': res.min_qty,
             'partner_ids': [(6, 0, [res.name.id])],
         }
+
         if self._context.get('user', False):
             log_vals['user_id'] = self._context.get('user', False)
         if self._context.get('cost_cron', False):

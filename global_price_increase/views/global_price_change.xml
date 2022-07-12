@@ -36,9 +36,8 @@
                                         <field name='display_name'/>
                                     </tree>
                                 </field>
-<!--                                <field name="salesrep_id" options="{'no_create': True}"-->
-<!--                                       domain="[('is_sales_person', '=', True)]"-->
-<!--                                       attrs="{'readonly':[('is_done', '=', True)], 'invisible': [('customer_filter', '!=', 'salesrep')], 'required': [('customer_filter', '=', 'salesrep')]}"/>-->
+                               <field name="salesrep_id" options="{'no_create': True}" domain="[('is_sales_person', '=', True)]"
+                                      attrs="{'readonly':[('is_done', '=', True)], 'invisible': [('customer_filter', '!=', 'salesrep')], 'required': [('customer_filter', '=', 'salesrep')]}"/>
                                 <field name="customer_categ_ids" options="{'no_create': True}"
                                        attrs="{'readonly':[('is_done', '=', True)], 'invisible': [('customer_filter', '!=', 'categ')], 'required': [('customer_filter', '=', 'categ')]}"/>
                             </group>

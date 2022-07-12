@@ -20,7 +20,7 @@ class CustomerProductPrice(models.Model):
                                              string='Competietor Price Entries')
     std_price = fields.Float(string='Standard Price', compute="_get_std_price", store=False)
     deviation = fields.Integer(string='Deviation%', compute="get_deviation")
-    lastsale_history_date = fields.Datetime(compute='_get_last_sale_date', string='Last Sale Date')
+    # lastsale_history_date = fields.Datetime(compute='_get_last_sale_date', string='Last Sale Date')
 
     def action_remove_pricelist(self):
         for record in self:
@@ -28,18 +28,18 @@ class CustomerProductPrice(models.Model):
             if pricelist:
                 pricelist.write({'pricelist_id':False})
 
-    def _get_last_sale_date(self):
-        for record in self:
-            lastsale_history_date = False
-            history = self.env['sale.history'].search([('product_id', '=', record.product_id.id),
-                ('uom_id', '=', record.product_uom.id),
-                ('partner_id', 'in', record.pricelist_id.partner_ids.ids)])
-            for his in history:
-                if lastsale_history_date == False:
-                    lastsale_history_date = his.order_date
-                elif lastsale_history_date < his.order_date:
-                    lastsale_history_date = his.order_date
-            record.lastsale_history_date = lastsale_history_date
+    # def _get_last_sale_date(self):
+    #     for record in self:
+    #         lastsale_history_date = False
+    #         history = self.env['sale.history'].search([('product_id', '=', record.product_id.id),
+    #             ('uom_id', '=', record.product_uom.id),
+    #             ('partner_id', 'in', record.pricelist_id.partner_ids.ids)])
+    #         for his in history:
+    #             if lastsale_history_date == False:
+    #                 lastsale_history_date = his.order_date
+    #             elif lastsale_history_date < his.order_date:
+    #                 lastsale_history_date = his.order_date
+    #         record.lastsale_history_date = lastsale_history_date
 
     @api.depends('product_id', 'product_uom')
     def _get_std_price(self):

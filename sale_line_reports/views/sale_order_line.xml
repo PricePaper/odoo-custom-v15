@@ -86,6 +86,32 @@
                </field>
             </field>
         </record>
+
+        <record id="view_order_product_search_inherit" model="ir.ui.view">
+            <field name="name">sale.report.search</field>
+            <field name="model">sale.report</field>
+            <field name="inherit_id" ref="sale.view_order_product_search"/>
+            <field name="arch" type="xml">
+               <field name="user_id" position='replace'>
+                  <field name="sales_persons"/>
+               </field>
+               <filter name="User" position='replace'>
+                  <filter string="Salesperson" name="sales_persons_ids" context="{'group_by':'sales_persons'}"/>
+               </filter>
+            </field>
+        </record>
+
+        <record id="sale_report_view_tree_inherit" model="ir.ui.view">
+            <field name="name">sale.report.tree</field>
+            <field name="model">sale.report</field>
+            <field name="inherit_id" ref="sale.sale_report_view_tree"/>
+            <field name="arch" type="xml">
+               <field name="user_id" position='replace'>
+                  <field name="sales_persons"/>
+               </field>
+            </field>
+        </record>
+
         <record id="view_order_product_graph_inherit" model="ir.ui.view">
              <field name="name">sale.report.graph</field>
              <field name="model">sale.report</field>

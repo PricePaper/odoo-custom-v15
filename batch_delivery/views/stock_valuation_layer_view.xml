@@ -6,7 +6,8 @@
             <field name="model">stock.valuation.layer</field>
             <field name="inherit_id" ref="stock_account.stock_valuation_layer_tree"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='value']" position="after">
+                <xpath expr="//field[@name='quantity']" position="after">
+                    <field name="remaining_qty"/>
                     <field name="unit_cost"/>
                 </xpath>
             </field>

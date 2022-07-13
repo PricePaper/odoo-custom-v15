@@ -41,8 +41,9 @@ class CustomerStatementPdfReport(models.AbstractModel):
         for line in info:
             if 'colspan' not in line:
                 aml_id = self.env['account.move.line'].browse(line['id'])
-                if today > datetime.strptime(line['columns'][3]['name'], "%m/%d/%Y").date() and not aml_id.reconciled and not aml_id.payment_id:
-                    data['past_due'] = True
+                if line['columns'][3]['name']:
+                    if today > datetime.strptime(line['columns'][3]['name'], "%m/%d/%Y").date() and not aml_id.reconciled and not aml_id.payment_id:
+                        data['past_due'] = True
                 if not aml_id.reconciled and (aml_id.payment_id or line['caret_options'] == 'account.move'):
                     amount += aml_id.balance
                     amount_due = aml_id.balance

@@ -56,7 +56,7 @@ class SaleCommission(models.Model):
         for rec in self:
             rec.settlement_id.message_post(
                 body='Commission Line Added..!!<br/><span> Source &#8594; %s </span><br/>Amount &#8594; %0.2f' % (
-                    rec.invoice_id.move_name, rec.commission),
+                    rec.invoice_id.name, rec.commission),
                 subtype_id=self.env.ref('mail.mt_note').id)
             rec.is_removed = False
 
@@ -65,7 +65,7 @@ class SaleCommission(models.Model):
         for rec in self:
             rec.settlement_id.message_post(
                 body='Commission Line removed..!!<br/><span> Source &#8594; %s </span><br/>Amount &#8594; %0.2f' % (
-                rec.invoice_id.move_name, rec.commission),
+                rec.invoice_id.name, rec.commission),
                 subtype_id=self.env.ref('mail.mt_note').id)
             rec.is_removed = True
 

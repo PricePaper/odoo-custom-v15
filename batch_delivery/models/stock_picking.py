@@ -445,13 +445,14 @@ class StockPicking(models.Model):
         return self.button_validate()
 
     def action_cancel(self):
+
         for rec in self:
             if self.mapped('invoice_ids').filtered(lambda r:  r.state == 'posted'):
                 raise UserError("Cannot perform this action, invoice not in draft state")
-            if not self._context.get('back_order_cancel', False):
-                self.mapped('invoice_ids').sudo().button_cancel()
-            else:
+            if self._context.get('back_order_cancel', False) or self._context.get('from_reset_picking', False):
                 self.mapped('invoice_ids').remove_zero_qty_line()
+            else:
+                self.mapped('invoice_ids').sudo().button_cancel()
             if rec.transit_move_lines:
                 done_moves = rec.transit_move_lines.filtered(lambda move: move.state == 'done')
                 (rec.transit_move_lines - done_moves)._action_cancel()
@@ -620,6 +621,18 @@ class StockPicking(models.Model):
             action['res_id'] = invoices.id
         return action
 
+    def action_reset_picking(self):
+        return {
+            'name': _('Reset Picking'),
+            'view_mode': 'form',
+            'res_model': 'reset.picking.reason',
+            'view_id': self.env.ref('batch_delivery.picking_reset_view_form').id,
+            'type': 'ir.actions.act_window',
+            'context': {'default_picking_id': self.id},
+            'target': 'new'
+            }
+
+
     def reset_picking(self):
         """
         Cancel this picking and create a new one
@@ -636,8 +649,8 @@ class StockPicking(models.Model):
                 for move in self.move_lines
             }
             #cancel the existing DO
-            self.action_cancel()
-            #if the order is in locked state we cannot make any changes so cahnge it to sale.
+            self.with_context(from_reset_picking=True).action_cancel()
+            #if the order is in locked state we cannot make any changes so change it to sale.
             previous_state = self.sale_id.state
             self.sale_id.write({'state': 'sale'})
             #create new DO

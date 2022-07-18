@@ -472,10 +472,11 @@ class StockMove(models.Model):
                     'description_picking': move.description_picking,
                     'priority': move.priority,
                     'transit_picking_id': move.transit_picking_id.id,
+                    'picking_id': False
                 }
-                move = self.create(move_vals)
-                move.with_context(is_transit=True)._action_confirm()
-                move.write({'quantity_done': move.product_uom_qty})
-                move.with_context(is_transit=True)._action_done()
+                new_move = self.create(move_vals)
+                new_move.with_context(is_transit=True)._action_confirm()
+                new_move.write({'quantity_done': move.product_uom_qty})
+                new_move.with_context(is_transit=True)._action_done()
         return True
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -231,7 +231,7 @@
                 </button>
                 <button name="action_cancel" position="after">
                     <field name="show_reset" invisible="1"/>
-                    <button name="reset_picking" type="object" string="Reset Delivery" attrs="{'invisible': [('show_reset', '=',False)]}" groups="base.group_erp_manager"/>
+                    <button name="action_reset_picking" type="object" string="Reset Delivery" attrs="{'invisible': ['|', ('state', 'not in', ('in_transit')), ('show_reset', '=',False)]}" groups="base.group_erp_manager"/>
                 </button>
                 <xpath expr="//button[@name='button_validate'][1]" position="attributes">
                   <attribute name="attrs">{'invisible':['|', '|',('picking_type_code', '!=', 'incoming'),('state', 'in', ('waiting','confirmed',

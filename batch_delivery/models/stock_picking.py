@@ -13,6 +13,15 @@ class StockPicking(models.Model):
 
     _order = 'release_date, deliver_by'
 
+    def _get_line_numbers(self):
+        line_num = 1
+        if self.ids:
+            first_line_rec = self.browse(self.ids[0])
+            for line_rec in first_line_rec.batch_id.picking_ids.sorted(key=lambda r: r.sequence):
+                line_rec.line_no = line_num
+                line_num += 1
+
+    line_no = fields.Integer(compute='_get_line_numbers', string='Serial Number',readonly=False, default=False)
     truck_driver_id = fields.Many2one('res.partner', string='Truck Driver', copy=False)
     route_id = fields.Many2one('truck.route', string='Truck Route', group_expand='_read_group_route_ids', copy=False)
     is_delivered = fields.Boolean(string='Delivered', copy=False)

@@ -853,6 +853,9 @@
                         ('date','&lt;',time.strftime('%%Y-%%m-01')),('state','not in',('draft', 'cancel', 'sent'))]" />
                     <filter string="Current Month" name="current_month" domain="[('date','&lt;',(context_today()+relativedelta(months=1)).strftime('%%Y-%%m-01')),
                         ('date','&gt;=',time.strftime('%%Y-%%m-01')),('state','not in',('draft', 'cancel', 'sent'))]"/>
+                    <!--                    <seperator/>-->
+                    <filter string="Current Fiscal year" name= "current_fiscal_year" domain="[('name', '=', 'current_fiscal_year')]" />
+                    <filter string="Last Fiscal year" name= "last_fiscal_year" domain="[('name', '=', 'last_fiscal_year')]" />
                 <separator/>
                 </filter>
 

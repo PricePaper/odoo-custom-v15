@@ -54,7 +54,7 @@
 
         <menuitem name="Fbprophet"
                   id="menu_fbprophet"
-                  parent="base.menu_custom"/>
+                  parent="stock.menu_stock_config_settings"/>
 
         <menuitem name="Yearly Holidays"
                   id="odoo_fbprophet_hoidays"

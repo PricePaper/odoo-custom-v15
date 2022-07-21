@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import date, timedelta
+from datetime import datetime,date, timedelta
 
 from odoo import models, api,_
 from odoo.tools.float_utils import float_round
@@ -15,7 +15,7 @@ class CustomerStatementPdfReport(models.AbstractModel):
             'unposted_in_period': True,
             'unfolded_lines': ['partner_%s' % (partner if partner else 0) for partner in partner.ids],
             'allow_domestic' : False,
-            'fiscal_position': 'all', 
+            'fiscal_position': 'all',
             'available_vat_fiscal_positions': [],
             'unreconciled': False,
             'all_entries': False,
@@ -41,8 +41,9 @@ class CustomerStatementPdfReport(models.AbstractModel):
         for line in info:
             if 'colspan' not in line:
                 aml_id = self.env['account.move.line'].browse(line['id'])
-                if str(today) > line['columns'][3]['name'] and not aml_id.reconciled and not aml_id.payment_id:
-                    data['past_due'] = True
+                if line['columns'][3]['name']:
+                    if today > datetime.strptime(line['columns'][3]['name'], "%m/%d/%Y").date() and not aml_id.reconciled and not aml_id.payment_id:
+                        data['past_due'] = True
                 if not aml_id.reconciled and (aml_id.payment_id or line['caret_options'] == 'account.move'):
                     amount += aml_id.balance
                     amount_due = aml_id.balance

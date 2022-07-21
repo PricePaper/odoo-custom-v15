@@ -81,7 +81,7 @@ class StockMove(models.Model):
         for line in self:
             line.invoice_line_ids = []
             aml_ids = self.env['account.move.line'].search([('stock_move_id', '=', line.id)]).ids
-            if not aml_ids and line.sale_line_id:
+            if not aml_ids and line.sale_line_id and not line.rma_id:
                 aml_ids = line.sale_line_id.mapped('invoice_lines').ids
             if aml_ids:
                 line.invoice_line_ids = [[6, 0, aml_ids]]

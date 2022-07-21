@@ -81,3 +81,9 @@ class AddDiscount(models.TransientModel):
         if batch_discount:
             return self.create({'discount': batch_discount, 'discount_type': 'amount'}).create_discount()
         return False
+
+    @api.model
+    def create_from_partial_payment(self, discount=0):
+        if discount:
+            return self.create({'discount': discount, 'discount_type': 'amount'}).create_discount()
+        return False

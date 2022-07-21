@@ -573,7 +573,7 @@ class StockPicking(models.Model):
         return super(StockPicking, self).button_validate()
 
     def action_create_refund(self):
-        if all(len(line.invoice_line_ids) > 0 for line in self.move_lines):
+        if all(len(line.invoice_line_ids.filtered(lambda rec: rec.move_id.state != 'cancel')) > 0 for line in self.move_lines):
             raise ValidationError("All lines are invoiced")
         journal = self.env['account.journal'].search([('company_id', '=', self.company_id.id), ('type', '=', 'sale')], limit=1)
         vals = {

@@ -13,6 +13,15 @@ class StockPicking(models.Model):
 
     _order = 'release_date, deliver_by'
 
+    def _get_line_numbers(self):
+        line_num = 1
+        if self.ids:
+            first_line_rec = self.browse(self.ids[0])
+            for line_rec in first_line_rec.batch_id.picking_ids.sorted(key=lambda r: r.sequence):
+                line_rec.line_no = line_num
+                line_num += 1
+
+    line_no = fields.Integer(compute='_get_line_numbers', string='Serial Number',readonly=False, default=False)
     truck_driver_id = fields.Many2one('res.partner', string='Truck Driver', copy=False)
     route_id = fields.Many2one('truck.route', string='Truck Route', group_expand='_read_group_route_ids', copy=False)
     is_delivered = fields.Boolean(string='Delivered', copy=False)
@@ -48,6 +57,13 @@ class StockPicking(models.Model):
     is_customer_return = fields.Boolean(string='Customer Return')
     transit_date = fields.Date()
     transit_move_lines = fields.One2many('stock.move', 'transit_picking_id', string="Stock Moves", copy=False)
+    show_reset = fields.Boolean('Show reset button',  compute="_compute_show_reset")
+
+    def _compute_show_reset(self):
+        for picking in self:
+            picking.show_reset = False
+            if picking.transit_move_lines.filtered(lambda rec: rec.procure_method == 'make_to_order') and self.state not in ('done', 'cancel'):
+                picking.show_reset = True
 
 
     def internal_move_from_customer_returned(self):
@@ -438,13 +454,14 @@ class StockPicking(models.Model):
         return self.button_validate()
 
     def action_cancel(self):
+
         for rec in self:
             if self.mapped('invoice_ids').filtered(lambda r:  r.state == 'posted'):
                 raise UserError("Cannot perform this action, invoice not in draft state")
-            if not self._context.get('back_order_cancel', False):
-                self.mapped('invoice_ids').sudo().button_cancel()
-            else:
+            if self._context.get('back_order_cancel', False) or self._context.get('from_reset_picking', False):
                 self.mapped('invoice_ids').remove_zero_qty_line()
+            else:
+                self.mapped('invoice_ids').sudo().button_cancel()
             if rec.transit_move_lines:
                 done_moves = rec.transit_move_lines.filtered(lambda move: move.state == 'done')
                 (rec.transit_move_lines - done_moves)._action_cancel()
@@ -612,6 +629,78 @@ class StockPicking(models.Model):
                 action['views'] = form_view
             action['res_id'] = invoices.id
         return action
+
+    def action_reset_picking(self):
+        return {
+            'name': _('Reset Picking'),
+            'view_mode': 'form',
+            'res_model': 'reset.picking.reason',
+            'view_id': self.env.ref('batch_delivery.picking_reset_view_form').id,
+            'type': 'ir.actions.act_window',
+            'context': {'default_picking_id': self.id},
+            'target': 'new'
+            }
+
+
+    def reset_picking(self):
+        """
+        Cancel this picking and create a new one
+        link with sales order without cancelling the order
+        link with invoice and PO if any
+        """
+        #todo if PO doen the orgin is not mapping in transit state.
+        # raise exception if more than one picking is there bcz we cannot handle multi
+        self.ensure_one()
+        if self.state not in ('done', ''): #in_transit
+            #copy th exisiting PO and recipt move details before cancelling
+            po_id = {
+                move.id: (move.move_orig_ids.mapped('created_purchase_line_id').id, move.move_orig_ids.mapped('move_orig_ids').ids or [])
+                for move in self.move_lines
+            }
+            #cancel the existing DO
+            self.with_context(from_reset_picking=True).action_cancel()
+            #if the order is in locked state we cannot make any changes so change it to sale.
+            previous_state = self.sale_id.state
+            self.sale_id.write({'state': 'sale'})
+            #create new DO
+            for move in self.move_lines:
+                move.sale_line_id.with_context({'reset_po_line_id': po_id.get(move.id)})._action_launch_stock_rule()
+                new_move  = move.sale_line_id.move_ids.filtered(lambda rec: rec.state not in ('cancel', 'done'))
+                if new_move.move_orig_ids.procure_method == 'make_to_stock' and po_id.get(move.id)[1]:
+                    new_move.move_orig_ids.write({
+                        'procure_method': 'make_to_order',
+                        'move_orig_ids': [[6, 0, po_id.get(move.id)[1]]]
+                    })
+                    new_move._action_assign()
+            self.sale_id.write({'state': previous_state})
+
+        # if self.state not in ('done', 'in_transit') and 'make_to_order' in self.transit_move_lines.mapped('procure_method'):
+        #     for move in self.transit_move_lines:
+        #         print(move.move_orig_ids.mapped('state'), move.move_orig_ids)
+        #         if self.state not in ('done', 'in_transit') and 'make_to_order' in self.transit_move_lines.mapped('procure_method'):
+        #             for move in self.transit_move_lines:
+        #                 print(move.move_orig_ids.mapped('state'), move.move_orig_ids)
+        #                 if move.move_orig_ids and 'done' not in move.move_orig_ids.mapped('state') or move.created_purchase_line_id:
+        #                     line = move.move_dest_ids.mapped('sale_line_id')
+        #                     move._action_cancel()
+        #                     reset_po_line_id = move.created_purchase_line_id.id
+        #                 old_state = line.state
+        #                 if line.order_id.state == 'done':
+        #                     line.order_id.write({'state': 'sale'})
+        #                 line.with_context({'reset_po_line_id': move.created_purchase_line_id.id})._action_launch_stock_rule()
+        #                 # if line.state != old_state:
+        #                 #     line.state = old_state
+        #                 # print(move,line)
+        #                 # qty = line._get_qty_procurement(False)
+        #                 # group_id = line._get_procurement_group()
+        #                 # values = line._prepare_procurement_values(group_id=group_id)
+        #                 # procurements = [self.env['procurement.group'].Procurement(
+        #                 #     line.product_id, line.product_uom_qty, line.product_uom,
+        #                 #     line.order_id.partner_shipping_id.property_stock_customer,
+        #                 #     line.name, line.order_id.name, line.order_id.company_id, values)]
+        #                 # self.env['procurement.group'].run(procurements)
+        #                 # print(line.move_ids, move)
+        #                 # if input('choice') == 'y':print(k)
 
     # @api.model
     # def reset_picking_with_route(self):

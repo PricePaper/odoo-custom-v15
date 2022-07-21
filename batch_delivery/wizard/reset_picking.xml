@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="picking_reset_view_form" model="ir.ui.view">
+        <field name="name">reset.picking.reason.form</field>
+        <field name="model">reset.picking.reason</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="picking_id" invisible="1"/>
+                <field name="reason" help='Reason for cancelling the order' placeholder="Cancel reason"/>
+                <footer>
+                    <button string="Confirm" name="action_cancel" type="object" class="btn-success" data-hotkey="q"/>
+                    <button string="Cancel" class="btn-danger" special="cancel" data-hotkey="z" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

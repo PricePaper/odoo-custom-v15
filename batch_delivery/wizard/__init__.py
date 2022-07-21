@@ -1,4 +1,5 @@
 from . import assign_route_wizard
+from . import reset_picking_reason
 # from . import driver_invoice
 from . import picking_full_return_wizard
 from . import so_cancel_reason

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="stock_valuation_layer_tree_inherit" model="ir.ui.view">
+            <field name="name">stock.valuation.layer.tree</field>
+            <field name="model">stock.valuation.layer</field>
+            <field name="inherit_id" ref="stock_account.stock_valuation_layer_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='quantity']" position="after">
+                    <field name="remaining_qty"/>
+                    <field name="unit_cost"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="view_inventory_valuation_search_inherit" model="ir.ui.view">
+            <field name="name">stock.valuation.layer.search</field>
+            <field name="model">stock.valuation.layer</field>
+            <field name="inherit_id" ref="stock_account.view_inventory_valuation_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_tmpl_id']" position="after">
+                    <separator/>
+                    <filter name="has_remaining" string="Has Remaining Qty" domain="[('remaining_qty', '>', 0)]"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

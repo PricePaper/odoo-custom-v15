@@ -12,6 +12,9 @@ class StockMove(models.Model):
     po_original_qty = fields.Float(related="purchase_line_id.product_uom_qty", string='Original Quantity (PO)',
                                    readonly=True)
 
+    def product_price_update_before_done(self, forced_qty=None):
+        pass
+
     @api.depends('sale_line_id.storage_contract_line_id', 'sale_line_id.order_id.storage_contract')
     def _compute_is_storage_contract(self):
         for line in self:

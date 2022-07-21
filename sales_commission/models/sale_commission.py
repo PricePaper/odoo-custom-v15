@@ -54,19 +54,21 @@ class SaleCommission(models.Model):
 
     def action_commission_add(self):
         for rec in self:
-            rec.settlement_id.message_post(
-                body='Commission Line Added..!!<br/><span> Source &#8594; %s </span><br/>Amount &#8594; %0.2f' % (
-                    rec.invoice_id.move_name, rec.commission),
-                subtype_id=self.env.ref('mail.mt_note').id)
+            if rec.settlement_id:
+                rec.settlement_id.message_post(
+                    body='Commission Line Added..!!<br/><span> Source &#8594; %s </span><br/>Amount &#8594; %0.2f' % (
+                        rec.invoice_id.name, rec.commission),
+                    subtype_id=self.env.ref('mail.mt_note').id)
             rec.is_removed = False
 
 
     def action_commission_remove(self):
         for rec in self:
-            rec.settlement_id.message_post(
-                body='Commission Line removed..!!<br/><span> Source &#8594; %s </span><br/>Amount &#8594; %0.2f' % (
-                rec.invoice_id.move_name, rec.commission),
-                subtype_id=self.env.ref('mail.mt_note').id)
+            if rec.settlement_id:
+                rec.settlement_id.message_post(
+                    body='Commission Line removed..!!<br/><span> Source &#8594; %s </span><br/>Amount &#8594; %0.2f' % (
+                    rec.invoice_id.name, rec.commission),
+                    subtype_id=self.env.ref('mail.mt_note').id)
             rec.is_removed = True
 
     @api.model

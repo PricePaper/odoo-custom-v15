@@ -33,6 +33,9 @@ class PartialPayment(models.TransientModel):
         for inv in self.partial_lines:
             inv_lines = inv.invoice_id.line_ids.filtered_domain(domain)
             (payment_lines+inv_lines).with_context({'is_partial_payment': True, 'partial_amount': inv.amount}).reconcile()
+            if inv.discount:
+                self.env['add.discount'].with_context(active_id=inv.invoice_id.id).create_from_partial_payment(
+                    discount=inv.discount)
         return  True
 
 
@@ -47,6 +50,7 @@ class PartialPaymentLines(models.TransientModel):
     currency_id = fields.Many2one('res.currency', related="invoice_id.currency_id")
     amount_residual = fields.Monetary(string='Amount Due', related="invoice_id.amount_residual", currency_field='currency_id')
     amount = fields.Float('Amount')
+    discount = fields.Float('Discount')
 
     @api.onchange('amount')
     def onchange_amount(self):

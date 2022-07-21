@@ -8,7 +8,8 @@
             <field name="inherit_id" ref="stock_picking_batch.view_picking_tree_batch"/>
             <field name="arch" type="xml">
                 <field name="name" position="after">
-                    <field name="sequence" optional="show"/>
+                    <field name="sequence" optional="show" widget="handle"/>
+                    <field name="line_no" optional="show" readonly="1"/>
                     <field name="company_id" invisible="1"/>
                     <field name="invoice_ref" readonly="1" optional="show"/>
                     <field name="partner_id" readonly="1" optional="hide"/>

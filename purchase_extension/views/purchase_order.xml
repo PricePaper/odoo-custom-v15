@@ -45,7 +45,6 @@
 
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="pickup_address_id"
-                           domain="['|', ('id', '=', partner_id), ('parent_id','=', partner_id)]"
                            context="{'default_type': 'invoice', 'show_address': 1, 'tree_view_ref': 'price_paper.view_partner_tree_search_more', 'show_partner_code': 1}"
                            options="{'no_create': 1, 'no_create_edit': 1, 'always_reload': True}"/>
                 </xpath>

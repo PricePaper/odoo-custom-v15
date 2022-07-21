@@ -17,6 +17,7 @@ class ProductSkuReference(models.Model):
     web_config = fields.Many2one('website.scraping.cofig', string='Competitor')
     scheduled_ids = fields.One2many('price.fetch.schedule', 'product_sku_ref_id', string='Scheduled Price Fetches')
     in_exception = fields.Boolean(string='Exception', default=False)
+    is_unavailable = fields.Boolean(string='Unavailable', default=False)
 
     @api.depends('product_id', 'competitor')
     def name_get(self):
@@ -45,6 +46,8 @@ class ProductSkuReference(models.Model):
     @api.model
     def log_exception_error(self, ref_id, except_string="Exception Error"):
         ref_obj = self.env['product.sku.reference'].browse(ref_id)
+        if except_string == 'Temporarily unavailable':
+            ref_obj.is_unavailable = True
         ref_obj.in_exception = True
         ref_obj.message_post(body=except_string)
         return True

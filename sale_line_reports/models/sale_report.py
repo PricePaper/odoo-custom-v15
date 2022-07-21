@@ -54,31 +54,30 @@ class SaleReport(models.Model):
                     DEFAULT_SERVER_DATE_FORMAT)
         return start_date, end_date
 
+    def get_new_domain(self, domain, dom, new_dom):
+        new_domain = []
+        for d in domain:
+            if d == dom:
+                new_domain += new_dom
+            else:
+                new_domain.append(d)
+        return new_domain
+
+
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
         new_dom = []
+        new_domain = domain
         for dom in domain:
             if len(dom) == 3 and dom[0] == 'name' and dom[2] == 'current_fiscal_year':
                 start_date, end_date = self._get_fiscal_year(date.today())
                 new_dom = ['&', ['date', '>=', start_date], ['date', '<', end_date]]
-                break
+                new_domain = self.get_new_domain(new_domain, dom, new_dom)
             elif len(dom) == 3 and dom[0] == 'name' and dom[2] == 'last_fiscal_year':
                 start_date, end_date = self._get_fiscal_year(date.today(), 'last')
                 new_dom = ['&', ['date', '>=', start_date], ['date', '<', end_date]]
-                break
+                new_domain = self.get_new_domain(new_domain, dom, new_dom)
+
         if new_dom:
-            index = domain.index(dom)
-            if index != 0 and len(domain[index - 1]) == 1:
-                domain.pop(index - 1)
-            elif index != 0:
-                reverse_index = 0
-                for i in range(index, 0, -1):
-                    if len(domain[i]) != 1:
-                        reverse_index += 1
-                    else:
-                        break
-                if index - reverse_index >= 0:
-                    domain.pop(index - reverse_index)
-            domain.remove(dom)
-            domain = new_dom + domain
+            domain = new_domain
         return super().read_group(domain, fields, groupby, offset, limit, orderby, lazy)

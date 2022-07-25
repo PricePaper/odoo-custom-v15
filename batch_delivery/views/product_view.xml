@@ -185,6 +185,10 @@
                 <xpath expr="//field[@name='active']" position="after">
                     <field name="last_inventoried_date" invisible="1"/>
                 </xpath>
+                <xpath expr="//field[@name='qty_available']" position="after">
+                    <field name="incoming_qty"/>
+                    <field name="outgoing_qty"/>
+                </xpath>
             </field>
         </record>
 

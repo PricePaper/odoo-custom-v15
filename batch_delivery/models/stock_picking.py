@@ -91,17 +91,20 @@ class StockPicking(models.Model):
                                                    'product_uom': quant.product_id.uom_id.id,
                                                    'location_dest_id': quant.product_id.property_stock_location.id,
                                                    })
-            for transfer_move in internal_transfer.move_ids_without_package:
-                if float_round(transfer_move.qty_to_transfer, 2) > 0:
-                    transfer_move.product_uom_qty = transfer_move.qty_to_transfer
-                    internal_transfer.action_confirm()
-                    internal_transfer.action_assign()
-                    transfer_move.move_line_ids.qty_done =  transfer_move.product_uom_qty
-                    internal_transfer.button_validate()
-                else:
-                    transfer_move.unlink()
+            remove_moves = internal_transfer.move_ids_without_package.filtered(lambda m:float_round(m.qty_to_transfer, 2) <= 0)
+            remove_moves.unlink()
             if not internal_transfer.move_ids_without_package:
                 internal_transfer.unlink()
+                return True
+            for transfer_move in internal_transfer.move_ids_without_package:
+                transfer_move.product_uom_qty = transfer_move.qty_to_transfer
+            internal_transfer.action_confirm()
+            internal_transfer.action_assign()
+            for transfer_move in internal_transfer.move_ids_without_package:
+                transfer_move.move_line_ids.qty_done =  transfer_move.product_uom_qty
+            internal_transfer.button_validate()
+
+
         return True
 
     @api.depends('state')

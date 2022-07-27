@@ -57,7 +57,7 @@ class Product(models.Model):
 
     def action_open_transit_moves(self):
         action = self.sudo().env.ref('stock.stock_move_action').read()[0]
-        moves = self.stock_move_ids.filtered(lambda r: r.transit_picking_id.is_transit and r.quantity_done > 0)
+        moves = self.stock_move_ids.filtered(lambda r: r.transit_picking_id.is_transit and r.quantity_done > 0 and r.transit_picking_id.state != 'cancel')
         action['domain'] = [('id', 'in', moves.ids)]
         action['context'] = {'search_default_groupby_location_id': 1}
         return action

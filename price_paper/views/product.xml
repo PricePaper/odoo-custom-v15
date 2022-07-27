@@ -31,10 +31,6 @@
                     <field name="property_stock_location"/>
                     <field name="value_svl" sum="Stock Valuation" widget="monetary" string="Total Value" optional="hide"/>
                 </xpath>
-
-                <xpath expr="//field[@name='qty_available']" position="after">
-                    <field name="reordering_min_qty" string="Min Qty" optional="show"/>
-                </xpath>
             </field>
         </record>
 

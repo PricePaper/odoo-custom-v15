@@ -112,7 +112,7 @@ class StockPicking(models.Model):
         for picking in self:
             if not (picking.immediate_transfer) and picking.state == 'draft':
                 picking.show_validate = False
-            elif picking.state not in ('draft', 'waiting', 'confirmed', 'assigned', 'in_transit', 'done'):
+            elif picking.state not in ('draft', 'waiting', 'confirmed', 'assigned', 'in_transit'):
                 picking.show_validate = False
             else:
                 picking.show_validate = True

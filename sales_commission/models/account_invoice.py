@@ -33,7 +33,12 @@ class AccountInvoice(models.Model):
     def _onchange_partner_id(self):
         res = super(AccountInvoice, self)._onchange_partner_id()
         if self.partner_id and self.partner_id.sales_person_ids:
-            self.sales_person_ids = self.partner_id.sales_person_ids
+            if self.move_type in ['out_invoice', 'out_refund']:
+                self.sales_person_ids = self.partner_id.sales_person_ids
+            else:
+                self.sales_person_ids = False
+        else:
+            self.sales_person_ids = False
         return res
 
     @api.onchange('sales_person_ids','partner_id')

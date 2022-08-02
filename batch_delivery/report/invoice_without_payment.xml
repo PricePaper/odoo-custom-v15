@@ -255,7 +255,7 @@
                                    </td>
                                  </tr>
                                <tr>
-                                   <td>
+                                   <td t-if="o.partner_id.bill_with_goods">
                                      <t t-if="o.state == 'draft'">
                                          <p t-if="o.partner_id.sudo().total_due &gt; 0">
                                          <strong class="mr16">Previous Balance :</strong>

@@ -94,7 +94,7 @@ class StockRule(models.Model):
 
             # Get the schedule date in order to find a valid seller
             procurement_date_planned = fields.Datetime.from_string(procurement.values['date_planned'])
-
+            date = fields.Date.context_today(self)
             supplier = False
             if procurement.values.get('supplierinfo_id'):
                 supplier = procurement.values['supplierinfo_id']
@@ -102,7 +102,7 @@ class StockRule(models.Model):
                 supplier = procurement.product_id.with_company(procurement.company_id.id)._select_seller(
                     partner_id=procurement.values.get("supplierinfo_name"),
                     quantity=procurement.product_qty,
-                    date=procurement_date_planned.date(),
+                    date=date,
                     uom_id=procurement.product_uom)
 
             # Fall back on a supplier for which no price may be defined. Not ideal, but better than

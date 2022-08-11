@@ -16,35 +16,33 @@ class SupplierInfo(models.Model):
         months = self.env['ir.config_parameter'].sudo().get_param('purchase_extension.supplier_month_increment')
         for line in self:
             if 'price' in vals:
-                product = False
-                if line.product_id:
-                    product = line.product_id.id
-                elif line.product_tmpl_id:
-                    product = line.product_tmpl_id.product_variant_id.id
-                log_vals = {
-                    'change_date': fields.Datetime.now(),
-                    'type': 'vendor_price',
-                    'old_price': line.price,
-                    'new_price': vals.get('price'),
-                    'user_id': self.env.user.id,
-                    'uom_id': line.product_uom.id,
-                    'price_from': 'manual',
-                    'product_id': product,
-                    'min_qty': line.min_qty,
-                    'partner_ids': [(6, 0, [line.name.id])],
-                }
-                if self._context.get('user', False):
-                    log_vals['user_id'] = self._context.get('user', False)
-                if self._context.get('cost_cron', False):
-                    log_vals['price_from'] = 'cost_cron'
-                if self._context.get('from_purchase', False):
-                    log_vals['price_from'] = 'purchase'
-                self.env['product.price.log'].create(log_vals)
-            if 'price' in vals:
                 if line.price != vals['price']:
-                    vals['date_start'] = fields.Date.today()
-                    vals['date_end'] = fields.Date.today() + relativedelta(months=int(months))
-
+                    product = False
+                    if line.product_id:
+                        product = line.product_id.id
+                    elif line.product_tmpl_id:
+                        product = line.product_tmpl_id.product_variant_id.id
+                    log_vals = {
+                        'change_date': fields.Datetime.now(),
+                        'type': 'vendor_price',
+                        'old_price': line.price,
+                        'new_price': vals.get('price'),
+                        'user_id': self.env.user.id,
+                        'uom_id': line.product_uom.id,
+                        'price_from': 'manual',
+                        'product_id': product,
+                        'min_qty': line.min_qty,
+                        'partner_ids': [(6, 0, [line.name.id])],
+                    }
+                    if self._context.get('user', False):
+                        log_vals['user_id'] = self._context.get('user', False)
+                    if self._context.get('cost_cron', False):
+                        log_vals['price_from'] = 'cost_cron'
+                    if self._context.get('from_purchase', False):
+                        log_vals['price_from'] = 'purchase'
+                    self.env['product.price.log'].create(log_vals)
+                vals['date_start'] = fields.Date.today()
+                vals['date_end'] = fields.Date.today() + relativedelta(months=int(months))
         return super(SupplierInfo, self).write(vals)
 
     @api.model

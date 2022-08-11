@@ -293,8 +293,7 @@ class PurchaseOrder(models.Model):
                         line.product_id.with_context({'user': self.user_id and self.user_id.id, 'from_purchase': True}).write(vals)
                     else:
                         vendor_line = vendor_prices.sorted(key=lambda r: r.min_qty, reverse=True)[0]
-                        if vendor_line.price != price:
-                            vendor_line.with_context({'user': self.env.user.id and self.env.user.id, 'from_purchase': True}).price = price
+                        vendor_line.with_context({'user': self.env.user.id and self.env.user.id, 'from_purchase': True}).price = price
 
                 except AccessError:  # no write access rights -> just ignore
                     break

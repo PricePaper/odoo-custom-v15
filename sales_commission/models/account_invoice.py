@@ -59,7 +59,7 @@ class AccountInvoice(models.Model):
 
 
     def _post(self, soft=True):
-        res = super(AccountInvoice, self).action_post()
+        res = super(AccountInvoice, self)._post(soft)
         for move in self:
             if move.check_bounce_invoice:
                 continue

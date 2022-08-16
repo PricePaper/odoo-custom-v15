@@ -115,7 +115,7 @@ class Reportcommission_audit(models.AbstractModel):
                     commission = 0
                     for vals in vals_list:
                         commission += vals.get('commission')
-                    old_commission_lines = invoice.mapped('sale_commission_ids').filtered(lambda r: r.sale_person_id == rep)
+                    old_commission_lines = invoice.mapped('sale_commission_ids').filtered(lambda r: r.sale_person_id == rep and r.is_paid)
                     old_commission = old_commission_lines and sum(old_commission_lines.mapped('commission')) or 0
 
                     if float_round(commission, precision_digits=2) != float_round(old_commission, precision_digits=2):

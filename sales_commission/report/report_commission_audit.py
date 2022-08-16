@@ -25,7 +25,9 @@ class Reportcommission_audit(models.AbstractModel):
             from_date = datetime.strptime(from_date, "%Y%m%d").date()
             to_date = "%s%s%s" %(year, month, month_last_date)
             to_date = datetime.strptime(to_date, "%Y%m%d").date()
-            invoices = self.env['account.move'].search([('state', '=', 'paid'), ('move_type', 'in', ('out_invoice', 'out_refund')), ('check_bounce_invoice', '=', False)])
+            invoices = self.env['account.move'].search([('payment_state', 'in', ('in_payment', 'paid')),
+                ('move_type', 'in', ('out_invoice', 'out_refund')),
+                ('check_bounce_invoice', '=', False), ('invoice_date', '>', from_date)])
             invoices = invoices.filtered(lambda r: r.paid_date and r.paid_date >= from_date and r.paid_date <= to_date)
             for invoice in invoices:
                 if invoice.paid_date and invoice.paid_date >= from_date and invoice.paid_date <= to_date:
@@ -33,15 +35,11 @@ class Reportcommission_audit(models.AbstractModel):
                         commission = 0
                         profit = invoice.gross_profit
                         if rec.based_on in ['profit', 'profit_delivery']:
-                            if invoice.payment_term_id.due_days:
-                                days = invoice.payment_term_id.due_days
+                            if invoice.invoice_payment_term_id.due_days:
+                                days = invoice.invoice_payment_term_id.due_days
                                 if invoice.paid_date and invoice.paid_date > invoice.invoice_date + relativedelta(days=days):
-                                    profit += invoice.amount_total * (invoice.payment_term_id.discount_per / 100)
-                            payment = invoice.payment_ids.filtered(lambda r: r.payment_method_id.code == 'credit_card')
-                            if payment and invoice.partner_id.payment_method != 'credit_card':
-                                profit -= invoice.amount_total * 0.03
-                            if not payment and invoice.partner_id.payment_method == 'credit_card':
-                                profit += invoice.amount_total * 0.03
+                                    profit += invoice.amount_total * (invoice.invoice_payment_term_id.discount_per / 100)
+                            payment = invoice._get_reconciled_payments().filtered(lambda r: r.payment_method_id.code == 'credit_card')
                             if profit <= 0:
                                 continue
                             commission = profit * (rec.percentage / 100)
@@ -54,6 +52,7 @@ class Reportcommission_audit(models.AbstractModel):
                         if invoice.move_type == 'out_refund':
                             commission = -commission
                             type = 'Refund'
+
 
                         sale = invoice.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
                         vals = {
@@ -69,6 +68,7 @@ class Reportcommission_audit(models.AbstractModel):
 
 
 
+
                         if commission_vals.get(rec.sales_person_id):
                             if commission_vals.get(rec.sales_person_id).get(invoice.partner_id):
                                 if commission_vals.get(rec.sales_person_id).get(invoice.partner_id).get(invoice):
@@ -80,8 +80,8 @@ class Reportcommission_audit(models.AbstractModel):
                         else:
                             commission_vals[rec.sales_person_id] = {invoice.partner_id: {invoice : [vals]}}
 
-                        if invoice.move_type != 'out_refund' and invoice.paid_date > invoice.date_due:
-                            extra_days = invoice.paid_date - invoice.date_due
+                        if invoice.move_type != 'out_refund' and invoice.paid_date > invoice.invoice_date_due:
+                            extra_days = invoice.paid_date - invoice.invoice_date_due
                             if invoice.partner_id.company_id.commission_ageing_ids:
                                 commission_ageing = invoice.partner_id.company_id.commission_ageing_ids.filtered(
                                     lambda r: r.delay_days <= extra_days.days)

@@ -58,7 +58,8 @@ class AccountInvoice(models.Model):
             self.commission_rule_ids = False
 
 
-    def action_post(self):
+    def _post(self, soft=True):
+        print(q)
         res = super(AccountInvoice, self).action_post()
         for move in self:
             if move.check_bounce_invoice:

@@ -23,8 +23,22 @@ class AccountInvoice(models.Model):
             ('payment_state','in',('not_paid','in_payment','partial')),
             ('invoice_date', '<', domain_date.strftime('%Y-%m-%d')),
         ]).sudo()
+
+        payment_limit_days = self.env['ir.config_parameter'].sudo().get_param('purge_old_open_credits.purge_old_payment_day_limit')
+        pay_domain_date = datetime.today() - timedelta(days=int(payment_limit_days))
+
+        payments = self.search([
+            ('state', '=', 'posted'),
+            ('move_type', '=', 'entry'),
+            ('payment_id','!=', False),
+            ('payment_id.payment_type', '=', 'inbound'),
+            ('amount_residual', '!=', 0),
+            ('date', '<', pay_domain_date.strftime('%Y-%m-%d'))
+        ]).sudo()
         for invoice in credit_notes:
             invoice.create_purge_writeoff()
+        for payment in payments:
+            payment.create_purge_writeoff()
         return True
 
     def create_purge_writeoff(self):
@@ -37,7 +51,12 @@ class AccountInvoice(models.Model):
             rev_line_account = self.env['ir.property'].\
                 with_context(force_company=self.company_id.id).get('property_account_receivable_id', 'res.partner')
 
-        wrtf_account = self.env['ir.config_parameter'].sudo().get_param('purge_old_open_credits.credit_purge_account')
+        if self.move_type == 'out_refund':
+            wrtf_account = self.env['ir.config_parameter'].sudo().get_param('purge_old_open_credits.credit_purge_account')
+            label = 'Old Credit Purge'
+        else:
+            wrtf_account = self.env['ir.config_parameter'].sudo().get_param('purge_old_open_credits.payment_purge_account')
+            label = 'Old Payment Purge'
         company_currency = self.company_id.currency_id
 
         if not wrtf_account:
@@ -56,7 +75,7 @@ class AccountInvoice(models.Model):
                 'debit': wrtf_amount,
                 'credit': 0,
                 'journal_id': self.journal_id.id,
-                'name': 'Old Credit Purge',
+                'name': label,
                 'partner_id': self.partner_id.id
             }), (0, 0, {
                 'account_id': int(wrtf_account),
@@ -64,7 +83,7 @@ class AccountInvoice(models.Model):
                 'debit': 0,
                 'credit': wrtf_amount,
                 'journal_id': self.journal_id.id,
-                'name': 'Old Credit Purge',
+                'name': label,
                 'partner_id': self.partner_id.id
              })]
         })

@@ -20,7 +20,7 @@
         <field name="inherit_id" ref="account.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//div[@data-key='account']/div[4]" position="inside">
-                <div class="col-lg-6 o_setting_box" id="customer_discount_limit">
+                <div class="col-lg-6 o_setting_box" id="credit_purge">
                     <div class="o_setting_left_pane"/>
                     <div class="o_setting_right_pane">
                         <span class="o_form_label">Old Open Credit Purge</span>
@@ -29,6 +29,24 @@
                         </div>
                         <div class="content-group mt16">
                             <field name="credit_purge_account" class="text-center oe_inline"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 o_setting_box" id="payment_purge">
+                    <div class="o_setting_left_pane"/>
+                    <div class="o_setting_right_pane">
+                        <span class="o_form_label">Old Payment Purge</span>
+                        <div class="text-muted">
+                            Payment Purge Account.
+                        </div>
+                        <div class="content-group mt16">
+                            <field name="payment_purge_account" class="text-center oe_inline"/>
+                        </div>
+                        <div class="text-muted">
+                            Payment Active Days.
+                        </div>
+                        <div class="content-group mt16">
+                            <field name="purge_old_payment_day_limit" class="text-center oe_inline"/>
                         </div>
                     </div>
                 </div>

@@ -22,3 +22,4 @@ access_stock_backorder_confirmation_line,access.stock.backorder.confirmation.lin
 access_stock_backorder_confirmation,access.stock.backorder.confirmation,stock.model_stock_backorder_confirmation,base.group_user,1,1,1,0
 access_order_banner,access.order.banner,model_order_banner,base.group_user,1,1,1,1
 access_stock_overprocessed_transfer,access.stock.overprocessed.transfer,model_stock_overprocessed_transfer,base.group_user,1,1,1,1
+access_reset_picking_reason,access.reset.picking.reason.transfer,model_reset_picking_reason,base.group_user,1,1,1,1

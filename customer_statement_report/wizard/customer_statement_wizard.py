@@ -68,7 +68,7 @@ class CustomerStatementWizard(models.TransientModel):
         """
         inv_domain = [
             ('move_type', 'in', ['out_invoice', 'in_refund']),
-            ('invoice_date', '>=', self.date_from),
+            # ('invoice_date', '>=', self.date_from),
             ('invoice_date', '<=', self.date_to),
             ('state', 'not in', ['draft', 'cancel'])
         ]
@@ -98,7 +98,6 @@ class CustomerStatementWizard(models.TransientModel):
         partners = partners.filtered(lambda p: p.credit > 0)
         email_customer = partners.filtered(lambda p: p.statement_method == 'email')
         pdf_customer = partners.filtered(lambda p: p.statement_method == 'pdf_report')
-
         if not email_customer and not pdf_customer:
             raise UserError(_('Nothing to process!!'))
 

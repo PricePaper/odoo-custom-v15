@@ -33,7 +33,12 @@ class AccountInvoice(models.Model):
     def _onchange_partner_id(self):
         res = super(AccountInvoice, self)._onchange_partner_id()
         if self.partner_id and self.partner_id.sales_person_ids:
-            self.sales_person_ids = self.partner_id.sales_person_ids
+            if self.move_type in ['out_invoice', 'out_refund']:
+                self.sales_person_ids = self.partner_id.sales_person_ids
+            else:
+                self.sales_person_ids = False
+        else:
+            self.sales_person_ids = False
         return res
 
     @api.onchange('sales_person_ids','partner_id')
@@ -53,27 +58,27 @@ class AccountInvoice(models.Model):
             self.commission_rule_ids = False
 
 
-    def action_post(self):
-        res = super(AccountInvoice, self).action_post()
+    def _post(self, soft=True):
+        res = super(AccountInvoice, self)._post(soft)
         for move in self:
             if move.check_bounce_invoice:
                 continue
             rec = move.sudo().calculate_commission()
             if rec and move.move_type == 'out_refund' and move.amount_total == 0:
-                rec.rec.sudo().write({'is_paid': True, 'paid_date': date.today()})
+                rec.sudo().write({'is_paid': True, 'paid_date': date.today()})
         return res
 
-    def _get_invoice_in_payment_state(self):
-        res = super(AccountInvoice, self)._get_invoice_in_payment_state()
-        for invoice in self:
-            if invoice.check_bounce_invoice:
-                continue
-            rec = invoice.sudo().calculate_commission()
-            rec.sudo().write({'is_paid': True})
-            invoice.sudo().check_commission(rec)
-            if invoice.move_type != 'out_refund':
-                invoice.sudo().check_due_date(rec)
-        return res
+    # def _get_invoice_in_payment_state(self):
+    #     res = super(AccountInvoice, self)._get_invoice_in_payment_state()
+    #     for invoice in self:
+    #         if invoice.check_bounce_invoice:
+    #             continue
+    #         rec = invoice.sudo().calculate_commission()
+    #         rec.sudo().write({'is_paid': True})
+    #         invoice.sudo().check_commission(rec)
+    #         if invoice.move_type != 'out_refund':
+    #             invoice.sudo().check_due_date(rec)
+    #     return res
 
     def check_commission(self, lines):
         for line in lines:
@@ -222,6 +227,29 @@ class AccountInvoice(models.Model):
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
+
+    def reconcile(self):
+
+        moves = self.mapped('move_id')
+        invs = moves.filtered(lambda r: r.move_type in ('out_refund', 'out_invoice'))
+        pay_state = {}
+        for inv in invs:
+            pay_state[inv] = inv.payment_state
+        res = super(AccountMoveLine, self).reconcile()
+
+        invoices = moves.filtered(lambda r: r.move_type in ('out_refund', 'out_invoice') and r.payment_state in ('in_payment', 'paid'))
+        for invoice in invoices:
+            if invoice.check_bounce_invoice:
+                continue
+            if invoice in pay_state and pay_state[invoice] == 'in_payment' and invoice.payment_state == 'paid':
+                continue
+            rec = invoice.sudo().calculate_commission()
+            rec.sudo().write({'is_paid': True})
+            invoice.sudo().check_commission(rec)
+            if invoice.move_type != 'out_refund':
+                invoice.sudo().check_due_date(rec)
+        return res
+
 
     def remove_move_reconcile(self):
         partial = self.matched_debit_ids + self.matched_credit_ids

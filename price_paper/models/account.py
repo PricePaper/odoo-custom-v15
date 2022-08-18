@@ -81,7 +81,7 @@ class AccountMove(models.Model):
                 for line in move.invoice_line_ids:
 
                     # Filter out lines being not eligible for COGS.
-                    if not line._eligible_for_cogs():
+                    if not line._eligible_for_cogs() and not line.is_storage_contract_candidate():
                         continue
 
                     # Retrieve accounts needed to generate the COGS.
@@ -135,7 +135,7 @@ class AccountMove(models.Model):
                         'exclude_from_invoice_tab': True,
                         'is_anglo_saxon_line': True,
                     })
-        res = super(AccountMove, self-processed)._stock_account_prepare_anglo_saxon_out_lines_vals()
+        res = super(AccountMove, self)._stock_account_prepare_anglo_saxon_out_lines_vals()
         return lines_vals_list + res
 
     def button_cancel(self):
@@ -269,6 +269,22 @@ class AccountMoveLine(models.Model):
             if sale_tax_history and not sale_tax_history.tax:
                 return self.env['account.tax']
         return super()._get_computed_taxes()
+
+    def _eligible_for_cogs(self):
+
+        self.ensure_one()
+        if self.is_storage_contract and any(self.sale_line_ids.mapped('order_id.storage_contract')):
+            return False
+        if self.is_storage_contract:
+            return False
+        return super(AccountMoveLine, self)._eligible_for_cogs()
+
+    def is_storage_contract_candidate(self):
+        self.ensure_one()
+        if self.is_storage_contract and any(self.sale_line_ids.mapped('order_id.storage_contract')):
+            return True
+        if self.is_storage_contract:
+            return True
 
 
 class PaymentTerm(models.Model):

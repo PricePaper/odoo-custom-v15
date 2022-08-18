@@ -112,7 +112,7 @@
                   <attribute name="optional">show</attribute>
                 </xpath>
                 <xpath expr="//tree" position="attributes">
-                    <attribute name="decoration-danger">is_available==False</attribute>
+                    <attribute name="decoration-danger">date_end != False and date_end &lt; current_date</attribute>
                 </xpath>
                 <xpath expr="//field[@name='delay']" position="before">
                   <field name="manual_delay"/>

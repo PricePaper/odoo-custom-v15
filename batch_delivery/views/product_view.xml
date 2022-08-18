@@ -58,7 +58,8 @@
                             class="oe_stat_button" icon="fa-building-o">
                         <div class="o_field_widget o_stat_info">
                             <span class="o_stat_value">
-                                <field name="outgoing_qty" widget="statinfo" nolabel="1"/>
+                                <!-- <field name="outgoing_qty" widget="statinfo" nolabel="1"/> -->
+                                <field name="out_qty" widget="statinfo" nolabel="1"/>
                                 <field name="uom_name" class="ml4"/>
                             </span>
                             <span class="o_stat_text">Qty In Sale</span>
@@ -70,7 +71,8 @@
                             class="oe_stat_button" icon="fa-building-o">
                         <div class="o_field_widget o_stat_info">
                             <span class="o_stat_value">
-                                <field name="incoming_qty" widget="statinfo" nolabel="1"/>
+                                <!-- <field name="incoming_qty" widget="statinfo" nolabel="1"/> -->
+                                <field name="in_qty" widget="statinfo" nolabel="1"/>
                                 <field name="uom_name" class="ml4"/>
                             </span>
                             <span class="o_stat_text">Qty In Purchase</span>
@@ -182,6 +184,11 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='active']" position="after">
                     <field name="last_inventoried_date" invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='qty_available']" position="after">
+                    <field name="reordering_min_qty" string="Min Qty" optional="show"/>
+                    <field name="incoming_qty"/>
+                    <field name="outgoing_qty"/>
                 </xpath>
             </field>
         </record>

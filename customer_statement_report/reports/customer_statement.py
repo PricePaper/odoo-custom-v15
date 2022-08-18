@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from datetime import date, timedelta
+from datetime import datetime,date, timedelta
+from dateutil.relativedelta import relativedelta
 
 from odoo import models, api,_
 from odoo.tools.float_utils import float_round
@@ -15,7 +16,7 @@ class CustomerStatementPdfReport(models.AbstractModel):
             'unposted_in_period': True,
             'unfolded_lines': ['partner_%s' % (partner if partner else 0) for partner in partner.ids],
             'allow_domestic' : False,
-            'fiscal_position': 'all', 
+            'fiscal_position': 'all',
             'available_vat_fiscal_positions': [],
             'unreconciled': False,
             'all_entries': False,
@@ -36,26 +37,42 @@ class CustomerStatementPdfReport(models.AbstractModel):
         info = ledger_OBJ._get_lines(options)
         today = date.today()
         data = {'cumulative': 0, 'open_credits': [], 'payments': [], 'past_due': False}
+
+
+        follow_up_OBJ = self.env['account.followup.report']
+        follow_options = {'partner_id': partner.id, 'followup_level': (1, 15)}
+        follow_up_info = follow_up_OBJ._get_lines(follow_options)
         amount = 0
+        for line in follow_up_info:
+
+            if line.get('account_move', False):
+                aml_id = self.env['account.move.line'].browse(line['id'])
+                if line['columns'][1]['name']:
+                    if aml_id.move_id.is_inbound() and today > datetime.strptime(line['columns'][1]['name'], "%m/%d/%Y").date() and not aml_id.reconciled and not aml_id.payment_id:
+                        data['past_due'] = True
+
+                move = line.get('account_move', False)
+
+                amount += aml_id.amount_residual
+                amount_due = aml_id.amount_residual
+                data['open_credits'].append(
+                    {
+                        'ref': line.get('name'),
+                        'date': line['columns'][0]['name'],
+                        'due_date': line['columns'][1]['name'],
+                        'amount': aml_id.balance,
+                        'amount_due': ('$ ', '-$ ')[amount_due < 0] + str(round(abs(amount_due), 2) or 0.00),
+                        'running_balance': ('$ ', '-$ ')[amount < 0] + str(round(abs(amount), 2) or 0.00),
+                    }
+                )
+        else:
+            data['cumulative'] = ('$ ', '-$ ')[amount < 0] + str(round(abs(amount), 2) or 0.0)
 
         for line in info:
             if 'colspan' not in line:
                 aml_id = self.env['account.move.line'].browse(line['id'])
-                if str(today) > line['columns'][3]['name'] and not aml_id.reconciled and not aml_id.payment_id:
-                    data['past_due'] = True
                 if not aml_id.reconciled and (aml_id.payment_id or line['caret_options'] == 'account.move'):
-                    amount += aml_id.balance
-                    amount_due = aml_id.balance
-                    data['open_credits'].append(
-                        {
-                            'ref': aml_id.payment_id.name if not aml_id.reconciled and aml_id.payment_id else line['columns'][2]['name'],
-                            'date': line['name'],
-                            'due_date': line['columns'][3]['name'],
-                            'amount': line['columns'][6]['name'] or '-' + line['columns'][8]['name'],
-                            'amount_due': ('$ ', '-$ ')[amount_due < 0] + str(round(abs(amount_due), 2) or 0.00),
-                            'running_balance': ('$ ', '-$ ')[amount < 0] + str(round(abs(amount), 2) or 0.00),
-                        }
-                    )
+                    pass
                 elif line['caret_options'] == 'account.payment':
                     payment = aml_id.payment_id
                     data['payments'].append(
@@ -69,8 +86,7 @@ class CustomerStatementPdfReport(models.AbstractModel):
                             'ref': ','.join(payment.invoice_line_ids.mapped('move_id.name'))
                         }
                     )
-        else:
-            data['cumulative'] = ('$ ', '-$ ')[amount < 0] + str(round(abs(amount), 2) or 0.0)
+
         return data
 
     @api.model

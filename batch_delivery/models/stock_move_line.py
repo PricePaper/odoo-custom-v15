@@ -16,7 +16,7 @@ class StockMoveLine(models.Model):
         return result
 
     def write(self, vals):
-        if 'product_uom_qty' in vals:
+        if 'product_uom_qty' in vals and vals.get('product_uom_qty', 0) != 0 and self.product_uom_qty != vals.get('product_uom_qty', 0):
             if len(self.ids) == 1 and self.product_uom_id != self.product_id.uom_id:
                 ordered = sum(self.move_id.mapped('product_uom_qty'))
                 reserved = sum((self.move_id.move_line_ids - self).mapped('product_uom_qty'))

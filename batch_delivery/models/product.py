@@ -9,6 +9,34 @@ class Product(models.Model):
 
     transit_qty = fields.Float("Transit Qty", compute='_compute_transit_quantities', store=True)
     last_inventoried_date = fields.Date(string="Last Inventoried Date")
+    in_qty = fields.Float("IN Qty", compute='_compute_in_out_quantities', digits='Product Unit of Measure')
+    out_qty = fields.Float("OUT Qty", compute='_compute_in_out_quantities', digits='Product Unit of Measure')
+
+
+    @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done')
+    def _compute_in_out_quantities(self):
+        for product in self:
+            # purchase_moves = product.stock_move_ids.filtered(lambda move: move.purchase_line_id and \
+            #                                                               move.state not in ['cancel', 'done'])
+            purchase_moves = self.env['stock.move'].search([('product_id', '=', product.id),
+                ('picking_code', '=', 'incoming'), ('state', 'not in', ('cancel', 'done')),
+                ('picking_id.is_return', '=', False),
+                ('picking_id.rma_id', '=', False)])
+            sale_moves = self.env['stock.move'].search([('product_id', '=', product.id),
+                ('picking_code', '=', 'outgoing'), ('state', 'not in', ('cancel', 'done')),
+                ('picking_id.is_return', '=', False),
+                ('picking_id.state', 'not in', ('in_transit', 'cancel', 'done')),
+                ('picking_id.rma_id', '=', False)])
+            product_qty = 0
+            for move in purchase_moves:
+                product_qty += move.product_qty
+            product.in_qty = product_qty
+            product_qty = 0
+            for move in sale_moves:
+                product_qty += move.product_qty
+            product.out_qty = product_qty
+
+
 
     @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done')
     def _compute_transit_quantities(self):
@@ -29,7 +57,7 @@ class Product(models.Model):
 
     def action_open_transit_moves(self):
         action = self.sudo().env.ref('stock.stock_move_action').read()[0]
-        moves = self.stock_move_ids.filtered(lambda r: r.transit_picking_id.is_transit and r.quantity_done > 0)
+        moves = self.stock_move_ids.filtered(lambda r: r.transit_picking_id.is_transit and r.quantity_done > 0 and r.transit_picking_id.state != 'cancel')
         action['domain'] = [('id', 'in', moves.ids)]
         action['context'] = {'search_default_groupby_location_id': 1}
         return action

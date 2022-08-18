@@ -456,11 +456,9 @@ class StockPicking(models.Model):
                                 accounts = late_product.product_tmpl_id.get_product_accounts(fiscal_pos=sale_order.fiscal_position_id)
                                 account = accounts['income']
                                 inv_vals['account_id'] = account.id
-                                new_inv_line = self.env['account.move.line'].create(inv_vals)
-                                new_inv_line._onchange_price_subtotal()
+                                invoice.write({'invoice_line_ids':[(0, 0, inv_vals)]})
                             else:
-                                invoice_line.write({'quantity':1})
-
+                                invoice.write({'invoice_line_ids':[(1, invoice_line.id, {'quantity':1})]})
                     else:
                         if sale_order:
                             order_line = sale_order.mapped('order_line').filtered(lambda r: r.product_id and r.product_id == late_product)
@@ -476,7 +474,8 @@ class StockPicking(models.Model):
                             invoice_line = invoice.mapped('invoice_line_ids').filtered(lambda r: r.product_id and r.product_id == late_product)
                             if invoice_line:
                                 if invoice.state == 'draft':
-                                    invoice_line.write({'quantity': 0})
+                                    invoice.write({'invoice_line_ids':[(1, invoice_line.id, {'quantity':0})]})
+
 
         return super().write(vals)
 

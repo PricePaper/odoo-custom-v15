@@ -9,6 +9,8 @@
                 <xpath expr="//field[@name='quantity']" position="after">
                     <field name="remaining_qty"/>
                     <field name="unit_cost"/>
+                    <field name="is_price_diff"/>
+
                 </xpath>
             </field>
         </record>
@@ -20,6 +22,8 @@
                 <xpath expr="//field[@name='product_tmpl_id']" position="after">
                     <separator/>
                     <filter name="has_remaining" string="Has Remaining Qty" domain="[('remaining_qty', '>', 0)]"/>
+                    <separator/>
+                    <filter name="price_diff" string="Has Price Diff" domain="[('is_price_diff', '=', True)]"/>
                 </xpath>
             </field>
         </record>

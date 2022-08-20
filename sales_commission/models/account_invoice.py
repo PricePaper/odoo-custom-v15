@@ -19,7 +19,7 @@ class AccountInvoice(models.Model):
     paid_date = fields.Date(string='Paid_date', compute='_compute_paid_date')
     commission_rule_ids = fields.Many2many('commission.rules', string='Commission Rules')
 
-    def button_draft(self):
+    def commission_correction(self):
 
         commission_vals={}
         to_date = "20220731"

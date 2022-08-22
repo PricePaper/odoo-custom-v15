@@ -9,8 +9,6 @@
                 <xpath expr="//field[@name='quantity']" position="after">
                     <field name="remaining_qty"/>
                     <field name="unit_cost"/>
-                    <field name="is_price_diff"/>
-
                 </xpath>
             </field>
         </record>
@@ -22,10 +20,82 @@
                 <xpath expr="//field[@name='product_tmpl_id']" position="after">
                     <separator/>
                     <filter name="has_remaining" string="Has Remaining Qty" domain="[('remaining_qty', '>', 0)]"/>
-                    <separator/>
-                    <filter name="price_diff" string="Has Price Diff" domain="[('is_price_diff', '=', True)]"/>
                 </xpath>
             </field>
         </record>
+
+        <record id="stock_valuation_layer_price_diff_tree" model="ir.ui.view">
+            <field name="name">stock.valuation.layer.tree</field>
+            <field name="model">stock.valuation.layer</field>
+            <field name="arch" type="xml">
+                <tree default_order="create_date desc, id desc" create="0"
+                      import="0" js_class="inventory_report_list">
+                    <field name="create_date" string="Date" />
+                    <field name="product_id" />
+                    <field name="quantity" />
+                    <field name="remaining_qty"/>
+                    <field name="unit_cost"/>
+                    <field name="product_price"/>
+                    <field name="seller_price"/>
+                    <field name="seller_id"/>
+                    <field name="is_price_diff"/>
+                    <field name="uom_id" groups="uom.group_uom" />
+                    <field name="currency_id" invisible="1" />
+                    <field name="value" sum="Total Value"/>
+                    <field name="company_id" groups="base.group_multi_company" />
+                    <groupby name="product_id">
+                        <field name="cost_method" invisible="1"/>
+                        <field name="quantity_svl" invisible="1"/>
+                        <button name="action_revaluation" icon="fa-plus" title="Add Manual Valuation" type="object" attrs="{'invisible':['|', ('cost_method', '=', 'standard'), ('quantity_svl', '&lt;=', 0)]}" />
+                    </groupby>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_inventory_valuation_price_diff_search" model="ir.ui.view">
+            <field name="name">Inventory Valuation Price Diff</field>
+            <field name="model">stock.valuation.layer</field>
+            <field name="arch" type="xml">
+                <search string="Inventory Valuation">
+                    <field name="product_id"/>
+                    <field name="categ_id" />
+                    <field name="product_tmpl_id" />
+                    <separator/>
+                    <filter name="price_diff" string="Has Price Diff" domain="[('is_price_diff', '=', True)]"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="stock_valuation_layer_price_diff_action" model="ir.actions.act_window">
+            <field name="name">Stock Valuation Price Diff</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">stock.valuation.layer</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_inventory_valuation_price_diff_search"/>
+            <field name="domain">[('product_id.type', '=', 'product')]</field>
+            <field name="context">{"search_default_price_diff": 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face"/>
+                <p>
+                    There is no valuation layers. Valuation layers are created when some product moves should impact the valuation of the stock.
+                </p>
+            </field>
+        </record>
+
+
+        <record id="stock_valuation_layer_price_diff_action_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="stock_valuation_layer_price_diff_tree"/>
+            <field name="act_window_id" ref="stock_valuation_layer_price_diff_action"/>
+        </record>
+
+
+        <record id="stock_account.stock_valuation_layer_action" model="ir.actions.act_window">
+            <field name="search_view_id" ref="stock_account.view_inventory_valuation_search"/>
+            <field name="context">{'search_default_group_by_product_id': 1}</field>
+        </record>
+
+        <menuitem id="menu_stock_valuation_diff" name="Inventory Valuation Price Diff" parent="stock.menu_warehouse_report" sequence="110" action="stock_valuation_layer_price_diff_action"/>
     </data>
 </odoo>

@@ -135,8 +135,6 @@ class AccountMove(models.Model):
                 gross_profit = 0
                 for line in move.invoice_line_ids:
                     gross_profit += line.profit_margin
-                if move.partner_id.payment_method == 'credit_card':
-                    gross_profit -= move.amount_total * 0.03
                 if move.invoice_payment_term_id.discount_per > 0:
                     gross_profit -= move.amount_total * (move.invoice_payment_term_id.discount_per / 100)
                 if move.move_type == 'out_refund':
@@ -329,8 +327,8 @@ class AccountMove(models.Model):
                 batch['format_values']['seq'] += 1
             batch['records']._compute_split_sequence()
         self.filtered(lambda m: not m.name).name = '/'
-    
-    
+
+
     def _stock_account_prepare_anglo_saxon_out_lines_vals(self):
         line_vals = super(AccountMove, self)._stock_account_prepare_anglo_saxon_out_lines_vals()
         if any(self.mapped('is_customer_return')):

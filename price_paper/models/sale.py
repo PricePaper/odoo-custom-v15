@@ -579,8 +579,6 @@ class SaleOrder(models.Model):
 
         for order in self:
             gross_profit = sum([line.profit_margin for line in order.order_line])
-            if order.partner_id.payment_method == 'credit_card':
-                gross_profit -= order.amount_total * 0.03
             if order.payment_term_id.discount_per > 0:
                 gross_profit -= order.amount_total * (order.payment_term_id.discount_per / 100)
             order.update({'gross_profit': round(gross_profit, 2)})

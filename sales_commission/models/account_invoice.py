@@ -216,24 +216,11 @@ class AccountInvoice(models.Model):
                 rec.sudo().write({'is_paid': True, 'paid_date': date.today()})
         return res
 
-    # def _get_invoice_in_payment_state(self):
-    #     res = super(AccountInvoice, self)._get_invoice_in_payment_state()
-    #     for invoice in self:
-    #         if invoice.check_bounce_invoice:
-    #             continue
-    #         rec = invoice.sudo().calculate_commission()
-    #         rec.sudo().write({'is_paid': True})
-    #         invoice.sudo().check_commission(rec)
-    #         if invoice.move_type != 'out_refund':
-    #             invoice.sudo().check_due_date(rec)
-    #     return res
-
     def check_commission(self, lines):
         for line in lines:
             profit = self.gross_profit
             commission = line.commission
             payment_date = self.paid_date
-
             rule_id = self.commission_rule_ids.filtered(
                 lambda r: r.sales_person_id == line.sale_person_id)
             if rule_id:
@@ -245,6 +232,8 @@ class AccountInvoice(models.Model):
                 elif rule_id.based_on == 'invoice':
                     amount = self.amount_total
                     commission = amount * (rule_id.percentage / 100)
+                if self.move_type == 'out_refund':
+                    commission = -float_round(commission, 2)
             line.write({'commission': commission})
             if self._context.get('is_cancelled') and commission < 0:
                 line.is_cancelled = True

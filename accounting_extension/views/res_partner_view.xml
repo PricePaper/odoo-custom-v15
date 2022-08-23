@@ -7,7 +7,7 @@
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
                 <notebook position="inside">
-                    <page string="Payment Tokens">
+                    <page string="Payment Tokens" groups="account.group_account_invoice">
                         <field name="payment_token_ids" context="{'default_partner_id': id}">
                             <form string="Payment Tokens">
                                 <sheet>

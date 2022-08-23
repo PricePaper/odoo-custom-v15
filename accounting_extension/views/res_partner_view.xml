@@ -19,7 +19,7 @@
                                         <field name="partner_id" required="False" invisible="1"/>
                                     </group>
                                     <group>
-                                        <field name="acquirer_id"/>
+                                        <field name="acquirer_id" domain="[('state', '!=', 'disabled')]"/>
                                         <field name="provider" invisible="1"/>
                                         <field name="authorize_profile" attrs="{'invisible':[('provider', '!=', 'authorize')]}"/>
                                         <field name="acquirer_ref" string="Authorize.Net Payment Profile"/>

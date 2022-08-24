@@ -18,6 +18,7 @@ Customisation for PPT
              'views/stock_picking_batch.xml',
              'views/account_payment_view.xml',
              'views/account_invoice_view.xml',
+             'views/res_partner_view.xml',
              'wizard/add_new_cash_collected_line_wizard.xml',
              'wizard/add_discount_view.xml',
              'wizard/discount_check_generate.xml',
@@ -25,7 +26,7 @@ Customisation for PPT
              'security/ir.model.access.csv'
 
              ],
-    'depends': ["l10n_us_check_printing", 'purchase_extension', 'price_paper', 'batch_delivery', 'account_reports', 'account_followup'],
+    'depends': ["l10n_us_check_printing", 'purchase_extension', 'price_paper', 'batch_delivery', 'account_reports', 'account_followup', 'payment'],
     'installable': True,
     'application': False,
     'assets': {

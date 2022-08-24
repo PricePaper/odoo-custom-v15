@@ -7,6 +7,9 @@
             <field name="model">account.journal</field>
             <field name="inherit_id" ref="account.view_account_journal_form" />
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='type']" position="after">
+                  <field name="show_in_common_payment" groups="base.group_no_one"/>
+                </xpath>
                 <xpath expr="//field[@name='suspense_account_id']" position="after">
                   <field name="old_outstanding_receipt_id" groups="base.group_no_one"/>
                 </xpath>

@@ -48,7 +48,7 @@ class SaleCommissionSettlement(models.Model):
             if rec.date_to:
                 domain.append(('paid_date', '<=', rec.date_to))
             if domain:
-                domain.extend([('is_paid', '=', True), ('is_settled', '=', False)])
+                domain.extend([('is_paid', '=', True), ('is_settled', '=', False), ('is_removed', '=', False)])
                 commission_lines = self.env['sale.commission'].search(domain)
             commission_lines -= self.search([]).mapped('commission_ids').filtered(
                 lambda rec: not rec.is_removed and rec.is_settled)

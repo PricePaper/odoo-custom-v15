@@ -63,10 +63,10 @@
                 <xpath expr="//field[@name='amount_residual']" position="before">
                     <field name="gross_profit" widget="monetary" string='Profit'
                            options="{'currency_field': 'currency_id', 'field_digits': True}"
-                           attrs="{'invisible':[('state','!=', 'paid')]}" class="oe_subtotal_footer_separator"/>
+                           attrs="{'invisible':[('payment_state','not in', ('paid', 'in_payment'))]}" class="oe_subtotal_footer_separator"/>
                     <field name="gross_profit" widget="monetary" string='Predicted Profit'
                            options="{'currency_field': 'currency_id', 'field_digits': True}"
-                           attrs="{'invisible':[('state','=', 'paid')]}" class="oe_subtotal_footer_separator"/>
+                           attrs="{'invisible':[('payment_state','in', ('paid', 'in_payment'))]}" class="oe_subtotal_footer_separator"/>
                 </xpath>
 
                 <xpath expr="//form/sheet/notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_subtotal']" position="before">

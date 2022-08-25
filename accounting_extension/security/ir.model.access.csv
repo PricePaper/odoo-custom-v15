@@ -6,3 +6,4 @@ access_cash_collected_lines_wizard,access_cash_collected_lines_wizard,model_cash
 access_add_cash_collected_wizard,access_add_cash_collected_wizard,model_add_cash_collected_wizard,account.group_account_user,1,1,1,0
 access_account_partial_payment_invoice,partial.payment.invoice,model_partial_payment_invoice,account.group_account_invoice,1,1,1,0
 access_account_partial_payment_invoice_lines,partial.payment.invoice.lines,model_partial_payment_invoice_lines,account.group_account_invoice,1,1,1,0
+payment_acquirer_user,payment.acquirer.user,payment.model_payment_acquirer,account.group_account_invoice,1,1,0,0

@@ -116,6 +116,37 @@
             <field name="view_mode">tree,form</field>
         </record>
 
+        <record id="account_payment_method_tree" model="ir.ui.view">
+          <field name="name">Account Payment Method</field>
+          <field name="model">account.payment.method</field>
+            <field name="arch" type="xml">
+                <tree string="Account Payment Method">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="account_payment_method_form" model="ir.ui.view">
+          <field name="name">Account Payment Method</field>
+          <field name="model">account.payment.method</field>
+            <field name="arch" type="xml">
+                <form string="Account Payment Method">
+                    <sheet>
+                        <group>
+                          <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                          </group>
+                          <group>
+                            <field name="payment_fee"/>
+                            <field name="payment_type"/>
+                          </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
         <record id="account_payment_method_action" model="ir.actions.act_window">
             <field name="name">Account Payment Method</field>
             <field name="res_model">account.payment.method</field>

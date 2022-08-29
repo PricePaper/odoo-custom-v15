@@ -250,3 +250,11 @@ class AccountPayment(models.Model):
         }
 
 AccountPayment()
+
+
+class PaymentToken(models.Model):
+    _inherit = 'payment.token'
+
+    sequence = fields.Integer(string='Order', default=1)
+
+PaymentToken()

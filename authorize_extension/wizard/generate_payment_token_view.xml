@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="payment_tokenize_form">
+            <field name="name">generate_payment_token_form</field>
+            <field name="model">generate.payment.token</field>
+            <field name="arch" type="xml">
+                <form string="Make payment wizard">
+                    <group>
+                        <group>
+                            <field name="card_no"/>
+                            <field name="exp_month"/>
+                            <field name="profile_id" placeholder="Keep empty to create a new one"/>
+                        </group>
+                        <group>
+                            <field name="card_code"/>
+                            <field name="exp_year"/>
+                            <field name="acquirer_id"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="generate_token" string="Create Token" type="object" class='oe_highlight'/>
+                        <button string="Cancel" special="cancel" class="oe_link"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="action_generate_payment_token_wizard" model="ir.actions.act_window">
+            <field name="name">Make payment</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">generate.payment.token</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

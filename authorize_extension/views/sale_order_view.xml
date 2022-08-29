@@ -1,0 +1,42 @@
+<odoo>
+    <data>
+        <record id="sale_order_view_inherited_form" model="ir.ui.view">
+            <field name="name">inherited.sale.order.form.view.batch</field>
+            <field name="model">sale.order</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <field name="transaction_ids" invisible="1"/>
+                    <button name="action_view_payment_transactions" type="object"
+                            class="oe_stat_button" icon="fa-money"
+                            attrs="{'invisible': [('transaction_ids', '=', [])]}">
+                        <field name="transaction_count" widget="statinfo" string="Payment"/>
+                    </button>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="sale_order_ppt_view_inherited_form" model="ir.ui.view">
+            <field name="name">inherited.sale.order.form.view.batch</field>
+            <field name="model">sale.order</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="price_paper.price_paper_sale_order_form_view"/>
+            <field name="arch" type="xml">
+                <field name='credit_warning' position="after">
+                    <field name='is_payment_error' invisible="1"/>
+                    <field name='payment_warning' class="alert alert-warning mb-0" role="alert"
+                           attrs="{'invisible':[('is_payment_error', '=', False)]}"/>
+                </field>
+                <xpath expr="//form//header//button[@name='action_release_price_hold']" position="after">
+                    <button name="action_confirm" type="object" string="Retry Payment" class="oe_highlight"
+                            attrs="{'invisible':[('is_payment_error', '=', False)]}" groups="sales_team.group_sale_manager"/>
+                    <button name="action_confirm_bypass" type="object" string="confirm without payment"
+                            confirm="You cannot make authorise.net payment afte this step"
+                            attrs="{'invisible':[('is_payment_error', '=', False)]}" context="{'bypass_payment':True}"
+                            groups="base.group_erp_manager"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

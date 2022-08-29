@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+generate_payment_token_user,generate.payment.token,model_generate_payment_token,account.group_account_invoice,1,1,1,0
+generate_payment_token_admin,generate.payment.token,model_generate_payment_token,base.group_system,1,1,1,1

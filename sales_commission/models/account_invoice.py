@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from datetime import date
+from datetime import datetime, date
 
 from dateutil.relativedelta import relativedelta
+from odoo.tools import float_round
 
 from odoo import fields, models, api, _
 from odoo.exceptions import UserError
+import math
 
 
 class AccountInvoice(models.Model):
@@ -16,6 +18,152 @@ class AccountInvoice(models.Model):
     sale_commission_ids = fields.One2many('sale.commission', 'invoice_id', string='Commission')
     paid_date = fields.Date(string='Paid_date', compute='_compute_paid_date')
     commission_rule_ids = fields.Many2many('commission.rules', string='Commission Rules')
+
+    def commission_correction(self):
+
+        commission_vals={}
+        to_date = "20220731"
+        to_date = datetime.strptime(to_date, "%Y%m%d").date()
+        invoices = self.env['account.move'].search([('payment_state', 'in', ('in_payment', 'paid')),
+            ('move_type', 'in', ('out_invoice', 'out_refund')),
+            ('check_bounce_invoice', '=', False)])
+        from_date = "20220301"
+        from_date = datetime.strptime(from_date, "%Y%m%d").date()
+        invoices = invoices.filtered(lambda r: r.paid_date and r.paid_date >= from_date and r.paid_date <= to_date)
+        print(len(invoices), 'lllllllllll')
+        for invoice in invoices:
+            for rec in invoice.commission_rule_ids:
+                commission = 0
+                profit = invoice.gross_profit
+                if rec.based_on in ['profit', 'profit_delivery']:
+                    if profit <= 0:
+                        continue
+                    commission = profit * (rec.percentage / 100)
+                elif rec.based_on == 'invoice':
+                    amount = invoice.amount_total
+                    commission = amount * (rec.percentage / 100)
+                if commission == 0:
+                    continue
+                type = 'Invoice'
+                if invoice.move_type == 'out_refund':
+                    commission = -commission
+                    type = 'Refund'
+
+
+                sale = invoice.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
+                vals = {
+                    'sale_person_id': rec.sales_person_id,
+                    'sale_id': sale and sale,
+                    'commission': commission,
+                    'invoice_id': invoice,
+                    'invoice_type': type,
+                    'is_paid': True,
+                    'invoice_amount': invoice.amount_total,
+                    'commission_date': invoice.invoice_date and invoice.paid_date
+                }
+
+
+
+                if commission_vals.get(rec.sales_person_id):
+                    if commission_vals.get(rec.sales_person_id).get(invoice.partner_id):
+                        if commission_vals.get(rec.sales_person_id).get(invoice.partner_id).get(invoice):
+                            commission_vals[rec.sales_person_id][invoice.partner_id][invoice].append(vals)
+                        else:
+                            commission_vals[rec.sales_person_id][invoice.partner_id][invoice] = [vals]
+                    else:
+                        commission_vals[rec.sales_person_id][invoice.partner_id] = {invoice : [vals]}
+                else:
+                    commission_vals[rec.sales_person_id] = {invoice.partner_id: {invoice : [vals]}}
+
+                if invoice.move_type != 'out_refund' and invoice.paid_date > invoice.invoice_date_due:
+                    extra_days = invoice.paid_date - invoice.invoice_date_due
+                    if self.env.user.company_id.commission_ageing_ids:
+                        commission_ageing = self.env.user.company_id.commission_ageing_ids.filtered(
+                            lambda r: r.delay_days <= extra_days.days)
+                        commission_ageing = commission_ageing.sorted(key=lambda r: r.delay_days, reverse=True)
+                        if commission_ageing and commission_ageing[0].reduce_percentage:
+                            commission = commission_ageing[0].reduce_percentage * commission / 100
+                            vals = {
+                                'sale_person_id': rec.sales_person_id,
+                                'sale_id': sale,
+                                'commission': -commission,
+                                'invoice_id': invoice,
+                                'invoice_type': 'Commission Aging',
+                                'is_paid': True,
+                                'invoice_amount': invoice.amount_total,
+                                'commission_date': invoice.paid_date
+                            }
+                            if commission_vals.get(rec.sales_person_id):
+                                if commission_vals.get(rec.sales_person_id).get(invoice.partner_id):
+                                    if commission_vals.get(rec.sales_person_id).get(invoice.partner_id).get(invoice):
+                                        commission_vals[rec.sales_person_id][invoice.partner_id][invoice].append(vals)
+                                    else:
+                                        commission_vals[rec.sales_person_id][invoice.partner_id][invoice] = [vals]
+                                else:
+                                    commission_vals[rec.sales_person_id][invoice.partner_id] = {invoice : [vals]}
+                            else:
+                                commission_vals[rec.sales_person_id] = {invoice.partner_id: {invoice : [vals]}}
+        commission_diff = {}
+        print(len(commission_vals), 'gggggggggggg')
+        for rep,partners in commission_vals.items():
+            for partner,invoices in partners.items():
+                for invoice, vals_list in invoices.items():
+                    commission = 0
+                    for vals in vals_list:
+                        commission += vals.get('commission')
+                    old_commission_lines = invoice.mapped('sale_commission_ids').filtered(lambda r: r.sale_person_id == rep and r.is_paid)
+                    old_commission = old_commission_lines and sum(old_commission_lines.mapped('commission')) or 0
+
+                    if float_round(commission, precision_digits=2) != float_round(old_commission, precision_digits=2):
+                        if math.isclose(commission, old_commission, abs_tol=0.1):
+                            continue
+                        vals1={'old_commission' : float_round(old_commission, precision_digits=2),
+                              'commission_audit': float_round(commission, precision_digits=2)}
+                        if commission_diff.get(rep):
+                            if commission_diff.get(rep).get(partner):
+                                if commission_diff.get(rep).get(partner).get(invoice):
+                                    commission_diff[rep][partner][invoice].append(vals1)
+                                else:
+                                    commission_diff[rep][partner][invoice] = [vals1]
+                            else:
+                                commission_diff[rep][partner] = {invoice : [vals1]}
+                        else:
+                            commission_diff[rep] = {partner: {invoice : [vals1]}}
+
+        for rep,partners in commission_diff.items():
+            sum1 = 0
+            sum2 = 0
+            for partner,invoices in partners.items():
+                for invoice, commission_d in invoices.items():
+                    old_commission_lines = invoice.mapped('sale_commission_ids').filtered(lambda r: r.sale_person_id == rep and not r.is_paid)
+                    if old_commission_lines:
+                        old_commission_lines.unlink()
+
+                    sale = invoice.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')
+                    if sale:
+                        sale = sale[0].id
+                    else:
+                        sale = False
+                    comm_corr = float_round(commission_d[0]['commission_audit'] - commission_d[0]['old_commission'], 2)
+
+                    vals = {
+                        'sale_person_id': rep.id,
+                        'sale_id': sale,
+                        'commission': comm_corr,
+                        'invoice_id': invoice.id,
+                        'invoice_type': invoice.move_type,
+                        'invoice_amount': invoice.amount_total,
+                        'commission_date':invoice.invoice_date,
+                        'paid_date': invoice.paid_date and invoice.paid_date,
+                        'is_paid': True
+                    }
+                    self.env['sale.commission'].create(vals)
+
+                    sum1+=commission_d[0]['old_commission']
+                    sum2+=commission_d[0]['commission_audit']
+            print(rep.name, float_round(sum1, 2), float_round(sum2, 2), float_round(sum2-sum1, 2))
+        return True
+
 
     def _compute_paid_date(self):
         for rec in self:
@@ -68,24 +216,11 @@ class AccountInvoice(models.Model):
                 rec.sudo().write({'is_paid': True, 'paid_date': date.today()})
         return res
 
-    # def _get_invoice_in_payment_state(self):
-    #     res = super(AccountInvoice, self)._get_invoice_in_payment_state()
-    #     for invoice in self:
-    #         if invoice.check_bounce_invoice:
-    #             continue
-    #         rec = invoice.sudo().calculate_commission()
-    #         rec.sudo().write({'is_paid': True})
-    #         invoice.sudo().check_commission(rec)
-    #         if invoice.move_type != 'out_refund':
-    #             invoice.sudo().check_due_date(rec)
-    #     return res
-
     def check_commission(self, lines):
         for line in lines:
             profit = self.gross_profit
             commission = line.commission
             payment_date = self.paid_date
-
             rule_id = self.commission_rule_ids.filtered(
                 lambda r: r.sales_person_id == line.sale_person_id)
             if rule_id:
@@ -97,6 +232,8 @@ class AccountInvoice(models.Model):
                 elif rule_id.based_on == 'invoice':
                     amount = self.amount_total
                     commission = amount * (rule_id.percentage / 100)
+                if self.move_type == 'out_refund':
+                    commission = -float_round(commission, 2)
             line.write({'commission': commission})
             if self._context.get('is_cancelled') and commission < 0:
                 line.is_cancelled = True

@@ -89,7 +89,7 @@ class SaleOrder(models.Model):
             if order.release_price_hold or not order.check_low_price():
                 order.hold_state = 'release'
                 if not self.quick_sale:
-                    order.action_confirm()
+                    return order.action_confirm()
                 else:
                     order.action_quick_sale()
             else:

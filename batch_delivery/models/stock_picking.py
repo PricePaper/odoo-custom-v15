@@ -65,7 +65,6 @@ class StockPicking(models.Model):
             if picking.transit_move_lines.filtered(lambda rec: rec.procure_method == 'make_to_order') and self.state not in ('done', 'cancel'):
                 picking.show_reset = True
 
-
     def internal_move_from_customer_returned(self):
         location = self.env.user.company_id.destination_location_id
         quants = self.env['stock.quant'].search([('quantity', '>', 0.01), ('location_id', '=', location.id)])
@@ -419,13 +418,65 @@ class StockPicking(models.Model):
                     batch = self.env['stock.picking.batch'].create({'route_id': route_id})
                 picking.batch_id = batch
 
-                vals['is_late_order'] = batch.state == 'in_progress'
+                vals['is_late_order'] = batch.state in ('in_progress', 'in_truck')
             if 'route_id' in vals.keys() and not (
                     vals.get('route_id', False)) and picking.batch_id and picking.batch_id.state == 'draft':
                 vals.update({'batch_id': False})
             if 'route_id' in vals.keys() and not vals.get('route_id', False):
                 vals.update({'batch_id': False, 'is_late_order': False, 'is_transit': False})
                 picking.mapped('sale_id').write({'state': 'sale','order_banner_id':False})
+
+            if 'is_late_order' in vals.keys():
+                sale_order = picking.sale_id
+                invoice = picking.invoice_ids.filtered(lambda r: r.state != 'cancel')
+                late_product = sale_order.carrier_id.late_order_product
+                if late_product:
+                    if vals.get('is_late_order', False):
+                        if sale_order:
+                            order_line = sale_order.mapped('order_line').filtered(lambda r: r.product_id and r.product_id == late_product)
+                            if not order_line:
+                                sale_vals = {'product_id': late_product.id,
+                                        'product_uom_qty': 1,
+                                        'price_unit': late_product.cost,
+                                        'order_id':sale_order.id}
+                                order_line = self.env['sale.order.line'].create(sale_vals)
+                            else:
+                                sale_flag = False
+                                if sale_order.state == 'done':
+                                    sale_order.write({'state': 'sale'})
+                                    sale_flag = True
+                                order_line.write({'product_uom_qty': 1,})
+                                if sale_flag:
+                                    sale_order.write({'state': 'done'})
+                        if invoice:
+                            invoice_line = invoice.mapped('invoice_line_ids').filtered(lambda r: r.product_id and r.product_id == late_product)
+                            if not invoice_line:
+                                inv_vals = order_line[0]._prepare_invoice_line()
+                                inv_vals['move_id'] = invoice.id
+                                accounts = late_product.product_tmpl_id.get_product_accounts(fiscal_pos=sale_order.fiscal_position_id)
+                                account = accounts['income']
+                                inv_vals['account_id'] = account.id
+                                invoice.write({'invoice_line_ids':[(0, 0, inv_vals)]})
+                            else:
+                                invoice.write({'invoice_line_ids':[(1, invoice_line.id, {'quantity':1})]})
+                    else:
+                        if sale_order:
+                            order_line = sale_order.mapped('order_line').filtered(lambda r: r.product_id and r.product_id == late_product)
+                            if order_line:
+                                sale_flag = False
+                                if sale_order.state == 'done':
+                                    sale_order.write({'state': 'sale'})
+                                    sale_flag = True
+                                order_line.write({'product_uom_qty': 0})
+                                if sale_flag:
+                                    sale_order.write({'state': 'done'})
+                        if invoice:
+                            invoice_line = invoice.mapped('invoice_line_ids').filtered(lambda r: r.product_id and r.product_id == late_product)
+                            if invoice_line:
+                                if invoice.state == 'draft':
+                                    invoice.write({'invoice_line_ids':[(1, invoice_line.id, {'quantity':0})]})
+
+
         return super().write(vals)
 
     def _action_done(self):

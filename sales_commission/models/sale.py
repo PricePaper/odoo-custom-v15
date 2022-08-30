@@ -69,20 +69,5 @@ class SaleOrder_line(models.Model):
         order = self.env['sale.order']._search([('partner_id', 'in', partner.ids)])
         return [('order_id', 'in', order)]
 
-    @api.depends('order_line.profit_margin')
-    def calculate_gross_profit(self):
-        """
-        If payment metod of customer is credit card
-        reduce 3percentage of amount from the profit.
-        """
-        for order in self:
-            gross_profit = sum([line.profit_margin for line in order.order_line])
-            if order.partner_id.payment_method == 'credit_card':
-                gross_profit -= order.amount_total * 0.03
-            if order.payment_term_id.discount_per > 0:
-                gross_profit -= order.amount_total * (order.payment_term_id.discount_per / 100)
-            order.update({'gross_profit': round(gross_profit, 2)})
-
-
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

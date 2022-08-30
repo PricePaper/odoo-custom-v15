@@ -11,6 +11,7 @@ class AccountJournal(models.Model):
     _inherit = 'account.journal'
 
     old_outstanding_receipt_id = fields.Many2one('account.account', string='Old Outstanding Receipt Account')
+    show_in_common_payment = fields.Boolean('Show in Batch common and Truck Payment')
 
 
 class AccountRegisterPayment(models.TransientModel):
@@ -249,3 +250,11 @@ class AccountPayment(models.Model):
         }
 
 AccountPayment()
+
+
+class PaymentToken(models.Model):
+    _inherit = 'payment.token'
+
+    sequence = fields.Integer(string='Order', default=1)
+
+PaymentToken()

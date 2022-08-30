@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_partner_form_inherit" model="ir.ui.view">
+            <field name="name">res.partner.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <notebook position="inside">
+                    <page string="Payment Tokens" groups="account.group_account_invoice">
+                        <field name="payment_token_ids" context="{'default_partner_id': id}">
+                            <form string="Payment Tokens">
+                                <sheet>
+
+                                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                                    <group>
+                                        <field name="active" widget="boolean_toggle"/>
+                                        <field name="name"/>
+                                        <field name="partner_id" required="False" invisible="1"/>
+                                    </group>
+                                    <group>
+                                        <field name="acquirer_id" domain="[('state', '!=', 'disabled')]"/>
+                                        <field name="provider" invisible="1"/>
+                                        <field name="authorize_profile" attrs="{'invisible':[('provider', '!=', 'authorize')]}"/>
+                                        <field name="acquirer_ref" string="Authorize.Net Payment Profile"/>
+                                        <field name="authorize_payment_method_type" attrs="{'invisible': [('provider', '!=', 'authorize')]}"/>
+                                        <field name="company_id" groups="base.group_multi_company"/>
+                                    </group>
+                                </sheet>
+                            </form>
+                            <tree string="Payment Tokens" default_order="sequence">
+                                <field name="sequence" widget="handle" />
+                                <field name="name"/>
+                                <field name="acquirer_id" readonly="1"/>
+                                <field name="acquirer_ref" string="Authorize.Net Payment Profile" readonly="1"/>
+                                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+    </data>
+</odoo>

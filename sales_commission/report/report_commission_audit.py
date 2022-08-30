@@ -27,7 +27,7 @@ class Reportcommission_audit(models.AbstractModel):
             to_date = datetime.strptime(to_date, "%Y%m%d").date()
             invoices = self.env['account.move'].search([('payment_state', 'in', ('in_payment', 'paid')),
                 ('move_type', 'in', ('out_invoice', 'out_refund')),
-                ('check_bounce_invoice', '=', False), ('invoice_date', '>', from_date)])
+                ('check_bounce_invoice', '=', False)])
             invoices = invoices.filtered(lambda r: r.paid_date and r.paid_date >= from_date and r.paid_date <= to_date)
             for invoice in invoices:
                 if invoice.paid_date and invoice.paid_date >= from_date and invoice.paid_date <= to_date:
@@ -35,11 +35,6 @@ class Reportcommission_audit(models.AbstractModel):
                         commission = 0
                         profit = invoice.gross_profit
                         if rec.based_on in ['profit', 'profit_delivery']:
-                            if invoice.invoice_payment_term_id.due_days:
-                                days = invoice.invoice_payment_term_id.due_days
-                                if invoice.paid_date and invoice.paid_date > invoice.invoice_date + relativedelta(days=days):
-                                    profit += invoice.amount_total * (invoice.invoice_payment_term_id.discount_per / 100)
-                            payment = invoice._get_reconciled_payments().filtered(lambda r: r.payment_method_id.code == 'credit_card')
                             if profit <= 0:
                                 continue
                             commission = profit * (rec.percentage / 100)
@@ -67,8 +62,6 @@ class Reportcommission_audit(models.AbstractModel):
                         }
 
 
-
-
                         if commission_vals.get(rec.sales_person_id):
                             if commission_vals.get(rec.sales_person_id).get(invoice.partner_id):
                                 if commission_vals.get(rec.sales_person_id).get(invoice.partner_id).get(invoice):
@@ -81,9 +74,10 @@ class Reportcommission_audit(models.AbstractModel):
                             commission_vals[rec.sales_person_id] = {invoice.partner_id: {invoice : [vals]}}
 
                         if invoice.move_type != 'out_refund' and invoice.paid_date > invoice.invoice_date_due:
+
                             extra_days = invoice.paid_date - invoice.invoice_date_due
-                            if invoice.partner_id.company_id.commission_ageing_ids:
-                                commission_ageing = invoice.partner_id.company_id.commission_ageing_ids.filtered(
+                            if self.env.user.company_id.commission_ageing_ids:
+                                commission_ageing = self.env.user.company_id.commission_ageing_ids.filtered(
                                     lambda r: r.delay_days <= extra_days.days)
                                 commission_ageing = commission_ageing.sorted(key=lambda r: r.delay_days, reverse=True)
                                 if commission_ageing and commission_ageing[0].reduce_percentage:

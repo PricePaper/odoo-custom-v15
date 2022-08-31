@@ -255,6 +255,23 @@ AccountPayment()
 class PaymentToken(models.Model):
     _inherit = 'payment.token'
 
+    _order = 'sequence, partner_id'
+
     sequence = fields.Integer(string='Order', default=1)
+
+    @api.model
+    def create(self, vals):
+        if not vals.get('sequence', False) and vals.get('partner_id', False):
+            tokens = self.env['res.partner'].browse(vals.get('partner_id')).payment_token_ids
+            next_seq = 1
+            if tokens:
+                next_seq = max(tokens.mapped('sequence')) + 1
+            if len(tokens) > next_seq:
+                next_seq = len(tokens) + 1
+            vals['sequence'] = next_seq
+
+        res = super().create(vals)
+        return res
+
 
 PaymentToken()

@@ -25,7 +25,7 @@
             <field name="report_type">qweb-pdf</field>
             <field name="report_name">purchase_extension.report_pdf_vendor_product</field>
             <field name="report_file">purchase_extension.report_pdf_vendor_product</field>
-            <field name="print_report_name">'Vendor Product Report'</field>
+            <field name="print_report_name">'Product Usage Report'</field>
             <field name="paperformat_id" ref="paperformat_report_pdf_vendor_product"/>
 
         </record>

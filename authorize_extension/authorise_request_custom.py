@@ -58,7 +58,6 @@ class AuthorizeAPICustom:
                 'err_code': messages.get('message')[0].get('code'),
                 'err_msg': err_msg,
             }
-
         return response
 
     def get_address_info(self, partner):
@@ -86,7 +85,7 @@ class AuthorizeAPICustom:
 
         response = self._make_request('createCustomerProfileRequest', {
             'profile': {
-                'merchantCustomerId': ('ODOO-%s-%s' % (partner.id, uuid4().hex[:8]))[:20],
+                'merchantCustomerId': partner.customer_code or 'ODOO-%s' % partner.id,
                 'email': partner.email or ''
             }
         })
@@ -114,4 +113,12 @@ class AuthorizeAPICustom:
         })
         if not response.get('customerPaymentProfileId'):
             _logger.warning('Unable to create customer profile \n {err_code}\n{err_msg}'.format(**response))
-        return response
+            return response
+        return self.get_payment_profile_info(response)
+
+    def get_payment_profile_info(self, payment_response):
+        return self._make_request('getCustomerPaymentProfileRequest', {
+            "customerProfileId": payment_response.get('customerProfileId'),
+            "customerPaymentProfileId": payment_response.get('customerPaymentProfileId'),
+            "includeIssuerInfo": "true"
+        })

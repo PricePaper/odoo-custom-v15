@@ -56,13 +56,15 @@ class PaymentTokenize(models.TransientModel):
             }
         }
         token = authorize_api.create_payment_profile(self.profile_id, self.partner_id, opequedata)
-        if not token.get('customerPaymentProfileId'):
+        if not token.get('paymentProfile', {}).get('customerPaymentProfileId'):
             raise UserError("Token creation error\n{err_code}\n{err_msg}".format(**token))
-        token =  self.env['payment.token'].create({
+        self.env['payment.token'].create({
             'acquirer_id': self.acquirer_id.id,
-            'name': self.partner_id.name,
+            'name': "%s - %s - %s" % (self.partner_id.name,
+                                      token.get('paymentProfile', {}).get('payment', {}).get('creditCard', {}).get('cardType'),
+                                      token.get('paymentProfile', {}).get('payment', {}).get('creditCard', {}).get('cardNumber').replace('X', '')),
             'partner_id': self.partner_id.id,
-            'acquirer_ref': token.get('customerPaymentProfileId'),
+            'acquirer_ref': token.get('paymentProfile', {}).get('customerPaymentProfileId'),
             'authorize_profile': self.profile_id,
             'authorize_payment_method_type': self.acquirer_id.authorize_payment_method_type,
             'verified': True,
@@ -73,7 +75,7 @@ class PaymentTokenize(models.TransientModel):
             'exp_month': '',
             'card_code': '',
         })
-        return token
+        return True
 
 
 PaymentTokenize()

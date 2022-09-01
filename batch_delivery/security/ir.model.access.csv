@@ -23,3 +23,5 @@ access_stock_backorder_confirmation,access.stock.backorder.confirmation,stock.mo
 access_order_banner,access.order.banner,model_order_banner,base.group_user,1,1,1,1
 access_stock_overprocessed_transfer,access.stock.overprocessed.transfer,model_stock_overprocessed_transfer,base.group_user,1,1,1,1
 access_reset_picking_reason,access.reset.picking.reason.transfer,model_reset_picking_reason,base.group_user,1,1,1,1
+access_stock_valuation_price_diff,access.stock.valuation.price.diff,model_stock_valuation_price_diff,base.group_user,1,1,1,1
+access_stock_valuation_price_diff_wizard,access.stock.valuation.price.diff.wizard,model_stock_valuation_price_diff_wizard,base.group_user,1,1,1,1

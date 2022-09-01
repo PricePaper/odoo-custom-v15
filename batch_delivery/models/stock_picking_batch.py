@@ -275,12 +275,13 @@ class StockPickingBatch(models.Model):
             self.route_id.set_active = False
         return self.write({'cash_collected_lines': res, 'state': 'done'})
 
-    def cancel_picking(self):
+    def action_cancel(self):
+        self.state = 'cancel'
         self.mapped('truck_driver_id').write({'is_driver_available': True})
         if self.mapped('route_id').ids:
             self.mapped('route_id').write({'set_active': False})
         self.mapped('picking_ids').write({'batch_id': False, 'route_id': False, 'is_late_order': False})
-        return self.write({'state': 'cancel'})
+        return True
 
     def set_in_truck(self):
         self.ensure_one()

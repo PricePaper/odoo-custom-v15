@@ -32,6 +32,7 @@ This module sets up the batch delivery process for price paper.
         'report/reports.xml',
         'views/truck_driver_view.xml',
         'views/account_view.xml',
+        'wizard/stock_valuation_price_diff.xml',
         'wizard/reset_picking.xml',
         'wizard/assign_route_wizard_view.xml',
         'wizard/stock_overprocessed_transfer_views.xml',

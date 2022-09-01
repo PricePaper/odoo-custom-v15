@@ -8,3 +8,4 @@ from . import reset_quantity
 from . import stock_backorder_confirmation
 from . import product_location_change
 from . import stock_overprocessed_transfer
+from . import stock_valuation_price_diff

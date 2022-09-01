@@ -32,14 +32,17 @@ class AssignRouteWizard(models.TransientModel):
         for line in self.line_ids:
             if line.route_id:
                 line.route_id.set_active = True
-            for partner_id in picking_dict.keys():
-                if partner_id in partners_assigned:
+            sequence = 0
+            for picking in line.prior_batch_id.picking_ids.sorted(key=lambda r: r.sequence):
+                partner = picking.partner_id
+                if partner in partners_assigned:
                     continue
-                if line.prior_batch_id.picking_ids.filtered(lambda pic: pic.partner_id.id == partner_id):
-                    [picking.write({'route_id': line.route_id.id}) for picking in picking_dict[partner_id]]
-                    partners_assigned.append(partner_id)
-
-        # it will preserve the context and domain value for view transition.
+                if partner.id in picking_dict.keys():
+                    print(picking.partner_id.name, 'pppppp', picking.origin)
+                    for new_picking in picking_dict[partner.id]:
+                        new_picking.write({'route_id': line.route_id.id, 'sequence': sequence})
+                        sequence +=1
+                    partners_assigned.append(partner)
         return self.sudo().env.ref('batch_delivery.stock_picking_act_route_assign').read()[0]
 
 

@@ -2,6 +2,7 @@ import json
 import logging
 import pprint
 from uuid import uuid4
+from odoo.addons.payment import utils as payment_utils
 import requests
 
 _logger = logging.getLogger(__name__)
@@ -37,7 +38,7 @@ class AuthorizeAPICustom:
                 **(data or {})
             }
         }
-        #todo remove logger to avoid printing sensitive informations
+        # todo remove logger to avoid printing sensitive informations
         _logger.info("sending request to %s:\n%s", self.url, pprint.pformat(request))
         response = requests.post(self.url, json.dumps(request), timeout=60)
         response.raise_for_status()
@@ -116,9 +117,103 @@ class AuthorizeAPICustom:
             return response
         return self.get_payment_profile_info(response)
 
+    def create_shipping_profile(self, profile_id, partner):
+        response = self._make_request(
+            "createCustomerShippingAddressRequest",
+            {
+                "customerProfileId": profile_id,
+                "address": {**self.get_address_info(partner)['billTo']},
+                "defaultShippingAddress": False
+
+            })
+
+    def _format_response(self, response, operation):
+        if response and response.get('err_code'):
+            return {
+                'x_response_code': self.AUTH_ERROR_STATUS,
+                'x_response_reason_text': response.get('err_msg')
+            }
+        else:
+            return {
+                'x_response_code': response.get('transactionResponse', {}).get('responseCode'),
+                'x_trans_id': response.get('transactionResponse', {}).get('transId'),
+                'x_type': operation,
+            }
+
     def get_payment_profile_info(self, payment_response):
         return self._make_request('getCustomerPaymentProfileRequest', {
             "customerProfileId": payment_response.get('customerProfileId'),
             "customerPaymentProfileId": payment_response.get('customerPaymentProfileId'),
             "includeIssuerInfo": "true"
         })
+
+    def get_line_item_info(self, order):
+        res = []
+        for line in order.order_line:
+            res.append({
+                 
+                    "itemId": line.product_id.default_code[:30],
+                    "name": line.product_id.name[:30],
+                    "description": line.name,
+                    "quantity": line.product_uom_qty,
+                    "unitPrice": line.price_unit
+                
+            })
+        return {"lineItem": res}
+    def get_tax_info(self, order):
+        tax_name = ','.join([','.join(line.tax_id.mapped('name'))for line in order.order_line if line.tax_id])
+        return {
+            "amount": order.amount_tax,
+            "name": tax_name[:30],
+            "description": tax_name
+        }
+
+    def get_shipping_info(self, order):
+        shipping_charge = sum(order.order_line.filtered(lambda rec: rec.is_delivery).mapped('price_subtotal')) or 0
+        return {
+                   "amount": shipping_charge,
+                   "name": order.carrier_id.name[:30] or '',
+                   "description": order.carrier_id.product_id.display_name
+               }
+
+    def authorize_transaction(self, transaction, order, invoice=False):
+        """
+            Authorize a transaction
+            @param profile_id : authorize.net customer profile_id
+            @param payment_id : authorize.net customer payment_id
+            @param amount : total amount to authorize
+            return : transaction id
+        """
+        response =  self._make_request("createTransactionRequest", {
+                "refId": transaction.reference,
+                "transactionRequest": {
+                    "transactionType": "authOnlyTransaction",
+                    "amount": transaction.amount,
+                    'profile': {
+                        'customerProfileId': transaction.token_id.authorize_profile,
+                        'paymentProfile': {
+                            'paymentProfileId': transaction.token_id.acquirer_ref,
+                        }
+                    },
+                    "lineItems": self.get_line_item_info(order),
+                    "tax": {**self.get_tax_info(order)},
+                    "shipping": {**self.get_shipping_info(order)},
+                    "poNumber": order.client_order_ref,
+                    "customer": {
+                        "type": "individual" if transaction.partner_id.is_company else "business",
+                        "id": transaction.partner_id.customer_code,
+                        "email": transaction.partner_id.email,
+                    },
+                   # **self.get_address_info(order.partner_invoice_id),
+
+                    "shipTo": {
+                        **self.get_address_info(order.partner_shipping_id).get('billTo')
+                    },
+                    "customerIP": payment_utils.get_customer_ip_address(),
+                    "authorizationIndicatorType": {
+                        "authorizationIndicator": "pre"
+                    }
+                }
+
+             })
+        return self._format_response(response, 'auth_only')

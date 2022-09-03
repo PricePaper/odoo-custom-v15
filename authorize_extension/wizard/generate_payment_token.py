@@ -58,6 +58,7 @@ class PaymentTokenize(models.TransientModel):
         token = authorize_api.create_payment_profile(self.profile_id, self.partner_id, opequedata)
         if not token.get('paymentProfile', {}).get('customerPaymentProfileId'):
             raise UserError("Token creation error\n{err_code}\n{err_msg}".format(**token))
+        # shipping  = authorize_api.create_shipping_profile(self.profile_id, self.partner_id)
         self.env['payment.token'].create({
             'acquirer_id': self.acquirer_id.id,
             'name': "%s - %s - %s" % (self.partner_id.name,

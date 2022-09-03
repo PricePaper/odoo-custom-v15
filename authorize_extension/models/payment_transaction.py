@@ -8,6 +8,9 @@ from dateutil import relativedelta
 
 from odoo import api, fields, models, _, SUPERUSER_ID
 from odoo.tools import float_compare
+from odoo.exceptions import UserError, ValidationError
+from ..authorise_request_custom import AuthorizeAPICustom
+
 
 
 _logger = logging.getLogger(__name__)
@@ -27,6 +30,26 @@ class PaymentTransaction(models.Model):
         if self.state == 'done' and self._context.get('create_payment'):
             self.invoice_ids.filtered(lambda rec: rec.state == 'draft').action_post()
             self._create_payment()
+
+
+    def _send_payment_request(self):
+        """ Override of payment to send a payment request to Authorize extebnsion custom odule to add more values to Json and prevent printing information in logger.
+
+        Note: self.ensure_one()
+
+        :return: None
+        :raise: UserError if the transaction is not linked to a token
+        """
+
+        if self.provider != 'authorize':
+            return super()._send_payment_request()
+        if not self.token_id.authorize_profile:
+            raise UserError("Authorize.Net: " + _("The transaction is not linked to a token."))
+
+        authorize_api = AuthorizeAPICustom(self.acquirer_id)
+        res_content = authorize_api.authorize_transaction(self, self.sale_order_ids)
+        feedback_data = {'reference': self.reference, 'response': res_content}
+        self._handle_feedback_data('authorize', feedback_data)
 
     def _create_payment(self, **extra_create_values):
         """Create an `account.payment` record for the current transaction.

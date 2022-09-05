@@ -151,17 +151,19 @@ class AuthorizeAPICustom:
         res = []
         for line in order.order_line:
             res.append({
-                 
-                    "itemId": line.product_id.default_code[:30],
-                    "name": line.product_id.name[:30],
-                    "description": line.name,
-                    "quantity": line.product_uom_qty,
-                    "unitPrice": line.price_unit
-                
+
+                "itemId": line.product_id.default_code[:30],
+                "name": line.product_id.name[:30],
+                "description": line.name,
+                "quantity": line.product_uom_qty,
+                "unitPrice": line.price_unit,
+                "taxable": True if line.tax_id else False,
+
             })
         return {"lineItem": res}
+
     def get_tax_info(self, order):
-        tax_name = ','.join([','.join(line.tax_id.mapped('name'))for line in order.order_line if line.tax_id])
+        tax_name = ','.join([','.join(line.tax_id.mapped('name')) for line in order.order_line if line.tax_id])
         return {
             "amount": order.amount_tax,
             "name": tax_name[:30],
@@ -171,10 +173,10 @@ class AuthorizeAPICustom:
     def get_shipping_info(self, order):
         shipping_charge = sum(order.order_line.filtered(lambda rec: rec.is_delivery).mapped('price_subtotal')) or 0
         return {
-                   "amount": shipping_charge,
-                   "name": order.carrier_id.name[:30] or '',
-                   "description": order.carrier_id.product_id.display_name
-               }
+            "amount": shipping_charge,
+            "name": order.carrier_id.name[:30] or '',
+            "description": order.carrier_id.product_id.display_name
+        }
 
     def authorize_transaction(self, transaction, order, invoice=False):
         """
@@ -184,36 +186,54 @@ class AuthorizeAPICustom:
             @param amount : total amount to authorize
             return : transaction id
         """
-        response =  self._make_request("createTransactionRequest", {
-                "refId": transaction.reference,
-                "transactionRequest": {
-                    "transactionType": "authOnlyTransaction",
-                    "amount": transaction.amount,
-                    'profile': {
-                        'customerProfileId': transaction.token_id.authorize_profile,
-                        'paymentProfile': {
-                            'paymentProfileId': transaction.token_id.acquirer_ref,
-                        }
-                    },
-                    "lineItems": self.get_line_item_info(order),
-                    "tax": {**self.get_tax_info(order)},
-                    "shipping": {**self.get_shipping_info(order)},
-                    "poNumber": order.client_order_ref or "Not provided",
-                    "customer": {
-                        "type": "business" if transaction.partner_id.is_company else "individual",
-                        "id": transaction.partner_id.customer_code,
-                        "email": transaction.partner_id.email,
-                    },
-                   # **self.get_address_info(order.partner_invoice_id),
-
-                    "shipTo": {
-                        **self.get_address_info(order.partner_shipping_id).get('billTo')
-                    },
-                    "customerIP": payment_utils.get_customer_ip_address(),
-                    "authorizationIndicatorType": {
-                        "authorizationIndicator": "pre"
+        response = self._make_request("createTransactionRequest", {
+            "refId": transaction.reference,
+            "transactionRequest": {
+                "transactionType": "authOnlyTransaction",
+                "amount": transaction.amount,
+                "currencyCode": transaction.currency_id.name,  # TODO
+                'profile': {
+                    'customerProfileId': transaction.token_id.authorize_profile,
+                    'paymentProfile': {
+                        'paymentProfileId': transaction.token_id.acquirer_ref,
                     }
-                }
+                },
+                "solution": {  # todo fix this with values from api credentials
+                    "id":
+                        "AAA100302",
+                    "name":
+                        "Test Solution #1"
+                },
+                "terminalNumber": self.env.user.id,
+                "order": {
+                    "invoiceNumber": transaction.reference,
+                    "description": order.note or 'description',
+                },
+                "lineItems": self.get_line_item_info(order),
+                "tax": {**self.get_tax_info(order)},
+                "shipping": {**self.get_shipping_info(order)},
+                # "taxExempt": #get value from customer fiscal position #todo
+                "poNumber": order.client_order_ref or "Not provided",
+                "customer": {
+                    "type": "business" if transaction.partner_id.is_company else "individual",
+                    "id": transaction.partner_id.customer_code,
+                    "email": transaction.partner_id.email,
+                },
+                # **self.get_address_info(order.partner_invoice_id),
 
-             })
+                "shipTo": {
+                    **self.get_address_info(order.partner_shipping_id).get('billTo')
+                },
+                "customerIP": payment_utils.get_customer_ip_address(),
+                "retail": {
+                    "marketType": 0,
+                    "deviceType": 8,
+                },
+                "employeeId": self.env.user.id,
+                "authorizationIndicatorType": {
+                    "authorizationIndicator": "pre"
+                }
+            }
+
+        })
         return self._format_response(response, 'auth_only')

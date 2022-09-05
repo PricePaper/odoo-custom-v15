@@ -198,9 +198,9 @@ class AuthorizeAPICustom:
                     "lineItems": self.get_line_item_info(order),
                     "tax": {**self.get_tax_info(order)},
                     "shipping": {**self.get_shipping_info(order)},
-                    "poNumber": order.client_order_ref,
+                    "poNumber": order.client_order_ref or "Not provided",
                     "customer": {
-                        "type": "individual" if transaction.partner_id.is_company else "business",
+                        "type": "business" if transaction.partner_id.is_company else "individual",
                         "id": transaction.partner_id.customer_code,
                         "email": transaction.partner_id.email,
                     },

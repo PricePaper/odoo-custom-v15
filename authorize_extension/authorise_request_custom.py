@@ -204,7 +204,7 @@ class AuthorizeAPICustom:
                     "name":
                         "Test Solution #1"
                 },
-                "terminalNumber": self.env.user.id,
+                "terminalNumber": transaction.env.user.id,
                 "order": {
                     "invoiceNumber": transaction.reference,
                     "description": order.note or 'description',
@@ -229,7 +229,7 @@ class AuthorizeAPICustom:
                     "marketType": 0,
                     "deviceType": 8,
                 },
-                "employeeId": self.env.user.id,
+                "employeeId": transaction.env.user.id,
                 "authorizationIndicatorType": {
                     "authorizationIndicator": "pre"
                 }

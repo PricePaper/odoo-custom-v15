@@ -13,6 +13,7 @@
         'wizard/generate_payment_token_view.xml',
         'views/res_partner.xml',
         'views/account_payment_term_view.xml',
+        'views/account_fiscal_position.xml',
         'views/sale_order_view.xml',
         'security/ir.model.access.csv',
     ],

@@ -130,7 +130,7 @@ class AuthorizeAPICustom:
     def _format_response(self, response, operation):
         if response and response.get('err_code'):
             return {
-                'x_response_code': self.AUTH_ERROR_STATUS,
+                'x_response_code': response.get('err_code'),
                 'x_response_reason_text': response.get('err_msg')
             }
         else:
@@ -149,12 +149,12 @@ class AuthorizeAPICustom:
 
     def get_line_item_info(self, order):
         res = []
-        for line in order.order_line:
+        for line in order.order_line[:30]:
             res.append({
 
                 "itemId": line.product_id.default_code[:30],
                 "name": line.product_id.name[:30],
-                "description": line.name,
+                "description": line.name[:254],
                 "quantity": line.product_uom_qty,
                 "unitPrice": line.price_unit,
                 "taxable": True if line.tax_id else False,
@@ -167,7 +167,7 @@ class AuthorizeAPICustom:
         return {
             "amount": order.amount_tax,
             "name": tax_name[:30],
-            "description": tax_name
+            "description": tax_name[:254]
         }
 
     def get_shipping_info(self, order):
@@ -175,7 +175,7 @@ class AuthorizeAPICustom:
         return {
             "amount": shipping_charge,
             "name": order.carrier_id.name[:30] or '',
-            "description": order.carrier_id.product_id.display_name
+            "description": order.carrier_id.product_id.display_name[:254]
         }
 
     def authorize_transaction(self, transaction, order, invoice=False):
@@ -211,6 +211,11 @@ class AuthorizeAPICustom:
                 },
                 "lineItems": self.get_line_item_info(order),
                 "tax": {**self.get_tax_info(order)},
+                "duty": {
+                    "amount": 0.00,
+                    "name": 'no duty',
+                    "description": 'no duty'
+                },
                 "shipping": {**self.get_shipping_info(order)},
                 # "taxExempt": #get value from customer fiscal position #todo
                 "poNumber": order.client_order_ref or "Not provided",

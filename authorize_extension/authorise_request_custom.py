@@ -162,6 +162,12 @@ class AuthorizeAPICustom:
             })
         return {"lineItem": res}
 
+    def get_tax_exempt(self, order):
+        res = 'false'
+        if order.fiscal_position_id.is_tax_exempt:
+            res = 'true'
+        return res
+
     def get_tax_info(self, order):
         tax_name = ','.join([','.join(line.tax_id.mapped('name')) for line in order.order_line if line.tax_id])
         return {
@@ -217,7 +223,7 @@ class AuthorizeAPICustom:
                     "description": 'no duty'
                 },
                 "shipping": {**self.get_shipping_info(order)},
-                # "taxExempt": #get value from customer fiscal position #todo
+                "taxExempt": self.get_tax_exempt(order),
                 "poNumber": order.client_order_ref or "Not provided",
                 "customer": {
                     "type": "business" if transaction.partner_id.is_company else "individual",

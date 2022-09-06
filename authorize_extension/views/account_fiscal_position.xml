@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="inherit_view_account_position_form_pricepaper" model="ir.ui.view">
+            <field name="name">inherited.account.position.form.view</field>
+            <field name="model">account.fiscal.position</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="account.view_account_position_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="is_tax_exempt"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

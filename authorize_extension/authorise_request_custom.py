@@ -4,6 +4,7 @@ import pprint
 from uuid import uuid4
 from odoo.addons.payment import utils as payment_utils
 import requests
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -184,6 +185,38 @@ class AuthorizeAPICustom:
             "description": order.carrier_id.product_id.display_name[:254]
         }
 
+    def check_avs_response(self, response):
+        if response and response.get('transactionResponse', False):
+            avs_res = response.get('transactionResponse').get('avsResultCode', '')
+            if avs_res != 'Y':
+                msg = ''
+                if avs_res == 'A':
+                    msg = 'The street address matched, but the postal code did not.'
+                elif avs_res == 'B':
+                    msg = 'No address information was provided.'
+                elif avs_res == 'E':
+                    msg = 'The AVS check returned an error.'
+                elif avs_res == 'G':
+                    msg = 'The card was issued by a bank outside the U.S. and does not support AVS.'
+                elif avs_res == 'N':
+                    msg = 'Neither the street address nor postal code matched.'
+                elif avs_res == 'P':
+                    msg = 'AVS is not applicable for this transaction.'
+                elif avs_res == 'R':
+                    msg = 'Retry — AVS was unavailable or timed out.'
+                elif avs_res == 'S':
+                    msg = 'AVS is not supported by card issuer.'
+                elif avs_res == 'U':
+                    msg = 'Address information is unavailable.'
+                elif avs_res == 'W':
+                    msg = 'The US ZIP+4 code matches, but the street address does not.'
+                elif avs_res == 'X':
+                    msg = 'Both the street address and the US ZIP+4 code matched.'
+                elif avs_res == 'Z':
+                    msg = 'The postal code matched, but the street address did not.'
+                if msg:
+                    raise ValidationError(msg)
+
     def authorize_transaction(self, transaction, order, invoice=False):
         """
             Authorize a transaction
@@ -247,4 +280,5 @@ class AuthorizeAPICustom:
             }
 
         })
+        self.check_avs_response(response)
         return self._format_response(response, 'auth_only')

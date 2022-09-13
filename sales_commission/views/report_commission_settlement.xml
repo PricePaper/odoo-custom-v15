@@ -33,131 +33,135 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <t t-set="partners" t-value="get_commission_lines(o)"/>
+
                         <t t-set="commission_total" t-value="0"/>
                         <t t-set="draw_total" t-value="0"/>
-                        <t t-foreach="partners" t-as="partner_id">
-                            <t t-if="partner_id">
-                            <t t-set="total" t-value="0"/>
-                            <tr>
-                                <td colspan="7">
-                                <t t-if="partner_id">
-                                    <t t-esc="partner_id.name"/>
-                                </t>
-                                </td>
-                            </tr>
-                            <t t-set="commission" t-value="partners[partner_id]"/>
-                                <t t-foreach="commission" t-as="line">
+                        <t t-set="old_partner_name" t-value=""/>
+                        <t t-set="first" t-value="1"/>
+                        <t t-set="total" t-value="0"/>
 
+                        <t t-foreach="o.commission_ids.filtered(lambda r: r.invoice_id).sorted(key=lambda l: (l.partner_id.display_name, l.date_invoice, l.paid_date))" t-as="line">
+                            <t t-if="old_partner_name != line.partner_id.display_name">
+                                <t t-if="first == 2">
+                                    <tr>
+                                      <td colspan="5"></td>
+                                      <td class="text-left">Total</td>
+                                      <td><span t-esc="'${0:.02f}'.format(total)"/></td>
+                                    </tr>
+                                </t>
+                                <t t-set="first" t-value="2"/>
+                                <t t-set="total" t-value="0"/>
                                 <tr>
-                                    <td>
-                                        <span t-if="line.invoice_id">
-                                            <t t-esc="line.invoice_id.name"/>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span t-if="line.date_invoice">
-                                            <t t-esc="line.date_invoice"/>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span t-if="line.paid_date">
-                                            <t t-esc="line.paid_date"/>
-                                        </span>
-                                    </td>
-                                    <td style="text-align:right;">
-                                        <span t-if="line.invoice_amount">
-                                            <t t-esc="'%.2f'% line.invoice_amount"/>
-                                        </span>
-                                    </td>
-                                    <td style="text-align:right;">
-                                        <span t-if="line.invoice_id">
-                                            <t t-esc="'%.2f'% line.invoice_id.gross_profit"/>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span t-if="line.invoice_type">
-                                            <span t-field="line.invoice_type"/>
-                                        </span>
-                                    </td>
-                                    <td style="text-align:right;">
-                                        <span t-if="line.commission">
-                                            <t t-esc="'%.2f'% line.commission"/>
-                                        </span>
-                                        <span t-if="not line.commission">
-                                            <t t-esc="0"/>
-                                        </span>
+                                    <td colspan="7">
+                                        <t t-esc="line.partner_id.display_name"/>
                                     </td>
                                 </tr>
-                                <t t-set="total" t-value="total + line.commission"/>
                             </t>
+                            <t t-set="old_partner_name" t-value="line.partner_id.display_name"/>
+
                             <tr>
-                              <td colspan="5"></td>
-                              <td class="text-left">Total</td>
-                              <td><t t-esc="'%.2f'% total"/></td>
-                            </tr>
-                            <t t-set="commission_total" t-value="commission_total + total"/>
-                        </t>
-                        </t>
-                        <t t-foreach="partners" t-as="partner_id">
-                            <t t-if=" not partner_id">
-                            <t t-set="draw_total" t-value="0"/>
-                            <tr>
-                                <td colspan="7">
-                                    <span> Weekly Draw </span>
+                                <td>
+                                    <span t-if="line.invoice_id">
+                                        <t t-esc="line.invoice_id.name"/>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span t-if="line.date_invoice">
+                                        <t t-esc="line.date_invoice"/>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span t-if="line.paid_date">
+                                        <t t-esc="line.paid_date"/>
+                                    </span>
+                                </td>
+                                <td style="text-align:right;">
+                                    <span t-if="line.invoice_amount">
+                                        <span t-esc="'${0:.02f}'.format(line.invoice_amount)"/>
+                                    </span>
+                                </td>
+                                <td style="text-align:right;">
+                                    <span t-if="line.invoice_id">
+                                        <span t-esc="'${0:.02f}'.format(line.invoice_id.gross_profit)"/>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span t-if="line.invoice_type">
+                                        <span t-field="line.invoice_type"/>
+                                    </span>
+                                </td>
+                                <td style="text-align:right;">
+                                    <span t-if="line.commission">
+                                      <span t-esc="'${0:.02f}'.format(line.commission)"/>
+                                    </span>
+                                    <span t-if="not line.commission">
+                                        <t t-esc="0"/>
+                                    </span>
                                 </td>
                             </tr>
-                            <t t-set="commission" t-value="partners[partner_id]"/>
-                                <t t-foreach="commission" t-as="line">
+
+                            <t t-set="total" t-value="total + line.commission"/>
+
+                            <t t-set="commission_total" t-value="commission_total + line.commission"/>
+                        </t>
+                        <tr>
+                          <td colspan="5"></td>
+                          <td class="text-left">Total</td>
+                          <td><span t-esc="'${0:.02f}'.format(total)"/></td>
+                        </tr>
+
+                        <t t-set="first" t-value="1"/>
+                        <t t-foreach="o.commission_ids.filtered(lambda r: not r.invoice_id).sorted(key=lambda l: l.paid_date)" t-as="line">
+                            <t t-if="first == 1">
                                 <tr>
-                                    <td>
-                                        <span t-if="line.invoice_id">
-                                            <t t-esc="line.invoice_id.name"/>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span t-if="line.date_invoice">
-                                            <t t-esc="line.date_invoice"/>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span t-if="line.paid_date">
-                                            <t t-esc="line.paid_date"/>
-                                        </span>
-                                    </td>
-                                    <td style="text-align:right;">
-                                        <span t-if="line.invoice_amount">
-                                            <t t-esc="'%.2f'% line.invoice_amount"/>
-                                        </span>
-                                    </td>
-                                    <td style="text-align:right;">
-                                        <span t-if="line.invoice_id">
-                                            <t t-esc="'%.2f'% line.invoice_id.gross_profit"/>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span t-if="line.invoice_type">
-                                            <span t-field="line.invoice_type"/>
-                                        </span>
-                                    </td>
-                                    <td style="text-align:right;">
-                                        <span t-if="line.commission">
-                                            <t t-esc="'%.2f'% line.commission"/>
-                                        </span>
-                                        <span t-if="not line.commission">
-                                            <t t-esc="0"/>
-                                        </span>
+                                    <td colspan="7">
+                                        <span> Weekly Draw </span>
                                     </td>
                                 </tr>
-                                <t t-set="draw_total" t-value="draw_total + line.commission"/>
+                                <t t-set="first" t-value="2"/>
                             </t>
                             <tr>
-                              <td colspan="5"></td>
-                              <td class="text-left">Total</td>
-                              <td><t t-esc="'%.2f'% draw_total"/></td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    <span t-if="line.paid_date">
+                                        <t t-esc="line.paid_date"/>
+                                    </span>
+                                </td>
+                                <td style="text-align:right;">
+                                    <span t-if="line.invoice_amount">
+                                        <span t-esc="'${0:.02f}'.format(line.invoice_amount)"/>
+                                    </span>
+                                </td>
+                                <td style="text-align:right;">
+                                    <span t-if="line.invoice_id">
+                                        <span t-esc="'${0:.02f}'.format(line.invoice_id.gross_profit)"/>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span t-if="line.invoice_type">
+                                        <span t-field="line.invoice_type"/>
+                                    </span>
+                                </td>
+                                <td style="text-align:right;">
+                                    <span t-if="line.commission">
+                                        <span t-esc="'${0:.02f}'.format(line.commission)"/>
+                                    </span>
+                                    <span t-if="not line.commission">
+                                        <t t-esc="0"/>
+                                    </span>
+                                </td>
                             </tr>
+                            <t t-set="draw_total" t-value="draw_total + line.commission"/>
                         </t>
-                        </t>
+                        <tr t-if='draw_total != 0'>
+                          <td colspan="5"></td>
+                          <td class="text-left">Total</td>
+                          <td><span t-esc="'${0:.02f}'.format(draw_total)"/></td>
+                        </tr>
+
                         <tr>
                           <td colspan="5"></td>
                           <t t-if='draw_total != 0'>
@@ -166,20 +170,20 @@
                           <t t-if='draw_total == 0'>
                               <td class="text-left">Grand Total</td>
                           </t>
-                          <td><t t-esc="'%.2f'% commission_total"/></td>
+                          <td><span t-esc="'${0:.02f}'.format(commission_total)"/></td>
                         </tr>
                         <t t-if='draw_total != 0'>
                             <tr>
                               <td colspan="5"></td>
                               <td class="text-left">Draw Total</td>
-                              <td><t t-esc="'%.2f'% draw_total"/></td>
+                              <td><span t-esc="'${0:.02f}'.format(draw_total)"/></td>
                             </tr>
                         </t>
                         <t t-if='draw_total != 0'>
                             <tr>
                               <td colspan="5"></td>
                               <td class="text-left">Grand Total</td>
-                              <td><t t-esc="'%.2f'% o.amount_paid"/></td>
+                              <td><span t-esc="'${0:.02f}'.format(o.amount_paid)"/></td>
                             </tr>
                         </t>
                     </tbody>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_payment_token_inherit" model="ir.ui.view">
+            <field name="name">payment.token.inherit</field>
+            <field name="model">payment.token</field>
+            <field name="inherit_id" ref="payment.payment_token_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet" position="after">
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

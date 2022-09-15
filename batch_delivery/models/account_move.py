@@ -377,7 +377,12 @@ class AccountMoveLine(models.Model):
         for line in self:
             line.stock_move_ids = []
             if line.move_id.move_type != 'entry' and line.sale_line_ids:
+                if line.move_id.move_type == 'out_refund' and not line.move_id.rma_id:
+                    line.stock_move_ids = False
+                    continue
                 line.stock_move_ids = [[6, 0, line.sale_line_ids.mapped('move_ids').ids]]
+
+
         return {}
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

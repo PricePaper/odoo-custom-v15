@@ -23,6 +23,7 @@ class PurchaseOrder(models.Model):
     state = fields.Selection(selection_add=[
         ('in_progress', 'In Progress RFQ'),
         ('received', 'Received')])
+    is_fully_billed = fields.Boolean('Is Fully Billed', default=False)
 
 
     def action_rfq_send(self):
@@ -33,6 +34,12 @@ class PurchaseOrder(models.Model):
         if self.state == 'in_progress':
             res['context']['model_description'] = 'Request for Quotation'
         return res
+
+    def po_fully_billed(self):
+        if self.filtered(lambda r: r.state not in ('done', 'received')):
+            raise ValidationError(_('Selected order(s) is/are not in Done or Received state'))
+        for rec in self:
+            rec.is_fully_billed = True
 
     @api.returns('mail.message', lambda value: value.id)
     def message_post(self, **kwargs):
@@ -233,10 +240,13 @@ class PurchaseOrder(models.Model):
                 purchase_order.activity_schedule(summary="Cost Discrepancy", note=note, **activity_vals)
         return super(PurchaseOrder, self).button_confirm()
 
-    @api.depends('state', 'order_line.qty_to_invoice')
+    @api.depends('state', 'order_line.qty_to_invoice', 'is_fully_billed')
     def _get_invoiced(self):
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
         for order in self:
+            if order.is_fully_billed:
+                order.invoice_status = 'invoiced'
+                continue
             if order.state not in ('purchase', 'received', 'done'):
                 order.invoice_status = 'no'
                 continue

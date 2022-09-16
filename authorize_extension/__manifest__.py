@@ -10,8 +10,10 @@
     Authorize.Net integration for PPT
     """,
     'data': [
+        'data/data.xml',
         'wizard/generate_payment_token_view.xml',
         'views/res_partner.xml',
+        'views/res_config_setting_view.xml',
         'views/account_payment_token_view.xml',
         'views/account_payment_term_view.xml',
         'views/account_fiscal_position.xml',

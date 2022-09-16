@@ -17,7 +17,73 @@ class SaleOrderline(models.Model):
     company_margin = fields.Float(related='company_id.company_margin')
     remark = fields.Char(string='RM', compute='_calculate_remark')
     deliver_by = fields.Date(string="Deliver By", related='order_id.deliver_by')
+    is_journal_mismatch = fields.Boolean('Jounral amount mismatch', compute="_compute_journal_entry_mismatch",
+                                         search="_search_journal_entry_mismatch")
+    stock_journal = fields.Many2many('account.move.line', compute="_compute_journal_entry_mismatch")
+    invoice_journal = fields.Many2many('account.move.line', compute="_compute_journal_entry_mismatch")
 
+    def _compute_journal_entry_mismatch(self):
+        self.is_journal_mismatch = False
+        self.stock_journal = False
+        self.invoice_journal = False
+        for line in self.filtered(lambda rec: rec.invoice_lines and rec.move_ids):
+            acc_id = line.product_id.product_tmpl_id.get_product_accounts()['stock_output']
+            inv_journal = line.invoice_lines.mapped('move_id.line_ids').filtered(
+                lambda rec: rec.account_id == acc_id and rec.product_id == line.product_id)
+            if len(inv_journal) > 1:
+                order_line = line.order_id.order_line.filtered(lambda rec: rec.product_id == line.product_id)
+                if len(order_line) == len(inv_journal):
+                    inv_journal = inv_journal[0]
+                elif len(order_line) != 1:
+                    inv_journal = self.env['account.move.line']
+            stock_journal = line.move_ids.mapped('account_move_ids.line_ids').filtered(
+                lambda rec: rec.account_id == acc_id and rec.product_id == line.product_id)
+            print(inv_journal, stock_journal,  sum(inv_journal.mapped('debit')) , sum(stock_journal.mapped('credit')) , sum(inv_journal.mapped('credit')) , sum(
+                    stock_journal.mapped('debit')))
+            if inv_journal or stock_journal and (sum(inv_journal.mapped('debit')) != sum(stock_journal.mapped('credit')) or sum(inv_journal.mapped('credit')) != sum(
+                    stock_journal.mapped('debit'))):
+                print(inv_journal, stock_journal)
+                line.is_journal_mismatch = True
+                line.invoice_journal = inv_journal.ids
+                line.stock_journal = stock_journal.ids
+
+    @api.model
+    def _search_journal_entry_mismatch(self, operator, value):
+        ids = []
+        print('inside search', operator, value)
+        l = 0
+        for line in self.search([('state', 'in', ('done', 'sale')), ('invoice_status', '!=', 'no')]).filtered(
+                lambda rec: rec.invoice_lines and rec.move_ids):
+            acc_id = line.product_id.product_tmpl_id.get_product_accounts()['stock_output']
+            inv_journal = line.invoice_lines.mapped('move_id.line_ids').filtered(lambda rec: rec.account_id == acc_id and rec.product_id == line.product_id)
+            stock_journal = line.move_ids.mapped('account_move_ids.line_ids').filtered(lambda rec: rec.account_id == acc_id and rec.product_id == line.product_id)
+            # print(sum(inv_journal.mapped('debit')) , sum(stock_journal.mapped('credit')), sum(inv_journal.mapped('credit')) , sum(
+            #     stock_journal.mapped('debit')))
+            if len(inv_journal) > 1:
+                order_line = line.order_id.order_line.filtered(lambda rec: rec.product_id == line.product_id)
+                if len(order_line) == len(inv_journal):
+                    inv_journal = inv_journal[0]
+                elif len(order_line) != 1:
+                    inv_journal = self.env['account.move.line']
+            if inv_journal or stock_journal and (sum(inv_journal.mapped('debit')) != sum(stock_journal.mapped('credit')) or sum(inv_journal.mapped('credit')) != sum(
+                    stock_journal.mapped('debit'))):
+                print(inv_journal, stock_journal,  sum(inv_journal.mapped('debit')) , sum(stock_journal.mapped('credit')) , sum(inv_journal.mapped('credit')) , sum(
+                    stock_journal.mapped('debit')), sum(inv_journal.mapped('debit')) != sum(stock_journal.mapped('credit')) or sum(inv_journal.mapped('credit')) != sum(
+                    stock_journal.mapped('debit')))
+                ids.append(line.id)
+                l +=1
+            # if l > 280:
+            #     break
+        if value == True and operator == '!=':
+            operator = 'not in'
+        elif value == False and operator == '!=':
+            operator = 'in'
+        if value == True and operator == '=':
+            operator = 'in'
+        elif value == False and operator == '=':
+            operator = 'not in'
+
+        return [('id', operator, ids)]
     def action_view_sale_order(self):
         self.ensure_one()
         if self.order_id.storage_contract:

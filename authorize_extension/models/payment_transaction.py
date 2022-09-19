@@ -30,6 +30,8 @@ class PaymentTransaction(models.Model):
         if self.state == 'done' and self._context.get('create_payment'):
             self.invoice_ids.filtered(lambda rec: rec.state == 'draft').action_post()
             self._create_payment()
+        self.filtered(lambda rec: rec.state == 'done' and not rec.is_post_processed)._finalize_post_processing()
+        return res
 
 
     def _send_payment_request(self):

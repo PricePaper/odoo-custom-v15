@@ -10,7 +10,7 @@ class AccountBatchPayment(models.Model):
 
     def create_autherize_batch_payment(self):
 
-        journal = self.env['account.journal'].search([('code', '=', 'AUTHO')])
+        auth_journals = self.env['account.journal'].search([('is_autherize_net', '=', True)])
         today = date.today()
         time = self.env['ir.config_parameter'].sudo().get_param('authorize_extension.auth_start_hour')
 
@@ -22,18 +22,24 @@ class AccountBatchPayment(models.Model):
         start_date = datetime.strptime(start_date, DEFAULT_SERVER_DATETIME_FORMAT)
         end_date = datetime.strptime(end_date, DEFAULT_SERVER_DATETIME_FORMAT)
 
-        payments = self.env['account.payment'].search([('journal_id', 'in', journal.ids),
+        payments = self.env['account.payment'].search([('journal_id', 'in', auth_journals.ids),
                 ('state', '=', 'posted'),
                 ('create_date', '>', start_date),
                 ('create_date', '<', end_date),
                 ('batch_payment_id', '=', False)])
         if payments:
-            batch_id = self.env['account.batch.payment'].create({
-                'batch_type': 'inbound',
-                'journal_id': journal.id,
-                'payment_method_line_id': payments[0].payment_method_line_id.id,
-                })
-            payments.write({'batch_payment_id': batch_id.id})
+            journals = payments.mapped('journal_id')
+            payment_methods = payments.mapped('payment_method_line_id')
+            for journal in journals:
+                for p_method in payment_methods:
+                    filtered_payments = payments.filtered(lambda r: r.journal_id == journal and r.payment_method_line_id == p_method)
+                    if filtered_payments:
+                        batch_id = self.env['account.batch.payment'].create({
+                            'batch_type': 'inbound',
+                            'journal_id': journal.id,
+                            'payment_method_line_id': p_method.id,
+                            })
+                        filtered_payments.write({'batch_payment_id': batch_id.id})
 
 
 

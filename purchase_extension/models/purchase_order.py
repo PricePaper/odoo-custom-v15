@@ -36,10 +36,14 @@ class PurchaseOrder(models.Model):
         return res
 
     def po_fully_billed(self):
-        if self.filtered(lambda r: r.state not in ('done', 'received')):
-            raise ValidationError(_('Selected order(s) is/are not in Done or Received state'))
-        for rec in self:
-            rec.is_fully_billed = True
+        if self.filtered(lambda r: r.state not in ('done', 'received', 'purchase')):
+            raise ValidationError(_('Selected order(s) is/are not in Purchase order or Locked or Received state'))
+        self.write({'is_fully_billed': True})
+
+    def action_mark_po_locked(self):
+        if self.filtered(lambda r: r.state not in ('purchase', 'received')):
+            raise ValidationError(_('Selected order(s) is/are not in Purchase order or Received state'))
+        self.button_done()
 
     @api.returns('mail.message', lambda value: value.id)
     def message_post(self, **kwargs):

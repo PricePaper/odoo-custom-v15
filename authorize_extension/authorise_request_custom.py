@@ -153,9 +153,9 @@ class AuthorizeAPICustom:
         for line in order.order_line[:30]:
             res.append({
 
-                "itemId": line.product_id.default_code[:30],
-                "name": line.product_id.name[:30],
-                "description": line.name[:254],
+                "itemId": line.product_id.default_code and line.product_id.default_code[:30] or '',
+                "name": line.product_id.name and line.product_id.name[:30],
+                "description": line.name and line.name[:254] or '',
                 "quantity": line.product_uom_qty,
                 "unitPrice": line.price_unit,
                 "taxable": True if line.tax_id else False,
@@ -173,16 +173,22 @@ class AuthorizeAPICustom:
         tax_name = ','.join([','.join(line.tax_id.mapped('name')) for line in order.order_line if line.tax_id])
         return {
             "amount": order.amount_tax,
-            "name": tax_name[:30],
-            "description": tax_name[:254]
+            "name": tax_name and tax_name[:30] or '',
+            "description": tax_name and tax_name[:254] or ''
         }
 
     def get_shipping_info(self, order):
         shipping_charge = sum(order.order_line.filtered(lambda rec: rec.is_delivery).mapped('price_subtotal')) or 0
+        carrier_name = ''
+        carrier_product_name = ''
+        if order.carrier_id:
+            carrier_name = order.carrier_id.name and order.carrier_id.name[:30]
+            if order.carrier_id.product_id:
+                carrier_product_name = order.carrier_id.product_id.display_name[:254]
         return {
             "amount": shipping_charge,
-            "name": order.carrier_id.name[:30] or '',
-            "description": order.carrier_id.product_id.display_name[:254]
+            "name": carrier_name,
+            "description": carrier_product_name
         }
 
     def check_avs_response(self, response):

@@ -83,7 +83,7 @@ class SaleOrder(models.Model):
     def action_confirm_bypass(self):
         return self.action_confirm()
 
-    def payment_action_capture(self):
+    def payment_action_capture_old(self):
         if not self.invoice_ids.filtered(lambda rec: rec.state != 'cancel'):
             action = self.env.ref('sale.action_view_sale_advance_payment_inv').read()[0]
             action.update({
@@ -92,7 +92,7 @@ class SaleOrder(models.Model):
                     'default_fixed_amount': self.amount_total,
                 }
             })
-            return action
+            # return action
         invoice_to_paid = self.invoice_ids.filtered(lambda rec: rec.state != 'cancel' and rec.payment_state  == 'not_paid')
         if sum(invoice_to_paid.mapped('amount_total')) >= sum(self.authorized_transaction_ids.mapped('amount')):
             return super(SaleOrder, self.with_context({'create_payment': True})).payment_action_capture()

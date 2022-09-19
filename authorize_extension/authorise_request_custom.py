@@ -150,7 +150,7 @@ class AuthorizeAPICustom:
 
     def get_line_item_info(self, order):
         res = []
-        for line in order.order_line[:30]:
+        for line in order.order_line.filtered(lambda r: not r.is_delivery and not r.is_downpayment)[:30]:
             res.append({
 
                 "itemId": line.product_id.default_code and line.product_id.default_code[:30] or '',

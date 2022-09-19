@@ -14,6 +14,7 @@
         'wizard/generate_payment_token_view.xml',
         'views/res_partner.xml',
         'views/res_config_setting_view.xml',
+        'views/payment_transaction_form.xml',
         'views/account_payment_token_view.xml',
         'views/account_payment_term_view.xml',
         'views/account_fiscal_position.xml',

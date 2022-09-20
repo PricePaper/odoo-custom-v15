@@ -39,7 +39,7 @@ class AccountMove(models.Model):
                 tx_sudo.with_context({'from_authorize_custom': True, 'from_invoice_reauth': True})._send_payment_request()
                 if tx_sudo.state == 'error':
                     error_msg = tx_sudo.state_message
-                    self.write({'is_payment_error': True})
+                    self.write({'is_authorize_tx_failed': True})
             if error_msg:
                 self.message_post(body=error_msg)
 

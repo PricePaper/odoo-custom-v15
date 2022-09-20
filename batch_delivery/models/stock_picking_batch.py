@@ -45,6 +45,12 @@ class StockPickingBatch(models.Model):
         ('cancel', 'Cancelled')], default='draft', compute=False,
         copy=False, tracking=True, required=True)
 
+
+    @api.onchange('date')
+    def _onchange_batch_date(self):
+        if self.date and self.date <= fields.Date.today():
+            return {'warning': {'title': 'Warning', 'message': 'You are entering today\'s date, or a date in the past. You most likely want a future date.'}}
+
     @api.depends('picking_ids.invoice_ids')
     def _compute_invoice_ids(self):
         for rec in self:

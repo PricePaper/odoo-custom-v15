@@ -47,7 +47,7 @@
             <field name="target">current</field>
         </record>
         <menuitem id="menu_vendor_report"
-                  name="Vendor Report"
+                  name="Product Usage Report"
                   action="action_vendor_product_report"
                   parent="purchase.menu_procurement_management"
                   groups="purchase.group_purchase_manager"

@@ -44,6 +44,7 @@
                  </xpath>
 
                 <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="is_fully_billed" invisible='1'/>
                     <field name="pickup_address_id"
                           domain="['|', ('id', '=', partner_id), ('parent_id','=', partner_id)]"
                           context="{'default_type': 'invoice', 'show_address': 1, 'tree_view_ref': 'price_paper.view_partner_tree_search_more', 'show_partner_code': 1}"
@@ -124,6 +125,24 @@
                         </div>
                     </div>
                 </xpath>
+            </field>
+        </record>
+        <record id="action_make_fully_billed" model="ir.actions.server">
+            <field name="name">Mark as fully billed</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="binding_model_id" ref="purchase.model_purchase_order"/>
+            <field name="state">code</field>
+            <field name="code">
+                action = records.po_fully_billed()
+            </field>
+        </record>
+        <record id="action_mark_po_locked" model="ir.actions.server">
+            <field name="name">Mark PO as Locked</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="binding_model_id" ref="purchase.model_purchase_order"/>
+            <field name="state">code</field>
+            <field name="code">
+                action = records.action_mark_po_locked()
             </field>
         </record>
     </data>

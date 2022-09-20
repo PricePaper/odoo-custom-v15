@@ -204,7 +204,7 @@ class SaleOrderLine(models.Model):
             for line in order_lines:
                 msg += "<li> %s: <br/>" % line.product_id.display_name
                 msg += _(
-                    "Ordered Quantity: %(old_qty)s -> %(new_qty)s",
+                    "Unit Price: %(old_qty)s -> %(new_qty)s",
                     old_qty=line.price_unit,
                     new_qty=values["price_unit"]
                 ) + "<br/>"

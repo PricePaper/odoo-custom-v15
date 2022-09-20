@@ -131,8 +131,8 @@
 
 
         <menuitem id="menu_stock_valuation_diff"
-            name="Inventory Valuation Price Diff"
-            parent="stock.menu_warehouse_report"
+            name="Cost/Value Differences"
+            parent="purchase.menu_procurement_management"
             sequence="110"
             action="stock_valuation_layer_price_diff_wizard_action"/>
     </data>

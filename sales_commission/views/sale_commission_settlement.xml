@@ -45,7 +45,8 @@
                         </group>
                         <field name="commission_ids" attrs="{'readonly': [('state', 'not in', ['draft', 'confirm'])]}" widget="many2many">
                             <tree decoration-danger="is_removed == True" delete="0">
-                                <field name="sale_person_id"/>
+                                <field name="sale_person_id" invisible="1"/>
+                                <field name="partner_id"/>
                                 <field name="paid_date"/>
                                 <field name="sale_id"/>
                                 <field name="invoice_id"/>

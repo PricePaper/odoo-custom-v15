@@ -10,13 +10,18 @@ class StockValuationPriceDiff(models.TransientModel):
     def generate_report(self):
         records = self.env['stock.valuation.layer'].search([('remaining_qty', '>', 0)])
         for rec in records:
+
             if rec.stock_move_id and rec.stock_move_id.picking_id and rec.stock_move_id.picking_id.rma_id:
                 continue
+            if rec.stock_move_id and rec.stock_move_id.picking_id.picking_type_code != 'incoming':
+                continue
             price_diff = False
-            svl_recs = rec.product_id.stock_valuation_layer_ids.filtered(lambda r: r.remaining_qty != 0 and r.create_date > rec.create_date)
+            svl_recs = rec.product_id.stock_valuation_layer_ids.filtered(lambda r: r.remaining_qty != 0 and r.create_date < rec.create_date)
             is_greater = True
             for svl_rec in svl_recs:
                 if svl_rec.stock_move_id and svl_rec.stock_move_id.picking_id and svl_rec.stock_move_id.picking_id.rma_id:
+                    continue
+                if svl_rec.stock_move_id and svl_rec.stock_move_id.picking_id.picking_type_code != 'incoming':
                     continue
                 is_greater = False
                 break

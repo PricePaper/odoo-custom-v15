@@ -15,6 +15,8 @@ class SaleOrder(models.Model):
     is_payment_error = fields.Boolean('Is payment error?')
     payment_warning = fields.Text('Payment warning')
     credit_warning = fields.Text(string='Credit Limit Warning Message', compute='compute_credit_warning', copy=False)
+    hold_state = fields.Selection(selection_add=[
+        ('payment_hold', 'Payment Hold')])
 
     def action_confirm(self):
         self.ensure_one()
@@ -26,9 +28,9 @@ class SaleOrder(models.Model):
                 error_msg = ''
                 if not token:
                     error_msg = "There is no authorise.net token available in %s" % self.partner_id.display_name
-                    self.write({'is_payment_error': True, 'payment_warning': error_msg})
+                    self.write({'is_payment_error': True, 'payment_warning': error_msg, 'hold_state': 'payment_hold'})
                 else:
-                    self.write({'is_payment_error': False, 'payment_warning': ""})
+                    self.write({'is_payment_error': False, 'payment_warning': "", 'hold_state': 'release'})
                     reference = self.name
                     count = self.env['payment.transaction'].sudo().search_count([('reference', 'ilike', self.name)])
                     if count:
@@ -48,7 +50,7 @@ class SaleOrder(models.Model):
                     tx_sudo.with_context({'from_authorize_custom': True})._send_payment_request()
                     if tx_sudo.state == 'error':
                         error_msg = tx_sudo.state_message
-                        self.write({'is_payment_error': True, 'payment_warning': error_msg})
+                        self.write({'is_payment_error': True, 'payment_warning': error_msg, 'hold_state': 'payment_hold'})
                 if error_msg:
                     self.message_post(body=error_msg)
                     view_id = self.env.ref('price_paper.view_sale_warning_wizard').id
@@ -61,9 +63,9 @@ class SaleOrder(models.Model):
                         'type': 'ir.actions.act_window',
                         'context': {'default_warning_message': error_msg},
                         'target': 'new'
-                    }
+                    } 
         if self.is_payment_error and self._context.get('bypass_payment'):
-            self.write({'is_payment_error': False})
+            self.write({'is_payment_error': False, 'hold_state': 'release'})
             self.message_post(body='confirming without payment')
             return False
         return super(SaleOrder, self).action_confirm()
@@ -99,4 +101,3 @@ class SaleOrder(models.Model):
         raise ValidationError("authorised amount and invoiced amount is not matching\n please correct the invoice.")
 
 SaleOrder()
-

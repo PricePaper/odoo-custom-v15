@@ -38,5 +38,9 @@
                 </xpath>
             </field>
         </record>
+
+        <record id="price_paper.action_orders_credit_limit_exceeded" model="ir.actions.act_window">
+            <field name="domain">['|', '|', '|', ('hold_state','=', 'price_hold'), ('hold_state','=', 'credit_hold'), ('hold_state','=', 'both_hold'), ('hold_state', '=', 'payment_hold')]</field>
+        </record>
     </data>
 </odoo>

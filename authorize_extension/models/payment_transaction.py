@@ -35,7 +35,7 @@ class PaymentTransaction(models.Model):
 
 
     def _send_payment_request(self):
-        """ Override of payment to send a payment request to Authorize extebnsion custom odule to add more values to Json and prevent printing information in logger.
+        """ Override of payment to send a payment request to Authorize extension custom module to add more values to Json and prevent printing information in logger.
 
         Note: self.ensure_one()
 
@@ -49,7 +49,11 @@ class PaymentTransaction(models.Model):
             raise UserError("Authorize.Net: " + _("The transaction is not linked to a token."))
 
         authorize_api = AuthorizeAPICustom(self.acquirer_id)
-        res_content = authorize_api.authorize_transaction(self, self.sale_order_ids)
+        res_content = False
+        if self.env.context.get('from_invoice_reauth'):
+            res_content = authorize_api.authorize_transaction(self, self.sale_order_ids)
+        else:
+            res_content = authorize_api.authorize_transaction(self, self.sale_order_ids)
         feedback_data = {'reference': self.reference, 'response': res_content}
         self._handle_feedback_data('authorize', feedback_data)
 

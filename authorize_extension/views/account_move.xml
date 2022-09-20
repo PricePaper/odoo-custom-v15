@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="invoice_form_inherited_autherize_ext" model="ir.ui.view">
+            <field name="name">account.move.form</field>
+            <field name="model">account.move</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='button_draft']" position="after">
+                    <field name='is_authorize_tx_failed' invisible='1'/>
+                    <button name="action_reautherize_transaction" type="object" string="Reautherize Payment" class="oe_highlight"
+                          attrs="{'invisible':[('is_authorize_tx_failed', '=', False)]}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

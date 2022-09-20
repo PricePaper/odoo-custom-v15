@@ -163,28 +163,58 @@ class AuthorizeAPICustom:
             })
         return {"lineItem": res}
 
+    def get_invoice_line_item_info(self, order):
+        res = []
+        for line in invoice.invoice_line_ids[:30]:
+            res.append({
+                "itemId": line.product_id.default_code and line.product_id.default_code[:30] or '',
+                "name": line.product_id.name and line.product_id.name[:30],
+                "description": line.name and line.name[:254] or '',
+                "quantity": line.quantity,
+                "unitPrice": line.price_unit,
+                "taxable": True if line.tax_ids else False,
+
+            })
+        return {"lineItem": res}
+
     def get_tax_exempt(self, order):
         res = 'false'
         if order.fiscal_position_id.is_tax_exempt:
             res = 'true'
         return res
 
-    def get_tax_info(self, order):
-        tax_name = ','.join([','.join(line.tax_id.mapped('name')) for line in order.order_line if line.tax_id])
+    def get_tax_info(self, order, from_invoice=False):
+
+        tax_name = ''
+        if from_invoice:
+            tax_name = ','.join([','.join(line.tax_ids.mapped('name')) for line in order.invoice_line_ids if line.tax_ids])
+        else:
+            tax_name = ','.join([','.join(line.tax_id.mapped('name')) for line in order.order_line if line.tax_id])
         return {
             "amount": order.amount_tax,
             "name": tax_name and tax_name[:30] or '',
             "description": tax_name and tax_name[:254] or ''
         }
 
-    def get_shipping_info(self, order):
-        shipping_charge = sum(order.order_line.filtered(lambda rec: rec.is_delivery).mapped('price_subtotal')) or 0
+    def get_shipping_info(self, order, from_invoice=False):
+
+        shipping_charge = 0
         carrier_name = ''
         carrier_product_name = ''
-        if order.carrier_id:
-            carrier_name = order.carrier_id.name and order.carrier_id.name[:30]
-            if order.carrier_id.product_id:
-                carrier_product_name = order.carrier_id.product_id.display_name[:254]
+        carrier_id = False
+        if from_invoice:
+            delivery_line = order.invoice_line_ids.sale_line_ids.filtered(lambda rec: rec.is_delivery)
+            if delivery_line:
+                shipping_charge = sum(delivery_line.mapped('price_subtotal')) or 0
+                carrier_id = delivery_line.mapped('order_id')[0].carrier_id
+        else:
+            shipping_charge = sum(order.order_line.filtered(lambda rec: rec.is_delivery).mapped('price_subtotal')) or 0
+            carrier_id = order.carrier_id
+
+        if carrier_id:
+            carrier_name = carrier_id.name and order.carrier_id.name[:30]
+            if carrier_id.product_id:
+                carrier_product_name = carrier_id.product_id.display_name[:254]
         return {
             "amount": shipping_charge,
             "name": carrier_name,
@@ -273,6 +303,74 @@ class AuthorizeAPICustom:
 
                 "shipTo": {
                     **self.get_address_info(order.partner_shipping_id).get('billTo')
+                },
+                "customerIP": payment_utils.get_customer_ip_address(),
+                "retail": {
+                    "marketType": 0,
+                    "deviceType": 8,
+                },
+                "employeeId": transaction.env.user.id,
+                "authorizationIndicatorType": {
+                    "authorizationIndicator": "pre"
+                }
+            }
+
+        })
+        self.check_avs_response(response)
+        return self._format_response(response, 'auth_only')
+
+
+
+    def authorize_transaction_from_invoice(self, transaction, invoice):
+        """
+            Authorize a transaction
+            @param profile_id : authorize.net customer profile_id
+            @param payment_id : authorize.net customer payment_id
+            @param amount : total amount to authorize
+            return : transaction id
+        """
+        response = self._make_request("createTransactionRequest", {
+            "refId": transaction.reference,
+            "transactionRequest": {
+                "transactionType": "authOnlyTransaction",
+                "amount": transaction.amount,
+                "currencyCode": transaction.currency_id.name,  # TODO
+                'profile': {
+                    'customerProfileId': transaction.token_id.authorize_profile,
+                    'paymentProfile': {
+                        'paymentProfileId': transaction.token_id.acquirer_ref,
+                    }
+                },
+                "solution": {  # todo fix this with values from api credentials
+                    "id":
+                        "AAA100302",
+                    "name":
+                        "Test Solution #1"
+                },
+                "terminalNumber": transaction.env.user.id,
+                "order": {
+                    "invoiceNumber": transaction.reference,
+                    "description": invoice.note or 'description',
+                },
+                "lineItems": self.get_invoice_line_item_info(invoice),
+                "tax": {**self.get_tax_info(invoice, from_invoice=True)},
+                "duty": {
+                    "amount": 0.00,
+                    "name": 'no duty',
+                    "description": 'no duty'
+                },
+                "shipping": {**self.get_shipping_info(invoice, from_invoice=True)},
+                "taxExempt": self.get_tax_exempt(invoice),
+                "poNumber": invoice.ref or "Not provided",
+                "customer": {
+                    "type": "business" if transaction.partner_id.is_company else "individual",
+                    "id": transaction.partner_id.customer_code,
+                    "email": transaction.partner_id.email,
+                },
+
+
+                "shipTo": {
+                    **self.get_address_info(invoice.partner_id).get('billTo')
                 },
                 "customerIP": payment_utils.get_customer_ip_address(),
                 "retail": {

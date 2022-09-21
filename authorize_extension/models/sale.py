@@ -17,6 +17,40 @@ class SaleOrder(models.Model):
     credit_warning = fields.Text(string='Credit Limit Warning Message', compute='compute_credit_warning', copy=False)
     hold_state = fields.Selection(selection_add=[
         ('payment_hold', 'Payment Hold')])
+    is_payment_bypassed = fields.Boolean('Is payment Bypassed?')
+    is_payment_low = fields.Boolean('Is payment Low?')
+
+    def write(self, vals):
+        """
+        if transaction amount is less than order amount mark it as payment_low.
+        """
+
+        res = super(SaleOrder, self).write(vals)
+        if vals.get('order_line', False):
+            for order in self:
+                if not order.is_payment_bypassed and order.state in ('sale', 'done'):# and not order.storage_contract:
+                    txs = order.transaction_ids.filtered(lambda r: r.state in ('authorized', 'done'))
+                    if txs:
+                        amount = sum(txs.mapped('amount'))
+                        if amount < order.amount_total:
+                            order.is_payment_low = True
+        return res
+
+    def cron_void_pricechanged_so_transactions(self):
+        orders = self.env['sale.order'].search([('is_payment_low', '=', True)])
+        for order in orders:
+            order.is_payment_low = False
+            transactions = order.transaction_ids.filtered(lambda r:r.state == 'authorized')
+            order._action_cancel()
+            order.message_post(body='Cancel Reason : New line added Payment Hold')
+            order.action_draft()
+            transactions.action_void()
+
+    def _action_cancel(self):
+        res =  super(SaleOrder, self)._action_cancel()
+        self.write({'is_payment_low': False})
+        return res
+
 
     def action_confirm(self):
         self.ensure_one()
@@ -63,9 +97,10 @@ class SaleOrder(models.Model):
                         'type': 'ir.actions.act_window',
                         'context': {'default_warning_message': error_msg},
                         'target': 'new'
-                    } 
+                        }
+                self.write({'is_payment_bypassed': False})
         if self.is_payment_error and self._context.get('bypass_payment'):
-            self.write({'is_payment_error': False, 'hold_state': 'release'})
+            self.write({'is_payment_error': False, 'hold_state': 'release', 'is_payment_bypassed': True})
             self.message_post(body='confirming without payment')
             return False
         return super(SaleOrder, self).action_confirm()

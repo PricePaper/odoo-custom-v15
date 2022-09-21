@@ -23,7 +23,7 @@ class AuthorizeAPICustom:
 
         self.state = acquirer.state
         self.name = acquirer.authorize_login
-        self.transaction_key = acquirer.authorize_transaction_key
+        self.transaction_key = acquirer.sudo().authorize_transaction_key
         self.payment_method_type = acquirer.authorize_payment_method_type
 
     def _make_request(self, operation, data=None):

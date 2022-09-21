@@ -5,7 +5,7 @@ class ResPartner(models.Model):
     _inherit = 'res.partner'
 
     def create_new_token(self):
-        return self.env.ref('authorize_extension.action_generate_payment_token_wizard').read()[0]
+        return self.sudo().env.ref('authorize_extension.action_generate_payment_token_wizard').read()[0]
 
     def get_authorize_token(self):
         self.ensure_one()

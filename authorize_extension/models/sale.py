@@ -47,7 +47,7 @@ class SaleOrder(models.Model):
             order._action_cancel()
             order.message_post(body='Cancel Reason : New line added Payment Hold')
             order.action_draft()
-
+            order.hold_state = 'payment_hold'
             transactions.action_void()
 
     def _action_cancel(self):

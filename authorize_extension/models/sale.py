@@ -61,7 +61,7 @@ class SaleOrder(models.Model):
         credit_warning = ''#self.check_credit_limit()
         price_warning = ''#self.check_low_price()
         if self.payment_term_id.is_pre_payment and not self._context.get('bypass_payment'):
-            if self.hold_state == 'release' or (not self.hold_state and not self.credit_warning and not self.low_price_warning):
+            if self.hold_state in ('release', 'payment_hold') or (not self.hold_state and not self.credit_warning and not self.low_price_warning):
                 token = self.partner_id.get_authorize_token()
                 error_msg = ''
                 if not token:

@@ -163,7 +163,7 @@ class AuthorizeAPICustom:
             })
         return {"lineItem": res}
 
-    def get_invoice_line_item_info(self, order):
+    def get_invoice_line_item_info(self, invoice):
         res = []
         for line in invoice.invoice_line_ids[:30]:
             res.append({

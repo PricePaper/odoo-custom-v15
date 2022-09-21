@@ -27,7 +27,8 @@ class SaleOrder(models.Model):
 
         res = super(SaleOrder, self).write(vals)
         if vals.get('order_line', False):
-            for order in self:
+            payment_terms = self.env['account.payment.term'].search([('is_pre_payment', '=', True)])
+            for order in self.filtered(lambda r: r.payment_term_id in payment_terms):
                 if not order.is_payment_bypassed and order.state in ('sale', 'done'):# and not order.storage_contract:
                     txs = order.transaction_ids.filtered(lambda r: r.state in ('authorized', 'done'))
                     if txs:
@@ -40,10 +41,13 @@ class SaleOrder(models.Model):
         orders = self.env['sale.order'].search([('is_payment_low', '=', True)])
         for order in orders:
             order.is_payment_low = False
+            order.is_payment_error = True
+            order.payment_warning = 'Payment Hold: Total Amount increased.Mismatch with Payment Transaction'
             transactions = order.transaction_ids.filtered(lambda r:r.state == 'authorized')
             order._action_cancel()
             order.message_post(body='Cancel Reason : New line added Payment Hold')
             order.action_draft()
+
             transactions.action_void()
 
     def _action_cancel(self):

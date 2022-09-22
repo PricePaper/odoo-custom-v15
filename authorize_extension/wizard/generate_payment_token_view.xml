@@ -9,13 +9,20 @@
                 <form string="Make payment wizard">
                     <group>
                         <group>
-                            <field name="card_no"/>
-                            <field name="exp_month"/>
+                            <field name="partner_id" invisible="1"/>
+                            <field name="is_for_shipping_id" widget="boolean_toggle"/>
+
+
+                            <field name="card_no" required="1"/>
+                            <field name="exp_month"  required="1"/>
                             <field name="profile_id" placeholder="Keep empty to create a new one"/>
                         </group>
                         <group>
-                            <field name="card_code"/>
-                            <field name="exp_year"/>
+                            <field name="shipping_id" attrs="{'required':[('is_for_shipping_id', '=', True)], 'invisible':[('is_for_shipping_id', '=', False)]}"
+                                   domain="[('type', '=', 'delivery'), ('parent_id', '=', partner_id)]"/>
+                            <field name="address_id" domain="[('type', '=', 'invoice'), ('parent_id', '=', partner_id)]"/>
+                            <field name="card_code"  required="1"/>
+                            <field name="exp_year"  required="1"/>
                             <field name="acquirer_id"/>
                         </group>
                     </group>

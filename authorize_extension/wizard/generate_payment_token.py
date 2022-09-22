@@ -26,10 +26,10 @@ class PaymentTokenize(models.TransientModel):
     def _get_authorize_acquirer(self):
         return self.env['payment.acquirer'].search([('provider', '=', 'authorize')], limit=1).id
 
-    acquirer_id = fields.Many2one('payment.acquirer', "Acquirer Account", default=_get_authorize_acquirer)
-    name = fields.Char('Card holder name')
+    acquirer_id = fields.Many2one('payment.acquirer', "Acquirer Account", default=_get_authorize_acquirer, required=True)
+    name = fields.Char('Card holder name', required=True)
     card_no = fields.Char('Credit Card Number', size=16)
-    card_code = fields.Char('CVV', size=4)
+    card_code = fields.Char('CVV',size=4)
     exp_month = fields.Selection(
         [('01', 'January'), ('02', 'February'), ('03', 'March'), ('04', 'April'), ('05', 'May'), ('06', 'June'), ('07', 'July'), ('08', 'August'),
          ('09', 'September'), ('10', 'October'), ('11', 'November'), ('12', 'December')], 'Card Expiration Month')
@@ -37,6 +37,9 @@ class PaymentTokenize(models.TransientModel):
     exp_year = fields.Selection([(str(num), str(num)) for num in range(datetime.now().year, datetime.now().year + 7)], 'Card Expiration Year')
     partner_id = fields.Many2one('res.partner', "Partner", default=_get_partner_id)
     profile_id = fields.Char('Profile ID', default=_get_profile_id)
+    is_for_shipping_id = fields.Boolean("Is for delivery address?")
+    shipping_id = fields.Many2one('res.partner', "Delivery address")
+    address_id = fields.Many2one('res.partner', "Billing address", default=_get_partner_id)
 
     def generate_token(self):
         self.ensure_one()
@@ -44,7 +47,7 @@ class PaymentTokenize(models.TransientModel):
             raise UserError("Internal Error please contact your system administrator")
         authorize_api = AuthorizeAPICustom(self.acquirer_id)
         if not self.profile_id:
-            profile = authorize_api.create_customer_profile(self.partner_id)
+            profile = authorize_api.create_customer_profile(self.partner_id, self.address_id, self.shipping_id)
             if not profile.get('customerProfileId'):
                 raise UserError("Profile creation error\n{err_code}\n{err_msg}".format(**profile))
             self.profile_id = profile.get('customerProfileId')
@@ -55,7 +58,7 @@ class PaymentTokenize(models.TransientModel):
                 'cardCode': self.card_code,
             }
         }
-        token = authorize_api.create_payment_profile(self.profile_id, self.partner_id, opequedata)
+        token = authorize_api.create_payment_profile(self.profile_id, self.partner_id, opequedata, self.address_id, self.shipping_id)
         if not token.get('paymentProfile', {}).get('customerPaymentProfileId'):
             raise UserError("Token creation error\n{err_code}\n{err_msg}".format(**token))
         # shipping  = authorize_api.create_shipping_profile(self.profile_id, self.partner_id)
@@ -69,9 +72,11 @@ class PaymentTokenize(models.TransientModel):
             'authorize_profile': self.profile_id,
             'authorize_payment_method_type': self.acquirer_id.authorize_payment_method_type,
             'verified': True,
+            'shipping_id': self.shipping_id.id,
+            'address_id': self.address_id.id,
         })
         self.write({
-            'card_no': '',
+            'card_no': 'null',
             'exp_year': '',
             'exp_month': '',
             'card_code': '',

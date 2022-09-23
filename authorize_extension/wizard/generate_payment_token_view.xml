@@ -20,7 +20,7 @@
                         <group>
                             <field name="shipping_id" attrs="{'required':[('is_for_shipping_id', '=', True)], 'invisible':[('is_for_shipping_id', '=', False)]}"
                                    domain="[('type', '=', 'delivery'), ('parent_id', '=', partner_id)]"/>
-                            <field name="address_id" domain="[('type', '=', 'invoice'), ('parent_id', '=', partner_id)]"/>
+                            <field name="address_id" domain="[('parent_id', '=', partner_id)]"/>
                             <field name="card_code"  required="1"/>
                             <field name="exp_year"  required="1"/>
                             <field name="acquirer_id"/>

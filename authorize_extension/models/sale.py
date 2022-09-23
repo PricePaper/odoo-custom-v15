@@ -34,25 +34,20 @@ class SaleOrder(models.Model):
                     if txs:
                         amount = sum(txs.mapped('amount'))
                         if amount < order.amount_total:
-                            order.is_payment_low = True
-        return res
+                            transactions = order.transaction_ids.filtered(lambda r:r.state == 'authorized')
+                            transactions.action_void()
+                            order._action_cancel()
+                            order.message_post(body='Cancel Reason : New line added Payment Hold')
+                            order.action_draft()
+                            order.hold_state = 'payment_hold'
+                            order.is_payment_error = True
+                            order.payment_warning = 'Payment Hold: Total Amount increased.Mismatch with Payment Transaction'
 
-    def cron_void_pricechanged_so_transactions(self):
-        orders = self.env['sale.order'].search([('is_payment_low', '=', True)])
-        for order in orders:
-            order.is_payment_low = False
-            order.is_payment_error = True
-            order.payment_warning = 'Payment Hold: Total Amount increased.Mismatch with Payment Transaction'
-            transactions = order.transaction_ids.filtered(lambda r:r.state == 'authorized')
-            order._action_cancel()
-            order.message_post(body='Cancel Reason : New line added Payment Hold')
-            order.action_draft()
-            order.hold_state = 'payment_hold'
-            transactions.action_void()
+        return res
 
     def _action_cancel(self):
         res =  super(SaleOrder, self)._action_cancel()
-        self.write({'is_payment_low': False})
+        self.write({'is_payment_error': False})
         return res
 
 

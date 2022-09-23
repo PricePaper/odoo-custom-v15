@@ -247,6 +247,14 @@ class AccountMove(models.Model):
                     new_pmt_state = 'reversed'
             move.payment_state = new_pmt_state
 
+    def action_switch_invoice_into_refund_credit_note(self):
+        if any(move.move_type not in ('in_invoice', 'out_invoice') for move in self):
+            raise ValidationError(_("This action isn't available for this document."))
+
+        for move in self:
+            move.write({'name' : '/'})
+        return super(AccountMove, self).action_switch_invoice_into_refund_credit_note()
+
     @api.depends('posted_before', 'state', 'journal_id', 'date')
     def _compute_name(self):
         """

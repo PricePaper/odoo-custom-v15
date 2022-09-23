@@ -39,7 +39,7 @@ class PaymentTokenize(models.TransientModel):
     profile_id = fields.Char('Profile ID', default=_get_profile_id)
     is_for_shipping_id = fields.Boolean("Is for delivery address?")
     shipping_id = fields.Many2one('res.partner', "Delivery address")
-    address_id = fields.Many2one('res.partner', "Billing address", default=_get_partner_id)
+    address_id = fields.Many2one('res.partner', "Billing address", required=True)
 
     def generate_token(self):
         self.ensure_one()

@@ -15,5 +15,18 @@
                 </button>
             </field>
         </record>
+
+        <record id="view_stock_order_form_inherit_ext" model="ir.ui.view">
+            <field name="name">view.stock.order.form.inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="scs_rma.view_stock_order_form_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='%(stock.act_stock_return_picking)d']" position="attributes">
+                    <attribute name="attrs">
+                        {'invisible': [('state', '!=', 'done')]}
+                    </attribute>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

@@ -27,7 +27,7 @@ class PaymentTokenize(models.TransientModel):
         return self.env['payment.acquirer'].search([('provider', '=', 'authorize')], limit=1).id
 
     acquirer_id = fields.Many2one('payment.acquirer', "Acquirer Account", default=_get_authorize_acquirer, required=True)
-    name = fields.Char('Card holder name', required=True)
+    name = fields.Char('Card holder name')
     card_no = fields.Char('Credit Card Number', size=16)
     card_code = fields.Char('CVV',size=4)
     exp_month = fields.Selection(

@@ -9,7 +9,7 @@ from dateutil import relativedelta
 from odoo import api, fields, models, _, SUPERUSER_ID
 from odoo.tools import float_compare
 from odoo.exceptions import UserError, ValidationError
-from ..authorise_request_custom import AuthorizeAPICustom
+from ..authorize_request_custom import AuthorizeAPICustom
 
 
 

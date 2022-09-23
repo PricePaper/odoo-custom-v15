@@ -39,9 +39,14 @@ class AuthorizeAPICustom:
                 **(data or {})
             }
         }
+        # Sanitize floats because they make the API angry
+        safe_request_str = json.dumps(json.loads(
+                json.dumps(request),
+                parse_float=lambda x: round(float(x), 2))
+        )
         # todo remove logger to avoid printing sensitive informations
         _logger.info("sending request to %s:\n%s", self.url, pprint.pformat(request))
-        response = requests.post(self.url, json.dumps(request), timeout=60)
+        response = requests.post(self.url, safe_request_str, timeout=60)
         response.raise_for_status()
         response = json.loads(response.content)
         _logger.info("response received:\n%s", pprint.pformat(response))
@@ -76,6 +81,18 @@ class AuthorizeAPICustom:
                 'phoneNumber': partner.phone or partner.mobile or '',
                 'faxNumber': partner.fax_number or ''
             }
+        }
+
+    def get_shipto_address_info(self, partner):
+        return {
+            'firstName': '' if partner.is_company else partner.firstname,
+            'lastName': partner.lastname or partner.name,  # lastName is always required
+            'company': partner.name if partner.is_company else partner.parent_id.name,
+            'address': '%s %s' % (partner.street or '', partner.street2 or ''),
+            'city': partner.city,
+            'state': partner.state_id.name or '',
+            'zip': partner.zip,
+            'country': partner.country_id.name or '',
         }
 
     def create_customer_profile(self, partner=False, address=False, shipping_id=False):
@@ -146,7 +163,7 @@ class AuthorizeAPICustom:
             "createCustomerShippingAddressRequest",
             {
                 "customerProfileId": profile_id,
-                "address": {**self.get_address_info(partner)['billTo']},
+                "address": self.get_shipto_address_info(partner),
                 "defaultShippingAddress": False
 
             })
@@ -324,9 +341,8 @@ class AuthorizeAPICustom:
                 },
                 # **self.get_address_info(order.partner_invoice_id),
 
-                "shipTo": {
-                    **self.get_address_info(order.partner_shipping_id).get('billTo')
-                },
+                # phoneNumber is not in the API and I think we got a little too fancy here
+                "shipTo": self.get_shipto_address_info(order.partner_shipping_id),
                 "customerIP": payment_utils.get_customer_ip_address(),
                 "retail": {
                     "marketType": 0,
@@ -392,9 +408,7 @@ class AuthorizeAPICustom:
                 },
 
 
-                "shipTo": {
-                    **self.get_address_info(invoice.partner_id).get('billTo')
-                },
+                "shipTo": self.get_shipto_address_info(invoice.partner_id),
                 "customerIP": payment_utils.get_customer_ip_address(),
                 "retail": {
                     "marketType": 0,

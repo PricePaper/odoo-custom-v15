@@ -57,7 +57,7 @@ class SaleOrder(models.Model):
         price_warning = ''#self.check_low_price()
         if self.payment_term_id.is_pre_payment and not self._context.get('bypass_payment'):
             if self.hold_state in ('release', 'payment_hold') or (not self.hold_state and not self.credit_warning and not self.low_price_warning):
-                token = self.partner_id.get_authorize_token()
+                token = self.partner_shipping_id.get_authorize_token() or self.partner_id.get_authorize_token()
                 error_msg = ''
                 if not token:
                     error_msg = "There is no authorise.net token available in %s" % self.partner_id.display_name

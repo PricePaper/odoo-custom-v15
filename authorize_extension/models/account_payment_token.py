@@ -15,6 +15,8 @@ class PaymentToken(models.Model):
         string="Acquirer Reference", help="The acquirer reference of the token of the transaction",
         required=True, tracking=True)
     active = fields.Boolean(string="Active", default=True, tracking=True)
+    shipping_id = fields.Many2one('res.partner', "Delivery address")
+    address_id = fields.Many2one('res.partner', "Billing address")
 
 
 PaymentToken()

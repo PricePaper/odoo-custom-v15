@@ -23,7 +23,7 @@ class AuthorizeAPICustom:
 
         self.state = acquirer.state
         self.name = acquirer.authorize_login
-        self.transaction_key = acquirer.authorize_transaction_key
+        self.transaction_key = acquirer.sudo().authorize_transaction_key
         self.payment_method_type = acquirer.authorize_payment_method_type
 
     def _make_request(self, operation, data=None):
@@ -73,10 +73,12 @@ class AuthorizeAPICustom:
                 'state': partner.state_id.name or '',
                 'zip': partner.zip,
                 'country': partner.country_id.name or '',
+                'phoneNumber': partner.phone or partner.mobile or '',
+                'faxNumber': partner.fax_number or ''
             }
         }
 
-    def create_customer_profile(self, partner=False):
+    def create_customer_profile(self, partner=False, address=False, shipping_id=False):
         """
             Create Authorize net profile
             @param partner: browse record object of res.partner
@@ -95,7 +97,27 @@ class AuthorizeAPICustom:
             _logger.warning('Unable to create customer profile \n {err_code}\n{err_msg}'.format(**response))
         return response
 
-    def create_payment_profile(self, profile_id, partner, opequedata):
+    def create_customer_profile_with_payment(self, partner=False, address=False, opequedata=False):
+        """
+            Create Authorize net profile
+            @param partner: browse record object of res.partner
+            return : longint profile id
+        """
+        if not partner:
+            return False
+
+        response = self._make_request('createCustomerProfileRequest', {
+            'profile': {
+                'merchantCustomerId': partner.customer_code or 'ODOO-%s' % partner.id,
+                "description": partner.name[:25],
+                'email': partner.email or ''
+            }
+        })
+        if not response.get('customerProfileId'):
+            _logger.warning('Unable to create customer profile \n {err_code}\n{err_msg}'.format(**response))
+        return response
+
+    def create_payment_profile(self, profile_id, partner, opequedata, address_id=False, shipping_id=False):
         """
             Authorize a transaction
             @param profile_id : authorize.net customer profile_id
@@ -106,9 +128,9 @@ class AuthorizeAPICustom:
 
         response = self._make_request('createCustomerPaymentProfileRequest', {
             'customerProfileId': profile_id,
-            # 'validationMode': 'liveMode' if self.state == 'enabled' else 'testMode',
             'paymentProfile': {
-                **self.get_address_info(partner),
+                "customerType": "business" if partner.is_company else "individual",
+                **self.get_address_info(address_id or partner),
                 'payment': {**opequedata},
             },
             'validationMode': 'liveMode' if self.state == 'enabled' else 'testMode',

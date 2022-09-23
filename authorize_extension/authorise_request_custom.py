@@ -109,7 +109,7 @@ class AuthorizeAPICustom:
         response = self._make_request('createCustomerProfileRequest', {
             'profile': {
                 'merchantCustomerId': partner.customer_code or 'ODOO-%s' % partner.id,
-                "description": partner.name[:25],
+                "description": partner.display_name[:25] or partner.name[:25],
                 'email': partner.email or ''
             }
         })

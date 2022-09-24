@@ -1,4 +1,4 @@
-from odoo import models,fields
+from odoo import models, fields
 
 
 class ResPartner(models.Model):
@@ -12,5 +12,7 @@ class ResPartner(models.Model):
 
     def get_authorize_token(self):
         self.ensure_one()
-        return self.payment_token_ids.filtered(lambda rec: rec.acquirer_id.provider == 'authorize')[:1]
+        return self.sudo().payment_token_ids.filtered(lambda rec: rec.acquirer_id.provider == 'authorize')[:1]
+
+
 ResPartner()

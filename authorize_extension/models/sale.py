@@ -20,6 +20,7 @@ class SaleOrder(models.Model):
     is_payment_bypassed = fields.Boolean('Is payment Bypassed?')
     is_payment_low = fields.Boolean('Is payment Low?')
     token_id = fields.Many2one('payment.token', 'Payment Token')
+    is_pre_payment = fields.Boolean('Is prepayment?', related='payment_term_id.is_pre_payment')
 
     def action_payment_hold(self, error_msg='', cancel_reason=''):
         self.ensure_one()

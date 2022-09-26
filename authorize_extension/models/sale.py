@@ -77,7 +77,7 @@ class SaleOrder(models.Model):
                 if count:
                     reference = '%s - %s' % (self.name, count)
                 tx_sudo = self.env['payment.transaction'].sudo().create({
-                    'acquirer_id': token.acquirer_id.id,
+                    'acquirer_id': self.token_id.acquirer_id.id,
                     'reference': reference,
                     'amount': self.amount_total,
                     'currency_id': self.currency_id.id,

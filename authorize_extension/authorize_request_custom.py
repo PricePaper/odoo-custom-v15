@@ -423,3 +423,35 @@ class AuthorizeAPICustom:
         })
         self.check_avs_response(response)
         return self._format_response(response, 'auth_only')
+
+    def _get_invoice_name(self, invoices):
+        name = ''
+        if invoices:
+            name = ','.join([','.join(invoices.mapped('name'))])
+        return name
+
+    def capture(self, transaction, amount):
+        """Capture a previously authorized payment for the given amount.
+
+        Capture a previsouly authorized payment. Note that the amount is required
+        even though we do not support partial capture.
+
+        :param transaction: id of the authorized transaction in the
+                                   Authorize.net backend
+        :param str amount: transaction amount (up to 15 digits with decimal point)
+
+        :return: a dict containing the response code, transaction id and transaction type
+        :rtype: dict
+        """
+
+        response = self._make_request('createTransactionRequest', {
+            'transactionRequest': {
+                'transactionType': 'priorAuthCaptureTransaction',
+                'amount': str(amount),
+                'refTransId': transaction.acquirer_reference,
+                "order": {
+                    "invoiceNumber": self._get_invoice_name(transaction.invoice_ids)
+                    }
+            }
+        })
+        return self._format_response(response, 'prior_auth_capture')

@@ -8,6 +8,10 @@
             <field name="payment_token_ids" position="before">
                 <button class="btn-warning" type="object" name="create_new_token" icon="fa-card" string="Generate New Token"/>
             </field>
+            <xpath expr="//field[@name='payment_token_ids']/tree/field[@name='name']" position="after">
+                    <field name="shipping_id"/>
+                    <field name="address_id"/>
+            </xpath>
             <xpath expr="//field[@name='payment_token_ids']/form/sheet/group/field[@name='name']" position="after">
                     <field name="shipping_id"/>
                     <field name="address_id"/>

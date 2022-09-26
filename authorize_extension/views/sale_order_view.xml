@@ -12,6 +12,10 @@
                 <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
                     <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ['draft']), ('is_payment_error', '=', True)]}</attribute>
                 </xpath>
+                <field name='payment_term_id' position="before">
+                    <field name="token_id"
+                          domain="[('partner_id','=', partner_id), '|', ('shipping_id', '=', 'False'), ('shipping_id', '=', partner_shipping_id)]"/>
+                </field>
                 <xpath expr="//div[@name='button_box']" position="inside">
                     <field name="transaction_ids" invisible="1"/>
                     <button name="action_view_payment_transactions" type="object"
@@ -44,6 +48,7 @@
                             attrs="{'invisible':[('is_payment_error', '=', False)]}" context="{'bypass_payment':True}"
                             groups="base.group_erp_manager"/>
                 </xpath>
+
             </field>
         </record>
         <record id="sale_order_view_search_credit_exceeded_inherit_payment_hold" model="ir.ui.view">

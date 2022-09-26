@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields
+from odoo import models, fields, api
 from odoo.exceptions import AccessError, UserError, ValidationError
 
 
@@ -19,6 +19,7 @@ class SaleOrder(models.Model):
         ('payment_hold', 'Payment Hold')])
     is_payment_bypassed = fields.Boolean('Is payment Bypassed?')
     is_payment_low = fields.Boolean('Is payment Low?')
+    token_id = fields.Many2one('payment.token', 'Payment Token')
 
     def action_payment_hold(self, error_msg='', cancel_reason=''):
         self.ensure_one()
@@ -64,11 +65,11 @@ class SaleOrder(models.Model):
         if isinstance(res, dict):
             return res
         if self.state in ('sale', 'done') and self.payment_term_id.is_pre_payment and not self._context.get('bypass_payment'):
-            token = self.partner_shipping_id.get_authorize_token() or self.partner_id.get_authorize_token()
+            # token = self.partner_shipping_id.get_authorize_token() or self.partner_id.get_authorize_token()
             error_msg = ''
-            if not token:
-                error_msg = "There is no authorise.net token available in %s" % self.partner_id.display_name
-                self.action_payment_hold(error_msg, "no payment token available in customer")
+            if not self.token_id:
+                error_msg = "Payment Token Not selected."
+                self.action_payment_hold(error_msg, "Payment Token Not selected.")
             else:
                 self.write({'is_payment_error': False, 'payment_warning': "", 'hold_state': 'release'})
                 reference = self.name

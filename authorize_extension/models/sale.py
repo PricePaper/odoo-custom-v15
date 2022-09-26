@@ -82,7 +82,7 @@ class SaleOrder(models.Model):
                     'amount': self.amount_total,
                     'currency_id': self.currency_id.id,
                     'partner_id': self.partner_id.id,
-                    'token_id': token.id,
+                    'token_id': self.token_id.id,
                     'operation': 'offline',
                     'tokenize': False,
                     'sale_order_ids': [(4, self.id)]

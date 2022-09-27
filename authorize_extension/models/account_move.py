@@ -62,6 +62,13 @@ class AccountMove(models.Model):
         transactions = invoices.mapped('authorized_transaction_ids').filtered(lambda r: r.state == 'authorized')
 
         for transaction in transactions:
+            rounded_amount = round(transaction.amount, transaction.currency_id.decimal_places)
+            invoice_amount = sum(transaction.invoice_ids.mapped('amount_total'))
+            if rounded_amount < invoice_amount:
+                transaction.action_void()
+                transaction.invoice_ids.is_authorize_tx_failed = True
+                transaction.invoice_ids.message_post(body='Transaction amount is less than Invoice amount.Void transaction.')
+                continue
             transaction.action_capture()
         failed_txs = transactions.filtered(lambda r: r.state == 'error')
         if failed_txs:

@@ -122,6 +122,12 @@ class PaymentTransaction(models.Model):
 
         authorize_API = AuthorizeAPICustom(self.acquirer_id)
         rounded_amount = round(self.amount, self.currency_id.decimal_places)
+        invoice_amount = sum(self.invoice_ids.mapped('amount_total'))
+        if rounded_amount < invoice_amount:
+            self.action_void()
+            self.invoice_ids.is_authorize_tx_failed = True
+            self.invoice_ids.message_post(body='Transaction amount is less than Invoice amount.Void transaction.')
+            return
         res_content = authorize_API.capture(self, rounded_amount)
         # As the API has no redirection flow, we always know the reference of the transaction.
         # Still, we prefer to simulate the matching of the transaction by crafting dummy feedback

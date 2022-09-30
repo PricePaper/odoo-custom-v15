@@ -44,6 +44,7 @@ class PaymentTokenize(models.TransientModel):
 
     def generate_token(self):
         self.ensure_one()
+        create_customer_profile = False
         if not self.partner_id:
             raise UserError("Internal Error please contact your system administrator")
         authorize_api = AuthorizeAPICustom(self.acquirer_id)
@@ -51,6 +52,7 @@ class PaymentTokenize(models.TransientModel):
             profile = authorize_api.create_customer_profile(self.partner_id, self.address_id, self.shipping_id)
             if not profile.get('customerProfileId'):
                 raise UserError("Profile creation error\n{err_code}\n{err_msg}".format(**profile))
+            create_customer_profile = True
             self.profile_id = profile.get('customerProfileId')
         opequedata = {
             'creditCard': {
@@ -61,6 +63,8 @@ class PaymentTokenize(models.TransientModel):
         }
         token = authorize_api.create_payment_profile(self.profile_id, self.partner_id, opequedata, self.address_id, self.shipping_id)
         if not token.get('paymentProfile', {}).get('customerPaymentProfileId'):
+            if create_customer_profile:
+                profile = authorize_api.delete_customer_profile(self.profile_id)
             raise UserError("Token creation error\n{err_code}\n{err_msg}".format(**token))
         # shipping  = authorize_api.create_shipping_profile(self.profile_id, self.partner_id)
         self.env['payment.token'].create({

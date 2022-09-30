@@ -115,6 +115,19 @@ class AuthorizeAPICustom:
             _logger.warning('Unable to create customer profile \n {err_code}\n{err_msg}'.format(**response))
         return response
 
+    def delete_customer_profile(self, profile_id):
+        """
+            Delete Authorize net profile
+            @param profile_id: customer profile id
+            return : response
+        """
+
+        response = self._make_request('deleteCustomerProfileRequest', {
+            'customerProfileId': profile_id
+            })
+
+        return response
+
     def create_customer_profile_with_payment(self, partner=False, address=False, opequedata=False):
         """
             Create Authorize net profile

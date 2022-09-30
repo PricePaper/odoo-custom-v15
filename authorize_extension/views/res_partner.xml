@@ -11,10 +11,12 @@
             <xpath expr="//field[@name='payment_token_ids']/tree/field[@name='name']" position="after">
                     <field name="shipping_id"/>
                     <field name="address_id"/>
+                    <field name="is_default" widget="boolean_toggle"/>
             </xpath>
             <xpath expr="//field[@name='payment_token_ids']/form/sheet/group/field[@name='name']" position="after">
                     <field name="shipping_id"/>
                     <field name="address_id"/>
+                    <field name="is_default" widget="boolean_toggle"/>
             </xpath>
 
         </field>
@@ -32,6 +34,7 @@
                                 <field name="sequence" widget="handle"/>
                                 <field name="name"/>
                                 <field name="acquirer_id" readonly="1"/>
+                                <field name="is_default" widget="boolean_toggle"/>
                                 <field name="acquirer_ref" string="Authorize.Net Payment Profile" readonly="1"/>
                                 <field name="company_id" groups="base.group_multi_company" optional="show"/>
                             </tree>

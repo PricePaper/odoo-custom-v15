@@ -40,6 +40,7 @@ class PaymentTokenize(models.TransientModel):
     is_for_shipping_id = fields.Boolean("Is for delivery address?")
     shipping_id = fields.Many2one('res.partner', "Delivery address")
     address_id = fields.Many2one('res.partner', "Billing address", required=True)
+    is_default = fields.Boolean('Is Default Token?')
 
     def generate_token(self):
         self.ensure_one()
@@ -74,6 +75,7 @@ class PaymentTokenize(models.TransientModel):
             'verified': True,
             'shipping_id': self.shipping_id.id,
             'address_id': self.address_id.id,
+            'is_default': self.is_default
         })
         self.write({
             'card_no': 'null',

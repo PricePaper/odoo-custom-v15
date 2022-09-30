@@ -22,6 +22,22 @@ class SaleOrder(models.Model):
     token_id = fields.Many2one('payment.token', 'Payment Token')
     is_pre_payment = fields.Boolean('Is prepayment?', related='payment_term_id.is_pre_payment')
 
+    @api.onchange('partner_shipping_id')
+    def onchange_partner_id_carrier_id(self):
+
+        res = super(SaleOrder, self).onchange_partner_id_carrier_id()
+        token = False
+        if self.partner_shipping_id and self.partner_id:
+            if self.partner_shipping_id == self.partner_id:
+                token = self.partner_id.payment_token_ids.filtered(lambda r: not r.shipping_id and r.is_default)
+            else:
+                token = self.partner_shipping_id.shipping_payment_token_ids.filtered(lambda r:r.is_default)
+            if token:
+                token.id
+
+        self.token_id = token
+
+
     def action_payment_hold(self, error_msg='', cancel_reason=''):
         self.ensure_one()
         if self.state not in ('drfat', 'sent'):

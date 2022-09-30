@@ -28,10 +28,23 @@ class SaleOrder(models.Model):
         res = super(SaleOrder, self).onchange_partner_id_carrier_id()
         token = False
         if self.partner_shipping_id and self.partner_id:
+            default_parent_token = False
+            parent_token = self.partner_id.payment_token_ids.filtered(lambda r: not r.shipping_id)
+            if len(parent_token) == 1:
+                default_parent_token = parent_token
+            elif len(parent_token) > 1:
+                default_parent_token = parent_token.filtered(lambda r: r.is_default)
+
             if self.partner_shipping_id == self.partner_id:
-                token = self.partner_id.payment_token_ids.filtered(lambda r: not r.shipping_id and r.is_default)
+                token = default_parent_token
             else:
-                token = self.partner_shipping_id.shipping_payment_token_ids.filtered(lambda r:r.is_default)
+                shipping_token = self.partner_shipping_id.shipping_payment_token_ids
+                if len(shipping_token) == 1:
+                    token = shipping_token
+                elif len(shipping_token) > 1:
+                    token = shipping_token.filtered(lambda r: r.is_default)
+                else:
+                    token = default_parent_token
             if token:
                 token.id
 

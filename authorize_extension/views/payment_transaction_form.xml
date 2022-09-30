@@ -2,18 +2,18 @@
 <odoo>
     <data>
 
-        <record id="payment_transaction_form" model="ir.ui.view">
-            <field name="name">Autherize extension Transaction Form</field>
-            <field name="model">payment.transaction</field>
-            <field name="inherit_id" ref="payment.payment_transaction_form"/>
-            <field name="arch" type="xml">
-              <xpath expr="//button[@name='action_capture']" position="attributes">
-                <attribute name="states"></attribute>
-                <attribute name="attrs">{'invisible': ['|', ('state', 'not in', 'authorized'), ('invoices_count', '=', 0)]}</attribute>
-              </xpath>
+<!--        <record id="payment_transaction_form" model="ir.ui.view">-->
+<!--            <field name="name">Autherize extension Transaction Form</field>-->
+<!--            <field name="model">payment.transaction</field>-->
+<!--            <field name="inherit_id" ref="payment.payment_transaction_form"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--              <xpath expr="//button[@name='action_capture']" position="attributes">-->
+<!--                <attribute name="states"></attribute>-->
+<!--                <attribute name="attrs">{'invisible': ['|', ('state', 'not in', 'authorized'), ('invoices_count', '=', 0)]}</attribute>-->
+<!--              </xpath>-->
 
-            </field>
-        </record>
+<!--            </field>-->
+<!--        </record>-->
     </data>
 
 </odoo>

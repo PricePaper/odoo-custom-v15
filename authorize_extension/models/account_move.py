@@ -1,12 +1,19 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
     is_authorize_tx_failed = fields.Boolean('Authorize.net Transaction Failed')
+
+    def action_register_payment(self):
+
+        if self.mapped('authorized_transaction_ids').filtered(lambda r: r.state in ('authorized', 'done')):
+            raise ValidationError(_("Selected Invoice(s) have/has authorized or confirmed transaction."))
+        return super(AccountMove, self).action_register_payment()
 
 
     def action_reautherize_transaction(self):

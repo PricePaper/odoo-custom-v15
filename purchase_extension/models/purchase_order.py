@@ -353,22 +353,25 @@ class PurchaseOrderLine(models.Model):
                 total = 0.0
                 for move in line._get_po_line_moves():
                     if move.state == 'cancel':
-                        if move.location_dest_id.usage == "supplier":
-                            if move.to_refund:
+                        if move.picking_code == 'outgoing':
+                            continue
+                        if move.picking_id.backorder_id or move.picking_id.state != 'cancel':
+                            if move.location_dest_id.usage == "supplier":
+                                if move.to_refund:
+                                    total -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom, rounding_method='HALF-UP')
+                            elif move.origin_returned_move_id and move.origin_returned_move_id._is_dropshipped() and not move._is_dropshipped_returned():
+                                pass
+                            elif (
+                                move.location_dest_id.usage == "internal"
+                                and move.to_refund
+                                and move.location_dest_id
+                                not in self.env["stock.location"].search(
+                                    [("id", "child_of", move.warehouse_id.view_location_id.id)]
+                                )
+                            ):
                                 total -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom, rounding_method='HALF-UP')
-                        elif move.origin_returned_move_id and move.origin_returned_move_id._is_dropshipped() and not move._is_dropshipped_returned():
-                            pass
-                        elif (
-                            move.location_dest_id.usage == "internal"
-                            and move.to_refund
-                            and move.location_dest_id
-                            not in self.env["stock.location"].search(
-                                [("id", "child_of", move.warehouse_id.view_location_id.id)]
-                            )
-                        ):
-                            total -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom, rounding_method='HALF-UP')
-                        else:
-                            total += move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom, rounding_method='HALF-UP')
+                            else:
+                                total += move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom, rounding_method='HALF-UP')
                 cancelled_qty = total
                 line.qty_owed = line.product_qty - line.qty_received - cancelled_qty
             else:

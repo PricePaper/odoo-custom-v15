@@ -50,7 +50,13 @@ class PaymentTransaction(models.Model):
 
         authorize_api = AuthorizeAPICustom(self.acquirer_id)
         res_content = False
-        if self.env.context.get('from_invoice_reauth'):
+        if self.payment_id:
+            if self._context.get('active_model') == 'account.move' and self._context.get('active_id'):
+                invoice = self.env['account.move'].browse(self._context.get('active_id'))
+                res_content = authorize_api.authorize_capture_transaction(self, invoice)
+            else:
+                raise ValidationError("Technical error contact administrator")
+        elif self.env.context.get('from_invoice_reauth'):
             res_content = authorize_api.authorize_transaction(self, self.sale_order_ids)
         else:
             res_content = authorize_api.authorize_transaction(self, self.sale_order_ids)

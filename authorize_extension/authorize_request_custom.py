@@ -265,7 +265,7 @@ class AuthorizeAPICustom:
             carrier_id = order.carrier_id
 
         if carrier_id:
-            carrier_name = carrier_id.name and order.carrier_id.name[:30]
+            carrier_name = carrier_id.name and carrier_id.name[:30]
             if carrier_id.product_id:
                 carrier_product_name = carrier_id.product_id.display_name[:254]
         return {
@@ -373,7 +373,7 @@ class AuthorizeAPICustom:
 
 
 
-    def authorize_transaction_from_invoice(self, transaction, invoice):
+    def authorize_transaction_from_invoice(self, transaction, invoice, ttype="authOnlyTransaction"):
         """
             Authorize a transaction
             @param profile_id : authorize.net customer profile_id
@@ -384,7 +384,7 @@ class AuthorizeAPICustom:
         response = self._make_request("createTransactionRequest", {
             "refId": transaction.reference,
             "transactionRequest": {
-                "transactionType": "authOnlyTransaction",
+                "transactionType": ttype,
                 "amount": transaction.amount,
                 "currencyCode": transaction.currency_id.name,  # TODO
                 'profile': {
@@ -393,16 +393,11 @@ class AuthorizeAPICustom:
                         'paymentProfileId': transaction.token_id.acquirer_ref,
                     }
                 },
-                "solution": {  # todo fix this with values from api credentials
-                    "id":
-                        "AAA100302",
-                    "name":
-                        "Test Solution #1"
-                },
+
                 "terminalNumber": transaction.env.user.id,
                 "order": {
                     "invoiceNumber": transaction.reference,
-                    "description": invoice.note or 'description',
+                    "description": invoice.narration or 'description',
                 },
                 "lineItems": self.get_invoice_line_item_info(invoice),
                 "tax": {**self.get_tax_info(invoice, from_invoice=True)},
@@ -436,3 +431,11 @@ class AuthorizeAPICustom:
         })
         self.check_avs_response(response)
         return self._format_response(response, 'auth_only')
+
+    # authCaptureTransaction
+    def authorize_capture_transaction(self, transaction, invoice):
+        res = self.authorize_transaction_from_invoice(transaction, invoice, "authCaptureTransaction")
+        if res.get('x_type'):
+            res['x_type'] = "auth_capture"
+        return res
+

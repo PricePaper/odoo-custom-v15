@@ -560,7 +560,7 @@ class SaleOrder(models.Model):
             if shipping_addr:
                 self.partner_shipping_id = shipping_addr.id
             else:
-                self.partner_shipping_id = addr['delivery']
+                self.partner_shipping_id = self.partner_id.id
         else:
             self.invoice_address_id = False
             self.partner_shipping_id = False

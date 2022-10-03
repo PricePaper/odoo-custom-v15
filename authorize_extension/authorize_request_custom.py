@@ -439,3 +439,24 @@ class AuthorizeAPICustom:
             res['x_type'] = "auth_capture"
         return res
 
+    def get_batch(self, start_date, last_date):
+        response = self._make_request("getSettledBatchListRequest", {
+            "includeStatistics": "true",
+            "firstSettlementDate": start_date,
+            "lastSettlementDate": last_date
+            })
+        return response
+
+    def get_transaction_list(self, batch_id):
+        response = self._make_request("getTransactionListRequest", {
+                        "batchId": batch_id,
+                        "sorting": {
+                          "orderBy": "submitTimeUTC",
+                          "orderDescending": "true"
+                        },
+                        "paging": {
+                          "limit": "100",
+                          "offset": "1"
+                        }
+                      })
+        return response

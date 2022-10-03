@@ -206,7 +206,7 @@ class AuthorizeAPICustom:
         for line in order.order_line.filtered(lambda r: not r.is_delivery and not r.is_downpayment and r.product_uom_qty > 0)[:30]:
             res.append({
 
-                "itemId": line.product_id.default_code and line.product_id.default_code[:30] or '',
+                "itemId": line.product_id.default_code and line.product_id.default_code[:30] or 'Not applicable',
                 "name": line.product_id.name and line.product_id.name[:30],
                 "description": line.name and line.name[:254] or '',
                 "quantity": line.product_uom_qty,
@@ -220,7 +220,7 @@ class AuthorizeAPICustom:
         res = []
         for line in invoice.invoice_line_ids.filtered(lambda rec: rec.quantity > 0)[:30]:
             res.append({
-                "itemId": line.product_id.default_code and line.product_id.default_code[:30] or '',
+                "itemId": line.product_id.default_code and line.product_id.default_code[:30] or 'Not applicable',
                 "name": line.product_id.name and line.product_id.name[:30],
                 "description": line.name and line.name[:254] or '',
                 "quantity": line.quantity,

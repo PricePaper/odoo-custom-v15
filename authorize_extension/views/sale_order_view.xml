@@ -15,7 +15,8 @@
                 <field name='payment_term_id' position="after">
                     <field name='is_pre_payment' invisible="1"/>
                     <field name="token_id"
-                          domain="[('partner_id','=', partner_id), '|', ('shipping_id', '=', False), ('shipping_id', '=', partner_shipping_id)]"/>
+                          domain="[('partner_id','=', partner_id), '|', ('shipping_id', '=', False), ('shipping_id', '=', partner_shipping_id)]"
+                          attrs="{'invisible': [('is_pre_payment', '=', False)]}"/>
                 </field>
                 <xpath expr="//div[@name='button_box']" position="inside">
                     <field name="transaction_ids" invisible="1"/>

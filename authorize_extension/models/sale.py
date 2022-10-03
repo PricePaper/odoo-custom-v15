@@ -22,12 +22,12 @@ class SaleOrder(models.Model):
     token_id = fields.Many2one('payment.token', 'Payment Token')
     is_pre_payment = fields.Boolean('Is prepayment?', related='payment_term_id.is_pre_payment')
 
-    @api.onchange('partner_shipping_id')
-    def onchange_partner_id_carrier_id(self):
+    @api.onchange('partner_shipping_id', 'payment_term_id')
+    def onchange_partner_payment_term(self):
 
         res = super(SaleOrder, self).onchange_partner_id_carrier_id()
         token = False
-        if self.partner_shipping_id and self.partner_id:
+        if self.partner_shipping_id and self.partner_id and self.payment_term_id.is_pre_payment:
             default_parent_token = False
             parent_token = self.partner_id.payment_token_ids.filtered(lambda r: not r.shipping_id)
             if len(parent_token) == 1:

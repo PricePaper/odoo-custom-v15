@@ -12,20 +12,19 @@ class SaleOrder(models.Model):
             order.transaction_count = len(order.transaction_ids)
 
     transaction_count = fields.Integer('Transaction count', compute=_get_transaction_count)
-    is_payment_error = fields.Boolean('Is payment error?')
-    payment_warning = fields.Text('Payment warning')
+    is_payment_error = fields.Boolean('Is payment error?', copy=False)
+    payment_warning = fields.Text('Payment warning', copy=False)
     credit_warning = fields.Text(string='Credit Limit Warning Message', compute='compute_credit_warning', copy=False)
     hold_state = fields.Selection(selection_add=[
         ('payment_hold', 'Payment Hold')])
-    is_payment_bypassed = fields.Boolean('Is payment Bypassed?')
-    is_payment_low = fields.Boolean('Is payment Low?')
+    is_payment_bypassed = fields.Boolean('Is payment Bypassed?', copy=False)
+    is_payment_low = fields.Boolean('Is payment Low?', copy=False)
     token_id = fields.Many2one('payment.token', 'Payment Token')
     is_pre_payment = fields.Boolean('Is prepayment?', related='payment_term_id.is_pre_payment')
 
     @api.onchange('partner_shipping_id', 'payment_term_id')
     def onchange_partner_payment_term(self):
 
-        res = super(SaleOrder, self).onchange_partner_id_carrier_id()
         token = False
         if self.partner_shipping_id and self.partner_id and self.payment_term_id.is_pre_payment:
             default_parent_token = False

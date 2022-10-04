@@ -52,21 +52,23 @@ class AccountBatchPayment(models.Model):
                             if p_type == 'outbound':
                                 payment_method_line = acquirer.journal_id.outbound_payment_method_line_ids\
                                     .filtered(lambda l: l.code == acquirer.provider)
+                            #hard coded partner for credit card swipe transaction
+                            partner_id = 1678
                             if token:
-                                payment_values = {
-                                    'amount': abs(amount),
-                                    'payment_type': p_type,
-                                    'currency_id': acquirer.authorize_currency_id.id,
-                                    'partner_id': token.partner_id.id,
-                                    'partner_type': 'customer',
-                                    'journal_id': acquirer.journal_id.id,
-                                    'company_id': acquirer.company_id.id,
-                                    'payment_method_line_id': payment_method_line.id,
-                                    'payment_token_id': token.id,
-                                    'ref': transaction.get('invoiceNumber', '')
-                                    }
-                                tx_payment = payment_obj.create(payment_values)
-                                payments_to_batch |= tx_payment
+                                partner = token.partner_id.id
+                            payment_values = {
+                                'amount': abs(amount),
+                                'payment_type': p_type,
+                                'currency_id': acquirer.authorize_currency_id.id,
+                                'partner_id': partner,
+                                'partner_type': 'customer',
+                                'journal_id': acquirer.journal_id.id,
+                                'company_id': acquirer.company_id.id,
+                                'payment_method_line_id': payment_method_line.id,
+                                'ref': transaction.get('invoiceNumber', '') + '-' + tx_ref
+                                }
+                            tx_payment = payment_obj.create(payment_values)
+                            payments_to_batch |= tx_payment
                         else:
                             if tx.payment_id:
                                 payments_to_batch |= tx.payment_id

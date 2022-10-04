@@ -13,7 +13,7 @@ class AccountMove(models.Model):
 
         if self.mapped('authorized_transaction_ids').filtered(lambda r: r.state in ('authorized', 'done')):
             raise ValidationError(_("Selected Invoice(s) have/has authorized or confirmed transaction."))
-        return super(AccountMove, self).action_register_payment()
+        return super(AccountMove, self).action_register_payment() 
 
 
     def action_reautherize_transaction(self):

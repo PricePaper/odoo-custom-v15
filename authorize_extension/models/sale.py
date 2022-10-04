@@ -22,6 +22,7 @@ class SaleOrder(models.Model):
     token_id = fields.Many2one('payment.token', 'Payment Token')
     is_pre_payment = fields.Boolean('Is prepayment?', related='payment_term_id.is_pre_payment')
 
+
     @api.onchange('partner_shipping_id', 'payment_term_id')
     def onchange_partner_payment_term(self):
 
@@ -86,6 +87,11 @@ class SaleOrder(models.Model):
     def _action_cancel(self):
         res = super(SaleOrder, self)._action_cancel()
         self.write({'is_payment_error': False})
+        if self.mapped('transaction_ids').filtered(lambda r: r.state == 'done'):
+            raise ValidationError("Transaction/s is/are already captured.")
+        txs = self.mapped('transaction_ids').filtered(lambda r: r.state == 'authorized')
+        txs.action_void()
+
         return res
 
     def action_confirm(self):

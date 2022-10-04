@@ -13,7 +13,7 @@ class AccountPaymentRegister(models.TransientModel):
         if any(invoices.mapped('is_authorize_tx_failed')):
             view_id = self.env.ref('price_paper.view_sale_warning_wizard').id
             return {
-                'name': 'Warning',
+                'name': 'Transaction Error',
                 'view_type': 'form',
                 'view_mode': 'form',
                 'res_model': 'sale.warning.wizard',

@@ -53,7 +53,7 @@ class AccountBatchPayment(models.Model):
                                 payment_method_line = acquirer.journal_id.outbound_payment_method_line_ids\
                                     .filtered(lambda l: l.code == acquirer.provider)
                             #hard coded partner for credit card swipe transaction
-                            partner_id = 1678
+                            partner = 1678
                             if token:
                                 partner = token.partner_id.id
                             payment_values = {

@@ -25,6 +25,7 @@ class AuthorizeAPICustom:
         self.name = acquirer.authorize_login
         self.transaction_key = acquirer.sudo().authorize_transaction_key
         self.payment_method_type = acquirer.authorize_payment_method_type
+        self.avs_warning_check = True
 
     def _make_request(self, operation, data=None):
         """
@@ -368,7 +369,8 @@ class AuthorizeAPICustom:
             }
 
         })
-        self.check_avs_response(response)
+        if self.avs_warning_check:
+            self.check_avs_response(response)
         return self._format_response(response, 'auth_only')
 
 
@@ -429,7 +431,8 @@ class AuthorizeAPICustom:
             }
 
         })
-        self.check_avs_response(response)
+        if self.avs_warning_check:
+            self.check_avs_response(response)
         return self._format_response(response, 'auth_only')
 
     # authCaptureTransaction

@@ -47,8 +47,9 @@ class PaymentTransaction(models.Model):
             return super()._send_payment_request()
         if not self.token_id.authorize_profile:
             raise UserError("Authorize.Net: " + _("The transaction is not linked to a token."))
-
         authorize_api = AuthorizeAPICustom(self.acquirer_id)
+        if self.env.user.has_group('base.group_system'):
+            authorize_api.avs_warning_check = False
         res_content = False
         if self.payment_id:
             if self._context.get('active_model') == 'account.move' and self._context.get('active_id'):

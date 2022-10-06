@@ -8,12 +8,16 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     is_authorize_tx_failed = fields.Boolean('Authorize.net Transaction Failed')
+    an_transaction_ref = fields.Char('Authorize.net Transaction')
+
+    def add_transaction_to_invoice(self):
+        return self.sudo().env.ref('authorize_extension.action_add_transaction_to_invoice').read()[0]
 
     def action_register_payment(self):
 
         if self.mapped('authorized_transaction_ids').filtered(lambda r: r.state in ('authorized', 'done')):
             raise ValidationError(_("Selected Invoice(s) have/has authorized or confirmed transaction."))
-        return super(AccountMove, self).action_register_payment() 
+        return super(AccountMove, self).action_register_payment()
 
 
     def action_reautherize_transaction(self):

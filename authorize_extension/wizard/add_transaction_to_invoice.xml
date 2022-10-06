@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="add_transaction_wizard_view_form">
+            <field name="name">add_transaction_to_invoice</field>
+            <field name="model">add.invoice.transaction</field>
+            <field name="arch" type="xml">
+                <form string="Check and Add authorize Transaction to invoice">
+                    <group>
+                        <group>
+                            <field name="transaction_ref" required='1'/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="add_transaction" string="Add" type="object" class='oe_highlight'/>
+                        <button string="Cancel" special="cancel" class="oe_link"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_add_transaction_to_invoice" model="ir.actions.act_window">
+            <field name="name">Add Transaction</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">add.invoice.transaction</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

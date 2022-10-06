@@ -460,3 +460,9 @@ class AuthorizeAPICustom:
                         }
                       })
         return response
+
+    def get_transaction_detail(self, transaction):
+        response = self._make_request("getTransactionDetailsRequest", {
+                        "transId":transaction
+                      })
+        return response

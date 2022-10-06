@@ -40,6 +40,8 @@ class AccountBatchPayment(models.Model):
                         tx = self.env['payment.transaction'].search([('acquirer_reference', '=', tx_ref)])
                         #if transaction does not exist in odoo then create draft payment
                         if not tx:
+                            invoice = self.env['account.move'].search([('an_transaction_ref', '=', tx_ref)])
+
                             amount = transaction.get('settleAmount', 0)
                             if transaction.get('transactionStatus', '') == 'settledSuccessfully':
                                 p_type = 'inbound'
@@ -56,6 +58,8 @@ class AccountBatchPayment(models.Model):
                             partner = 1678
                             if token:
                                 partner = token.partner_id.id
+                            elif invoice:
+                                partner = invoice.partner_id.id
                             payment_values = {
                                 'amount': abs(amount),
                                 'payment_type': p_type,

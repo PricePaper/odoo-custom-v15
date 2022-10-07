@@ -48,7 +48,7 @@ class PaymentTransaction(models.Model):
         if not self.token_id.authorize_profile:
             raise UserError("Authorize.Net: " + _("The transaction is not linked to a token."))
         authorize_api = AuthorizeAPICustom(self.acquirer_id)
-        if self.env.user.has_group('base.group_system'):
+        if not self.acquirer_id.is_avs_check:
             authorize_api.avs_warning_check = False
         res_content = False
         if self.payment_id:
@@ -62,7 +62,7 @@ class PaymentTransaction(models.Model):
             else:
                 raise ValidationError("Technical error contact administrator")
         elif self.env.context.get('from_invoice_reauth'):
-            res_content = authorize_api.authorize_transaction(self, self.sale_order_ids)
+            res_content = authorize_api.authorize_transaction_from_invoice(self, self.invoice_ids)
         else:
             res_content = authorize_api.authorize_transaction(self, self.sale_order_ids)
         feedback_data = {'reference': self.reference, 'response': res_content}

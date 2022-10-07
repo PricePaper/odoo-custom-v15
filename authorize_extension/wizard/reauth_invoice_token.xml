@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="invoice_reauthorize_wizard_view_form">
+            <field name="name">Invoice Reautherization</field>
+            <field name="model">reauth.invoice.token</field>
+            <field name="arch" type="xml">
+                <form string="Check and Add authorize Transaction to invoice">
+                    <group>
+                        <group>
+                            <field name="invoice_id" readonly='1'/>
+                            <field name="partner_id" readonly='1'/>
+                            <field name="partner_shipping_id" readonly='1'/>
+                            <field name="token_id" required='1'
+                                  domain="[('partner_id','=', partner_id), '|',
+                                          ('shipping_id', '=', False),
+                                          ('shipping_id', '=', partner_shipping_id)]"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="reautherize_invoice" string="Authorize" type="object" class='oe_highlight'/>
+                        <button string="Cancel" special="cancel" class="oe_link"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_invoice_reauthorize_wizard" model="ir.actions.act_window">
+            <field name="name">Invoice Reautherization</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">reauth.invoice.token</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

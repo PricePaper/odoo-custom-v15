@@ -13,6 +13,7 @@
         'data/data.xml',
         'wizard/generate_payment_token_view.xml',
         'wizard/add_transaction_to_invoice.xml',
+        'wizard/reauth_invoice_token.xml',
         'views/res_partner.xml',
         'views/res_config_setting_view.xml',
         'views/account_move.xml',

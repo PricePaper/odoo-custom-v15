@@ -21,40 +21,8 @@ class AccountMove(models.Model):
 
 
     def action_reautherize_transaction(self):
-        self.ensure_one()
 
-        if self.is_authorize_tx_failed:
-            token = self.partner_id.get_authorize_token()
-            error_msg = ''
-            if not token:
-                error_msg = "There is no authorise.net token available in %s" % self.partner_id.display_name
-                self.write({'is_authorize_tx_failed': True})
-            else:
-                self.write({'is_authorize_tx_failed': False})
-                reference = self.name
-                count = self.env['payment.transaction'].sudo().search_count([('reference', 'ilike', self.name)])
-                if count:
-                    reference = '%s - %s' % (self.name, count)
-                tx_sudo = self.env['payment.transaction'].sudo().create({
-                    'acquirer_id': token.acquirer_id.id,
-                    'reference': reference,
-                    'amount': self.amount_total,
-                    'currency_id': self.currency_id.id,
-                    'partner_id': self.partner_id.id,
-                    'token_id': token.id,
-                    'operation': 'offline',
-                    'tokenize': False,
-                    'invoice_ids': [(4, self.id)]
-                })
-
-                tx_sudo.with_context({'from_authorize_custom': True, 'from_invoice_reauth': True})._send_payment_request()
-                if tx_sudo.state == 'error':
-                    error_msg = tx_sudo.state_message
-                    self.write({'is_authorize_tx_failed': True})
-            if error_msg:
-                self.message_post(body=error_msg)
-
-
+        return self.sudo().env.ref('authorize_extension.action_invoice_reauthorize_wizard').read()[0]
 
     def payment_action_capture(self):
         return super(AccountMove, self.with_context({'create_payment': True})).payment_action_capture()

@@ -10,11 +10,11 @@ class SaleReport(models.Model):
 
     sales_persons = fields.Text('Associated Salesperson')
 
-    # def _select_sale(self, fields=None):
-    #     if not fields:
-    #         fields = {}
-    #     fields['sales_persons'] = ", array_to_string(array_agg(distinct srp.name),'  |  ') as sales_persons"
-    #     return super(SaleReport, self)._select_sale(fields)
+    def _select_sale(self, fields=None):
+        if not fields:
+            fields = {}
+        fields['sales_persons'] = ", s.sales_person_name as sales_persons"
+        return super(SaleReport, self)._select_sale(fields)
     #
     # def _from_sale(self, from_clause=''):
     #     if from_clause:

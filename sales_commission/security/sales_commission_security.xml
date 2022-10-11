@@ -193,7 +193,7 @@
                                         ('parent_id.sales_person_ids.id', '=', user.partner_id.id),
                                         '|', ('id', '=', user.partner_id.id), '|',
                                         ('id', '=', user.company_id.partner_id.id),'|',
-                                        ('id', 'in', [2,3]), ('user_ids', '!=', False)]
+                                        ('id', 'in', [2, 3, 4, 5, 6]), ('user_ids', '!=', False)]
             </field>
             <field name="groups" eval="[
                 (4, ref('base.group_user')),

@@ -14,6 +14,7 @@
                     <div style="color:grey;font-style: italic;" t-field="company.report_header" name="moto"/>
                 </div>
                 <div class="text-right" style="font-weight: bold;">
+                    <span> </span><br/>
                     <span>Invoice Number:</span> <span t-esc="o.name if o.partner_id.bill_with_goods else ','.join(o.picking_ids.mapped('name'))" style="padding-left:10px;"/><br/>
                     <span>Date:</span><span t-field="o.invoice_date" style="padding-left:10px;"/><br/>
                     <span t-if="o.partner_id.customer_code">Partner Code: </span><span t-field="o.partner_id.customer_code" style="padding-left:10px;" t-if="o.partner_id.customer_code"/>

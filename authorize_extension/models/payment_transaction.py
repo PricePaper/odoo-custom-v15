@@ -54,6 +54,7 @@ class PaymentTransaction(models.Model):
         if self.payment_id:
             if self._context.get('active_model') == 'account.move' and self._context.get('active_id'):
                 invoice = self.env['account.move'].browse(self._context.get('active_id'))
+                self.write({'invoice_ids': [(6, 0, [invoice.id])]})
                 res_content = authorize_api.authorize_capture_transaction(self, invoice)
                 invoice.write({'is_authorize_tx_failed': False})
                 if res_content.get('x_response_reason_text') and not res_content.get('x_trans_id', False):

@@ -117,3 +117,24 @@ class PaymentTransaction(models.Model):
     def write_old(self, vals):
         if input(vals) == 'y':print(k)
         return super(PaymentTransaction, self).write(vals)
+
+    def cron_check_pending_status(self):
+        transactions = self.env['payment.transaction'].search([('state', '=', 'pending')])
+        for tx in transactions:
+            tx.check_pending_status()
+
+    def check_pending_status(self):
+
+        authorize_api = AuthorizeAPICustom(self.acquirer_id)
+        res_content = authorize_api.get_transaction_detail(self.acquirer_reference)
+        status = res_content.get('transaction', {}).get('transactionStatus', '')
+        if status in ('settledSuccessfully', 'refundSettledSuccessfully', 'capturedPendingSettlement', 'refundPendingSettlement'):
+            self.state = 'done'
+            payment = self.payment_id
+            if payment and payment.state == 'cancel':
+                payment.action_draft()
+                payment.action_post()
+        elif status == 'authorizedPendingCapture':
+            self.state = 'authorized'
+        elif status == 'voided':
+            self.state = 'cancel'

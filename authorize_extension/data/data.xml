@@ -1,7 +1,7 @@
 <odoo>
     <data>
         <record forcecreate="True" id="ir_cron_create_autherize_batch_payment" model="ir.cron">
-            <field name="name">Autherize.net Batch Payment</field>
+            <field name="name">Authorize.net Batch Payment</field>
             <field name="model_id" ref="model_account_batch_payment"/>
             <field name="state">code</field>
             <field name="code">model.create_autherize_batch_payment()</field>
@@ -9,13 +9,13 @@
             <field name="user_id" ref="base.user_root"/>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
-            <field name="nextcall" eval="(DateTime.now().replace(hour=4, minute=0) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')" />
+            <field name="nextcall" eval="(DateTime.now().replace(hour=0, minute=2) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')" />
             <field name="numbercall">-1</field>
             <field eval="False" name="doall"/>
         </record>
         <!--Cron for capturing posted invoices  -->
         <record forcecreate="True" id="ir_cron_capture_posted_invoices" model="ir.cron">
-            <field name="name">Autherize.net Capture Invoices</field>
+            <field name="name">Authorize.net Capture Invoices</field>
             <field name="model_id" ref="model_account_move"/>
             <field name="state">code</field>
             <field name="code">model.cron_capture_autherize_invoices()</field>
@@ -23,6 +23,19 @@
             <field name="user_id" ref="base.user_root"/>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field eval="False" name="doall"/>
+        </record>
+        <!--Cron for check status of pending transactions-->
+        <record forcecreate="True" id="ir_cron_pending_transaction_status_check" model="ir.cron">
+            <field name="name">Authorize.net Check status of pending Transactions</field>
+            <field name="model_id" ref="model_payment_transaction"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_check_pending_status()</field>
+            <field eval="True" name="active"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">15</field>
+            <field name="interval_type">minutes</field>
             <field name="numbercall">-1</field>
             <field eval="False" name="doall"/>
         </record>

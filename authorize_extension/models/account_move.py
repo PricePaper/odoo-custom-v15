@@ -10,6 +10,15 @@ class AccountMove(models.Model):
     is_authorize_tx_failed = fields.Boolean('Authorize.net Transaction Failed')
     an_transaction_ref = fields.Char('Authorize.net Transaction')
 
+
+    def _post(self, soft=True):
+        res = super(AccountMove, self)._post(soft)
+        for move in self.filtered(lambda r: r.move_type in ('out_refund', 'out_invoice')):
+            if move.filtered(lambda r: r.invoice_date_due <= fields.Date.today()).mapped('authorized_transaction_ids').filtered(lambda r: r.state in ('authorized')):
+                move.with_context({'create_payment': True}).payment_action_capture()
+        return res
+
+
     def add_transaction_to_invoice(self):
         return self.sudo().env.ref('authorize_extension.action_add_transaction_to_invoice').read()[0]
 

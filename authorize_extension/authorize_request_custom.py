@@ -241,9 +241,21 @@ class AuthorizeAPICustom:
 
         tax_name = ''
         if from_invoice:
-            tax_name = ','.join([','.join(line.tax_ids.mapped('name')) for line in order.invoice_line_ids if line.tax_ids])
+            tax_names = []
+            for line in order.invoice_line_ids:
+                if line.tax_ids:
+                    for tax in line.tax_ids.mapped('name'):
+                        if tax not in tax_names:
+                            tax_names.append(tax)
+            tax_name = ','.join(tax_names)
         else:
-            tax_name = ','.join([','.join(line.tax_id.mapped('name')) for line in order.order_line if line.tax_id])
+            tax_names = []
+            for line in order.order_line:
+                if line.tax_id:
+                    for tax in line.tax_id.mapped('name'):
+                        if tax not in tax_names:
+                            tax_names.append(tax)
+            tax_name = ','.join(tax_names)
         return {
             "amount": order.amount_tax,
             "name": tax_name and tax_name[:30] or '',

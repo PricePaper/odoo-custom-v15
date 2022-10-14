@@ -18,6 +18,7 @@
         'views/res_config_setting_view.xml',
         'views/account_move.xml',
         'views/batch_payment.xml',
+        'views/account_payment.xml',
         'views/payment_acquirer.xml',
         'views/payment_transaction_form.xml',
         'views/account_journal.xml',

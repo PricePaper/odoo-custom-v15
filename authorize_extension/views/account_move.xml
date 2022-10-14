@@ -16,6 +16,8 @@
                 <xpath expr="//div[@name='journal_div']" position="after">
                     <field name='an_transaction_ref'
                       attrs="{'invisible':[('an_transaction_ref', '=', False)], 'readonly': True}" force_save='1'/>
+                      <field name='an_bank_tx_ref'
+                        attrs="{'invisible':[('an_bank_tx_ref', '=', False)], 'readonly': True}" force_save='1'/>
                 </xpath>
             </field>
         </record>

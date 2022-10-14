@@ -4,6 +4,8 @@ from odoo import models, fields, api
 class AccountPayment(models.Model):
     _inherit = "account.payment"
 
+    card_payment_type = fields.Selection(selection=[('bank', "Direct Bank"), ('authorize', "Through Authorize"), ], string="Card Swipe Payment Type")
+
     def _prepare_payment_transaction_vals(self, **extra_create_values):
         res = super(AccountPayment, self)._prepare_payment_transaction_vals(**extra_create_values)
         count = self.env['payment.transaction'].search_count([('reference', 'ilike', res['reference'])])
@@ -35,4 +37,3 @@ class AccountPaymentRegister(models.TransientModel):
 
 
 AccountPaymentRegister()
-

@@ -9,7 +9,9 @@
                 <form string="Check and Add authorize Transaction to invoice">
                     <group>
                         <group>
+                            <field name="is_bank_tx"/>
                             <field name="transaction_ref" required='1'/>
+                            <field name="amount" attrs="{'invisible':[('is_bank_tx', '=', False)], 'required':[('is_bank_tx', '=', True)]}" />
                         </group>
                     </group>
                     <footer>

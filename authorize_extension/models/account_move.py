@@ -9,6 +9,7 @@ class AccountMove(models.Model):
 
     is_authorize_tx_failed = fields.Boolean('Authorize.net Transaction Failed')
     an_transaction_ref = fields.Char('Authorize.net Transaction')
+    an_bank_tx_ref = fields.Char('Card Transaction Ref')
 
 
     def _post(self, soft=True):

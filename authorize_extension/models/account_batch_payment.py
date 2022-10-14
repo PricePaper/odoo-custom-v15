@@ -13,7 +13,7 @@ class AccountBatchPayment(models.Model):
     def create_autherize_batch_payment(self):
 
         last_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-        start_date = (datetime.now() - timedelta(10)).strftime("%Y-%m-%dT%H:%M:%S")
+        start_date = (datetime.now() - timedelta(1)).strftime("%Y-%m-%dT%H:%M:%S")
 
         acquirer = self.env['payment.acquirer'].search([('provider', '=', 'authorize')])
 
@@ -69,13 +69,25 @@ class AccountBatchPayment(models.Model):
                                 'journal_id': acquirer.journal_id.id,
                                 'company_id': acquirer.company_id.id,
                                 'payment_method_line_id': payment_method_line.id,
-                                'ref': transaction.get('invoiceNumber', '') + '-' + tx_ref
+                                'ref': transaction.get('invoiceNumber', '') + '-' + tx_ref,
+                                'card_payment_type': 'authorize'
                                 }
                             tx_payment = payment_obj.create(payment_values)
                             payments_to_batch |= tx_payment
                         else:
                             if tx.payment_id:
                                 payments_to_batch |= tx.payment_id
+
+                #add card swipe payments direct to the bank
+                payment_last_date = fields.Date.today()
+                payment_start_date = fields.Date.today() - timedelta(1)
+                direct_bank_payments = payment_obj.search([('card_payment_type', '=', 'bank'),
+                    ('batch_payment_id', '=', False),
+                    ('date', '<=', payment_last_date),
+                    ('date', '>=', payment_start_date)])
+                if direct_bank_payments:
+                    payments_to_batch |= direct_bank_payments
+
                 #create batch for payments based on journal and payment method
                 if payments_to_batch:
                     journals = payments_to_batch.mapped('journal_id')

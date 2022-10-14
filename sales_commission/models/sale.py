@@ -9,6 +9,12 @@ class SaleOrder(models.Model):
 
     sales_person_ids = fields.Many2many('res.partner', string='Associated Sales Persons')
     commission_rule_ids = fields.Many2many('commission.rules', string='Commission Rules')
+    sales_person_name = fields.Text('Associated Sales Persons Name', compute="_compute_sales_person_name", store=True, help="Technical field for reporting")
+
+    @api.depends("sales_person_ids")
+    def _compute_sales_person_name(self):
+        for order in self:
+            order.sales_person_name = " | ".join(order.mapped('sales_person_ids.name'))
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):

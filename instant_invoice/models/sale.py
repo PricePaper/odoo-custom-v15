@@ -50,7 +50,7 @@ class SaleOrder(models.Model):
             res = rec.action_confirm()
             if res and res != True and res.get('context') and res.get('context').get('warning_message'):
                 return res
-            picking_ids = rec.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done', 'in_transit'))
+            picking_ids = rec.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done', 'in_transit', 'transit_confirmed'))
             for picking in picking_ids:
                 picking.action_assign_transit()
                 picking.receive_product_in_lines()

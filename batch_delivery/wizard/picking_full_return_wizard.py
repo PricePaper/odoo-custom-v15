@@ -28,7 +28,7 @@ class PickingFullReturnWizard(models.TransientModel):
                 'reason_id': move.reason_id.id
             }) for move in picking.move_lines]
         })
-        picking.write({'is_transit': False, 'batch_id': False})
+        picking.write({'is_transit': False, 'batch_id': False, 'is_transit_confirmed': False})
         # picking.mapped('move_line_ids').write({'qty_done': 0})
 
         for move in picking.move_lines:

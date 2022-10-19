@@ -41,9 +41,9 @@ class PendingProductView(models.TransientModel):
             pending_products = self.pending_line_ids.mapped('product_id')
             product_moves = self.env['stock.move']
             if self.batch_ids:
-                records = self.batch_ids.mapped('picking_ids').filtered(lambda pick: pick.state not in ['done', 'cancel', 'in_transit']). \
+                records = self.batch_ids.mapped('picking_ids').filtered(lambda pick: pick.state not in ['done', 'cancel', 'in_transit', 'transit_confirmed']). \
                     mapped('transit_move_lines')
-                records += self.batch_ids.mapped('picking_ids').filtered(lambda pick: pick.state in ['in_transit']). \
+                records += self.batch_ids.mapped('picking_ids').filtered(lambda pick: pick.state in ['in_transit', 'transit_confirmed']). \
                     mapped('move_lines')
                 product_moves = records.filtered(lambda r: r.product_id in pending_products)
             elif self.picking_ids:
@@ -69,10 +69,10 @@ class PendingProductView(models.TransientModel):
                     mapped('move_lines').filtered(lambda l: l.product_uom_qty != l.reserved_availability)
             elif self._context.get('default_batch_ids'):
                 records = self.env['stock.picking.batch'].browse(self._context.get('default_batch_ids')). \
-                    mapped('picking_ids').filtered(lambda pick: pick.state not in ['done', 'cancel', 'in_transit']). \
+                    mapped('picking_ids').filtered(lambda pick: pick.state not in ['done', 'cancel', 'in_transit', 'transit_confirmed']). \
                     mapped('transit_move_lines').filtered(lambda l: l.product_uom_qty != l.reserved_availability)
                 records += self.env['stock.picking.batch'].browse(self._context.get('default_batch_ids')). \
-                    mapped('picking_ids').filtered(lambda pick: pick.state in ['in_transit']). \
+                    mapped('picking_ids').filtered(lambda pick: pick.state in ['in_transit', 'transit_confirmed']). \
                     mapped('move_lines').filtered(lambda l: l.product_uom_qty != l.reserved_availability)
 
             res['pending_line_ids'] = [(0, 0, {

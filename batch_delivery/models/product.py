@@ -25,7 +25,7 @@ class Product(models.Model):
             sale_moves = self.env['stock.move'].search([('product_id', '=', product.id),
                 ('picking_code', '=', 'outgoing'), ('state', 'not in', ('cancel', 'done')),
                 ('picking_id.is_return', '=', False),
-                ('picking_id.state', 'not in', ('in_transit', 'cancel', 'done')),
+                ('picking_id.state', 'not in', ('in_transit', 'cancel', 'done', 'transit_confirmed')),
                 ('picking_id.rma_id', '=', False)])
             product_qty = 0
             for move in purchase_moves:
@@ -57,7 +57,7 @@ class Product(models.Model):
 
     def action_open_transit_moves(self):
         action = self.sudo().env.ref('stock.stock_move_action').read()[0]
-        moves = self.stock_move_ids.filtered(lambda r: r.transit_picking_id.is_transit and r.quantity_done > 0 and r.transit_picking_id.state != 'cancel')
+        moves = self.stock_move_ids.filtered(lambda r: (r.transit_picking_id.is_transit or r.transit_picking_id.is_transit_confirmed) and r.quantity_done > 0 and r.transit_picking_id.state != 'cancel')
         action['domain'] = [('id', 'in', moves.ids)]
         action['context'] = {'search_default_groupby_location_id': 1}
         return action
@@ -68,7 +68,7 @@ class Product(models.Model):
     def get_quantity_in_sale(self):
         self.ensure_one()
         moves = self.stock_move_ids.filtered(lambda move: move.sale_line_id and move.state not in ['cancel', 'done'] \
-                                                          and not move.transit_picking_id and move.picking_code == 'outgoing' and move.picking_id.state not in ['cancel', 'done','in_transit'])
+                                                          and not move.transit_picking_id and move.picking_code == 'outgoing' and move.picking_id.state not in ['cancel', 'done','in_transit', 'transit_confirmed'])
         sale_lines = moves.mapped('sale_line_id').ids
 
         action = self.sudo().env.ref('price_paper.act_product_2_sale_order_line').read()[0]

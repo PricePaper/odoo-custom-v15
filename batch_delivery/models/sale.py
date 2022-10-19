@@ -55,7 +55,7 @@ class SaleOrder(models.Model):
         if not self._context.get('from_cancel_wizard'):
             if self.invoice_ids and self.invoice_ids.filtered(lambda r: r.state == 'posted'):
                 raise ValidationError('Cannot perform this action, invoice not in draft state')
-            if self.picking_ids and self.picking_ids.filtered(lambda r: r.state in ('in_transit', 'done')):
+            if self.picking_ids and self.picking_ids.filtered(lambda r: r.state in ('in_transit', 'done', 'transit_confirmed')):
                 if not self.env.user.has_group('account.group_account_manager') and not self.env.user.has_group('sales_team.group_sale_manager'):
                     raise ValidationError('You don\'t have permissions to cancel a SO with DO in transit.\nContact your system administrator')
             return {
@@ -107,14 +107,14 @@ class SaleOrderLine(models.Model):
                     if move.state == 'done':
                         qty += move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom,
                                                                   rounding_method='HALF-UP')
-                    elif move.picking_id.state == 'in_transit':
+                    elif move.picking_id.state in ('in_transit', 'transit_confirmed'):
                         # qty_done = sum(move.move_orig_ids.filtered(lambda rec: rec.state == 'done').mapped('product_uom_qty'))
                         qty += move.product_uom._compute_quantity(move.quantity_done, line.product_uom, rounding_method='HALF-UP')
                 for move in incoming_moves:
                     if move.state == 'done':
                         qty -= move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom,
                                                                   rounding_method='HALF-UP')
-                    elif move.picking_id.state == 'in_transit':
+                    elif move.picking_id.state in ('in_transit', 'transit_confirmed'):
                         qty -= move.product_uom._compute_quantity(move.quantity_done, line.product_uom, rounding_method='HALF-UP')
                 line.qty_delivered = qty
 
@@ -151,7 +151,7 @@ class SaleOrderLine(models.Model):
         res =  super(SaleOrderLine, self)._action_launch_stock_rule(previous_product_uom_qty)
         for line in self:
             transit_move = line.move_ids.mapped('move_orig_ids').filtered(lambda rec: not rec.transit_picking_id)
-            picking_id = transit_move.mapped('move_dest_ids').mapped('picking_id').filtered(lambda rec: rec.state not in ('cancel', 'done', 'in_transit'))
+            picking_id = transit_move.mapped('move_dest_ids').mapped('picking_id').filtered(lambda rec: rec.state not in ('cancel', 'done', 'in_transit', 'transit_confirmed'))
             if len(picking_id) > 1:
                 picking_id = picking_id[0]
             transit_move.write({'transit_picking_id': picking_id.id})

@@ -25,7 +25,7 @@ class StockPicking(models.Model):
     truck_driver_id = fields.Many2one('res.partner', string='Truck Driver', copy=False)
     route_id = fields.Many2one('truck.route', string='Truck Route', group_expand='_read_group_route_ids', copy=False)
     is_delivered = fields.Boolean(string='Delivered', copy=False)
-    state = fields.Selection(selection_add=[('in_transit', 'In Transit')])
+    state = fields.Selection(selection_add=[('in_transit', 'In Transit'), ('transit_confirmed', 'Confirmed Transit')])
     street = fields.Char(string='Street', related='partner_id.street')
     street2 = fields.Char(string='Street2', related='partner_id.street2')
     city = fields.Char(string='City', related='partner_id.city')
@@ -58,6 +58,21 @@ class StockPicking(models.Model):
     transit_date = fields.Date()
     transit_move_lines = fields.One2many('stock.move', 'transit_picking_id', string="Stock Moves", copy=False)
     show_reset = fields.Boolean('Show reset button',  compute="_compute_show_reset")
+    is_transit_confirmed = fields.Boolean(string='Transit Confirmed', copy=False)
+
+    def action_transit_adjustment(self, cancel_backorder=False):
+
+        if 'outgoing' == self.picking_type_id.code:
+            for move in self.move_ids_without_package:
+                if move.move_orig_ids and move.location_id.is_transit_location:
+                    incoming_qty = sum(move.move_orig_ids.filtered(lambda rec: rec.state == 'done' and
+                        not rec.location_id.is_transit_location).mapped('quantity_done'))
+                    outgoing_qty = sum(move.move_orig_ids.filtered(lambda rec: rec.state == 'done' and
+                        rec.location_id.is_transit_location).mapped('quantity_done'))
+                    if move.quantity_done != incoming_qty - outgoing_qty:
+                        move.transit_confirm_adjustment(move.quantity_done - incoming_qty + outgoing_qty)
+        self.write({'is_transit_confirmed': True, 'is_transit': False})
+
 
     def _compute_show_reset(self):
         for picking in self:
@@ -111,7 +126,7 @@ class StockPicking(models.Model):
         for picking in self:
             if not (picking.immediate_transfer) and picking.state == 'draft':
                 picking.show_validate = False
-            elif picking.state not in ('draft', 'waiting', 'confirmed', 'assigned', 'in_transit'):
+            elif picking.state not in ('draft', 'waiting', 'confirmed', 'assigned', 'in_transit', 'transit_confirmed'):
                 picking.show_validate = False
             else:
                 picking.show_validate = True
@@ -178,7 +193,7 @@ class StockPicking(models.Model):
     def _compute_available_qty(self):
         for pick in self:
             moves = pick.mapped('transit_move_lines').filtered(lambda move: move.state != 'cancel')
-            if pick.state == 'in_transit':
+            if pick.state in ('in_transit', 'transit_confirmed'):
                 moves = pick.mapped('move_lines').filtered(lambda move: move.state != 'cancel')
             pick.reserved_qty = sum(moves.mapped('forecast_availability'))
             pick.low_qty_alert = pick.item_count != pick.reserved_qty and pick.state != 'done'
@@ -201,7 +216,7 @@ class StockPicking(models.Model):
                 count += line.product_uom_qty
             picking.item_count = count
 
-    @api.depends('move_type', 'is_delivered', 'move_lines.picking_id', 'is_transit', 'immediate_transfer', 'move_lines.state', 'transit_move_lines.state')
+    @api.depends('move_type', 'is_delivered', 'move_lines.picking_id', 'is_transit', 'immediate_transfer', 'move_lines.state', 'transit_move_lines.state', 'is_transit_confirmed')
     def _compute_state(self):
         """
             override state compute method for adding transit in selection
@@ -210,6 +225,8 @@ class StockPicking(models.Model):
         for picking in self:
             if picking.is_transit and not all(move.state in ['cancel', 'done'] for move in picking.move_lines):
                 picking.state = 'in_transit'
+            elif picking.is_transit_confirmed and not all(move.state in ['cancel', 'done'] for move in picking.move_lines):
+                picking.state = 'transit_confirmed'
             else:
                 not_in_transit |= picking
 
@@ -269,7 +286,7 @@ class StockPicking(models.Model):
 
     def validate_multiple_delivery(self):
         for rec in self:
-            if rec.state != 'in_transit' and not rec.purchase_id:
+            if rec.state not in ('in_transit', 'transit_confirmed') and not rec.purchase_id:
                 raise UserError("Some of the selected Delivery order is not in transit state")
             rec.button_validate()
         return {'type': 'ir.actions.act_window_close'}
@@ -303,7 +320,7 @@ class StockPicking(models.Model):
 
     def action_make_transit(self):
         for picking in self:
-            if picking.state not in ['in_transit', 'done']:
+            if picking.state not in ['in_transit', 'done', 'transit_confirmed']:
                 if picking.id == int(self.env['ir.config_parameter'].sudo().get_param('exclude_transit_picking', 0)):
                     picking.write({
                         'is_transit': True,
@@ -483,6 +500,7 @@ class StockPicking(models.Model):
         res = super()._action_done()
         for pick in self:
             pick.is_transit = False
+            pick.is_transit_confirmed = False
         for line in self.move_line_ids.filtered(lambda r: r.state == 'done'):
             line.product_onhand_qty = line.product_id.qty_available + line.product_id.transit_qty
         return res
@@ -565,7 +583,7 @@ class StockPicking(models.Model):
     @api.model
     def reset_picking_with_route(self):
         picking = self.env['stock.picking'].search(
-            [('state', 'in', ['confirmed', 'assigned', 'in_transit','waiting']), ('batch_id', '!=', False),
+            [('state', 'in', ['confirmed', 'assigned', 'in_transit','waiting', 'transit_confirmed']), ('batch_id', '!=', False),
              ('batch_id.state', '=', 'draft')])
         picking.mapped('route_id').write({'set_active': False})
         # removed newly created batch with empty pciking lines.

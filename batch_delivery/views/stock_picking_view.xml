@@ -120,6 +120,7 @@
             <field name="arch" type="xml">
                 <filter name="late" position="after">
                     <filter string="In Transit" name="in_transit" domain="[('state', '=', 'in_transit')]"/>
+                    <filter string="In Transit" name="transit_confirmed" domain="[('state', '=', 'transit_confirmed')]"/>
                     <filter string="Truck Deliveries" name="truck_deliveries" domain="[('carrier_id.show_in_route', '=', True)]"/>
                     <filter string="Earliest Delivery Today" name="release_date"
                             domain="[('release_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
@@ -138,7 +139,7 @@
             <field name="res_model">stock.picking</field>
             <field name="view_mode">kanban,tree</field>
             <field name="domain">['|', ('batch_id.state', 'in', ('draft', 'in_progress', 'in_truck')), ('batch_id', '=', False), ('state','in',
-                ['confirmed', 'waiting', 'assigned', 'in_transit']), ('picking_type_code', '=', 'outgoing')]
+                ['confirmed', 'waiting', 'assigned', 'in_transit', 'transit_confirmed']), ('picking_type_code', '=', 'outgoing')]
             </field>
             <field name="context">{'search_default_truck_deliveries': 1}</field>
             <field name="search_view_id" ref="stock.view_picking_internal_search"/>
@@ -203,7 +204,7 @@
                     <field name="invoice_ids" invisible="1"/>
                     <button name="action_assign_transit" type="object"
                       string="check availability" class="oe_highlight"
-                      attrs="{'invisible': ['|', '|',  ('state', 'in', ['done', 'cancel', 'in_transit']),
+                      attrs="{'invisible': ['|', '|',  ('state', 'in', ['done', 'cancel', 'in_transit', 'transit_confirmed']),
                       ('picking_type_code', 'in', ['incoming', 'internal']),
                       '&amp;',('picking_type_code', '=', 'outgoing'),
                       ('purchase_id', '!=', False)]}"/>
@@ -214,13 +215,17 @@
                           ('picking_type_code', 'in', ['incoming', 'internal'])]}"
                           class="oe_highlight"/>
                     <button name="create_invoice" type="object" string="Create Invoice" groups="account.group_account_invoice" class="oe_highlight"
-                         attrs="{'invisible': ['|', ('state', 'not in', ['in_transit']), ('is_invoiced', '=', True)]}" />
+                         attrs="{'invisible': ['|', ('state', 'not in', ['in_transit', 'transit_confirmed']), ('is_invoiced', '=', True)]}" />
+                    <button name="action_transit_adjustment" type="object" string="Confirm Transit"
+                        attrs="{'invisible': [('state', 'not in', ('in_transit'))]}"
+                        class="oe_highlight"
+                        groups="base.group_erp_manager"/>
                     <button name="action_validate" type="object" string="Confirm Transfer" groups="account.group_account_invoice"
                             attrs="{'invisible': ['|', '|', ('state', '=', 'done'), ('is_return', '=', False), ('picking_type_code', '!=', 'outgoing')]}" class="oe_highlight"/>
                     <button name="action_validate" type="object" string="Confirm Transfer" groups="account.group_account_invoice"
-                            attrs="{'invisible': ['|', ('state', '!=', 'in_transit'), ('is_invoiced', '=', False)]}" class="oe_highlight"/>
+                            attrs="{'invisible': ['|', ('state', 'not in', ('in_transit', 'transit_confirmed')), ('is_invoiced', '=', False)]}" class="oe_highlight"/>
                     <button name="%(action_view_picking_full_reeturn_wizard_form)d" type="action" string="Full Return"
-                            attrs="{'invisible': ['|', '|', ('is_return', '=', True), ('is_transit', '=', False), ('is_invoiced', '=', False)]}"
+                            attrs="{'invisible': ['|', '|', '|', ('is_transit_confirmed', '=', False), ('is_return', '=', True), ('is_transit', '=', False), ('is_invoiced', '=', False)]}"
                             class="oe_highlight"/>
                     <button name="action_validate_internal"
                             attrs="{'invisible': ['|', '|', ('state', 'in', ('waiting','confirmed')), ('show_validate', '=', False), ('picking_type_code', '!=', 'internal')]}"
@@ -228,10 +233,13 @@
                     <button name="action_create_refund"
                             attrs="{'invisible': ['|',  ('state', '!=', 'done'), ('is_customer_return', '=', False)]}"
                             string="Create Refund" type="object" class="oe_highlight" groups="stock.group_stock_user, account.group_account_invoice"/>
+                    <button name="action_transit_adjustment" type="object" string="Adjust Transit"
+                        attrs="{'invisible': [('state', 'not in', ('transit_confirmed'))]}"
+                        groups="base.group_erp_manager"/>
                 </button>
                 <button name="action_cancel" position="after">
                     <field name="show_reset" invisible="1"/>
-                    <button name="action_reset_picking" type="object" string="Reset Delivery" attrs="{'invisible': [('state', 'not in', ('in_transit'))]}" groups="base.group_erp_manager"/>
+                    <button name="action_reset_picking" type="object" string="Reset Delivery" attrs="{'invisible': [('state', 'not in', ('in_transit', 'transit_confirmed'))]}" groups="base.group_erp_manager"/>
                 </button>
                 <xpath expr="//button[@name='button_validate'][1]" position="attributes">
                   <attribute name="attrs">{'invisible':['|', '|',('picking_type_code', '!=', 'incoming'),('state', 'in', ('waiting','confirmed',
@@ -288,6 +296,7 @@
                 </field>
                 <field name="origin" position="after">
                     <field name="is_transit" invisible="1"/>
+                    <field name="is_transit_confirmed" invisible="1"/>
                     <field name="is_return" invisible="1"/>
                     <field name="route_id" invisible="1"/>
                     <field name="is_invoiced" invisible="1"/>
@@ -300,7 +309,7 @@
                         <button class="oe_highlight oe_right"
                             name="receive_product_in_lines"
                             type="object" string="Set Quantity Done"
-                            attrs="{'invisible': ['|', ('picking_type_code', '=', 'incoming'), ('state', 'in',  ['cancel', 'draft', 'in_transit', 'done'])]}"/>
+                            attrs="{'invisible': ['|', ('picking_type_code', '=', 'incoming'), ('state', 'in',  ['cancel', 'draft', 'in_transit', 'done', 'transit_confirmed'])]}"/>
                         <field name="transit_move_lines" mode="tree,kanban"
                                attrs="{'readonly': ['&amp;', ('state', '=', 'done'), ('is_locked', '=', True)]}">
                             <tree string="Stock Moves" editable="bottom" create="false" decoration-muted="state == 'cancel'"
@@ -340,13 +349,13 @@
                                         attrs="{'invisible': ['|', ('forecast_availability', '&gt;=', 0), '|', ('parent.immediate_transfer', '=', True), '&amp;', ('parent.picking_type_code', '=', 'outgoing'), ('state', '!=', 'draft')]}"/>
                                 <field name="forecast_expected_date" invisible="1"/>
                                 <field name="forecast_availability" string="Reserved"
-                                       attrs="{'column_invisible': ['|', '|', ('parent.state', 'in', ['draft', 'done', 'in_transit']), ('parent.picking_type_code', '!=', 'outgoing'), ('parent.immediate_transfer', '=', True)]}"
+                                       attrs="{'column_invisible': ['|', '|', ('parent.state', 'in', ['draft', 'done', 'in_transit', 'transit_confirmed']), ('parent.picking_type_code', '!=', 'outgoing'), ('parent.immediate_transfer', '=', True)]}"
                                        widget="forecast_widget"/>
                                 <field name="reserved_availability" string="Reserved"
                                        attrs="{'column_invisible': ['|', '|', ('parent.state', 'in', ['draft', 'done']), ('parent.picking_type_code', 'in', ['incoming', 'outgoing']), ('parent.immediate_transfer', '=', True)]}"/>
                                 <field name="product_qty" invisible="1" readonly="1"/>
                                 <button name="action_show_reset_window" help="Reset Reserve Qty" type="object" icon="fa-refresh text-success"
-                                        attrs="{'invisible': ['|',('parent.picking_type_code', '=', 'incoming'), ('parent.state', 'in', ['in_transit', 'done', 'cancel'])]}"/>
+                                        attrs="{'invisible': ['|',('parent.picking_type_code', '=', 'incoming'), ('parent.state', 'in', ['in_transit', 'done', 'cancel', 'transit_confirmed'])]}"/>
                                 <field name="quantity_done" string="Done"
                                        attrs="{'readonly': [('is_quantity_done_editable', '=', False)], 'column_invisible':[('parent.state', '=', 'draft'), ('parent.immediate_transfer', '=', False)]}"/>
                                 <field name="product_uom"
@@ -360,7 +369,7 @@
                                        context="{'default_company_id': company_id, 'default_product_id': product_id, 'active_picking_id': parent.id}"
                                        domain="[('product_id','=',product_id)]"/>
                                 <button name="action_show_details" type="object" icon="fa-list" width="0.1"
-                                        attrs="{'invisible': ['|', ('show_details_visible', '=', False), ('state', 'in', ('in_transit', 'done', 'cancel'))]}"
+                                        attrs="{'invisible': ['|', ('show_details_visible', '=', False), ('state', 'in', ('in_transit', 'done', 'cancel', 'transit_confirmed'))]}"
                                         options="{&quot;warn&quot;: true}"/>
                                 <button name="action_assign_serial" type="object" icon="fa-plus-square" width="0.1"
                                         role="img" title="Assign Serial Numbers"
@@ -411,7 +420,7 @@
                 </xpath>
                 <xpath expr="//form/sheet/notebook/page[3]/field[@name='move_ids_without_package']/tree/button[@name='action_show_details']" position="replace">
                     <button name="action_show_details" type="object" icon="fa-list" width="0.1"
-                                                      attrs="{'invisible': ['&amp;',('parent.is_return','=',False),('parent.picking_type_code', '=', 'outgoing'),('parent.state', '!=', 'in_transit'),('show_details_visible', '=', False)]}" options='{"warn": true}'/>
+                                                      attrs="{'invisible': ['&amp;',('parent.is_return','=',False),('parent.picking_type_code', '=', 'outgoing'),('parent.state', 'not in', ('in_transit', 'transit_confirmed')),('show_details_visible', '=', False)]}" options='{"warn": true}'/>
                 </xpath>
 
                 <xpath expr="//form/sheet/notebook/page[3]/field[@name='move_ids_without_package']/tree/field[@name='location_dest_id']" position="replace">

@@ -11,7 +11,7 @@ class AssignRouteWizard(models.TransientModel):
 
     def assign_routes(self):
         pickings = self.env['stock.picking'].search([
-            ('state', 'in', ['confirmed', 'waiting', 'assigned', 'in_transit']),
+            ('state', 'in', ['confirmed', 'waiting', 'assigned', 'in_transit', 'transit_confirmed']),
             ('picking_type_code', '=', 'outgoing'),
             ('route_id', '=', False)
         ])

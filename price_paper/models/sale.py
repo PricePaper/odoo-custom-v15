@@ -481,7 +481,7 @@ class SaleOrder(models.Model):
         for order in self:
             if order.id in amount and amount[order.id] < order.amount_total:
                 if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
-                    if order.picking_ids.filtered(lambda r: r.state == 'in_transit'):
+                    if order.picking_ids.filtered(lambda r: r.state in ('in_transit', 'transit_confirmed')):
                         raise UserError('You can not add product to a Order which has a DO in transit state')
                     order._action_cancel()
                     order.message_post(body='Cancel Reason : Credit limit Exceed Auto cancel')

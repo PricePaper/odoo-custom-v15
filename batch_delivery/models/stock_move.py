@@ -407,45 +407,55 @@ class StockMove(models.Model):
     def _action_done(self, cancel_backorder=False):
         if 'outgoing' in self.mapped('picking_type_id.code') and any(self.mapped('picking_id')) and not self._context.get('transit_qty_update'):
             for move in self:
-                if move.picking_id and move.move_orig_ids and move.location_id.is_transit_location and move.quantity_done != sum(
-                        move.move_orig_ids.filtered(lambda rec: rec.state == 'done').mapped('quantity_done')):
-                    remining_qty = move.quantity_done - sum(move.move_orig_ids.filtered(lambda rec: rec.state == 'done').mapped('quantity_done'))
-                    location_id = move.move_orig_ids.mapped('location_id')[0]
-                    location_src_id = move.location_id
-                    if remining_qty > 0:
-                        location_id, location_src_id = location_src_id, location_id
-                    move_vals = {
-                        'name': move.name,
-                        'company_id': move.company_id.id,
-                        'product_id': move.product_id.id,
-                        'product_uom': move.product_uom.id,
-                        'product_uom_qty': abs(remining_qty),
-                        'partner_id': move.partner_id.id,
-                        'location_id': location_src_id.id,
-                        'location_dest_id': location_id.id,
-                        'rule_id': move.rule_id.id,
-                        'procure_method': 'make_to_stock',
-                        'origin': move.origin,
-                        'picking_type_id': self.picking_type_id.id,
-                        'group_id': move.group_id.id,
-                        'route_ids': [(4, route.id) for route in move.route_ids],
-                        'warehouse_id': move.warehouse_id.id,
-                        'date': fields.Datetime.now().date(),
-                        'date_deadline': False,
-                        'propagate_cancel': move.propagate_cancel,
-                        'description_picking': move.description_picking,
-                        'priority': move.priority,
-                        'transit_picking_id': move.picking_id.id,
-                        'move_dest_ids': [(4, move.id)]
-                    }
-                    move = self.create(move_vals)
-                    move.with_context(is_transit=True)._action_confirm()
-                    move.write({'quantity_done': abs(remining_qty)})
-                    move.with_context(is_transit=True)._action_done()
+                if move.picking_id and move.move_orig_ids and move.location_id.is_transit_location:
+                    incoming_qty = sum(move.move_orig_ids.filtered(lambda rec: rec.state == 'done' and
+                        not rec.location_id.is_transit_location).mapped('quantity_done'))
+                    outgoing_qty = sum(move.move_orig_ids.filtered(lambda rec: rec.state == 'done' and
+                        rec.location_id.is_transit_location).mapped('quantity_done'))
+                    if move.quantity_done == incoming_qty - outgoing_qty:
+                        continue
+                    remaining_qty = move.quantity_done - incoming_qty + outgoing_qty
+                    move.transit_confirm_adjustment(remaining_qty)
         res = super()._action_done(cancel_backorder)
         for move in self.filtered(lambda rec: rec.state == 'done'):
             move.update_invoice_line()
         return res
+
+
+    def transit_confirm_adjustment(self, remaining_qty):
+
+        location_id = self.move_orig_ids.mapped('location_id')[0]
+        location_src_id = self.location_id
+        if remaining_qty > 0:
+            location_id, location_src_id = location_src_id, location_id
+        move_vals = {
+            'name': self.name,
+            'company_id': self.company_id.id,
+            'product_id': self.product_id.id,
+            'product_uom': self.product_uom.id,
+            'product_uom_qty': abs(remaining_qty),
+            'partner_id': self.partner_id.id,
+            'location_id': location_src_id.id,
+            'location_dest_id': location_id.id,
+            'rule_id': self.rule_id.id,
+            'procure_method': 'make_to_stock',
+            'origin': self.origin,
+            'picking_type_id': self.picking_type_id.id,
+            'group_id': self.group_id.id,
+            'route_ids': [(4, route.id) for route in self.route_ids],
+            'warehouse_id': self.warehouse_id.id,
+            'date': fields.Datetime.now().date(),
+            'date_deadline': False,
+            'propagate_cancel': self.propagate_cancel,
+            'description_picking': self.description_picking,
+            'priority': self.priority,
+            'transit_picking_id': self.picking_id.id,
+            'move_dest_ids': [(4, self.id)]
+        }
+        new_move = self.create(move_vals)
+        new_move.with_context(is_transit=True)._action_confirm()
+        new_move.write({'quantity_done': abs(remaining_qty)})
+        new_move.with_context(is_transit=True)._action_done()
 
 
     def _transit_return(self):

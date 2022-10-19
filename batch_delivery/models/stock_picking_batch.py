@@ -95,7 +95,7 @@ class StockPickingBatch(models.Model):
             batch.total_volume = 0
             batch.total_weight = 0
             for picking in batch.mapped('picking_ids').filtered(lambda rec: rec.state != 'cancel'):
-                movelines = picking.mapped('transit_move_lines') if picking.state not in['in_transit','done'] else picking.mapped('move_lines')
+                movelines = picking.mapped('transit_move_lines') if picking.state not in['in_transit','done', 'transit_confirmed'] else picking.mapped('move_lines')
                 for line in movelines.filtered(lambda rec: rec.state !='cancel'):
                     product_qty = line.quantity_done if line.quantity_done else line.reserved_availability
                     batch.total_unit += line.product_uom_qty
@@ -247,7 +247,7 @@ class StockPickingBatch(models.Model):
 
         # if least one picking not assigned, don't allow proceeding
 
-        if any(picking.state not in ('assigned', 'in_transit', 'done') for picking in self.picking_ids):
+        if any(picking.state not in ('assigned', 'in_transit', 'done', 'transit_confirmed') for picking in self.picking_ids):
             raise UserError('Some pickings are still waiting for goods. Please check or force their availability before setting this batch to done.')
         # invoice creation from batch processing
         # move every shipment to transit location(default done state of odoo picking)

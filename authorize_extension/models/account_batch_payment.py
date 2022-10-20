@@ -23,6 +23,8 @@ class AccountBatchPayment(models.Model):
         batches = res_content.get('batchList', [])
         payment_obj = self.env['account.payment']
 
+        new_batch = self.env['account.batch.payment']
+
         for batch in batches:
             batch_id = batch.get('batchId', False)
 
@@ -96,13 +98,35 @@ class AccountBatchPayment(models.Model):
                         for p_method in payment_methods:
                             filtered_payments = payments_to_batch.filtered(lambda r: r.journal_id == journal and r.payment_method_line_id == p_method)
                             if filtered_payments:
-                                batch_id = self.env['account.batch.payment'].create({
+                                new_batch = self.env['account.batch.payment'].create({
                                     'journal_id': journal.id,
                                     'payment_method_line_id': p_method.id,
                                     'authorize_batch_ref': batch_id
 
                                     })
-                                filtered_payments.write({'batch_payment_id': batch_id.id})
+                                filtered_payments.write({'batch_payment_id': new_batch.id})
+        if not new_batch:
+            payment_last_date = fields.Date.today()
+            payment_start_date = fields.Date.today() - timedelta(1)
+            payments_to_batch = payment_obj.search([('card_payment_type', '=', 'bank'),
+                ('batch_payment_id', '=', False),
+                ('date', '<=', payment_last_date),
+                ('date', '>=', payment_start_date)])
+            if payments_to_batch:
+                journals = payments_to_batch.mapped('journal_id')
+                payment_methods = payments_to_batch.mapped('payment_method_line_id')
+                for journal in journals:
+                    for p_method in payment_methods:
+                        filtered_payments = payments_to_batch.filtered(lambda r: r.journal_id == journal and r.payment_method_line_id == p_method)
+                        if filtered_payments:
+                            new_batch = self.env['account.batch.payment'].create({
+                                'journal_id': journal.id,
+                                'payment_method_line_id': p_method.id,
+                                'authorize_batch_ref': batch_id
+
+                                })
+                            filtered_payments.write({'batch_payment_id': new_batch.id})
+
 
 
 

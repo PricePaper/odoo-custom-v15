@@ -48,7 +48,7 @@
                     <button name="action_confirm_bypass" type="object" string="confirm without payment"
                             confirm="You cannot make authorise.net payment afte this step"
                             attrs="{'invisible':[('is_payment_error', '=', False)]}" context="{'bypass_payment':True}"
-                            groups="base.group_erp_manager"/>
+                            groups="base.group_erp_manager, account.group_account_manager"/>
                 </xpath>
 
             </field>

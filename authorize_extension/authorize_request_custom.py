@@ -204,7 +204,7 @@ class AuthorizeAPICustom:
 
     def get_line_item_info(self, order):
         res = []
-        for line in order.order_line.filtered(lambda r: not r.is_delivery and not r.is_downpayment and r.product_uom_qty > 0)[:30]:
+        for line in order.order_line.filtered(lambda r: not r.is_delivery and not r.is_downpayment and r.product_uom_qty > 0 and r.price_unit > 0)[:30]:
             res.append({
 
                 "itemId": line.product_id.default_code and line.product_id.default_code[:30] or 'Not applicable',

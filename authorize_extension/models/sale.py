@@ -99,7 +99,7 @@ class SaleOrder(models.Model):
         res = super(SaleOrder, self).action_confirm()
         if isinstance(res, dict):
             return res
-        if self.state in ('sale', 'done') and self.payment_term_id.is_pre_payment and not self._context.get('bypass_payment'):
+        if self.state in ('sale', 'done') and self.payment_term_id.is_pre_payment and not self._context.get('bypass_payment') and self.amount_total > 0:
             # token = self.partner_shipping_id.get_authorize_token() or self.partner_id.get_authorize_token()
             error_msg = ''
             if not self.token_id:

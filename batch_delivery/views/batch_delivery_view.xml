@@ -81,8 +81,13 @@
             <field name="inherit_id" ref="stock_picking_batch.view_picking_form_inherited"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='state']" position="before">
-                  <button name="create_invoice" type="object" string="Create Invoice" groups="account.group_account_invoice" class="oe_highlight"
-                       attrs="{'invisible': ['|', ('state', 'not in', ['in_transit', 'transit_confirmed']), ('is_invoiced', '=', True)]}" />
+                    <button name="create_invoice" type="object" string="Create Invoice" groups="account.group_account_invoice" class="oe_highlight"
+                         attrs="{'invisible': ['|', ('state', 'not in', ['in_transit', 'transit_confirmed']), ('is_invoiced', '=', True)]}" />
+                    <button name="action_transit_adjustment" type="object" string="Confirm Transit"
+                        attrs="{'invisible': [('state', 'not in', ('in_transit'))]}"
+                        class="oe_highlight" />
+                    <button name="action_transit_adjustment" type="object" string="Adjust Transit"
+                        attrs="{'invisible': [('state', 'not in', ('transit_confirmed'))]}" />
                 </xpath>
             </field>
         </record>
@@ -132,6 +137,10 @@
                     <button name="set_to_draft" string="Move to Draft"
                             type="object"
                             states='in_truck'/>
+                    <button name="action_transit_adjustment" type="object" string="Confirm Transit"
+                        attrs="{'invisible': [('state', 'not in', ('in_progress'))]}"
+                        class="oe_highlight"
+                        groups="stock.group_stock_user"/>
                 </button>
                 <button name="action_open_label_layout" position="attributes">
                     <attribute name="attrs">{'invisible': 1}</attribute>

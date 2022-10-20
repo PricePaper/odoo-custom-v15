@@ -261,6 +261,10 @@ class StockPickingBatch(models.Model):
                 invoice.write({'invoice_date': pick.batch_id.date})
         return self.write({'state': 'in_progress'})
 
+    def action_transit_adjustment(self):
+        for pick in self.picking_ids.filtered(lambda picking: picking.state != 'cancel'):
+            pick.action_transit_adjustment()
+
     def action_done(self):
         self.ensure_one()
         if not self.picking_ids:

@@ -219,7 +219,7 @@
                     <button name="action_transit_adjustment" type="object" string="Confirm Transit"
                         attrs="{'invisible': [('state', 'not in', ('in_transit'))]}"
                         class="oe_highlight"
-                        groups="base.group_erp_manager"/>
+                        groups="stock.group_stock_user"/>
                     <button name="action_validate" type="object" string="Confirm Transfer" groups="account.group_account_invoice"
                             attrs="{'invisible': ['|', '|', ('state', '=', 'done'), ('is_return', '=', False), ('picking_type_code', '!=', 'outgoing')]}" class="oe_highlight"/>
                     <button name="action_validate" type="object" string="Confirm Transfer" groups="account.group_account_invoice"
@@ -235,7 +235,7 @@
                             string="Create Refund" type="object" class="oe_highlight" groups="stock.group_stock_user, account.group_account_invoice"/>
                     <button name="action_transit_adjustment" type="object" string="Adjust Transit"
                         attrs="{'invisible': [('state', 'not in', ('transit_confirmed'))]}"
-                        groups="base.group_erp_manager"/>
+                        groups="stock.group_stock_user"/>
                 </button>
                 <button name="action_cancel" position="after">
                     <field name="show_reset" invisible="1"/>

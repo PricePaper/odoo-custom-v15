@@ -45,6 +45,16 @@
             </xpath>
             <xpath expr="//table/tbody/t/tr/t/td[3]" position="replace">
             </xpath>
+            <xpath expr="//div[@class='page']" position="after">
+              <div class='footer'>
+                <div class="text-center" style="border-top: 1px solid black;">
+                    <div t-if="report_type == 'pdf'" class="text-muted">
+                        Page: <span class="page"/> / <span class="topage"/>
+                    </div>
+                    <div t-field="o.purchase_default_message"/>
+                </div>
+              </div>
+            </xpath>
         </template>
 
         <template id="report_ppt_report_purchaseorder_document" inherit_id="purchase.report_purchaseorder_document">
@@ -87,6 +97,16 @@
                 <td>
                     <span t-esc="product_code and product_code[-1]"/>
                 </td>
+            </xpath>
+            <xpath expr="//div[@class='page']" position="after">
+              <div class='footer'>
+                <div class="text-center" style="border-top: 1px solid black;">
+                    <div t-if="report_type == 'pdf'" class="text-muted">
+                        Page: <span class="page"/> / <span class="topage"/>
+                    </div>
+                    <div t-field="o.purchase_default_message"/>
+                </div>
+              </div>
             </xpath>
         </template>
 

@@ -25,3 +25,5 @@ access_stock_overprocessed_transfer,access.stock.overprocessed.transfer,model_st
 access_reset_picking_reason,access.reset.picking.reason.transfer,model_reset_picking_reason,base.group_user,1,1,1,1
 access_stock_valuation_price_diff,access.stock.valuation.price.diff,model_stock_valuation_price_diff,base.group_user,1,1,1,1
 access_stock_valuation_price_diff_wizard,access.stock.valuation.price.diff.wizard,model_stock_valuation_price_diff_wizard,base.group_user,1,1,1,1
+access_stock_immediate_transfer_line_accountant,access_stock_immediate_transfer_line_accountant,stock.model_stock_immediate_transfer_line,account.group_account_user,1,1,1,0
+access_stock_immediate_transfer_accountant,access_stock_immediate_transfer_accountant,stock.model_stock_immediate_transfer,account.group_account_user,1,1,1,0

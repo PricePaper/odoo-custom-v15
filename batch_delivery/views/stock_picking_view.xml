@@ -245,11 +245,13 @@
                   <attribute name="attrs">{'invisible':['|', '|',('picking_type_code', '!=', 'incoming'),('state', 'in', ('waiting','confirmed',
                       'done', 'cancel')), ('show_validate', '=', False)]}
                   </attribute>
+                  <attribute name="groups">stock.group_stock_user,account.group_account_user</attribute>
                </xpath>
                <xpath expr="//button[@name='button_validate'][2]" position="attributes">
                  <attribute name="attrs">{'invisible':['|', '|',('picking_type_code', '!=', 'incoming'),('state', 'not in', ('waiting','confirmed',
                      'done', 'cancel')), ('show_validate', '=', False)]}
                  </attribute>
+                 <attribute name="groups">stock.group_stock_user,account.group_account_user</attribute>
               </xpath>
                 <!-- <button name="button_validate" position="attributes">
                     <attribute name="attrs">{'invisible':['|', '|',('picking_type_code', '!=', 'incoming'),('state', 'in', ('waiting','confirmed',

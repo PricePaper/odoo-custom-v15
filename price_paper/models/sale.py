@@ -492,6 +492,9 @@ class SaleOrder(models.Model):
             self.check_payment_term()
         if 'sales_person_ids' in vals and vals['sales_person_ids']:
             self.message_subscribe(partner_ids=vals['sales_person_ids'][0][-1])
+        if 'carrier_id' in vals and vals['carrier_id']:
+            pickings = self.picking_ids.filtered(lambda r:r.state != 'cancel')
+            pickings.write({'carrier_id': self.carrier_id.id})
         return res
 
     def copy(self, default=None):

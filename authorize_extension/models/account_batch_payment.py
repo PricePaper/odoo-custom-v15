@@ -13,7 +13,7 @@ class AccountBatchPayment(models.Model):
     def create_autherize_batch_payment(self):
 
         last_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-        start_date = (datetime.now() - timedelta(1)).strftime("%Y-%m-%dT%H:%M:%S")
+        start_date = (datetime.now() - timedelta(15)).strftime("%Y-%m-%dT%H:%M:%S")
 
         acquirer = self.env['payment.acquirer'].search([('provider', '=', 'authorize')])
 
@@ -100,6 +100,7 @@ class AccountBatchPayment(models.Model):
                             if filtered_payments:
                                 new_batch = self.env['account.batch.payment'].create({
                                     'journal_id': journal.id,
+                                    'date': filtered_payments[0].date,
                                     'payment_method_line_id': p_method.id,
                                     'authorize_batch_ref': batch_id
 

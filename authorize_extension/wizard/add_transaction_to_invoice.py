@@ -30,7 +30,7 @@ class AddInvoiceTransaction(models.TransientModel):
         payment_values = {
             'amount': abs(self.amount),
             'payment_type': p_type,
-            'currency_id': acquirer.authorize_currency_id.id,
+            'currency_id': acquirer.sudo().authorize_currency_id.id,
             'partner_id': invoice.partner_id.id,
             'partner_type': 'customer',
             'journal_id': acquirer.journal_id.id,

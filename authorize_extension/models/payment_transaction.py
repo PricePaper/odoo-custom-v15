@@ -17,7 +17,18 @@ _logger = logging.getLogger(__name__)
 
 
 class PaymentTransaction(models.Model):
-    _inherit = 'payment.transaction'
+
+    _name = 'payment.transaction'
+    _inherit = ['payment.transaction', 'mail.thread']
+
+    state = fields.Selection(
+        string="Status",
+        selection=[('draft', "Draft"), ('pending', "Pending"), ('authorized', "Authorized"),
+                   ('done', "Confirmed"), ('cancel', "Canceled"), ('error', "Error")],
+        default='draft', readonly=True, required=True, copy=False, index=True, tracking=True)
+    acquirer_reference = fields.Char(
+        string="Acquirer Reference", help="The acquirer reference of the transaction",
+        readonly=True, tracking=True)
 
     def _check_amount_and_confirm_order(self):
         self.ensure_one()

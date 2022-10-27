@@ -14,6 +14,12 @@
              <xpath expr="//button[@name='action_capture']" position="after">
                <button name="check_pending_status" string="Check Status" type="object" class='oe_highlight' states='pending'/>
              </xpath>
+             <xpath expr="//form/sheet" position="after">
+                 <div class="oe_chatter">
+                     <field name="message_follower_ids"/>
+                     <field name="message_ids"/>
+                 </div>
+             </xpath>
 
            </field>
        </record>

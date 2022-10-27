@@ -348,7 +348,7 @@ class AuthorizeAPICustom:
                 "terminalNumber": transaction.env.user.id,
                 "order": {
                     "invoiceNumber": transaction.reference,
-                    "description": order.note or 'description',
+                    "description": order.note and order.note[30] or 'description',
                 },
                 "lineItems": self.get_line_item_info(order),
                 "tax": {**self.get_tax_info(order)},
@@ -411,7 +411,7 @@ class AuthorizeAPICustom:
                 "terminalNumber": transaction.env.user.id,
                 "order": {
                     "invoiceNumber": transaction.reference,
-                    "description": invoice.narration or 'description',
+                    "description": invoice.narration and invoice.narration[30] or 'description',
                 },
                 "lineItems": self.get_invoice_line_item_info(invoice),
                 "tax": {**self.get_tax_info(invoice, from_invoice=True)},

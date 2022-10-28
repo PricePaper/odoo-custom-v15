@@ -80,18 +80,21 @@ class AccountBatchPayment(models.Model):
                             if tx.payment_id:
                                 payments_to_batch |= tx.payment_id
 
-                #add card swipe payments direct to the bank
-                payment_last_date = fields.Date.today()
-                payment_start_date = fields.Date.today() - timedelta(1)
-                direct_bank_payments = payment_obj.search([('card_payment_type', '=', 'bank'),
-                    ('batch_payment_id', '=', False),
-                    ('date', '<=', payment_last_date),
-                    ('date', '>=', payment_start_date)])
-                if direct_bank_payments:
-                    payments_to_batch |= direct_bank_payments
 
                 #create batch for payments based on journal and payment method
                 if payments_to_batch:
+
+                    #add card swipe payments direct to the bank
+                    payment_last_date = fields.Date.today()
+                    payment_start_date = fields.Date.today() - timedelta(1)
+                    direct_bank_payments = payment_obj.search([('card_payment_type', '=', 'bank'),
+                        ('batch_payment_id', '=', False),
+                        ('date', '<=', payment_last_date),
+                        ('date', '>=', payment_start_date)])
+                    if direct_bank_payments:
+                        payments_to_batch |= direct_bank_payments
+
+
                     journals = payments_to_batch.mapped('journal_id')
                     payment_methods = payments_to_batch.mapped('payment_method_line_id')
                     for journal in journals:
@@ -123,7 +126,7 @@ class AccountBatchPayment(models.Model):
                             new_batch = self.env['account.batch.payment'].create({
                                 'journal_id': journal.id,
                                 'payment_method_line_id': p_method.id,
-                                'authorize_batch_ref': batch_id
+                                'authorize_batch_ref': 'Direct Bank payments'
 
                                 })
                             filtered_payments.write({'batch_payment_id': new_batch.id})

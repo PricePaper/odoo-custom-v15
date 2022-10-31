@@ -400,8 +400,9 @@ class StockMove(models.Model):
                 {'invoice_line_ids': [[1, invoice_lines.id, {'quantity': quantity}]]})
 
         elif invoice:
-            vals = self.sale_line_id._prepare_invoice_line()
-            invoice_lines = invoice.sudo().with_context(default_move_type='out_invoice').write({'invoice_line_ids': [[0, 0, vals]]})
+            if self.quantity_done != 0:
+                vals = self.sale_line_id._prepare_invoice_line()
+                invoice_lines = invoice.sudo().with_context(default_move_type='out_invoice').write({'invoice_line_ids': [[0, 0, vals]]})
         return invoice_lines
 
     def _action_done(self, cancel_backorder=False):

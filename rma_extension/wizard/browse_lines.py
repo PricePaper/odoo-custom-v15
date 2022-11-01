@@ -241,6 +241,12 @@ class BrowseLinesSourceLine(models.TransientModel):
     tax_id = fields.Many2many('account.tax', string='Taxes')
 
 
+    @api.onchange('select')
+    def onchange_select_boolean(self):
+        for order in self:
+            if order.select and not order.product_id.active:
+                raise ValidationError(('This product is archived and can not be returned.'))
+
     @api.onchange('refund_qty', 'total_qty')
     def onchange_refund_price(self):
         for order in self:

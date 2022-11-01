@@ -53,7 +53,7 @@
                 </p>
             </div>
             </field>
-            <field name="report_template" ref="batch_delivery.ppt_account_selected_invoices_with_payment_report"/>
+            <field name="report_template" ref="batch_delivery.ppt_account_selected_invoices_with_payment_mail_report"/>
             <field name="report_name">Invoice_{{ (object.name or '').replace('/','_') }}{{ object.state == 'draft' and '_draft' or '' }}</field>
             <field name="lang">{{ object.partner_id.lang }}</field>
             <field name="auto_delete" eval="True"/>

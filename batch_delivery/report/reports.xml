@@ -221,6 +221,18 @@
             <field name="paperformat_id" ref="batch_delivery.paperformat_inv_std"/>
         </record>
 
+        <record id="ppt_account_selected_invoices_with_payment_mail_report" model="ir.actions.report">
+            <field name="name">Invoice Mail</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">batch_delivery.mail_report_ppt_selected_invoice_with_payment</field>
+            <field name="report_file">batch_delivery.mail_report_ppt_selected_invoice_with_payment</field>
+            <field name="print_report_name">object.picking_ids.mapped('batch_id') and 'Invoice - %s - %s' % (object.picking_ids.mapped('batch_id').truck_driver_id and object.picking_ids.mapped('batch_id').truck_driver_id.name, object.picking_ids.mapped('batch_id').date) or (object._get_report_base_filename())</field>
+            <field name="binding_model_id" ref="model_account_move"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="batch_delivery.paperformat_inv_std"/>
+        </record>
+
          <record id="account.account_invoices" model="ir.actions.report">
             <field name="name">Invoices</field>
             <field name="model">account.move</field>

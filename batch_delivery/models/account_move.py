@@ -31,7 +31,7 @@ class AccountMove(models.Model):
     def action_invoice_sent(self):
         self.ensure_one()
         template = self.env.ref('batch_delivery.email_template_edi_invoice', False)
-        report_template = self.env.ref('batch_delivery.ppt_account_selected_invoices_with_payment_report')
+        report_template = self.env.ref('batch_delivery.ppt_account_selected_invoices_with_payment_mail_report')
         if template and report_template and template.report_template.id != report_template.id:
             template.write({'report_template': report_template.id})
         return super(AccountMove, self).action_invoice_sent()

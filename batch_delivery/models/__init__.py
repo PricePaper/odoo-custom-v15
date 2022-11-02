@@ -19,4 +19,5 @@ from . import stock_quant
 from . import delivery_carrier
 from . import order_banner
 from . import stock_rule
+from . import stock_scrap
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

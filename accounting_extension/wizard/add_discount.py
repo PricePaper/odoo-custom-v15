@@ -49,6 +49,7 @@ class AddDiscount(models.TransientModel):
             'date': fields.Date.today(),
             'journal_id': move.journal_id.id,
             'ref': '%s - Discount' % move.name,
+            'partner_id': move.partner_id.id,
             'line_ids': [(0, 0, {
                 'account_id': account_payable.id if move.move_type == 'in_invoice' else account_receivable.id,
                 'company_currency_id': company_currency.id,

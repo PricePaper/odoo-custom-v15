@@ -159,16 +159,21 @@ class PaymentTransaction(models.Model):
 
         if self.provider != 'authorize':
             return super().action_refund(amount_to_refund=amount_to_refund)
-        else:
-            if any(tx.state != 'done' for tx in self):
-                raise ValidationError(_("Only confirmed transactions can be refunded."))
 
-            for tx in self:
-                refund_tx = tx._send_refund_request(amount_to_refund)
+        if any(tx.state != 'done' for tx in self):
+            raise ValidationError(_("Only confirmed transactions can be refunded."))
 
-                if refund_tx.state == 'done':
-                    refund_tx._create_payment()
-                    refund_tx.filtered(lambda rec: rec.state == 'done' and not rec.is_post_processed)._finalize_post_processing()
+        authorize_api = AuthorizeAPICustom(self.acquirer_id)
+        res_content = authorize_api.get_transaction_detail(self.acquirer_reference)
+        status = res_content.get('transaction', {}).get('transactionStatus', '')
+        if status in ('capturedPendingSettlement'):
+            raise ValidationError(_("The selected transaction is not settled in API."))
+
+        for tx in self:
+            refund_tx = tx._send_refund_request(amount_to_refund)
+            if refund_tx.state == 'done':
+                refund_tx._create_payment()
+                refund_tx.filtered(lambda rec: rec.state == 'done' and not rec.is_post_processed)._finalize_post_processing()
 
     def _send_refund_request(self, amount_to_refund=None, create_refund_transaction=True):
         """ Override of payment to send a refund request to Authorize.
@@ -184,10 +189,6 @@ class PaymentTransaction(models.Model):
                 create_refund_transaction=create_refund_transaction,
             )
 
-        # refund_tx = super()._send_refund_request(
-        #     amount_to_refund=amount_to_refund, create_refund_transaction=True
-        # )
-
         refund_tx = self._create_refund_transaction(amount_to_refund=amount_to_refund)
         refund_tx._log_sent_message()
 
@@ -195,7 +196,6 @@ class PaymentTransaction(models.Model):
         authorize_API = AuthorizeAPI(refund_tx.acquirer_id)
         rounded_amount = round(amount_to_refund, refund_tx.currency_id.decimal_places)
         res_content = authorize_API.refund(self.acquirer_reference, rounded_amount)
-        # _logger.info("refund request response:\n%s", pprint.pformat(res_content))
         # As the API has no redirection flow, we always know the reference of the transaction.
         # Still, we prefer to simulate the matching of the transaction by crafting dummy feedback
         # data in order to go through the centralized `_handle_feedback_data` method.

@@ -95,10 +95,11 @@ class AccountBatchPayment(models.Model):
                     #     payments_to_batch |= direct_bank_payments
 
 
-                    journals = payments_to_batch.mapped('journal_id')
-                    payment_methods = payments_to_batch.mapped('payment_method_line_id')
+                    journals = [*set(payments_to_batch.mapped('journal_id'))]
+                    payment_methods = [*set(payments_to_batch.mapped('payment_method_line_id'))]
                     for journal in journals:
                         for p_method in payment_methods:
+
                             filtered_payments = payments_to_batch.filtered(lambda r: r.journal_id == journal and r.payment_method_line_id == p_method)
                             if filtered_payments:
                                 name = self.env['ir.sequence'].with_context(sequence_date=filtered_payments[0].date).next_by_code('authorize.batch.payment')

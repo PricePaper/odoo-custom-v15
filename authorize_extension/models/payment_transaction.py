@@ -10,6 +10,7 @@ from odoo import api, fields, models, _, SUPERUSER_ID
 from odoo.tools import float_compare
 from odoo.exceptions import UserError, ValidationError
 from ..authorize_request_custom import AuthorizeAPICustom
+from odoo.addons.payment_authorize.models.authorize_request import AuthorizeAPI
 
 
 
@@ -149,3 +150,64 @@ class PaymentTransaction(models.Model):
             self.state = 'authorized'
         elif status == 'voided':
             self.state = 'cancel'
+
+    def action_refund(self, amount_to_refund=None):
+        """ Check the state of the transactions and request their refund.
+        :param float amount_to_refund: The amount to be refunded
+        :return: None
+        """
+
+        if self.provider != 'authorize':
+            return super().action_refund(amount_to_refund=amount_to_refund)
+        else:
+            if any(tx.state != 'done' for tx in self):
+                raise ValidationError(_("Only confirmed transactions can be refunded."))
+
+            for tx in self:
+                refund_tx = tx._send_refund_request(amount_to_refund)
+
+                if refund_tx.state == 'done':
+                    refund_tx._create_payment()
+                    refund_tx.filtered(lambda rec: rec.state == 'done' and not rec.is_post_processed)._finalize_post_processing()
+
+    def _send_refund_request(self, amount_to_refund=None, create_refund_transaction=True):
+        """ Override of payment to send a refund request to Authorize.
+        Note: self.ensure_one()
+        :param float amount_to_refund: The amount to refund
+        :param bool create_refund_transaction: Whether a refund transaction should be created or not
+        :return: The refund transaction if any
+        :rtype: recordset of `payment.transaction`
+        """
+        if self.provider != 'authorize':
+            return super()._send_refund_request(
+                amount_to_refund=amount_to_refund,
+                create_refund_transaction=create_refund_transaction,
+            )
+
+        # refund_tx = super()._send_refund_request(
+        #     amount_to_refund=amount_to_refund, create_refund_transaction=True
+        # )
+
+        refund_tx = self._create_refund_transaction(amount_to_refund=amount_to_refund)
+        refund_tx._log_sent_message()
+
+
+        authorize_API = AuthorizeAPI(refund_tx.acquirer_id)
+        rounded_amount = round(amount_to_refund, refund_tx.currency_id.decimal_places)
+        res_content = authorize_API.refund(self.acquirer_reference, rounded_amount)
+        # _logger.info("refund request response:\n%s", pprint.pformat(res_content))
+        # As the API has no redirection flow, we always know the reference of the transaction.
+        # Still, we prefer to simulate the matching of the transaction by crafting dummy feedback
+        # data in order to go through the centralized `_handle_feedback_data` method.
+        feedback_data = {'reference': refund_tx.reference, 'response': res_content}
+        status_code = res_content.get('x_response_code', '3')
+        if status_code == '1':  # Approved
+            status_type = res_content.get('x_type').lower()
+            if status_type in ('refund'):
+                refund_tx._set_done()
+                if refund_tx.tokenize and not self.token_id:
+                    refund_tx._authorize_tokenize()
+                refund_tx._execute_callback()
+        refund_tx._handle_feedback_data('authorize', feedback_data)
+
+        return refund_tx

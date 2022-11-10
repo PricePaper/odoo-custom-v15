@@ -38,10 +38,11 @@ class StockMove(models.Model):
             uom_quantity = self.product_id.uom_id._compute_quantity(quantity, self.product_uom, rounding_method='HALF-UP')
             uom_quantity = float_round(uom_quantity, precision_digits=2)
             uom_quantity_back_to_product_uom = self.product_uom._compute_quantity(uom_quantity, self.product_id.uom_id, rounding_method='HALF-UP')
-            if float_compare(quantity, uom_quantity_back_to_product_uom, precision_digits=rounding) == 0:
-                vals = dict(vals, product_uom_qty=uom_quantity)
-            else:
-                vals = dict(vals, product_uom_qty=quantity, product_uom_id=self.product_id.uom_id.id)
+            vals = dict(vals, product_uom_qty=uom_quantity)
+            # if float_compare(quantity, uom_quantity_back_to_product_uom, precision_digits=rounding) == 0:
+            #     vals = dict(vals, product_uom_qty=uom_quantity)
+            # else:
+            #     vals = dict(vals, product_uom_qty=quantity, product_uom_id=self.product_id.uom_id.id)
         package = None
         if reserved_quant:
             package = reserved_quant.package_id

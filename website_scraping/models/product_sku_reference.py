@@ -41,6 +41,7 @@ class ProductSkuReference(models.Model):
     def mark_exception_fixed(self):
         for rec in self:
             rec.in_exception = False
+            rec.is_unavailable = False
             rec.message_post(body="Exception Removed")
 
     @api.model

@@ -127,6 +127,10 @@ class ReportAccountFinancialReport(models.Model):
         def create_date_domain(options_date):
             date_field = options_date.get('date_field', 'date')
             domain = [(date_field, '<=', options_date['date_to'])]
+            date_tmp = fields.Date.from_string(options_date['date_to'])
+            date_tmp = self.env.company.compute_fiscalyear_dates(date_tmp)['date_from']
+            date_from = date_tmp.strftime('%Y-%m-%d')
+            domain += [(date_field, '>=', date_from)]
             if options_date['mode'] == 'range' and options_date['date_from'] and not options.get('exclude_from_date'):
                 strict_range = options_date.get('strict_range')
                 if not strict_range:

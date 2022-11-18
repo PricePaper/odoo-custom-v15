@@ -176,7 +176,7 @@ class StockPicking(models.Model):
     def _compute_invoice_ids(self):
         for picking in self:
             invoice_ids = picking.move_lines.mapped('invoice_line_ids').mapped('move_id')
-            if not invoice_ids:
+            if not invoice_ids and not picking.rma_id:
                 invoice_ids = picking.sale_id.invoice_ids
             picking.invoice_ids = invoice_ids
             picking.invoice_count = len(invoice_ids)

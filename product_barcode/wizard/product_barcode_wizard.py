@@ -58,6 +58,16 @@ class ProductBarcode(models.TransientModel):
                 self.barcode_search = False
                 return {'warning': {
                         'title': "Warning",
-                        'message': "Product Doesn't Exist",
+                        'message': "Barcode Doesn't Exist",
                         }
                         }
+
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        """
+        Assigning corresponding value for the product_template
+        """
+        if self.product_id:
+            self.product_tmpl_id = self.product_id.product_tmpl_id
+        else:
+            self.product_tmpl_id = False

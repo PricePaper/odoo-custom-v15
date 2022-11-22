@@ -5,8 +5,8 @@ from odoo.exceptions import ValidationError
 class ProductBarcode(models.Model):
     _name = 'product.barcode'
 
-    product_id = fields.Many2one('product.product', string="Product Variants")
-    product_tmpl_id = fields.Many2one('product.template', string="Product")
+    product_id = fields.Many2one('product.product', string="Product")
+    product_tmpl_id = fields.Many2one('product.template', string="Product Template")
     supplier_id = fields.Many2one('product.supplierinfo', string="Supplier")
     product_barcode = fields.Char(string="Product Barcode", copy=False)
 

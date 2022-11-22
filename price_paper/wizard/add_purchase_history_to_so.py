@@ -4,7 +4,8 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
-from odoo.tools import float_compare
+from odoo.tools import float_compare, DEFAULT_SERVER_DATETIME_FORMAT
+import pytz
 
 
 class SaleHistoryLinesWizard(models.TransientModel):
@@ -205,13 +206,25 @@ class AddPurchaseHistorySO(models.TransientModel):
         for line_id in line_ids:
             if line_id.qty_to_be != 0.0:
                 warning, price, price_from = line_id.order_line.calculate_customer_price()
+                old_order_line = line_id.order_line
+                last_sale = ''
+                if old_order_line.order_id:
+                    local = pytz.timezone(self.sudo().env.user.tz or "UTC")
+                    last_date = datetime.strftime(
+                        pytz.utc.localize(
+                            datetime.strptime(
+                                str(old_order_line.order_id.date_order), DEFAULT_SERVER_DATETIME_FORMAT)
+                        ).astimezone(local), "%m/%d/%Y %H:%M:%S")
+                    last_sale = 'Order Date  - %s\nPrice Unit    - %s\nSale Order  - %s' % (
+                        last_date, old_order_line.price_unit, old_order_line.order_id.name)
                 sale_order_line = {
                     'product_id': line_id.order_line.product_id.id,
                     'product_uom': line_id.order_line.product_uom.id,
                     'product_uom_qty': line_id.qty_to_be,
                     'price_unit': price,
                     'order_id': order_id and order_id.id or False,
-                    'price_from': line_id.order_line.price_from and line_id.order_line.price_from.id
+                    'price_from': line_id.order_line.price_from and line_id.order_line.price_from.id,
+                    'last_sale': last_sale
                 }
                 self.env['sale.order.line'].create(sale_order_line)
         return True

@@ -4,6 +4,8 @@
 from odoo import models, fields, api
 from odoo.addons.price_paper.models import margin
 from odoo.tools import float_round
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
 
 class ProductStandardPrice(models.Model):
@@ -61,6 +63,8 @@ class ProductStandardPrice(models.Model):
             if self._context.get('cost_cron', False):
                 log_vals['price_from'] = 'cost_cron'
             self.env['product.price.log'].create(log_vals)
+            standard_price_days = self.env.user.company_id.standard_price_config_days or 75
+            self.product_id.standard_price_date_lock = date.today() + relativedelta(days=standard_price_days)
         return super(ProductStandardPrice, self).write(vals)
 
     @api.model

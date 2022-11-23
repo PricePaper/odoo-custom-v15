@@ -219,7 +219,7 @@ class AuthorizeAPICustom:
 
     def get_invoice_line_item_info(self, invoice):
         res = []
-        for line in invoice.invoice_line_ids.filtered(lambda rec: rec.quantity > 0)[:30]:
+        for line in invoice.invoice_line_ids.filtered(lambda rec: rec.quantity > 0 and rec.price_unit > 0)[:30]:
             res.append({
                 "itemId": line.product_id.default_code and line.product_id.default_code[:30] or 'Not applicable',
                 "name": line.product_id.name and line.product_id.name[:30],

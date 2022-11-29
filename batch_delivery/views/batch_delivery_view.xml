@@ -58,7 +58,7 @@
                     <attribute name="invisible">True</attribute>
                 </xpath>
                 <xpath expr="//field[@name='scheduled_date']" position="after">
-                    <field name="is_late_order" attrs="{'readonly':[('parent.state','in', ('in_truck', 'done'))]}" widget="boolean_toggle"/>
+                    <field name="is_late_order" attrs="{'readonly':[('parent.state','in', ('done'))]}" widget="boolean_toggle"/>
                     <field name="is_invoiced" invisible="1"/>
                     <button class="fa fa-file-text mr8" name="action_print_invoice" type="object" aria-label="Invoice"/>
                     <button class="fa fa-truck" name="action_print_pick_ticket" type="object" aria-label="Pick Ticket"/>
@@ -237,7 +237,7 @@
                 </xpath>
 
                 <xpath expr="//field[@name='picking_ids']" position="attributes">
-                    <attribute name="attrs">{'readonly': [('state', 'in', ('done', 'in_truck'))]}</attribute>
+                    <attribute name="attrs">{'readonly': [('state', 'in', ('done'))]}</attribute>
                 </xpath>
 
 

@@ -588,6 +588,16 @@ class StockPicking(models.Model):
         picking.mapped('route_id').write({'set_active': False})
         # removed newly created batch with empty pciking lines.
         picking.mapped('batch_id').unlink()
+        routes = self.env['truck.route'].search([('set_active', '=', True)])
+        if routes:
+            draft_batches = self.env['stock.picking.batch'].search([('route_id', 'in', routes.ids), ('state', '=', 'draft')])
+            running_batches = self.env['stock.picking.batch'].search([('route_id', 'in', routes.ids), ('state', 'in', ('in_truck', 'in_progress'))])
+            routes = routes - draft_batches.mapped('route_id') - running_batches.mapped('route_id')
+            if draft_batches:
+                draft_batches.mapped('route_id').write({'set_active': False})
+                draft_batches.unlink()
+            if routes:
+                routes.write({'set_active': False})
         for rec in picking:
             rec.write({'batch_id':False,'route_id':False})
         return True

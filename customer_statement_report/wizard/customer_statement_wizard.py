@@ -30,14 +30,14 @@ class CustomerStatementWizard(models.TransientModel):
             for p in customers:
                 try:
                     past_due = False
-                    # if invoices.filtered(lambda inv: inv.partner_id.id == p.id and inv.invoice_date_due < fields.Date.today()):
-                    #     past_due = True
+                    if invoices.filtered(lambda inv: inv.partner_id.id == p.id and inv.invoice_date_due < fields.Date.today()):
+                        past_due = True
 
                     mail_template.sudo().with_context({
                         'd_from': date_from,
                         'd_to': date_to,
-                        'subject': "Customer Statement",
-                        # 'subject': "Customer Statement [PAST DUE] - %s" % p.name if past_due else "Customer Statement - %s" % p.name
+                        # 'subject': "Customer Statement",
+                        'subject': "Customer Statement [PAST DUE] - %s" % p.name if past_due else "Customer Statement - %s" % p.name
                     }).send_mail(p.id, force_send=False, notif_layout='mail.mail_notification_light')
                     _logger.info("Mail loop activated: %s %s.", threading.current_thread().name, p.id)
                 except Exception as e:

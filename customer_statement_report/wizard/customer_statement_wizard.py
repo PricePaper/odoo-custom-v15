@@ -33,13 +33,13 @@ class CustomerStatementWizard(models.TransientModel):
                     if invoices.filtered(lambda inv: inv.partner_id.id == p.id and inv.invoice_date_due < fields.Date.today()):
                         past_due = True
 
-                    t = mail_template.sudo().with_context({
+                    mail_template.sudo().with_context({
                         'd_from': date_from,
                         'd_to': date_to,
-                        'past_due': past_due,
+                        # 'subject': "Customer Statement",
                         'subject': "Customer Statement [PAST DUE] - %s" % p.name if past_due else "Customer Statement - %s" % p.name
                     }).send_mail(p.id, force_send=False, notif_layout='mail.mail_notification_light')
-                    _logger.info("Mail loop activated: %s %s %s.", threading.current_thread().name, p.id, t)
+                    _logger.info("Mail loop activated: %s %s.", threading.current_thread().name, p.id)
                 except Exception as e:
                     bus_message = {
                         'message': e,
@@ -105,8 +105,8 @@ class CustomerStatementWizard(models.TransientModel):
         if email_customer:
             if self._context.get('ppt_active_recipient'):
                 past_due = False
-                if invoices.filtered(lambda inv: inv.partner_id.id == email_customer.id and inv.invoice_date_due < fields.Date.today()):
-                    past_due = True
+                # if invoices.filtered(lambda inv: inv.partner_id.id == email_customer.id and inv.invoice_date_due < fields.Date.today()):
+                #     past_due = True
                 template_id = self.env.ref('customer_statement_report.email_template_customer_statement')
                 compose_form_id = self.env.ref('mail.email_compose_message_wizard_form')
                 ctx = {
@@ -135,6 +135,8 @@ class CustomerStatementWizard(models.TransientModel):
             t = threading.Thread(target=self.mail_loop, args=([invoices, email_customer, self.date_from, self.date_to, self.env.uid]))
             t.setName('CustomerStatement Email (Beta)')
             t.start()
+
+
         if pdf_customer:
             report = self.env.ref('customer_statement_report.report_customer_statement_pdf')
             return report.report_action(pdf_customer, data={

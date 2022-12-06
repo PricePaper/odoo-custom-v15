@@ -176,7 +176,7 @@ class StockPicking(models.Model):
     def _compute_invoice_ids(self):
         for picking in self:
             invoice_ids = picking.move_lines.mapped('invoice_line_ids').mapped('move_id')
-            if not invoice_ids:
+            if not invoice_ids and not picking.rma_id:
                 invoice_ids = picking.sale_id.invoice_ids
             picking.invoice_ids = invoice_ids
             picking.invoice_count = len(invoice_ids)
@@ -588,6 +588,16 @@ class StockPicking(models.Model):
         picking.mapped('route_id').write({'set_active': False})
         # removed newly created batch with empty pciking lines.
         picking.mapped('batch_id').unlink()
+        routes = self.env['truck.route'].search([('set_active', '=', True)])
+        if routes:
+            draft_batches = self.env['stock.picking.batch'].search([('route_id', 'in', routes.ids), ('state', '=', 'draft')])
+            running_batches = self.env['stock.picking.batch'].search([('route_id', 'in', routes.ids), ('state', 'in', ('in_truck', 'in_progress'))])
+            routes = routes - draft_batches.mapped('route_id') - running_batches.mapped('route_id')
+            if draft_batches:
+                draft_batches.mapped('route_id').write({'set_active': False})
+                draft_batches.unlink()
+            if routes:
+                routes.write({'set_active': False})
         for rec in picking:
             rec.write({'batch_id':False,'route_id':False})
         return True
@@ -729,6 +739,14 @@ class StockPicking(models.Model):
                 move.id: (move.move_orig_ids.mapped('created_purchase_line_id').id, move.move_orig_ids.mapped('move_orig_ids').ids or [])
                 for move in self.move_lines
             }
+            invoices = self.invoice_ids.filtered(lambda r: r.state in ('draft'))
+            del_invoice = self.env['account.move']
+            for invoice in invoices:
+                for line in invoice.invoice_line_ids:
+                    if True in line.mapped('sale_line_ids').mapped('is_delivery'):
+                        del_invoice |= invoice
+                        line.unlink()
+
             #cancel the existing DO
             self.with_context(from_reset_picking=True).action_cancel()
             #if the order is in locked state we cannot make any changes so change it to sale.
@@ -745,6 +763,12 @@ class StockPicking(models.Model):
                     })
                     new_move._action_assign()
             self.sale_id.write({'state': previous_state})
+            for inv in del_invoice:
+                delivery_line = self.sale_id.order_line.filtered(lambda r: r.is_delivery)
+                for line in delivery_line:
+                    vals = delivery_line._prepare_invoice_line()
+                    inv.write({'invoice_line_ids': [(0, 0, vals)]})
+
 
         # if self.state not in ('done', 'in_transit') and 'make_to_order' in self.transit_move_lines.mapped('procure_method'):
         #     for move in self.transit_move_lines:

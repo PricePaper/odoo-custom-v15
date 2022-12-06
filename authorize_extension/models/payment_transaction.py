@@ -37,6 +37,31 @@ class PaymentTransaction(models.Model):
             return
         return super(PaymentTransaction, self)._check_amount_and_confirm_order()
 
+    def _send_capture_request(self):
+        """ Override of payment to send a capture request to Authorize.
+
+        Note: self.ensure_one()
+
+        :return: None
+        """
+        self.ensure_one()
+        if self.provider != 'authorize':
+            return super()._send_capture_request()
+
+        authorize_API = AuthorizeAPI(self.acquirer_id)
+        rounded_amount = round(self.amount, self.currency_id.decimal_places)
+        invoices = self.invoice_ids.filtered(lambda r:r.state == 'posted' and r.payment_state in ('not_paid', 'partial'))
+        if invoices:
+            rounded_amount = round(sum(invoices.mapped('amount_residual')), self.currency_id.decimal_places)
+        self.amount = rounded_amount
+
+        res_content = authorize_API.capture(self.acquirer_reference, rounded_amount)
+        # As the API has no redirection flow, we always know the reference of the transaction.
+        # Still, we prefer to simulate the matching of the transaction by crafting dummy feedback
+        # data in order to go through the centralized `_handle_feedback_data` method.
+        feedback_data = {'reference': self.reference, 'response': res_content}
+        self._handle_feedback_data('authorize', feedback_data)
+
     def action_capture(self):
         res = super(PaymentTransaction, self).action_capture()
         if self.state == 'done' and self._context.get('create_payment'):

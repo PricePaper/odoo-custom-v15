@@ -14,8 +14,8 @@
                             </group>
                             <group>
                                 <field name="supplier_id" domain="[('product_tmpl_id','=',product_tmpl_id)]" required="True"/>
-                                <field name="product_barcode" required="True" invisible="1"/>
-                                <field name="_barcode_scanned" widget="many2one_barcode"/>
+                                <field name="product_barcode" required="True" invisible="0" widget='rt_widget_field_char_qr_cam'/>
+                                <!-- <field name="_barcode_scanned" widget="many2one_barcode"/> -->
 
                             </group>
                         </group>
@@ -44,7 +44,7 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="barcode_search"/>
+                                <field name="barcode_search" widget='rt_widget_field_many2one_qr_cam'/>
                             </group>
                         </group>
                         <group>

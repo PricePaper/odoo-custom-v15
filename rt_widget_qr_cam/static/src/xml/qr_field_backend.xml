@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <!-- qr Field Char Dialog -->
+
+    <div t-name="rt_widget_qr_cam.rt_widget_field_char_qr_cam.dialog">
+        <div class="rt_widget_field_char_qr_cam_wrapper">
+            <div class="form-group input-group">
+                <select name="" id="rt_widget_field_char_qr_cam_select" class="form-control">
+                    <option value="">Select camera</option>
+                </select>
+
+                <div class="input-group-append">
+                    <a class="ml-1 btn btn-primary" data-toggle="collapse" href="#rt_widget_field_char_qr_settings" role="button" aria-expanded="false" aria-controls="rt_widget_field_char_qr_settings">
+                        <i class="fa fa-cog"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 
+====================================
+QR Code or Barcode selection
+====================================
+-->
+
+            <div class="form-row ml-1">
+                <div class="form-check form-check-inline d-none">
+                    <label class="form-check-label" for="id_setting_type_code_barcode">Barcode Types: </label>
+                </div>
+
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input js_cls_setting_type_code" type="radio" name="setting_type_code" id="id_setting_type_code_barcode" value="barcode" />
+                    <label class="form-check-label" for="id_setting_type_code_barcode">Barcode</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input js_cls_setting_type_code" type="radio" name="setting_type_code" id="id_setting_type_code_qrcode" value="qrcode" />
+                    <label class="form-check-label" for="id_setting_type_code_qrcode">QR Code</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input js_cls_setting_type_code" type="radio" name="setting_type_code" id="id_setting_type_code_both" value="both" />
+                    <label class="form-check-label" for="id_setting_type_code_both">Both</label>
+                </div>
+            </div>
+            <!-- 
+====================================
+QR Code or Barcode selection
+====================================
+-->
+
+            <div class="collapse" id="rt_widget_field_char_qr_settings">
+                <div class="card card-body mb-3">
+                    <div class="">
+                        <input class="form-input js_cls_setting_dont_close_dialog" name="setting_dont_close_dialog" type="checkbox" value="dont_close_dialog" id="id_setting_dont_close_dialog" />
+                        <label class="form-label" for="id_setting_dont_close_dialog">
+                            Don't close dialog when scan success. (only applied to widget)
+                        </label>
+                    </div>
+
+                    <div class="d-none">
+                        <input class="form-input js_cls_setting_dont_stop_stream" name="setting_dont_stop_stream" type="checkbox" value="dont_stop_stream" id="id_setting_dont_stop_stream" />
+                        <label style="padding-top: 0px;" class="form-label" for="id_setting_dont_stop_stream">
+                            Don't stop video stream when scan success.
+                        </label>
+                    </div>
+
+                    <div class="">
+                        <input class="form-input js_cls_setting_dont_play_audio" name="setting_dont_play_audio" type="checkbox" value="dont_play_audio" id="id_setting_dont_play_audio" />
+                        <label style="padding-top: 0px;" class="form-label" for="id_setting_dont_play_audio">
+                            Don't play audio when scan success.
+                        </label>
+                    </div>
+
+                    <div class="">
+                        <input
+                            class="form-input js_cls_setting_dont_select_autocomplete_result"
+                            name="setting_dont_select_autocomplete_result"
+                            type="checkbox"
+                            value="setting_dont_select_autocomplete_result"
+                            id="id_setting_dont_select_autocomplete_result"
+                        />
+                        <label style="padding-top: 0px;" class="form-label" for="id_setting_dont_select_autocomplete_result">
+                            In search view, Don't select a first autocomplete result automatically.
+                        </label>
+                    </div>
+
+                    <div class="form-row">
+                        <input class="col-sm-2 form-input js_cls_setting_m2o_auto_selection_delay" name="setting_m2o_auto_selection_delay" type="number" id="id_setting_m2o_auto_selection_delay" step="number" />
+                        <label style="padding-top: 0px;" class="col-sm-10 form-label" for="id_setting_m2o_auto_selection_delay">
+                            Many2one auto selection delay (Millisecond)
+                        </label>
+                    </div>
+
+                    <div class="form-row mt-2">
+                        <input class="col-sm-2 form-input js_cls_setting_searchview_auto_selection_delay" name="setting_searchview_auto_selection_delay" type="number" id="id_setting_searchview_auto_selection_delay" step="number" />
+                        <label style="padding-top: 0px;" class="col-sm-10 form-label" for="id_setting_searchview_auto_selection_delay">
+                            Searchview auto selection delay (Millisecond)
+                        </label>
+                    </div>
+
+                    <div class="alert alert-info mt-2" role="alert">
+                        All settings are stored in browser cache so when you clear browser cache the settings are no longer accessible. You need to set settings again after clear browser cache.
+                    </div>
+                </div>
+            </div>
+
+            <div class="font-weight-bold js_cls_rt_widget_field_char_qr_last_scan_result" style="padding: 5px; font-size: 14px; color: #ffffff;"></div>
+
+            <a href="" type="button" class="js_cls_scan_again_button btn btn-primary btn-lg btn-block mt-2 mb-2">
+                Scan Again
+            </a>
+
+            <video id="rt_widget_field_char_qr_video" style="width: 100%;" autoplay="true" muted="true"></video>
+
+            <canvas id="rt_widget_field_char_qr_canvas" hidden="true"></canvas>
+
+            <div class="text-right mt-2">
+                <a href="" class="btn btn-link pr-0 js_cls_rt_close_dialog_stop_scanning_btn">
+                    Close dialog and stop scanning
+                </a>
+            </div>
+        </div>
+    </div>
+</templates>

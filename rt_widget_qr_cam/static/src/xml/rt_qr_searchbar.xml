@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+    <t name="rt_widget_qr_cam_rt_qr_searchbar" t-inherit="web.Legacy.SearchBar" t-inherit-mode="extension">
+        <xpath expr="//input[hasclass('o_searchview_input')]" position="after">
+            <a href="" class="btn btn-link" t-on-click.prevent="_rt_widget_qr_cam_on_click_search_bar_qr_scan_btn" style="position: absolute; top: -3px; left: auto; bottom: auto; right: 5px;"><i class="fa fa-qrcode"></i></a>
+        </xpath>
+    </t>
+</templates>

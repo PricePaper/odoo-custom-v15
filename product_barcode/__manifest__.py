@@ -19,7 +19,7 @@ Custom module implemented for Price Papers Barcode process.
     """,
     'installable': True,
     'application': False,
-    'depends': ['stock'],
+    'depends': ['rt_widget_qr_cam', 'stock'],
     'data': [
         'security/ir.model.access.csv',
         'wizard/product_barcode_wizard.xml',

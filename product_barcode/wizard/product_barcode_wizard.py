@@ -3,7 +3,7 @@ from odoo import api, fields, models
 
 class ProductBarcode(models.TransientModel):
     _name = "product.barcode.wizard"
-    _inherit = ['barcodes.barcode_events_mixin']
+    # _inherit = ['barcodes.barcode_events_mixin']
 
     product_id = fields.Many2one('product.product', string="Product Variants")
     product_tmpl_id = fields.Many2one('product.template', string="Product Name")
@@ -44,7 +44,34 @@ class ProductBarcode(models.TransientModel):
                     }
                     }
 
+    @api.onchange('product_barcode')
+    def _onchange_product_barcode(self):
+        if self.product_barcode:
+            barcode = self.env['product.barcode'].search([('product_barcode', '=', self.product_barcode)])
+            if product_barcode:
+                return {'warning': {
+                    'title': "Warning",
+                    'message': 'Barcode already exist for product %s' % (product_barcode.product_id.name),
+                    }
+                    }
 
+            if self.product_id and self.supplier_id:
+                values = {
+                    'product_id': self.product_id.id,
+                    'product_tmpl_id': self.product_tmpl_id.id,
+                    'supplier_id': self.supplier_id.id,
+                    'product_barcode': self.product_barcode
+                    }
+                self.env['product.barcode'].create(values)
+                name = self.product_id.name
+                self.product_id = False
+                self.supplier_id = False
+                self.product_barcode = False
+                return {'warning': {
+                    'title': "Barcode Added",
+                    'message': 'Barcode added for product %s' % (name),
+                    }
+                    }
 
     @api.onchange('barcode_search')
     def _onchange_product_search(self):

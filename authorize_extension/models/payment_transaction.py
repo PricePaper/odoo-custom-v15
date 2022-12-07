@@ -52,7 +52,8 @@ class PaymentTransaction(models.Model):
         rounded_amount = round(self.amount, self.currency_id.decimal_places)
         invoices = self.invoice_ids.filtered(lambda r:r.state == 'posted' and r.payment_state in ('not_paid', 'partial'))
         if invoices:
-            rounded_amount = round(sum(invoices.mapped('amount_residual')), self.currency_id.decimal_places)
+            due_amount = round(sum(invoices.mapped('amount_residual')), self.currency_id.decimal_places)
+            rounded_amount = min(rounded_amount, due_amount)
         self.amount = rounded_amount
 
         res_content = authorize_API.capture(self.acquirer_reference, rounded_amount)

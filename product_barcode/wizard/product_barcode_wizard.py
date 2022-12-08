@@ -13,15 +13,14 @@ class ProductBarcode(models.TransientModel):
     @api.onchange('product_barcode')
     def _onchange_product_barcode(self):
         if self.product_barcode:
-            barcode = self.env['product.barcode'].search([('product_barcode', '=', self.product_barcode)])
-            if barcode:
-                return {'warning': {
-                    'title': "Warning : Unique Barcode constrain",
-                    'message': 'Barcode already exist for product %s' % (barcode.product_id.name),
-                    }
-                    }
-
             if self.product_id and self.supplier_id:
+                barcode = self.env['product.barcode'].search([('product_barcode', '=', self.product_barcode)])
+                if barcode:
+                    return {'warning': {
+                        'title': "Warning : Unique Barcode constrain",
+                        'message': 'Barcode already exist for product %s' % (barcode.product_id.name),
+                        }
+                        }
                 values = {
                     'product_id': self.product_id.id,
                     'product_tmpl_id': self.product_tmpl_id.id,
@@ -38,6 +37,16 @@ class ProductBarcode(models.TransientModel):
                     'message': 'Barcode added for product %s' % (name),
                     }
                     }
+            else:
+                self.product_id = False
+                self.supplier_id = False
+                self.product_barcode = False
+                return {'warning': {
+                    'title': "Required Fields",
+                    'message': 'Please select Product and Supplier'
+                    }
+                    }
+
 
     @api.onchange('barcode_search')
     def _onchange_product_search(self):

@@ -3,7 +3,6 @@ from odoo import api, fields, models
 
 class ProductBarcode(models.TransientModel):
     _name = "product.barcode.wizard"
-    # _inherit = ['barcodes.barcode_events_mixin']
 
     product_id = fields.Many2one('product.product', string="Product Variants")
     product_tmpl_id = fields.Many2one('product.template', string="Product Name")
@@ -11,47 +10,14 @@ class ProductBarcode(models.TransientModel):
     product_barcode = fields.Char(string="Barcode")
     barcode_search = fields.Char(string="Barcode")
 
-
-    def on_barcode_scanned(self, barcode):
-        """
-        creating records for product barcode
-        """
-
-        if barcode:
-            product_barcode = self.env['product.barcode'].search([('product_barcode', '=', self.product_barcode)])
-            if product_barcode:
-                return {'warning': {
-                    'title': "Warning",
-                    'message': 'Barcode already exist for product %s' % (product_barcode.product_id.name),
-                    }
-                    }
-
-            if self.product_id and self.supplier_id:
-                values = {
-                    'product_id': self.product_id.id,
-                    'product_tmpl_id': self.product_tmpl_id.id,
-                    'supplier_id': self.supplier_id.id,
-                    'product_barcode': barcode
-                    }
-                self.env['product.barcode'].create(values)
-                name = self.product_id.name
-                self.product_id = False
-                self.supplier_id = False
-                self._barcode_scanned = False
-                return {'warning': {
-                    'title': "Barcode Added",
-                    'message': 'Barcode added for product %s' % (name),
-                    }
-                    }
-
     @api.onchange('product_barcode')
     def _onchange_product_barcode(self):
         if self.product_barcode:
             barcode = self.env['product.barcode'].search([('product_barcode', '=', self.product_barcode)])
-            if product_barcode:
+            if barcode:
                 return {'warning': {
-                    'title': "Warning",
-                    'message': 'Barcode already exist for product %s' % (product_barcode.product_id.name),
+                    'title': "Warning : Unique Barcode constrain",
+                    'message': 'Barcode already exist for product %s' % (barcode.product_id.name),
                     }
                     }
 
@@ -91,7 +57,7 @@ class ProductBarcode(models.TransientModel):
                 self.barcode_search = False
                 return {'warning': {
                         'title': "Warning",
-                        'message': "Product Doesn't Exist",
+                        'message': "Bacode Doesn't Exist",
                         }
                         }
 

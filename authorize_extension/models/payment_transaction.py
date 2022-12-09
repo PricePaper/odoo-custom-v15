@@ -237,3 +237,11 @@ class PaymentTransaction(models.Model):
         refund_tx._handle_feedback_data('authorize', feedback_data)
 
         return refund_tx
+
+    def _process_feedback_data(self, data):
+        """ Override to fix acquirer_reference set as 0.
+        """
+        acquirer_reference = self.acquirer_reference
+        super()._process_feedback_data(data)
+        if self.provider == 'authorize' and self.acquirer_reference = '0':
+            self.acquirer_reference = acquirer_reference

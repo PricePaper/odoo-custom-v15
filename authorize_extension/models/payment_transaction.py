@@ -48,9 +48,12 @@ class PaymentTransaction(models.Model):
         if self.provider != 'authorize':
             return super()._send_capture_request()
 
+        if self.state != 'authorized':
+            raise ValidationError(_("Only authorized transactions can be captured."))
+
         authorize_API = AuthorizeAPI(self.acquirer_id)
         rounded_amount = round(self.amount, self.currency_id.decimal_places)
-        invoices = self.invoice_ids.filtered(lambda r:r.state == 'posted' and r.payment_state in ('not_paid', 'partial'))
+        invoices = self.invoice_ids.filtered(lambda r: r.state == 'posted' and r.payment_state in ('not_paid', 'partial'))
         if invoices:
             due_amount = round(sum(invoices.mapped('amount_residual')), self.currency_id.decimal_places)
             rounded_amount = min(rounded_amount, due_amount)

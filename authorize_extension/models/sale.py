@@ -99,8 +99,13 @@ class SaleOrder(models.Model):
         res = super(SaleOrder, self).action_confirm()
         if isinstance(res, dict):
             return res
+
         if self.state in ('sale', 'done') and self.payment_term_id.is_pre_payment and not self._context.get('bypass_payment') and self.amount_total > 0:
             # token = self.partner_shipping_id.get_authorize_token() or self.partner_id.get_authorize_token()
+            valid_transaction  = self.transaction_ids.filtered(lambda rec: rec.state in ('pending', 'authorized', 'done'))
+            if self.amount_total <= sum(valid_transaction.mapped('amount')):
+                self.message_post(body="Odoo prevents a duplicate authorize transaction request.\n please contact administrator immediately.")
+                return res
             error_msg = ''
             if not self.token_id:
                 error_msg = "Payment Token Not selected."

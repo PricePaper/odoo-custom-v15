@@ -242,6 +242,7 @@ class PaymentTransaction(models.Model):
         """ Override to fix acquirer_reference set as 0.
         """
         acquirer_reference = self.acquirer_reference
-        super()._process_feedback_data(data)
-        if self.provider == 'authorize' and self.acquirer_reference = '0':
+        res = super()._process_feedback_data(data)
+        if self.provider == 'authorize' and self.acquirer_reference == '0':
             self.acquirer_reference = acquirer_reference
+        return res

@@ -45,9 +45,18 @@ class AccountMove(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals.get('move_type', '') != 'entry':
-            self = self.with_context(tracking_disable=True)
+        context = dict(self._context)
+        context.update(tracking_disable=True)
+        # if vals.get('move_type', '') != 'entry':
+        self = self.with_context(context)
         return super(AccountMove, self).create(vals)
+
+    def write(self, vals):
+        context = dict(self._context)
+        context.update(tracking_disable=True)
+        self = self.with_context(context)
+        return super(AccountMove, self).write(vals)
+
 
     @api.depends('invoice_line_ids.profit_margin')
     def calculate_gross_profit(self):

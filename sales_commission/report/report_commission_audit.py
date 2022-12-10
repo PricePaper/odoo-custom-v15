@@ -25,10 +25,14 @@ class Reportcommission_audit(models.AbstractModel):
             from_date = datetime.strptime(from_date, "%Y%m%d").date()
             to_date = "%s%s%s" %(year, month, month_last_date)
             to_date = datetime.strptime(to_date, "%Y%m%d").date()
-            invoices = self.env['account.move'].search([('payment_state', 'in', ('in_payment', 'paid')),
+            invoices_rec = self.env['account.move'].search([('payment_state', 'in', ('in_payment', 'paid')),
                 ('move_type', 'in', ('out_invoice', 'out_refund')),
                 ('check_bounce_invoice', '=', False)])
-            invoices = invoices.filtered(lambda r: r.paid_date and r.paid_date >= from_date and r.paid_date <= to_date)
+            invoices = self.env['account.move']
+            for inv in invoices_rec:
+                if inv.paid_date and inv.paid_date >= from_date and inv.paid_date <= to_date:
+                    invoices |= inv
+            # invoices = invoices.filtered(lambda r: r.paid_date and r.paid_date >= from_date and r.paid_date <= to_date)
             for invoice in invoices:
                 if invoice.paid_date and invoice.paid_date >= from_date and invoice.paid_date <= to_date:
                     for rec in invoice.commission_rule_ids:

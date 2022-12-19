@@ -18,6 +18,7 @@
                             </group>
                         </group>
                         <footer>
+                            <button string='Apply' type='object' class="btn-primary" name='apply_barcode'/>
                             <button string="Close" class="btn-primary" special="cancel"/>
                         </footer>
                   </sheet>

@@ -10,7 +10,9 @@ class ProductBarcode(models.TransientModel):
     product_barcode = fields.Char(string="Barcode")
     barcode_search = fields.Char(string="Barcode")
 
-    @api.onchange('product_barcode')
+
+
+    # @api.onchange('product_barcode')
     def _onchange_product_barcode(self):
         if self.product_barcode:
             if self.product_id and self.supplier_id:
@@ -70,7 +72,7 @@ class ProductBarcode(models.TransientModel):
                         }
                         }
 
-    @api.onchange('product_id')
+    # @api.onchange('product_id')
     def _onchange_product_id(self):
         """
         Assigning corresponding value for the product_template
@@ -79,3 +81,10 @@ class ProductBarcode(models.TransientModel):
             self.product_tmpl_id = self.product_id.product_tmpl_id
         else:
             self.product_tmpl_id = False
+
+
+    def apply_barcode(self):
+        self._onchange_product_id()
+        self._onchange_product_barcode()
+        
+        return {'type': 'ir.actions.act_window_close'}

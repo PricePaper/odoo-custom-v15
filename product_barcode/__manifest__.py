@@ -7,7 +7,7 @@
 ##############################################################################
 {
     'name': 'Product_Barcode',
-    'version': '1.0.1',
+    'version': '1.0.2',
     'license': 'LGPL-3',
     'category': 'Product Barcode',
     'author': 'Confianz',

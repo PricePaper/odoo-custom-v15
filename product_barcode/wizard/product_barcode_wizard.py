@@ -87,4 +87,7 @@ class ProductBarcode(models.TransientModel):
         self._onchange_product_id()
         self._onchange_product_barcode()
         
-        return {'type': 'ir.actions.act_window_close'}
+        action = self.env['ir.actions.act_window']._for_xml_id('product_barcode.product_barcode_wizard')
+        
+        return action
+        

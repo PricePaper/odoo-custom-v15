@@ -210,7 +210,7 @@ class SaleOrder(models.Model):
             if order.partner_id:
                 sc_order = self.env['sale.order'].search([('storage_contract', '=', True), ('state', '=', 'released'),
                                                           ('partner_id', '=', order.partner_id.id)])
-                count = sc_order.mapped('order_line').filtered(lambda r: r.storage_remaining_qty > 0)
+                count = sc_order.mapped('order_line').filtered(lambda r: r.storage_remaining_qty > 0 and r.product_id.active and r.product_id.type != 'service')
                 order.show_contract_line = len(count) > 0
 
     @api.depends('order_line.product_id', 'order_line.product_uom_qty')

@@ -1,0 +1,96 @@
+<odoo>
+    <data>
+        <record id="view_sample_request_tree" model="ir.ui.view">
+            <field name="name">sample.request.tree</field>
+            <field name="model">sample.request</field>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name='name'/>
+                    <field name='partner_id'/>
+                </tree>
+
+            </field>
+        </record>
+
+
+        <record id="view_sample_request_form" model="ir.ui.view">
+            <field name="name">sample.request.form</field>
+            <field name="model">sample.request</field>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+
+                <form>
+                    <header>
+                        <button name='approve_request' class='btn-primary' type='object' string='Approve Request' attrs="{'invisible':[('state','!=','request')]}"/>
+                        <button name='reject_request' type='object' string='Reject Request' attrs="{'invisible':[('state','!=','request')]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,request,approve"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name='partner_id'/>
+                                <field name='partner_shipping_id' string='Delivery Address'/>
+                            </group>
+
+                            <group>
+                                <field name='sale_id'/>
+                                <field name='carrier_id'/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string='Requests'>
+                                <field name='request_lines'>
+                                    <tree>
+                                        <field name='product_id'/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+
+        <record id="action_sample_request" model="ir.actions.act_window">
+            <field name="name">Sample Request</field>
+            <field name="res_model">sample.request</field>
+            <field name="view_mode">tree,form</field>
+            <!-- <field name="domain">[('state', '=', 'request')]</field> -->
+
+        </record>
+
+
+        <record id="action_sample_request_approve" model="ir.actions.act_window">
+            <field name="name">Sample Request</field>
+            <field name="res_model">sample.request</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state', '=', 'approve')]</field>
+
+        </record>
+
+        <record id="action_sample_request_reject" model="ir.actions.act_window">
+            <field name="name">Sample Request</field>
+            <field name="res_model">sample.request</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state', '=', 'reject')]</field>
+
+        </record>
+
+
+        <menuitem id="sample_request_root" name="Sample Requests" sequence="30" parent='sale.sale_menu_root'/>
+
+
+        <menuitem id="sample_request_draft" name="Sample Requests" sequence="30" parent='sample_request_root' action='sample_request.action_sample_request'/>
+        <menuitem id="sample_request_approve" name="Approved Requests" sequence="30" parent='sample_request_root' action='sample_request.action_sample_request_approve'/>
+        <menuitem id="sample_request_reject" name="Rejectd Requests" sequence="30" parent='sample_request_root' action='sample_request.action_sample_request_reject'/>
+
+    </data>
+</odoo>

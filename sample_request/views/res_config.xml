@@ -1,0 +1,77 @@
+<odoo>
+    <data>
+
+        <record id="res_config_settings_view_form" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.website.sale</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="website.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <div id="webmaster_settings" position="after">
+                    <h2>Sample Request</h2>
+                    <div class="row mt16 o_settings_container" id="sample_request_settings">
+                        <div class="col-12 col-lg-6 o_setting_box" id="sample_request_general">
+                            <div class="o_setting_left_pane">
+                                <field name="allow_sample"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="allow_sample"/>
+                                <div class="text-muted">
+                                Allow Customer to Request for Samples
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6 o_setting_box" id="sample_request_public" attrs="{'invisible':[('allow_sample','!=',True)]}">
+                            <div class="o_setting_left_pane">
+                                <field name="allow_guest"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="allow_guest"/>
+                                <div class="text-muted">
+                                Allow Guest to Request for Samples
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6 o_setting_box" id="sample_request_repeat" attrs="{'invisible':[('allow_sample','!=',True)]}">
+                            <div class="o_setting_left_pane">
+                                <field name="allow_repeat"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="allow_repeat"/>
+                                <div class="text-muted">
+                                Allow Repeat Sample Requests
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6 o_setting_box" id="sample_request_max" attrs="{'invisible':[('allow_sample','!=',True)]}">
+
+                            <div class="o_setting_right_pane">
+                                <field name="max_sample"/>
+                                <label for="max_sample"/>
+                                <div class="text-muted">
+                                Max Sample Request Per Customer
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6 o_setting_box" id="sample_request_max_month" attrs="{'invisible':[('allow_sample','!=',True)]}">
+
+                            <div class="o_setting_right_pane">
+                                <field name="request_months"/>
+                                <label for="request_months"/>
+                                <div class="text-muted">
+                                    Months to consider while checking request limit
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </field>
+        </record>
+
+    </data>
+</odoo>
+    

@@ -23,9 +23,7 @@ class ResPartner(models.Model):
         return [
             ('reconciled', '=', False),
             ('account_id.deprecated', '=', False),
-            # ('account_id.internal_type', '=', 'receivable'),
             ('account_id.internal_type', 'in', ('receivable', 'payable')),
-            ('move_id.move_type', 'in', ('in_invoice', 'in_refund', 'out_invoice', 'out_refund')),
             ('move_id.state', '=', 'posted'),
             ('partner_id', 'in', self.ids),
             ('company_id', '=', self.env.company.id),

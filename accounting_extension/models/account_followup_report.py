@@ -77,8 +77,9 @@ class AccountFollowupReport(models.AbstractModel):
                 total += not aml.blocked and amount or 0
                 is_overdue = today > aml.date_maturity if aml.date_maturity else today > aml.date
                 is_payment = aml.payment_id
-                days = today - aml.move_id.invoice_date
-                print(type(days), days)
+                days = 0
+                if aml.move_id.invoice_date:
+                    days = (today - aml.move_id.invoice_date).days
                 if is_overdue or is_payment:
                     total_issued += not aml.blocked and amount or 0
                 if is_overdue:
@@ -92,7 +93,7 @@ class AccountFollowupReport(models.AbstractModel):
                 amount = formatLang(self.env, amount, currency_obj=currency)
                 line_num += 1
                 running_total = formatLang(self.env, total, currency_obj=currency)
-                columns = [format_date(self.env, aml.date, lang_code=lang_code), days.days, date_due, aml.move_id.invoice_origin,
+                columns = [format_date(self.env, aml.date, lang_code=lang_code), days, date_due, aml.move_id.invoice_origin,
                            move_line_name, aml.expected_pay_date and str(aml.expected_pay_date) + ' ' + (
                                        aml.internal_note and aml.internal_note or '') or '',
                            {'name': aml.blocked, 'blocked': aml.blocked}, amount, running_total]

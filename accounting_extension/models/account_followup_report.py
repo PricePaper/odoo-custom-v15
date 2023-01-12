@@ -80,6 +80,8 @@ class AccountFollowupReport(models.AbstractModel):
                 days = 0
                 if aml.move_id.invoice_date:
                     days = (today - aml.move_id.invoice_date).days
+                elif aml.move_id.payment_id:
+                    days = (today - aml.move_id.payment_id.date).days
                 if is_overdue or is_payment:
                     total_issued += not aml.blocked and amount or 0
                 if is_overdue:

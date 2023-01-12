@@ -10,19 +10,40 @@ from odoo.exceptions import UserError
 
 
 class AccountFollowupReport(models.AbstractModel):
-    _inherit = 'account.report'
+    # _inherit = 'account.report'
     _inherit = "account.followup.report"
     _description = "Follow-up Report"
 
+    # def _get_columns_name(self, options):
+    #     """
+    #     Override to running total column
+    #
+    #     """
+    #     res = []
+    #     res = super(AccountFollowupReport, self)._get_columns_name(options)
+    #     res.append({'name': _('Days'), 'class': 'number', 'style': 'text-align:right; white-space:nowrap;'})
+    #     res.append({'name': _('Total'), 'class': 'number', 'style': 'text-align:right; white-space:nowrap;'})
+    #     return res
+
     def _get_columns_name(self, options):
         """
-        Override to running total column
-
+        Override
+        Override to add running total column, number of days from invoice date
         """
-        res = []
-        res = super(AccountFollowupReport, self)._get_columns_name(options)
-        res.append({'name': _('Total'), 'class': 'number', 'style': 'text-align:right; white-space:nowrap;'})
-        return res
+        headers = [{},
+                   {'name': _('Date'), 'class': 'date', 'style': 'text-align:center; white-space:nowrap;'},
+                   {'name': _('Days'), 'class': 'number', 'style': 'text-align:right; white-space:nowrap;'},
+                   {'name': _('Due Date'), 'class': 'date', 'style': 'text-align:center; white-space:nowrap;'},
+                   {'name': _('Source Document'), 'style': 'text-align:center; white-space:nowrap;'},
+                   {'name': _('Communication'), 'style': 'text-align:right; white-space:nowrap;'},
+                   {'name': _('Expected Date'), 'class': 'date', 'style': 'white-space:nowrap;'},
+                   {'name': _('Excluded'), 'class': 'date', 'style': 'white-space:nowrap;'},
+                   {'name': _('Total Due'), 'class': 'number o_price_total', 'style': 'text-align:right; white-space:nowrap;'},
+                   {'name': _('Total'), 'class': 'number', 'style': 'text-align:right; white-space:nowrap;'}
+                  ]
+        if self.env.context.get('print_mode'):
+            headers = headers[:6] + headers[8:]  # Remove the 'Expected Date' and 'Excluded' columns
+        return headers
 
     def _get_lines(self, options, line_id=None):
         """
@@ -56,6 +77,8 @@ class AccountFollowupReport(models.AbstractModel):
                 total += not aml.blocked and amount or 0
                 is_overdue = today > aml.date_maturity if aml.date_maturity else today > aml.date
                 is_payment = aml.payment_id
+                days = today - aml.move_id.invoice_date
+                print(type(days), days)
                 if is_overdue or is_payment:
                     total_issued += not aml.blocked and amount or 0
                 if is_overdue:
@@ -69,13 +92,13 @@ class AccountFollowupReport(models.AbstractModel):
                 amount = formatLang(self.env, amount, currency_obj=currency)
                 line_num += 1
                 running_total = formatLang(self.env, total, currency_obj=currency)
-                columns = [format_date(self.env, aml.date, lang_code=lang_code), date_due, aml.move_id.invoice_origin,
+                columns = [format_date(self.env, aml.date, lang_code=lang_code), days.days, date_due, aml.move_id.invoice_origin,
                            move_line_name, aml.expected_pay_date and str(aml.expected_pay_date) + ' ' + (
                                        aml.internal_note and aml.internal_note or '') or '',
                            {'name': aml.blocked, 'blocked': aml.blocked}, amount, running_total]
 
                 if self.env.context.get('print_mode'):
-                    columns = columns[:4] + columns[6:]
+                    columns = columns[:5] + columns[7:]
                 lines.append({
                     'id': aml.id,
                     'account_move': aml.move_id,
@@ -95,7 +118,7 @@ class AccountFollowupReport(models.AbstractModel):
                 'style': 'border-top-style: double',
                 'unfoldable': False,
                 'level': 3,
-                'columns': [{'name': v} for v in [''] * (3 if self.env.context.get('print_mode') else 5) + [
+                'columns': [{'name': v} for v in [''] * (4 if self.env.context.get('print_mode') else 6) + [
                     total >= 0 and _('Total Due') or '', total_due]],
             })
 
@@ -109,7 +132,7 @@ class AccountFollowupReport(models.AbstractModel):
                     'unfoldable': False,
                     'level': 3,
                     'columns': [{'name': v} for v in
-                                [''] * (3 if self.env.context.get('print_mode') else 5) + [_('Total Overdue'),
+                                [''] * (4 if self.env.context.get('print_mode') else 6) + [_('Total Overdue'),
                                                                                            total_issued]],
                 })
             # Add an empty line after the total to make a space between two currencies

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access.product.barcode,access_product_barcode,product_barcode.model_product_barcode,base.group_user,1,1,1,1
+access.product.barcode.wizard,access_product_barcode_wizard,product_barcode.model_product_barcode_wizard,base.group_user,1,1,1,1
+

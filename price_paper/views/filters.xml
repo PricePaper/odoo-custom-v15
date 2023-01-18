@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="ir_filters_view_form_readonly" model="ir.ui.view">
+            <field name="model">ir.filters</field>
+            <field name="arch" type="xml">
+                <form string="Filters" create='0' edit='0' delete='0'>
+                  <sheet>
+                    <group col="4">
+                        <field name="name"/>
+                        <field name="user_id" string="Available for User"/>
+                        <field name="model_id"/>
+                        <field name="is_default"/>
+                        <field name="action_id"/>
+                        <field name="active"/>
+                    </group>
+                    <group>
+                        <field name="domain" widget="domain" options="{'model': 'model_id'}"/>
+                        <field name="context"/>
+                        <field name="sort"/>
+                    </group>
+                   </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="ir_filters_view_tree_readonly" model="ir.ui.view">
+            <field name="model">ir.filters</field>
+            <field name="arch" type="xml">
+                <tree string="Filters" create='0' edit='0' delete='0'>
+                    <field name="name"/>
+                    <field name="model_id"/>
+                    <field name="user_id"/>
+                    <field name="is_default"/>
+                    <field name="action_id"/>
+                    <field name="domain" groups="base.group_no_one"/>
+                    <field name="context" groups="base.group_no_one"/>
+                    <field name="sort" groups="base.group_no_one"/>
+                </tree>
+            </field>
+        </record>
+        <record id="actions_user_ir_filters_view" model="ir.actions.act_window">
+            <field name="name">User-defined Filters</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ir.filters</field>
+        </record>
+        <record model="ir.actions.act_window.view" id="actions_user_ir_filters_view_tree">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="price_paper.ir_filters_view_tree_readonly"/>
+            <field name="act_window_id" ref="actions_user_ir_filters_view"/>
+        </record>
+
+        <record model="ir.actions.act_window.view" id="actions_user_ir_filters_view_form">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="price_paper.ir_filters_view_form_readonly"/>
+            <field name="act_window_id" ref="actions_user_ir_filters_view"/>
+        </record>
+
+        <menuitem parent="helpdesk.helpdesk_menu_config" name="User-defined Filters"
+            id="menu_user_filters" action="actions_user_ir_filters_view" sequence="5"/>
+    </data>
+</odoo>

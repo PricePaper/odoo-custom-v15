@@ -19,6 +19,18 @@ class ChangeProductUom(models.TransientModel):
     weight = fields.Float(string='Weight')
     duplicate_pricelist = fields.Boolean(string='Copy Pricelist')
 
+    @api.onchange('new_default_code')
+    def _onchange_default_code(self):
+        if not self.new_default_code:
+            return
+
+        domain = [('default_code', '=', self.new_default_code)]
+        if self.env['product.product'].search(domain, limit=1):
+            return {'warning': {
+                'title': _("Note:"),
+                'message': _("The Internal Reference '%s' already exists.", self.new_default_code),
+            }}
+
     def create_duplicate_product(self):
         default_vals = {
             'name': self.new_name,
@@ -30,9 +42,9 @@ class ChangeProductUom(models.TransientModel):
             'weight': self.weight,
             'volume': self.volume
         }
-        if self.new_default_code:
-            if self.product_id.default_code and self.product_id.default_code == self.new_default_code:
-                raise ValidationError('Internal reference is same as Old product')
+        # if self.new_default_code:
+        #     if self.product_id.default_code and self.product_id.default_code == self.new_default_code:
+        #         raise ValidationError('Internal reference is same as Old product')
         res = self.product_id.with_context(from_change_uom=True).copy(default=default_vals)
         res.sale_uoms = [(5, _, _)]
         res.sale_uoms = self.new_sale_uoms

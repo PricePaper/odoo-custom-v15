@@ -9,11 +9,13 @@
                     <sheet>
                         <group>
                             <group>
+                                <field name="product_id" readonly='1'/>
                                 <field name="duplicate_pricelist" widget='boolean_toggle'
                                        help="Duplicate customer product priclist lines with new product"/>
                             </group>
                             <group>
-                                <field name="product_id" readonly='1'/>
+                                <field name="is_alternate_product" widget='boolean_toggle'/>
+                                <field name="is_supercede_product" widget='boolean_toggle'/>
                             </group>
                         </group>
                         <separator string="New Product Details"/>

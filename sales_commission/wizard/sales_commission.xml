@@ -11,7 +11,8 @@
                         </group>
                     </sheet>
                     <footer>
-                        <button string="View Commissions" type="object" name="generate_commission" class="btn-primary"/>
+                        <button string="View Commission Diff" type="object" name="generate_commission" class="btn-primary"/>
+                        <button string="Export Commission CSV" type="object" name="generate_diff_csv" class="btn-primary"/>
                         <button special="cancel" string="Cancel" class="btn-default"/>
                     </footer>
                 </form>

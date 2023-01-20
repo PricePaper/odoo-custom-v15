@@ -40,7 +40,31 @@
                 <page  name="other_info" position="after">
                   <page string="Sales Commission" groups="base.group_no_one" attrs="{'invisible': [('move_type', 'not in', ['out_invoice', 'out_refund'])]}">
                     <field name="commission_rule_ids" invisible='1'/>
-                    <field name="sale_commission_ids"/>
+                    <field name="sale_commission_ids">
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="sale_person_id"
+                                      domain="[('is_sales_person', '=', True)]"
+                                      options="{'no_create': true, 'create_edit': false}"/>
+                                    <field name="commission_date" required='0'  invisible="1"/>
+                                    <field name="paid_date" required='0'/>
+                                </group>
+                                <group>
+                                    <field name="invoice_type"/>
+                                    <field name="sale_id" readonly="0"/>
+                                    <field name="partner_id" readonly="0"/>
+                                    <field name="invoice_id" readonly="0"/>
+                                    <field name="invoice_amount" readonly="0"/>
+                                    <field name="commission" />
+                                    <field name="is_paid" readonly="0"/>
+                                    <field name="is_cancelled" invisible="1"/>
+                                    <field name="is_settled" readonly="1"/>
+                                    <field name="is_removed" invisible="1"/>
+                                </group>
+                            </group>
+                        </form>
+                    </field>
                   </page>
                 </page>
             </field>

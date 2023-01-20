@@ -65,7 +65,7 @@ class SaleOrder(models.Model):
 
         for order in self:
             pending_invoices = order.partner_id.invoice_ids.filtered(
-                lambda rec: rec.move_type == 'out_invoice' and rec.state == 'posted' and rec.payment_state not in ('paid', 'in_payment') and (
+                lambda rec: rec.move_type == 'out_invoice' and rec.state == 'posted' and rec.payment_state not in ('paid', 'in_payment', 'reversed') and (
                         rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
 
             msg = ''
@@ -210,7 +210,7 @@ class SaleOrder(models.Model):
             if order.partner_id:
                 sc_order = self.env['sale.order'].search([('storage_contract', '=', True), ('state', '=', 'released'),
                                                           ('partner_id', '=', order.partner_id.id)])
-                count = sc_order.mapped('order_line').filtered(lambda r: r.storage_remaining_qty > 0)
+                count = sc_order.mapped('order_line').filtered(lambda r: r.storage_remaining_qty > 0 and r.product_id.active and r.product_id.type != 'service')
                 order.show_contract_line = len(count) > 0
 
     @api.depends('order_line.product_id', 'order_line.product_uom_qty')
@@ -481,7 +481,7 @@ class SaleOrder(models.Model):
         for order in self:
             if order.id in amount and amount[order.id] < order.amount_total:
                 pending_invoices = order.partner_id.invoice_ids.filtered(
-                    lambda rec: rec.move_type == 'out_invoice' and rec.state == 'posted' and rec.payment_state not in ('paid', 'in_payment') and (
+                    lambda rec: rec.move_type == 'out_invoice' and rec.state == 'posted' and rec.payment_state not in ('paid', 'in_payment', 'reversed') and (
                             rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
 
                 msg = ''
@@ -644,6 +644,7 @@ class SaleOrder(models.Model):
                 order.action_confirm()
             else:
                 order.hold_state = 'credit_hold'
+        return True
 
     @api.onchange('payment_term_id')
     def onchange_payment_term(self):

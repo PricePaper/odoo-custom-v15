@@ -38,6 +38,7 @@ Custom module implemented for Price Paper.
         'wizard/sc_popup_window.xml',
         'views/saleorder_report.xml',
         'views/res_company.xml',
+        'views/filters.xml',
         'views/stock_move.xml',
         'views/product_notes.xml',
         'views/product_price_log.xml',

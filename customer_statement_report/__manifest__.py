@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Customer Statement Report',
-    'version': '1.0',
+    'version': '1.0.1',
     'license': 'LGPL-3',
     'summary': 'Customer Statement Report',
     'description': """

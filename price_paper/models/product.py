@@ -157,7 +157,9 @@ class ProductProduct(models.Model):
             else:
                 product.is_bel_min_qty = False
 
-            if product.qty_available < (product.reordering_min_qty / 2):
+            crit_config = float(self.env['ir.config_parameter'].sudo().get_param('price_paper.bel_critical_config'))
+
+            if product.qty_available < (product.reordering_min_qty / crit_config):
                 product.is_bel_crit_qty = True
             else:
                 product.is_bel_crit_qty = False

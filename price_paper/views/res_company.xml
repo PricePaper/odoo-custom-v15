@@ -54,6 +54,29 @@
                 </div>
             </xpath>
         </field>
-    </record>
+        </record>
+        <record id="res_config_settings_view_stock_price_paperinherit" model="ir.ui.view">
+        <field name="name">res.config.settings.view.stock.inherit.pricepaper</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="stock.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='manage_product_packaging']" position="after">
+              <div class="col-12 col-lg-6 o_setting_box">
+                <div class="o_setting_right_pane">
+                  <label for="bel_critical_config"/>
+                  <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company"/>
+                  <div class="text-muted">
+
+                  </div>
+                  <div class="content-group">
+                    <div class="mt16">
+                      <span><field name="bel_critical_config" class="oe_inline"/> %</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </xpath>
+        </field>
+        </record>
     </data>
 </odoo>

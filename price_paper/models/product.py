@@ -278,6 +278,17 @@ class ProductProduct(models.Model):
             self.env['product.price.log'].create(log_vals)
         return res
 
+    def name_get(self):
+        res = super(ProductProduct, self).name_get()
+        if not self._context.get('show_uom_name', False):
+            return res
+        result = []
+        for rec in res:
+            name = self.env['product.product'].browse(rec[0]).uom_id.name or ''
+            result.append((rec[0], rec[1]+'_'+name))
+
+        return result
+
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):
         """

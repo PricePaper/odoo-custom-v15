@@ -138,10 +138,10 @@
                     <attribute name="decoration-bf">procure_method == 'make_to_order'</attribute>
                 </xpath>
 
-                <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="attributes">
+                <!-- <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="attributes">
                     <attribute name="options">{"no_create": False}</attribute>
                     <attribute name="widget">False</attribute>
-                </xpath>
+                </xpath> -->
                 <xpath expr="//field[@name='order_line']/form//field[@name='product_uom']" position="before">
                     <field name="sale_uom_ids" invisible="1"/>
                 </xpath>
@@ -202,12 +202,41 @@
                     <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
                 </xpath>
 
-                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='product_id']"
+                <!-- <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='product_id']"
                        position="attributes">
                     <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
                     <attribute name="domain">[('sale_ok', '=', True), ('categ_id.is_storage_contract', '=', False)]
                     </attribute>
+                </xpath> -->
+                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]" position="before">
+                  <label for='product_id'/>
+                  <field name="product_id"
+                      domain="[('sale_ok', '=', True), ('categ_id.is_storage_contract', '=', False)]"
+                      context="{'partner_id':parent.partner_id,
+                          'show_uom_name': 1,
+                          'quantity':product_uom_qty,
+                          'pricelist':parent.pricelist_id,
+                          'uom':product_uom,
+                          'company_id': parent.company_id}"
+                      attrs="{
+                          'readonly': [('product_updatable', '=', False)],
+                          'required': [('display_type', '=', False)],
+                      }"
+                      force_save="1"
+                     />
                 </xpath>
+                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='product_id']"
+                       position="attributes">
+                       <attribute name="invisible">1</attribute>
+                       <attribute name="context">{'partner_id':parent.partner_id,
+                           'show_uom_name': 1,
+                           'quantity':product_uom_qty,
+                           'pricelist':parent.pricelist_id,
+                           'uom':product_uom,
+                           'company_id': parent.company_id}</attribute>
+                      <attribute name="domain">[('sale_ok', '=', True), ('categ_id.is_storage_contract', '=', False)]</attribute>
+                </xpath>
+
 
                 <xpath expr="//field[@name='order_line']/form/group[1]" position="after">
                     <div>

@@ -8,3 +8,6 @@ class ResConfigSettings(models.TransientModel):
     auth_start_hour = fields.Float(string='Starting Hour',
         config_parameter='authorize_extension.auth_start_hour',
         default=8.0)
+    card_fee = fields.Float(string='Credit Card Fee Percentage',
+        config_parameter='authorize_extension.card_fee',
+        default=3.0)

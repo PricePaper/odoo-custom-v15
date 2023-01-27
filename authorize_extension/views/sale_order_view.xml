@@ -6,6 +6,15 @@
             <field name="type">form</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
+                <sheet position='before'>
+                    <div class="oe_text_center" attrs="{'invisible':[('transaction_count', '=', 0)]}">
+                        <p>
+                            <b>
+                                Payment fee will be added to the Total amount.
+                            </b>
+                        </p>
+                    </div>
+                </sheet>
                 <xpath expr="//button[@name='action_confirm'][1]" position="attributes">
                     <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ['sent']), ('is_payment_error', '=', True)]}</attribute>
                 </xpath>

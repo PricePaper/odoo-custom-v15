@@ -15,7 +15,8 @@ class StockPickingBatch(models.Model):
 
     route_id = fields.Many2one('truck.route', string='Route', tracking=True, readonly=True)
     truck_driver_id = fields.Many2one('res.partner', string='Driver', tracking=True)
-    date = fields.Date(string='Scheduled Date', copy=False, tracking=True)
+    date = fields.Date(string='Scheduled Delivery Date', copy=False, tracking=True,
+            help="The day we plan to deliver these orders")
     payment_ids = fields.One2many('account.payment', 'batch_id', string='Payments')
     actual_returned = fields.Float(string='Total Amount', help='Total amount returned by the driver.', digits='Product Price')
     cash_collected_lines = fields.One2many('cash.collected.lines', 'batch_id', string='Cash Collected Breakup')

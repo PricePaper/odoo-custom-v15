@@ -3,6 +3,7 @@ from werkzeug.urls import Href
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_round
+from dateutil.relativedelta import relativedelta
 
 
 def urlplus(url, params):
@@ -48,6 +49,9 @@ class StockPickingBatch(models.Model):
 
     @api.onchange('date')
     def _onchange_batch_date(self):
+        if self.date and self.date >= fields.Date.today()+(relativedelta(days=8)):
+            self.date = False
+            return {'warning': {'title': 'Validation Error', 'message': 'You can not set a date greater than 8 days from today.'}}
         if self.date and self.date <= fields.Date.today():
             return {'warning': {'title': 'Warning', 'message': 'You are entering today\'s date, or a date in the past. You most likely want a future date.'}}
 

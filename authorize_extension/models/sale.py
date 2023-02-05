@@ -117,14 +117,16 @@ class SaleOrder(models.Model):
                 count = self.env['payment.transaction'].sudo().search_count([('reference', 'ilike', self.name)])
                 if count:
                     reference = '%s - %s' % (self.name, count)
-                payment_fee = float(self.env['ir.config_parameter'].sudo().get_param('authorize_extension.card_fee') or 3)
+                payment_fee = float(self.env['ir.config_parameter'].sudo().get_param('authorize_extension.card_fee') or 0.00)
                 amount = self.amount_total
                 if payment_fee:
                     amount = float_round(self.amount_total * ((100+payment_fee) / 100), precision_digits=2)
+                    payment_fee = self.amount_total * (payment_fee/100)
                 tx_sudo = self.env['payment.transaction'].sudo().create({
                     'acquirer_id': self.token_id.acquirer_id.id,
                     'reference': reference,
                     'amount': amount,
+                    'transaction_fee': payment_fee,
                     'currency_id': self.currency_id.id,
                     'partner_id': self.partner_id.id,
                     'token_id': self.token_id.id,

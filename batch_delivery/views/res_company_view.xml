@@ -9,6 +9,13 @@
                 <field name='price_lock_days' position="after">
                     <field name='driver_writeoff_account_id'/>
                 </field>
+                <xpath expr="//page[1]" position="after">
+                    <page string="Sale/Invoice Message">
+                        <group>
+                            <field name="sale_default_message"/>
+                        </group>
+                    </page>
+                </xpath>
             </field>
         </record>
     </data>

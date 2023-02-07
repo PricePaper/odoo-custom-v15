@@ -362,6 +362,7 @@
                         Products may be returned within 30 days if they are in a resellable condition and their original, undamaged packaging.
                         Past due payments will incur 1.5% interest per month until paid in full. Balances placed for collection will incur a 30% service fee."
                     </div>
+                    <div t-field="o.sale_default_message"/>
                     <div t-if="report_type == 'pdf'" class="text-muted">
                         Page:
                         <span class="page"/>

@@ -3,7 +3,7 @@
     <template id="report_quick_saleorder_document">
         <t t-call="web.external_layout">
             <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)" />
-            <t t-set="forced_vat" t-value="doc.fiscal_position_id.foreign_vat"/> 
+            <t t-set="forced_vat" t-value="doc.fiscal_position_id.foreign_vat"/>
             <t t-set="address">
                 <div t-field="doc.partner_id"
                     t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' />
@@ -174,6 +174,14 @@
                     <strong>Fiscal Position Remark:</strong>
                     <span t-field="doc.fiscal_position_id.sudo().note"/>
                 </p>
+            </div>
+            <div class='footer'>
+              <div class="text-center" style="border-top: 1px solid black;">
+                  <div t-if="report_type == 'pdf'" class="text-muted">
+                      Page: <span class="page"/> / <span class="topage"/>
+                  </div>
+                  <div t-field="doc.sale_default_message"/>
+              </div>
             </div>
         </t>
     </template>

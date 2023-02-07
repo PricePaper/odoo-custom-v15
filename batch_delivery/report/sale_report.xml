@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_ppt_report_sale_order_document" inherit_id="sale.report_saleorder_document">
+            <xpath expr="//div[@class='page']" position="after">
+              <div class='footer'>
+                <div class="text-center" style="border-top: 1px solid black;">
+                    <div t-if="report_type == 'pdf'" class="text-muted">
+                        Page: <span class="page"/> / <span class="topage"/>
+                    </div>
+                    <div t-field="doc.sale_default_message"/>
+                </div>
+              </div>
+            </xpath>
+        </template>
+    </data>
+</odoo>

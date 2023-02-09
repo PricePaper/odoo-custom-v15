@@ -21,6 +21,9 @@ class ProductTemplate(models.Model):
     # def action_open_quants(self):
     #     return {}
 
+    description_purchase = fields.Text(
+        'Purchase Description', translate=True, copy=False)
+
     def _get_product_accounts(self):
         """ Add the stock accounts related to product to the result of super()
         @return: dictionary which contains information regarding stock accounts and super (income+expense accounts)

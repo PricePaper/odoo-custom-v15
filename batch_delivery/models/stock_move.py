@@ -418,7 +418,11 @@ class StockMove(models.Model):
                         continue
                     remaining_qty = move.quantity_done - incoming_qty + outgoing_qty
                     move.transit_confirm_adjustment(remaining_qty)
-        res = super()._action_done(cancel_backorder)
+        context = dict(self._context)
+        if any(self.mapped('is_storage_contract')):
+            context.update({'storage_contract': self, 'action_done': True})
+
+        res = super(StockMove, self.with_context(context))._action_done(cancel_backorder)
         for move in self.filtered(lambda rec: rec.state == 'done'):
             move.update_invoice_line()
         return res

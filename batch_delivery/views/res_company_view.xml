@@ -12,7 +12,7 @@
                 <xpath expr="//page[1]" position="after">
                     <page string="Sale/Invoice Message">
                         <group>
-                            <field name="sale_default_message"/>
+                            <field name="sale_default_message" widget="html"/>
                         </group>
                     </page>
                 </xpath>

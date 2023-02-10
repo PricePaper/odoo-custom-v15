@@ -9,8 +9,8 @@ class ResCompany(models.Model):
     @api.model
     def _get_default_sale_msg(self):
         result = """
-            <div style = "font-family: 'Gotham Bold', sans-serif;font-size:7px;" >
-                <p>TEST
+            <div style = "font-family: 'Gotham Bold', sans-serif;font-size:13px;" >
+                <p>
                 </p>
             </div>"""
         return result

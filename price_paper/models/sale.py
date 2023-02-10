@@ -1517,8 +1517,8 @@ class SaleOrderLine(models.Model):
             seller = self.product_id._prepare_sellers(False)[:1]
         if not seller:
             raise UserError("""There is no matching vendor price to generate the purchase order for product %s
-                    (no vendor defined, minimum quantity not reached, dates not valid, ...). Go on the product form and complete the list of vendors.""") % (
-                self.product_id.display_name)
+                    (no vendor defined, minimum quantity not reached, dates not valid, ...). Go on the product form and complete the list of vendors.""" % (
+                self.product_id.display_name))
         return seller
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

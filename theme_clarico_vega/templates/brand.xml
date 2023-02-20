@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="brand_listing_template" inherit_id="emipro_theme_base.brand_listing_template" name="Brand Listing">
+        <xpath expr="//div[@id='wrap']" position="inside">
+            <div class="container featured-all-brands">
+                <t t-set="brands"
+                   t-value="request.env['product.brand.ept'].sudo().search([('website_published','=', True),('website_id', 'in', (False,website.id))]).filtered(lambda r:r.products_count > 0)"/>
+                <t t-if="brands"><!--Featured Brand-->
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-auto">
+                    <h3 class="brand-title-main my-3">Our Brands</h3>
+                    </div>
+                    <div class="col-auto te_search">
+                        <input type="text" id="search_box" class="input-group" placeholder="Search Brand">
+                            <div class="input-group-append">
+                            <button type="button" id="close-button" class="btn"><i class="fa fa-search" /></button>
+                            </div>
+                        </input>
+                    </div>
+                </div>
+                    <div class="clearfix my-3">
+                        <button type="button" id="all-brands" class="has-brands ">All</button>
+                        <t t-foreach="range(97, 123)" t-as="i">
+                            <a t-att-data-href="'#brand_%s'%(chr(i))"
+                               t-att-class="'has-brands active' if  brands.filtered(lambda r:r.name.startswith((chr(i) , chr(i).upper()))) else 'has-brands disabled'">
+                                <div class="brand-alpha">
+                                    <t t-esc="chr(i)"/>
+                                </div>
+                            </a>
+                        </t>
+                    </div>
+                    <t t-set="featured_brands" t-value="brands.filtered(lambda r:r.is_featured_brand)"/>
+                    <div class="container-fluid">
+                        <div class="my-3 brand-main ">
+                        <t t-foreach="range(97, 123)" t-as="i">
+                            <t t-set="alpha_brands"
+                               t-value="brands.filtered(lambda r:r.name.startswith((chr(i) , chr(i).upper())))"/>
+                            <div class="brand-alpha-main" t-if="alpha_brands" t-att-id="'brand_%s'%(chr(i))">
+                                <div class="box-content">
+                                    <t t-foreach="alpha_brands" t-as="brand">
+                                        <div class="item brand-item">
+                                            <t t-if="brand.is_brand_page and brand.sudo().brand_page and brand.sudo().brand_page.website_published">
+                                                <t t-set="page_url" t-value="brand.sudo().brand_page.url"/>
+                                            </t>
+                                            <t t-else="">
+                                                <t t-set="page_url" t-value="'/shop?attrib=0-%s' %(brand.id)"/>
+                                            </t>
+                                            <a t-att-href="page_url">
+                                                <div class="brand-logo">
+                                                    <img t-attf-src="/web/image/product.brand.ept/#{brand.id}/logo/90x90"
+                                                         alt="Brand Logo"/>
+                                                </div>
+                                                <div class="py-2">
+                                                    <span class="mr-1 brand-name" t-esc="brand.name"/>
+                                                    (<span class="" t-esc="brand.products_count"/>)
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                    </div>
+                </t>
+                <t t-else="">
+                    <h1>No Brand Found</h1>
+                </t>
+            </div>
+        </xpath>
+    </template>
+</odoo>

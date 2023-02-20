@@ -1,0 +1,46 @@
+/*================== Button Style 1 ===============================*/
+@if o-website-value('button-template') == 'button_style_1' {
+    .te_theme_button {
+        color: nth($f_color,19);
+        display: inline-block;
+        @include transition(all,300ms,null)
+        background-color:nth($f_color,27);
+        border-color: nth($f_color,19);
+        border-style: solid;
+
+        &.btn-secondary, &.btn-link
+        {
+            color: theme-color("secondary") !important;
+            border-color:theme-color("secondary") !important;
+            background-color: nth($f_color,27) !important;
+            &:hover {
+                border-color:theme-color("secondary") !important;
+                background-color:theme-color("secondary") !important;
+                color:nth($f_color,5) !important;
+                @include transition(null,0.4s,null);
+            }
+        }
+        &.btn-danger
+        {
+            color: theme-color('danger');
+            border-color: theme-color('danger');
+
+            &:hover {
+                border-color:theme-color('danger');
+                background-color:theme-color('danger');
+                color: nth($f_color,5);
+                @include transition(null,0.4s,null);
+            }
+        }
+        @include media-breakpoint-down(xs) {
+            padding: 0.475rem 0.7rem;
+            font-size:nth($f_sizes,3);
+        }
+        &:hover {
+            @include border(null,19,solid)
+            background-color:nth($f_color,19);
+            color:nth($f_color,5);
+            @include transition(null,0.4s,null)
+        }
+    }
+}

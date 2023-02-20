@@ -1,0 +1,203 @@
+<odoo>
+    <data>
+        <template id="portal_my_home_address" name="Show Address Book" inherit_id="portal.portal_my_home" customize_show="True" priority="30">
+            <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title">Address Book</t>
+                    <t t-set="url" t-value="'/my/address/book'"/>
+                </t>
+            </xpath>
+        </template>
+
+        <template id="portal_my_home_menu_request" name="Portal layout : Request" inherit_id="portal.portal_breadcrumbs" priority="30">
+            <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+                <li t-if="page_name == 'address_book'" t-attf-class="breadcrumb-item #{'active ' if not child_address else ''}">
+                    <a t-if="child_address" t-attf-href="/my/address/book?{{ keep_query() }}">Address Book</a>
+                    <t t-else="">Address Book</t>
+                </li>
+            </xpath>
+        </template>
+
+        <template id='address_render'>
+            <div t-attf-class="container mb-4 tab-pane fade slow #{'active show' if tab_id == 'contact' else ''} mt-4" t-att-id="tab_id" role="tabpanel">
+                <div class='row'>
+                    <t t-if='not add_ids'>
+                        <div class='col col-12 col-lg-4'>
+                            <p>There are currently no addresses linked to your account.</p>
+                        </div>
+                    </t>
+                    <t t-foreach='add_ids' t-as='child'>
+                        <div class='col col-12 col-lg-4'>
+                            <div class='card address_card'>
+                                <div class='card-body border'>
+
+                                    <div style='min-height: 130px;'>
+                                        <a t-attf-href="/my/address/#{child.id}" class="btn btn-link float-right p-0 js_edit_address_book no-decoration" role="button" title="Edit this address" aria-label="Edit this address">
+                                            <i class='fa fa-edit'/>
+                                        </a>
+                                        <t t-if='child.type=="contact"' t-esc='child.name'/>
+                                        <t t-if="child.type=='contact'" t-esc="child" t-options="dict(widget='contact', fields=['address'], no_marker=True)"/>
+
+                                        <t t-else="" t-esc="child" t-options="dict(widget='contact', fields=['name', 'address'], no_marker=True)"/>
+                                        <button t-if='child.type=="contact" and not child.with_context(active_test=False).user_ids[0].has_group("base.group_portal")' t-att-data-partner_id ='child.id' class='btn btn-primary portal_access mt-1 w-100 font-weight-bolder'>Grant Portal Access</button>
+                                        <button t-if='child.type=="contact" and child.with_context(active_test=False).user_ids[0].has_group("base.group_portal")' t-att-data-partner_id ='child.id' class='btn btn-secondary portal_access_deny mt-1 w-100 font-weight-bolder'>Revoke Portal Access</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </template>
+
+
+        <template id="portal_my_address" name="My Address">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+                <t t-call="portal.portal_searchbar">
+                    <t t-set="title">Address Book</t>
+                </t>
+
+                <div>
+                    <a href='/my/address' class='btn btn-primary float-right new_add'>
+                        <i class='fa fa-plus mr-2'/>
+                        Add Address 
+                    </a>
+                </div>
+
+
+
+                <div class='mt32' >
+                    <ul class="nav nav-tabs justify-content-center pt-1" role="tablist">
+                        <li class="nav-item">
+                            <a href="#contact" class="nav-link active" role="tab" aria-selected="true" data-toggle="tab">
+                                Contacts
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#invoice" class="nav-link" role="tab" aria-selected="true" data-toggle="tab">
+                                Invoice Address
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#delivery" class="nav-link" role="tab" aria-selected="true" data-toggle="tab">
+                                Delivery Address
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class=" tab-content r p-0">
+
+
+                    <t t-call='pp_address_book.address_render'>
+                        <t t-set='head' t-value='"Contacts"'/>
+                        <t t-set='tab_id' t-value="'contact'"/>
+                        <t t-set='add_ids' t-value='contact'/>
+                    </t>
+                    <t t-call='pp_address_book.address_render'>
+                        <t t-set='head' t-value='"Invoice Addresses"'/>
+                        <t t-set='tab_id' t-value="'invoice'"/>
+                        <t t-set='add_ids' t-value='inv_add'/>
+                    </t>
+                    <t t-call='pp_address_book.address_render'>
+                        <t t-set='head' t-value='"Delivery Addresses"'/>
+                        <t t-set='tab_id' t-value="'delivery'"/>
+                        <t t-set='add_ids' t-value='del_add'/>
+                    </t>
+                </div>
+
+            </t>
+        </template>
+
+
+        <template id="address_book">
+            <t t-call="portal.portal_layout">
+                <div class="container mt-4 address_edit_book">
+                    <form action="/my/address" class="fr-address mt-4" method="POST" role="form">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                        <input type="hidden" name="partner_id" t-att-value="partner_id.id if partner_id else '0'" />
+                        <h3 class="mb-4">Address</h3>
+                        <div t-if="error" class="alert alert-danger mb-4">
+                            <p t-foreach="error.get('error_message', [])" t-as="err" class="mb-0">
+                                <t t-esc="err"/>
+                            </p>
+                        </div>
+                        <div t-attf-class="form-group #{error.get('name') and 'o_has_error' or ''}">
+                            <label for="name">
+                                <strong>Name*</strong>
+                            </label>
+                            <input type="text" name="name" required="required" autofocus="autofocus" class="form-control " t-att-value="'name' in partner_id and partner_id['name'] if partner_id else ''"/>
+                        </div>
+                        <div t-attf-class="form-group #{error.get('email') and 'o_has_error' or ''}">
+                            <label for="email">
+                                <strong>Email*</strong>
+                            </label>
+                            <input type="email" name="email" required="required" autofocus="autofocus" class="form-control " t-att-value="'email' in partner_id and partner_id['email'] if partner_id else ''"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">
+                                <strong>Phone*</strong>
+                            </label>
+                            <input type="number" maxlength="12" minlength="12" placeholder="###-###-####" min='1' name="phone" required="required" autofocus="autofocus" class="form-control " t-att-value="'phone' in partner_id and partner_id['phone'] if partner_id else ''" />
+                        </div>
+                        <div t-attf-class="form-group #{error.get('street') and 'o_has_error' or ''}">
+                            <label for="street">
+                                <strong>Street and Number*</strong>
+                            </label>
+                            <input type="text" name="street" required="required" autofocus="autofocus" class="form-control " t-att-value="'street' in partner_id and partner_id['street'] if partner_id else ''"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="street2">Street 2</label>
+                            <input type="text" name="street2" autofocus="autofocus" class="form-control " t-att-value="'street2' in partner_id and partner_id['street2'] if partner_id else ''" />
+                        </div>
+                        <div id='fr_add_city' t-attf-class="form-group #{error.get('city') and 'o_has_error' or ''}">
+                            <label for="city">
+                                <strong>City</strong>
+                            </label>
+                            <input type="text" name="city" required="required" autocapitalize="off" class="form-control " t-att-value="'city' in partner_id and partner_id['city'] if partner_id else ''"/>
+                        </div>
+                        <div class="form-group fr_zip">
+                            <label for="zip">Zip</label>
+                            <input type="text" name="zip" autofocus="autofocus" class="form-control " t-att-value="'zip' in partner_id and partner_id['zip'] if partner_id else ''"/>
+                        </div>
+                        <div t-attf-class="form-group #{error.get('country_id') and 'o_has_error' or ''}">
+                            <label class="col-form-label" for="country_id">Country*</label>
+                            <select id="country_id" name="country_id" class="form-control" required="required">
+                                <option value="">Country...</option>
+                                <t t-foreach="countries" t-as="c">
+                                    <option t-att-value="c.id" t-att-selected="c.id == country.id if country else '' ">
+                                        <t t-esc="c.name" />
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        <div id="fr_add_state" t-attf-class="state_form form-group #{error.get('country_id') and 'o_has_error' or ''}">
+                            <label class="col-form-label" for="state_id">State / Province</label>
+                            <select name="state_id" class="form-control" data-init="1">
+                                <option value="">State / Province...</option>
+                                <t t-foreach="country and country.state_ids or []" t-as="s">
+                                    <option t-att-value="s.id" t-att-selected="s.id == ('state_id' in partner_id and country and partner_id['state_id'] != '' and int(partner_id['state_id'])) if partner_id and country else ''">
+                                        <t t-esc="s.name" />
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="d-flex mt-4">
+                            <button type="submit" role="button" href="#" class="btn btn-primary mb32 mr-4">
+                                <span>Save changes</span>
+                            </button>
+                            <a href='/myprofile' class="btn text-dark mb32 ">
+                                <span>Cancel</span>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </t>
+        </template>
+
+
+
+
+    </data>
+</odoo>

@@ -1,0 +1,213 @@
+/*=================== Theme Customize modal =================*/
+body
+{
+.modal.o_theme_customize_modal 
+{
+	.modal-dialog
+	{
+		padding: 0;
+		right: 1%;
+		@include position(fixed) 
+		
+		.modal-content
+		{
+			height:100%;
+		}
+	}
+    .modal-header
+    {
+    	background-color: nth($f_color,3);
+	}
+	& h5
+	{
+		text-transform:uppercase;	
+	}
+	& .o_theme_customize_color_previews 
+	{
+		h6
+		{
+			margin: 8px 0;
+			padding: 5px 0;
+			@include style(3,6,inherit,null,uppercase);
+			font-weight: normal;
+		}
+		> div
+		{
+			display:inline-block;
+			width:100%;	
+			margin-bottom: 16px;
+			
+			.btn:not(.o_btn_preview).btn-sm
+			{
+				width: 48% !important;
+				display: block !important;
+				float: left;
+				@include position(relative)
+				line-height:0;
+				padding: 0.25rem 0.25rem;
+				margin: 1%;
+				border: 1px solid $border-color;
+				
+				> .o_color_preview
+				{
+					width: 100%;
+					border:0;
+					height: 30px;
+				}
+				.o_color_name
+				{
+					@include position(absolute,1.4em,auto,auto,1.5em);
+					z-index: 9;
+					color: nth($f_color,5);
+				}
+			}
+		}
+		div:nth-child(2)
+		{
+			.btn:not(.o_btn_preview).btn-sm .o_color_name
+			{
+				color:nth($f_color,5);
+				 mix-blend-mode: difference;
+			}
+		}
+	}
+	& .btn:not(.o_btn_preview).btn-secondary
+	{
+		background-color: nth($f_color,5) !important;
+	}
+	& .nav .nav-item
+	{
+		background-color: nth($f_color,27);
+		margin-bottom: 1em !important;
+		
+		& a.nav-link
+		{
+			@include style(3,1,inherit);
+			@include spacing(0);
+			font-weight: normal;
+			border: 1px solid nth($f_color,17);
+			padding: 8px 15px;
+		}
+		& a.nav-link.active 
+		{
+			font-weight: normal;
+			border: 0;
+			@include box-shadow(0px 0px 10px 0 rgba(50, 50, 93, 0.1))
+			border-right: 2px solid nth($f_color,20);
+			color: nth($f_color,3);
+			background-color: nth($f_color,5);
+		}
+	}
+	.nav
+		{
+			:nth-child(5),:nth-child(6),:nth-child(7),:nth-child(8)
+			{
+				a.nav-link
+				{
+					background-color: nth($f_color,19);
+					color:nth($f_color,5);
+				}
+			}
+		}
+    .tab-pane {
+        &:nth-child(5) {
+			.col-6 h6
+			{
+				margin: 0;
+				padding: 0;
+			}
+            & .o_theme_customize_option {
+                & > img {
+                   width: auto;
+                }
+            }
+        }
+        &:nth-child(6),
+        &:nth-child(7) {
+            .col-6 {
+                flex: 0 0 100%;
+                max-width: 100%;
+				h6
+				{
+					margin: 0;
+					padding: 0;
+				}
+            }
+            & .o_theme_customize_option {
+                & > img {
+                   max-height: initial;
+                   width: auto;
+                }
+                label.checked {
+                    background: nth($f_color,27);
+                    padding: 0;
+                    min-height: unset;
+                    ~ img {
+                       border: 2px solid nth($f_color,19);
+                    }
+                }
+            }
+        }
+        &:nth-child(8) {
+			.col-6
+			{
+				h6
+				{
+					margin: 0;
+					padding: 0;
+				}
+				label
+				{
+					text-align: left;
+					line-height: 1.2;
+				}
+			}
+			.col-6:nth-child(3) 
+			{
+                .o_theme_customize_option_list
+				{
+					.o_theme_customize_option_list
+					{
+						padding: 0 !important;
+					}
+				}
+            }
+            & .o_theme_customize_option {
+                & > img {
+                   max-height: initial;
+                   width: 120px;
+                }
+            }
+        }
+    }
+    & .o_theme_customize_option {
+        margin-bottom: 16px !important;
+        padding: 3px;
+        text-align: center;
+
+        & > img
+        {
+            max-height: 50px;
+        }
+        & label
+        {
+            border: 1px solid $border-color;
+            background-color: nth($f_color,5);
+        }
+        & label.checked {
+            border-color: nth($f_color,3);
+            color: nth($f_color,3);
+        }
+    }
+	.o_theme_customize_option_list {
+    box-shadow: none;
+	}
+	& .o_options_container h6
+	{
+			margin: 8px 0;
+			padding: 5px 0;
+			@include style(3,6,inherit,null,uppercase);
+			font-weight: normal;
+	}
+}
+}

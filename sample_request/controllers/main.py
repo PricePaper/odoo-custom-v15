@@ -83,7 +83,7 @@ class WebsiteSale(main.WebsiteSale):
 
 
     @http.route(['/sample/address/edit'], type='http', methods=['GET', 'POST'], auth="public", website=True, sitemap=False)
-    def address(self, **kw):
+    def sample_ddress(self, **kw):
         Partner = request.env['res.partner'].with_context(show_address=1).sudo()
         sample_request = request.website.get_sample_oder(force_create=1)
 

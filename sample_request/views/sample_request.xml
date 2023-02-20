@@ -24,6 +24,7 @@
                     <header>
                         <button name='approve_request' class='btn-primary' type='object' string='Approve Request' attrs="{'invisible':[('state','!=','request')]}"/>
                         <button name='reject_request' type='object' string='Reject Request' attrs="{'invisible':[('state','!=','request')]}"/>
+                        <button name='sent_approval' type='object' string='Send For Approval' attrs="{'invisible':[('state','!=','draft')]}"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,request,approve"/>
                     </header>
                     <sheet>
@@ -39,20 +40,24 @@
                             </group>
 
                             <group>
-                                <field name='sale_id'/>
+                                <field name='sale_id' readonly='1' attrs="{'inivisible':[('state','=','draft')]}"/>
                                 <field name='carrier_id'/>
                             </group>
                         </group>
                         <notebook>
                             <page string='Requests'>
                                 <field name='request_lines'>
-                                    <tree>
+                                    <tree editable='bottom'>
                                         <field name='product_id'/>
                                     </tree>
                                 </field>
                             </page>
                         </notebook>
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
                 </form>
             </field>
         </record>
@@ -85,7 +90,7 @@
         </record>
 
 
-        <menuitem id="sample_request_root" name="Sample Requests" sequence="30" parent='sale.sale_menu_root'/>
+        <menuitem id="sample_request_root" name="Sample Requests" sequence="30" parent='sale.sale_menu_root' groups='sample_request.group_manager,sample_request.group_user'/>
 
 
         <menuitem id="sample_request_draft" name="Sample Requests" sequence="30" parent='sample_request_root' action='sample_request.action_sample_request'/>

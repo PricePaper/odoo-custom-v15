@@ -1,0 +1,112 @@
+Version 15.0.4.1.4 - 12 Oct 22
+===================================
+Note:First upgrade emipro_theme_base and update theme.
+
+Improvement
+- XML Templates Source Code Optimization
+
+Version 15.0.4.1.3 - 14 Sep 22
+===================================
+Note:First upgrade emipro_theme_base and update theme.
+
+Improvement
+- Source Code Optimization
+
+Version 15.0.4.1.2 - 24 Aug 22
+===================================
+Note:First upgrade emipro_theme_base and update theme.
+
+Improvement
+- Source Code Optimization & Performance Improvement
+
+
+Version 15.0.4.1.1 - 26 Jul 22
+===================================
+Note:First upgrade emipro_theme_base and update theme.
+
+Improvement
+- Fix - Dynamic mega menu issue while creating from frontend .
+
+Version 15.0.4.1.0 - 22 Jul 22
+===================================
+Note:First upgrade emipro_theme_base and update theme.
+
+New Feature
+- Advanced Website Search: User-friendly website search with brand and attributes.
+- Website Search keyword report
+- Search synonyms
+
+Version 15.0.4.0.1 - 12 Jul 22
+===================================
+Improvement
+
+- Minor UI/UX Changes.
+
+Version 15.0.4.0.0 - 22 Jun 22
+===================================
+Note:First upgrade emipro_theme_base and update theme.
+
+New Feature
+- Advanced Dynamic Mega Menu
+- Product Documents: A single document can be assigned to multiple products with different documents types as file & link
+- Advanced Product Tab: Configure global product tabs for all products
+- B2B Feature: Restrict guest user checkout
+
+Version 15.0.3.0.1 - 20 May 22
+===================================
+Note:First upgrade emipro_theme_base and update theme.
+
+New Feature
+- Provide Clear cart option In Cart Page and Shopping Cart
+
+Version 15.0.3.0.0 - 11 May 22
+===================================
+Note:First upgrade emipro_theme_base and update theme.
+
+New Feature
+- B2B Reorder
+- B2B Hide Add to cart button & Price
+
+Version 15.0.2.0.0 - 20 Apr 22
+===================================
+New Feature
+- Color Variants In Shop Page
+
+Functional Improvement
+- Speed Up the rendering Process of the Dynamic Sliders,Category Sliders,Brand Slider
+
+
+Version 15.0.1.1.3 - 28 Feb 22
+===================================
+Improvement
+
+- Fix PWA window disable issue.
+
+Version 15.0.1.1.2 - 24 Dec 21
+===================================
+Improvement
+
+- Fix the Category and Brand Slider Issue.
+
+Version 15.0.1.1.1 - 11 Dec 21
+===================================
+Improvement
+
+- Fix the Product Builder Snippet click issue.
+
+Version 15.0.1.1.0 - 01 Dec 21
+===================================
+Improvement
+
+- Module restructre Process
+
+Version 15.0.1.0.1 - 16 Nov 21
+===================================
+Improvement
+
+- Minor UI/UX Changes.
+
+Version 15.0.1.0.0 - 15 Nov 21
+===================================
+
+1. Initial release

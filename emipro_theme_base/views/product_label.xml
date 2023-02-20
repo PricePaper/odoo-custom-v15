@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_label_extended" model="ir.ui.view">
+        <field name="name">product.label</field>
+        <field name="model">product.label</field>
+        <field name="arch" type="xml">
+            <form>
+                <div class="o_website_sale_image_modal_container">
+                    <div class="row">
+                        <div class="col-12">
+                            <tr>
+                                <td>
+                                    <label for="name" string="Name"/>
+                                </td>
+                                <td>
+                                    <field name="name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="html_color" string="Background Color"/>
+                                </td>
+                                <td>
+                                    <field name="html_color" widget="color"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                
+                                <td>
+                                    <label for="font_html_color" string="Font Color"/>
+                                </td>
+                                <td>
+                                    <field name="font_html_color" widget="color"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="label_style" string="Label Style"/>
+                                </td>
+                                <td>
+                                    <field name="label_style" class="web_label_style d-block" widget="radio"/>
+                                </td>
+                            </tr>
+                        </div>
+                        <style type="text/css">
+                            /*******************************************************/
+                            .web_label_style .custom-radio .custom-control-input[data-value="style_1"] + label:after {
+                                background-image: url(/theme_clarico_vega/static/src/img/customise_option/Style-1.jpg);
+                                position: relative;
+                                width: 110px;
+                                height: 110px;
+                                background-size: 100% 100%;
+                                border-radius: 0;
+                            }
+
+                            .web_label_style .custom-radio .custom-control-input[data-value="style_2"] + label:after {
+                                background-image: url(/theme_clarico_vega/static/src/img/customise_option/Style-2.jpg);
+                                position: relative;
+                                width: 110px;
+                                height: 110px;
+                                background-size: 100% 100%;
+                                border-radius: 0;
+                            }
+
+                            .web_label_style .custom-radio .custom-control-input[data-value="style_3"] + label:after {
+                                background-image: url(/theme_clarico_vega/static/src/img/customise_option/Style-3.jpg);
+                                position: relative;
+                                width: 110px;
+                                height: 110px;
+                                background-size: 100% 100%;
+                                border-radius: 0;
+                            }
+
+                            .web_label_style .custom-radio .custom-control-input[data-value="style_4"] + label:after {
+                                background-image: url(/theme_clarico_vega/static/src/img/customise_option/Style-4.jpg);
+                                position: relative;
+                                width: 110px;
+                                height: 110px;
+                                background-size: 100% 100%;
+                                border-radius: 0;
+                            }
+
+                            .web_label_style .custom-radio .custom-control-input[data-value="style_5"] + label:after {
+                                background-image: url(/theme_clarico_vega/static/src/img/customise_option/Style-5.jpg);
+                                position: relative;
+                                width: 110px;
+                                height: 110px;
+                                background-size: 100% 100%;
+                                border-radius: 0;
+                            }
+                            .web_label_style .custom-control.custom-radio.o_radio_item {
+                                display: inline-block;
+                            }
+                        </style>
+                    </div>
+                </div>
+            </form>
+        </field>
+    </record>
+</odoo>

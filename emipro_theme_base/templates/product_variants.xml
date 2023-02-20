@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="product_variants_ept" inherit_id="sale.variants">
+
+        <!-- display image icon if avalible on color type attribute -->
+        <xpath expr="//li[hasclass('js_attribute_value')]" position="replace">
+            <li class="form-group js_attribute_value" style="margin: 0;">
+                <label class="col-form-label"
+                       data-toggle="tooltip" data-html="true" t-att-data-title="ptav.product_attribute_value_id.name"
+                       data-placement="top">
+                    <div>
+                        <input type="radio"
+                               t-attf-class="js_variant_change radio_input #{ptal.attribute_id.create_variant} d-none"
+                               t-att-checked="ptav in combination"
+                               t-att-name="'ptal-%s' % ptal.id"
+                               t-att-value="ptav.id"
+                               t-att-data-value_id="ptav.id"
+                               t-att-data-value_name="ptav.name"
+                               t-att-data-attribute_name="ptav.attribute_id.name"
+                               t-att-data-is_custom="ptav.is_custom"
+                               t-att-data-is_single_and_custom="single_and_custom"/>
+                        <div class="radio_input_value flex-column align-items-center text-center te-radio-name">
+                            <span t-field="ptav.name"/>
+                            <span class="badge badge-pill badge-secondary" t-if="ptav.price_extra">
+                                <!-- see note above about price_extra -->
+                                <t t-esc="ptav.price_extra > 0 and '+' or '-'"/>
+                                <span t-esc="abs(ptav.price_extra)" class="variant_price_extra"
+                                      style="white-space: nowrap;"
+                                      t-options='{
+                                                "widget": "monetary",
+                                                "from_currency": product.currency_id,
+                                                "display_currency": (pricelist or product).currency_id
+                                            }'/>
+                            </span>
+                        </div>
+                    </div>
+                </label>
+            </li>
+        </xpath>
+
+        <xpath expr="//li[contains(@t-attf-class, 'o_variant_pills')]" position="replace">
+            <li t-attf-class="o_variant_pills btn btn-primary mb-1 list-inline-item js_attribute_value #{'active' if ptav in combination else ''}">
+                <input type="radio"
+                       t-attf-class="js_variant_change #{ptal.attribute_id.create_variant}"
+                       t-att-checked="ptav in combination"
+                       t-att-name="'ptal-%s' % ptal.id"
+                       t-att-value="ptav.id"
+                       t-att-data-value_id="ptav.id"
+                       t-att-id="ptav.id"
+                       t-att-data-value_name="ptav.name"
+                       t-att-data-attribute_name="ptav.attribute_id.name"
+                       t-att-data-is_custom="ptav.is_custom"
+                       t-att-data-is_single_and_custom="single_and_custom"
+                       t-att-autocomplete="off"/>
+                <div class="radio_input_value o_variant_pills_input_value">
+                    <span t-field="ptav.name" data-toggle="tooltip" data-html="true"
+                          t-att-data-title="ptav.product_attribute_value_id.name"
+                          data-placement="top"/>
+                    <t t-call="sale.badge_extra_price"/>
+                </div>
+            </li>
+        </xpath>
+
+        <xpath expr="//t/ul/li[hasclass('list-inline-item')]" position="replace">
+            <li t-foreach="ptal.product_template_value_ids._only_active()" t-as="ptav"
+                t-attf-class="list-inline-item #{'te_style_round' if (ptal.attribute_id.icon_style == 'round') else 'te_style_square'} #{'large_item' if ptal.attribute_id.is_swatches else ''}">
+                <t t-if="ptal.attribute_id.is_swatches and ptav.product_attribute_value_id.icon">
+                    <label data-toggle="tooltip" data1-html="true"
+                           t-att-data-title="ptav.product_attribute_value_id.name" data-placement="top"
+                           t-attf-style="background-image: url(data:image/*;base64,#{ptav.product_attribute_value_id.icon}) !important; position: relative;"
+                           t-attf-class="css_attribute_color #{'active' if ptav in combination else ''} #{'custom_value' if ptav.is_custom else ''}">
+                        <input type="radio"
+                               t-attf-class="js_variant_change  #{ptal.attribute_id.create_variant}"
+                               t-att-checked="ptav in combination"
+                               t-att-name="'ptal-%s' % ptal.id"
+                               t-att-value="ptav.id"
+                               t-att-title="ptav.name"
+                               t-att-data-value_id="ptav.id"
+                               t-att-data-value_name="ptav.name"
+                               t-att-data-attribute_name="ptav.attribute_id.name"
+                               t-att-data-is_custom="ptav.is_custom"
+                               t-att-data-is_single_and_custom="single_and_custom"/>
+                    </label>
+                </t>
+                <t t-else="">
+                    <label data-toggle="tooltip" data-html="true"
+                           t-att-data-title="ptav.product_attribute_value_id.name" data-placement="top"
+                           t-attf-style="background-color:#{ptav.html_color or ptav.product_attribute_value_id.name if not ptav.is_custom else ''}"
+                           t-attf-class="css_attribute_color #{'active' if ptav in combination else ''} #{'custom_value' if ptav.is_custom else ''}">
+                        <input type="radio"
+                               t-attf-class="js_variant_change  #{ptal.attribute_id.create_variant}"
+                               t-att-checked="ptav in combination"
+                               t-att-name="'ptal-%s' % ptal.id"
+                               t-att-value="ptav.id"
+                               t-att-title="ptav.name"
+                               t-att-data-value_id="ptav.id"
+                               t-att-data-value_name="ptav.name"
+                               t-att-data-attribute_name="ptav.attribute_id.name"
+                               t-att-data-is_custom="ptav.is_custom"
+                               t-att-data-is_single_and_custom="single_and_custom"/>
+                    </label>
+                </t>
+            </li>
+        </xpath>
+        <xpath expr="//label[hasclass('col-form-label')]" position="attributes">
+            <attribute name="style">
+            </attribute>
+        </xpath>
+        <xpath expr="//ul[@t-att-data-attribute_id='ptal.attribute_id.id']" position="attributes">
+            <attribute name="t-attf-class">list-unstyled d-flex flex-wrap align-items-start te-radio-list
+                #{'d-none' if single_and_custom else ''}
+            </attribute>
+        </xpath>
+        <xpath expr="//ul" position="before">
+            <!--<t t-if="website">
+                <t t-if="product.has_configurable_attributes">
+                    <hr class="te_s_hr_line"/>
+                    <div class="te_s_variant_text">
+                        <span class="pull-left te_show_variants">Customize</span>
+                        <span class="pull-right">
+                            <i class="fa fa-caret-down"></i>
+                        </span>
+                    </div>
+                </t>
+            </t>-->
+        </xpath>
+        <xpath expr="//ul" position="after">
+            <t t-if="website">
+<!--                <hr class="te_s_hr_line"/>-->
+            </t>
+        </xpath>
+
+    </template>
+</odoo>

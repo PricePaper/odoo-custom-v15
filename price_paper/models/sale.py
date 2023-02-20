@@ -176,7 +176,11 @@ class SaleOrder(models.Model):
 
         res = super(SaleOrder, self).action_confirm()
 
+
         for order in self:
+            for picking in order.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done')):
+                if order.carrier_id != picking.carrier_id:
+                    order.carrier_id = picking.carrier_id.id
             for order_line in order.order_line:
                 if order_line.is_delivery:
                     continue
@@ -1513,8 +1517,8 @@ class SaleOrderLine(models.Model):
             seller = self.product_id._prepare_sellers(False)[:1]
         if not seller:
             raise UserError("""There is no matching vendor price to generate the purchase order for product %s
-                    (no vendor defined, minimum quantity not reached, dates not valid, ...). Go on the product form and complete the list of vendors.""") % (
-                self.product_id.display_name)
+                    (no vendor defined, minimum quantity not reached, dates not valid, ...). Go on the product form and complete the list of vendors.""" % (
+                self.product_id.display_name))
         return seller
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

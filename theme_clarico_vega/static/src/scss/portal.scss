@@ -1,0 +1,448 @@
+/*****************************************
+			   01. Portal Details
+			   02. Portal Table
+			   03. Portal Main Page
+			   04. Quotation Page
+******************************************/
+/*=================== 01. Portal Details ================================*/
+#portal_grid {
+	width:100%;
+	display:inline-block;
+	.list-group-item {
+	    width: 31%;
+	    float: left;
+	    margin: 1%;
+	    padding: 14px 18px;
+	    min-height: 100px;
+	    @include media-breakpoint-down(sm){
+	        min-height: 50px;
+	    }
+	    > span.text-black.bg-transparent {
+	        @include media-breakpoint-down(sm){
+                display: flex;
+            }
+            &:after, &:before{
+                padding:0px 2px;
+            }
+        }
+		&:hover{
+	    	@include transition(null,.3s,null)
+ 		   	@include box-shadow(0px 0px 10px nth($f_color,17))
+		}
+	}
+	& span:after { content: ' )' }
+	& span:before { content: '( ' }
+}
+.o_portal_my_home
+{
+	@media (max-width:1000px)
+	{
+		#portal_grid .list-group-item
+		{
+			width:47%;
+		}
+	}
+	@include media-breakpoint-down(sm)
+	{
+		#portal_grid .list-group-item
+		{
+			width:100%;
+		}
+	}
+}
+/*------ max-width class for sales order table ------*/
+.max_width_1000 {
+	max-width:1000px;
+}
+/*------ my detail section styling in portal page ------*/
+.o_portal_my_details {
+    address {
+	    margin: 1%;
+	    padding: 14px 18px;
+		border: 1px solid rgba(0, 0, 0, 0.125);
+		i {
+			@include position(absolute)
+		    line-height: 1.5;
+		}
+		span{
+	   		@include style(2,3,inherit)
+	   		display: inline-block !important;
+		}
+	}
+	@include media-breakpoint-down(sm)
+	{
+		margin-top: 16px;
+	}
+}
+/*========================= 02. Portal Table ==========================*/
+/*------ To add '>' sign in bredcrumb ------*/
+.o_portal_submenu {
+	li {
+	font-size:nth($f_sizes,2) !important;
+		a{
+	   		font-family:inherit;
+		}
+	}
+}
+.breadcrumb-item {
+	line-height :1.5 !important;
+	&+.breadcrumb-item {
+		padding-left: 0.5rem;
+		&::before {
+			line-height: inherit !important;
+		}
+	}
+}
+/*------ To add style in table data ------*/
+.o_portal_my_doc_table {
+	th{
+		@include style(7,3,inherit)
+		border:0;
+		padding:1.25rem !important;
+		background-color: nth($f_color,18);
+	}
+	tbody {
+	    background-color: nth($f_color,18);
+		tr{
+			td {
+		  		padding:1rem 1.25rem 1rem 1.25rem !important;
+				a {
+	    			@include style(1,3,inherit);
+	    		}
+		  	}
+		}
+	 }
+	@media (max-width:800px){
+	 	thead{
+			display: none;
+		}
+	 	tbody
+	 	{
+	 		background-color: nth($f_color,27);
+		 	tr
+			{
+				display: block;
+				padding: 16px 0;
+				border-top: 1px solid nth($f_color,8);
+
+				td{
+					display:block;
+					border: none !important;
+					text-align: left !important;
+					background-color:nth($f_color,5);
+					width: 100%;
+
+					a{
+						font-weight: 767.98px;
+						@include style(7,3);
+					}
+					span
+					{
+						line-height:1.8rem;
+					}
+				}
+			}
+		}
+	}
+}
+@media (max-width:800px)
+{
+	.o_portal_wrap
+	{
+		.o_portal_my_doc_table td
+		{
+			padding: 0 !important;
+		}
+	}
+}
+/*------ dropdown buttons in navbar(portal)---------*/
+#o_portal_navbar_content {
+	span {
+		font-family : inherit;
+		font-size :nth($f_sizes,2);
+	}
+	.btn-group {
+		button {
+			padding: 0.2625rem 0.6125rem !important;
+			text-transform: none !important;
+		}
+	}
+}
+/*===================== 03. Portal Main Page =======================*/
+.o_portal_my_details {
+	address {
+	    span[itemprop="name"] {
+	        margin-bottom: 0.3em;
+		   	@include style(2,3,inherit)
+	    	font-weight: normal !important;
+	    }
+		div {
+		    padding-bottom: 0.25rem !important;
+		}
+	    div[itemprop="address"] > div {
+	        position: relative;
+	        span[itemprop="streetAddress"] {
+	            line-height: 1.2;
+	            margin-bottom: 0.3em;
+	        }
+	        .fa {
+	            @include o-position-absolute(0, $left: 0);
+	            line-height: $line-height-base;
+	            + span {
+	                display: block;
+	                padding-left: 1.28571429em + 0.5em;
+	 				@include style(3,1,inherit,1.8)
+	            }
+	        }
+	    }
+	}
+}
+/*------ address tag in sale order page ------*/
+#informations 
+{
+	padding-left: 1rem;
+	.col-lg-6 {
+		address {
+			@include style(3,6,inherit,180%)
+		}
+	}
+}
+/*---------headers in sale order page-------------*/
+#quote_content {
+	h2,	h3{
+	    font-family: inherit;
+	    letter-spacing: 0;
+	    font-size :nth($f_sizes,19);
+	    font-weight:bold;
+	    @include media-breakpoint-down(sm)
+	    {
+	    	font-size:nth($f_sizes,4);
+	    	padding-left: 1rem;
+	    }
+	}
+	@include media-breakpoint-down(sm)
+	{
+		.card-body
+		{
+			padding-left: 0;
+			padding-right: 0;
+		}
+	}
+	@include media-breakpoint-down(xs)
+	{
+        .te_theme_button{
+            width:100%;
+        }
+    }
+}
+#sale_order_communication
+{
+	h2
+	{
+		@include media-breakpoint-down(sm)
+	    {
+	    	padding-left: 0;
+	    }
+	}
+}
+.te_so_product_name {
+    @include style(2,6)
+    @include media-breakpoint-down(sm)
+    {
+    	max-height: 150px;
+    	overflow: auto;
+    }
+}
+/*--------pager in navbar(portal) --------*/
+.record_pager {
+	a {
+		padding:0.675rem 0.500rem !important;
+	}
+}
+/*---------- table in sale order page ----------*/
+#sales_order_table {
+  thead {
+    tr {
+	  th {
+	    padding:0.9rem;
+	  }
+	}
+  }
+}
+.o_portal_chatter_messages {
+	.media {
+        border: 1px solid #ededed;
+        padding: 15px 15px;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        box-shadow:0 3px 12px #ccc;
+        .o_wrating_publisher_comment{
+            margin:0 !important;
+        }
+	}
+	.o_portal_chatter_message_title {
+		h5 {
+			font-family: poppins-regular;
+		    letter-spacing: 0;
+	    	font-size: 0.9rem;
+	    	margin-bottom: 0;
+		}
+	}
+}
+
+.o_portal_wrap {
+	#sidebar_content
+	{
+		z-index: 9;
+		top: 105px;
+	}
+	h5,h6 {
+		font-family:inherit;
+	}
+}
+.panel_div
+{
+	@media (max-width:800px){
+		table tbody tr{
+			border-bottom: 1px solid nth($f_color,8);
+		}
+	}
+}
+#introduction
+{
+	@include media-breakpoint-down(sm)
+	{
+		padding: 0;
+	}
+}
+.o_portal_chatter_header{
+    .col-lg-3 p{
+        text-align: center;
+    }
+    .progress{
+        height:5px;
+    }
+}
+/*-------------------User detail form-------------------*/
+.o_portal_details {
+	.col-form-label {
+		font-weight: normal;
+		@include style(3,1,inherit,null,uppercase);
+	}
+	.form-control {
+		&:focus
+		{
+			box-shadow: none;
+			border-color: nth($f_color,19);
+		}
+	}
+	label.col-form-label:after
+	{
+		content:'*';
+	}
+	label.col-form-label.label-optional:after
+	{
+		content:'';
+	}
+}
+/*------invoidce billing page------*/
+#invoice_content {
+	.o_portal_html_view {
+		max-width:none;
+	}
+}
+.thead-light {
+	th {
+	    font-size: 0.9rem; /* Not defined in variable */
+	}
+}
+
+/*-- Gender class --*/
+#wrapwrap.o_portal {
+	background-color : nth($f_color,5) !important;
+}
+#wrap.o_portal_wrap {
+	h6{
+		@include border(0 0 1px 0,8,solid)
+		margin-bottom: 1rem;
+	}
+	div [t-if="task.user_id"] {
+		strong {
+			margin-bottom: 10rem;
+		}
+	}
+
+}
+.my_quotation_tbl
+{
+	@media (max-width:800px)
+	{
+		td:nth-child{
+			display: none !important;
+		}
+	}
+}
+/*================== 04. Quotation Page ====================*/
+.o_portal_my_doc_table{
+    @media (max-width:800px){
+        .te_quotation{
+            &:before{
+                content: "Quotations : ";
+                font-weight: 600;
+            }
+            a{
+                @include style(2,15);
+                &:hover{
+                    color:nth($f_color,19);
+                }
+            }
+            margin-bottom: 5px;
+        }
+        .te_quotation_date{
+            &:before{
+                content: "Quotation Date : ";
+                font-weight: 600;
+            }
+            span{
+                @include style(2,15);
+            }
+            margin-bottom: 5px;
+        }
+        .te_quotation_valid{
+            &:before{
+                content: "Valid Until : ";
+                font-weight: 600;
+            }
+            span{
+                @include style(2,15);
+            }
+            &.disable{
+                display:none;
+            }
+            margin-bottom: 5px;
+        }
+        .te_quotation_cancel_expired{
+            &:before{
+                content: "Quotation State : ";
+                font-weight: 600;
+            }
+            span{
+                color:nth($f_color,19);
+            }
+            &.disable{
+                display:none;
+            }
+            margin-bottom: 5px;
+        }
+        .te_quotation_total{
+            &:before{
+                content: "Total : ";
+                font-weight: 600;
+            }
+            span{
+                @include style(2,15);
+            }
+            margin-bottom: 5px;
+        }
+    }
+}

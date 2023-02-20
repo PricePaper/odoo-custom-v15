@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--===================== Latest Blog list snippet =====================-->
+    <template id="s_latest_posts_list_template_ept" inherit_id="website_blog.dynamic_filter_template_blog_post_list">
+        <xpath expr="//div[hasclass('s_blog_posts_post_subtitle')]" position="after">
+            <a class="btn btn-primary btn-sm mt-1 px-2 py-1 te_theme_button"
+               t-attf-href="/blog/#{record.blog_id.id}/post/#{record.id}">
+                <span>Read More</span>
+            </a>
+        </xpath>
+        <xpath expr="//div[hasclass('s_blog_posts_post_subtitle')]" position="attributes">
+            <attribute name="t-attf-class">s_blog_posts_post_subtitle mb-1 d-sm-block</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('s_blog_posts_post')]" position="attributes">
+            <attribute name="class">d-flex s_blog_posts_post</attribute>
+        </xpath>
+    </template>
+    <!--================= Latest blog page ====================-->
+    <template id="blog_post_short_ept" inherit_id="website_blog.blog_post_short">
+        <xpath expr="//section[@id='o_wblog_index_content']//div[hasclass('container')]" position="attributes">
+            <attribute name="class">te_opt_blog_design container py-4</attribute>
+        </xpath>
+    </template>
+
+    <template id="opt_blog_sidebar_show_ept" inherit_id="website_blog.opt_blog_sidebar_show">
+        <xpath expr="//div[contains(@t-attf-class, 'col-12')]" position="attributes">
+            <attribute name="t-attf-class">col-12 col-md-3 d-flex #{opt_blog_list_view and 'ml-lg-5' or 'ml-lg-5'}
+            </attribute>
+        </xpath>
+    </template>
+
+    <template id="post_teaser_ept" inherit_id="website_blog.post_teaser">
+        <xpath expr="//div[@t-field='blog_post.teaser']" position="attributes">
+            <attribute name="class">mt-2</attribute>
+        </xpath>
+    </template>
+
+    <template id="post_info_ept" inherit_id="website_blog.post_info">
+        <xpath expr="//time[@t-field='blog_post.post_date']" position="replace">
+            <t t-set="active_lang" t-value="request.env['res.lang'].sudo().search([('code', '=', request.env.lang)])"></t>
+            <t t-if="active_lang">
+                <time t-field="blog_post.post_date" class="text-nowrap font-weight-bold px-2" t-field-options='{"format": blog_post.post_date.strftime(active_lang.date_format)}'/>
+            </t>
+        </xpath>
+    </template>
+
+</odoo>

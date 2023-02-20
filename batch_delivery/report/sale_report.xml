@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_ppt_report_sale_order_document" inherit_id="sale.report_saleorder_document">
+            <xpath expr="//table" position="after">
+                <div t-field="doc.sale_default_message"/>
+            </xpath>
+        </template>
+    </data>
+</odoo>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="product_barcode_form_inherit" model="ir.ui.view">
+            <field name="name">product.product.inherit</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/header/button[@name='action_open_label_layout']" position="after">
+                    <button name="action_add_barcode" string="Add Barcode" type="object"/>
+                </xpath>
+                <xpath expr="//field[@name='barcode']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <notebook position="inside">
+                    <page string="Barcode" name="barcode">
+                        <field name="barcode_ids" readonly="1">
+                            <tree editable="bottom">
+                                <field name="product_id"/>
+                                <field name="product_tmpl_id"/>
+                                <field name="supplier_id"/>
+                                <field name="product_barcode"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+    </data>
+</odoo>

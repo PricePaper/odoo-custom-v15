@@ -23,6 +23,8 @@ class ResConfigSettings(models.TransientModel):
     check_printing_journal_id = fields.Many2one('account.journal',
         string='Journal for check printing',
         config_parameter='price_paper.check_printing_journal_id')
+    bel_critical_config = fields.Integer(string='Below Critical qty Config %',
+        config_parameter='price_paper.bel_critical_config', default=40)
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

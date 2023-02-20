@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--============================ Inclusion of editor js Files =======================-->
+<!--    <template id="emipro_theme_base_assets_editor" inherit_id="website.assets_editor">-->
+<!--        <xpath expr="//script[last()]" position="after">-->
+<!--            <script type="text/javascript"-->
+<!--                    src="/emipro_theme_base/static/src/js/snippet/slider_builder_common_editor.js"/>-->
+<!--            <script src="/emipro_theme_base/static/src/js/snippet/category_brand_editor.js"-->
+<!--                    type="text/javascript"/>-->
+<!--            <script src="/emipro_theme_base/static/src/js/snippet/image_hotspot_snippet.js"-->
+<!--                    type="text/javascript"/>-->
+<!--        </xpath>-->
+<!--    </template>-->
+    <!--======================== Inclusion of JS Files ======================-->
+<!--    <template id="emipro_theme_base_assets_frontend" inherit_id="website.assets_frontend">-->
+<!--        <xpath expr="script[last()]" position="after">-->
+<!--            <script type="text/javascript" src="/emipro_theme_base/static/src/js/frontend/category_brand_slider.js"/>-->
+<!--            <script type="text/javascript" src="/emipro_theme_base/static/src/js/frontend/image_hotspot_events.js"/>-->
+<!--        </xpath>-->
+<!--    </template>-->
+    <template id="lazyload_activate" inherit_id="website.layout">
+        <xpath expr="//div[@id='wrapwrap']" position="inside">
+            <input id="id_lazyload" type="hidden" name="is_lazyload" value="true"/>
+            <input type="hidden" class="current_website_id" t-att-value="request.env['website'].sudo().get_current_website().id"/>
+        </xpath>
+    </template>
+
+    <template id="layout" name="Main layout" inherit_id="portal.frontend_layout">
+        <xpath expr="//head" position="inside">
+            <t t-set="is_pwa" t-value="request.env['website'].sudo().get_current_website().is_pwa"/>
+            <t t-if="is_pwa">
+                <link rel="manifest" t-attf-href="/pwa_ept/manifest/#{request.env['website'].sudo().get_current_website().id}"/>
+                <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+                <meta name="apple-mobile-web-app-title" content="PWA"/>
+                <meta name="theme-color" content="black" />
+                <t t-set="website" t-value="request.env['website'].search([('id', '=', website_id)]) if website_id else request.website"/>
+                <link rel="apple-touch-icon" t-att-href="'/web/image/website/%s/app_image_512/152x152' % (website.id) if website.app_image_512 else '/emipro_theme_base/static/src/img/152x152.png'"/>
+                <meta name="apple-mobile-web-app-capable" content="yes"/>
+            </t>
+        </xpath>
+    </template>
+</odoo>

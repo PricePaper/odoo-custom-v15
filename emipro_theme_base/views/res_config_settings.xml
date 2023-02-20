@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.emipro.base</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="website.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <div id="website_settings" position="after">
+                <h2>Emipro Theme Settings</h2>
+                <div class="row mt16 o_settings_container" id="clarico_settings_main"/>
+            </div>
+            <div id="clarico_settings_main" position="inside">
+                <div class="row o_settings_container mt16 w-50" id="clarico_product_name_lines">
+                    <div class="col-12 o_setting_box">
+                        <div class="o_setting_right_pane">
+                            <div class="content-group">
+                                <label string="Number of lines for product name" for="number_of_product_line"/>
+                                <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                                <div class="text-muted">
+                                    Number of lines for product name
+                                </div>
+                                <div class="mt8">
+                                    <field name="number_of_product_line"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt16 o_settings_container w-50" id="clarico_slider_auto_play">
+                    <div class="col-12 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="is_auto_play"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="is_auto_play"/>
+                            <div class="text-muted">
+                                Slider Auto Play
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt16 o_settings_container w-50" id="clarico_vega_load_more">
+                    <div class="col-12 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="is_load_more"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="is_load_more"/>
+                            <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                            <div class="text-muted">
+                                Enable Load more for load product through Ajax
+                            </div>
+                            <div class="content-group" attrs="{'invisible': [('is_load_more', '=', False)]}">
+                                <div class="mt8">
+                                    <div class="content-group">
+                                        <label string="Loading type for products" for="button_or_scroll"/>
+                                        <span class="fa fa-lg fa-globe"
+                                              title="Values set here are website-specific."/>
+                                        <div class="mt4">
+                                            <field name="button_or_scroll" class="o_light_label" widget="radio"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt8">
+                                    <label string="Load more Image" for="load_more_image"/>
+                                    <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                                    <div class="text-muted">
+                                        Display this image while Load more applies
+                                    </div>
+                                    <field name="load_more_image" class="w-25 mt-2" widget="image"
+                                           attrs="{'required': [('is_load_more', '=', True)]}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="col-12 text-muted">Note: We suggest you to maintain the product column and count
+                            ratio in a normalized manner in the shop page. If the product column is 3 then product count
+                            should to be in the multiplier of 3. For example [ (3 x 5 = 15), (3 x 6 = 18), (3 x 8 =
+                            24),(4 x 4 = 16), (4 x 6 = 24) ]
+                        </span>
+                    </div>
+                </div>
+                <div class="row o_settings_container mt16 w-50" id="clarico_lazy_load">
+                    <div class="col-12 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="is_lazy_load"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="is_lazy_load"/>
+                            <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                            <div class="text-muted">
+                                Enable lazy load for images
+                            </div>
+                            <div class="content-group" attrs="{'invisible': [('is_lazy_load', '=', False)]}">
+                                <label string="Lazyload Image" for="lazy_load_image"/>
+                                <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                                <div class="text-muted">
+                                    Display this image while lazy load
+                                </div>
+                                <field name="lazy_load_image" class="w-25 mt-2" widget="image"
+                                       attrs="{'required': [('is_lazy_load', '=', True)]}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row o_settings_container mt16 w-50" id="clarico_price_filter">
+                    <div class="col-12 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="is_price_range_filter"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="is_price_range_filter"/>
+                            <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                            <div class="text-muted">
+                                Display Price Range filter in web shop
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 o_setting_box">
+                        <div class="o_setting_right_pane"
+                             attrs="{'invisible': [('is_price_range_filter', '=', False)]}">
+                            <div class="content-group">
+                                <label string="Price Range Filter" for="price_filter_on"/>
+                                <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                                <div class="text-muted col-12">
+                                    Based On Below Select option Price Filter will Work
+                                    <br/>
+                                    On Product Sale Price = Works on Product Actual price,
+                                    <br/>
+                                    On Product Discount Price = Works On Product Discount price , Based on Configuration
+                                    of product and Discount.It may affect your web shop speed
+                                </div>
+                                <div class="mt8">
+                                    <field name="price_filter_on"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row o_settings_container mt16 w-50" id="clarico_out_of_stock">
+                    <div class="col-12 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="option_out_of_stock"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="option_out_of_stock"/>
+                            <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                            <div class="text-muted">
+                                Enable for out of stock label for products in website
+                            </div>
+                            <br/>
+                            <div class="content-group" attrs="{'invisible': [('option_out_of_stock', '=', False)]}">
+                                <label string="Text For Out of stock" for="text_out_of_stock"/>
+                                <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                                <div class="text-muted">
+                                    Display this text label in out of stock
+                                </div>
+                                <field name="text_out_of_stock" attrs="{'required': [('option_out_of_stock', '=', True)]}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row o_settings_container mt16 w-50" id="clarico_banner_video">
+                    <div class="col-12 o_setting_box">
+                        <div class="o_setting_right_pane">
+                            <div class="content-group">
+                                <label string="Video URL for Banner" for="banner_video_url"/>
+                                <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                                <div class="text-muted">
+                                    Video URL for the banner
+                                </div>
+                                <div class="mt8">
+                                    <field name="banner_video_url" domain="[('mimetype', '=', 'video/mp4')]" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="w-100"/>
+                <!-- b2b hide pricing -->
+                <div class="row o_settings_container mt16 w-50" id="clarico_allow_reorder">
+                    <div class="col-12 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="allow_reorder"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="allow_reorder"/>
+                            <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                            <div class="text-muted">
+                                Enable to Reorder the Existing Sales Orders
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row o_settings_container mt16 w-50" id="clarico_disallow_checkout">
+                    <div class="col-12 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="b2b_checkout"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="b2b_checkout" string="Restrict Guest user checkout"/>
+                            <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                            <div class="text-muted">
+                                Allow checkout for logged in users only.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row o_settings_container mt16 w-50" id="b2b_hide_details">
+                    <div class="col-12 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="b2b_hide_details"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="b2b_hide_details" string="Hide Add to Cart for Guest Users"/>
+                            <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row o_settings_container mt16 w-50">
+                    <div class="col-12 o_setting_box" attrs="{'invisible': [('b2b_hide_details', '=', False)]}">
+                        <div class="content-group">
+                            <div invisible="1">
+                                <div class="o_setting_left_pane">
+                                    <field name="b2b_hide_add_to_cart"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="b2b_hide_add_to_cart"/>
+                                    <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                                    <div class="text-muted">
+                                        Do not allow guest users to place an order option
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_setting_left_pane">
+                                <field name="b2b_hide_price"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="b2b_hide_price" string="Hide Product Price for Guest Users"/>
+                                <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                                <div class="text-muted">
+                                    Hide price for guest users along with hide add to cart feature
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row o_settings_container mt16 w-50">
+                    <div class="col-12 o_setting_box" attrs="{'invisible': [('b2b_hide_details', '=', False)]}">
+                        <div class="o_setting_left_pane">
+                            <field name="is_b2b_message"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="is_b2b_message" string="Display Message instead of product price/cart button"/>
+                            <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                            <br/>
+                            <div class="content-group" attrs="{'invisible': [('is_b2b_message', '=', False)]}">
+                                <br/>
+                                <div class="">Login or Register
+                                    <field name="text_b2b_hide_details" class="ml-2"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <style type="text/css">
+                    .o_form_view #clarico_vega_load_more .o_field_translate.btn.btn-link {
+                    display: none;
+                    }
+                    .col-12.text-muted
+                    {
+                        display:block;
+                    }
+                </style>
+            </div>
+            <div id="webmaster_settings" position="after">
+                <h2>Emipro Website PWA</h2>
+                <div class="mt16 o_settings_container" id="emipro_website_pwa_settings">
+                    <div class="row" >
+                        <div class="col-12 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="is_pwa"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="is_pwa"/>
+                                <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                                <div class="text-muted">
+                                    Enable Progressive Web Application
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" attrs="{'invisible': [('is_pwa', '=', False)]}">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <div class="content-group" attrs="{'invisible': [('is_pwa', '=', False)]}">
+                                    <label string="Name" for="pwa_name"/>
+                                    <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                                    <div class="text-muted">
+                                        It will be used in the splash screen and Add To Home Screen’ pop-up.
+                                    </div>
+                                    <div class="mt8">
+                                        <field name="pwa_name" attrs="{'required': [('is_pwa', '=', True)]}" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <div class="content-group">
+                                    <label string="Short name of Pwa" for="pwa_short_name"/>
+                                    <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                                    <div class="text-muted">
+                                        It will be used in a browser pop-up and the app shortcut name.
+                                    </div>
+                                    <div class="mt8">
+                                        <field name="pwa_short_name" attrs="{'required': [('is_pwa', '=', True)]}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <div class="content-group">
+                                    <label string="Theme Color" for="pwa_theme_color"/>
+                                    <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                                    <div class="text-muted">
+                                        The color is used to customize the look of the browser.
+                                    </div>
+                                    <div class="mt8">
+                                        <field name="pwa_theme_color" widget="color" attrs="{'required': [('is_pwa', '=', True)]}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <div class="content-group">
+                                    <label string="Background Color" for="pwa_bg_color"/>
+                                    <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                                    <div class="text-muted">
+                                        The color used to customize the splash screen when launching from the home screen shortcut.
+                                    </div>
+                                    <div class="mt8">
+                                        <field name="pwa_bg_color" widget="color" attrs="{'required': [('is_pwa', '=', True)]}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <div class="content-group">
+                                    <label string="Start URL" for="pwa_start_url"/>
+                                    <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                                    <div class="text-muted">
+                                        This is the URL on which the user will be landed when they add this app to the home screen and click on it.
+                                    </div>
+                                    <div class="mt8">
+                                        <field name="pwa_start_url" attrs="{'required': [('is_pwa', '=', True)]}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <div class="content-group">
+                                    <label string="Application Image(512x512)" for="app_image_512"/>
+                                    <span class="fa fa-lg fa-globe" title="Values set here are website-specific."/>
+                                    <div class="text-muted">
+                                        It will be used in an app launcher, home screen, splash screen icons. (Required 512x512)
+                                    </div>
+                                    <field name="app_image_512" class="w-25 mt-2" widget="image" attrs="{'required': [('is_pwa', '=', True)]}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </field>
+    </record>
+    <record id="view_banner_video_form" model="ir.ui.view">
+        <field name="name">view.banner.video.document.form</field>
+        <field name="model">ir.attachment</field>
+        <field name="inherit_id" ref="base.view_attachment_form"/>
+        <field name="arch" type="xml">
+          <xpath expr="//group/group[1]" position="inside">
+              <field name="public"/>
+          </xpath>
+          <xpath expr="//group/group[2]/field[@name='public']" position="replace">
+          </xpath>
+        </field>
+    </record>
+</odoo>
+
+

@@ -146,7 +146,7 @@ class RMARetMerAuth(models.Model):
 
     @api.onchange('sale_order_id')
     def onchange_sale_order_id(self):
-        return {}
+        self.rma_sale_lines_ids = [(5,)]
 
     @api.onchange('purchase_order_id')
     def onchange_purchase_order_id(self):

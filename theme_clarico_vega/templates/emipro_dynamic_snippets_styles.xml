@@ -1,0 +1,1485 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="dynamic_style_color_variant">
+        <t t-set="attribute_lines" t-value="product.attribute_line_ids.ids"/>
+        <t t-set="colors" t-value="product.attribute_line_ids.search([('product_tmpl_id', '=', product.id), ('attribute_id.display_type', '=', 'color')], limit=1)"/>
+        <t t-if="colors">
+            <div class="slider-color-changer">
+                <t t-foreach="colors.value_ids" t-as="v">
+                    <t t-if="v.icon">
+                        <span class="te-color-attr-pil">
+                        <label t-attf-style="background-image: url('/web/image/product.attribute.value/{{v.id}}/icon');" t-att-data-attribute-lines="attribute_lines" t-att-data-variant-color="v.id" t-att-data-product-id="product.id" class="te_cv_slider"/>
+                        </span>
+                    </t>
+                    <t t-else="">
+                        <span class="te-color-attr-pil">
+                        <label t-attf-style="background-color:#{v.html_color or v.name}; " t-att-data-attribute-lines="attribute_lines" t-att-data-variant-color="v.id" t-att-data-product-id="product.id" class="te_cv_slider"/>
+                        </span>
+                    </t>
+                </t>
+            </div>
+        </t>
+        <t t-else="">
+            <div class="color-changer-not-available"/>
+        </t>
+    </template>
+    <!-- Price In All slider -->
+    <template id="slider_display_price">
+        <t t-if="False if website.b2b_hide_price and website.is_public_user() else True">
+            <div class="product_price" itemprop="offers" itemscope="itemscope" itemtype="http://schema.org/Offer">
+                <span t-if="combination_info['price']" t-esc="combination_info['price']" class="te_p_sm"
+                      t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                <del t-attf-class="text-danger mr-1 te_p_disc {{'' if combination_info['has_discounted_price'] else 'd-none'}}"
+                     style="white-space: nowrap;" t-esc="combination_info['list_price']"
+                     t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                <span itemprop="price" style="display:none;" t-esc="combination_info['price']"/>
+                <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name"/>
+                <div t-attf-class="te_discount {{'' if combination_info['has_discounted_price'] else 'd-none'}}">
+                    <t t-set="difference" t-value="round(combination_info['list_price'] - combination_info['price'],2)"/>
+                    <t t-set="discount"
+                       t-value="round(difference*100/combination_info['list_price'], 2) if combination_info['list_price'] &gt; 0 else 0"/>
+                    <div class="te_percentage">
+                        (<span class="percent_val" t-esc="'%s'%(discount)"/>%
+                        Off)
+                    </div>
+                </div>
+            </div>
+        </t>
+        <t t-if="True if website.is_b2b_message and website.is_public_user() else False" t-call="theme_clarico_vega.b2b_hide_details_msg"/>
+    </template>
+
+    <!-- Ratings for the slider styles -->
+    <template id="slider_ratings">
+        <t t-set="is_review_rating_enabled" t-value="request.website.viewref('website_sale.product_comment').active"/>
+        <t t-if="is_review_rating_enabled">
+            <t t-set="rating_avg" t-value="round(product.rating_avg * 100) / 100"/>
+            <t t-set="val_decimal" t-value="round(product.rating_avg % 1, 1)"/>
+            <t t-set="val_integer" t-value="int(product.rating_avg)"/>
+            <t t-set="empty_star" t-value="5 - (val_integer+1) if val_decimal else 5 - val_integer"/>
+            <div t-if="rating_avg > 0" class="text-muted d-block">
+                <div class="ept-total-review o_website_rating_static" t-att-style="inline_mode and 'display:inline'"
+                     t-att-title="rating_avg">
+                    <t t-foreach="range(0, val_integer)" t-as="num">
+                        <i class="fa fa-star" role="img"/>
+                    </t>
+                    <t t-if="val_decimal">
+                        <i class="fa fa-star-half-o" role="img"/>
+                    </t>
+                    <t t-foreach="range(0, empty_star)" t-as="num">
+                        <i class="fa fa-star text-black-25" role="img"/>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+
+    <template id="t_image_512">
+        <t t-if="website.is_lazy_load">
+            <img t-attf-class="o_carousel_product_card_img_top card-img-top lazyload #{'sold-out' if product_stock_available else ''}"
+                 t-attf-src="/web/image/website/#{website.id}/lazy_load_image"
+                 t-attf-data-src="/web/image/product.template/#{product.id}/image_512"
+                 t-att-alt="product.name"/>
+        </t>
+        <t t-else="">
+            <img t-attf-class="o_carousel_product_card_img_top card-img-top #{'sold-out' if product_stock_available else ''}"
+                 t-attf-src="/web/image/product.template/#{product.id}/image_512"
+                 t-att-alt="product.name"/>
+        </t>
+    </template>
+
+
+    <template id="t_configurator_state">
+        <t t-set="configurator_state"
+           t-value="request.env['ir.module.module'].sudo().search([['name', '=', 'sale_product_configurator']])"/>
+        <t t-if="configurator_state and configurator_state.state == 'installed'">
+            <a role="button"
+               t-attf-class="btn btn-secondary btn-sm a-submit not_product_page #{theme_button} #{'disabled out_of_stock' if product.type=='product' and not product.allow_out_of_stock_order and product.sudo().qty_available &lt; 1 else ''}"
+               title="Shopping cart"
+               t-att-id="'add_to_cart' if ajax_cart and not product.optional_product_ids else ''"
+               t-att-product-id="product.id"
+               t-att-variant-count="product.product_variant_count">
+                <span class="fa fa-shopping-cart"/>
+            </a>
+        </t>
+        <t t-else="">
+            <a role="button"
+               t-attf-class="btn btn-secondary btn-sm a-submit not_product_page #{theme_button} #{'disabled out_of_stock' if product.type=='product' and not product.allow_out_of_stock_order and product.sudo().qty_available &lt; 1 else ''}"
+               title="Shopping cart"
+               t-att-id="'add_to_cart' if ajax_cart else ''"
+               t-att-product-id="product.id"
+               t-att-variant-count="product.product_variant_count">
+                <span class="fa fa-shopping-cart"/>
+                <t t-esc="addtocart"/>
+            </a>
+        </t>
+    </template>
+
+
+    <template id="t_show_wishlist">
+        <t t-set="show_wishlist"
+           t-value="request.website.viewref('website_sale_wishlist.add_to_wishlist').active"/>
+        <t t-if="show_wishlist">
+            <t t-set="in_wish" t-value="product._is_in_wishlist()"
+               t-if="product"/>
+            <t t-set="product_variant_id"
+               t-value="product._get_first_possible_variant_id()"
+               t-if="product"/>
+            <t t-if="'wishlist' in option">
+                <button t-if="product_variant_id" type="button"
+                        role="button"
+                        t-attf-class="btn btn-secondary #{theme_button} btn-sm o_add_wishlist"
+                        t-att-disabled='in_wish or None'
+                        title="Add to Wishlist"
+                        t-att-data-product-template-id="product.id"
+                        t-att-data-product-product-id="product_variant_id"
+                        data-action="o_wishlist">
+                    <span class="fa fa-heart" role="img"
+                          aria-label="Add to wishlist"/>
+                </button>
+            </t>
+        </t>
+    </template>
+
+    <!-- ============================= Slider Style 1 ============================= -->
+    <template id="clarico_slider_styles_one_template" name="Slider Style 1">
+        <span class="d-none group_website_designer" contenteditable="false" groups="website.group_website_designer"/>
+        <t t-call="theme_clarico_vega.slider_edit_message"/>
+        <section t-if="filter_data" class="te_pc_style_main slider_body o_not_editable">
+            <div class="container oe_website_sale">
+                <!-- Products container -->
+                <div class="js_data_container">
+                    <div class="js_filter_data" t-att-filter-id="active_filter_data">
+                        <!-- Owl carousel -->
+                        <section class="owl-slider te_prod_slider_1">
+                            <!-- To Display product's data -->
+                            <div id="" class="owl-carousel te_product_slider_1">
+                                <t t-foreach="filter_data" t-as="product">
+                                    <div class="item te_slider_1_content">
+                                        <form action="/shop/cart/update" method="post">
+                                            <input type="hidden" name="csrf_token"
+                                                   t-att-value="request.csrf_token()"/>
+                                            <t t-set="combination"
+                                               t-value="product._get_first_possible_combination()"/>
+                                            <t t-set="combination_info"
+                                               t-value="product._get_combination_info(combination, add_qty=add_qty or 1, pricelist=pricelist)"/>
+                                            <t t-set="product_variant"
+                                               t-value="product.env['product.product'].browse(combination_info['product_id'])"/>
+                                            <input type="hidden" class="product_id" name="product_id"
+                                                   t-att-value="product_variant.id"/>
+                                            <input type="hidden" class="product_template_id"
+                                                   name="product_template_id"
+                                                   t-att-value="product.id"/>
+                                            <div t-if="product.label_line_ids and 'sale_label' in option">
+                                                <t t-foreach="product.label_line_ids" t-as="labels">
+                                                    <t t-if="labels.website_id.id == website.id">
+                                                        <t t-call="theme_clarico_vega.common_label_ept"/>
+                                                    </t>
+                                                </t>
+                                            </div>
+                                            <section class="te_slider_img dd_slider_prod_bg">
+                                                <t t-set="product_stock_available" t-value="website.option_out_of_stock and product.type=='product' and (not product.allow_out_of_stock_order) and (product.sudo().qty_available &lt; 1)"/>
+                                                <a t-att-href="product.website_url" class="position-relative">
+                                                    <t t-call="theme_clarico_vega.t_image_512"/>
+                                                    <!-- out of stock -->
+                                                    <div class="te-out-of-stock-lbl" t-if="product_stock_available">
+                                                        <t t-call="theme_clarico_vega.out_of_stock_label_ept"/>
+                                                    </div>
+                                                </a>
+                                            </section>
+                                            <div class="te_prod_info">
+                                                <section class="d-block position-relative p-3 te_prod_info_sub">
+                                                    <a t-att-href="product.website_url"
+                                                       class="text-decoration-none">
+                                                        <h6 t-attf-class="product_name #{'te_2_line' if (website.number_of_product_line == '2') else 'te_3_line' if (website.number_of_product_line == '3') else ''}"
+                                                            t-raw="product.name"/>
+                                                    </a>
+                                                    <t t-if="'ratings' in option"
+                                                       t-call="theme_clarico_vega.slider_ratings"/>
+                                                    <t t-call="theme_clarico_vega.slider_display_price"/>
+                                                    <t t-if="request.website.viewref('theme_clarico_vega.shop_color_variant_ept').active" t-call="theme_clarico_vega.dynamic_style_color_variant"/>
+                                                    <section class="te_prod_cart_wish">
+                                                        <t t-if="False if website.b2b_hide_add_to_cart and website.is_public_user() else True">
+                                                            <t t-if="'shopping_cart' in option">
+                                                            <t t-set="ajax_cart" t-value="1"/>
+                                                            <t t-call="theme_clarico_vega.t_configurator_state">
+                                                                <t t-set="theme_button" t-valuef="te_theme_button"/>
+                                                            </t>
+                                                        </t>
+                                                        </t>
+                                                        <t t-set="quick_view"
+                                                           t-value="request.website.viewref('theme_clarico_vega.quickview_icon_shop_product_item').active"/>
+                                                        <t t-if="'quick_view' in option">
+                                                            <button title="Quick View"
+                                                                    class="btn btn-secondary te_theme_button btn-sm quick-view-a te_quick_view"
+                                                                    t-att-data-id="'%s' % product.id">
+                                                                <span class="fa fa-eye"/>
+                                                            </button>
+                                                        </t>
+                                                        <t t-call="theme_clarico_vega.t_show_wishlist">
+                                                            <t t-set="theme_button" t-valuef="te_theme_button"/>
+                                                        </t>
+                                                    </section>
+                                                </section>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </t>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <!--============== Slider Style 2 ===================-->
+    <template id="clarico_slider_styles_two_template" name="Slider Style 2">
+        <span class="d-none group_website_designer" contenteditable="false" groups="website.group_website_designer"/>
+        <t t-call="theme_clarico_vega.slider_edit_message"/>
+        <t t-if="filter_data">
+            <section class="te_pc_style_main slider_body o_not_editable">
+                <div class="product_container container oe_website_sale">
+                    <!-- Products container -->
+                    <div class="js_data_container">
+                        <!-- Display a Single slider Filter Product -->
+                        <div class="js_filter_data" t-att-filter-id="active_filter_data">
+                            <section class="te_product_slider_2 owl-slider">
+                                <div class="owl-carousel te_slider_style_2_right_pannel">
+                                    <!-- To Display product's data -->
+                                    <t t-foreach="filter_data" t-as="product">
+                                        <div class="item te_product_ind">
+                                            <form action="/shop/cart/update" method="post">
+                                                <input type="hidden" name="csrf_token"
+                                                       t-att-value="request.csrf_token()"/>
+                                                <t t-set="combination"
+                                                   t-value="product._get_first_possible_combination()"/>
+                                                <t t-set="combination_info"
+                                                   t-value="product._get_combination_info(combination, add_qty=add_qty or 1, pricelist=pricelist)"/>
+                                                <t t-set="product_variant"
+                                                   t-value="product.env['product.product'].browse(combination_info['product_id'])"/>
+                                                <input type="hidden" class="product_id" name="product_id"
+                                                       t-att-value="product_variant.id"/>
+                                                <input type="hidden" class="product_template_id"
+                                                       name="product_template_id"
+                                                       t-att-value="product.id"/>
+                                                <div t-if="product.label_line_ids and 'sale_label' in option">
+                                                    <t t-foreach="product.label_line_ids" t-as="labels">
+                                                        <t t-if="labels.website_id.id == website.id">
+                                                            <t t-call="theme_clarico_vega.common_label_ept"/>
+                                                        </t>
+                                                    </t>
+                                                </div>
+                                                <section class="te_slider_img dd_slider_prod_bg">
+                                                    <t t-set="product_stock_available" t-value="website.option_out_of_stock and product.type=='product' and (not product.allow_out_of_stock_order) and (product.sudo().qty_available &lt; 1)"/>
+                                                    <a t-att-href="product.website_url" class="position-relative">
+                                                        <t t-call="theme_clarico_vega.t_image_512"/>
+                                                    </a>
+                                                    <!-- out of stock -->
+                                                    <div class="te-out-of-stock-lbl" t-if="product_stock_available">
+                                                        <t t-call="theme_clarico_vega.out_of_stock_label_ept"/>
+                                                    </div>
+                                                </section>
+                                                <div class="te_prod_info_2">
+                                                    <section class="d-block position-relative p-2 te_prod_info_sub">
+                                                        <a t-att-href="product.website_url"
+                                                           class="text-decoration-none">
+                                                            <h6
+                                                                    t-attf-class="product_name #{'te_2_line' if (website.number_of_product_line == '2') else 'te_3_line' if (website.number_of_product_line == '3') else ''}"
+                                                                    t-raw="product.name"/>
+                                                        </a>
+                                                        <t t-if="'ratings' in option"
+                                                           t-call="theme_clarico_vega.slider_ratings"/>
+                                                        <t t-call="theme_clarico_vega.slider_display_price"/>
+                                                        <t t-if="request.website.viewref('theme_clarico_vega.shop_color_variant_ept').active" t-call="theme_clarico_vega.dynamic_style_color_variant"/>
+                                                        <section class="te_prod_cart_wish_2">
+                                                            <t t-if="False if website.b2b_hide_add_to_cart and website.is_public_user() else True">
+                                                                <t t-if="'shopping_cart' in option">
+<!--                                                                <t t-set="ajax_cart"-->
+<!--                                                                   t-value="request.website.viewref('theme_clarico_vega.ajax_add_to_cart').active"/>-->
+                                                                <t t-set="ajax_cart" t-value="1"/>
+                                                                <t t-call="theme_clarico_vega.t_configurator_state"/>
+                                                            </t>
+                                                            </t>
+                                                            <t t-call="theme_clarico_vega.product_slider_btn"/>
+                                                        </section>
+                                                    </section>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </t>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </t>
+    </template>
+
+    <!--============== Slider Style 3 (Product Slider List Style) ===================-->
+    <template id="clarico_slider_styles_three_template" name="Slider Style 3">
+        <span class="d-none group_website_designer" contenteditable="false" groups="website.group_website_designer"/>
+        <t t-call="theme_clarico_vega.slider_edit_message"/>
+        <section t-if="filter_data" class="ps_style_3_main te_pc_style_main slider_body o_not_editable">
+            <div class="container oe_website_sale">
+                <!-- Products container -->
+                <div class="js_data_container">
+                    <!-- Display a Single slider Filter Product -->
+                    <div class="js_filter_data" t-att-filter-id="active_filter_data">
+                        <div class="te_product_slider_3 row align-items-center">
+                            <t t-foreach="filter_data" t-as="product">
+                                <div class="col-lg-4 col-sm-6 mb-4 te_product_slider_3_block_mobi">
+                                    <form action="/shop/cart/update" method="post" class="te_pr_form">
+                                        <input type="hidden" name="csrf_token"
+                                               t-att-value="request.csrf_token()"/>
+                                        <t t-set="combination"
+                                           t-value="product._get_first_possible_combination()"/>
+                                        <t t-set="combination_info"
+                                           t-value="product._get_combination_info(combination, add_qty=add_qty or 1, pricelist=pricelist)"/>
+                                        <t t-set="product_variant"
+                                           t-value="product.env['product.product'].browse(combination_info['product_id'])"/>
+                                        <input type="hidden" class="product_id" name="product_id"
+                                               t-att-value="product_variant.id"/>
+                                        <input type="hidden" class="product_template_id"
+                                               name="product_template_id"
+                                               t-att-value="product.id"/>
+                                        <div class="row te_style_3_border">
+                                            <div t-if="product.label_line_ids and 'sale_label' in option">
+                                                <t t-foreach="product.label_line_ids" t-as="labels">
+                                                    <t t-if="labels.website_id.id == website.id">
+                                                        <t t-call="theme_clarico_vega.common_label_ept"/>
+                                                    </t>
+                                                </t>
+                                            </div>
+                                            <section class="te_slider_img col-4">
+                                                <t t-set="product_stock_available" t-value="website.option_out_of_stock and product.type=='product' and (not product.allow_out_of_stock_order) and (product.sudo().qty_available &lt; 1)"/>
+                                                <a t-att-href="product.website_url" class="position-relative">
+                                                    <t t-if="website.is_lazy_load">
+                                                        <img t-attf-class="o_carousel_product_card_img_top card-img-top lazyload #{'sold-out' if product_stock_available else ''}"
+                                                             t-attf-src="/web/image/website/#{website.id}/lazy_load_image"
+                                                             t-attf-data-src="/web/image/product.template/#{product.id}/image_512"
+                                                             t-att-alt="product.name"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <img t-attf-class="o_carousel_product_card_img_top card-img-top #{'sold-out' if product_stock_available else ''}"
+                                                             t-attf-src="/web/image/product.template/#{product.id}/image_128"
+                                                             t-att-alt="product.name"/>
+                                                    </t>
+                                                </a>
+                                                <!-- out of stock -->
+                                                <div class="te-out-of-stock-lbl"
+                                                     t-if="product_stock_available">
+                                                    <t t-call="theme_clarico_vega.out_of_stock_label_ept"/>
+                                                </div>
+
+                                            </section>
+                                            <div class="te_prod_info_3 col-8">
+                                                <section class="d-block position-relative te_prod_info_sub">
+                                                    <a t-att-href="product.website_url"
+                                                       class="text-decoration-none">
+                                                        <h6
+                                                                t-attf-class="product_name #{'te_2_line' if (website.number_of_product_line == '2') else 'te_3_line' if (website.number_of_product_line == '3') else ''}"
+                                                                t-raw="product.name"/>
+                                                    </a>
+                                                    <t t-if="'ratings' in option"
+                                                       t-call="theme_clarico_vega.slider_ratings"/>
+                                                    <t t-call="theme_clarico_vega.slider_display_price"/>
+                                                    <t t-if="request.website.viewref('theme_clarico_vega.shop_color_variant_ept').active" t-call="theme_clarico_vega.dynamic_style_color_variant"/>
+                                                    <section class="te_prod_cart_wish_3">
+                                                        <t t-if="False if website.b2b_hide_add_to_cart and website.is_public_user() else True">
+                                                            <t t-if="'shopping_cart' in option">
+                                                            <t t-set="ajax_cart" t-value="1"/>
+                                                            <t t-call="theme_clarico_vega.t_configurator_state"/>
+                                                            </t>
+                                                        </t>
+                                                        <t t-call="theme_clarico_vega.product_slider_btn"/>
+                                                    </section>
+                                                </section>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <!--============== Slider Style 4 ===================-->
+    <template id="clarico_slider_styles_four_template" name="Slider Style 4">
+        <span class="d-none group_website_designer" contenteditable="false" groups="website.group_website_designer"/>
+        <t t-call="theme_clarico_vega.slider_edit_message"/>
+        <section t-if="filter_data" class="ps_style_4_main te_pc_style_main slider_body o_not_editable">
+            <div class="container oe_website_sale">
+                <!-- / For Display a Header And View All -->
+                <div class="js_data_container">
+                    <!-- Display a Single slider Filter Product -->
+                    <div class="js_filter_data" t-att-filter-id="active_filter_data">
+                        <section class="owl-slider te_prod_slider_4">
+                            <!-- For Display a product -->
+                            <div id="" class="owl-carousel te_product_slider_4 row">
+                                <t t-foreach="filter_data" t-as="product">
+                                    <!-- Display s Single Product -->
+                                    <div class="item te_slider_4_content">
+                                        <form action="/shop/cart/update" method="post">
+                                            <input type="hidden" name="csrf_token"
+                                                   t-att-value="request.csrf_token()"/>
+                                            <t t-set="combination"
+                                               t-value="product._get_first_possible_combination()"/>
+                                            <t t-set="combination_info"
+                                               t-value="product._get_combination_info(combination, add_qty=add_qty or 1, pricelist=pricelist)"/>
+                                            <t t-set="product_variant"
+                                               t-value="product.env['product.product'].browse(combination_info['product_id'])"/>
+                                            <input type="hidden" class="product_id" name="product_id"
+                                                   t-att-value="product_variant.id"/>
+                                            <input type="hidden" class="product_template_id"
+                                                   name="product_template_id"
+                                                   t-att-value="product.id"/>
+                                            <section
+                                                    class="te_slider_img dd_slider_prod_bg col-lg-6 col-md-12 col-sm-11">
+                                                <div t-if="product.label_line_ids and 'sale_label' in option">
+                                                    <t t-foreach="product.label_line_ids" t-as="labels">
+                                                        <t t-if="labels.website_id.id == website.id">
+                                                            <t t-call="theme_clarico_vega.common_label_ept"/>
+                                                        </t>
+                                                    </t>
+                                                </div>
+                                                <t t-set="product_stock_available" t-value="website.option_out_of_stock and product.type=='product' and (not product.allow_out_of_stock_order) and (product.sudo().qty_available &lt; 1)"/>
+                                                <a t-att-href="product.website_url" class="position-relative">
+                                                    <t t-call="theme_clarico_vega.t_image_512"/>
+                                                </a>
+                                                <!-- out of stock -->
+                                                <div class="te-out-of-stock-lbl"
+                                                     t-if="product_stock_available">
+                                                    <t t-call="theme_clarico_vega.out_of_stock_label_ept"/>
+                                                </div>
+                                            </section>
+                                            <div class="te_prod_info_4 col-lg-5 col-md-12 col-sm-11">
+                                                <section class="d-block te_prod_info_sub">
+                                                    <a t-att-href="product.website_url" class="text-decoration-none">
+                                                        <h6
+                                                                t-attf-class="my-2 product_name #{'te_2_line' if (website.number_of_product_line == '2') else 'te_3_line' if (website.number_of_product_line == '3') else ''}"
+                                                                t-raw="product.name"/>
+                                                    </a>
+                                                    <t t-if="'ratings' in option"
+                                                       t-call="theme_clarico_vega.slider_ratings"/>
+                                                    <t t-if="product.description_sale">
+                                                        <div class="te_slider_4_desc">
+                                                            <p class="te_slider_4_p" t-esc="product.description_sale"/>
+                                                        </div>
+                                                    </t>
+                                                    <t t-call="theme_clarico_vega.slider_display_price"/>
+                                                    <t t-if="request.website.viewref('theme_clarico_vega.shop_color_variant_ept').active" t-call="theme_clarico_vega.dynamic_style_color_variant"/>
+                                                    <section class="te_prod_cart_wish_4">
+                                                        <t t-if="False if website.b2b_hide_add_to_cart and website.is_public_user() else True">
+                                                            <t t-if="'shopping_cart' in option">
+                                                                <t t-call="theme_clarico_vega.slider_add_to_cart_ept"/>
+                                                            </t>
+                                                        </t>
+                                                        <t t-call="theme_clarico_vega.product_slider_btn"/>
+                                                    </section>
+                                                </section>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <!-- Display s Single Product -->
+                                </t>
+                            </div>
+                        </section>
+                        <!-- / For Display a product -->
+                    </div>
+                    <!-- / Display a Single slider Product -->
+                </div>
+                <!-- Display the slider Container -->
+            </div>
+        </section>
+    </template>
+
+    <!--============== Slider Style 4 ===================-->
+    <!--<template id="clarico_slider_styles_four_template" name="Slider Style 4">
+        <span class="d-none group_website_designer" contenteditable="false" groups="website.group_website_designer"/>
+        <t t-call="theme_clarico_vega.slider_edit_message"/>
+        <section t-if="filter_data" class="ps_style_4_main te_pc_style_main slider_body o_not_editable">
+            <div class="container oe_website_sale">
+                &lt;!&ndash; / For Display a Header And View All &ndash;&gt;
+                <div class="js_data_container">
+                    &lt;!&ndash; Display a Single slider Filter Product &ndash;&gt;
+                    <div class="js_filter_data" t-att-filter-id="active_filter_data">
+                        <section class="owl-slider te_prod_slider_4">
+                            &lt;!&ndash; For Display a product &ndash;&gt;
+                            <div id="" class="owl-carousel te_product_slider_4 row">
+                                <t t-foreach="filter_data" t-as="product">
+                                    &lt;!&ndash; Display s Single Product &ndash;&gt;
+                                    <div class="item te_slider_4_content">
+                                        <form action="/shop/cart/update" method="post">
+                                            <t t-set="combination"
+                                               t-value="product._get_first_possible_combination()"/>
+                                            <t t-set="combination_info"
+                                               t-value="product._get_combination_info(combination, add_qty=add_qty or 1, pricelist=pricelist)"/>
+                                            <t t-set="product_variant"
+                                               t-value="product.env['product.product'].browse(combination_info['product_id'])"/>
+                                            <input type="hidden" name="csrf_token"
+                                                   t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" class="product_id" name="product_id"
+                                                   t-att-value="product_variant.id"/>
+                                            <input type="hidden" class="product_template_id"
+                                                   name="product_template_id"
+                                                   t-att-value="product.id"/>
+                                            <section
+                                                    class="te_slider_img dd_slider_prod_bg col-lg-6 col-md-12 col-sm-11">
+                                                <div t-if="product.label_line_ids and 'sale_label' in option">
+                                                    <t t-foreach="product.label_line_ids" t-as="labels">
+                                                        <t t-if="labels.website_id.id == website.id">
+                                                            <t t-call="theme_clarico_vega.common_label_ept"/>
+                                                        </t>
+                                                    </t>
+                                                </div>
+                                                <t t-set="product_stock_available" t-value="website.option_out_of_stock and product.type=='product' and (not product.allow_out_of_stock_order) and (product.sudo().qty_available &lt; 1)"/>
+                                                <a t-att-href="product.website_url" class="position-relative">
+                                                    <t t-if="website.is_lazy_load">
+                                                        <img t-attf-class="o_carousel_product_card_img_top card-img-top lazyload #{'sold-out' if product_stock_available else ''}"
+                                                             t-attf-src="/web/image/website/#{website.id}/lazy_load_image"
+                                                             t-attf-data-src="/web/image/product.template/#{product.id}/image_512"
+                                                             t-att-alt="product.name"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <img t-attf-class="o_carousel_product_card_img_top card-img-top #{'sold-out' if product_stock_available else ''}"
+                                                             t-attf-src="/web/image/product.template/#{product.id}/image_512"
+                                                             t-att-alt="product.name"/>
+                                                    </t>
+                                                </a>
+                                                &lt;!&ndash; out of stock &ndash;&gt;
+                                                <div class="te-out-of-stock-lbl"
+                                                     t-if="product_stock_available">
+                                                    <t t-call="theme_clarico_vega.out_of_stock_label_ept"/>
+                                                </div>
+                                            </section>
+                                            <div class="te_prod_info_4 col-lg-5 col-md-12 col-sm-11">
+                                                <section class="d-block te_prod_info_sub">
+                                                    <a t-att-href="product.website_url" class="text-decoration-none">
+                                                        <h6
+                                                                t-attf-class="my-2 product_name #{'te_2_line' if (website.number_of_product_line == '2') else 'te_3_line' if (website.number_of_product_line == '3') else ''}"
+                                                                t-raw="product.name"/>
+                                                    </a>
+                                                    <t t-if="'ratings' in option"
+                                                       t-call="theme_clarico_vega.slider_ratings"/>
+                                                    <t t-if="product.description_sale">
+                                                        <div class="te_slider_4_desc">
+                                                            <p class="te_slider_4_p" t-esc="product.description_sale"/>
+                                                        </div>
+                                                    </t>
+                                                    <t t-call="theme_clarico_vega.slider_display_price"/>
+                                                    <t t-if="request.website.viewref('theme_clarico_vega.shop_color_variant_ept').active" t-call="theme_clarico_vega.dynamic_style_color_variant"/>
+                                                    <section class="te_prod_cart_wish_4">
+                                                        <t t-if="False if website.b2b_hide_add_to_cart and website.is_public_user() else True">
+                                                            <t t-if="'shopping_cart' in option">
+&lt;!&ndash;                                                            <t t-set="ajax_cart"&ndash;&gt;
+&lt;!&ndash;                                                               t-value="request.website.viewref('theme_clarico_vega.ajax_add_to_cart').active"/>&ndash;&gt;
+                                                            <t t-set="ajax_cart" t-value="1"/>
+                                                            <t t-set="configurator_state"
+                                                               t-value="request.env['ir.module.module'].sudo().search([['name', '=', 'sale_product_configurator']])"/>
+                                                            <t t-if="configurator_state and configurator_state.state == 'installed'">
+                                                                <a role="button"
+                                                                   t-attf-class="btn btn-secondary btn-sm px-3 py-2 a-submit not_product_page #{'disabled out_of_stock' if product.type=='product' and not product.allow_out_of_stock_order and product.sudo().qty_available &lt; 1 else ''}"
+                                                                   title="Shopping cart"
+                                                                   t-att-id="'add_to_cart' if ajax_cart and not product.optional_product_ids else ''"
+                                                                   t-att-product-id="product.id"
+                                                                   t-att-variant-count="product.product_variant_count">
+                                                                    <span class="fa fa-shopping-cart"/>
+                                                                </a>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <a role="button"
+                                                                   t-attf-class="btn btn-secondary btn-sm a-submit not_product_page #{'disabled out_of_stock' if product.type=='product' and not product.allow_out_of_stock_order and product.sudo().qty_available &lt; 1 else ''}"
+                                                                   title="Shopping cart"
+                                                                   t-att-id="'add_to_cart' if ajax_cart else ''"
+                                                                   t-att-product-id="product.id"
+                                                                   t-att-variant-count="product.product_variant_count">
+                                                                    <span class="fa fa-shopping-cart"/>
+                                                                </a>
+                                                            </t>
+                                                        </t>
+                                                        </t>
+                                                        <t t-call="theme_clarico_vega.product_slider_btn"/>
+                                                    </section>
+                                                </section>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    &lt;!&ndash; Display s Single Product &ndash;&gt;
+                                </t>
+                            </div>
+                        </section>
+                        &lt;!&ndash; / For Display a product &ndash;&gt;
+                    </div>
+                    &lt;!&ndash; / Display a Single slider Product &ndash;&gt;
+                </div>
+                &lt;!&ndash; Display the slider Container &ndash;&gt;
+            </div>
+        </section>
+    </template>-->
+
+    <!-- ============================= Slider Style 5 ============================= -->
+    <template id="clarico_slider_styles_five_template" name="Slider Style 5">
+        <span class="d-none group_website_designer" contenteditable="false" groups="website.group_website_designer"/>
+        <t t-call="theme_clarico_vega.slider_edit_message"/>
+        <section t-if="filter_data" class="te_pc_style_main slider_body o_not_editable">
+            <div class="container oe_website_sale">
+                <!-- Products container -->
+                <div class="js_data_container">
+                    <div class="js_filter_data" t-att-filter-id="active_filter_data">
+                        <!-- Owl carousel -->
+                        <section class="owl-slider te_prod_slider_5">
+                            <!-- To Display product's data -->
+                            <div id="" class="owl-carousel te_product_slider_5">
+                                <t t-foreach="filter_data" t-as="product">
+                                    <div class="item te_slider_5_content te_product_ind">
+                                        <form action="/shop/cart/update" method="post">
+                                            <input type="hidden" name="csrf_token"
+                                                   t-att-value="request.csrf_token()"/>
+                                            <t t-set="combination"
+                                               t-value="product._get_first_possible_combination()"/>
+                                            <t t-set="combination_info"
+                                               t-value="product._get_combination_info(combination, add_qty=add_qty or 1, pricelist=pricelist)"/>
+                                            <t t-set="product_variant"
+                                               t-value="product.env['product.product'].browse(combination_info['product_id'])"/>
+                                            <input type="hidden" class="product_id" name="product_id"
+                                                   t-att-value="product_variant.id"/>
+                                            <input type="hidden" class="product_template_id"
+                                                   name="product_template_id"
+                                                   t-att-value="product.id"/>
+                                            <div t-if="product.label_line_ids and 'sale_label' in option">
+                                                <t t-foreach="product.label_line_ids" t-as="labels">
+                                                    <t t-if="labels.website_id.id == website.id">
+                                                        <t t-call="theme_clarico_vega.common_label_ept"/>
+                                                    </t>
+                                                </t>
+                                            </div>
+                                            <section class="te_slider_img dd_slider_prod_bg">
+                                                <t t-set="product_stock_available" t-value="website.option_out_of_stock and product.type=='product' and (not product.allow_out_of_stock_order) and (product.sudo().qty_available &lt; 1)"/>
+                                                <a t-att-href="product.website_url" class="position-relative">
+                                                    <t t-call="theme_clarico_vega.t_image_512"/>
+                                                </a>
+                                                <!-- out of stock -->
+                                                <div class="te-out-of-stock-lbl" t-if="product_stock_available">
+                                                    <t t-call="theme_clarico_vega.out_of_stock_label_ept"/>
+                                                </div>
+                                                <div class="te_wishlist_quickview_icon">
+                                                    <t t-call="theme_clarico_vega.t_show_wishlist"/>
+                                                    <t t-set="quick_view"
+                                                       t-value="request.website.viewref('theme_clarico_vega.quickview_icon_shop_product_item').active"/>
+                                                    <t t-if="'quick_view' in option">
+                                                        <button title="Quick View"
+                                                                class="btn btn-secondary quick-view-a te_quick_view"
+                                                                t-att-data-id="'%s' % product.id">
+                                                            <span class="fa fa-eye"/>
+                                                        </button>
+                                                    </t>
+                                                </div>
+                                            </section>
+                                            <div class="te_prod_info">
+                                                <section class="d-block position-relative p-2 te_prod_info_sub">
+                                                    <a t-att-href="product.website_url"
+                                                       class="text-decoration-none">
+                                                        <h6
+                                                                t-attf-class="mb-1 product_name #{'te_2_line' if (website.number_of_product_line == '2') else 'te_3_line' if (website.number_of_product_line == '3') else ''}"
+                                                                t-raw="product.name"/>
+                                                    </a>
+                                                    <t t-if="'ratings' in option"
+                                                       t-call="theme_clarico_vega.slider_ratings"/>
+                                                    <t t-call="theme_clarico_vega.slider_display_price"/>
+                                                    <t t-if="request.website.viewref('theme_clarico_vega.shop_color_variant_ept').active" t-call="theme_clarico_vega.dynamic_style_color_variant"/>
+                                                    <section class="te_prod_cart_wish pt-1">
+                                                        <t t-if="False if website.b2b_hide_add_to_cart and website.is_public_user() else True">
+                                                            <t t-if="'shopping_cart' in option">
+                                                            <t t-set="ajax_cart" t-value="1"/>
+                                                            <t t-call="theme_clarico_vega.t_configurator_state">
+                                                                <t t-set="addtocart" t-valuef="Add to Cart"/>
+                                                            </t>
+                                                        </t>
+                                                        </t>
+                                                    </section>
+                                                </section>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </t>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <!--============== Slider Style 6 ===================-->
+    <template id="clarico_slider_styles_six_template" name="Slider Style 6">
+        <span class="d-none group_website_designer" contenteditable="false" groups="website.group_website_designer"/>
+        <t t-call="theme_clarico_vega.slider_edit_message"/>
+        <t t-if="filter_data">
+            <section class="te_pc_style_main slider_body o_not_editable">
+                <div class="product_container container oe_website_sale">
+                    <!-- Products container -->
+                    <div class="js_data_container">
+                        <!-- Display a Single slider Filter Product -->
+                        <div class="js_filter_data" t-att-filter-id="active_filter_data">
+
+                            <section class="te_product_slider_6 owl-slider">
+                                <div class="owl-carousel te_slider_style_6">
+                                    <!-- To Display product's data -->
+                                    <t t-foreach="filter_data" t-as="product">
+                                        <div class="item te_product_ind">
+                                            <form action="/shop/cart/update" method="post">
+                                                <input type="hidden" name="csrf_token"
+                                                       t-att-value="request.csrf_token()"/>
+                                                <t t-set="combination"
+                                                   t-value="product._get_first_possible_combination()"/>
+                                                <t t-set="combination_info"
+                                                   t-value="product._get_combination_info(combination, add_qty=add_qty or 1, pricelist=pricelist)"/>
+                                                <t t-set="product_variant"
+                                                   t-value="product.env['product.product'].browse(combination_info['product_id'])"/>
+                                                <input type="hidden" class="product_id" name="product_id"
+                                                       t-att-value="product_variant.id"/>
+                                                <input type="hidden" class="product_template_id"
+                                                       name="product_template_id"
+                                                       t-att-value="product.id"/>
+                                                <div t-if="product.label_line_ids and 'sale_label' in option">
+                                                    <t t-foreach="product.label_line_ids" t-as="labels">
+                                                        <t t-if="labels.website_id.id == website.id">
+                                                            <t t-call="theme_clarico_vega.common_label_ept"/>
+                                                        </t>
+                                                    </t>
+                                                </div>
+                                                <section class="te_slider_img dd_slider_prod_bg">
+                                                    <t t-set="product_stock_available" t-value="website.option_out_of_stock and product.type=='product' and (not product.allow_out_of_stock_order) and (product.sudo().qty_available &lt; 1)"/>
+                                                    <a t-att-href="product.website_url" class="position-relative">
+                                                        <t t-call="theme_clarico_vega.t_image_512"/>
+                                                    </a>
+                                                    <!--  out of stock  -->
+                                                    <div class="te-out-of-stock-lbl" t-if="product_stock_available">
+                                                        <t t-call="theme_clarico_vega.out_of_stock_label_ept"/>
+                                                    </div>
+                                                    <div class="te_prod_icons_6">
+                                                        <t t-call="theme_clarico_vega.t_show_wishlist"/>
+                                                        <t t-set="quick_view"
+                                                           t-value="request.website.viewref('theme_clarico_vega.quickview_icon_shop_product_item').active"/>
+                                                        <t t-if="'quick_view' in option">
+                                                            <button title="Quick View"
+                                                                    class="btn btn-secondary quick-view-a te_quick_view"
+                                                                    t-att-data-id="'%s' % product.id">
+                                                                <span class="fa fa-eye"/>
+                                                            </button>
+                                                        </t>
+                                                        <t t-if="False if website.b2b_hide_add_to_cart and website.is_public_user() else True">
+                                                        <t t-if="'shopping_cart' in option">
+                                                        <t t-set="ajax_cart" t-value="1"/>
+                                                       <t t-call="theme_clarico_vega.t_configurator_state"/>
+                                                    </t>
+                                                    </t>
+                                                    </div>
+                                                  <!--  <t t-if="False if website.b2b_hide_add_to_cart and website.is_public_user() else True">
+                                                    <t t-if="'shopping_cart' in option">
+&lt;!&ndash;                                                        <t t-set="ajax_cart"&ndash;&gt;
+&lt;!&ndash;                                                           t-value="request.website.viewref('theme_clarico_vega.ajax_add_to_cart').active"/>&ndash;&gt;
+                                                        <t t-set="ajax_cart" t-value="1"/>
+                                                        <t t-set="configurator_state"
+                                                           t-value="request.env['ir.module.module'].sudo().search([['name', '=', 'sale_product_configurator']])"/>
+                                                        <t t-if="configurator_state and configurator_state.state == 'installed'">
+                                                            <a  src=""
+                                                               t-attf-class="btn btn-secondary btn-sm a-submit not_product_page #{'disabled out_of_stock' if product.type=='product' and not product.allow_out_of_stock_order and product.sudo().qty_available &lt; 1 else ''}"
+                                                               title="Shopping cart"
+                                                               t-att-id="'add_to_cart' if ajax_cart and not product.optional_product_ids else ''"
+                                                               t-att-product-id="product.id"
+                                                               t-att-variant-count="product.product_variant_count">
+                                                                <span class="fa fa-shopping-cart"/>
+                                                                Add to Cart
+                                                            </a>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <a role="button" src=""
+                                                               t-attf-class="btn btn-secondary btn-sm a-submit not_product_page #{'disabled out_of_stock' if product.type=='product' and not product.allow_out_of_stock_order and product.sudo().qty_available &lt; 1 else ''}"
+                                                               title="Shopping cart"
+                                                               t-att-id="'add_to_cart' if ajax_cart else ''"
+                                                               t-att-product-id="product.id"
+                                                               t-att-variant-count="product.product_variant_count">
+                                                                <span class="fa fa-shopping-cart"/>
+                                                                Add to Cart
+                                                            </a>
+                                                        </t>
+                                                    </t>
+                                                    </t>-->
+                                                </section>
+                                                <div class="te_prod_info_2">
+                                                    <section class="d-block position-relative p-2 te_prod_info_sub">
+                                                        <a t-att-href="product.website_url"
+                                                           class="text-decoration-none">
+                                                            <h6
+                                                                    t-attf-class="product_name #{'te_2_line' if (website.number_of_product_line == '2') else 'te_3_line' if (website.number_of_product_line == '3') else ''}"
+                                                                    t-raw="product.name"/>
+                                                        </a>
+                                                        <t t-if="'ratings' in option"
+                                                           t-call="theme_clarico_vega.slider_ratings"/>
+                                                        <t t-call="theme_clarico_vega.slider_display_price"/>
+                                                        <t t-if="request.website.viewref('theme_clarico_vega.shop_color_variant_ept').active" t-call="theme_clarico_vega.dynamic_style_color_variant"/>
+                                                    </section>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </t>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </t>
+    </template>
+
+    <!--============== Slider Style 7 (Product Slider Grid Style-5 Products) ===================-->
+    <template id="clarico_slider_styles_seven_template" name="Slider Style 7">
+        <span class="d-none group_website_designer" contenteditable="false" groups="website.group_website_designer"/>
+        <t t-call="theme_clarico_vega.slider_edit_message"/>
+        <t t-if="filter_data">
+            <section class="te_pc_style_main slider_body o_not_editable">
+                <div class="product_container grid_container container oe_website_sale">
+                    <!-- Products container -->
+                    <div class="js_data_container">
+                        <!-- Display a Single slider Filter Product -->
+                        <div class="js_filter_data" t-att-filter-id="active_filter_data">
+
+                            <section class="te_product_slider_7 owl-slider">
+                                <div class="owl-carousel te_slider_style_7">
+                                    <!-- To Display product's data -->
+                                    <t t-set="product_items" t-value="website.get_product_data(filter_data, 5)"/>
+                                    <t t-set="i" t-value="0"/>
+                                    <div class="row product-rows" t-if="products" t-foreach="product_items"
+                                         t-as="products">
+                                        <t t-set="i" t-value="1"/>
+                                        <t t-foreach="products" t-as="product">
+                                            <div t-attf-class="item te_product_ind #{'col-12' if i == 1 else 'col-6'}">
+                                                <form action="/shop/cart/update" method="post">
+                                                    <input type="hidden" name="csrf_token"
+                                                           t-att-value="request.csrf_token()"/>
+                                                    <t t-set="combination"
+                                                       t-value="product._get_first_possible_combination()"/>
+                                                    <t t-set="combination_info"
+                                                       t-value="product._get_combination_info(combination, add_qty=add_qty or 1, pricelist=pricelist)"/>
+                                                    <t t-set="product_variant"
+                                                       t-value="product.env['product.product'].browse(combination_info['product_id'])"/>
+                                                    <input type="hidden" class="product_id" name="product_id"
+                                                           t-att-value="product_variant.id"/>
+                                                    <input type="hidden" class="product_template_id"
+                                                           name="product_template_id"
+                                                           t-att-value="product.id"/>
+                                                    <div t-if="product.label_line_ids and 'sale_label' in option">
+                                                        <t t-foreach="product.label_line_ids" t-as="labels">
+                                                            <t t-if="labels.website_id.id == website.id">
+                                                                <t t-call="theme_clarico_vega.common_label_ept"/>
+                                                            </t>
+                                                        </t>
+                                                    </div>
+                                                    <section class="te_slider_img dd_slider_prod_bg">
+                                                        <t t-set="product_stock_available" t-value="website.option_out_of_stock and product.type=='product' and (not product.allow_out_of_stock_order) and (product.sudo().qty_available &lt; 1)"/>
+                                                        <a t-att-href="product.website_url" class="position-relative">
+                                                            <t t-call="theme_clarico_vega.t_image_512"/>
+                                                        </a>
+                                                        <!-- out of stock -->
+                                                        <div class="te-out-of-stock-lbl" t-if="product_stock_available">
+                                                            <t t-call="theme_clarico_vega.out_of_stock_label_ept"/>
+                                                        </div>
+                                                    </section>
+                                                    <div class="te_prod_info_2">
+                                                        <section class="d-block position-relative te_prod_info_sub">
+                                                            <t t-if="request.website.viewref('theme_clarico_vega.shop_color_variant_ept').active" t-call="theme_clarico_vega.dynamic_style_color_variant"/>
+                                                            <t t-set="categ" t-value="1"/>
+                                                            <t t-foreach="product.public_categ_ids" t-as="category"
+                                                               t-if="categ == 1 and product.public_categ_ids">
+                                                                <t t-if="category.is_category_page">
+                                                                    <t t-set="page_url"
+                                                                       t-value="category.category_page.url"/>
+                                                                </t>
+                                                                <t t-else="">
+                                                                    <t t-set="page_url"
+                                                                       t-value="'/shop/category/%s'%slug(category)"/>
+                                                                </t>
+                                                                <t t-set="categ" t-value="categ + 1"/>
+                                                                <a class="te_categ_name" t-att-href="page_url">
+                                                                    <small class="d-block" t-esc="category.name"/>
+                                                                </a>
+                                                            </t>
+                                                            <a t-att-href="product.website_url"
+                                                               class="text-decoration-none">
+                                                                <h6
+                                                                    t-attf-class="product_name #{'te_2_line' if (website.number_of_product_line == '2') else 'te_3_line' if (website.number_of_product_line == '3') else ''}"
+                                                                    t-raw="product.name"/>
+                                                            </a>
+                                                            <t t-if="'ratings' in option"
+                                                               t-call="theme_clarico_vega.slider_ratings"/>
+                                                            <t t-call="theme_clarico_vega.slider_display_price"/>
+
+                                                            <section class="te_prod_cart_wish_2">
+                                                                <t t-if="False if website.b2b_hide_add_to_cart and website.is_public_user() else True">
+                                                                <t t-if="'shopping_cart' in option">
+                                                                    <t t-set="ajax_cart" t-value="1"/>
+                                                                    <t t-call="theme_clarico_vega.t_configurator_state"/>
+                                                                </t>
+                                                                </t>
+                                                                <t t-call="theme_clarico_vega.product_slider_btn"/>
+                                                            </section>
+                                                        </section>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <t t-set="i" t-value="i +1"/>
+                                        </t>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </t>
+    </template>
+
+    <!--============== Slider Style 8 (2 Sliders Right Side-6 Products) ===================-->
+    <template id="clarico_slider_styles_eight_template" name="Slider Style 8">
+        <span class="d-none group_website_designer" contenteditable="false" groups="website.group_website_designer"/>
+        <t t-call="theme_clarico_vega.slider_edit_message"/>
+        <t t-if="filter_data">
+            <section class="te_pc_style_main slider_body o_not_editable">
+                <div class="product_container container-fluid oe_website_sale">
+                    <!-- Products container -->
+                    <div class="js_data_container">
+                        <!-- Display a Single slider Filter Product -->
+                        <div class="js_filter_data" t-att-filter-id="active_filter_data">
+
+                            <section class="te_product_slider_8 owl-slider">
+                                <div class="owl-carousel te_slider_style_8">
+                                    <!-- To Display product's data -->
+                                    <t t-set="product_items" t-value="website.get_product_data(filter_data, 6)"/>
+                                    <div class="row product-rows" t-if="products" t-foreach="product_items"
+                                         t-as="products">
+                                        <t t-foreach="products" t-as="product">
+                                            <div class="item te_product_ind col-sm-4 col-6 pr-0">
+                                                <form action="/shop/cart/update" method="post">
+                                                    <input type="hidden" name="csrf_token"
+                                                           t-att-value="request.csrf_token()"/>
+                                                    <t t-set="combination"
+                                                       t-value="product._get_first_possible_combination()"/>
+                                                    <t t-set="combination_info"
+                                                       t-value="product._get_combination_info(combination, add_qty=add_qty or 1, pricelist=pricelist)"/>
+                                                    <t t-set="product_variant"
+                                                       t-value="product.env['product.product'].browse(combination_info['product_id'])"/>
+                                                    <input type="hidden" class="product_id" name="product_id"
+                                                           t-att-value="product_variant.id"/>
+                                                    <input type="hidden" class="product_template_id"
+                                                           name="product_template_id"
+                                                           t-att-value="product.id"/>
+                                                    <section class="te_slider_img_8 dd_slider_prod_bg">
+                                                        <t t-if="product.label_line_ids and 'sale_label' in option">
+                                                            <t t-foreach="product.label_line_ids" t-as="labels">
+                                                                <t t-if="labels.website_id.id == website.id">
+                                                                    <t t-call="theme_clarico_vega.common_label_ept"/>
+                                                                </t>
+                                                            </t>
+                                                        </t>
+                                                        <t t-set="product_stock_available" t-value="website.option_out_of_stock and product.type=='product' and (not product.allow_out_of_stock_order) and (product.sudo().qty_available &lt; 1)"/>
+                                                        <a t-att-href="product.website_url" class="position-relative">
+                                                            <t t-if="website.is_lazy_load">
+                                                                <img t-attf-class="o_carousel_product_card_img_top card-img-top lazyload #{'sold-out' if product_stock_available else ''}"
+                                                                     t-attf-src="/web/image/website/#{website.id}/lazy_load_image"
+                                                                     t-attf-data-src="/web/image/product.template/#{product.id}/image_256"
+                                                                     t-att-alt="product.name"/>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <img t-attf-class="o_carousel_product_card_img_top card-img-top #{'sold-out' if product_stock_available else ''}"
+                                                                     t-attf-src="/web/image/product.template/#{product.id}/image_256"
+                                                                     t-att-alt="product.name"/>
+                                                            </t>
+                                                        </a>
+                                                        <!-- out of stock -->
+                                                        <div class="te-out-of-stock-lbl" t-if="product_stock_available">
+                                                            <t t-call="theme_clarico_vega.out_of_stock_label_ept"/>
+                                                        </div>
+                                                    </section>
+                                                    <div class="te_prod_info_2">
+                                                        <section class="d-block position-relative p-2 te_prod_info_sub">
+                                                            <t t-set="categ" t-value="1"/>
+                                                            <t t-foreach="product.public_categ_ids" t-as="category"
+                                                               t-if="categ == 1 and product.public_categ_ids">
+                                                                <t t-if="category.is_category_page">
+                                                                    <t t-set="page_url"
+                                                                       t-value="category.category_page.url"/>
+                                                                </t>
+                                                                <t t-else="">
+                                                                    <t t-set="page_url"
+                                                                       t-value="'/shop/category/%s'%slug(category)"/>
+                                                                </t>
+                                                                <t t-set="categ" t-value="categ + 1"/>
+                                                                <a class="te_categ_name" t-att-href="page_url">
+                                                                    <small class="d-block" t-esc="category.name"/>
+                                                                </a>
+                                                            </t>
+                                                            <a t-att-href="product.website_url"
+                                                               class="text-decoration-none">
+                                                                <h6 t-attf-class="product_name #{'te_2_line' if (website.number_of_product_line == '2') else 'te_3_line' if (website.number_of_product_line == '3') else ''}"
+                                                                    t-raw="product.name"/>
+                                                            </a>
+                                                            <t t-if="'ratings' in option"
+                                                               t-call="theme_clarico_vega.slider_ratings"/>
+                                                            <t t-call="theme_clarico_vega.slider_display_price"/>
+                                                            <t t-if="request.website.viewref('theme_clarico_vega.shop_color_variant_ept').active" t-call="theme_clarico_vega.dynamic_style_color_variant"/>
+                                                            <section class="te_prod_cart_wish_2">
+                                                                <t t-if="False if website.b2b_hide_add_to_cart and website.is_public_user() else True">
+                                                                    <t t-if="'shopping_cart' in option">
+<!--                                                                    <t t-set="ajax_cart"-->
+<!--                                                                       t-value="request.website.viewref('theme_clarico_vega.ajax_add_to_cart').active"/>-->
+                                                                    <t t-set="ajax_cart" t-value="1"/>
+                                                                    <t t-call="theme_clarico_vega.t_configurator_state"/>
+                                                                </t>
+                                                                </t>
+                                                                <t t-call="theme_clarico_vega.product_slider_btn"/>
+                                                            </section>
+                                                        </section>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </t>
+    </template>
+
+    <!--============== Banner Product Slider Style (Product Slider With Banner) ===================-->
+    <template id="clarico_banner_slider_styles_template" name="Banner Product Slider Style">
+        <span class="d-none group_website_designer" contenteditable="false" groups="website.group_website_designer"/>
+        <t t-call="theme_clarico_vega.slider_edit_message"/>
+        <section t-if="filter_data" class="te_pc_style_main slider_body o_not_editable">
+            <div class="container-fluid oe_website_sale">
+                <!-- Products container -->
+                <div class="js_data_container">
+                    <div class="js_filter_data" t-att-filter-id="active_filter_data">
+                        <!-- Owl carousel -->
+                        <!-- To Display product's data -->
+                        <div id="" class="owl-carousel te_product_slider_banner">
+                            <t t-foreach="filter_data" t-as="product">
+                                <div class="item te_slider_content">
+                                    <form action="/shop/cart/update" method="post">
+                                        <input type="hidden" name="csrf_token"
+                                               t-att-value="request.csrf_token()"/>
+                                        <t t-set="combination"
+                                           t-value="product._get_first_possible_combination()"/>
+                                        <t t-set="combination_info"
+                                           t-value="product._get_combination_info(combination, add_qty=add_qty or 1, pricelist=pricelist)"/>
+                                        <t t-set="product_variant"
+                                           t-value="product.env['product.product'].browse(combination_info['product_id'])"/>
+                                        <input type="hidden" class="product_id" name="product_id"
+                                               t-att-value="product_variant.id"/>
+                                        <input type="hidden" class="product_template_id"
+                                               name="product_template_id"
+                                               t-att-value="product.id"/>
+                                        <section
+                                                class="te_slider_img dd_slider_prod_bg d-flex justify-content-center position-relative">
+                                            <t t-set="product_stock_available" t-value="website.option_out_of_stock and product.type=='product' and (not product.allow_out_of_stock_order) and (product.sudo().qty_available &lt; 1)"/>
+                                            <a t-att-href="product.website_url" class="position-relative">
+                                                <t t-call="theme_clarico_vega.t_image_512"/>
+                                            </a>
+                                            <!-- out of stock -->
+                                            <div class="te-out-of-stock-lbl"  t-if="product_stock_available">
+                                                <t t-call="theme_clarico_vega.out_of_stock_label_ept"/>
+                                            </div>
+                                        </section>
+                                        <div class="te_prod_info text-center">
+                                            <section class="d-block position-relative px-3 te_prod_info_sub">
+                                                <t t-if="product.label_line_ids and 'sale_label' in option">
+                                                    <t t-foreach="product.label_line_ids" t-as="labels">
+                                                        <t t-if="labels.website_id.id == website.id">
+                                                            <div class="te_prod_label"
+                                                                 t-attf-style="background-color:#{labels.label.html_color};color:#{labels.label.font_html_color}">
+                                                                <div class="te_label_tag" t-field="labels.label.name"/>
+                                                            </div>
+                                                        </t>
+                                                    </t>
+                                                </t>
+                                                <t t-set="categ" t-value="1"/>
+                                                <t t-foreach="product.public_categ_ids" t-as="category"
+                                                   t-if="categ == 1 and product.public_categ_ids">
+                                                    <t t-if="category.is_category_page and category.sudo().category_page and category.sudo().category_page.website_published">
+                                                        <t t-set="page_url"
+                                                           t-value="category.sudo().category_page.url"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <t t-set="page_url"
+                                                           t-value="'/shop/category/%s'%slug(category)"/>
+                                                    </t>
+                                                    <t t-set="categ" t-value="categ + 1"/>
+                                                    <a class="te_categ_name" t-att-href="page_url">
+                                                        <small class="d-block" t-esc="category.name"/>
+                                                    </a>
+                                                </t>
+                                                <a t-att-href="product.website_url"
+                                                   class="text-decoration-none">
+                                                    <h6 t-attf-class="my-1 mb-0 product_name #{'te_2_line' if (website.number_of_product_line == '2') else 'te_3_line' if (website.number_of_product_line == '3') else ''}"
+                                                        t-raw="product.name"/>
+                                                </a>
+                                                <t t-if="'ratings' in option"
+                                                   t-call="theme_clarico_vega.slider_ratings"/>
+                                                <t t-call="theme_clarico_vega.slider_display_price"/>
+                                                <t t-if="request.website.viewref('theme_clarico_vega.shop_color_variant_ept').active" t-call="theme_clarico_vega.dynamic_style_color_variant"/>
+                                                <section class="te_prod_cart_wish">
+                                                    <t t-if="False if website.b2b_hide_add_to_cart and website.is_public_user() else True">
+                                                        <t t-if="'shopping_cart' in option">
+<!--                                                        <t t-set="ajax_cart"-->
+<!--                                                           t-value="request.website.viewref('theme_clarico_vega.ajax_add_to_cart').active"/>-->
+                                                        <t t-set="ajax_cart" t-value="1"/>
+                                                        <t t-call="theme_clarico_vega.t_configurator_state"/>
+                                                    </t>
+                                                    </t>
+                                                    <t t-call="theme_clarico_vega.product_slider_btn"/>
+                                                </section>
+                                            </section>
+                                        </div>
+                                    </form>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <!--============== Product Slider Banner ===================-->
+    <template id="product_slider_banner" name="Banner With Product Slider">
+        <section data-vcss="001">
+            <div class="container-fluid">
+                <div class="row s_nb_column_fixed s_col_no_bgcolor">
+                    <div class="col-lg-12 product_banner_list flex_reverse_row p-0">
+                        <div class="row s_col_no_resize s_col_no_bgcolor no-gutters align-items-center">
+                            <div class="col-lg-8 align-self-stretch">
+                                <img src="/theme_clarico_vega/static/src/img/snippets/slider_styles/1900_800.png"
+                                     class="s_media_list_img h-100 w-100 image_hotspot_drop" alt=""/>
+                                <span class="banner-heading">
+                                    <section>
+                                        <div class="oe_structure"/>
+                                        <h2>Heading 6</h2>
+                                    </section>
+                                </span>
+                            </div>
+                            <div class="col-lg-4 py-0 align-self-stretch">
+                                <section class="h-100">
+                                    <t t-set="template_id"
+                                       t-value="request.env['slider.styles'].search([('style_template_key', '=', 'clarico_banner_slider_styles_template')])"/>
+                                    <div class="js_slider_snippet d-flex align-items-center h-100" name="product-slider"
+                                         data-isemipro='true' data-slider_type="slider"
+                                         data-exclude="data-limit,data-style" t-att-data-style="template_id.id"
+                                         data-limit="5"
+                                         data-ui_option="shopping_cart,wishlist,quick_view,sale_label,ratings">
+                                        <div class="css_non_editable_mode_hidden o_not_editable">
+                                            <div class="missing_option_warning alert alert-info rounded-0 fade show d-print-none">
+                                                Your Snippet data will be displayed here.This message is displayed
+                                                because you have not
+                                                configured the snippet yet.
+                                                <br/>
+                                                Check the document and video for the configuration.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <!--============== Product 2 Sliders ===================-->
+    <template id="product_multiple_sliders" name="Dual Product Slider">
+        <section>
+            <div class="container product_multiple_sliders flex_reverse_row">
+                <section class="row s_nb_column_fixed js_multi_slider align-items-end pt8 pb8">
+                    <div class="col-lg-4 product_col_sm align-self-stretch pr-0 align-items-end">
+                        <t t-set="template_id"
+                           t-value="request.env['slider.styles'].search([('style_template_key', '=', 'clarico_banner_slider_styles_template')])"/>
+                        <div class="js_slider_snippet d-flex align-self-end h-100 align-items-top" name="product-slider"
+                             data-isemipro='true' data-exclude="data-limit,data-style" data-limit="3"
+                             t-att-data-style="template_id.id"
+                             data-ui_option="shopping_cart,wishlist,quick_view,sale_label,ratings">
+                            <div class="css_non_editable_mode_hidden o_not_editable">
+                                <div class="missing_option_warning alert alert-info rounded-0 fade show d-print-none">
+                                    Your Snippet data will be displayed here.This message is displayed
+                                    because you have not
+                                    configured the snippet yet.
+                                    <br/>
+                                    Check the document and video for the configuration.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8 product_col_lg py-0 pl-0">
+                        <t t-set="template_id"
+                           t-value="request.env['slider.styles'].search([('style_template_key', '=', 'clarico_slider_styles_eight_template')])"/>
+                        <div class="js_slider_snippet" name="product-slider"
+                             data-isemipro='true' data-slider_type="slider" data-exclude="data-style"
+                             t-att-data-style="template_id.id"
+                             data-ui_option="shopping_cart,wishlist,quick_view,sale_label,ratings">
+                            <div class="css_non_editable_mode_hidden o_not_editable">
+                                <div class="missing_option_warning alert alert-info rounded-0 fade show d-print-none">
+                                    Your Snippet data will be displayed here.This message is displayed
+                                    because you have not
+                                    configured the snippet yet.
+                                    <br/>
+                                    Check the document and video for the configuration.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </template>
+
+    <!--====================== Row reverse option for banner slider style ====================-->
+    <template id="product_banner_list_options" inherit_id="website.snippet_options">
+        <xpath expr="." position="inside">
+            <div data-selector=".flex_reverse_row" data-target="> .row">
+                <we-button-group string="Layout">
+                    <we-button title="Left"
+                               data-name="media_left_opt"
+                               data-select-class=""
+                               data-img="/website/static/src/img/snippets_options/image_left.svg"/>
+                    <we-button title="Right"
+                               data-select-class="flex-row-reverse"
+                               data-img="/website/static/src/img/snippets_options/image_right.svg"/>
+                </we-button-group>
+            </div>
+        </xpath>
+    </template>
+
+    <!--============= 'Add to cart',Wishlist,Quick view icons ===================-->
+    <template id="product_slider_btn">
+        <t t-set="quick_view"
+           t-value="request.website.viewref('theme_clarico_vega.quickview_icon_shop_product_item').active"/>
+        <t t-if="'quick_view' in option">
+            <button title="Quick View" class="btn btn-secondary btn-sm quick-view-a te_quick_view"
+                    t-att-data-id="'%s' % product.id">
+                <span class="fa fa-eye"/>
+            </button>
+        </t>
+        <t t-call="theme_clarico_vega.t_show_wishlist"/>
+    </template>
+
+    <!--============== ===== Brand Slider Template 1 ===== =============-->
+    <template id="brand_slider_template_1" name="Brand Slider Template 1">
+        <span class="d-none group_website_designer" contenteditable="false" groups="website.group_website_designer"/>
+        <t t-call="theme_clarico_vega.slider_edit_message"/>
+        <section class="te_brand_slider slider_body o_not_editable">
+            <div class="container">
+                <t t-if="items">
+                    <div class="owl-slider">
+                        <div class="owl-carousel brand_carousel">
+                            <t t-foreach="items" t-as="brand">
+                                <div class="item te_brand_img">
+                                    <t t-if="brand.is_brand_page and brand.sudo().brand_page and brand.sudo().brand_page.website_published">
+                                        <t t-set="page_url" t-value="brand.sudo().brand_page.url"/>
+                                    </t>
+                                    <t t-else="">
+                                        <t t-set="page_url" t-value="'/shop?attrib=0-%s' %(brand.id)"/>
+                                    </t>
+                                    <a t-att-href="page_url" class="brand_link" t-att-title="brand.name">
+                                        <span t-field="brand.logo" class="brand_image text-center mx-auto"
+                                              t-options='{"widget": "image"}'/>
+                                        <div class="brand_name text-center" t-esc="brand.name"/>
+                                        <div class="product_count text-center"
+                                             t-if="display_product_count and brand.products_count">
+                                            <t t-esc="brand.products_count"/>
+                                            Products
+                                        </div>
+                                    </a>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </section>
+    </template>
+
+    <!--============== ===== Brand Slider Template 2 ===== =============-->
+    <template id="brand_slider_template_2" name="Brand Slider Template 2">
+        <span class="d-none group_website_designer" contenteditable="false" groups="website.group_website_designer"/>
+        <t t-call="theme_clarico_vega.slider_edit_message"/>
+        <section class="te_brand_slider slider_body o_not_editable">
+            <div class="container">
+                <t t-if="items">
+                    <div class="owl-slider">
+                        <div class="owl-carousel brand_carousel te_brand_slider_2">
+                            <t t-foreach="items" t-as="brand">
+                                <div class="item te_brand_img">
+                                    <t t-if="brand.is_brand_page and brand.sudo().brand_page and brand.sudo().brand_page.website_published">
+                                        <t t-set="page_url" t-value="brand.sudo().brand_page.url"/>
+                                    </t>
+                                    <t t-else="">
+                                        <t t-set="page_url" t-value="'/shop?attrib=0-%s' %(brand.id)"/>
+                                    </t>
+                                    <a t-att-href="page_url" class="brand_link" t-att-title="brand.name">
+                                        <div t-field="brand.logo" class="brand_image text-center mx-auto"
+                                             t-options='{"widget": "image"}'/>
+                                        <div class="brand-content clearfix">
+                                            <div class="brand_name" t-esc="brand.name"/>
+                                            <div class="product_count"
+                                                 t-if="display_product_count and brand.products_count">
+                                                <t t-esc="brand.products_count"/>
+                                                Products
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </section>
+    </template>
+
+    <!--============== ===== Brand Slider Template 3 ===== =============-->
+    <template id="brand_slider_template_3" name="Brand Slider Template 3">
+        <span class="d-none group_website_designer" contenteditable="false" groups="website.group_website_designer"/>
+        <t t-call="theme_clarico_vega.slider_edit_message"/>
+        <section class="brand_slider_3 te_brand_slider slider_body o_not_editable">
+            <div class="container">
+                <t t-if="items">
+                    <div class="te_brand_slider_3 row">
+                        <t t-foreach="items" t-as="brand">
+                            <div class="item te_brand_img col-md-2 col-4 d-flex align-content-center flex-wrap justify-content-center">
+                                <t t-if="brand.is_brand_page and brand.sudo().brand_page and brand.sudo().brand_page.website_published">
+                                    <t t-set="page_url" t-value="brand.sudo().brand_page.url"/>
+                                </t>
+                                <t t-else="">
+                                    <t t-set="page_url" t-value="'/shop?attrib=0-%s' %(brand.id)"/>
+                                </t>
+                                <a t-att-href="page_url" class="brand_link" t-att-title="brand.name">
+                                    <div t-field="brand.logo"
+                                         class="d-block brand_image text-center mx-auto t_img_hover_1 te_img_effect2"
+                                         t-options='{"widget": "image"}'/>
+                                    <div class="product_count text-center mt-2"
+                                         t-if="display_product_count and brand.products_count">
+                                        <t t-esc="brand.products_count"/>
+                                        Products
+                                    </div>
+                                </a>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </div>
+        </section>
+    </template>
+
+
+    <template id="t_foreach_category_slider">
+        <t t-foreach="items" t-as="category">
+            <div class="te_category_item item">
+                <t t-if="category.is_category_page and category.sudo().category_page and category.sudo().category_page.website_published">
+                    <t t-set="page_url" t-value="category.sudo().category_page.url"/>
+                </t>
+                <t t-else="">
+                    <t t-set="page_url" t-value="'/shop/category/%s'%slug(category)"/>
+                </t>
+                <a t-att-href="page_url">
+                    <div class="te_category_img t_img_hover_1 te_img_effect2">
+                        <img class="owl-lazy" t-if="category.image_256" src=""
+                             t-att-data-src="'data:image/png;base64,%s' % to_text(category.image_256)"/>
+                    </div>
+                    <span class="te_category_name" t-esc="category.name"/>
+                </a>
+            </div>
+        </t>
+    </template>
+
+    <!--============== ===== Category Slider Template 1 ===== =============-->
+    <template id="category_slider_template_1" name="Category Slider Template 1">
+        <span class="d-none group_website_designer" contenteditable="false" groups="website.group_website_designer"/>
+        <t t-call="theme_clarico_vega.slider_edit_message"/>
+        <section class="te_category_slider category_slider_template_1 slider_body o_not_editable">
+            <div class="container">
+                <t t-if="items">
+                    <div class="owl-carousel category_carousel">
+                        <t t-call="theme_clarico_vega.t_foreach_category_slider"/>
+                    </div>
+                </t>
+            </div>
+        </section>
+    </template>
+
+    <!--============== ===== Category Slider Template 2 ===== =============-->
+    <template id="category_slider_template_2" name="Category Slider Template 2">
+        <span class="d-none group_website_designer" contenteditable="false" groups="website.group_website_designer"/>
+        <t t-call="theme_clarico_vega.slider_edit_message"/>
+        <section class="te_category_slider category_slider_template_2 slider_body o_not_editable">
+            <div class="container">
+                <t t-if="items">
+                    <div class="owl-carousel category_carousel">
+                        <t t-call="theme_clarico_vega.t_foreach_category_slider"/>
+                    </div>
+                </t>
+            </div>
+        </section>
+    </template>
+
+    <!--============== ===== Category Slider Template 3 ===== =============-->
+    <template id="category_slider_template_3" name="Category Slider Template 3">
+        <span class="d-none group_website_designer" contenteditable="false" groups="website.group_website_designer"/>
+        <t t-call="theme_clarico_vega.slider_edit_message"/>
+        <section class="te_category_slider category_slider_template_3 slider_body o_not_editable">
+            <div class="container">
+                <t t-if="items">
+                    <div class="owl-carousel category_carousel">
+                        <t t-call="theme_clarico_vega.t_foreach_category_slider"/>
+                    </div>
+                </t>
+            </div>
+        </section>
+    </template>
+
+    <template id="slider_add_to_cart_ept" name="Slider Add To Cart Button">
+        <t t-set="ajax_cart"
+               t-value="request.website.viewref('theme_clarico_vega.ajaxcart_popup').active"/>
+        <t t-set="configurator_state"
+           t-value="request.env['ir.module.module'].sudo().search([['name', '=', 'sale_product_configurator']])"/>
+        <t t-if="configurator_state and configurator_state.state == 'installed'">
+            <a role="button"
+               t-attf-class="btn btn-secondary btn-sm a-submit not_product_page #{'ajax-add-to-cart' if product.optional_product_ids else ''} #{'ajax-cart-a' if ajax_cart else ''} #{'disabled out_of_stock' if product.type=='product' and not product.allow_out_of_stock_order and product.sudo().qty_available &lt; 1 else ''}"
+               title="Shopping cart"
+               t-att-id="'add_to_cart' if ajax_cart and not product.optional_product_ids else ''"
+               t-att-product-id="product.id"
+               t-att-variant-count="product.product_variant_count">
+                <span class="fa fa-shopping-cart"/>
+            </a>
+        </t>
+        <t t-else="">
+            <a role="button"
+               t-attf-class="btn btn-secondary btn-sm a-submit not_product_page  #{'ajax-cart-a' if ajax_cart else ''} #{'disabled out_of_stock' if product.type=='product' and not product.allow_out_of_stock_order and product.sudo().qty_available &lt; 1 else ''}"
+               title="Shopping cart"
+               t-att-id="'add_to_cart' if ajax_cart else ''"
+               t-att-product-id="product.id"
+               t-att-variant-count="product.product_variant_count">
+                <span class="fa fa-shopping-cart"/>
+            </a>
+        </t>
+    </template>
+</odoo>

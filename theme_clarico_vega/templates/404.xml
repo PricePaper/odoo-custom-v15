@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!--======================== 404 Page ==========================-->	
+	<template id="404_ept" inherit_id="http_routing.404">
+			<xpath expr="//div[hasclass('oe_empty')]" position="replace">
+				<div class="oe_structure oe_empty">
+					<div class="container page404">
+						<section>
+							<img class="te_404_img" src="/theme_clarico_vega/static/src/img/404/404-error-image.jpg" alt="404"></img>
+						</section>
+	           	        <p>The page you requested could not be found</p>
+	                    <ul class="mt16 mb32">
+	                        <li class="mr8"><a href="/" class="btn btn-primary te_theme_button">Homepage</a></li>
+	                        <li><a href="/contactus" class="btn btn-primary te_theme_button">Contact Us</a></li>
+	                    </ul>
+					</div>
+				</div>
+			</xpath>
+	</template>
+</odoo>

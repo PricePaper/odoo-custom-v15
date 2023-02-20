@@ -9,11 +9,13 @@
                     <sheet>
                         <group>
                             <group>
+                                <field name="product_id" readonly='1'/>
                                 <field name="duplicate_pricelist" widget='boolean_toggle'
                                        help="Duplicate customer product priclist lines with new product"/>
                             </group>
                             <group>
-                                <field name="product_id" readonly='1'/>
+                                <field name="is_alternate_product" widget='boolean_toggle'/>
+                                <field name="is_supercede_product" widget='boolean_toggle'/>
                             </group>
                         </group>
                         <separator string="New Product Details"/>
@@ -26,8 +28,8 @@
                                 <field name="new_cost" required='1'/>
                                 <field name="new_sale_uoms" widget="many2many_tags" required='1'/>
                                 <field name="new_uom" required='1'/>
-                                <field name="volume"/>
                                 <field name="weight"/>
+                                <field name="volume"/>
                             </group>
                         </group>
 

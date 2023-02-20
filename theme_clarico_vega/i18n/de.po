@@ -1,0 +1,4747 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* theme_clarico_vega
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-06 12:13+0000\n"
+"PO-Revision-Date: 2021-12-06 12:13+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_1
+msgid ""
+"\"Lorem ipsum dolor sit amet, eam et reque justo quidam, te est\n"
+"                                            audire\n"
+"                                            persius.\n"
+"                                            Duis meis quas vim ex\""
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_7
+msgid ""
+"\"Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.\n"
+"                                        Duis meis quas vim ex\""
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_timer_style_3
+msgid "$100"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_timer_style_3
+msgid "$500"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_4
+msgid ""
+"&amp;nbsp;<b>Lorem ipsum dolor sit\n"
+"                                    amet.\n"
+"                                </b> Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.\n"
+"                                    Duis meis quas vim ex, ius no oblique phaedrum pertinacia. Ornatus referrentur\n"
+"                                    nec cu, dicam dolore vivendum ne mea. Usu bonorum inermis efficiantur ad, nec at\n"
+"                                    detracto repudiandae, erat denique percipit at est."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_attributes_ept
+msgid "(Clear)"
+msgstr "(Löschen)"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_icon_style_3
+msgid "(Lorem)"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.website_pricefilter_ept
+msgid "(Reset)"
+msgstr "(Zurücksetzen)"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_website_form_options
+msgid ", .s_button"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.login_popup
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.register_popup
+msgid "- or -"
+msgstr "- oder -"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid "100% Money Back"
+msgstr "100% Geld zurück"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid "1000+"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.2_column_style6
+msgid "15 $"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid "20"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid "24/7 Online"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid "269"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid ""
+"30\n"
+"                                        <br/>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid "30 Day Money Back Guarantee."
+msgstr "30 Tage Geld-zurück-Garantie."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.404_ept
+msgid "404"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_extra_pages
+msgid "404 Page"
+msgstr "404-Seite"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid ""
+"<b class=\"o_default_snippet_text\">Great stories are for everyone even\n"
+"                                    when only written for just one person.\n"
+"                                </b>\n"
+"                                If you try to write with a wide general audience in mind, your story\n"
+"                                will ring false and be bland. No one will be interested. Write for one\n"
+"                                person. If it’s genuine for the one, it’s genuine for the rest."
+msgstr ""
+"<b class=\"o_default_snippet_text\">Große Geschichten sind für alle, auch wenn sie nur für eine Person geschrieben werden.\n"
+"                                </b>\n"
+"                                Wenn du versuchst, mit Blick auf ein breites Publikum zu schreiben, wird deine Geschichte falsch klingen und fade sein. Keiner wird sich dafür interessieren. Schreiben Sie für eine einzige Person. Wenn es für die eine Person echt ist, ist es auch für die anderen echt."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid ""
+"<b class=\"o_default_snippet_text\">Great stories have personality.</b>\n"
+"                                Consider telling a great story that provides personality. Writing a\n"
+"                                story with personality for potential clients will assists with making a\n"
+"                                relationship connection. This shows up in small quirks like word choices\n"
+"                                or phrases. Write from your point of view, not from someone else's\n"
+"                                experience."
+msgstr ""
+"<b class=\"o_default_snippet_text\">Große Geschichten haben Persönlichkeit.</b>\n"
+"                                Denken Sie daran, eine große Geschichte zu erzählen, die Persönlichkeit vermittelt. Wenn Sie eine Geschichte mit Persönlichkeit für potenzielle Kunden schreiben, hilft das dabei, eine Beziehung zu ihnen aufzubauen. Dies zeigt sich in kleinen Eigenheiten wie Wortwahl oder Formulierungen. Schreiben Sie aus Ihrer Sicht, nicht aus der Erfahrung eines anderen."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_2
+msgid ""
+"<b class=\"o_default_snippet_text\">Lorem ipsum dolor sit amet, eam et reque justo\n"
+"                                    quidam, te est audire persius.\n"
+"                                </b>\n"
+"                                Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.\n"
+"                                Duis\n"
+"                                meis\n"
+"                                quas vim ex, ius no oblique phaedrum pertinacia. Ornatus referrentur nec cu,\n"
+"                                dicam\n"
+"                                dolore vivendum ne mea,"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_2
+msgid ""
+"<b class=\"o_default_snippet_text\">Lorem ipsum dolor sit amet.</b>\n"
+"                                    Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.\n"
+"                                    Duis meis\n"
+"                                    quas vim ex, ius no oblique phaedrum pertinacia. Ornatus referrentur nec cu,\n"
+"                                    dicam\n"
+"                                    dolore vivendum ne mea. Usu bonorum inermis efficiantur ad, nec at detracto\n"
+"                                    repudiandae,\n"
+"                                    erat denique percipit at est.&amp;nbsp;"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_2
+msgid ""
+"<b class=\"o_default_snippet_text\">Lorem ipsum dolor sit amet.</b>\n"
+"                                Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.\n"
+"                                Duis\n"
+"                                meis\n"
+"                                quas vim ex, ius no oblique phaedrum pertinacia. Ornatus referrentur nec cu,\n"
+"                                dicam\n"
+"                                dolore vivendum ne mea. Usu bonorum inermis efficiantur ad, nec at detracto\n"
+"                                repudiandae,\n"
+"                                erat denique percipit at est."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_2
+msgid ""
+"<b class=\"px-2 mb32 te_emp_content d-block o_default_snippet_text\">-Lorem\n"
+"                                    </b>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customers_carousel_1
+msgid "<b class=\"px-2 mb32 te_emp_content d-block\">-Lorem</b>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"<b>\n"
+"                                    <font style=\"font-size: 24px;\">Frequently asked questions</font>\n"
+"                                </b>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"<b>\n"
+"                                    <font style=\"font-size: 24px;\">Our Support</font>\n"
+"                                </b>"
+msgstr ""
+"<b>\n"
+"                                    <font style=\"font-size: 24px;\">Unsere Unterstützung</font>\n"
+"                                </b>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_tabs_ept
+msgid ""
+"<b>Lorem ipsum dolor phaedrum</b>\n"
+"                                        Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.\n"
+"                                        Duis meis quas vim ex, ius no oblique phaedrum pertinacia. Ornatus referrentur\n"
+"                                        nec cu, dicam dolore vivendum ne mea. Usu bonorum inermis efficiantur ad, nec at\n"
+"                                        detracto repudiandae, erat denique percipit at est."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_tabs_ept
+msgid ""
+"<b>Lorem ipsum dolor sit amet, eam et reque justo quidam, Duis meis quas vim\n"
+"                                            ex,\n"
+"                                        </b>\n"
+"                                        Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.\n"
+"                                        Duis meis quas vim ex, ius no oblique phaedrum pertinacia. Ornatus referrentur\n"
+"                                        nec cu, dicam dolore vivendum ne mea."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_text_block
+msgid ""
+"<b>Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.</b>\n"
+"                                Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius. Duis meis\n"
+"                                quas vim ex, ius no oblique phaedrum pertinacia. Ornatus referrentur nec cu, dicam\n"
+"                                dolore vivendum ne mea,"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_3
+msgid ""
+"<b>Lorem ipsum dolor sit amet.</b>\n"
+"                                    Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.\n"
+"                                    Duis meis\n"
+"                                    quas vim ex, ius no oblique phaedrum pertinacia. Ornatus referrentur nec cu,\n"
+"                                    dicam\n"
+"                                    dolore vivendum ne mea. Usu bonorum inermis efficiantur ad, nec at detracto\n"
+"                                    repudiandae,\n"
+"                                    erat denique percipit at est.&amp;nbsp;"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_text_block
+msgid ""
+"<b>Lorem ipsum dolor sit amet.</b>\n"
+"                                Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius. Duis meis\n"
+"                                quas vim ex, ius no oblique phaedrum pertinacia. Ornatus referrentur nec cu, dicam\n"
+"                                dolore vivendum ne mea. Usu bonorum inermis efficiantur ad, nec at detracto repudiandae,\n"
+"                                erat denique percipit at est."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_call_to_action_ept
+msgid ""
+"<b>My</b>\n"
+"                                Heading 3"
+msgstr ""
+"<b>My</b>\n"
+"                                Überschrift 3"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid "<font style=\"font-size: 24px;\">Who We Are</font>"
+msgstr "<font style=\"font-size: 24px;\">Wer wir sind</font>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_3
+msgid ""
+"<font style=\"font-size: 36px;\">Leading Heads</font>\n"
+"                                    <br/>"
+msgstr ""
+"<font style=\"font-size: 36px;\">Führende Köpfe</font>\n"
+"                                    <br/>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_2
+msgid ""
+"<font style=\"font-size: 36px;\">Meet the team</font>\n"
+"                                    <br/>"
+msgstr ""
+"<font style=\"font-size: 36px;\">Mit dem Team</font>\n"
+"                                    <br/>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_4
+msgid ""
+"<font style=\"font-size: 36px;\">Our Team</font>\n"
+"                                    <br/>"
+msgstr ""
+"<font style=\"font-size: 36px;\">Unser Team</font>\n"
+"                                    <br/>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid "<font style=\"font-size: 36px;\">What Our Client Says</font>"
+msgstr "<font style=\"font-size: 36px;\">Was unser Kunde sagt</font>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_3
+msgid ""
+"<font style=\"font-size: 48px;\">Meet Our Team</font>\n"
+"                                    <br/>"
+msgstr ""
+"<font style=\"font-size: 48px;\">Mit dem Team</font>\n"
+"                                    <br/>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_9
+msgid "<font>Lorem 30%</font>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.banner_ept
+msgid ""
+"<font>Lorem ipsum dolor sit amet, eam viris essent dissentiet at</font>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_title_5_ept
+msgid ""
+"<i class=\"fa fa-address-book-o\"/>\n"
+"                            - Lorem ipsum"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_10
+msgid ""
+"<i class=\"fa fa-check\"/>\n"
+"                                    Lorem ipsum &amp; dolor sit amet, eam et reque"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_10
+msgid "<i class=\"fa fa-check\"/>Lorem ipsum dolor"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_10
+msgid "<i class=\"fa fa-check\"/>Lorem phaedrum"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_10
+msgid ""
+"<i class=\"fa fa-check\"/>bonorum &amp; inermis\n"
+"                                    efficiantur"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_vega
+msgid ""
+"<i class=\"fa fa-cogs\"/>\n"
+"                Service Plan"
+msgstr ""
+"<i class=\"fa fa-cogs\"/>\n"
+"                Dienst plan"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_vega
+msgid ""
+"<i class=\"fa fa-columns\"/>\n"
+"                2 Columns"
+msgstr ""
+"<i class=\"fa fa-columns\"/>\n"
+"                2 Spalten"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_vega
+msgid ""
+"<i class=\"fa fa-columns\"/>\n"
+"                3 Columns"
+msgstr ""
+"<i class=\"fa fa-columns\"/>\n"
+"                3 Säulen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_vega
+msgid ""
+"<i class=\"fa fa-columns\"/>\n"
+"                4 Columns"
+msgstr ""
+"<i class=\"fa fa-columns\"/>\n"
+"                4 Spalten"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_vega
+msgid ""
+"<i class=\"fa fa-file\"/>\n"
+"                Dynamic Snippets"
+msgstr ""
+"<i class=\"fa fa-file\"/>\n"
+"                Dynamische Schnipsel"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_extra_pages
+msgid ""
+"<i class=\"fa fa-file-text-o\"/>\n"
+"                Clarico Extra Pages"
+msgstr ""
+"<i class=\"fa fa-file-text-o\"/>\n"
+"                Clarico Extra Seiten"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_attributes_ept
+msgid ""
+"<i class=\"fa fa-filter mr-1\"/>\n"
+"                Quick Filter"
+msgstr ""
+"<i class=\"fa fa-filter mr-1\"/>\n"
+"                Schnell filter"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.portal_my_quotations_ept
+msgid "<i class=\"fa fa-fw fa-clock-o\"/> Expired"
+msgstr "<i class=\"fa fa-fw fa-clock-o\"/> Abgelaufen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.portal_my_quotations_ept
+msgid "<i class=\"fa fa-fw fa-remove\"/> Cancelled"
+msgstr "<i class=\"fa fa-fw fa-remove\"/> Abgebrochen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_col_style_13
+msgid "<i class=\"fa fa-play te_play_icon\"/>Play Video"
+msgstr "<i class=\"fa fa-play te_play_icon\"/>Video abspielen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_wishlist_ept
+msgid ""
+"<i class=\"fa fa-shopping-cart mr4\"/>\n"
+"                                        <span class=\"d-none d-md-inline\">Add to Cart</span>"
+msgstr ""
+"<i class=\"fa fa-shopping-cart mr4\"/>\n"
+"                                        <span class=\"d-none d-md-inline\">Zum Warenkorb hinzufügen</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_vega
+msgid ""
+"<i class=\"fa fa-sliders-h\"/>\n"
+"                Sliders"
+msgstr ""
+"<i class=\"fa fa-sliders-h\"/>\n"
+"                Schieberegler"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.label_inner_snippet
+msgid "<i class=\"fa fa-tag\"/>Recommended"
+msgstr "<i class=\"fa fa-tag\"/>Empfohlen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_vega
+msgid ""
+"<i class=\"fa fa-tags\"/>\n"
+"                Offers"
+msgstr ""
+"<i class=\"fa fa-tags\"/>\n"
+"                Angebote"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_10
+msgid ""
+"<i class=\"fa fa-times\"/>\n"
+"                                    Lorem ipsum"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_10
+msgid "<i class=\"fa fa-times\"/>Lorem ipsum dolor sit amet"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_vega
+msgid ""
+"<i class=\"fa fa-users\"/>\n"
+"                Customer Testimonial"
+msgstr ""
+"<i class=\"fa fa-users\"/>\n"
+"                Erfahrungsbericht eines Kunden"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_vega
+msgid ""
+"<i class=\"fa fa-users\"/>\n"
+"                Team"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.ajax_cart_success_template
+msgid "<span class=\"\">Continue Shopping</span>"
+msgstr "<span class=\"\">Weiter einkaufen</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.ajax_cart_success_template
+msgid ""
+"<span class=\"\">Process Checkout</span>\n"
+"                                <span class=\"fa fa-chevron-right\"/>"
+msgstr ""
+"<span class=\"\">Kasse bearbeiten</span>\n"
+"                                <span class=\"fa fa-chevron-right\"/>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_ept
+msgid ""
+"<span class=\"align-middle te_prod_fltr_count\" style=\"padding-right: 8px;\">Product(s) Found\n"
+"                        </span>"
+msgstr ""
+"<span class=\"align-middle te_prod_fltr_count\" style=\"padding-right: 8px;\">Produkt(e) gefunden \n"
+"                        </span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_13
+msgid ""
+"<span class=\"carousel-control-next-icon t_left_to_right_arrow\"/>\n"
+"                        <span class=\"sr-only o_default_snippet_text\">Next</span>"
+msgstr ""
+"<span class=\"carousel-control-next-icon t_left_to_right_arrow\"/>\n"
+"                        <span class=\"sr-only o_default_snippet_text\">Nächster</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_5
+msgid ""
+"<span class=\"carousel-control-next-icon te_arrow_top\"/>\n"
+"                        <span class=\"sr-only o_default_snippet_text\">Next</span>"
+msgstr ""
+"<span class=\"carousel-control-next-icon te_arrow_top\"/>\n"
+"                        <span class=\"sr-only o_default_snippet_text\">Nächste</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.landing_page_3
+msgid ""
+"<span class=\"carousel-control-next-icon\"/>\n"
+"                                <span class=\"sr-only o_default_snippet_text\">Next</span>"
+msgstr ""
+"<span class=\"carousel-control-next-icon\"/>\n"
+"                                <span class=\"sr-only o_default_snippet_text\">Nächste</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_9
+msgid ""
+"<span class=\"carousel-control-next-icon\"/>\n"
+"                                <span class=\"sr-only\">Next</span>"
+msgstr ""
+"<span class=\"carousel-control-next-icon\"/>\n"
+"                                <span class=\"sr-only\">Nächste</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.carouse_slider
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_10
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_14
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_7
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_8
+msgid ""
+"<span class=\"carousel-control-next-icon\"/>\n"
+"                        <span class=\"sr-only\">Next</span>"
+msgstr ""
+"<span class=\"carousel-control-next-icon\"/>\n"
+"                        <span class=\"sr-only\">Nächste</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_quotes_carousel_ept
+msgid ""
+"<span class=\"carousel-control-next-icon\"/>\n"
+"                    <span class=\"sr-only\">Next</span>"
+msgstr ""
+"<span class=\"carousel-control-next-icon\"/>\n"
+"                    <span class=\"sr-only\">Nächste</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_13
+msgid ""
+"<span class=\"carousel-control-prev-icon t_left_to_right_arrow\"/>\n"
+"                        <span class=\"sr-only o_default_snippet_text\">Previous</span>"
+msgstr ""
+"<span class=\"carousel-control-prev-icon t_left_to_right_arrow\"/>\n"
+"                        <span class=\"sr-only o_default_snippet_text\">Vorheriges</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_5
+msgid ""
+"<span class=\"carousel-control-prev-icon te_arrow_top\"/>\n"
+"                        <span class=\"sr-only o_default_snippet_text\">Previous</span>"
+msgstr ""
+"<span class=\"carousel-control-prev-icon te_arrow_top\"/>\n"
+"                        <span class=\"sr-only o_default_snippet_text\">Vorherige</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.landing_page_3
+msgid ""
+"<span class=\"carousel-control-prev-icon\"/>\n"
+"                                <span class=\"sr-only o_default_snippet_text\">Previous</span>"
+msgstr ""
+"<span class=\"carousel-control-prev-icon\"/>\n"
+"                                <span class=\"sr-only o_default_snippet_text\">Vorheriges</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_9
+msgid ""
+"<span class=\"carousel-control-prev-icon\"/>\n"
+"                                <span class=\"sr-only\">Previous</span>"
+msgstr ""
+"<span class=\"carousel-control-prev-icon\"/>\n"
+"                                <span class=\"sr-only\">Vorheriges</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.carouse_slider
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_10
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_14
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_7
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_8
+msgid ""
+"<span class=\"carousel-control-prev-icon\"/>\n"
+"                        <span class=\"sr-only\">Previous</span>"
+msgstr ""
+"<span class=\"carousel-control-prev-icon\"/>\n"
+"                        <span class=\"sr-only\">Vorherige</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_quotes_carousel_ept
+msgid ""
+"<span class=\"carousel-control-prev-icon\"/>\n"
+"                    <span class=\"sr-only\">Previous</span>"
+msgstr ""
+"<span class=\"carousel-control-prev-icon\"/>\n"
+"                    <span class=\"sr-only\">Vorherige</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.website_pricefilter_ept
+msgid ""
+"<span class=\"ept_price_slider_error\"/>\n"
+"                            <span class=\"w-100 btn btn-primary mt16 rounded py-1\" id=\"price_slider_filter\">Apply\n"
+"                                Filter\n"
+"                            </span>"
+msgstr ""
+"<span class=\"ept_price_slider_error\"/>\n"
+"                            <span class=\"w-100 btn btn-primary mt16 rounded py-1\" id=\"price_slider_filter\">Filter \n"
+"                                Anwenden\n"
+"                            </span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_s_card_ept
+msgid ""
+"<span class=\"fa fa-1x fa-clock-o mr8\"/>\n"
+"                    <small>2 Lorem sit</small>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.picture_ept
+msgid ""
+"<span class=\"fa fa-1x fa-picture-o mr-2\"/>Add a caption to enhance the meaning of this\n"
+"                                    image."
+msgstr ""
+"<span class=\"fa fa-1x fa-picture-o mr-2\"/>Fügen Sie eine Beschriftung "
+"hinzu, um die Bedeutung dieses Bildes zu verdeutlichen."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customers_3
+msgid ""
+"<span class=\"fa fa-4x fa-quote-left\"/>\n"
+"                                Lorem ipsum dolor sit amet, eam et reque justo quidam, audire Lorem ipsum dolor sit\n"
+"                                amet, eam et reque justo quidam, audire Lorem ipsum dolor sit amet, eam et reque justo\n"
+"                                quidam, audire"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid ""
+"<span class=\"fa fa-5x fa-quote-left pr16 te_quotes_icon\"/>\n"
+"                                                            Lorem ipsum dolor sit amet, eam et reque\n"
+"                                                            justo quidam, te est\n"
+"                                                            audire persius. Duis meis quas vim ex, ius\n"
+"                                                            no oblique phaedrum\n"
+"                                                            pertinacia. Lorem ipsum dolor sit amet, eam\n"
+"                                                            et reque justo\n"
+"                                                            quidam, te est audire persius.\n"
+"                                                            <span class=\"fa fa-quote-right te_quotes_icon_right\"/>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customers_carousel_2
+msgid ""
+"<span class=\"fa fa-5x fa-quote-left pr16 te_quotes_icon\"/>\n"
+"                                            Lorem ipsum dolor sit amet, eam et reque justo quidam, te\n"
+"                                            est\n"
+"                                            audire persius. Duis meis quas vim ex, ius no oblique\n"
+"                                            phaedrum\n"
+"                                            pertinacia. Lorem ipsum dolor sit amet, eam et reque justo\n"
+"                                            quidam, te est audire persius.\n"
+"                                            <span class=\"fa fa-quote-right te_quotes_icon_right\"/>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.ajax_cart_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_sticky_details_container
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.quick_view_template
+msgid ""
+"<span class=\"fa fa-bolt\"/>\n"
+"                                        Buy Now"
+msgstr ""
+"<span class=\"fa fa-bolt\"/>\n"
+"                                        Jetzt kaufen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_shipping_info
+msgid ""
+"<span class=\"fa fa-clock-o text-black mr-1\"/>\n"
+"                        <span>Shipping: 2-3 Days</span>"
+msgstr ""
+"<span class=\"fa fa-clock-o text-black mr-1\"/>\n"
+"                        <span>Versand: 2-3 Tage</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.google_map_snippet_snippet_options
+msgid ""
+"<span class=\"fa fa-clock-o\"/>\n"
+"                        Add Below Details"
+msgstr ""
+"<span class=\"fa fa-clock-o\"/>\n"
+"                        Unten Details hinzufügen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.html_content_tabs_ept
+msgid ""
+"<span class=\"fa fa-file-text mr-2\"/>\n"
+"                                                <span class=\"nav_tab_title\">Documents</span>"
+msgstr ""
+"<span class=\"fa fa-file-text mr-2\"/>\n"
+"                                                <span class=\"nav_tab_title\">Dokumente</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_five_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_one_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_six_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_add_to_wishlist_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_slider_btn
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_sticky_gallary
+msgid "<span class=\"fa fa-heart\" role=\"img\" aria-label=\"Add to wishlist\"/>"
+msgstr ""
+"<span class=\"fa fa-heart\" role=\"img\" aria-label=\"Zur Wunschliste "
+"hinzufügen\"/>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_shipping_info
+msgid ""
+"<span class=\"fa fa-money text-black mr-1\"/>\n"
+"                        <span>30-day money-back</span>"
+msgstr ""
+"<span class=\"fa fa-money text-black mr-1\"/>\n"
+"                        <span>30 Tage Geld-zurück</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_2
+msgid ""
+"<span class=\"fa fa-pie-chart\"/>\n"
+"                                                        <span class=\"te_user_drop_item\">My orders</span>"
+msgstr ""
+"<span class=\"fa fa-pie-chart\"/>\n"
+"                                                        <span class=\"te_user_drop_item\">Meine Bestellungen</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_5
+msgid ""
+"<span class=\"fa fa-pie-chart\"/>\n"
+"                                                <span class=\"te_user_drop_item\">My orders</span>"
+msgstr ""
+"<span class=\"fa fa-pie-chart\"/>\n"
+"                                                <span class=\"te_user_drop_item\">Meine Bestellungen</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_4
+msgid ""
+"<span class=\"fa fa-pie-chart\"/>\n"
+"                                            <span class=\"te_user_drop_item\">My orders</span>"
+msgstr ""
+"<span class=\"fa fa-pie-chart\"/>\n"
+"                                            <span class=\"te_user_drop_item\">Meine Bestellungen</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_10
+msgid ""
+"<span class=\"fa fa-pie-chart\"/>\n"
+"                                        <span class=\"te_user_drop_item\">My orders\n"
+"                                        </span>"
+msgstr ""
+"<span class=\"fa fa-pie-chart\"/>\n"
+"                                        <span class=\"te_user_drop_item\">Meine Bestellungen\n"
+"                                        </span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_1
+msgid ""
+"<span class=\"fa fa-pie-chart\"/>\n"
+"                                        <span class=\"te_user_drop_item\">My orders</span>"
+msgstr ""
+"<span class=\"fa fa-pie-chart\"/>\n"
+"                                        <span class=\"te_user_drop_item\">Meine Bestellungen</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_9
+msgid ""
+"<span class=\"fa fa-pie-chart\"/>\n"
+"                                    <span class=\"te_user_drop_item\">My\n"
+"                                        orders\n"
+"                                    </span>"
+msgstr ""
+"<span class=\"fa fa-pie-chart\"/>\n"
+"                                    <span class=\"te_user_drop_item\">Meine Bestellungen\n"
+"                                    </span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_8
+msgid ""
+"<span class=\"fa fa-pie-chart\"/>\n"
+"                                    <span class=\"te_user_drop_item\">My orders</span>"
+msgstr ""
+"<span class=\"fa fa-pie-chart\"/>\n"
+"                                    <span class=\"te_user_drop_item\">Meine Bestellungen</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_7
+msgid ""
+"<span class=\"fa fa-pie-chart\"/>\n"
+"                                <span class=\"te_user_drop_item\">My\n"
+"                                    orders\n"
+"                                </span>"
+msgstr ""
+"<span class=\"fa fa-pie-chart\"/>\n"
+"                                <span class=\"te_user_drop_item\">Meine Bestellungen\n"
+"                                </span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_five_template
+msgid ""
+"<span class=\"fa fa-shopping-cart\"/>\n"
+"                                                                    Add to Cart"
+msgstr ""
+"<span class=\"fa fa-shopping-cart\"/>\n"
+"                                                                    Zum Warenkorb hinzufügen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_six_template
+msgid ""
+"<span class=\"fa fa-shopping-cart\"/>\n"
+"                                                                Add to Cart"
+msgstr ""
+"<span class=\"fa fa-shopping-cart\"/>\n"
+"                                                                In den Warenkorb legen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.quick_view_template
+msgid ""
+"<span class=\"fa fa-shopping-cart\"/>\n"
+"                                        Add to Cart"
+msgstr ""
+"<span class=\"fa fa-shopping-cart\"/>\n"
+"                                        Zum Warenkorb hinzufügen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.ajax_cart_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_sticky_details_container
+msgid ""
+"<span class=\"fa fa-shopping-cart\"/>\n"
+"                                    Add to Cart"
+msgstr ""
+"<span class=\"fa fa-shopping-cart\"/>\n"
+"                                    Zum Warenkorb hinzufügen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_2
+msgid ""
+"<span class=\"fa fa-sign-out\"/>\n"
+"                                                        <span class=\"te_user_drop_item\">Logout</span>"
+msgstr ""
+"<span class=\"fa fa-sign-out\"/>\n"
+"                                                        <span class=\"te_user_drop_item\">Abmelden</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_5
+msgid ""
+"<span class=\"fa fa-sign-out\"/>\n"
+"                                                <span class=\"te_user_drop_item\">Logout</span>"
+msgstr ""
+"<span class=\"fa fa-sign-out\"/>\n"
+"                                                <span class=\"te_user_drop_item\">Abmelden</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_4
+msgid ""
+"<span class=\"fa fa-sign-out\"/>\n"
+"                                            <span class=\"te_user_drop_item\">Logout</span>"
+msgstr ""
+"<span class=\"fa fa-sign-out\"/>\n"
+"                                            <span class=\"te_user_drop_item\">Abmelden</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_10
+msgid ""
+"<span class=\"fa fa-sign-out\"/>\n"
+"                                        <span class=\"te_user_drop_item\">Logout</span>"
+msgstr ""
+"<span class=\"fa fa-sign-out\"/>\n"
+"                                        <span class=\"te_user_drop_item\">Abmelden</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_8
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_9
+msgid ""
+"<span class=\"fa fa-sign-out\"/>\n"
+"                                    <span class=\"te_user_drop_item\">Logout</span>"
+msgstr ""
+"<span class=\"fa fa-sign-out\"/>\n"
+"                                    <span class=\"te_user_drop_item\">Abmelden</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_7
+msgid ""
+"<span class=\"fa fa-sign-out\"/>\n"
+"                                <span class=\"te_user_drop_item\">Logout</span>"
+msgstr ""
+"<span class=\"fa fa-sign-out\"/>\n"
+"                                <span class=\"te_user_drop_item\">Abmelden</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.html_content_tabs_ept
+msgid ""
+"<span class=\"fa fa-sliders mr-2\"/>\n"
+"                                            <span class=\"nav_tab_title\">Description</span>"
+msgstr ""
+"<span class=\"fa fa-sliders mr-2\"/>\n"
+"                                            <span class=\"nav_tab_title\">Beschreibung</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.html_content_tabs_ept
+msgid ""
+"<span class=\"fa fa-sort-amount-desc mr-2\"/>\n"
+"                                                <span class=\"nav_tab_title\">Specification</span>"
+msgstr ""
+"<span class=\"fa fa-sort-amount-desc mr-2\"/>\n"
+"                                                <span class=\"nav_tab_title\">Spezifikation</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.html_content_tabs_ept
+msgid ""
+"<span class=\"fa fa-star mr-2\"/>\n"
+"                                                <span class=\"nav_tab_title\">Ratings and Reviews</span>"
+msgstr ""
+"<span class=\"fa fa-star mr-2\"/>\n"
+"                                                <span class=\"nav_tab_title\">Bewertungen und Rezensionen</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.quick_view_template
+msgid ""
+"<span class=\"fa fa-star\"/>\n"
+"                                <span class=\"product-separator\">|</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_item_ept
+msgid ""
+"<span class=\"fa fa-star\"/>\n"
+"                <span class=\"product-separator\">|</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_shipping_info
+msgid ""
+"<span class=\"fa fa-undo text-black mr-1\"/>\n"
+"                        <span>7-day returns</span>"
+msgstr ""
+"<span class=\"fa fa-undo text-black mr-1\"/>\n"
+"                        <span>7 Tage Rückgabe</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_2
+msgid ""
+"<span class=\"fa fa-user\"/>\n"
+"                                                        <span class=\"te_user_drop_item\">My Account</span>"
+msgstr ""
+"<span class=\"fa fa-user\"/>\n"
+"                                                        <span class=\"te_user_drop_item\">Mein Konto</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_5
+msgid ""
+"<span class=\"fa fa-user\"/>\n"
+"                                                <span class=\"te_user_drop_item\">My Account</span>"
+msgstr ""
+"<span class=\"fa fa-user\"/>\n"
+"                                                <span class=\"te_user_drop_item\">Mein Konto</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_4
+msgid ""
+"<span class=\"fa fa-user\"/>\n"
+"                                            <span class=\"te_user_drop_item\">My Account</span>"
+msgstr ""
+"<span class=\"fa fa-user\"/>\n"
+"                                            <span class=\"te_user_drop_item\">Mein Konto</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_1
+msgid ""
+"<span class=\"fa fa-user\"/>\n"
+"                                        <span class=\"te_user_drop_item\">My Account</span>"
+msgstr ""
+"<span class=\"fa fa-user\"/>\n"
+"                                        <span class=\"te_user_drop_item\">Mein Konto</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_8
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_9
+msgid ""
+"<span class=\"fa fa-user\"/>\n"
+"                                    <span class=\"te_user_drop_item\">My\n"
+"                                        Account\n"
+"                                    </span>"
+msgstr ""
+"<span class=\"fa fa-user\"/>\n"
+"                                    <span class=\"te_user_drop_item\">Mein Konto\n"
+"                                    </span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_7
+msgid ""
+"<span class=\"fa fa-user\"/>\n"
+"                                <span class=\"te_user_drop_item\">My\n"
+"                                    Account\n"
+"                                </span>"
+msgstr ""
+"<span class=\"fa fa-user\"/>\n"
+"                                <span class=\"te_user_drop_item\">My\n"
+"                                    Konto\n"
+"                                </span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_10
+msgid ""
+"<span class=\"fa fa-user-o\"/>\n"
+"                                        <span class=\"te_user_drop_item\">My Account\n"
+"                                        </span>"
+msgstr ""
+"<span class=\"fa fa-user-o\"/>\n"
+"                                        <span class=\"te_user_drop_item\">Mein Konto                                        </span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_ept
+msgid "<span class=\"filters-title-ept\">Filters</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.website_pricefilter_ept
+msgid "<span class=\"m-0 te_pricerange_title\">Price Range</span>"
+msgstr "<span class=\"m-0 te_pricerange_title\">Preisbereich</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.address_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.portal_my_details_custom
+msgid "<span class=\"mb16 d-block text-danger\">* are required fields</span>"
+msgstr "<span class=\"mb16 d-block text-danger\">* sind Pflichtfelder</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_4
+msgid "<span class=\"o_default_snippet_text\">Lorem ipsum</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+msgid ""
+"<span class=\"o_default_snippet_text\">My Heading</span>\n"
+"                                3"
+msgstr ""
+"<span class=\"o_default_snippet_text\">Meine Überschrift</span>\n"
+"                                3"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.variants_ept
+msgid ""
+"<span class=\"pull-left te_show_variants\">Customize</span>\n"
+"                    <span class=\"pull-right\">\n"
+"                        <i class=\"fa fa-caret-down\"/>\n"
+"                    </span>"
+msgstr ""
+"<span class=\"pull-left te_show_variants\">Anpassen</span>\n"
+"                    <span class=\"pull-right\">\n"
+"                        <i class=\"fa fa-caret-down\"/>\n"
+"                    </span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_icon
+msgid "<span class=\"te_4_col_readmore\">Read More</span>"
+msgstr "<span class=\"te_4_col_readmore\">Weiter lesen</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid "<span class=\"te_cost_validity o_default_snippet_text\">/ Lorem</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_pricing
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_comparisons_ept
+msgid "<span class=\"te_cost_validity\">/ Lorem</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.number_counter
+msgid "<span class=\"te_count_value\">1000</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.number_counter
+msgid "<span class=\"te_count_value\">10</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.number_counter
+msgid "<span class=\"te_count_value\">154</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.number_counter
+msgid "<span class=\"te_count_value\">200</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.number_counter
+msgid "<span class=\"te_count_value\">853</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.number_counter
+msgid "<span class=\"te_count_value\">87</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_attributes_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_ept
+msgid "<span class=\"te_filter_icon_close\">x</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_1
+msgid ""
+"<span class=\"te_name_name o_default_snippet_text\">Lorem ipsum\n"
+"                                                </span>\n"
+"                                                <span class=\"te_name_designation o_default_snippet_text\">-\n"
+"                                                    position\n"
+"                                                </span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_7
+msgid ""
+"<span class=\"te_name_name\">Lorem ipsum</span>\n"
+"                                            <span class=\"te_name_designation\">- position</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customers_3
+msgid ""
+"<span class=\"te_name_name\">Lorem ipsum</span>\n"
+"                                    <span class=\"te_name_designation\">- position</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.option_pill_style
+msgid "<span class=\"te_pill_category_text d-inline-block\">All Products</span>"
+msgstr "<span class=\"te_pill_category_text d-inline-block\">Alle Produkte</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_10
+msgid ""
+"<span class=\"te_price_fsize\">\n"
+"                                    <sup class=\"te_3_col_price_currency\">$</sup>\n"
+"                                    35\n"
+"                                </span>\n"
+"                                <br/>\n"
+"                                <span class=\"te_days\">15 Days</span>"
+msgstr ""
+"<span class=\"te_price_fsize\">\n"
+"                                    <sup class=\"te_3_col_price_currency\">$</sup>\n"
+"                                    35\n"
+"                                </span>\n"
+"                                <br/>\n"
+"                                <span class=\"te_days\">15 Tage</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_10
+msgid ""
+"<span class=\"te_price_fsize\">\n"
+"                                    <sup class=\"te_3_col_price_currency\">$</sup>\n"
+"                                    55\n"
+"                                </span>\n"
+"                                <br/>\n"
+"                                <span class=\"te_days\">29 Days</span>"
+msgstr ""
+"<span class=\"te_price_fsize\">\n"
+"                                    <sup class=\"te_3_col_price_currency\">$</sup>\n"
+"                                    55\n"
+"                                </span>\n"
+"                                <br/>\n"
+"                                <span class=\"te_days\">29 Tage</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_10
+msgid ""
+"<span class=\"te_price_fsize\">\n"
+"                                    <sup class=\"te_3_col_price_currency\">$</sup>\n"
+"                                    90\n"
+"                                </span>\n"
+"                                <br/>\n"
+"                                <span class=\"te_days\">55 Days</span>"
+msgstr ""
+"<span class=\"te_price_fsize\">\n"
+"                                    <sup class=\"te_3_col_price_currency\">$</sup>\n"
+"                                    90\n"
+"                                </span>\n"
+"                                <br/>\n"
+"                                <span class=\"te_days\">55 Tage</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_12
+msgid ""
+"<span class=\"te_price_s4\">\n"
+"                                    <sup class=\"\">$</sup>\n"
+"                                    35\n"
+"                                </span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_12
+msgid ""
+"<span class=\"te_price_s4\">\n"
+"                                    <sup class=\"\">$</sup>\n"
+"                                    55\n"
+"                                </span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_12
+msgid ""
+"<span class=\"te_price_s4\">\n"
+"                                    <sup class=\"\">$</sup>\n"
+"                                    90\n"
+"                                </span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_ept
+msgid ""
+"<span class=\"te_quick_filter_dropdown btn te_sort_btn\">Quick Filter</span>"
+msgstr ""
+"<span class=\"te_quick_filter_dropdown btn te_sort_btn\">Schnell "
+"filter</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_attributes_ept
+msgid "<span class=\"te_res_filter_title d-none\">Quick Filter</span>"
+msgstr "<span class=\"te_res_filter_title d-none\">Schnell filter</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_price
+msgid ""
+"<span class=\"te_sign\">$</span>\n"
+"                                <span class=\"te_price\">359.99</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_3
+msgid ""
+"<span class=\"te_team_6_tel\">\n"
+"                                            <span class=\"fa fa-phone mt16 o_default_snippet_text\">1234567890</span>\n"
+"                                        </span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_6
+msgid ""
+"<span class=\"te_team_6_tel\">\n"
+"                                    <span class=\"fa fa-phone mt16\">1234567890</span>\n"
+"                                </span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_2
+msgid ""
+"<span class=\"te_user_account_name\">Sign in</span>\n"
+"                                                        <span class=\"te_user_account_icon\">\n"
+"                                                            <i class=\"fa fa-user\" aria-hidden=\"true\"/>\n"
+"                                                        </span>"
+msgstr ""
+"<span class=\"te_user_account_name\">Anmelden</span>\n"
+"                                                        <span class=\"te_user_account_icon\">\n"
+"                                                            <i class=\"fa fa-user\" aria-hidden=\"true\"/>\n"
+"                                                        </span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_3
+msgid ""
+"<span class=\"te_user_account_name\">Sign in</span>\n"
+"                                            <span class=\"te_user_account_icon\">\n"
+"                                                <i class=\"fa fa-user\" aria-hidden=\"true\"/>\n"
+"                                            </span>"
+msgstr ""
+"<span class=\"te_user_account_name\">Anmelden</span>\n"
+"                                            <span class=\"te_user_account_icon\">\n"
+"                                                <i class=\"fa fa-user\" aria-hidden=\"true\"/>\n"
+"                                            </span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_wishlist_ept
+msgid "<span>Add product to my cart but keep it in my wishlist</span>"
+msgstr ""
+"<span>Produkt in den Warenkorb legen, aber in der Wunschliste "
+"behalten</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_attributes_ept
+msgid "<span>Brand</span>"
+msgstr "<span>Marke</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.snippets_ept
+msgid "<span>Clarico Vega</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_10
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.te_header_offer_string
+msgid "<span>Free Shipping on above $50</span>"
+msgstr "<span>Kostenloser Versand für über $50</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_call_to_action_ept
+msgid ""
+"<span>Know more</span>\n"
+"                                <span class=\"fa fa-1x fa-fw fa-arrow-circle-right ml-1\"/>"
+msgstr ""
+"<span>Mehr erfahren</span>\n"
+"                                <span class=\"fa fa-1x fa-fw fa-arrow-circle-right ml-1\"/>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_6
+msgid "<span>Lorem Ipsum</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_8
+msgid "<span>Lorem ipsum dolor sit amet, eam et req</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_7
+msgid "<span>Lorem ipsum</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_style_6
+msgid "<span>Lorem</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_5
+msgid "<span>Mon - Sun / 9:00AM - 8:00PM</span>"
+msgstr "<span>Montag - Sonntag / 9:00AM – 8:00PM</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_5
+msgid ""
+"<span>My Heading</span>\n"
+"                            3"
+msgstr ""
+"<span>Meine Überschrift</span>\n"
+"                            3"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.2_column_style2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.brand_slider_template_snippet
+msgid "<span>My heading 2</span>"
+msgstr "<span>Meine Überschrift 2</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_features_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_latest_posts_list_template_ept
+msgid "<span>Read More</span>"
+msgstr "<span>Weiter lesen</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.ajax_cart_success_template
+msgid "<span>You added</span>"
+msgstr "<span>Sie haben</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_9
+msgid ""
+"<span>sit</span>\n"
+"                                                    <span>50%</span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.ajax_cart_success_template
+msgid "<span>to your</span>"
+msgstr "<span>zu Ihrem</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_quotes_carousel_ept
+msgid ""
+"<span>— Lorem ipsum , dolor sit\n"
+"                                            <b>Lorem</b>\n"
+"                                        </span>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"<sup class=\"te_price_currency o_default_snippet_text\">$</sup>\n"
+"                                        125"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"<sup class=\"te_price_currency o_default_snippet_text\">$</sup>\n"
+"                                        35"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+msgid ""
+"<sup class=\"te_price_currency o_default_snippet_text\">$</sup>\n"
+"                                        55"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"<sup class=\"te_price_currency o_default_snippet_text\">$</sup>\n"
+"                                        65"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+msgid ""
+"<sup class=\"te_price_currency o_default_snippet_text\">$</sup>\n"
+"                                        85"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+msgid ""
+"<sup class=\"te_price_currency o_default_snippet_text\">$</sup>\n"
+"                                        99"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_comparisons_ept
+msgid ""
+"<sup class=\"te_price_currency\">$</sup>\n"
+"                                        125"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_comparisons_ept
+msgid ""
+"<sup class=\"te_price_currency\">$</sup>\n"
+"                                        35"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_comparisons_ept
+msgid ""
+"<sup class=\"te_price_currency\">$</sup>\n"
+"                                        65"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_pricing
+msgid ""
+"<sup class=\"te_price_currency\">$</sup>\n"
+"                                    35"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_pricing
+msgid ""
+"<sup class=\"te_price_currency\">$</sup>\n"
+"                                    55"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_pricing
+msgid ""
+"<sup class=\"te_price_currency\">$</sup>\n"
+"                                    85"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_pricing
+msgid ""
+"<sup class=\"te_price_currency\">$</sup>\n"
+"                                    99"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid ""
+"A great way to catch your reader's attention\n"
+"                                is to tell a story. Everything you consider writing can be told as a\n"
+"                                story."
+msgstr ""
+"Eine gute Möglichkeit, die Aufmerksamkeit des Lesers zu erregen,\n"
+"                                ist das Erzählen einer Geschichte. Alles, was du zu schreiben gedenkst, kann als\n"
+"                                Geschichte erzählt werden."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "AJAX Shopping Cart"
+msgstr "AJAX-Warenkorb"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.menu_vertical
+msgid "About Shop"
+msgstr "Über den Shop"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "About Store"
+msgstr "Über den Laden"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_4
+msgid "About The Store"
+msgstr "Über das Geschäft"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style6
+msgid "About Us"
+msgstr "Über uns"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_extra_pages
+msgid "About Us Page"
+msgstr "Über uns Seite"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_ept
+msgid "Accessories Products"
+msgstr "Zubehör Produkte"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.ajax_cart_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.cart_lines_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.custom_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.quick_view_template
+msgid "Add one"
+msgstr "Eine hinzufügen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_five_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_one_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_six_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_slider_btn
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_sticky_gallary
+msgid "Add to Wishlist"
+msgstr "Zum Wunschzettel hinzufügen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_6
+msgid "Address"
+msgstr "Adresse"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.blank_details
+msgid "Address :"
+msgstr "Adresse :"
+
+#. module: theme_clarico_vega
+#. openerp-web
+#: code:addons/theme_clarico_vega/static/src/js/editor/google_map_snippet_backend.js:0
+#, python-format
+msgid "Address information"
+msgstr "Informationen zur Adresse"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Advance Mini cart"
+msgstr "Advance Mini Warenkorb"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style5
+msgid "Advanced search"
+msgstr "Erweiterte Suche"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_5
+msgid ""
+"Aeque facilis deleniti te sed. Dicam vituperatoribus ad est. Graecis efficiendi\n"
+"                                        an\n"
+"                                        vix, efficiendi disputando te quo. Duo ut stet saperet constituto, pri blandit\n"
+"                                        detracto in. Eu sint elit pri. Ne justo inani signiferumque sit."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style6
+msgid "Affiliates"
+msgstr "Verbundene Unternehmen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Alignment"
+msgstr "Ausrichtung"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.brand_listing_template
+msgid "All Brands"
+msgstr "Alle Marken"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.option_round_image_style
+msgid "All Products"
+msgstr "Alle Produkte"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_ept
+msgid "Alternative Products"
+msgstr "Alternative Produkte"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid ""
+"Amanda Gutierrez\n"
+"                                        <br/>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.404_error
+msgid "And these guys refused us to tell anything !"
+msgstr "Und diese Typen wollten uns nichts sagen !"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid "Aron Hank"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid ""
+"Aron Hunk\n"
+"                                                            <br/>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_13
+msgid ""
+"At vero eos et accusamus et iusto\n"
+"                                        odio\n"
+"                                        dignissimos\n"
+"                                        ducimus qui blanditiis praesentium voluptatum deleniti atque"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.login_popup
+msgid "Back to Login"
+msgstr "Zurück zu Login"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_7
+msgid "Be the first to know"
+msgstr "Seien Sie der Erste, der es erfährt"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.menu_vertical
+msgid "Blog"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Bottom"
+msgstr "Unten"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.brand_listing_template
+msgid "Brand Logo"
+msgstr "Logo der Marke"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.brand_listing_template
+msgid "Brands"
+msgstr "Marken"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_button
+msgid "Button"
+msgstr "Schaltfläche"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid "CEO-Founder"
+msgstr "CEO-Gründer"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_ept
+msgid "Categories:"
+msgstr "Kategorien:"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_ept
+msgid "Category:"
+msgstr "Kategorie:"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Center"
+msgstr "Mitte"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "Chicago"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Choose Button Style"
+msgstr "Stil der Schaltfläche wählen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Choose Category Style"
+msgstr "Kategorie-Stil wählen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_vega
+msgid "Clarico Vega Other Snippets"
+msgstr "Clarico Vega Andere Schnipsel"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_1
+msgid "Clarico-3 Columans Style 1"
+msgstr "Clarico-3 Columans Stil 1"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_2
+msgid "Clarico-3 Columns Style 2"
+msgstr "Clarico-3-Säulen Stil 2"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_5
+msgid "Clarico-3 Columns Style 5"
+msgstr "Clarico-3-Spalten-Stil 5"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_7
+msgid "Clarico-3 Columns Style 7"
+msgstr "Clarico-3-Spalten Stil 7"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid "Clarico-4 Blocks"
+msgstr "Clarico-4 Blöcke"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.banner_ept
+msgid "Clarico-Banner"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customers_carousel_1
+msgid "Clarico-Customer-1"
+msgstr "Clarico-Kunde-1"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customers_carousel_2
+msgid "Clarico-Customer-2"
+msgstr "Clarico-Kunde-2"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.full_width_image
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.full_width_image_banner
+msgid "Clarico-Full Image"
+msgstr "Clarico-Voll bild"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_image_text
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_2
+msgid "Clarico-Image-Text"
+msgstr "Clarico-Bilder-Text"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_1
+msgid "Clarico-Offer style 1"
+msgstr "Clarico-Angebot Stil 1"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_2
+msgid "Clarico-Offer style 2"
+msgstr "Clarico- Angebot Stil 2"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_3
+msgid "Clarico-Offer style 3"
+msgstr "Klartext-Angebot Stil 3"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+msgid "Clarico-Offer style 5"
+msgstr "Clarico-Angebot Stil 5"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.picture_ept
+msgid "Clarico-Picture"
+msgstr "Clarico-Bilder"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_3
+msgid "Clarico-Slider Style 3"
+msgstr "Clarico-Schieberegler Stil 3"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_5
+msgid "Clarico-Slider Style 5"
+msgstr "Clarico-Schieberegler Stil 5"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_7
+msgid "Clarico-Slider Style 8"
+msgstr "Clarico-Schieberegler Stil 8"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_4
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_3
+msgid "Clarico-Team-1"
+msgstr "Klartext-Team-1"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_2
+msgid "Clarico-Team-2"
+msgstr "Klärchen-Team-2"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_3
+msgid "Clarico-Team-3"
+msgstr "Clarico-Mannschaft-3"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_two_image
+msgid "Clarico-Text Two images"
+msgstr "Clarico-Text Zwei Bilder"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_text_image
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_2
+msgid "Clarico-Text-Image"
+msgstr "Klarschrift-Text-Bild"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_1
+msgid "Clarico-Text-Image-1"
+msgstr "Clarico-Text-Bild-1"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_2
+msgid "Clarico-Text-Image-2"
+msgstr "Clarico-Text-Bild-2"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_attributes_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_ept
+msgid "Clear All Filters"
+msgstr "Alle Filter löschen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_ept
+msgid ""
+"Click\n"
+"\n"
+"                        <i>'New'</i>\n"
+"                        in the top-right corner to create your first product."
+msgstr ""
+"Klicken Sie auf\n"
+"\n"
+"                        <i>'Neu'</i>\n"
+"                         in der oberen rechten Ecke, um Ihr erstes Produkt zu erstellen."
+
+#. module: theme_clarico_vega
+#. openerp-web
+#: code:addons/theme_clarico_vega/static/src/xml/customise_option.xml:0
+#, python-format
+msgid "Click to define as special Menu"
+msgstr "Anklicken, um als spezielles Menü zu definieren"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.ajaxcart_popup_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_ajax_cart
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_quick_view
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.quickview_popup_ept
+msgid "Close"
+msgstr "Schließen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "Cockfosters BP"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid "Coddy"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_1
+msgid "Code : #ASDA44"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:ir.ui.view,arch_db:theme_clarico_vega.coming_soon
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.coming_soon_style_1
+#: model_terms:website.page,arch_db:theme_clarico_vega.ecom_furniture_page_coming_soon
+msgid "Coming Soon"
+msgstr "Demnächst"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_extra_pages
+msgid "Coming Soon Page"
+msgstr "Coming Soon Seite"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_company_team_ept
+msgid "Company team"
+msgstr "Unternehmensteam"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_add_to_compare_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_ept
+msgid "Compare"
+msgstr "Vergleichen Sie"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_slider_options
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_options
+msgid "Configure Slider"
+msgstr "Schieberegler konfigurieren"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.login_popup
+msgid "Confirm"
+msgstr "Bestätigen Sie"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style7
+msgid "Contact"
+msgstr "Kontakt"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_3
+msgid "Contact Info"
+msgstr "Kontakt Informationen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_6
+msgid "Contact Information"
+msgstr "Informationen zum Kontakt"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.404_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style5
+msgid "Contact Us"
+msgstr "Kontakt"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_ept
+msgid "Continue To Shop"
+msgstr "Weiter zum Shop"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid "Crystal Morgan"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.login_popup
+msgid "Database"
+msgstr "Datenbank"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_ept
+msgid "Days"
+msgstr "Tage"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_2
+msgid "Design"
+msgstr "Gestaltung"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid "Designer"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid "Developer"
+msgstr "Entwickler"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.blank_details
+msgid "Edit"
+msgstr "bearbeiten"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Effect 1"
+msgstr "Effekt 1"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Effect 2"
+msgstr "Effekt 2"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Effect 3"
+msgstr "Wirkung 3"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Effect 4"
+msgstr "Effekt 4"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Effect 5"
+msgstr "Effekt 5"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Effect 6"
+msgstr "Wirkung 6"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.login_popup
+msgid "Email"
+msgstr "E-Mail"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.blank_details
+msgid "Email :"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_9
+msgid "Equino"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.2_column_style4
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.2_column_style5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_style_5
+msgid "Explore"
+msgstr "Erkunden Sie"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.brand_listing_template
+msgid "Featured Brands"
+msgstr "Ausgewählte Marken"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Filter in Sidebar"
+msgstr "Filter in der Seitenleiste"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "Footer Menu"
+msgstr "Fußzeile Menü"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_custom_options
+msgid "Footer Style 1"
+msgstr "Fußzeile Stil 1"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_custom_options
+msgid "Footer Style 2"
+msgstr "Fußzeile Stil 2"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_custom_options
+msgid "Footer Style 3"
+msgstr "Fußzeile Stil 3"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_custom_options
+msgid "Footer Style 4"
+msgstr "Fußzeile Stil 4"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_custom_options
+msgid "Footer Style 5"
+msgstr "Fußzeile Stil 5"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_custom_options
+msgid "Footer Style 6"
+msgstr "Fußzeile Stil 6"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_custom_options
+msgid "Footer Style 7"
+msgstr "Fußzeile Stil 7"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style7
+msgid "Free Shipping"
+msgstr "Kostenloser Versand"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid "Free Shipping WorldWide"
+msgstr "Weltweiter kostenloser Versand"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_1
+msgid "Get 50% Off"
+msgstr "Erhalten Sie 50% Rabatt"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid "Get Help When You Need It."
+msgstr "Holen Sie sich Hilfe, wenn Sie sie brauchen."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style7
+msgid "Gift Cards"
+msgstr "Geschenkkarten"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.404_error
+msgid "Go To Home"
+msgstr "Nach Hause gehen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Gradient color 1"
+msgstr "Verlaufsfarbe 1"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_2
+msgid "Graphics"
+msgstr "Grafiken"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid ""
+"Happy Customers\n"
+"                                        <br/>"
+msgstr ""
+"Zufriedene Kunden\n"
+"                                        <br/>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Header Style 1"
+msgstr "Kopfzeile Stil 1"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Header Style 10"
+msgstr "Kopfzeilen-Stil 10"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Header Style 2"
+msgstr "Kopfzeile Stil 2"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Header Style 3"
+msgstr "Kopfzeile Stil 3"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Header Style 4"
+msgstr "Kopfzeilen-Stil 4"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Header Style 5"
+msgstr "Kopfzeile Stil 5"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Header Style 6"
+msgstr "Kopfzeilen-Stil 6"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Header Style 7"
+msgstr "Kopfzeile Stil 7"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Header Style 8"
+msgstr "Kopfzeilen-Stil 8"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Header Style 9"
+msgstr "Kopfzeilen-Stil 9"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Header Top BG Color"
+msgstr "Kopfzeile Top BG Farbe"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Header Top Text Color"
+msgstr "Kopfzeile oben Textfarbe"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_slider_banner
+msgid "Heading 6"
+msgstr "Überschrift 6"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_10
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_4
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_7
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_8
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_9
+msgid "Hello,"
+msgstr "Hallo,"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style7
+msgid "Help"
+msgstr "Hilfe"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.menu_vertical
+msgid "Help Center"
+msgstr "Hilfe-Center"
+
+#. module: theme_clarico_vega
+#. openerp-web
+#: code:addons/theme_clarico_vega/static/src/xml/customise_option.xml:0
+#, python-format
+msgid ""
+"Hint: Type '/' to search an existing page and '#' to link to an anchor."
+msgstr ""
+"Tipp: Geben Sie '/' ein, um eine vorhandene Seite zu suchen, und '#', um "
+"einen Link zu einem Anker zu erstellen."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_extra_pages
+msgid "Home Page"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.404_ept
+msgid "Homepage"
+msgstr "Startseite"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Horizontal Category"
+msgstr "Horizontale Kategorie"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_ept
+msgid "Hours"
+msgstr "Stunden"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Image Magnifier"
+msgstr "Bildlupe"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_error_message
+msgid ""
+"In case of misconfiguration, no product is found and no price list is configured, Slider will not be\n"
+"                displayed.\n"
+"                <br/>"
+msgstr ""
+"Im Falle einer Fehlkonfiguration, wenn kein Produkt gefunden wird und keine Preisliste konfiguriert ist, wird der Slider nicht angezeigt.        \n"
+"                <br/>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "Information"
+msgstr "Informationen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style3
+msgid "Informations"
+msgstr "Informationen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "Instagram profile"
+msgstr "Instagram-Profil"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style7
+msgid "International"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_pricing
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+msgid "Invidunt-petentium"
+msgstr ""
+
+#. module: theme_clarico_vega
+#. openerp-web
+#: code:addons/theme_clarico_vega/static/src/xml/customise_option.xml:0
+#, python-format
+msgid "Is Dynamic Menu"
+msgstr "Ist dynamisches Menü"
+
+#. module: theme_clarico_vega
+#. openerp-web
+#: code:addons/theme_clarico_vega/static/src/xml/customise_option.xml:0
+#, python-format
+msgid "Is Highlight Menu"
+msgstr "Ist Menü hervorheben"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style6
+msgid "Jobs"
+msgstr "Stellenangebote"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid "John herry"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_7
+msgid ""
+"Know\n"
+"                                                    more"
+msgstr ""
+"Mehr \n"
+"                                                    Wissen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.brand_slider_template_snippet
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.landing_page_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_14
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_8
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_4
+msgid ""
+"Know\n"
+"                                            more"
+msgstr ""
+"Mehr \n"
+"                                            Wissen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.2_column_style2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_2
+msgid ""
+"Know\n"
+"                                        more"
+msgstr ""
+"Mehr \n"
+"                                        Wissen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_2
+msgid ""
+"Know\n"
+"                                    more"
+msgstr ""
+"Mehr \n"
+"                                    Erfahren"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_timer_style_2
+msgid ""
+"Know\n"
+"                                more"
+msgstr ""
+"Mehr \n"
+"                                Wissen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_timer_style_3
+msgid ""
+"Know\n"
+"                            more"
+msgstr ""
+"Mehr \n"
+"                            Wissen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_9
+msgid "Know More"
+msgstr "Mehr wissen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.banner_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.carouse_slider
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_price
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_pricing
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.picture_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_comparisons_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_image_text
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_text_image
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_10
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_13
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_9
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_two_image
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_10
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_12
+msgid "Know more"
+msgstr "Mehr wissen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Label Color"
+msgstr "Etikett Farbe"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Label position"
+msgstr "Position des Etiketts"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_extra_pages
+msgid "Landing Page"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "Las Vegas"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "Latest News"
+msgstr "Neueste Nachrichten"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_banner_list_options
+msgid "Layout"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Lazy Load"
+msgstr "Langsames Laden"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_banner_list_options
+msgid "Left"
+msgstr "Links"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style7
+msgid "Legal"
+msgstr "Rechtliches"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Load Products Through Ajax"
+msgstr "Produkte über Ajax laden"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.login_popup
+msgid "Log in"
+msgstr "Einloggen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.login_popup
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.register_popup
+msgid "Log in With :"
+msgstr "Anmelden mit :"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.login_popup
+msgid "Log in as superuser"
+msgstr "Anmelden als Superuser"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.login_register_popup
+msgid "Login"
+msgstr "Anmeldung"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Login Popup"
+msgstr "Anmelde-Popup"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_4
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_7
+msgid "Logo of MyCompany"
+msgstr "Logo von MyCompany"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "London SF"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.banner_style_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_tabs_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_12
+msgid "Lorem"
+msgstr "Wortlaut"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_4
+msgid ""
+"Lorem\n"
+"                                        ipsum"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"Lorem\n"
+"                                        ipsum dolor sit"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"Lorem\n"
+"                                        ipsum dolor sit amet"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"Lorem\n"
+"                                        ipsum dolor sit amet, eam et"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"Lorem\n"
+"                                        phaedrum"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.2_column_style6
+msgid "Lorem / ipsum / dolor / sit / amet"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_offer_text
+msgid "Lorem 50% sit"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_offer_text
+msgid "Lorem : #ASDA44"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.2_column_style4
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.2_column_style5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.banner_style_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customers_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.number_counter
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_14
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_col_style_13
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_12
+msgid "Lorem Ipsum"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"Lorem Ipsum\n"
+"                                <br/>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.2_column_style6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.banner_slider
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customers_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_timer_style_3
+msgid "Lorem Ipsum Dolor"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_timer_style_3
+msgid "Lorem Ipsum Dolor Sit"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.2_column_style4
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.2_column_style5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.banner_slider
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_7
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_8
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_10
+msgid "Lorem Ipsum Dolor Sit Amet"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_title_5_ept
+msgid "Lorem Ipsum is simply dummy text of the printing."
+msgstr "Lorem Ipsum ist einfach ein Blindtext für den Druck."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_4
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_icon
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_price
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_pricing
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.landing_page_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_9
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_company_team_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_comparisons_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_features_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_8
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_9
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_icon_style_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_icon_style_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_4
+msgid "Lorem ipsum"
+msgstr "Zitat von Lorem ipsum"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"Lorem ipsum\n"
+"                                                dolor sit amet, eam et reque justo quidam, te\n"
+"                                                est audire persius. Duis meis quas vim ex, ius no\n"
+"                                                oblique phaedrum\n"
+"                                                pertinacia. Ornatus referrentur nec cu, dicam dolore\n"
+"                                                vivendum ne mea."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"Lorem ipsum\n"
+"                                                dolor sit amet, eam et reque justo quidam, te\n"
+"                                                est audire persius. Duis meis quas vim ex, ius no\n"
+"                                                oblique phaedrum\n"
+"                                                pertinacia. Ornatus referrentur nec cu, dicam dolore\n"
+"                                                vivendum ne mea. Usu\n"
+"                                                bonorum inermis efficiantur"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"Lorem ipsum\n"
+"                                                dolor sit amet, eam et reque justo quidam, te\n"
+"                                                est audire persius. Duis meis quas vim ex, ius no\n"
+"                                                oblique phaedrum\n"
+"                                                pertinacia. Ornatus referrentur nec cu, dicam dolore\n"
+"                                                vivendum ne mea. Usu\n"
+"                                                bonorum inermis efficiantur ad, nec at detracto\n"
+"                                                repudiandae, erat denique\n"
+"                                                percipit at est."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+msgid ""
+"Lorem ipsum\n"
+"                                        dolor"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_comparisons_ept
+msgid ""
+"Lorem ipsum &amp; dolor sit amet, eam et\n"
+"                                        reque"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style5
+msgid "Lorem ipsum amet"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_style_5
+msgid "Lorem ipsum consectetur dolor sit amet, adipiscing elit."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.2_column_style4
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.2_column_style5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_price
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_pricing
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_style_6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_9
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_faq_collapse_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_2
+msgid "Lorem ipsum dolor"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_3
+msgid ""
+"Lorem ipsum dolor\n"
+"                                    sit amet, eam et reque justo\n"
+"                                    quidam, te est audire persius. Duis meis quas vim ex, ius no oblique. Ornatus\n"
+"                                    <br/>\n"
+"                                    Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style5
+msgid "Lorem ipsum dolor amet"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_col_style_13
+msgid ""
+"Lorem ipsum dolor s it amet, consectetur adipisicing elit,\n"
+"                                sed do\n"
+"                                eiusmod"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_col_style_13
+msgid ""
+"Lorem ipsum dolor s it amet, consectetur adipisicing elit, sed\n"
+"                                do\n"
+"                                eiusmod\n"
+"                                tempor incididunt ut labore et dolore magna ipsum dolor sit amet,"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.banner_style_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"Lorem ipsum dolor s it amet, consectetur adipisicing elit, sed do\n"
+"                                eiusmod\n"
+"                                tempor incididunt ut labore et dolore magna ipsum dolor sit amet,"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_1
+msgid ""
+"Lorem ipsum dolor s it amet, consectetur adipisicing elit, sed do\n"
+"                            eiusmod\n"
+"                            tempor incididunt ut labore et dolore magna ipsum dolor sit amet,"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.brand_slider_template_snippet
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_price
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_comparisons_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_faq_collapse_ept
+msgid "Lorem ipsum dolor sit"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.landing_page_3
+msgid ""
+"Lorem ipsum dolor sit\n"
+"                                        amet"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_2
+msgid ""
+"Lorem ipsum dolor sit\n"
+"                                    amet, eam et reque justo quidam,\n"
+"                                    te est audire persius. Duis meis quas vim ex, ius no oblique phaedrum\n"
+"                                    pertinacia.\n"
+"                                    Ornatus"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customers_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_9
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_comparisons_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_9
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_icon_style_1
+msgid "Lorem ipsum dolor sit amet"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.2_column_style6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_14
+msgid "Lorem ipsum dolor sit amet eam et reque justo quidam"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_offer_text
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_company_team_ept
+msgid "Lorem ipsum dolor sit amet,"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"Lorem ipsum dolor sit amet,\n"
+"                                        eam et"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"Lorem ipsum dolor sit amet,\n"
+"                                        eam et\n"
+"                                        <br/>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_style_5
+msgid "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_comparisons_ept
+msgid "Lorem ipsum dolor sit amet, eam et"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+msgid ""
+"Lorem ipsum dolor sit amet, eam et\n"
+"                                            reque justo quidam, te est audire\n"
+"                                            persius Duis meis quas vim ex, ius no\n"
+"                                            oblique phaedrum"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_blocks
+msgid ""
+"Lorem ipsum dolor sit amet, eam et\n"
+"                                        reque justo quidam, te est audire\n"
+"                                        persius Duis meis quas vim ex, ius no\n"
+"                                        oblique phaedrum"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_1
+msgid ""
+"Lorem ipsum dolor sit amet, eam et\n"
+"                                reque justo quidam, audire ius no oblique phaedrum pertinacia. Ornatus referrentur\n"
+"                                nec dicam Lorem ipsum"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_comparisons_ept
+msgid "Lorem ipsum dolor sit amet, eam et reque"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_1
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque\n"
+"                                    justo quidam, audire<br/>ius no\n"
+"                                    oblique phaedrum pertinacia. Ornatus referrentur nec dicam<br/>Lorem ipsum"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_1
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque\n"
+"                                    justo quidam, audire<br/>ius no\n"
+"                                    oblique phaedrum pertinacia. Ornatus referrentur nec dicam<br/>Lorem ipsum dolor\n"
+"                                    sit\n"
+"                                    amet, eam et reque justo quidam, audire persius."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_2
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque\n"
+"                                    justo quidam, te est audire\n"
+"                                    persius. Duis meis quas vim ex, ius no oblique phaedrum."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_2
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque\n"
+"                                justo\n"
+"                                quidam, audire lorem ipsum<br/>ius no\n"
+"                                oblique phaedrum pertinacia. Ornatus referrentur nec dicam<br/>Lorem ipsum"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_2
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque\n"
+"                                justo\n"
+"                                quidam, audire<br/>ius no\n"
+"                                oblique phaedrum pertinacia. Ornatus referrentur nec dicam<br/>Lorem ipsum"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_2
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque\n"
+"                                justo\n"
+"                                quidam, audire<br/>ius no\n"
+"                                oblique phaedrum pertinacia. Ornatus referrentur nec dicam<br/>Lorem ipsum dolor\n"
+"                                sit\n"
+"                                amet, eam et reque justo quidam, audire persius."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_2
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque\n"
+"                                justo\n"
+"                                quidam, te est audire\n"
+"                                persius. Duis meis quas vim ex, ius no oblique phaedrum."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_2
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo\n"
+"\n"
+"                                        <br/>\n"
+"                                        Lorem ipsum dolor"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_2
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo\n"
+"                                    quidam"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customers_carousel_1
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo\n"
+"                                    quidam,\n"
+"                                    te est audire persius. Duis meis quas vim ex, ius no oblique phaedrum pertinacia.\n"
+"                                    Ornatus"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_12
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo\n"
+"                                quidam, Duis meis quas vim ex, ius no oblique phaedrum pertinacia. Ornatus referrentur\n"
+"                                nec,"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_cover_ept
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo\n"
+"                                quidam, te est audire persius. Duis meis quas vim ex, ius no oblique. Ornatus\n"
+"                                <br/>\n"
+"                                Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_4
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_1
+msgid "Lorem ipsum dolor sit amet, eam et reque justo quidam"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_3
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam Lorem ipsum dolor\n"
+"                                            sit amet"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_6
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam Lorem ipsum dolor sit "
+"amet"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_call_to_action_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_features_grid_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_2
+msgid "Lorem ipsum dolor sit amet, eam et reque justo quidam,"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_10
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, Duis meis quas vim\n"
+"                    ex, ius no oblique phaedrum pertinacia. Ornatus referrentur nec,"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_4
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, audire ius no\n"
+"                        oblique phaedrum pertinacia. Ornatus referrentur nec dicam Lorem ipsum"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_image_text
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_text_image
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_3
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, audire<br/>ius no\n"
+"                                oblique phaedrum pertinacia. Ornatus referrentur nec dicam<br/>Lorem ipsum"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_image_text
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_text_image
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, audire<br/>ius no\n"
+"                                oblique phaedrum pertinacia. Ornatus referrentur nec dicam<br/>Lorem ipsum dolor sit\n"
+"                                amet, eam et reque justo quidam, audire persius."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_faq_collapse_ept
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te\n"
+"                                            est audire persius. Duis meis quas vim ex, ius no oblique phaedrum\n"
+"                                            pertinacia. Ornatus referrentur nec cu, dicam dolore vivendum ne mea."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_faq_collapse_ept
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te\n"
+"                                            est audire persius. Duis meis quas vim ex, ius no oblique phaedrum\n"
+"                                            pertinacia. Ornatus referrentur nec cu, dicam dolore vivendum ne mea. Usu\n"
+"                                            bonorum inermis efficiantur"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_faq_collapse_ept
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te\n"
+"                                            est audire persius. Duis meis quas vim ex, ius no oblique phaedrum\n"
+"                                            pertinacia. Ornatus referrentur nec cu, dicam dolore vivendum ne mea. Usu\n"
+"                                            bonorum inermis efficiantur ad, nec at detracto repudiandae, erat denique\n"
+"                                            percipit at est."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customers_5
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te\n"
+"                                        est audire persius. Duis meis quas vim ex, ius no oblique. Lorem ipsum dolor sit\n"
+"                                        amet, eam\n"
+"                                        et reque justo quidam, te est audire persius. Duis meis quas vim ex, ius no\n"
+"                                        oblique."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.banner_slider
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te\n"
+"                            est audire persius. Duis meis quas vim ex, ius no oblique. Lorem ipsum dolor sit amet, eam\n"
+"                            et reque justo quidam, te est audire persius. Duis meis quas vim ex, ius no oblique."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customers_5
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te\n"
+"                        est audire persius. Duis meis quas vim ex, ius no oblique. Lorem ipsum dolor sit"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_two_image
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te est\n"
+"                                            audire persius. Duis meis quas vim ex, ius no oblique phaedrum pertinacia.\n"
+"                                            Ornatus referrentur"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_7
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire\n"
+"                                                persius. Duis meis quas vim ex, ius no oblique phaedrum pertinacia."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_two_image
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire\n"
+"                                            persius. Duis meis quas vim ex,"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_banner_ept
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire\n"
+"                                        persius. Duis meis quas vim ex, ius no oblique. Ornatus Lorem ipsum dolor sit\n"
+"                                        amet, eam et reque justo quidam, te est audire persius. Duis meis quas vim ex,\n"
+"                                        ius no oblique. Ornatus"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_text_block
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire\n"
+"                                persius. Duis meis quas vim ex, ius no oblique phaedrum."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.banner_ept
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius\n"
+"                                        Duis meis quas vim ex, ius no oblique phaedrum.\n"
+"                                        <br/>\n"
+"                                        Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius\n"
+"                                        Duis meis quas vim ex, ius no oblique phaedrum."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_2
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.\n"
+"\n"
+"                            <br/>\n"
+"                            Duis meis quas vim ex, ius no oblique phaedrum pertinacia. Ornatus referrentur nec,"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_tabs_ept
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.\n"
+"                                            Duis meis quas vim ex, ius no oblique phaedrum pertinacia."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_quotes_carousel_ept
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.\n"
+"                                        Duis meis quas vim ex, ius no oblique"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_quotes_carousel_ept
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.\n"
+"                                        Duis meis quas vim ex, ius no oblique phaedrum"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_1
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.\n"
+"                                        Duis meis quas vim ex, ius no oblique. Ornatus\n"
+"                                        <em class=\"o_default_snippet_text\"/>\n"
+"                                        cu."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_4
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.\n"
+"                                        Duis meis quas vim ex. oblique Ornatus\n"
+"\n"
+"                                        <em class=\"o_default_snippet_text\"/>\n"
+"                                        cu."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_s_card_ept
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.\n"
+"                        Duis meis quas vim ex, ius no oblique phaedrum pertinacia. Ornatus referrentur nec cu, dicam\n"
+"                        dolore vivendum ne mea."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_2
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius. Duis\n"
+"                                    meis quas vim ex, ius no oblique. Ornatus\n"
+"\n"
+"                                    <em class=\"o_default_snippet_text\"/>\n"
+"                                    cu."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_1
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius. Duis meis quas\n"
+"                            vim ex, ius no oblique phaedrum pertinacia."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_icon
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque, te est\n"
+"                                    audire persius."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_features_ept
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque, te est\n"
+"                                    audire persius. Ornatus referrentur nec cu, dicam dolore vivendum ne mea"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.picture_ept
+msgid ""
+"Lorem ipsum dolor sit amet, eam et reque, te est audire\n"
+"                                persius.\n"
+"                                <br/>\n"
+"                                ius no oblique phaedrum pertinacia. Ornatus referrentur nec cu, dicam dolore vivendum ne\n"
+"                                mea. ad<br/>dicam dolore vivendum ne mea Usu bonorum inermis efficiantur ad"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+msgid ""
+"Lorem ipsum dolor sit amet, eam viris essent\n"
+"                                dissentiet at"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_5
+msgid "Lorem ipsum dolor sit amet, eam viris essent dissentiet at"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_2
+msgid ""
+"Lorem ipsum dolor sit amet, eam viris essent dissentiet at, nec\n"
+"                                        falli\n"
+"                                        percipit petentium ut. Delenit molestie sententiae ea his, usu augue nemore\n"
+"                                        prompta\n"
+"                                        eu, te utamur voluptatibus mei. Exerci repudiare vel ex, nam sumo quidam\n"
+"                                        lobortis ad"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.coming_soon_style_1
+msgid ""
+"Lorem ipsum dolor sit amet, eam viris essent dissentiet at, nec\n"
+"                            falli percipit petentium\n"
+"                            ut. Delenit molestie sententiae ea his"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_timer_style_2
+msgid ""
+"Lorem ipsum dolor sit amet, eam viris essent dissentiet at, nec falli percipit petentium\n"
+"                            ut. Delenit molestie sententiae ea his...."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_style_6
+msgid "Lorem ipsum dolor sit amet."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_alert_ept
+msgid ""
+"Lorem ipsum dolor sit amet.<br/>Lorem ipsum dolor sit amet, eam et reque justo quidam, te est\n"
+"                        audire"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_price
+msgid "Lorem ipsum sit"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_3
+msgid ""
+"Lorem ipsum sit\n"
+"\n"
+"                                        <span>50%</span>\n"
+"                                        amet, eam et reque justo"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_comparisons_ept
+msgid "Lorem phaedrum"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "Los Angeles"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"Luxurious Layouts\n"
+"                                <br/>"
+msgstr ""
+"Luxuriöse Layouts\n"
+"                                <br/>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style6
+msgid "Main Features"
+msgstr "Hauptmerkmale"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid "Manager"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid ""
+"Mattie George\n"
+"                                                            <br/>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid ""
+"Mattie George\n"
+"                                        <br/>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style6
+msgid "Meet The Maker"
+msgstr "Treffen Sie den Macher"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.mega_menu_custom_options
+msgid "Mega Menus Style 1"
+msgstr "Mega Menüs Stil 1"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.mega_menu_custom_options
+msgid "Mega Menus Style 2"
+msgstr "Mega-Menüs Stil 2"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.mega_menu_custom_options
+msgid "Mega Menus Style 3"
+msgstr "Mega Menüs Stil 3"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.mega_menu_custom_options
+msgid "Mega Menus Style 4"
+msgstr "Mega-Menüs Stil 4"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.mega_menu_custom_options
+msgid "Mega Menus Style 5"
+msgstr "Mega Menüs Stil 5"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.mega_menu_custom_options
+msgid "Mega Menus Style 6"
+msgstr "Mega Menüs Stil 6"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_2
+msgid "Mel in iudico"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Menu Label"
+msgstr "Menü Etikett"
+
+#. module: theme_clarico_vega
+#. openerp-web
+#: code:addons/theme_clarico_vega/static/src/xml/customise_option.xml:0
+#, python-format
+msgid "Menu Label Text"
+msgstr "Menübeschriftung Text"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_ept
+msgid "Mins"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_price
+msgid "Monthly Plan"
+msgstr "Monatlicher Plan"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_comparisons_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"My\n"
+"                                    Heading 5"
+msgstr ""
+"Meine\n"
+"                                    Heading 5"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style6
+msgid "My Account"
+msgstr "Mein Konto"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.portal_home_gridview
+msgid "My Dashboard"
+msgstr "Mein Dashboard"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_icon
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_banner_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_cover_ept
+msgid "My Heading 1"
+msgstr "Meine Überschrift 1"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.carouse_slider
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_timer_style_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.picture_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_company_team_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_image_text
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_text_image
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_13
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_7
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_two_image
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_10
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_12
+msgid "My Heading 2"
+msgstr "Meine Überschrift 2"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.2_column_style6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_price
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_7
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_8
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_10
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_tabs_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_10
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_11
+msgid "My Heading 3"
+msgstr "Meine Überschrift 3"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.2_column_style4
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.2_column_style5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customers_carousel_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_7
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_style_6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_7
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_4
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_title_1_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_title_2_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_title_5_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_title_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_features_grid_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_references_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_s_card_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_blocks
+msgid "My Heading 4"
+msgstr "Meine Überschrift 4"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customers_carousel_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_pricing
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_comparisons_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_13
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_7
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_features_grid_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_8
+msgid "My Heading 5"
+msgstr "Meine Überschrift 5"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_2
+msgid ""
+"My Heading 5\n"
+"\n"
+"                                        <span>25%</span>"
+msgstr ""
+"Meine Überschrift 5\n"
+"\n"
+"                                        <span>25%</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_2
+msgid ""
+"My Heading 5\n"
+"\n"
+"                                        <span>50%</span>"
+msgstr ""
+"Meine Überschrift 5\n"
+"\n"
+"                                        <span>50%</span>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customers_carousel_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_5
+msgid "My Heading 6"
+msgstr "Meine Überschrift 6"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_10
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_7
+msgid "My Website"
+msgstr "Meine Website"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_2
+msgid "My heading 3"
+msgstr "Meine Rubrik 3"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_ept
+msgid "N/A"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_5
+msgid "NEWSLETTER SIGNUP:"
+msgstr "NEWSLETTER-ANMELDUNG:"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.blank_details
+msgid "Name :"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.carouse_slider
+msgid ""
+"Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur,\n"
+"                                        adipisci velit abil mutoi sovali uomil mitum."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.menu_item_label
+msgid "New"
+msgstr "Neu"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "New Collection"
+msgstr "Neue Kollektion"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.menu_vertical
+msgid "New Look"
+msgstr "Neuer Look"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "New York"
+msgstr "Neu York"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_1
+msgid "Newsletter Signup :"
+msgstr "Newsletter-Anmeldung :"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_7
+msgid "Newsletter Signup:"
+msgstr "Newsletter-Anmeldung:"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.carouse_slider
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.landing_page_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_10
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_13
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_14
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_7
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_8
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_9
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_quotes_carousel_ept
+msgid "Next"
+msgstr "Nächste"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.brand_listing_template
+msgid "No Brand Found"
+msgstr "Keine Marke gefunden"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_ept
+msgid "No product defined."
+msgstr "Kein Produkt definiert."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_ept
+msgid "No results"
+msgstr "Keine Ergebnisse"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_ept
+msgid "No results for \""
+msgstr "Keine Ergebnisse für \""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_ept
+msgid "No results found for \""
+msgstr "Keine Ergebnisse gefunden für \""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_price_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_sticky_details_container
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_wishlist_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_item_discount_message
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_display_price
+msgid "Off)"
+msgstr "Aus)"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_vega
+msgid "Offer Timer"
+msgstr "Angebot Timer"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid "On All Orders Of USD 250,00+"
+msgstr "Auf alle Bestellungen von USD 250,00+"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style7
+msgid "Order Status"
+msgstr "Status der Bestellung"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style5
+msgid "Order history"
+msgstr "Historie bestellen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_1
+msgid "Our Assistants"
+msgstr "Unsere Assistenten"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.brand_listing_template
+msgid "Our Brands"
+msgstr "Unsere Marken"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_4
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_1
+msgid "Our Experts"
+msgstr "Unsere Experten"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "Our Sitemap"
+msgstr "Unsere Sitemap"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "Our Stores"
+msgstr "Unsere Läden"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_1
+msgid "Our Team"
+msgstr "Unser Team"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid ""
+"Our Team\n"
+"                                <br/>"
+msgstr "Unser Team <br/>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_extra_pages
+msgid "Our Team Page"
+msgstr "Unser Team Seite"
+
+#. module: theme_clarico_vega
+#: model_terms:ir.ui.view,arch_db:theme_clarico_vega.coming_soon
+#: model_terms:website.page,arch_db:theme_clarico_vega.ecom_furniture_page_coming_soon
+msgid ""
+"Our website is under construction. We'll be here soon with our new page"
+msgstr ""
+"Unsere Website befindet sich im Aufbau. Wir werden hier bald mit unserer "
+"neuen Seite sein"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.404_error
+msgid "Page Lost In Antarctica !"
+msgstr "Seite Verloren in der Antarktis !"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.login_popup
+msgid "Password"
+msgstr "Kennwort"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_1
+msgid "Payment Methods"
+msgstr "Zahlungsmöglichkeiten"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.menu_vertical
+msgid ""
+"Pellentesque mollis nec orci id tincidunt. Sed mollis risus eu nisi aliquet, sit amet\n"
+"                                fermentum."
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_6
+msgid "Phone"
+msgstr "Telefon"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.blank_details
+msgid "Phone :"
+msgstr "Telefon :"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Pill Style"
+msgstr "Pillen-Stil"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.menu_vertical
+msgid "Portfolio"
+msgstr "Mappe"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Position Bottom"
+msgstr "Position Unten"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Position Left"
+msgstr "Position Links"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Position Right"
+msgstr "Position Rechts"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Position Top"
+msgstr "Position oben"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.carouse_slider
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.landing_page_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_10
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_13
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_14
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_7
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_8
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_9
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_quotes_carousel_ept
+msgid "Previous"
+msgstr "Vorherige"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.cart_summary_ept
+msgid "Price"
+msgstr "Preis"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style7
+msgid "Privacy"
+msgstr "Datenschutz"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "Privacy Policy"
+msgstr "Datenschutz"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.cart_popover_ept
+msgid "Process Checkout"
+msgstr "Zur Kasse gehen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.cart_summary_ept
+msgid "Product"
+msgstr "Produkt"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Product Brand"
+msgstr "Produktmarke"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_categories_ept
+msgid "Product Category"
+msgstr "Produkt-Kategorie"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Product Count In Shop Filter"
+msgstr "Produktanzahl im Shop Filter"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.ajax_cart_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_sticky_details_container
+msgid "Product Image"
+msgstr "Produkt bild"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Product Label"
+msgstr "Produkt-Label"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.ajax_cart_success_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.ajax_cart_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_sticky_details_container
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.quick_view_template
+msgid "Product Name"
+msgstr "Produkt name"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.ajax_cart_success_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_wishlist_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_item_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.remove_button
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.shop_product_carousel_ept
+msgid "Product image"
+msgstr "Produkt bild"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.brand_slider_template_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.brand_slider_template_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.brand_slider_template_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_ept
+msgid "Products"
+msgstr "Produkte"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "Purchase Theme"
+msgstr "Thema kaufen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.cart_summary_ept
+msgid "Qty"
+msgstr "Menge"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.cart_popover_ept
+msgid "Qty:"
+msgstr "Menge:"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.cart_lines_ept
+msgid "Quantity"
+msgstr "Menge"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_five_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_one_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_six_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_slider_btn
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.quickview_icon_shop_product_item
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Quick View"
+msgstr "Schnell Ansicht"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.banner_style_3
+msgid ""
+"Read\n"
+"                                    More"
+msgstr ""
+"Mehr\n"
+"                                    Lesen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.login_register_popup
+msgid "Register"
+msgstr "Registrieren"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.cart_popover_ept
+msgid "Remove from cart"
+msgstr "Aus dem Warenkorb entfernen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.ajax_cart_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.cart_lines_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.custom_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.quick_view_template
+msgid "Remove one"
+msgstr "Eine entfernen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.portal_my_orders_reorder
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.sale_order_portal_content_reorder
+msgid "Reorder"
+msgstr "Nachbestellung"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.login_popup
+msgid "Reset Password"
+msgstr "Passwort zurücksetzen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "Returns"
+msgstr "Rückgabe"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style7
+msgid "Returns Exchanges"
+msgstr "Rücksendungen Umtausch"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_banner_list_options
+msgid "Right"
+msgstr "Rechts"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Rounded image style"
+msgstr "Abgerundeter Bildstil"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_ept
+msgid "SKU:"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_attributes_ept
+msgid "Search for"
+msgstr "Suche nach"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_attributes_ept
+msgid "Search for Brand"
+msgstr "Suche nach Marke"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_ept
+msgid "Secs"
+msgstr "Sekunden"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style7
+msgid "Security"
+msgstr "Sicherheit"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.three_columns_style_11
+msgid "See All Collection"
+msgstr "Alle Sammlungen anzeigen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.login_popup
+msgid ""
+"Select\n"
+"                            <i class=\"fa fa-database\" role=\"img\" aria-label=\"Database\" title=\"Database\"/>"
+msgstr ""
+"Wählen Sie\n"
+"                            <i class=\"fa fa-database\" role=\"img\" aria-label=\"Database\" title=\"Database\"/>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_edit_message
+msgid ""
+"Select section for edit dynamic snippet configuration or remove snippet. Check the document and video\n"
+"                for more help."
+msgstr ""
+"Wählen Sie den Abschnitt zum Bearbeiten der dynamischen Snippet-"
+"Konfiguration oder zum Entfernen des Snippets. Im Dokument und im Video "
+"finden Sie weitere Hilfe."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid ""
+"Served Countries\n"
+"                                        <br/>"
+msgstr ""
+"Betreute Länder\n"
+"                                        <br/>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_extra_pages
+msgid "Service Page"
+msgstr "Service-Seite"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_2
+msgid "Services"
+msgstr "Dienstleistungen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"Services We Provide\n"
+"                                <br/>"
+msgstr ""
+"Unsere Dienstleistungen\n"
+"                                <br/>"
+
+#. module: theme_clarico_vega
+#. openerp-web
+#: code:addons/theme_clarico_vega/static/src/js/editor/offer_snippent_backend.js:0
+#, python-format
+msgid "Set Offer Timer"
+msgstr "Angebots-Timer einstellen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_share_buttons_ept
+msgid "Share :"
+msgstr "Teilen:"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_style_6
+msgid "Shop More"
+msgstr "Mehr kaufen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.banner_slider
+msgid "Shop Now"
+msgstr "Jetzt einkaufen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_banner_slider_styles_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_eight_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_five_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_four_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_one_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_seven_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_six_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_three_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.clarico_slider_styles_two_template
+msgid "Shopping cart"
+msgstr "Einkaufswagen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Show Associated Attribute Value"
+msgstr "Zugehörige Attributwerte anzeigen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Show Brand Logo"
+msgstr "Markenlogo anzeigen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.offer_style_6
+msgid "Show More"
+msgstr "Mehr zeigen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.user_sign_in_ept
+msgid "Sign in"
+msgstr "Anmelden"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.register_popup
+msgid "Sign up"
+msgstr "Anmelden"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.sort_ept
+msgid "Sort By"
+msgstr "Sortieren nach"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_1
+msgid "Special Offer on First Purchase"
+msgstr "Sonderangebot beim ersten Kauf"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.html_content_tabs_ept
+msgid "Specifications for"
+msgstr "Spezifikationen für"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.te_search_bar
+msgid "Start typing and press Enter to search"
+msgstr "Tippen Sie und drücken Sie die Eingabetaste, um zu suchen."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Sticky Attribute & Category Filter"
+msgstr "Sticky Attribut & Kategorie Filter"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Sticky Product Details"
+msgstr "Aufgeklebte Produkt-Details"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Sticky Product Gallary"
+msgstr "Sticky Produkt-Galerie"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.contact_form_button
+msgid "Submit"
+msgstr "Einreichen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_7
+msgid "Subscribe"
+msgstr "Anmelden"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.cart_lines_ept
+msgid "Subtotal"
+msgstr "Zwischensumme"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style7
+msgid "Supply Chain"
+msgstr "Lieferkette"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.p_multi_slider
+msgid "Tab1"
+msgstr "Registerkarte1"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.p_multi_slider
+msgid "Tab2"
+msgstr "Registerkarte2"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style7
+msgid "Take Action"
+msgstr "Maßnahmen ergreifen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "Terms &amp; Conditions"
+msgstr "Bedingungen und Konditionen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style7
+msgid "Text Messaging"
+msgstr "Textnachrichten"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_7
+msgid "Thanks"
+msgstr "Danke"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_7
+msgid "Thanks for your subscription!"
+msgstr "Vielen Dank für Ihr Abonnement!"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.404_ept
+msgid "The page you requested could not be found"
+msgstr "Die von Ihnen angeforderte Seite konnte nicht gefunden werden"
+
+#. module: theme_clarico_vega
+#. openerp-web
+#: code:addons/theme_clarico_vega/static/src/js/editor/snippets.editor.js:0
+#, python-format
+msgid "Theme Settings"
+msgstr "Theme-Einstellungen"
+
+#. module: theme_clarico_vega
+#. openerp-web
+#: code:addons/theme_clarico_vega/static/src/xml/customise_option.xml:0
+#, python-format
+msgid "Theme colors"
+msgstr "Farben des Themas"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.ajax_cart_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.quick_view_template
+msgid ""
+"This combination does\n"
+"                                    not exist."
+msgstr ""
+"Diese Kombination \n"
+"                                    existiert nicht."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.ajax_cart_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.quick_view_template
+msgid "This product has no valid combination."
+msgstr "Dieses Produkt hat keine gültige Kombination."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.ajax_cart_template
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.quick_view_template
+msgid ""
+"This product is no longer\n"
+"                            available."
+msgstr "Dieses Produkt ist nicht mehr verfügbar."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.theme_clarico_vega
+msgid "Title"
+msgstr "Titel"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Top"
+msgstr "Oben"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.header_custom_options
+msgid "Transition Effect"
+msgstr "Übergangseffekt"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.cart_popover_ept
+msgid "True"
+msgstr "Wahr"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.html_content_tabs_ept
+msgid "Uncategorized"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style7
+msgid "Useful link"
+msgstr "Nützlicher Link"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "Useful links"
+msgstr "Nützliche Links"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.vega_theme_options
+msgid "Vertical Menu"
+msgstr "Vertikales Menü"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.cart_popover_ept
+msgid "View Cart ("
+msgstr "Warenkorb anzeigen ("
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.quick_view_template
+msgid "View full details <i class=\"fa fa-long-arrow-right\"/>"
+msgstr "Alle Details anzeigen <i class=\"fa fa-long-arrow-right\"/>"
+
+#. module: theme_clarico_vega
+#: model_terms:ir.ui.view,arch_db:theme_clarico_vega.coming_soon
+#: model_terms:website.page,arch_db:theme_clarico_vega.ecom_furniture_page_coming_soon
+msgid "WEBSITE IS ALMOST READY"
+msgstr "WEBSITE IST FAST FERTIG"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid ""
+"Web Design\n"
+"                                                            <br/>"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid "Web Developer"
+msgstr "Web Entwickler"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_header_style_4
+msgid "What are you Looking for ?"
+msgstr "Wonach suchen Sie?"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.footer_snippet_style4
+msgid "Woman Dress"
+msgstr "Frau Kleid"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_5
+msgid "Working Days/Hours"
+msgstr "Arbeitstage/-stunden"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.login_popup
+msgid "You are successfully logged in"
+msgstr "Sie sind erfolgreich eingeloggt"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.register_popup
+msgid "You are successfully register your account"
+msgstr "Sie sind erfolgreich Ihr Konto registrieren"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.banner_video
+msgid "Your Banner Video will be displayed here after saving editor option"
+msgstr ""
+"Ihr Banner-Video wird nach dem Speichern der Editor Option hier angezeigt"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.banner_video_template
+msgid ""
+"Your Banner Video will be displayed here... This message is displayed because you did not configure\n"
+"                Banner Video.\n"
+"                <br/>\n"
+"                Configure From Website -&gt; Configuration -&gt; Setting -&gt; Video URL for Banner"
+msgstr ""
+"Ihr Bannervideo wird hier angezeigt... Diese Meldung wird angezeigt, weil Sie Banner Video nicht konfiguriert haben.                 \n"
+"                <br/>\n"
+"                Konfigurieren Von Website -&gt; Konfiguration -&gt; Einstellung -&gt; Video URL für Banner"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.login_popup
+msgid "Your Email"
+msgstr "Ihre E-Mail"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.p_multi_slider
+msgid ""
+"Your Snippet data will be displayed here.This message is displayed\n"
+"                                                because you\n"
+"                                                have not\n"
+"                                                configured the snippet yet.\n"
+"                                                <br/>\n"
+"                                                Check the document and video for the configuration."
+msgstr ""
+"Diese Meldung wird angezeigt, weil Sie das Snippet noch nicht konfiguriert haben.       \n"
+"                                                <br/>\n"
+"                                                Sehen Sie sich das Dokument und das Video für die Konfiguration an."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_slider_banner
+msgid ""
+"Your Snippet data will be displayed here.This message is displayed\n"
+"                                                because you have not\n"
+"                                                configured the snippet yet.\n"
+"                                                <br/>\n"
+"                                                Check the document and video for the configuration."
+msgstr ""
+"Diese Meldung wird angezeigt, weil Sie das Snippet noch nicht konfiguriert haben.\n"
+"                                                <br/>\n"
+"                                                Sehen Sie sich das Dokument und das Video für die Konfiguration an."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.product_multiple_sliders
+msgid ""
+"Your Snippet data will be displayed here.This message is displayed\n"
+"                                    because you have not\n"
+"                                    configured the snippet yet.\n"
+"                                    <br/>\n"
+"                                    Check the document and video for the configuration."
+msgstr ""
+"Diese Meldung wird angezeigt, weil Sie das Snippet noch nicht konfiguriert haben.\n"
+"                                    <br/>\n"
+"                                    Schauen Sie sich das Dokument und das Video für die Konfiguration an."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.brand_slider_template_snippet
+msgid ""
+"Your Snippet data will be displayed here.This message is displayed because you\n"
+"                                        have\n"
+"                                        not configured the snippet yet.\n"
+"                                        <br/>\n"
+"                                        Check the document and video for the configuration."
+msgstr ""
+"Hier werden Ihre Snippet-Daten angezeigt, da\n"
+"                                        Sie das Snippet noch nicht konfiguriert haben.\n"
+"                                        <br/>\n"
+"                                        Überprüfen Sie das Dokument und das Video für die Konfiguration."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.brand_slider
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.category_slider
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.p_slider
+msgid ""
+"Your Snippet data will be displayed here.This message is displayed because you have not\n"
+"                        configured the snippet yet.\n"
+"                        <br/>\n"
+"                        Check the document and video for the configuration."
+msgstr ""
+"Diese Meldung wird angezeigt, weil Sie das Snippet noch nicht konfiguriert "
+"haben.                         <br/> Sehen Sie sich das Dokument und das "
+"Video für die Konfiguration an."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.cart_lines_ept
+msgid "Your cart is empty!"
+msgstr "Ihr Einkaufswagen ist leer!"
+
+#. module: theme_clarico_vega
+#. openerp-web
+#: code:addons/theme_clarico_vega/static/src/js/editor/google_map_snippet_backend.js:0
+#, python-format
+msgid "Your location"
+msgstr "Ihr Standort"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_2
+msgid "best support"
+msgstr "bester Support"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_comparisons_ept
+msgid "bonorum &amp; inermis efficiantur"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid "bonorum &amp;amp; inermis efficiantur"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid "completed projects"
+msgstr "abgeschlossene Projekte"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid ""
+"consectetur elit\n"
+"                                adipisicing elitLorem ipsum dolor s it ametr"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_1
+msgid "consectetur elit adipisicing elitLorem ipsum dolor s it ametr"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_2
+msgid "consequat constituam"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_2
+msgid "creativity"
+msgstr "Kreativität"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_2
+msgid "easy to buy"
+msgstr "einfach zu kaufen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_3
+msgid "experience"
+msgstr "Erfahrung"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_ept
+msgid "in category \""
+msgstr "in der Kategorie \""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.cart_popover_ept
+msgid "items)"
+msgstr "Artikel)"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.banner_slider
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_banner_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_cover_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+msgid "know more"
+msgstr "Mehr wissen"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.employee_team_6
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_2
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.our_team_3
+msgid "lorem"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_2
+msgid ""
+"meet our\n"
+"                                team\n"
+"                                <br/>"
+msgstr ""
+"Treffen Sie unser\n"
+"                                Team\n"
+"                                <br/>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.products_ept
+msgid "mt-3 ml-md-2"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.slider_style_8
+msgid "oblique<br/>pertinacia"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.html_content_tabs_ept
+msgid "or"
+msgstr "oder"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+msgid "phaedrum"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_1
+msgid ""
+"phaedrum\n"
+"                                        pertinacia"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_price
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.four_columns_pricing
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.s_comparisons_ept
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_3
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.text_image_2
+msgid "phaedrum pertinacia"
+msgstr ""
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.ajax_cart_success_template
+msgid "shopping cart."
+msgstr "Einkaufswagen hinzugefügt."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.service_2
+msgid "tasks"
+msgstr "Aufgaben"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.about_us_2
+msgid ""
+"what we do\n"
+"                                <br/>"
+msgstr ""
+"was wir tun\n"
+"                                <br/>"
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_1
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_5
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.customize_footer_style_7
+msgid "your email..."
+msgstr "Ihre E-Mail..."
+
+#. module: theme_clarico_vega
+#: model_terms:theme.ir.ui.view,arch:theme_clarico_vega.t_tabs_ept
+msgid ""
+"— Lorem ipsum, dolor sit\n"
+"                                            <b>Lorem</b>"
+msgstr ""
+
+#. module: website_sale
+#: model_terms:ir.ui.view,arch_db:website_sale.product
+msgid "<i class=\"fa fa-shopping-cart mr-2\"/>ADD TO CART"
+msgstr "<i class=\"fa fa-shopping-cart mr-2\"/>Zum Warenkorb hinzufügen"

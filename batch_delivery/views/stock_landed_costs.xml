@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id='view_stock_landed_cost_form_inherit_batch_delivery' model='ir.ui.view'>
+            <field name="name">stock.landed.cost.form</field>
+            <field name="model">stock.landed.cost</field>
+            <field name="inherit_id" ref="stock_landed_costs.view_stock_landed_cost_form"/>
+            <field name="arch" type="xml">
+              <xpath expr="//field[@name='former_cost']" position="after">
+                  <field name="price_per_unit"/>
+              </xpath>
+              <xpath expr="//field[@name='final_cost']" position="after">
+                  <field name="price_per_unit"/>
+              </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

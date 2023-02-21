@@ -21,6 +21,9 @@ class ProductTemplate(models.Model):
     # def action_open_quants(self):
     #     return {}
 
+    description_purchase = fields.Text(
+        'Purchase Description', translate=True, copy=False)
+
     def _get_product_accounts(self):
         """ Add the stock accounts related to product to the result of super()
         @return: dictionary which contains information regarding stock accounts and super (income+expense accounts)
@@ -71,6 +74,7 @@ class ProductProduct(models.Model):
     lst_from_std_price = fields.Float(
         'Standard Price', compute='_compute_lst_price_std_price',
         digits='Product Price')
+    allow_out_of_stock_selling = fields.Boolean(string='Allow Out Of Stock Selling', default=True)
 
     def action_open_quants(self):
         # Override to make the button readonly for non-inventory users.
@@ -157,7 +161,9 @@ class ProductProduct(models.Model):
             else:
                 product.is_bel_min_qty = False
 
-            if product.qty_available < (product.reordering_min_qty / 2):
+            crit_config = float(self.env['ir.config_parameter'].sudo().get_param('price_paper.bel_critical_config'))
+
+            if product.qty_available < (product.reordering_min_qty * (crit_config / 100)):
                 product.is_bel_crit_qty = True
             else:
                 product.is_bel_crit_qty = False
@@ -275,6 +281,17 @@ class ProductProduct(models.Model):
                 log_vals['user_id'] = self._context.get('user', False)
             self.env['product.price.log'].create(log_vals)
         return res
+
+    def name_get(self):
+        res = super(ProductProduct, self).name_get()
+        if not self._context.get('show_uom_name', False):
+            return res
+        result = []
+        for rec in res:
+            name = self.env['product.product'].browse(rec[0]).uom_id.name or ''
+            result.append((rec[0], rec[1]+'_'+name))
+
+        return result
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):

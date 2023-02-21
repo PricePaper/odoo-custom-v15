@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id='view_stock_landed_cost_form_inherit_batch_delivery' model='ir.ui.view'>
+            <field name="name">stock.landed.cost.form</field>
+            <field name="model">stock.landed.cost</field>
+            <field name="inherit_id" ref="stock_landed_costs.view_stock_landed_cost_form"/>
+            <field name="arch" type="xml">
+              <xpath expr="//header" position="inside">
+                  <button name="button_create_cost_change" string="Create Cost change" states="done" type="object"/>
+              </xpath>
+              <xpath expr="//div[@name='button_box']" position="inside">
+                <field name="cost_cron_ids" invisible='1'/>
+                <button string="Cost Change" type="object"
+                    name="action_view_cost_cron" icon="fa-bars"
+                    class="oe_stat_button"
+                    attrs="{'invisible': [('cost_cron_ids', '=', [])]}"/>
+              </xpath>
+              <xpath expr="//field[@name='former_cost']" position="after">
+                  <field name="price_per_unit"/>
+              </xpath>
+              <xpath expr="//field[@name='final_cost']" position="after">
+                  <field name="price_per_unit"/>
+              </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

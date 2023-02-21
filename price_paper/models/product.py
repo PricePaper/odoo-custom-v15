@@ -74,6 +74,7 @@ class ProductProduct(models.Model):
     lst_from_std_price = fields.Float(
         'Standard Price', compute='_compute_lst_price_std_price',
         digits='Product Price')
+    allow_out_of_stock_selling = fields.Boolean(string='Allow Out Of Stock Selling', default=True)
 
     def action_open_quants(self):
         # Override to make the button readonly for non-inventory users.

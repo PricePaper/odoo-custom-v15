@@ -3,7 +3,7 @@
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare, DEFAULT_SERVER_DATETIME_FORMAT
 import pytz
 
@@ -91,12 +91,19 @@ class SaleHistoryLinesWizard(models.TransientModel):
                                     "%s: %s %s\n" % (warehouse.name, quantity, self.order_line.product_id.uom_id.name))
 
             if message:
-                products = product.same_product_ids + product.same_product_rel_ids
+
+                products = product.same_product_ids | product.same_product_rel_ids
                 alternatives = ''
                 if products:
-                    alternatives = 'Alternative Products:'
+                    alternatives = '\nPlease add an alternate product'
                     for item in products:
                         alternatives += '\n' + item.default_code
+                    alternatives += '\nusing the Add Product button (not Browse Products).'
+                if not product.allow_out_of_stock_selling:
+                    message1 = 'Product'+ product.display_name + 'is not in stock and can not be oversold.'
+                    if alternatives:
+                        message1 += alternatives
+                    raise ValidationError(message1)
                 return {'warning': {
                     'title': _('Not enough inventory!'),
                     'message': message+alternatives

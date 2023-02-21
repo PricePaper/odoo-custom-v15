@@ -45,6 +45,7 @@ This module sets up the batch delivery process for price paper.
         'wizard/pending_product_view.xml',
         'views/res_company_view.xml',
         'views/truck_route_view.xml',
+        'views/stock_landed_costs.xml',
         'views/batch_delivery_view.xml',
         'views/product_view.xml',
         'views/stock_picking_return.xml',
@@ -58,7 +59,7 @@ This module sets up the batch delivery process for price paper.
         'views/stock_picking_view.xml',
         'views/stock_valuation_layer_view.xml',
         'views/order_banner.xml',
-        'views/website_asset.xml',
+        # 'views/website_asset.xml',
     ],
     'depends': [
         'price_paper',
@@ -71,6 +72,7 @@ This module sets up the batch delivery process for price paper.
         'account_batch_payment',
         'purchase_extension',
         'account_followup',
+        'stock_landed_costs',
     ],
     'assets': {
         'web.assets_backend': [

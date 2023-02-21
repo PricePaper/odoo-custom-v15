@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============= Comparison =========== -->
+    <template id="product_attributes_body_ept" inherit_id="website_sale_comparison.product_attributes_body" priority="20" >
+		<!--<xpath expr="//section[@id='product_full_spec']//div" position="replace" />-->
+        <xpath expr="//section[@id='product_full_spec']" position="attributes">
+            <attribute name="class" add="border-0 product_full_spec_inner" separator=" "/>
+        </xpath>
+<!--        <xpath expr="//section[hasclass('product_full_spec_inner')]" position="replace" />-->
+    </template>
+    <!-- ================= Compare Page ==================== -->
+    <template id="remove_button" inherit_id="website_sale_comparison.product_compare">
+        <xpath expr="//table[@id='o_comparelist_table']" position="attributes">
+            <attribute name="class">table table-bordered table-hover text-center mt16 table-comparator
+                te_compare_table
+            </attribute>
+        </xpath>
+        <xpath expr="//section[hasclass('container')]" position="attributes">
+            <attribute name="class"></attribute>
+        </xpath>
+        <xpath expr="//h3" position="attributes">
+            <attribute name="class">Compare_Products_heading pb-2 mb-4 mt-4</attribute>
+        </xpath>
+        <xpath expr="//td[@t-foreach='products']" position="attributes">
+            <attribute name="class">position-relative</attribute>
+        </xpath>
+        <xpath expr="//td[@t-foreach='products']/a[1]" position="attributes">
+            <attribute name="class">o_comparelist_remove te_close</attribute>
+        </xpath>
+        <xpath expr="//td[@t-foreach='products']/a[1]/strong" position="attributes">
+            <attribute name="class"></attribute>
+        </xpath>
+        <xpath expr="//td[@t-foreach='products']/a[2]/img" position="replace">
+            <div class="te_cmp_img_div position-relative">
+                <t t-set="check_stock" t-value="website.option_out_of_stock and product.type=='product' and (not product.allow_out_of_stock_order) and (product.sudo().qty_available &lt; 1)"/>
+                <img t-attf-src="/web/image/product.product/#{product.id}/image_256/300x300"
+                     t-attf-class="img img-fluid #{'sold-out' if check_stock else ''}" style="margin:auto;" alt="Product image"/>
+                <div class="te-out-of-stock-lbl" t-if="website.option_out_of_stock and product.type=='product' and (not product.allow_out_of_stock_order) and (product.sudo().qty_available &lt; 1)">
+                    <t t-call="theme_clarico_vega.out_of_stock_label_ept"/>
+                </div>
+            </div>
+        </xpath>
+        <xpath expr="//div[hasclass('product_summary')]" position="attributes">
+            <attribute name="class">product_summary text-center</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('product_summary')]/a[hasclass('o_product_comparison_table')]" position="replace">
+            <div id="read_more">
+                <a class="o_product_comparison_table product_name_compare"
+                   t-attf-href="/shop/product/#{ slug(product.product_tmpl_id) }">
+                    <div class="more" t-field='product.display_name'></div>
+                    <div class="full_name_compare" t-field='product.display_name'></div>
+                </a>
+            </div>
+        </xpath>
+        <xpath expr="//div[hasclass('product_summary')]/span[1]" position="attributes">
+            <attribute name="t-if">False if (website.b2b_hide_price and website.is_public_user()) else True</attribute>
+        </xpath>
+        <xpath expr="//form[@action='/shop/cart/update']" position="attributes">
+            <attribute name="t-if">False if (website.b2b_hide_add_to_cart and website.is_public_user()) else True</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('product_summary')]/span[1]" position="after">
+            <t t-if="True if website.is_b2b_message and website.is_public_user() else False" t-call="theme_clarico_vega.b2b_hide_details_msg"/>
+        </xpath>
+    </template>
+
+    <template id="product_add_to_compare_ept" name='Add to comparison in product page'
+              inherit_id="website_sale_comparison.add_to_compare_button">
+        <xpath expr="//button[hasclass('o_add_compare_dyn')]" position="replace">
+            <button t-if="product_variant" type="button" role="button"
+                    class="d-none d-md-inline-block btn btn-link mt16 o_add_compare_dyn te_theme_button" aria-label="Compare"
+                    t-att-data-product-product-id="product_variant.id" data-action="o_comparelist">
+                <span class="fa fa-exchange"></span>
+            </button>
+        </xpath>
+    </template>
+
+    <template id="compare_products" inherit_id="website_sale_comparison.product_product">
+        <xpath expr="//a[@t-att-href='product.website_url']/.." position="replace">
+            <a t-att-href="product.website_url"><t t-esc="combination_info['display_name']" /></a><br/>
+            <t t-if="False if (website.b2b_hide_price and website.is_public_user()) else True">
+                <del t-attf-class="text-danger mr8 {{'' if combination_info['has_discounted_price'] else 'd-none'}}" style="white-space: nowrap;" t-esc="combination_info['list_price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}" />
+                <span t-esc="combination_info['price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"></span>
+            </t>
+        </xpath>
+    </template>
+</odoo>

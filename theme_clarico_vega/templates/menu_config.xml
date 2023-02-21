@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============= Dynamic category listing based on is_dynamic_menu is enable/disable  =========== -->
+    <template id="website_submenu_ept" inherit_id="website.submenu">
+        <xpath expr="//li[@t-if='submenu.is_visible and not (submenu.child_id or submenu.is_mega_menu)']"
+               position="inside">
+            <t t-if="submenu.is_dynamic_menu">
+                <t t-call="theme_clarico_vega.website_dynamic_category"/>
+            </t>
+        </xpath>
+        <xpath expr="//li[@t-if='submenu.is_visible and not (submenu.child_id or submenu.is_mega_menu)']"
+               position="attributes">
+            <attribute name="t-attf-class">#{item_class or ''} #{'dynamic_category' if submenu.is_dynamic_menu else ''}
+            </attribute>
+        </xpath>
+    </template>
+    <template id="website_menu_label_text">
+        <t t-set="label_color" t-value="m.menu_label_text_color"/>
+        <t t-set="is_dynamic_mega_menu" t-value="m.dynamic_mega_menu"/>
+        <span id="menu_label_tx_span">
+            <t t-if="is_dynamic_mega_menu and m.category_selection == 'specific' and m.ecom_category.menu_label_id">
+                <t t-set="label_bg_color"
+                   t-value="m.ecom_category.menu_label_id.label_background_color"/>
+                <t t-set="label_text_color"
+                   t-value="m.ecom_category.menu_label_id.label_text_color"/>
+                <span t-field="m.ecom_category.menu_label_id.name"
+                      t-attf-style="background-color: {{ label_bg_color }};color: {{ label_text_color }};border-top-color: {{ label_bg_color }};border-right-color: {{ label_bg_color }};"
+                      class="te_custom_menu_label label_tx"/>
+            </t>
+            <t t-else="">
+                <span t-if="m.menu_label_text" t-field="m.menu_label_text"
+                      t-attf-style="background-color: {{ label_color }};border-top-color: {{ label_color }};border-right-color: {{ label_color }};"
+                      class="te_custom_menu_label label_tx"/>
+            </t>
+        </span>
+    </template>
+    <template id="website_dynamic_category">
+        <div class="menu-categories-container dropdown-menu te_custom_submenu o_mega_menu">
+            <ul id="menu-categories" class="list-unstyled">
+                <t t-set="nav_increment" t-value="0"/>
+                <t t-set="category_fetch"
+                   t-value="request.env['product.public.category'].sudo().search([('parent_id', '=', False), ('website_id', 'in', (False, website.id))])"/>
+                <t t-foreach="category_fetch" t-as="c">
+                    <t t-if="c.is_category_page">
+                        <t t-set="category_url" t-value="c.category_page.url"/>
+                    </t>
+                    <t t-else="">
+                        <t t-set="category_url" t-value="'/shop/category/%s' %slug(c)"/>
+                    </t>
+                    <li class="nav-item parent-category" t-att-data-id="c.id">
+                        <a t-att-href="category_url"
+                           t-attf-class="nav-link te_main_a #{' active' if c.id == int(category or 0) else ''}">
+                            <img class="img" t-attf-src="/website/image/#{c._name}/#{c.id}/icon/30x30"/>
+                            <span class="category_name" t-field="c.name"/>
+                            <span class="fa fa-angle-right main_category_child" t-if="c.child_id"/>
+                        </a>
+                        <section t-if="c.child_id" class="sub-menu-dropdown">
+                            <div class="d-none cus_theme_loader_menu">
+                                <div class="menu_loader_div_layout">
+                                    <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"
+                                         style="margin:auto;background:transparent;display:block;" width="100px"
+                                         height="100px"
+                                         viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+                                        <g transform="translate(20 50)">
+                                            <circle class="circle1" cx="0" cy="0" r="6">
+                                                <animateTransform attributeName="transform" type="scale" begin="-0.375s"
+                                                                  calcMode="spline" keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+                                                                  values="0;1;0" keyTimes="0;0.5;1" dur="1s"
+                                                                  repeatCount="indefinite"/>
+                                            </circle>
+                                        </g>
+                                        <g transform="translate(40 50)">
+                                            <circle class="circle2" cx="0" cy="0" r="6">
+                                                <animateTransform attributeName="transform" type="scale" begin="-0.25s"
+                                                                  calcMode="spline" keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+                                                                  values="0;1;0" keyTimes="0;0.5;1" dur="1s"
+                                                                  repeatCount="indefinite"/>
+                                            </circle>
+                                        </g>
+                                        <g transform="translate(60 50)">
+                                            <circle class="circle3" cx="0" cy="0" r="6">
+                                                <animateTransform attributeName="transform" type="scale" begin="-0.125s"
+                                                                  calcMode="spline" keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+                                                                  values="0;1;0" keyTimes="0;0.5;1" dur="1s"
+                                                                  repeatCount="indefinite"/>
+                                            </circle>
+                                        </g>
+                                        <g transform="translate(80 50)">
+                                            <circle class="circle4" cx="0" cy="0" r="6">
+                                                <animateTransform attributeName="transform" type="scale" begin="0s"
+                                                                  calcMode="spline" keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+                                                                  values="0;1;0" keyTimes="0;0.5;1" dur="1s"
+                                                                  repeatCount="indefinite"/>
+                                            </circle>
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="sub-menu-dropdown-content"/>
+                        </section>
+                    </li>
+                </t>
+            </ul>
+        </div>
+    </template>
+
+    <template id="website_dynamic_sub_category" inherit_id="emipro_theme_base.dynamic_mega_menu_child">
+        <xpath expr="//div[hasclass('dynamic_mega_menu_child')]" position="inside">
+            <div class="container-fluid">
+                <div class="row">
+                    <t t-if="child_ids" t-foreach="child_ids" t-as="child_id">
+                        <div class="col-xl-3 col-lg-4 col-md-6 category_column">
+                            <t t-if="child_id.is_category_page">
+                                <t t-set="category_url" t-value="child_id.category_page.url"/>
+                            </t>
+                            <t t-else="">
+                                <t t-set="category_url" t-value="'/shop/category/%s' %slug(child_id)"/>
+                            </t>
+                            <span t-if="child_id and child_id.image_128"
+                                  t-field="child_id.image_128" class="demo-icon"
+                                  t-options="{'widget': 'image', 'alt-field': 'name', 'itemprop': 'image'}"/>
+                            <span t-if="child_id and not child_id.image_128"
+                                  t-field="child_id.image_128" class="demo-icon"
+                                  t-options="{'widget': 'image', 'alt-field': 'name', 'itemprop': 'image'}">
+                            </span>
+                            <div class="category_heading mb8">
+                                <a t-att-href="category_url" t-esc="child_id.name"></a>
+                                <span class="cat_badge badge badge-pill"
+                                      t-if="child_id.menu_label_id"
+                                      t-esc="child_id.menu_label_id.name"
+                                      t-att-style="'background-color: %s;color: %s;' % (child_id.menu_label_id.label_background_color, child_id.menu_label_id.label_text_color)"
+                                />
+                            </div>
+                            <ul class="list-unstyled category_ul">
+                                <t t-foreach="child_id.child_id" t-as="c">
+                                    <t t-call="theme_clarico_vega.web_categories_recursive"/>
+                                </t>
+                            </ul>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </xpath>
+    </template>
+    <template id="web_categories_recursive">
+        <li t-att-id="'custom_menu_li_%s' % c.id" class="nav-item">
+            <t t-if="c.is_category_page">
+                <t t-set="category_url" t-value="c.category_page.url"/>
+            </t>
+            <t t-else="">
+                <t t-set="category_url" t-value="'/shop/category/%s' %slug(c)"/>
+            </t>
+            <div class="child_categories">
+                <a t-attf-id="nav_main_{{c.id}}" t-att-href="category_url"
+                   t-attf-class="nav-link te_main_a #{' active' if c.id == int(category or 0) else ''}">
+                    <span t-field="c.name"/>
+                    <span class="cat_badge badge badge-pill"
+                          t-if="c.menu_label_id"
+                          t-esc="c.menu_label_id.name"
+                          t-att-style="'background-color: %s;color: %s;' % (c.menu_label_id.label_background_color, c.menu_label_id.label_text_color)"
+                    />
+                </a>
+            </div>
+            <ul t-if="c.child_id" t-att-id="'custom_recursive_%s' % c.id"
+                class="collapse t_custom_subctg list-unstyled">
+                <t t-foreach="c.child_id" t-as="c">
+                    <t t-call="theme_clarico_vega.web_categories_recursive"/>
+                </t>
+            </ul>
+        </li>
+    </template>
+    <!-- Nested dynamic categories for mega menu upto third level  -->
+    <template id="web_dynamic_categories_recursive">
+            <li id="custom_menu_li" class="nav-item">
+            <t t-if="c.is_category_page">
+                <t t-set="category_url" t-value="c.category_page.url"/>
+            </t>
+            <t t-else="">
+                <t t-set="category_url" t-value="'/shop/category/%s' %slug(c)"/>
+            </t>
+            <a t-att-href="category_url" t-attf-class="nav-link #{' active' if c.id == int(category or 0) else ''}">
+                <span t-field="c.name"/>
+                <span class="cat_badge badge badge-pill"
+                      t-if="c.menu_label_id"
+                      t-esc="c.menu_label_id.name"
+                      t-att-style="'background-color: %s;color: %s;' % (c.menu_label_id.label_background_color, c.menu_label_id.label_text_color)"
+                />
+            </a>
+            <t t-set="c_level" t-value="c_level and c_level or 1"/>
+            <t t-if="c_level&lt;3">
+                <span t-if="c.child_id" class='ctg_arrow fa fa-angle-right' />
+                <ul t-if="c.child_id" id="custom_recursive" class="t_custom_subctg">
+                    <t t-foreach="c.child_id" t-as="c">
+                        <t t-if="c_level&lt;3">
+                            <t t-set="c_level" t-value="c_level+1"/>
+                            <t t-call="theme_clarico_vega.web_dynamic_categories_recursive"/>
+                            <t t-set="c_level" t-value="c_level - 1"/>
+                        </t>
+                    </t>
+                </ul>
+            </t>
+        </li>
+    </template>
+
+    <template id="website_submenu_label_ept" inherit_id="website.submenu"></template>
+    <!--highlighted menu-->
+    <template id="submenu" inherit_id="website.submenu">
+        <xpath expr="//li[@t-if='submenu.is_visible and not (submenu.child_id or submenu.is_mega_menu)']//a//span" position="before">
+             <t t-if="submenu.is_dynamic_menu">
+                 <i class="fa fa-th-large"/>
+             </t>
+         </xpath>
+        <xpath expr="//li[@t-if='submenu.is_visible and not (submenu.child_id or submenu.is_mega_menu)']//a"
+               position="replace">
+            <t t-call="theme_clarico_vega.render_submenu_ept"/>
+        </xpath>
+        <xpath expr="//li//div[@t-if='submenu.is_mega_menu']" position="replace">
+            <!-- If category and not style 5 & nested menu style  -->
+            <div t-if="submenu.dynamic_mega_menu"
+                 t-attf-class="dropdown-menu o_mega_menu o_mega_menu_container_size #{submenu.mega_menu_classes}"
+                 data-name="Mega Menu" t-field="submenu.mega_menu_content"/>
+            <!-- If not category -->
+            <div t-if="submenu.is_mega_menu and not submenu.dynamic_mega_menu"
+                 t-attf-class="dropdown-menu o_mega_menu #{submenu.mega_menu_classes}"
+                 data-name="Mega Menu"
+                 t-field="submenu.mega_menu_content"/>
+        </xpath>
+        <xpath expr="//li[@t-elif='show_dropdown']//a" position="replace">
+            <a t-if="submenu.dynamic_mega_menu"
+               t-attf-class="#{link_class or ''} dropdown-toggle #{submenu.is_mega_menu and 'o_mega_menu_toggle'}"
+               t-att-href="submenu.category_selection == 'specific' and '/shop/category/%s' %slug(submenu.ecom_category) or submenu.url or '#'"
+               data-toggle="dropdown" t-att-data-id="submenu.id">
+                <span t-field="submenu.name"
+                      t-attf-class="#{'te_highlighted_menu_span' if submenu.is_highlight_menu else ''}"/>
+                <t t-if="request.website.viewref('theme_clarico_vega.website_submenu_label_ept').active">
+                    <t t-foreach="submenu" t-as="m" t-if="m.menu_label_text">
+                        <t t-call="theme_clarico_vega.website_menu_label_text"/>
+                    </t>
+                </t>
+            </a>
+            <a t-else="" t-attf-class="#{link_class or ''} dropdown-toggle #{submenu.is_mega_menu and 'o_mega_menu_toggle'}"
+               data-toggle="dropdown" href="#">
+                <span t-field="submenu.name" t-attf-class="#{'te_highlighted_menu_span' if submenu.is_highlight_menu else ''}"/>
+                <t t-if="request.website.viewref('theme_clarico_vega.website_submenu_label_ept').active">
+                    <t t-foreach="submenu" t-as="m" t-if="m.menu_label_text">
+                        <t t-call="theme_clarico_vega.website_menu_label_text"/>
+                    </t>
+                </t>
+            </a>
+        </xpath>
+        <xpath expr="//li[@t-elif='show_dropdown']" position="attributes">
+            <attribute name="t-att-id">submenu.id</attribute>
+        </xpath>
+        <xpath expr="//t[@t-set='show_dropdown']" position="after">
+            <t t-set="item_class"
+               t-value="submenu.is_highlight_menu and (item_class and item_class or '') + ' te_highlighted_menu' or item_class"/>
+            <t t-set="item_class"
+               t-value="(submenu.dynamic_mega_menu and submenu.category_menu_styles == 'style6') and (item_class and item_class or '') + ' m_custom te_dynamic_ept' or item_class"/>
+            <t t-set="item_class"
+               t-value="(submenu.dynamic_mega_menu and submenu.category_menu_styles == 'style5') and (item_class and item_class or '') + ' m_custom te_all_dynamic_ept' or item_class"/>
+            <t t-set="item_class"
+               t-value="(submenu.dynamic_mega_menu) and (item_class and item_class or '') + ' te_mega_menu_ept' or item_class"/>
+        </xpath>
+        <xpath expr="//li[@t-elif='show_dropdown']//ul" position="replace">
+            <ul t-if="not submenu.is_mega_menu" class="dropdown-menu" role="menu">
+                <t t-foreach="submenu.child_id" t-as="submenu">
+                    <t t-call="website.submenu">
+                        <t t-set="item_class" t-value="None"/>
+                        <t t-set="link_class" t-valuef="dropdown-item"/>
+                    </t>
+                </t>
+            </ul>
+        </xpath>
+    </template>
+    <template id="render_submenu_ept">
+        <!-- Start: Mega Menu dynamic category -->
+        <a t-if="submenu.is_mega_menu and submenu.dynamic_mega_menu"
+           t-att-href="'/shop/category/%s' %slug(submenu.ecom_category)"
+           t-attf-class="#{link_class or ''} dropdown-toggle o_mega_menu_toggle #{'active' if '/shop/category/%s' %slug(submenu.ecom_category) and unslug_url(request.httprequest.path) == unslug_url('/shop/category/%s' %slug(submenu.ecom_category)) else ''}"
+           data-toggle="dropdown"
+           role="menuitem"
+           t-ignore="true"
+           t-att-target="'_blank' if submenu.new_window else None">
+            <span t-field="submenu.ecom_category.name" t-attf-class="#{'te_highlighted_menu_span' if submenu.is_highlight_menu else ''}"/>
+            <t t-if="request.website.viewref('theme_clarico_vega.website_submenu_label_ept').active">
+                <t t-foreach="submenu" t-as="m" t-if="m.menu_label_text">
+                    <t t-call="theme_clarico_vega.website_menu_label_text"/>
+                </t>
+            </t>
+        </a>
+        <!-- End: Mega Menu dynamic category -->
+        <a t-if="not submenu.is_mega_menu"
+           t-att-href="submenu.clean_url()"
+           t-attf-class="#{link_class or ''} #{'active' if submenu.clean_url() and unslug_url(request.httprequest.path) == unslug_url(submenu.clean_url()) else ''}"
+           role="menuitem"
+           t-ignore="true"
+           t-att-target="'_blank' if submenu.new_window else None">
+            <span t-field="submenu.name" t-attf-class="#{'te_highlighted_menu_span' if submenu.is_highlight_menu else ''}"/>
+            <t t-if="request.website.viewref('theme_clarico_vega.website_submenu_label_ept').active">
+                <t t-foreach="submenu" t-as="m" t-if="m.menu_label_text">
+                    <t t-call="theme_clarico_vega.website_menu_label_text"/>
+                </t>
+            </t>
+        </a>
+    </template>
+    <template id="dynamic_category_mega_menu" inherit_id="emipro_theme_base.dynamic_category_mega_menu">
+        <xpath expr="//t[@t-set='category_fetch']" position="after">
+            <!-- Mega Menu Category Style 1 -->
+            <section t-if="category_menu_styles == 'style1'"
+                    class="te_menu_style_1 s_mega_menu_style_1 container-fluid py-3 px-3 te_img_hide_small_devices dynamic_menu" t-att-menu_id="parent_menu.id">
+                <div class="container">
+                    <div class="row">
+                        <t t-set="selected_category" t-value="parent_menu.category_selection"/>
+                        <t t-if="selected_category == 'all'">
+                            <t t-set="parent_menu" t-value="category_fetch"/>
+                        </t>
+                        <t t-else="">
+                            <t t-set="parent_menu" t-value="parent_menu.ecom_category.child_id"/>
+                        </t>
+                        <t t-if="parent_menu"
+                           t-foreach="parent_menu"
+                           t-as="parent_child">
+                            <section class="col-lg-3 col-md-3 col-sm-3 col-12">
+                                <div class="te_category-heading-center">
+                                    <div class="d-inline-block">
+                                        <t t-if="parent_child.is_category_page">
+                                            <t t-set="category_url"
+                                               t-value="parent_child.category_page.url"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-set="category_url"
+                                               t-value="'/shop/category/%s' %slug(parent_child)"/>
+                                        </t>
+                                        <a class="te_menu_category_heading nav-link d-inline-block"
+                                           t-att-href="category_url">
+                                            <span t-esc="parent_child.name"/>
+                                            <span class="cat_badge badge badge-pill"
+                                              t-if="parent_child.menu_label_id"
+                                              t-esc="parent_child.menu_label_id.name"
+                                              t-att-style="'background-color: %s;color: %s;' % (parent_child.menu_label_id.label_background_color, parent_child.menu_label_id.label_text_color)"
+                                        />
+                                        </a>
+                                    </div>
+                                    <t t-foreach="parent_child.child_id" t-as="child_of_child">
+                                        <section class="te_menu_category_item d-inline-block">
+                                            <t t-if="child_of_child.is_category_page">
+                                                <t t-set="category_url"
+                                                   t-value="child_of_child.category_page.url"/>
+                                            </t>
+                                            <t t-else="">
+                                                <t t-set="category_url"
+                                                   t-value="'/shop/category/%s' %slug(child_of_child)"/>
+                                            </t>
+                                            <a t-att-href="category_url"
+                                               class="te_menu_item nav-link d-inline-block">
+                                                <span t-esc="child_of_child.name"/>
+                                                <span class="cat_badge badge badge-pill"
+                                                      t-if="child_of_child.menu_label_id"
+                                                      t-esc="child_of_child.menu_label_id.name"
+                                                      t-att-style="'background-color: %s;color: %s;' % (child_of_child.menu_label_id.label_background_color, child_of_child.menu_label_id.label_text_color)"
+                                                />
+                                            </a>
+                                        </section>
+                                    </t>
+                                </div>
+                            </section>
+                        </t>
+                    </div>
+                </div>
+            </section>
+            <!-- Mega Menu Category Style 2 -->
+            <section t-if="category_menu_styles == 'style2'"
+                     class="te_menu_style_2 s_mega_menu_style_2 container-fluid dynamic_menu" t-att-menu_id="parent_menu.id">
+                <div class="container">
+                    <div class="row ">
+                        <t t-set="selected_category" t-value="parent_menu.category_selection"/>
+                        <t t-if="selected_category == 'all'">
+                            <t t-set="parent_menu" t-value="category_fetch"/>
+                        </t>
+                        <t t-else="">
+                            <t t-set="parent_menu" t-value="parent_menu.ecom_category.child_id"/>
+                        </t>
+                        <t t-if="parent_menu"
+                           t-foreach="parent_menu"
+                           t-as="parent_child">
+                            <section class="col-lg-3 cat-column col-md-4 col-sm-6">
+                                <t t-if="parent_child.is_category_page">
+                                    <t t-set="category_url"
+                                       t-value="parent_child.category_page.url"/>
+                                </t>
+                                <t t-else="">
+                                    <t t-set="category_url"
+                                       t-value="'/shop/category/%s' %slug(parent_child)"/>
+                                </t>
+                                <a t-att-href="category_url">
+                                    <section class="te_image">
+                                        <span t-if="parent_child.image_1920"
+                                              t-field="parent_child.image_1920"
+                                              class="demo-icon"
+                                              t-options="{'widget': 'image', 'alt-field': 'name', 'itemprop': 'image', 'class': 'img img-responsive img-fluid d-block mx-auto w-100'}"/>
+                                        <img t-if="not parent_child.image_1920"
+                                             class="img img-responsive img-fluid d-block mx-auto w-100"
+                                             alt="Clarico-Mega Menus Style 2"
+                                             src="/theme_clarico_vega/static/src/img/snippets/menu_snippets/style_2/340_500.jpg"/>
+                                        <section class="te_menu_content">
+                                            <h5 class="mb0">
+                                                <div class="d-block">
+                                                    <a t-att-href="category_url"
+                                                       class="nav-link d-inline-block break_word"
+                                                       t-esc="parent_child.name"/>
+                                                </div>
+                                            </h5>
+                                            <span class="cat_badge badge badge-pill"
+                                                  t-if="parent_child.menu_label_id"
+                                                  t-esc="parent_child.menu_label_id.name"
+                                                  t-att-style="'background-color: %s;color: %s;border-top-color: %s;' % (parent_child.menu_label_id.label_background_color, parent_child.menu_label_id.label_text_color, parent_child.menu_label_id.label_background_color)"
+                                            />
+                                        </section>
+                                    </section>
+                                </a>
+                            </section>
+                        </t>
+                    </div>
+                </div>
+            </section>
+            <!-- Mega Menu Category Style 3 -->
+            <section t-if="category_menu_styles == 'style3'"
+                    class="te_menu_style_4 s_mega_menu_style_4 container-fluid te_icons_menu_main py-3 px-3 dynamic_menu" t-att-menu_id="parent_menu.id">
+                <div class="container">
+                    <div class="row">
+                        <t t-set="selected_category" t-value="parent_menu.category_selection"/>
+                        <t t-if="selected_category == 'all'">
+                            <t t-set="parent_menu" t-value="category_fetch"/>
+                        </t>
+                        <t t-else="">
+                            <t t-set="parent_menu" t-value="parent_menu.ecom_category.child_id"/>
+                        </t>
+                        <t t-if="parent_menu"
+                           t-foreach="parent_menu"
+                           t-as="parent_child">
+                            <section class="col-8 te_menu_flip_box col-8-row">
+                                <div class="align-items-center">
+                                    <t t-if="parent_child.is_category_page">
+                                        <t t-set="category_url"
+                                           t-value="parent_child.category_page.url"/>
+                                    </t>
+                                    <t t-else="">
+                                        <t t-set="category_url"
+                                           t-value="'/shop/category/%s' %slug(parent_child)"/>
+                                    </t>
+                                    <section class="text-center col-12 te_icon_text">
+                                        <div class="te_menu_flip_box_inner">
+                                            <a t-att-href="category_url">
+                                            <span t-if="parent_child.image_1920" t-field="parent_child.image_1920"
+                                                  class="demo-icon"
+                                                  t-options="{'widget': 'image', 'alt-field': 'name', 'itemprop': 'image', 'class': 'img img-responsive img-fluid d-block mx-auto'}"/>
+                                            <img t-if="not parent_child.image_1920"
+                                                 class="img img-responsive img-fluid d-block mx-auto"
+                                                 alt="Clarico-Mega Menus Style 4"
+                                                 src="/theme_clarico_vega/static/src/img/snippets/menu_snippets/style_4/100_100.png"/>
+                                            </a>
+                                        </div>
+                                    </section>
+                                    <section class="py-3 text-center col-12 te_icon_text">
+                                        <span class="cat_badge badge badge-pill"
+                                              t-if="parent_child.menu_label_id"
+                                              t-esc="parent_child.menu_label_id.name"
+                                              t-att-style="'background-color: %s;color: %s;border-top-color: %s;' % (parent_child.menu_label_id.label_background_color, parent_child.menu_label_id.label_text_color, parent_child.menu_label_id.label_background_color)"
+                                        />
+                                        <div class="d-block mt8">
+                                            <a t-att-href="category_url"
+                                               class="nav-link d-inline-block align-middle"
+                                               t-esc="parent_child.name"/>
+                                        </div>
+
+                                    </section>
+                                </div>
+                            </section>
+                        </t>
+                    </div>
+                </div>
+            </section>
+            <!-- Mega Menu Category Style 4 -->
+            <section t-if="category_menu_styles == 'style4'"
+                    class="te_menu_style_5 s_mega_menu_style_5 container-fluid py-3 px-3 te_catalog_menu_main te_img_hide_small_devices dynamic_menu" t-att-menu_id="parent_menu.id">
+                <div class="container">
+                    <div class="row">
+                        <t t-set="selected_category" t-value="parent_menu.category_selection"/>
+                        <t t-if="selected_category == 'all'">
+                            <t t-set="parent_menu" t-value="category_fetch"/>
+                        </t>
+                        <t t-else="">
+                            <t t-set="parent_menu" t-value="parent_menu.ecom_category.child_id"/>
+                        </t>
+                        <t t-if="parent_menu" t-foreach="parent_menu" t-as="parent_child">
+                            <section class="col-lg-2 col-md-4 col-sm-6">
+                                <div class="img_container">
+                                    <div class="te_border_div">
+                                        <span t-if="parent_child.image_1920"
+                                              t-field="parent_child.image_1920"
+                                              class="demo-icon"
+                                              t-options="{'widget': 'image', 'alt-field': 'name', 'itemprop': 'image', 'class': 'img img-responsive img-fluid d-block mx-auto'}"/>
+                                        <img t-if="not parent_child.image_1920"
+                                             class="img img-responsive img-fluid d-block mx-auto"
+                                             alt="Clarico-Mega Menus Style 5"
+                                             src="/theme_clarico_vega/static/src/img/snippets/menu_snippets/style_5/290_210.jpg"/>
+                                    </div>
+                                </div>
+                                <section class="py-lg-3 py-md-3 py-sm-3 py-2">
+                                    <div class="d-inline-block parent_cat mb8">
+                                        <t t-if="parent_child.is_category_page">
+                                            <t t-set="category_url"
+                                               t-value="parent_child.category_page.url"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-set="category_url"
+                                               t-value="'/shop/category/%s' %slug(parent_child)"/>
+                                        </t>
+                                        <a class="te_menu_ctg_main" t-att-href="category_url">
+                                            <span t-esc="parent_child.name"/>
+                                        </a>
+                                        <span class="cat_badge badge badge-pill"
+                                              t-if="parent_child.menu_label_id"
+                                              t-esc="parent_child.menu_label_id.name"
+                                              t-att-style="'background-color: %s;color: %s;' % (parent_child.menu_label_id.label_background_color, parent_child.menu_label_id.label_text_color)"
+                                        />
+                                    </div>
+                                    <ul>
+                                        <section>
+                                            <t t-foreach="parent_child.child_id" t-as="child_of_child">
+                                                <li>
+                                                    <div class="d-inline-block mb8">
+                                                        <t t-if="child_of_child.is_category_page">
+                                                            <t t-set="category_url"
+                                                               t-value="child_of_child.category_page.url"/>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <t t-set="category_url"
+                                                               t-value="'/shop/category/%s' %slug(child_of_child)"/>
+                                                        </t>
+                                                        <a class="te_menu_sub nav-link m-0"
+                                                           t-att-href="category_url">
+                                                            <span t-esc="child_of_child.name"/>
+                                                        </a>
+                                                        <span class="cat_badge badge badge-pill"
+                                                              t-if="child_of_child.menu_label_id"
+                                                              t-esc="child_of_child.menu_label_id.name"
+                                                              t-att-style="'background-color: %s;color: %s;' % (child_of_child.menu_label_id.label_background_color, child_of_child.menu_label_id.label_text_color)"
+                                                        />
+                                                    </div>
+                                                </li>
+                                            </t>
+                                        </section>
+                                    </ul>
+                                </section>
+                            </section>
+                        </t>
+                    </div>
+                </div>
+            </section>
+            <!-- Mega Menu Category Style 5 -->
+            <div t-if="category_menu_styles == 'style5'" id="all_dynamic_menu"
+                     class="menu-categories-container te_custom_submenu dynamic_menu" t-att-menu_id="parent_menu.id">
+                <t t-set="selected_category" t-value="parent_menu.category_selection"/>
+                <t t-if="selected_category == 'all'">
+                    <t t-set="parent_menu" t-value="category_fetch"/>
+                </t>
+                <t t-else="">
+                    <t t-set="parent_menu" t-value="parent_menu.ecom_category.child_id"/>
+                </t>
+                <div class="container px-0">
+                    <ul id="menu-categories" class="list-unstyled">
+                        <t t-if="parent_menu" t-foreach="parent_menu" t-as="c">
+                            <t t-if="c.is_category_page">
+                                <t t-set="category_url" t-value="c.category_page.url"/>
+                            </t>
+                            <t t-else="">
+                                <t t-set="category_url" t-value="'/shop/category/%s' %slug(c)"/>
+                            </t>
+                            <li class="nav-item parent-category" t-att-data-id="c.id">
+                                <a t-att-href="category_url"
+                                   t-attf-class="nav-link te_main_a #{' active' if c.id == int(category or 0) else ''}">
+                                    <img class="img"
+                                         t-attf-src="/website/image/#{c._name}/#{c.id}/icon/30x30"/>
+                                    <span class="ml-2 d-block">
+                                        <span class="category_name" t-field="c.name"></span>
+                                        <span class="cat_badge badge badge-pill"
+                                              t-if="c.menu_label_id"
+                                              t-esc="c.menu_label_id.name"
+                                              t-att-style="'background-color: %s;color: %s;' % (c.menu_label_id.label_background_color, c.menu_label_id.label_text_color)"
+                                        />
+                                    </span>
+                                    <span class="fa fa-angle-right main_category_child"
+                                          t-if="c.child_id"/>
+                                </a>
+                                <section t-if="c.child_id" class="sub-menu-dropdown">
+                                    <div class="d-none cus_theme_loader_menu">
+                                        <div class="menu_loader_div_layout">
+                                            <svg xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                 xmlns="http://www.w3.org/2000/svg"
+                                                 style="margin:auto;background:transparent;display:block;"
+                                                 width="100px"
+                                                 height="100px"
+                                                 viewBox="0 0 100 100"
+                                                 preserveAspectRatio="xMidYMid">
+                                                <g transform="translate(20 50)">
+                                                    <circle class="circle1" cx="0" cy="0" r="6">
+                                                        <animateTransform
+                                                                attributeName="transform"
+                                                                type="scale" begin="-0.375s"
+                                                                calcMode="spline"
+                                                                keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+                                                                values="0;1;0"
+                                                                keyTimes="0;0.5;1" dur="1s"
+                                                                repeatCount="indefinite"/>
+                                                    </circle>
+                                                </g>
+                                                <g transform="translate(40 50)">
+                                                    <circle class="circle2" cx="0" cy="0" r="6">
+                                                        <animateTransform
+                                                                attributeName="transform"
+                                                                type="scale" begin="-0.25s"
+                                                                calcMode="spline"
+                                                                keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+                                                                values="0;1;0"
+                                                                keyTimes="0;0.5;1" dur="1s"
+                                                                repeatCount="indefinite"/>
+                                                    </circle>
+                                                </g>
+                                                <g transform="translate(60 50)">
+                                                    <circle class="circle3" cx="0" cy="0" r="6">
+                                                        <animateTransform
+                                                                attributeName="transform"
+                                                                type="scale" begin="-0.125s"
+                                                                calcMode="spline"
+                                                                keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+                                                                values="0;1;0"
+                                                                keyTimes="0;0.5;1" dur="1s"
+                                                                repeatCount="indefinite"/>
+                                                    </circle>
+                                                </g>
+                                                <g transform="translate(80 50)">
+                                                    <circle class="circle4" cx="0" cy="0" r="6">
+                                                        <animateTransform
+                                                                attributeName="transform"
+                                                                type="scale" begin="0s"
+                                                                calcMode="spline"
+                                                                keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+                                                                values="0;1;0"
+                                                                keyTimes="0;0.5;1" dur="1s"
+                                                                repeatCount="indefinite"/>
+                                                    </circle>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="sub-menu-dropdown-content"/>
+                                </section>
+                                <section t-if="not c.child_id" class="sub-menu-dropdown"/>
+                            </li>
+                        </t>
+                    </ul>
+                </div>
+
+            </div>
+            <!-- Mega Menu Category Style 6 (Nested Menu) -->
+            <section t-if="category_menu_styles == 'style6'" id="custom_menu"
+                     class="te_custom_submenu dynamic_menu" t-att-menu_id="parent_menu.id">
+                    <ul id="te_main_ul">
+                        <t t-set="selected_category" t-value="parent_menu.category_selection"/>
+                    <t t-if="selected_category == 'all'">
+                        <t t-set="parent_menu" t-value="category_fetch"/>
+                    </t>
+                    <t t-else="">
+                        <t t-set="parent_menu" t-value="parent_menu.ecom_category.child_id"/>
+                    </t>
+                    <t t-if="parent_menu" t-foreach="parent_menu" t-as="c">
+                        <t t-call="theme_clarico_vega.web_dynamic_categories_recursive"></t>
+                    </t>
+                </ul>
+            </section>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,81 @@
+/*========================== Button Style 10 ========================*/
+@if o-website-value('button-template') == 'button_style_10' {
+    .te_theme_button {
+        @include border(2px,27,solid);
+        color: nth($f_color,05);
+        display: inline-block;
+        @include transition(all,300ms,null);
+        background-color:nth($f_color,19);
+        @include position(relative);
+        padding: 0.575rem 1.2rem;
+        z-index: 1;
+
+        &.btn-secondary, &.btn-link
+        {
+            color: nth($f_color,5) !important;
+            background-color: theme-color("secondary") !important;
+            &:before{
+                border-color:theme-color("secondary") !important;
+            }
+            &:hover {
+                color: theme-color("secondary") !important;
+                background: nth($f_color,27) !important;
+                border-color: nth($f_color,27) !important;
+                border-width: 2px !important;
+            }
+        }
+        &.btn-danger
+        {
+            background-color: theme-color('danger');
+            &:before{
+                border-color:theme-color('danger');
+            }
+            &:hover {
+                color: theme-color('danger');
+            }
+        }
+
+        &.btn-link
+        {
+            border:0 !important;
+        }
+        &:before{
+            content: '';
+            @include position(absolute,0,null,null,0);
+            width: 100%;
+            height: 100%;
+            @include border(2px,19,solid);
+            z-index: -1;
+            opacity: 0;
+            @include transform(scale3d(0.6, 0.6, 1));
+            -webkit-transition: -webkit-transform 0.6s, opacity 0.6s;
+            transition: transform 0.6s, opacity 0.6s;
+            -webkit-transition-timing-function: cubic-bezier(0.75, 0, 0.125, 1);
+            transition-timing-function: cubic-bezier(0.75, 0, 0.125, 1);
+        }
+        &:hover {
+            background: nth($f_color,27);
+            color: nth($f_color,19);
+            @include border(2px,27,solid);
+            &:before{
+                @include transform(scale3d(1, 1, 1));
+                opacity: 1;
+                @include transition(all,.4s);
+            }
+        }
+    }
+    @include media-breakpoint-down(xs)
+    {
+        .te_theme_button
+        {
+            padding: 0.5rem 1.8rem;
+            margin-bottom: 8px;
+            font-size:nth($f_sizes,3);
+
+            &:after
+            {
+                font-size: 0.6rem; /*This font size is not used in variables*/
+            }
+        }
+    }
+}

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============= Added is_dynamic_menu in form view  =========== -->
+    <record id="website_menus_form_inherit" model="ir.ui.view">
+        <field name="name">website.menus.form.inherit</field>
+        <field name="model">website.menu</field>
+        <field name="inherit_id" ref="website.website_menus_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/group/group[3]//field[@name='group_ids']" position="after">
+                <td class="o_td_label position-absolute"
+                    attrs="{'invisible': [('is_mega_menu', '!=', True)]}">
+                    <label class="o_form_label" style="display: inline;" for="dynamic_mega_menu"/>
+                    <a href="https://docs.emiprotechnologies.com/theme-clarico-vega/v15/dynamic-mega-menu.html"
+                       title="Dynamic mega menu user guide"
+                       class="o_doc_link" target="_blank"
+                       style="display: inline;margin-left: 5px;"></a>
+                </td>
+                <td style="width:50%;">
+                    <field name="dynamic_mega_menu" attrs="{'invisible': [('is_mega_menu', '!=', True)]}"/>
+                </td>
+                <field name="category_selection"
+                       attrs="{'invisible': ['|', ('is_mega_menu', '!=', True), ('dynamic_mega_menu', '!=', True)], 'required':[('dynamic_mega_menu', '=', True)]}"/>
+                <field name="ecom_category"
+                       attrs="{'invisible': ['|','|', ('is_mega_menu', '!=', True), ('dynamic_mega_menu', '!=', True), ('category_selection', '=', 'all')], 'required':[('dynamic_mega_menu', '=', True), ('category_selection', '=', 'specific')]}"/>
+                <field name="category_menu_styles"
+                       attrs="{'invisible': ['|', ('is_mega_menu', '!=', True), ('dynamic_mega_menu', '!=', True)], 'required':[('dynamic_mega_menu','!=',False)]}"/>
+            </xpath>
+            <xpath expr="//form/sheet/group" position="after">
+                <group>
+                    <field name="is_highlight_menu"/>
+                </group>
+            </xpath>
+            <xpath expr="//form/sheet/group" position="after">
+                <form string="Mega Menu Style Images">
+                    <p>
+                        <img
+                                attrs="{'invisible': ['|','|', ('is_mega_menu', '!=', True), ('dynamic_mega_menu', '!=', True), ('category_menu_styles','!=', 'style1')]}"
+                                alt="Mega Menu Style 1" class="mw-100"
+                                src="/emipro_theme_base/static/src/img/mega_menu_style/mm1.png"/>
+                        <img
+                                attrs="{'invisible': ['|','|', ('is_mega_menu', '!=', True), ('dynamic_mega_menu', '!=', True), ('category_menu_styles','!=', 'style2')]}"
+                                alt="Mega Menu Style 2" class="mw-100"
+                                src="/emipro_theme_base/static/src/img/mega_menu_style/mm2.png"/>
+                        <img
+                                attrs="{'invisible': ['|','|', ('is_mega_menu', '!=', True), ('dynamic_mega_menu', '!=', True), ('category_menu_styles','!=', 'style3')]}"
+                                alt="Mega Menu Style 3" class="mw-100"
+                                src="/emipro_theme_base/static/src/img/mega_menu_style/mm3.png"/>
+                        <img
+                                attrs="{'invisible': ['|','|', ('is_mega_menu', '!=', True), ('dynamic_mega_menu', '!=', True), ('category_menu_styles','!=', 'style4')]}"
+                                alt="Mega Menu Style 4" class="mw-100"
+                                src="/emipro_theme_base/static/src/img/mega_menu_style/mm4.png"/>
+                        <img
+                                attrs="{'invisible': ['|','|', ('is_mega_menu', '!=', True), ('dynamic_mega_menu', '!=', True), ('category_menu_styles','!=', 'style5')]}"
+                                alt="Mega Menu Style 5" class="mw-100"
+                                src="/emipro_theme_base/static/src/img/mega_menu_style/mm6.png"/>
+                        <img
+                                attrs="{'invisible': ['|','|', ('is_mega_menu', '!=', True), ('dynamic_mega_menu', '!=', True), ('category_menu_styles','!=', 'style6')]}"
+                                alt="Mega Menu Style 6" class="mw-100"
+                                src="/emipro_theme_base/static/src/img/mega_menu_style/mm5.png"/>
+                    </p>
+                </form>
+            </xpath>
+        </field>
+    </record>
+    <!-- ============= Added is_dynamic_menu in tree view  =========== -->
+    <record id="website_menu_tree_inherit" model="ir.ui.view">
+        <field name="name">website.menu.tree.inherit</field>
+        <field name="model">website.menu</field>
+        <field name="inherit_id" ref="website.menu_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_mega_menu']" position="after">
+                <field name="dynamic_mega_menu"/>
+                <field name="ecom_category"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

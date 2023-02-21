@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="pwa_offline" model="ir.ui.view">
+            <field name="name">Pwa Offline</field>
+            <field name="type">qweb</field>
+            <field name="key">emipro_theme_base.pwa_offline</field>
+            <field name="arch" type="xml">
+                <t name="Pwa Offline" t-name="emipro_theme_base.pwa_offline">
+                    <t t-call="website.layout">
+                        <div id="wrap" style="background: url('/emipro_theme_base/static/src/img/pwa_offline.jpg');background-repeat: no-repeat;background-position: center;background-size: contain;position: relative;height: 80vh;">
+                            <div class="container text-center">
+                                <div class="row mb64 mt64">
+                                    <div class="col-md-12 col-12 mb16" style="position: absolute;bottom: 2rem;left: 0;right: 0;">
+                                        <a href="/" class="btn btn-primary">BACK TO HOME</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </field>
+        </record>
+
+        <record id="pwa_offline_page" model="website.page">
+            <field name="website_published">True</field>
+            <field name="url">/pwa/offline</field>
+            <field name="view_id" ref="emipro_theme_base.pwa_offline"/>
+        </record>
+    </data>
+</odoo>

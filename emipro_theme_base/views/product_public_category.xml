@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Product Public Categories -->
+    <record id="product_public_category_form_view_icon" model="ir.ui.view">
+        <field name="name">product.public.category.form.category.icon</field>
+        <field name="model">product.public.category</field>
+        <field name="inherit_id" ref="website_sale.product_public_category_form_view"/>
+        <field name="arch" type="xml">
+             <xpath expr="//field[@name='sequence']" position="after">
+                 <field name="icon" widget="image" class="oe_avatar w-100" options="{'size': [30, 30]}"/>
+             </xpath>
+            <xpath expr="//div[hasclass('oe_left')]" position="after">
+                <notebook>
+                    <page string="Category Description">
+                        <field name="website_description"/>
+                    </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+     <!-- Product Public Categories -->
+    <record id="product_public_category_form_view_extend" model="ir.ui.view">
+        <field name="name">product.public.category.form.extend</field>
+        <field name="model">product.public.category</field>
+        <field name="inherit_id" ref="website_sale.product_public_category_form_view"/>
+        <field name="arch" type="xml">
+             <xpath expr="//field[@name='sequence']" position="after">
+                    <field name="menu_label_id"/>
+                    <field name="is_category_page"/>
+                    <field name="category_page"
+                       attrs="{'invisible': [('is_category_page','=',False)],'required':[('is_category_page','!=',False)]}"/>
+             </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--================== Theme Price Filter Code ====================-->
+    <template id="website_pricefilter_ept" name="Price Filter" inherit_id="website_sale.products_attributes">
+        <xpath expr="//div[@id='wsale_products_attributes_collapse']//form" position="inside">
+            <t t-if="(website.is_price_range_filter and website.price_filter_on) or request.website.viewref('website_sale.filter_products_price').active">
+                <t t-set="curr_web" t-value="request.website.get_current_website()"/>
+                <t t-set="range_values" t-value='website.get_min_max_prices(search,category,attrib_values)'/>
+                 <t t-if="range_values">
+                     <input type="hidden" id="price_slider_min" t-att-value="range_values[2]"/>
+                     <input type="hidden" id="price_slider_max" t-att-value="range_values[3]"/>
+                    <div class="ept_price_slider_block" t-if="range_values[2] != range_values[3]">
+                        <div class="price_filter_head te_fa-plus">
+                            <span class="m-0 te_pricerange_title">Price Range</span>
+                            <a class="price_filter_reset">(Reset)</a>
+                        </div>
+                        <div class="te_pricerange_content">
+                            <div class="d-block mb8 te_price_filter_amount">
+                                <div class="d-inline-block">
+                                    <label t-att-class="'d-none' if website.currency_id.position == 'after' else ''"
+                                           t-field="website.currency_id.symbol"/>
+                                    <span class="ept_price_min" t-esc="range_values[2]"/>
+                                    <label t-att-class="'d-none' if website.currency_id.position == 'before' else ''"
+                                           t-field="website.currency_id.symbol"/>
+                                </div>
+                                <div class="d-inline-block pull-right">
+                                    <label t-att-class="'d-none' if website.currency_id.position == 'after' else ''"
+                                           t-field="website.currency_id.symbol"/>
+                                    <span class="ept_price_max" t-esc="range_values[3]"/>
+                                    <label t-att-class="'d-none' if website.currency_id.position == 'before' else ''"
+                                           t-field="website.currency_id.symbol"/>
+                                </div>
+                            </div>
+                            <div id="ept_price_slider"/>
+                            <div class="te_price_wrap">
+                                <div class="te_price_min">
+                                    <label t-att-class="'d-none' if website.currency_id.position == 'after' else ''"
+                                           t-field="website.currency_id.symbol"/>
+                                    <input name="min_price" type="number" class="sliderValue ept_price_min" data-index="0"
+                                           t-att-value="range_values[0]"/>
+                                    <label t-att-class="'d-none' if website.currency_id.position == 'before' else ''"
+                                           t-field="website.currency_id.symbol"/>
+                                </div>
+                                <div class="te_price_wrap_line">-</div>
+                                <div class="te_price_max">
+                                    <label t-att-class="'d-none' if website.currency_id.position == 'after' else ''"
+                                           t-field="website.currency_id.symbol"/>
+                                    <input name="max_price" type="number" class="sliderValue ept_price_max" data-index="1"
+                                           t-att-value="range_values[1]"/>
+                                    <label t-att-class="'d-none' if website.currency_id.position == 'before' else ''"
+                                           t-field="website.currency_id.symbol"/>
+                                </div>
+                            </div>
+                            <span class="ept_price_slider_error"/>
+                            <span class="w-100 btn btn-primary mt16 rounded py-1" id="price_slider_filter">Apply
+                                Filter
+                            </span>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </xpath>
+
+    </template>
+</odoo>

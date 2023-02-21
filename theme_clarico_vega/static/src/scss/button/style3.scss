@@ -1,0 +1,70 @@
+/*============================ Button Style 3 =======================*/
+@if o-website-value('button-template') == 'button_style_3' {
+    .te_theme_button {
+        overflow: hidden;
+        @include position(relative,null,null,null,null);
+        z-index: 1;
+        @include border(0px,19,solid)
+        @include transition(all,0.4s,null)
+        box-sizing: border-box;
+        box-shadow: 0 3px 25px -10px rgba(0, 0, 0, 0.3);
+        background: unset;
+        color: nth($f_color,19);
+        @include position(relative);
+        padding: 0.675rem 1.8rem;
+
+        &.btn-secondary, &.btn-link
+        {
+            color: theme-color("secondary") !important;
+            background-color: nth($f_color,27) !important;
+            border-color:theme-color("secondary") !important;
+            border: 0 !important;
+            &:after, &:before {
+                background-color:theme-color("secondary") !important;
+            }
+            &:hover {
+                color: nth($f_color,5) !important;
+            }
+        }
+        &.btn-danger
+        {
+            color: theme-color('danger');
+            &:after, &:before {
+                background-color:theme-color('danger');
+            }
+            &:hover {
+                color: nth($f_color,5);
+            }
+        }
+        @include media-breakpoint-down(xs) {
+            padding: 0.475rem 0.7rem;
+            font-size:nth($f_sizes,3);
+        }
+        &:hover {
+            background: unset;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 20px -12px rgba(0, 0, 0, 0.2);
+        }
+        &:before {
+            content: "";
+            @include position(absolute,0,null,null,0);
+            width: 4px;
+            height: 100%;
+            transition: all 0.4s ease;
+            background-color: nth($f_color,19);
+            z-index: -1;
+        }
+        &:after {
+            content: "";
+            @include position(absolute,0,0);
+            width: 4px;
+            height: 100%;
+            transition: all 0.4s ease;
+            background-color: nth($f_color,19);
+            z-index: -1;
+        }
+    }
+    .te_theme_button:hover::before, .te_theme_button:hover::after {
+        width: 51%;
+    }
+}

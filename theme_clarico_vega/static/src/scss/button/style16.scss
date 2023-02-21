@@ -1,0 +1,39 @@
+/*====================== Button Style 16 =============================*/
+@if o-website-value('button-template') == 'button_style_16' {
+    .te_theme_button{
+        color: nth($f_color,5);
+        z-index: 1;
+        padding: 0.7rem 1.8rem;
+        background-image: linear-gradient(75deg, $btn-gradient-1, $btn-gradient-2, $btn-gradient-2, $btn-gradient-1);
+        background-size: 300% 100%;
+        @include transition(all,0.4s,null);
+        @include position(relative);
+        overflow: hidden;
+        @include border-radius(25px);
+
+        &.btn-link
+        {
+            background-image: linear-gradient(75deg, $btn-gradient-1, $btn-gradient-2, $btn-gradient-2, $btn-gradient-1) !important;
+            background-size: 300% 100% !important;
+            border:0 !important;
+            &:hover {
+                background-position: 100% 0 !important;
+            }
+        }
+
+        &:hover {
+            background-position: 100% 0;
+            color: nth($f_color,5);
+            @include transition(all,0.4s,ease-in-out);
+        }
+    }
+    .o_rtl
+    {
+        .te_theme_button
+        {
+            &:hover {
+                background-position: 100% 0;
+            }
+        }
+    }
+}

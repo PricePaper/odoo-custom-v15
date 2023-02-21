@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="clarico_product_page_label" inherit_id="website_sale.product"
+              priority="23">
+        <xpath expr="//div[@id='product_details']/h1" position="before">
+            <t t-if="request.website.viewref('theme_clarico_vega.clarico_shop_products_label').active">
+                <t t-if="product.label_line_ids">
+                    <t t-foreach="product.label_line_ids" t-as="labels">
+                        <t t-if="labels.website_id.id == website.id">
+                            <div class="te_prod_label" t-attf-style="background-color:#{labels.label.html_color};color:#{labels.label.font_html_color}">
+                                <div class="te_label_tag" t-field="labels.label.name" />
+                            </div>
+                        </t>
+                    </t>
+                </t>
+            </t>
+        </xpath>
+    </template>
+    <!--===================== Shop Product label =========================-->
+    <template id="clarico_shop_products_label" inherit_id="website_sale.products_item" priority="23" active="True">
+        <xpath expr="//div[hasclass('oe_product_image')]" position="inside">
+            <div t-if="product.label_line_ids">
+                <t t-foreach="product.label_line_ids" t-as="labels">
+                    <t t-if="labels.website_id.id == website.id">
+                        <t t-call="theme_clarico_vega.common_label_ept" />
+                    </t>
+                </t>
+            </div>
+        </xpath>
+    </template>
+    <template id="common_label_ept">
+        <div class="te_ribbon-wrapper" t-attf-style="color:#{labels.label.font_html_color}">
+            <div t-if="labels.label.label_style == 'style_1'" t-att-id="labels.label.label_style">
+                <span class="te_before"
+                      t-attf-style="background-color:#{labels.label.html_color}CC"/>
+                <div class="label_div">
+                    <t t-if="labels.label.html_color">
+                    <div class="p-1 te_label_name"
+                         t-attf-style="background-color:#{labels.label.html_color}B3;box-shadow: 0 0 0 3px #{labels.label.html_color}B3, 0px 21px 5px -18px rgba(0, 0, 0, 0.6);"
+                         t-field="labels.label.name"/>
+                    </t>
+                    <t t-else="">
+                        <div class="p-1 te_label_name" t-field="labels.label.name"/>
+                    </t>
+                </div>
+                <span class="te_after"
+                      t-attf-style="background-color:#{labels.label.html_color}CC"/>
+            </div>
+            <div t-if="labels.label.label_style == 'style_2'"
+                 class="label_div"
+                 t-att-id="labels.label.label_style"
+                 t-attf-style="background-color:#{labels.label.html_color}B3">
+                <span class="te_before"
+                      t-attf-style="border-bottom-color:#{labels.label.html_color}CC"/>
+                <div class="p-1 te_label_name te_label_name" t-field="labels.label.name"/>
+                <t t-if="request.env['res.lang'].search([('code', '=', request.env.lang)]).direction == 'rtl'">
+                    <span class="te_after"
+                      t-attf-style="border-right-color:#{labels.label.html_color}B3"/>
+                </t>
+                <t t-else="">
+                <span class="te_after"
+                      t-attf-style="border-left-color:#{labels.label.html_color}B3"/>
+                </t>
+            </div>
+            <div class="style_3 label_div" t-if="labels.label.label_style == 'style_3'"
+                 t-att-id="labels.label.label_style"
+                 t-attf-style="background-color:#{labels.label.html_color}">
+                <div class="p-1 te_label_name te_label_name" t-field="labels.label.name"/>
+            </div>
+            <div class="style_4 label_div" t-if="labels.label.label_style == 'style_4'"
+                 t-att-id="labels.label.label_style"
+                 t-attf-style="background-color:#{labels.label.html_color}">
+                <div class="p-1 te_label_name te_label_name" t-field="labels.label.name"/>
+            </div>
+
+            <div t-if="labels.label.label_style == 'style_5'"
+                 class="label_div"
+                 t-att-id="labels.label.label_style"
+                 t-attf-style="background-color:#{labels.label.html_color}B3">
+                <span class="te_before"
+                      t-attf-style="border-top-color:#{labels.label.html_color}B3"/>
+                <div class=" px-1 te_label_name te_label_name" t-field="labels.label.name"/>
+                <t t-if="labels.label.html_color and request.env['res.lang'].search([('code', '=', request.env.lang)]).direction == 'rtl'">
+                    <span class="te_after"
+                      t-attf-style="border-bottom-color:#{labels.label.html_color}B3;border-width: 0px 0px 16px 14px;border-right-color: transparent;"/>
+                </t>
+                <t t-else="">
+                    <span class="te_after"
+                      t-attf-style="border-left-color:#{labels.label.html_color}B3"/>
+                </t>
+            </div>
+        </div>
+    </template>
+</odoo>

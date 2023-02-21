@@ -1,0 +1,38 @@
+/*======================== Button Style 17 =========================*/
+@if o-website-value('button-template') == 'button_style_17' {
+    .te_theme_button
+    {
+        @include position(relative);
+        padding: 0.675rem 1.2rem;
+        border: none !important;
+        background-color:nth($f_color,5);
+        color:nth($f_color,19);
+        @include transition(all, 0.3s, ease-out);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(128, 128, 128, 0.1) inset;
+
+        &.btn-secondary, &.btn-link
+        {
+            background-color:nth($f_color,5) !important;
+            color:theme-color('secondary') !important;
+            &:hover {
+               background-color:theme-color('secondary') !important;
+               color:nth($f_color,5) !important;
+            }
+        }
+        &.btn-danger
+        {
+            background-color:nth($f_color,5);
+            color: theme-color('danger');
+            &:hover {
+                background-color: theme-color('danger');
+                color:nth($f_color,5);
+            }
+        }
+
+        &:hover {
+        background:nth($f_color,19);
+        color:nth($f_color,5);
+        box-shadow: 0 15px 10px -10px rgba(31, 31, 31, 0.5);
+        }
+    }
+}

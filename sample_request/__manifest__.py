@@ -13,10 +13,14 @@ of products and admin have rights to approve to reject them
     'depends': ['website_sale'],
     'data': [  
         'security/ir.model.access.csv',
+        'security/security.xml',
         'data/sequence.xml',
+        'data/mail.xml',
+        'wizard/reject_reason.xml',
         'views/res_config.xml',
         'views/templates.xml',
-        'views/sample_request.xml'
+        'views/sample_request.xml',
+        'views/portal_template.xml'
     ],
     'demo': [  ],
     'assets': {

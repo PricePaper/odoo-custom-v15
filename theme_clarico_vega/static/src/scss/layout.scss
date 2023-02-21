@@ -1,0 +1,343 @@
+/******************************
+INDEX:
+    01 - Header common styles
+    02 - 404 page
+    03 - Login Style
+    04 - Click to scroll top
+    05 - social button icons for product page
+    06 - loading icon
+    07 - About us
+******************************/
+/*============================ 01 - Header common styles ================================*/
+/* hide search from website search module when installed */
+.website_search_form_main
+{
+	display:none;
+}
+form.o_searchbar_form div.dropdown-menu.show{
+	overflow-y: auto !important;
+}
+.te_user_account
+{
+	> .dropdown-menu a.dropdown-item
+	{
+		padding: 0.55rem 1.5rem;
+		border-bottom: 1px solid #ededed;
+		font-size: $font-size-base - 0.125rem; /* Reduced font-size with 2px */
+
+		> span.fa
+		{
+			font-size: inherit;
+			color: rgba(0, 0, 0, 0.5);
+			margin-right:1rem;
+		}
+		&:hover{
+		    > span.fa{
+		        color: nth($f_color,19);
+		    }
+		}
+	}
+	> .dropdown-menu a.dropdown-item:last-child
+	{
+		border:none;
+	}
+	.dropdown-menu
+	{
+	    padding: 0.2rem 0 0 0;
+	    margin-top: 0px !important;
+	    @include media-breakpoint-down(sm){
+	        margin-top: 8px !important;
+	    }
+	    &:before
+	    {
+	        content: "";
+	        @include position(absolute,-12px,28px)
+            border: 6px solid;
+            border-color:transparent transparent #fff transparent;
+            z-index: 4;
+            display: block;
+            height: 0;
+            width: 0;
+	    }
+	    &:after
+	    {
+            content: "";
+            @include position(absolute,-15px,27px)
+            border: 7px solid;
+            border-color:transparent transparent #ededed transparent;
+            z-index: 3;
+            display: block;
+            height: 0px;
+            width: 0px;
+	    }
+	}
+}
+.te_header_lang, .te_header_pricelist, .te_pricelist, .te_header_style_3_inner, .te_header_style_4_inner, .te_header_style_4_main, .te_header_style_6_main, .h6_pricelist,
+.te_language_selector, .h8_pricelist
+{
+    .dropdown-menu
+	{
+	    margin-top: 0px !important;
+	    @include media-breakpoint-down(sm){
+	        margin-top: 8px !important;
+	    }
+	    &:before
+	    {
+	        content: "";
+	        @include position(absolute,-12px,null,null,41px)
+            border: 6px solid;
+            border-color:transparent transparent #fff transparent;
+            z-index: 4;
+            display: block;
+            height: 0;
+            width: 0;
+	    }
+	    &:after
+	    {
+            content: "";
+            @include position(absolute,-15px,null,null,40px)
+            border: 7px solid;
+            border-color:transparent transparent #ededed transparent;
+            z-index: 3;
+            display: block;
+            height: 0px;
+            width: 0px;
+	    }
+    }
+}
+/*------ Company Logo Customize option---------*/
+.te_header_before_logo, .navbar-brand.logo
+{
+	img
+	{
+		height:$o-theme-navbar-logo-height;
+		@include media-breakpoint-down(sm)
+		{
+			max-width: 110px;
+		}
+	}
+}
+/*--------Language dropdown box hover style-----------*/
+.dropdown-menu.show
+{
+    a:hover{
+        color: $primary;
+        text-decoration: none;
+        background-color: transparent;
+    }
+}
+
+/*============================ 02 - 404 page ==============================*/
+.page404
+{
+	p
+	{
+		text-align: center;
+		@include style(10,3);
+	}
+	ul
+	{
+		text-align:center;
+		padding:0;
+		li
+		{
+			list-style-type:none;
+			display: inline-block;
+		}
+	}
+	.te_404_img
+	{
+		margin: 0px auto;
+		display: block;
+		max-height: 266px;
+		max-width:100%;
+	}
+}
+
+/*=========================== 03 - Login Style ==================================*/
+.oe_login_form, .oe_signup_form, .oe_reset_password_form
+{
+	max-width: 400px;
+	padding: 32px;
+	@include box-shadow(0px 0px 10px 0 rgba(50, 50, 93, 0.1));
+
+	.form-group > .form-control
+	{
+		border:0;
+		border-bottom: $input-border-width solid $input-border-color;
+
+		&:focus
+		{
+			box-shadow: none;
+			border-color: nth($f_color,3);
+		}
+	}
+	& .form-group{
+	    margin-bottom: 12px;
+	}
+	& label
+	{
+		font-weight: normal;
+		@include style(1,3);
+		@include spacing(1px,0);
+		margin-bottom: 2px
+	}
+}
+#loginPopup, #registerPopup{
+    .oe_login_form, .oe_signup_form, .oe_reset_password_form{
+        & .o_auth_oauth_providers {
+            vertical-align: middle;
+            > a{
+                margin-bottom:8px;
+                &:hover{
+                    background-color: inherit;
+                }
+                > i{
+                    font-size: 20px;
+                    vertical-align: middle;
+                    width: 40px;
+                    height: 40px;
+                    line-height: 40px;
+                    border-radius: 50%;
+                    background-color: #eaeaea;
+                    text-align: center;
+                    margin-right: 5px;
+                    margin-bottom: 5px;
+                    &:before{
+                        mix-blend-mode: luminosity;
+                    }
+                    &:hover:before{
+                        mix-blend-mode: unset;
+                    }
+                }
+            }
+        }
+    }
+}
+.form-control:disabled, .form-control[readonly] {
+  background-color: nth($f_color,18);
+}
+.form-control::placeholder {
+  color: #b1b1b1; /*This color is not used in variables*/
+}
+.te_login_links >a,.te_reset_pw_login_btns > a
+{
+  	@include style(18,4,inherit);
+}
+.te_signup_login_link
+{
+	@include style(18,4,inherit);
+}
+
+.te_user_account_icon, .te_currency_symbol{
+	display:none;
+}
+/*=========================== 04 - Click to scroll top ===================================*/
+.scrollup-div{
+    @include position(fixed,null,30px,30px);
+    background: nth($f_color,3);
+    width: 35px !important;
+    height: 35px;
+    display:none;
+    cursor: pointer;
+    @include transition(null,.3s,null);
+    line-height: 1.7;
+    z-index:9999;
+    &.justify-content-end {
+        @include position(fixed,null,30px,30px);
+    }
+    &.justify-content-center {
+        @include position(fixed,null,50%,15px);
+        @include transform(translateX(50%))
+    }
+    &.justify-content-start {
+        @include position(fixed,null,unset,30px, 30px);
+    }
+    #o_footer_scrolltop {
+        background: nth($f_color,28) !important;
+    }
+    @include media-breakpoint-down(md)
+    {
+        z-index:99;
+        bottom:65px;
+    }
+    &:hover{
+         background: nth($f_color,19);
+    }
+    .scrollup-i{
+        @include position(absolute,null,null,null, 0px);
+        font-weight: 900;
+        width: 35px;
+        height: 35px;
+        @include transition(null,.3s,null)
+        padding: 0.25rem;
+    }
+}
+/*================================= 05 - social button icons for product page ====================================*/
+
+.oe_share_icon,
+.te_product_media #o_product_terms_and_share .s_share a {
+	@include style(1,19)
+    display: inline-block;
+    @include box-shadow(0px 4px 8px 0px rgba(0, 0, 0, 0.1))
+    background: nth($f_color,5);
+    @include border-radius(100%)
+    text-align: center;
+    margin: 10px 0;
+    width: 38px;
+    height: 38px;
+    line-height: 38px;
+    @include transition(all,.3s,ease-out)
+    &:hover
+    {
+    	transform: scale(1.2);
+    	text-decoration: none;
+    }
+}
+/*========================================== 06 - loading icon ================================================*/
+/* Load icon style in Layout */
+.cus_theme_loader_layout svg path,
+.cus_theme_loader_layout svg rect{
+  fill: nth($f_color,19);
+}
+.cus_theme_loader_layout{
+	@include position(fixed,0,0,0,0)
+	width: 100%;
+	background:rgba(255, 255, 255, 0.7);
+	z-index: 9999;
+}
+.cus_theme_loader_div_layout{
+	margin-top:20%;
+	display:inline-block;
+	width:100%;
+	text-align:center;
+}
+/*======================== 07 - About us ===========================*/
+.te_aboutus_img
+{
+	overflow: hidden;
+	position: relative;
+	&:hover 
+	{
+        &:before {
+            animation: effect_shine 1s;
+        }
+    }
+    &:before {
+        @include position(absolute,0,auto,auto,-100%);
+        content: "";
+        z-index: 1;
+        display: block;
+        width: 50%;
+        height: 100%;
+        background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 100%);
+        background: linear-gradient(to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.3) 100%);
+        -webkit-transform: skewX(-25deg);
+        -moz-transform: skewX(-25deg);
+        -ms-transform: skewX(-25deg);
+        -o-transform: skewX(-25deg);
+        transform: skewX(-25deg);
+    }
+}

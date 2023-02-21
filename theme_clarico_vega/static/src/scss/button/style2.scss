@@ -1,0 +1,66 @@
+/*================== Button Style 2 =====================*/
+@if o-website-value('button-template') == 'button_style_2' {
+    .te_theme_button {
+        @include border(2px,19,solid);
+        color: nth($f_color,19);
+        display: inline-block;
+        @include position(relative);
+        @include transition(all,0.3s,null)
+        overflow: hidden;
+        background-color:nth($f_color,27);
+        z-index: 1;
+
+        &.btn-secondary,&.btn-link
+        {
+            color: theme-color("secondary") !important;
+            background-color: nth($f_color,27) !important;
+            border-color:theme-color("secondary") !important;
+            border-width:2px !important;
+            &:after {
+                background-color:theme-color("secondary") !important;
+            }
+            &:hover {
+                border-color:theme-color("secondary") !important;
+                color: nth($f_color,5) !important;
+            }
+        }
+        &.btn-danger
+        {
+            color: theme-color('danger');
+            border-color: theme-color('danger');
+            &:after {
+                background-color:theme-color('danger');
+            }
+            &:hover {
+                border-color:theme-color('danger');
+                color: nth($f_color,5);
+            }
+        }
+
+        @include media-breakpoint-down(xs) {
+            padding: 0.475rem 0.7rem;
+            font-size:nth($f_sizes,3);
+        }
+
+        &:after {
+            content: '';
+            @include position(absolute,50%,unset,unset,50%)
+            z-index: -1;
+            @include transition(all,0.3s,null)
+            width:0;
+            height: 103%;
+            background:nth($f_color,19);
+            opacity: 0;
+            @include transform(translateX(-50%) translateY(-50%))
+        }
+        &:hover {
+            @include border(2px,19,solid)
+            background-color:unset;
+            color:nth($f_color,5);
+            &:after {
+                width: 90%;
+                opacity: 1;
+            }
+        }
+    }
+}

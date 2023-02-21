@@ -1,0 +1,619 @@
+/********************************************************************************
+      01. Scss Mixins
+      02. Mixin for Text Styling
+      03. Common style for p tag
+      04. Mixin for effect and align
+      05. Mixin for Animation
+      06. Mixin for Transition
+      07. Odoo Icon Snippet
+      08. Common style for (container, Button, Image Zoom Effect)
+**********************************************************************************/
+
+/*=================== 01. Scss Mixins =======================*/
+@mixin width($width,$max-width)
+{
+  width:$width;
+  max-width:$max-width;
+}
+@mixin container
+{
+  display:block;
+  margin:0px auto;
+}
+@mixin text-ellipsis
+{
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	display: inline-block;
+}
+/*======================= 02. Mixin for Text Styling =========================*/
+@mixin style($size,$color,$family:null,$height:null,$transform:null)
+{
+  font-size:nth($f_sizes,$size);
+  color:nth($f_color,$color);
+  font-family:$family;
+  line-height:$height;
+  text-transform:$transform;
+}
+@mixin spacing($l-spacing:null,$w-spacing:null)
+{
+  letter-spacing:$l-spacing;
+  word-spacing:$w-spacing;
+}
+@mixin border($border-width,$border-color,$border-style)
+{
+  border-width:$border-width;
+  border-color:nth($f_color,$border-color);
+  border-style:$border-style;
+}
+@mixin border-radius($radius) {
+  border-radius: $radius;
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -ms-border-radius: $radius;
+     -o-border-radius: $radius;
+     border-radius: $radius;
+}
+@mixin position($position,$top:null,$right:null,$bottom:null,$left:null) {
+  position:$position;
+  top:$top;
+  right:$right;
+  bottom:$bottom;
+  left:$left;
+}
+@mixin line-clamp($number,$height:null) {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: $number;
+    -webkit-box-orient: vertical;
+    height: $height;
+}
+/*==================== 03. Common style for p tag =========================*/
+p {
+  @include container;
+  @include style(1,28,inherit,180%);
+}
+@media (max-width:767.98px)
+{
+	p
+	{
+		font-size:nth($f_sizes,3)
+	}
+}
+
+/*============================ 04. Mixin for effect and align ======================*/
+/*------- box-shadow -------------*/
+@mixin box-shadow($top)
+{
+  -webkit-box-shadow: $top;
+  -moz-box-shadow: $top;
+  -ms-box-shadow: $top;
+  -o-box-shadow: $top;
+   box-shadow: $top;
+}
+/*---------- transform ----------*/
+@mixin transform($x,$y:null){
+      -webkit-transform: $x,$y;
+      -moz-transform: $x,$y;
+      -ms-transform: $x,$y;
+      -o-transform: $x,$y;
+      transform: $x,$y;
+}
+/*-------- align-items -----------*/
+@mixin align-items($center){
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      -webkit-align-items: center;
+      -moz-align-items: center;
+      align-items: center;
+}
+/*-------- justify-content ---------*/
+@mixin justify-content($content){
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      -webkit-justify-content: center;
+      -moz-justify-content: center;
+      justify-content: center;
+}
+/*---------- display ------------*/
+@mixin display($flex){
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -moz-flex;
+      display: -ms-flexbox;
+      display: flex;
+}
+/*---------- object-fit ------------*/
+@mixin object-fit($fit: fill, $position: null){
+    -o-object-fit: $fit;
+    object-fit: $fit;
+}
+
+/*------BUTTON FADE-IN------*/
+@keyframes fadeIn{from{opacity: 0; transform: translate3d(0, -30%, 0);}to{opacity: 1; transform: translate3d(0, 0, 0);}}
+
+/*========================== 05. Mixin for Animation ======================*/
+
+@mixin animation($delay, $duration, $animation, $timing_function:null, $iteration:null,$fill_mode:null) {
+  /* For Safari*/
+    -webkit-animation-delay: $delay;
+    -webkit-animation-duration: $duration;
+    -webkit-animation-name: $animation;
+    -webkit-animation-timing-function: $timing_function;
+    -webkit-animation-iteration-count: $iteration;
+    -webkit-animation-fill-mode:$fill_mode;
+
+  /*For Firefox*/
+    -moz-animation-delay: $delay;
+    -moz-animation-duration: $duration;
+    -moz-animation-name: $animation;
+    -moz-animation-timing-function: $timing_function;
+    -moz-animation-iteration-count: $iteration;
+    -moz-animation-fill-mode:$fill_mode;
+
+  /*Internet Explorer*/
+  -ms-animation-delay: $delay;
+    -ms-animation-duration: $duration;
+    -ms-animation-name: $animation;
+    -ms-animation-timing-function: $timing_function;
+    -ms-animation-iteration-count: $iteration;
+    -ms-animation-fill-mode:$fill_mode;
+
+    /*For Opera*/
+    -o-animation-delay: $delay;
+    -o-animation-duration: $duration;
+    -o-animation-name: $animation;
+    -o-animation-timing-function: $timing_function;
+    -o-animation-iteration-count: $iteration;
+    -o-animation-fill-mode:$fill_mode;
+
+  /* Standard syntax */
+    animation-delay: $delay;
+    animation-duration: $duration;
+    animation-name: $animation;
+    animation-timing-function:$timing_function;
+    animation-iteration-count: $iteration;
+    animation-fill-mode:$fill_mode;
+}
+/*========================== 06. Mixin for Transition ======================*/
+
+@mixin transition($t_property,$t_duration,$t_timing-function:null,$t_delay:null)
+{
+  /* For Safari*/
+  -webkit-transition-property:$t_property;
+  -webkit-transition-duration:$t_duration;
+    -webkit-transition-timing-function:$t_timing-function;
+    -webkit-transition-delay:$t_delay;
+
+  /*For Firefox*/
+  -moz-transition-property:$t_property;
+  -moz-transition-duration:$t_duration;
+    -moz-transition-timing-function:$t_timing-function;
+    -moz-transition-delay:$t_delay;
+
+  /*Internet Explorer*/
+  -ms-transition-property:$t_property;
+  -ms-transition-duration:$t_duration;
+    -ms-transition-timing-function:$t_timing-function;
+    -ms-transition-delay:$t_delay;
+
+  /*For Opera*/
+  -o-transition-property:$t_property;
+  -o-transition-duration:$t_duration;
+    -o-transition-timing-function:$t_timing-function;
+    -o-transition-delay:$t_delay;
+
+  /* Standard syntax */
+  transition-property:$t_property;
+  transition-duration:$t_duration;
+    transition-timing-function:$t_timing-function;
+    transition-delay:$t_delay;
+}
+/*================== 07. Odoo Icon Snippet ==========================*/
+.te_menu_flip_box
+{
+  perspective: 1000px;
+
+  .te_menu_flip_box_inner
+  {
+     position: relative;
+      width: 100%;
+      text-align: center;
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+      z-index: 1;
+
+  }
+  &:hover .te_menu_flip_box_inner
+  {
+     @include transform(rotateY(180deg))
+
+     a
+     {
+      color:nth($f_color,19);
+     }
+  }
+  &:hover a::before
+    {
+
+      right: 0;
+    }
+}
+
+/*============================== 08. Common style for (container, Button, Image Zoom Effect) ==========================*/
+/*------------ Button ------------*/
+.btn-theme {
+    &:hover{
+      background-color : $btn-hover-color ;
+      border-color : $btn-hover-color;
+    }
+}
+h1
+  {
+    @include media-breakpoint-down(lg)
+    {
+      font-size:nth($f_sizes,25)
+    }
+    @include media-breakpoint-down(md)
+    {
+      font-size:nth($f_sizes,21)
+    }
+    @include media-breakpoint-down(sm)
+    {
+      font-size:nth($f_sizes,23)!important;
+    }
+  }
+h2
+  {
+    @include media-breakpoint-down(lg)
+    {
+      font-size:nth($f_sizes,21)
+    }
+    @include media-breakpoint-down(md)
+    {
+      font-size:nth($f_sizes,19)
+    }
+    @include media-breakpoint-down(sm)
+    {
+      font-size:nth($f_sizes,10)!important;
+    }
+  }
+  h3
+  {
+    @include media-breakpoint-down(lg)
+    {
+      font-size:nth($f_sizes,23)
+    }
+    @include media-breakpoint-down(md)
+    {
+      font-size:nth($f_sizes,22)
+    }
+    @include media-breakpoint-down(sm)
+    {
+      font-size:nth($f_sizes,16)
+    }
+  }
+  h4
+  {
+    @include media-breakpoint-down(lg)
+    {
+      font-size:nth($f_sizes,16)
+    }
+    @include media-breakpoint-down(md)
+    {
+      font-size:nth($f_sizes,8)
+    }
+    @include media-breakpoint-down(sm)
+    {
+      font-size:nth($f_sizes,26);
+    }
+  }
+  h5
+  {
+    @include media-breakpoint-down(lg)
+    {
+      font-size:nth($f_sizes,26)
+    }
+    @include media-breakpoint-down(md)
+    {
+      font-size:nth($f_sizes,7)
+    }
+    @include media-breakpoint-down(sm)
+    {
+      font-size:nth($f_sizes,1)!important;
+    }
+  }
+  h6
+  {
+    @include media-breakpoint-down(sm)
+    {
+      font-size:nth($f_sizes,2)
+    }
+    @include media-breakpoint-down(sm)
+    {
+      font-size:nth($f_sizes,3)
+    }
+  }
+
+/*------------------ container -------------------*/
+.container
+{
+    @include container;
+    @include width(90%,1400px);
+    @include media-breakpoint-down(sm)
+  {
+    width:100%;
+  }
+}
+
+/*-------------- Common image zoom effect ---------------------*/
+.te_img_hover_overflow
+{
+  overflow: hidden;
+
+  img
+  {
+    max-width: 100%;
+    @include transition(all,.4s,ease-out)
+
+  }
+}
+/*-------------- Common image opacity effect ---------------------*/
+.t_img_hover_1
+{
+	&.te_img_effect1
+	{
+	  	overflow: hidden;
+	  	position: relative;
+	  	display: inline-block;
+		img
+	  	{
+			-webkit-transition: opacity 0.35s, transform 0.35s;
+			-moz-transition: opacity 0.35s, transform 0.35s;
+			-ms-transition: opacity 0.35s, transform 0.35s;
+			-o-transition: opacity 0.35s, transform 0.35s;
+			transition: opacity 0.35s, transform 0.35s;
+			@include transform(scale(1.02))
+
+		}
+	  	&:hover
+	  	{
+			img
+			{
+		  		@include transform(scale(1))
+		  		opacity: 1;
+			}
+			&:before
+			{
+			  -webkit-animation: effect_shine 1s;
+			  -moz-animation: effect_shine 1s;
+			  -ms-animation: effect_shine 1s;
+			  -o-animation: effect_shine 1s;
+			  animation: effect_shine 1s;
+			}
+		}
+	  	&:before
+	  	{
+			@include position(absolute,0,auto,auto,-108%)
+			content: "";
+			z-index: 1;
+			display: block;
+			width: 50%;
+			height: 100%;
+			background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 100%);
+			background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 100%);
+			@include transform(skewX(-25deg));
+		}
+	}
+	&.te_img_effect2
+	{
+		overflow: hidden;
+		position: relative;
+		display: inline-block;
+		img
+		{
+			@include transition(all,0.4s,ease);
+		}
+		&:hover img
+		{
+			transform: scale(1.1);
+		}
+	}
+	&.te_img_effect3
+	{
+		overflow: hidden;
+		position: relative;
+		display: inline-block;
+
+		&:before
+		{
+			@include position(absolute,0,0,0,0);
+			content: '';
+			z-index: 1;
+			@include transition(all, 0.3s);
+		}
+		&:hover
+		{
+			&:before
+			{
+				@include position(absolute,30px,30px,30px,30px);
+				background-color: rgba(nth($f_color,3),0.3);
+			}
+		}
+	}
+	&.te_img_effect4
+	{
+		overflow: hidden;
+		position: relative;
+		display: inline-block;
+
+		&:before, &:after
+		{
+			content: "";
+			@include position(absolute,0,0,0,0);
+			@include transition(all,0.5s,ease-out);
+			z-index: 1;
+		}
+		&:hover
+		{
+			&:after
+			{
+				background-color:rgba(nth($f_color,5),0.2);
+				top: 50%;
+				bottom: 50%;
+			}
+			&:before
+			{
+				background-color:rgba(nth($f_color,5),0.2);
+				right: 50%;
+				left: 50%;
+			}
+		}
+	}
+	&.te_img_effect5
+	{
+		@include position(relative);
+		&:after
+		{
+			content: "";
+			@include position(absolute,40px,40px,40px,40px);
+			z-index: 0;
+			opacity: 0;
+			transform: scale(0.6);
+			transition: transform .35s cubic-bezier(.05,.2,.1,1),opacity .35s cubic-bezier(.05,.2,.1,1);
+			border: 5px solid rgba(nth($f_color,5),0.3);
+		}
+		&:hover
+		{
+			&:after
+			{
+				opacity: 1;
+				transform: scale(1);
+			}
+		}
+	}
+	&.te_img_effect6
+	{
+
+		@include position(relative);
+		text-align: center;
+	 	display: inline-block;
+
+		&:before, &:after
+		{
+			@include position(absolute,15px,15px,15px,15px);
+			content: '';
+			transition: opacity 0.35s, transform 0.35s;
+			z-index: 1;
+		}
+		&:after{
+		  	border-right: 2px solid nth($f_color,19);
+			border-left: 2px solid nth($f_color,19);
+			@include transform(scale(1, 0));
+		}
+		&:before{
+	  		border-top: 2px solid nth($f_color,19);
+			border-bottom: 2px solid nth($f_color,19);
+			@include transform(scale(0, 1));
+		}
+		&:hover
+		{
+			&:before, &:after
+			{
+	  			opacity: 1;
+				@include transform(scale(1));
+			}
+		}
+	}
+}
+@-webkit-keyframes effect_shine {
+  100% {
+    left: 150%; } }
+
+@keyframes effect_shine {
+  100% {
+    left: 150%; } }
+/*-------------- some parent class of image zoom effect ---------------------*/
+.common_carousel_emp .carousel-item,.s_banner .jumbotron,.te_ts_img_hvr,.te_space_section
+{
+  &:hover .te_img_hover_overflow img
+  {
+    @include transform(scale(1.1))
+  }
+}
+.te_header_style_2_main .fa.fa-shopping-cart.o_editable,
+.te_header_style_2_main .fa.fa-heart.o_editable,
+.te_header_style_2_main .te_srch_icon_header.o_editable,
+.te_header_style_2_main .te_bar_icon.o_editable,
+
+.te_header_style_3_main .fa.fa-shopping-cart.o_editable,
+.te_header_style_3_main .fa.fa-heart.o_editable,
+.te_header_style_3_main .te_srch_icon_header.o_editable,
+.te_header_style_3_main .te_bar_icon.o_editable,
+
+.te_header_style_4_main .fa.fa-shopping-cart.o_editable,
+.te_header_style_4_main .fa.fa-heart.o_editable,
+.te_header_style_4_main .te_srch_icon_header.o_editable,
+.te_header_style_4_main .te_bar_icon.o_editable,
+
+.te_header_style_5_main .fa.fa-shopping-cart.o_editable,
+.te_header_style_5_main .fa.fa-heart.o_editable,
+.te_header_style_5_main .te_srch_icon_header.o_editable,
+.te_header_style_5_main .te_bar_icon.o_editable,
+
+.te_header_style_6_main .fa.fa-shopping-cart.o_editable,
+.te_header_style_6_main .fa.fa-heart.o_editable,
+.te_header_style_6_main .te_srch_icon_header.o_editable,
+.te_header_style_6_main .te_bar_icon.o_editable,
+
+.te_header_style_7_main .fa.fa-shopping-cart.o_editable,
+.te_header_style_7_main .fa.fa-heart.o_editable,
+.te_header_style_7_main .te_srch_icon_header.o_editable,
+.te_header_style_7_main .te_bar_icon.o_editable,
+
+.te_header_style_1_main .fa.fa-shopping-cart.o_editable,
+.te_header_style_1_main .fa.fa-heart.o_editable,
+.te_header_style_1_main .te_srch_icon_header.o_editable,
+.te_header_style_1_main .te_bar_icon.o_editable {
+pointer-events: none;
+}
+/*---------------- Extra keyframes -------------------*/
+@keyframes shine_label {
+    0% {
+        opacity: 0;
+        left: -15px;
+    }
+    20% {
+        opacity: .3;
+        left: 0;
+    }
+    30% {
+        opacity: .45;
+        left: 5px;
+    }
+    50% {
+        opacity: .45;
+        left: 25px;
+    }
+    80% {
+        opacity: .45;
+        left: 42px;
+    }
+    100% {
+        opacity: 0;
+        left: 44px;
+    }
+}
+/* For Footer Social Icons */
+.te_footer_social_icon{
+    >a.o_editable{
+        pointer-events: none;
+    }
+}
+/* For Vertical Menu Social Icons */
+.te_sidenav_social_icon .te_social_icon{
+    a.o_editable{
+        pointer-events: none;
+    }
+}

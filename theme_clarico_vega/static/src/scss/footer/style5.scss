@@ -1,0 +1,176 @@
+/*================ Footer Style 5 ==================*/
+@if o-website-value('footer-template') == 'option_footer_05' {
+    #footer
+    {
+        .te_block_title,.te_block_title_col
+        {
+            font-size: inherit;
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+        @include media-breakpoint-down(xs)
+        {
+            .te_block_title
+            {
+                display:none;
+            }
+        }
+        ul
+        {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+        }
+        .te_footer_info_text
+        {
+            li
+            {
+                padding: 1rem 0;
+                border-top: 1px solid #ccc;
+                &:first-child
+                {
+                    border-top:0;
+                    padding-top:0;
+                }
+
+                .te_footer_add_tel_email_text_ept span
+                {
+                    vertical-align: middle;
+                    width: 15px;
+                    @include media-breakpoint-down(sm){
+                        width: 20px;
+                    }
+                }
+                .te_ftr_text_style
+                {
+                    width: calc(100% - 30px);
+                    font-size: inherit;
+                    vertical-align: middle;
+                    a
+                    {
+                        font-size: inherit;
+                        color: inherit;
+                    }
+                }
+                .te_title_span
+                {
+                    line-height: 1;
+                    font-size: inherit;
+                    margin-bottom: 5px;
+                    text-transform: uppercase;
+                }
+            }
+        }
+        .te_footer_info_ept {
+            li {
+                padding: 12px 0;
+                a {
+                    font-size: inherit;
+                }
+            }
+            section:first-child {
+                li
+                {
+                    padding-top:0;
+                }
+            }
+        }
+        .te_newsletter, .te_footer_social_icon
+        {
+            margin-bottom: 5px;
+        }
+        .te_footer_social_icon
+        {
+            @include media-breakpoint-down(sm){
+                margin-bottom: 0px;
+            }
+            a:first-child
+            {
+                > span{
+                    padding-left:0;
+                }
+            }
+            >a
+            {
+                color: inherit;
+                font-size: inherit;
+                @include transition(all,0.25s,ease-out,0s)
+                @include transform(scale(1))
+                padding:0;
+                span
+                {
+                    display:inline-block;
+                    padding: 0.625rem 0.3125rem;
+                }
+                &:hover
+                {
+                    @include transition(all,0.25s,ease-out,0s)
+                    @include transform(scale(1.2))
+                }
+            }
+        }
+        .te_collapse_icon
+        {
+            cursor: pointer;
+            display: block;
+            >i
+            {
+                float: right;
+                padding-top: 5px;
+            }
+            i:before
+            {
+                content: "\f068";
+            }
+            &.collapsed
+            {
+                i:before
+                {
+                    content: "\f067";
+                }
+            }
+            @include media-breakpoint-up(sm)
+            {
+                display:none;
+            }
+        }
+        .collapse
+        {
+            @include media-breakpoint-up(sm)
+            {
+                display:block;
+            }
+        }
+    }
+    .te_newsletter_title > h5{
+        margin-bottom: 15px;
+    }
+    .te_footer_payment_img
+    {
+        text-align: center;
+        @include media-breakpoint-down(sm)
+        {
+            text-align: left;
+        }
+    }
+    .te_language .js_language_selector .dropdown-menu{
+        @include media-breakpoint-down(sm){
+            transform: translate3d(65px, -73px, 0px) !important;
+        }
+    }
+    .te_payment_list{
+        margin-bottom: 40px;
+        @include media-breakpoint-down(md){
+            margin-top: 5px;
+        }
+        @include media-breakpoint-down(sm){
+            margin-top: 0px;
+        }
+    }
+    section.te_payment_list img {
+        max-height: 30px;
+    }
+}

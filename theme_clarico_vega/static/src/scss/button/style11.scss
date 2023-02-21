@@ -1,0 +1,74 @@
+/*======================== Button Style 11 =========================*/
+@if o-website-value('button-template') == 'button_style_11' {
+    .te_theme_button
+    {
+        background: nth($f_color,27) !important;
+        border: none;
+        padding: 0.675rem 1.2rem;
+        box-shadow: inset 0 0 0 2px nth($f_color,3);
+        color: nth($f_color,3);
+        @include transition(color, 0.25s, ease, 0.08s);
+        @include position(relative);
+
+        &.btn-secondary, &.btn-link
+        {
+            color: nth($f_color,3) !important;
+            border: none !important;
+            &:hover {
+                color: theme-color("secondary") !important;
+                border-color: theme-color("secondary") !important;
+                &:before, &:after
+                {
+                    border-color: theme-color("secondary") !important;
+                }
+            }
+        }
+        &.btn-danger
+        {
+            &:hover {
+                color: theme-color('danger');
+                &:before, &:after
+                {
+                    border-color: theme-color('danger');
+                }
+            }
+        }
+        &:before, &:after
+        {
+            @include border(0px, 27, solid);
+            box-sizing: border-box;
+            content: '';
+            pointer-events: none;
+            @include position(absolute, auto, 0, 0);
+            width: 0;
+            height: 0;
+            border-radius: $btn-border-radius;
+        }
+        &:before {
+            border-bottom-width: $btn-border-width;
+            border-left-width: $btn-border-width;
+        }
+        &:after {
+            border-top-width: $btn-border-width;
+            border-right-width: $btn-border-width;
+        }
+
+        &:hover
+        {
+            color: nth($f_color,19);
+            &:before, &:after
+            {
+                border-color: nth($f_color,19);
+                transition: border-color 0s, width 0.25s, height 0.25s;
+                width: 100%;
+                height: 100%;
+            }
+            &:before {
+                transition-delay: 0s, 0s, 0.25s;
+            }
+            &:after {
+                transition-delay: 0s, 0.25s, 0s;
+            }
+        }
+    }
+}

@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--======================== Inclusion of Scss Files ======================-->
+<!--    <template id="theme_base_assets_frontend" inherit_id="website.assets_frontend">-->
+<!--        <xpath expr="link[last()]" position="after">-->
+<!--            <link rel="stylesheet" type="text/css" href="/emipro_theme_base/static/src/scss/product_slider_editor.scss"/>-->
+<!--            <link rel="stylesheet" type="text/css" href="/emipro_theme_base/static/src/scss/image_hotspot_editor.scss"/>-->
+<!--        </xpath>-->
+<!--    </template>-->
+
+    <template id="quick_view_container" name="Quick View Container">
+        <div class="quick_view_content"/>
+    </template>
+
+    <template id="dynamic_mega_menu_child" name="Quick View Container">
+        <div class="dynamic_mega_menu_child" t-att-menu_id="current_menu"/>
+    </template>
+    <template id="ajax_cart_container" name="Ajax Cart Container">
+        <div class="ajax_cart_content"/>
+    </template>
+    <template id="ajax_cart_success_container" name="Ajax Cart Success Container">
+        <div class="ajax_cart_success_content"/>
+    </template>
+    <template id="brand_slider_container" name="Brand Slider Container">
+        <section class="brand_slider_content">
+        </section>
+    </template>
+    <template id="category_slider_container" name="Category Slider Container">
+        <section class="category_slider_content">
+        </section>
+    </template>
+    <template id="theme_category_carousel" name="common theme category carousel">
+		<div class="oe_theme_category_carousel_container w-100">
+		</div>
+	</template>
+    <template id="slider_preview" name="slider Preview">
+		<t t-call="website.layout">
+			<div class="input-group js_slider_snippet hidden" data-isemipro="true" t-att-data-slider-id="rec_id"/>
+	  	</t>
+	</template>
+    <!--===================== Cart Page Banner =======================-->
+    <template id="cart_ept_theme_base" inherit_id="website_sale.cart">
+        <xpath expr="//div[@id='wrap']/div[hasclass('container')]"
+			position="before">
+            <div class="oe_structure" id="te_shop_before_h_section" />
+        </xpath>
+    </template>
+    <template id="slider_auto_play" inherit_id="website.layout">
+        <xpath expr="//header" position="before">
+            <div class="te_auto_play_value d-none">
+                <span t-if="website.is_auto_play" t-esc="website.is_auto_play"></span>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="menu_categories_style_1_ept">
+        <t t-foreach="items" t-as="item">
+            <t t-if="item &gt; 0">
+                <section class="col-lg-4 col-md-4 col-sm-4 col-12">
+                    <div class="te_category-heading-center">
+                        <div class="d-flex">
+                            <a class="te_menu_category_heading nav-link" href="#">
+                                Lorem
+                            </a>
+                        </div>
+                        <section class="te_menu_category_item">
+                            <a href="#" class="te_menu_item nav-link">Lorem ipsum dolor
+                                sit
+                            </a>
+                        </section>
+                        <section class="te_menu_category_item">
+                            <a href="#" class="te_menu_item nav-link">Lorem ipsum dolor
+                                sit
+                            </a>
+                        </section>
+                        <section class="te_menu_category_item">
+                            <a href="#" class="te_menu_item nav-link">Lorem ipsum sit
+                            </a>
+                        </section>
+                        <section class="te_menu_category_item">
+                            <a href="#" class="te_menu_item nav-link">Lorem ipsum dolor
+                                sit
+                            </a>
+                        </section>
+                        <section class="te_menu_category_item">
+                            <a href="#" class="te_menu_item nav-link">Lorem ipsum dolor
+                                sit
+                            </a>
+                        </section>
+                    </div>
+                </section>
+            </t>
+            <t t-set="item" t-value="item-1"/>
+        </t>
+    </template>
+
+    <template id="menu_categories_style_2_ept">
+        <t t-foreach="items" t-as="item">
+            <t t-if="item &gt; 0">
+                <section class="col-lg-3 cat-column col-md-3 col-sm-6">
+                    <section class="te_image">
+                        <img class="img img-responsive img-fluid d-block mx-auto w-100"
+                             alt="Clarico-Mega Menus Style 2"
+                             src="/theme_clarico_vega/static/src/img/snippets/menu_snippets/style_2/340_500.jpg"/>
+                        <section class="te_menu_content">
+                            <h4>
+                                <a href="#" class="nav-link">Lorem ipsum</a>
+                            </h4>
+                            <p>Lorem ipsum dolor sit</p>
+                        </section>
+                    </section>
+                </section>
+            </t>
+            <t t-set="item" t-value="item-1"/>
+        </t>
+    </template>
+
+    <template id="menu_categories_style_3_ept">
+        <t t-foreach="items" t-as="item">
+            <t t-if="item &gt; 0">
+                <section class="col-lg-4 col-sm-4 p-0 py-2">
+                    <div class="row mx-0 align-items-center">
+                        <div class="col-4 text-center px-sm-0 te_menu_icon">
+                            <span>
+                                <span class="fa fa-paint-brush bg-primary rounded-circle "/>
+                            </span>
+                        </div>
+                        <div class="col-lg-8 col-8 p-0 col-sm-12 my-sm-2  px-sm-2">
+                            <span class="te_megamenu_service_heading">oblique phaedrum</span>
+                            <p>Lorem ipsum dolor sit amet.</p>
+                        </div>
+                    </div>
+                </section>
+            </t>
+            <t t-set="item" t-value="item-1"/>
+        </t>
+    </template>
+
+    <template id="menu_categories_style_3_ept_2">
+        <t t-foreach="items" t-as="item">
+            <t t-if="item &gt; 0">
+                <section class="col-lg-6 col-md-12 col-sm-6">
+                    <ul class="mb-0">
+                        <section>
+                            <li>
+                                <div class="d-flex">
+                                    <a href="#" class="nav-link">Lorem ipsum dolor sit
+                                    </a>
+                                </div>
+                            </li>
+                        </section>
+                        <section>
+                            <li>
+                                <div class="d-flex">
+                                    <a href="#" class="nav-link">Lorem ipsum sit</a>
+                                </div>
+                            </li>
+                        </section>
+                        <section>
+                            <li>
+                                <div class="d-flex">
+                                    <a href="#" class="nav-link">Lorem ipsum sit</a>
+                                </div>
+                            </li>
+                        </section>
+                        <section>
+                            <li>
+                                <div class="d-flex">
+                                    <a href="#" class="nav-link">Lorem ipsum dolor sit
+                                    </a>
+                                </div>
+                            </li>
+                        </section>
+                        <section>
+                            <li>
+                                <div class="d-flex">
+                                    <a href="#" class="nav-link">Lorem ipsum</a>
+                                </div>
+                            </li>
+                        </section>
+                    </ul>
+                </section>
+            </t>
+            <t t-set="item" t-value="item-1"/>
+        </t>
+    </template>
+
+    <template id="menu_categories_style_4_ept">
+        <t t-foreach="items" t-as="item">
+            <t t-if="item &gt; 0">
+                <section class="col-lg-2 te_menu_flip_box col-md-2 col-6 col-sm-3">
+                    <div class="row align-items-center">
+                        <section class="text-center col-12 te_icon_text">
+                            <div class="te_menu_flip_box_inner">
+                                <img class="img img-responsive img-fluid d-block mx-auto"
+                                     alt="Clarico-Mega Menus Style 4"
+                                     src="/theme_clarico_vega/static/src/img/snippets/menu_snippets/style_4/100_100.png"/>
+                            </div>
+                        </section>
+                        <section class="py-3 text-center col-12 te_icon_text">
+                            <a href="#" class="nav-link">Lorem</a>
+                        </section>
+                    </div>
+                </section>
+            </t>
+            <t t-set="item" t-value="item-1"/>
+        </t>
+    </template>
+
+    <template id="menu_categories_style_5_ept">
+        <t t-foreach="items" t-as="item">
+            <t t-if="item &gt; 0">
+                <section class="col-lg-2 col-md-4 col-sm-6">
+                    <div class="img_container">
+                        <div class="te_border_div">
+                            <img class="img img-responsive img-fluid d-block mx-auto"
+                                 alt="Clarico-Mega Menus Style 5"
+                                 src="/theme_clarico_vega/static/src/img/snippets/menu_snippets/style_5/290_210.jpg"/>
+                        </div>
+                    </div>
+                    <section class="py-lg-3 py-md-3 py-sm-3 py-2">
+                        <div class="d-flex">
+                            <a class="te_menu_ctg_main" href="#">Lorem + ipsum</a>
+                        </div>
+                        <ul>
+                            <section>
+                                <li>
+                                    <div class="d-flex">
+                                        <a class="te_menu_sub nav-link m-0" href="#">Lorem
+                                            ipsum
+                                        </a>
+                                    </div>
+                                </li>
+                            </section>
+                            <section>
+                                <li>
+                                    <div class="d-flex">
+                                        <a class="te_menu_sub nav-link m-0" href="#">Lorem
+                                            ipsum
+                                        </a>
+                                    </div>
+                                </li>
+                            </section>
+                            <section>
+                                <li>
+                                    <div class="d-flex">
+                                        <a class="te_menu_sub nav-link m-0" href="#">Lorem
+                                            ipsum
+                                        </a>
+                                    </div>
+                                </li>
+                            </section>
+                            <section>
+                                <li>
+                                    <div class="d-flex">
+                                        <a class="te_menu_sub nav-link m-0" href="#">Lorem
+                                            ipsum
+                                        </a>
+                                    </div>
+                                </li>
+                            </section>
+                        </ul>
+                    </section>
+                </section>
+            </t>
+            <t t-set="item" t-value="item-1"/>
+        </t>
+    </template>
+
+    <template id="menu_categories_style_6_ept">
+        <t t-foreach="items" t-as="item">
+            <t t-if="item &gt; 0">
+                <section
+                        class="col-lg-6 align-items-center col-sm-6 col-md-6 col-12">
+                    <div class="row pb-3">
+                        <section class="col-md-4 align-self-center word-break">
+                            <div class="img_container te_sub_menu_img">
+                                <img alt="Clarico-Mega Menus Style 6"
+                                     src="/theme_clarico_vega/static/src/img/snippets/menu_snippets/style_6/170_90.jpg"
+                                     class="img img-responsive img-fluid d-block mx-auto"/>
+                            </div>
+                        </section>
+                        <section class="col-md-8 align-item-center">
+                            <h5 class="mb0 te_employee_name_ti d-flex">
+                                <a href="#" class="te_employee_name_ti">Lorem ipsum
+                                    dolor
+                                </a>
+                            </h5>
+                            <h6 class="te_designation_name_sub_ti nav-link mb-0">My
+                                Heading 6
+                            </h6>
+                        </section>
+                    </div>
+                </section>
+            </t>
+            <t t-set="item" t-value="item-1"/>
+        </t>
+    </template>
+
+        <!--================= Mega Menus Style 1 =============================-->
+    <template id="s_mega_menu_style_1" name="Style 1" groups="base.group_user">
+        <section class="te_menu_style_1 s_mega_menu_style_1 container-fluid py-3 px-3 te_img_hide_small_devices">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-9 align-self-center">
+                        <div class="row">
+                            <t t-call="emipro_theme_base.menu_categories_style_1_ept">
+                                <t t-set="items" t-value="4"/>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 te_img_hide_small_devices">
+                        <section class="te_menu-right-side-img-div">
+                            <img class="img img-responsive img-fluid d-block mx-auto"
+                                 alt="Clarico-Mega Menus Style 1"
+                                 src="/theme_clarico_vega/static/src/img/snippets/menu_snippets/style_1/340_300.png"/>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+    <!--=================== Mega Menus Style 2 ======================-->
+    <template id="s_mega_menu_style_2" name="Style 2" groups="base.group_user">
+        <section class="te_menu_style_2 s_mega_menu_style_2 container-fluid">
+            <div class="container">
+                <div class="row ">
+                    <t t-call="emipro_theme_base.menu_categories_style_2_ept" >
+                        <t t-set="items" t-value="5"/>
+                    </t>
+                </div>
+            </div>
+        </section>
+    </template>
+    <!--=================== Mega Menus Style 3 ======================-->
+    <template id="s_mega_menu_style_3" name="Style 3" groups="base.group_user">
+        <section class="te_menu_style_3 s_mega_menu_style_3 container-fluid py-3 px-3">
+            <div class="container">
+                <div class="row border-bottom mb-3">
+                    <t t-call="emipro_theme_base.menu_categories_style_3_ept">
+                        <t t-set="items" t-value="4"/>
+                    </t>
+                </div>
+                <div class="row te_service_items">
+                    <section class="col-md-4 col-lg-6">
+                        <div class="row">
+                            <t t-call="emipro_theme_base.menu_categories_style_3_ept_2">
+                                <t t-set="items" t-value="3"/>
+                            </t>
+                        </div>
+                    </section>
+                    <section class="col-lg-6 py-2 col-md-8 col-12 align-self-lg-center">
+                        <h3 class="te_megamenu_service_content_heading">My Heading 3</h3>
+                        <hr class="mx-0 w-25 border-primary"/>
+                        <p>Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire
+                            persius. Duis meis quas vim
+                            ex, ius no oblique phaedrum pertinacia. Ornatus referrentur nec cu,
+                            dicam dolore vivendum ne
+                            mea. Usu bonorum
+
+                        </p>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </template>
+    <!--==================== Mega Menus Style 4 ============================-->
+    <template id="s_mega_menu_style_4" name="Style 4" groups="base.group_user">
+        <section
+                class="te_menu_style_4 s_mega_menu_style_4 container-fluid te_icons_menu_main py-3 px-3">
+            <div class="container">
+                <div class="row">
+                    <section class="col-lg-9 align-self-center">
+                        <div class="row">
+                            <t t-call="emipro_theme_base.menu_categories_style_4_ept" >
+                                <t t-set="items" t-value="13"/>
+                            </t>
+                        </div>
+                    </section>
+                    <section class="col-lg-3">
+                        <div class="te_img_hide_small_devices">
+                            <img class="img img-responsive img-fluid d-block mx-auto"
+                                 alt="Clarico-Mega Menus Style 4"
+                                 src="/theme_clarico_vega/static/src/img/snippets/menu_snippets/style_4/370_300.png"/>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </template>
+    <!--==================== Mega Menus Style 5 =======================-->
+    <template id="s_mega_menu_style_5" name="Style 5" groups="base.group_user">
+        <section
+                class="te_menu_style_5 s_mega_menu_style_5 container-fluid py-3 px-3 te_catalog_menu_main te_img_hide_small_devices">
+            <div class="container">
+                <div class="row">
+                    <t t-call="emipro_theme_base.menu_categories_style_5_ept">
+                        <t t-set="items" t-value="7"/>
+                    </t>
+                </div>
+            </div>
+        </section>
+    </template>
+    <!--==================== Mega Menus Style 6 ========================-->
+    <template id="s_mega_menu_style_6" name="Style 6" groups="base.group_user">
+        <section>
+            <div class="te_menu_style_6 s_mega_menu_style_6 te_m6_container py-3">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-8 col-md-12 col-sm-12 align-self-center">
+                            <div class="row">
+                                <t t-call="emipro_theme_base.menu_categories_style_6_ept">
+                                    <t t-set="items" t-value="7"/>
+                                </t>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 align-self-center col-12 col-sm-12 col-md-12">
+                            <div class="row">
+                                <section class="col-lg-12 col-md-6 te_m6_img">
+                                    <div class="img_container te_sub_menu_main_img">
+                                        <img class="img img-responsive te_feature_image_1"
+                                             src="/theme_clarico_vega/static/src/img/snippets/menu_snippets/style_6/550_270.png"
+                                             alt="Clarico-Mega Menus Style 6"/>
+                                    </div>
+                                </section>
+                                <section
+                                        class="te_emp_title_sub_title col-lg-12 col-md-6 align-self-center">
+                                    <div class="d-flex">
+                                        <a href="#"
+                                           class="card-title text-left te_three_columns_heading te_employee_name_ti">
+                                            Lorem ipsum dolor
+                                        </a>
+                                    </div>
+                                    <p class="card-text text-left te_three_columns_para o_default_snippet_text te_designation_name_sub_ti">
+                                        Lorem ipsum dolor sit amet, eam et reque justo quidam, te
+                                        est audire persius. Duis
+                                        meis quas vim ex, ius no oblique
+                                    </p>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <!--==================== Mega Menu Category Styles ========================-->
+    <template id="dynamic_category_mega_menu" name="Dynamic Mega Menu Category Style">
+        <t t-set="website_id"
+           t-value="request.env['website'].sudo().get_current_website().id"/>
+        <t t-set="category_fetch"
+           t-value="request.env['product.public.category'].sudo().search([('parent_id', '=', False), ('website_id', 'in', (False, website_id))])"/>
+    </template>
+    <!--==================== Brand Page ========================-->
+    <template id="brand_listing_template" name="Brand Listing">
+        <t t-call="website.layout">
+            <t t-set="additional_title">Brands</t>
+            <div id="wrap"/>
+        </t>
+    </template>
+</odoo>

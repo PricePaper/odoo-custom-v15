@@ -1,0 +1,159 @@
+<odoo>
+    <data>
+
+        <template id="portal_my_home_menu_request" name="Portal layout : Request" inherit_id="portal.portal_breadcrumbs" priority="30">
+            <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+                <li t-if="page_name == 'request'" t-attf-class="breadcrumb-item #{'active ' if not sample_request else ''}">
+                    <a t-if="sample_request" t-attf-href="/my/requests?{{ keep_query() }}">Sample Request</a>
+                    <t t-else="">Sample Request</t>
+                </li>
+                <li t-if="sample_request" class="breadcrumb-item active">
+                    <t t-esc="sample_request.name"/>
+
+                </li>
+            </xpath>
+        </template>
+
+        <template id="portal_my_home_request" name="Show Sample Requests" inherit_id="portal.portal_my_home" customize_show="True" priority="30">
+            <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title">Sample Request</t>
+                    <t t-set="url" t-value="'/my/requests'"/>
+                    <t t-set="placeholder_count" t-value="'request_count'"/>
+                </t>
+            </xpath>
+        </template>
+
+        <template id="portal_my_requests" name="My Sample Requests">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+                <t t-call="portal.portal_searchbar">
+                    <t t-set="title">Requests</t>
+                </t>
+                <t t-if="not requests">
+                    <p>There are currently no Sample Requests for your account.</p>
+                </t>
+                <t t-if="requests" t-call="portal.portal_table">
+                    <thead>
+                        <tr class="active">
+                            <th>Request #</th>
+                            <th>Request Date</th>
+                            <th class="text-center">Status</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="requests" t-as="request">
+                            <tr>
+                                <td>
+                                    <a t-attf-href="/my/request/#{request.id}" t-att-title="request.name">
+                                        <t t-esc="request.name"/>
+
+                                    </a>
+                                </td>
+                                <td>
+                                    <span t-field="request.create_date"/>
+                                </td>
+
+                                <td class="tx_status text-center">
+                                    <span t-field='request.state'/>
+                                </td>
+
+                            </tr>
+                        </t>
+                    </tbody>
+                </t>
+            </t>
+        </template>
+
+
+        <template id="sample_request_portal_template" name="Sample Request Portal Template" inherit_id="portal.portal_sidebar" primary="True">
+            <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
+                <div class="row mt16 o_portal_sale_sidebar">
+                    <t t-call="portal.portal_record_sidebar">
+                        <t t-set="classes" t-value="'col-lg-auto d-print-none'"/>
+                    </t>
+                    <div id="quote_content" class="col-12 col-lg justify-content-end">
+                        <div t-if="sample_request.state == 'reject'" class="alert alert-danger alert-dismissable d-print-none" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="close">×</button>
+                            <strong>This Sample Request has been Rejected.</strong>
+                            <a role="button" href="#discussion">
+                                <i class="fa fa-comment"/>
+                                Contact us to get a new Request.
+                            </a>
+                        </div>
+                        <div t-attf-class="card pb-5" id="portal_request_content">
+                            <div t-call="sample_request.sample_request_portal_content"/>
+                        </div>
+                        <div id="sample_request_communication" class="mt-4">
+                            <h2>History</h2>
+                            <t t-call="portal.message_thread">
+                                <t t-set="object" t-value="sample_request"/>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </template>
+
+
+        <template id="sample_request_portal_content" name="Sample Request Portal Content">
+            <div id="introduction" t-attf-class="pb-2 pt-3 card-header bg-white}">
+                <h2 class="my-0">
+                Sample Request
+                    <em t-esc="sample_request.name"/>
+                </h2>
+            </div>
+            <div t-attf-class="card-body">
+                <div id="informations">
+                    <div class="row" id="so_date">
+                        <div class="mb-3 col-6">
+                            <strong>Request Date:</strong>
+                            <span t-field="sample_request.create_date" t-options='{"widget": "date"}'/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <strong t-if="sample_request.partner_shipping_id == sample_request.partner_id" class="d-block mb-1">Invoicing and Shipping Address:</strong>
+                            <strong t-if="sample_request.partner_shipping_id != sample_request.partner_id" class="d-block mb-1">Invoicing Address:</strong>
+                            <address t-field="sample_request.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                        </div>
+                        <t t-if="sample_request.partner_shipping_id != sample_request.partner_id">
+                            <div id="shipping_address" class="col-lg-6">
+                                <strong class="d-block mb-1">Shipping Address:</strong>
+                                <address t-field="sample_request.partner_shipping_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <section id="details" style="page-break-inside: auto;" class="mt32">
+                    <h3 id="details">Request Details</h3>
+                    <table t-att-data-order-id="sample_request.id" class="table table-sm" id="sales_order_table">
+                        <thead class="bg-100">
+                            <tr>
+                                <th/>
+                                <th class="text-left">Products</th>
+
+                            </tr>
+                        </thead>
+                        <tbody class="sale_tbody">
+                            <t t-foreach="sample_request.request_lines" t-as="line">
+                                <tr t-attf-class="bg-200 font-weight-bold">
+                                <td>
+                                     <span t-field="line.product_id.image_128" t-options="{'widget': 'image', 'qweb_img_responsive': False, 'class': 'rounded o_image_64_max'}" />
+                                </td>
+                                    <td id="product_name">
+                                        <span t-field="line.product_id.display_name"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </template>
+
+    </data>
+</odoo>

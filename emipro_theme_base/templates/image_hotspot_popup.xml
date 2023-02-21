@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <template id="image_hotspot_configure_template">
+        <div class="modal fade w-100 o_technical_modal o_not_editable" id="image_hotspot_configure_model"
+             contenteditable="false">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content image_hotspot_configure_model" contenteditable="false">
+                    <div class="modal-body p-0 pb-0" contenteditable="false">
+                        <div class="hotspot-configure h-100 pb-0">
+                            <div class="configure-header">
+                                <div class="setting-icon">
+                                    <i class="fa fa-cog"/>
+                                </div>
+                                <div class="header-content">
+                                    <h5>Image Hotspot</h5>
+                                    <p>Easily highlight any sections with an image hotspot</p>
+                                </div>
+                                <button type="button" class="image_hotspot_configure_model_close" data-dismiss="modal"
+                                        aria-label="Close" tabindex="-1">
+                                </button>
+                            </div>
+                            <div class="configure-sub-header">
+                                <span class="invisible">
+                                    <div class="configure-selection js-layout-selection disabled invisible">
+                                        <span class="icon layout-selection"/>
+                                        <span class="title">Layout Selection</span>
+                                    </div>
+                                </span>
+                                <span class="float-right">
+                                    <div class="configure-selection">
+                                        <span class="fa fa-file-text mr-1"/>
+                                        <span class="title">User Guide</span>
+                                    </div>
+                                    <div class="configure-selection">
+                                        <span class="fa fa-play-circle mr-1"/>
+                                        <span class="title">Videos</span>
+                                    </div>
+                                    <div class="configure-selection btn-hotspot-save">
+                                        <span class="title">Save</span>
+                                    </div>
+                                </span>
+                            </div>
+                            <div class="container-fluid hotspot_configure_template category_brand_option">
+                                <div class="row layout-configure">
+                                    <div class="col-5 p-0">
+                                        <div class="hotspot_configure_section">
+                                            <div class="card ui-configuration">
+                                                <div class="card-header">
+                                                    <h2 class="row mb-0 align-items-center my-2">
+                                                        <span class="col-10 h6 mb-0">
+                                                            Hotspot Configuration
+                                                        </span>
+                                                        <span class="col h6 mb-0 text-center align-self-center">
+                                                            <i class="fa fa-minus"/>
+                                                        </span>
+                                                    </h2>
+                                                </div>
+                                                <div id="collapseOne" class="collapse show">
+                                                    <div class="card-body">
+                                                        <div class="configure-sub pb4">
+                                                            <div class="sub-title mt-2">
+                                                                Hotspot Action type
+                                                            </div>
+                                                            <div class="ui-configure clearfix">
+                                                                <span class=" sub-title">On Click</span>
+                                                                <label class="form-switch">
+                                                                    <input type="checkbox"
+                                                                           class="product_hotspot_event form-check-input"
+                                                                           name="product_hotspot_event"/>
+                                                                    <span class="slider round"/>
+                                                                </label>
+                                                                <span class="ml-1 sub-title">On Hover</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="configure-sub">
+                                                            <div class="sub-title">
+                                                                Hotspot Action
+                                                            </div>
+                                                            <div class="ui-configure dropdown_div clearfix ui-settings">
+                                                                <div class="dropdown slider-dropdown">
+                                                                    <button type="button"
+                                                                            class="dropdown-toggle slider-style-ui slider-dropdown-button"
+                                                                            data-toggle="dropdown">Redirect URL
+                                                                    </button>
+                                                                    <div id="hotspot_action" class="dropdown-menu">
+                                                                        <a class="dropdown-item slider-dropdown-item"
+                                                                           data-action="redirect_url"
+                                                                           href="#">Redirect URL
+                                                                        </a>
+                                                                        <a class="dropdown-item slider-dropdown-item"
+                                                                           data-action="redirect_on_product"
+                                                                           href="#">Redirect on product
+                                                                        </a>
+                                                                        <a class="dropdown-item slider-dropdown-item"
+                                                                           data-action="add_to_cart"
+                                                                           href="#" data-toggle="tooltip"
+                                                                           data-placement="left"
+                                                                           title="Add to cart with basic popover">
+                                                                            Display
+                                                                            basic product card
+                                                                        </a>
+                                                                        <a class="dropdown-item slider-dropdown-item"
+                                                                           data-action="display_product"
+                                                                           href="#" data-toggle="tooltip"
+                                                                           data-placement="left"
+                                                                           title="Display overview product card">Display
+                                                                            advanced product card
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="configure-sub">
+                                                            <div class="sub-title">
+                                                                Page URL
+                                                            </div>
+                                                            <div class="ui-configure clearfix">
+                                                                <div class="o_not_editable" data-focus="false" contenteditable="true">
+                                                                <input type="text"
+                                                                       class="hotspot_page_url hotspot-text-input"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="configure-sub product-box d-none p-0">
+                                                            <div class="sub-title">
+                                                                Product
+                                                            </div>
+                                                            <div class="ui-configure clearfix">
+                                                                <div class="new-product js_new_item dropdown">
+                                                                    <div class="o_not_editable" data-focus="false"
+                                                                         contenteditable="true">
+                                                                        <input type="text"
+                                                                               class="hotspot_product hotspot-text-input"
+                                                                               placeholder="Search product with name... "/>
+                                                                    </div>
+                                                                    <div id="js_item"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card ui-configuration">
+                                                <div class="card-header">
+                                                    <h2 class="row mb-0 align-items-center my-2">
+                                                        <span class="col-10 h6 mb-0">
+                                                            Hotspot UI Configuration
+                                                        </span>
+                                                        <span class="col h6 mb-0 text-center align-self-center">
+                                                            <i class="fa fa-plus"/>
+                                                        </span>
+                                                    </h2>
+                                                </div>
+                                                <div id="collapseTwo" class="collapse">
+                                                    <div class="card-body">
+                                                        <div class="configure-sub">
+                                                            <div class="sub-title">
+                                                                Hotspot Shape
+                                                            </div>
+                                                            <div class="ui-configure dropdown_div clearfix ui-settings">
+                                                                <div class="dropdown slider-dropdown">
+                                                                    <button type="button"
+                                                                            class="dropdown-toggle slider-style-ui slider-dropdown-button"
+                                                                            data-toggle="dropdown">Circle
+                                                                    </button>
+                                                                    <div id="hotspotShape" class="dropdown-menu">
+                                                                        <a id="circle"
+                                                                           class="dropdown-item slider-dropdown-item"
+                                                                           href="#">Circle
+                                                                        </a>
+                                                                        <a id="square"
+                                                                           class="dropdown-item slider-dropdown-item"
+                                                                           href="#">Square
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="configure-sub">
+                                                            <div class="sub-title">
+                                                                Hotspot Color
+                                                            </div>
+                                                            <div class="ui-configure clearfix">
+                                                                <button type="button" id="colorPicker"
+                                                                        class="btn btn-secondary w-25 border border-dark"/>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="configure-sub">
+                                                            <div class="sub-title">
+                                                                Hotspot Animation
+                                                            </div>
+                                                            <div class="ui-configure dropdown_div clearfix ui-settings">
+                                                                <div class="dropdown slider-dropdown">
+                                                                    <button type="button"
+                                                                            class="dropdown-toggle slider-style-ui slider-dropdown-button"
+                                                                            data-toggle="dropdown">None
+                                                                    </button>
+                                                                    <div id="hotspotAnimation" class="dropdown-menu">
+                                                                        <a id="none"
+                                                                           class="dropdown-item slider-dropdown-item"
+                                                                           href="#">None
+                                                                        </a>
+                                                                        <a id="fade"
+                                                                           class="dropdown-item slider-dropdown-item"
+                                                                           href="#">Fade
+                                                                        </a>
+                                                                        <a id="blink"
+                                                                           class="dropdown-item slider-dropdown-item"
+                                                                           href="#">Blink
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-7 hotspot_preview_section">
+                                        <div class="preview-title title-main my-3 pb-3">
+                                            <span class="fa fa-eye mr-2"></span>
+                                            <span>Hotspot Layout Preview</span>
+                                        </div>
+                                        <div class="preview-image-section">
+                                            <img class="img img-fluid"
+                                                 src="/emipro_theme_base/static/src/img/image_hotspot/hotspot_preview_image.png"/>
+                                        </div>
+                                        <div class="alert alert-danger">
+                                            The preview contains a dummy image to check for hotspot UI configuration
+                                            like shape, color, and effects. You can directly drag and change position
+                                            after configuring the hotspot.
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+
+    <template id="hotspot_configure" inherit_id="website.layout">
+        <xpath expr="//div[@id='wrapwrap']" position="inside">
+            <div role="dialog" id="hotspot_configure_model_main" class="o_not_editable o_technical_modal"
+                 contenteditable="false"/>
+        </xpath>
+    </template>
+
+    <!--============= Product Suggestion for Hotspot ===================-->
+    <template id="suggested_products_for_hotspot">
+        <t t-if="products">
+            <t t-foreach="products" t-as="product">
+                <div class="dropdown-item input-item-link media align-items-center o_search_product_item product-main"
+                     t-att-data-item_name="product.name"
+                     t-att-data-item_id="product.id">
+                    <img t-attf-src="/web/image/product.template/#{product['id']}/image_128"
+                         class="align-self-start o_image_64_contain mr-2"/>
+                    <h6 class="product-name mb-0" t-esc="product['name']"/>
+                </div>
+            </t>
+        </t>
+        <t t-else="">
+            <div class="dropdown-item">
+                <h6>No Any Item(s) Found</h6>
+            </div>
+        </t>
+    </template>
+
+    <!--============= Product Add to cart (pop up) for Hotspot ===================-->
+    <template id="product_add_to_cart_popover">
+        <form action="/shop/cart/update" method="post">
+            <t t-set="combination"
+               t-value="product._get_first_possible_combination()"/>
+            <t t-set="combination_info"
+               t-value="product._get_combination_info(combination, add_qty=add_qty or 1, pricelist=pricelist)"/>
+            <t t-set="product_variant"
+               t-value="product.env['product.product'].browse(combination_info['product_id'])"/>
+            <input type="hidden" name="csrf_token"
+                   t-att-value="request.csrf_token()"/>
+            <input type="hidden" class="product_id" name="product_id"
+                   t-att-value="product_variant.id"/>
+            <input type="hidden" class="product_template_id"
+                   name="product_template_id"
+                   t-att-value="product.id"/>
+            <div class='d-inline-block custom_width'>
+                <div class="row">
+                    <div class="col-3">
+                        <img class='o_image_64_contain' t-attf-src='/web/image/product.template/#{product.id}/image_256'
+                             t-att-alt='product.display_name'/>
+                    </div>
+                    <div class="col-9">
+                        <div class='oe_website_sale te_pop_desc_width'>
+                            <t t-if="product.public_categ_ids">
+                                <t t-if="len(product.public_categ_ids.ids) > 0">
+                                    <t t-set="categ_rec" t-value="product.public_categ_ids[0]"/>
+                                    <a class="text-muted" target="_blank"
+                                       t-att-href="'/shop/category/%s' %slug(categ_rec)">
+                                        <span t-esc="categ_rec.name"/>
+                                    </a>
+                                </t>
+                            </t>
+                            <a t-att-href="product.website_url"
+                               class="text-decoration-none">
+                                <h6 class='product-name mb-0' itemprop='name' t-field='product.name'/>
+                            </a>
+                            <div class="d-block w-100 border_custom mt4">
+                                <div class="align-items-center mx-0">
+                                    <div class="col-12 product_price text-left px-0 my-1" itemprop="offers"
+                                         itemscope="itemscope"
+                                         itemtype="http://schema.org/Offer">
+
+                                        <span t-if="combination_info['price']" t-esc="combination_info['price']"
+                                              class="te_p_sm"
+                                              t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                        <del t-attf-class="text-danger mr-1 te_p_disc {{'' if combination_info['has_discounted_price'] else 'd-none'}}"
+                                             style="white-space: nowrap;" t-esc="combination_info['list_price']"
+                                             t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                        <span itemprop="price" style="display:none;" t-esc="combination_info['price']"/>
+                                        <span itemprop="priceCurrency" style="display:none;"
+                                              t-esc="website.currency_id.name"/>
+                                        <div t-attf-class="te_discount {{'' if combination_info['has_discounted_price'] else 'd-none'}}">
+                                            <t t-set="difference"
+                                               t-value="round(combination_info['list_price'] - combination_info['price'],2)"/>
+                                            <t t-set="discount"
+                                               t-value="round(difference*100/combination_info['list_price'], 2) if combination_info['list_price'] &gt; 0 else 0"/>
+                                            <div class="te_percentage" t-if="discount">
+                                                <span t-esc="'(%s'%(discount)+'%'"/>
+                                                Off)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 w-100 border_custom px-0">
+                                        <a role="button"
+                                           class="btn-primary a-submit te_theme_button ajax-add-to-cart hotspot_add_to_cart_btn"
+                                           href="#" id="add_to_cart" t-att-product-id="product.id">
+                                            <span class="fa fa-shopping-cart"/>
+                                            <span style="vertical-align: middle;">Add to Cart</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </template>
+
+    <!--============= Image Hotspot options ===================-->
+    <template id="image_hotspot_element_options" name="Image Hotspot element options"
+              inherit_id="website.snippet_options">
+        <xpath expr="//div" position="after">
+            <div data-js='image_hotspot_inner_div' data-selector=".hotspot_element"
+                 data-drop-near="[data-oe-field='body_html']:not(:has(.o_layout)) > , .oe_structure > "
+                 data-drop-in="[data-oe-field='body_html']:not(:has(.o_layout)), .oe_structure">
+                <we-button data-edit_hotspot="" data-no-preview="true">Configure Hotspot</we-button>
+            </div>
+        </xpath>
+    </template>
+
+    <!--============= Image Hotspot options ===================-->
+    <template id="image_hotspot_options" name="Image Hotspot options"
+              inherit_id="website.snippet_options">
+        <xpath expr="//div" position="after">
+            <div data-js='image_hotspot_inner_div' data-selector=".image_hotspot_drop"
+                 data-exclude=".s_col_no_resize, .s_col_no_bgcolor"
+                 data-drop-near="[data-oe-field='body_html']:not(:has(.o_layout)) > , .oe_structure > "
+                 data-drop-in="[data-oe-field='body_html']:not(:has(.o_layout)), .oe_structure">
+                <we-button data-edit_hotspot="" data-no-preview="true">Configure Hotspot</we-button>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="image_hotspot_wrapper_options" name="Image Hotspot wrapper options"
+              inherit_id="website.snippet_options">
+        <xpath expr="//div" position="after">
+            <div data-js='image_hotspot_inner_div' data-selector=".hotspot_wrapper"
+                 data-drop-near="[data-oe-field='body_html']:not(:has(.o_layout)) > , .oe_structure > "
+                 data-drop-in="[data-oe-field='body_html']:not(:has(.o_layout)), .oe_structure">
+            </div>
+        </xpath>
+    </template>
+
+</odoo>

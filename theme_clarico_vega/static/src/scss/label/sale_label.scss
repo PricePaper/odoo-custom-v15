@@ -1,0 +1,195 @@
+.te_ribbon-wrapper
+{
+	color: nth($f_color,05);
+	#style_1
+	{
+		.label_div
+		{
+			width: 100px;
+			height: 100px;
+			@include position(absolute,-5px,null,null,-5px);
+			overflow: hidden;
+			.te_label_name
+			{
+				width: 130px;
+				height: 20px;
+				@include position(absolute,20px,null,null,-30px);
+				z-index: 1;
+				overflow: hidden;
+				transform: rotate(-45deg);
+				border: 1px dashed;
+				box-shadow: 0 0 0 3px rgba($product-label,0.7), 0px 21px 5px -18px rgba(0,0,0,0.6);
+				background: rgba($product-label,0.7);
+				text-align: center;
+				font-size: 0.75rem;
+				line-height: 0.9;
+			}
+		}
+		.te_before {
+			content: '';
+			width: 14px;
+			height: 6px;
+			z-index: 1;
+			@include position(absolute,-5px,null,null,69px);
+			background: rgba($product-label,0.8);
+			border-radius: 8px 8px 0px 0px;
+		}
+
+		.te_after {
+			content: '';
+			width: 6px;
+			height: 14px;
+			@include position(absolute,69px,null,null,-5px);
+			background:rgba($product-label,0.8);
+			border-radius: 8px 0px 0px 8px;
+		}
+	}
+	#style_2
+	{
+		&.label_div {
+			padding: 0 4px 0 8px;
+			@include position(absolute,20px,null,null,-8px);
+			background: rgba($product-label,0.7);
+			z-index: 1;
+			.te_before
+			{
+				content: "";
+				@include position(absolute,-7px,null,null,0px);
+				height: 0;
+				width: 0;
+				border-bottom: 7px solid rgba($product-label,0.8);
+				border-left: 9px solid transparent;
+			}
+			.te_after
+			{
+				content: "";
+				@include position(absolute,0px,-10px);
+				height: 0;
+				width: 0;
+				border-top: 13px solid transparent;
+				border-bottom: 14px solid transparent;
+				border-left: 10px solid rgba($product-label,0.7);
+			}
+			.te_label_name
+			{
+				font-size: 0.75rem;
+				padding-left: 0px !important;
+				padding-right: 0px !important;
+			}
+		}
+	}
+	#style_3
+	{
+		&.label_div
+		{
+			display: inline-block;
+			width: auto;
+			font-size: nth($f_sizes,3);
+			background-color: $product-label;
+			@include position(absolute,8px,unset,unset,8px);
+			z-index: 1;
+			overflow: hidden;
+
+			.te_label_name {
+				padding: 2px 8px !important;
+
+				&:before {
+					content: "\f02b";
+					font-family: FontAwesome;
+					margin-right: 5px;
+					font-size: nth($f_sizes,9);
+				}
+			}
+			&:before {
+				content: "";
+				@include position(absolute,0px, auto, 0px, -9px);
+				width: 22px;
+				background-color: nth($f_color,5);
+				filter: blur(6px) opacity(0.5);
+				@include transform(skewX(-25deg));
+				@include animation(0.2s, 1s, shine_label, linear, infinite);
+				opacity: 0;
+			}
+		}
+	}
+	#style_4
+	{
+		&.label_div
+		{
+			@include position(absolute,8px, auto, auto, 6px);
+			font-size: nth($f_sizes,3);
+			line-height: 1;
+			border: 1px solid #aba0a0;
+			@include box-shadow(4px 4px 0px rgba(nth($f_color,3),0.1));
+			background-color: $product-label;
+			text-align: center;
+			z-index: 1;
+			.te_label_name
+			{
+				padding: 3px 8px !important;
+			}
+		}
+	}
+	#style_5
+	{
+		&.label_div {
+			padding: 1px 0px;
+			@include position(absolute,10px,null,null,0);
+			background: rgba($product-label,0.7);
+			z-index: 1;
+		}
+		.te_before {
+			content: "";
+			width: 0;
+			height: 0;
+			border-style: solid;
+			z-index: 0;
+			@include position(absolute,0,null,null,100%);
+			border-width: 12px 10px 0px 0px;
+			border-color: rgba($product-label,0.7) transparent transparent transparent;
+		}
+		.te_after {
+			content: "";
+			width: 0;
+			height: 0;
+			border-style: solid;
+			z-index: 0;
+			@include position(absolute,null,null,0px,100%);
+			border-color: transparent transparent transparent rgba($product-label,0.7);
+			border-width: 12px 0px 0px 10px;
+		}
+		.te_label_name {
+			font-size: 0.8rem;
+		}
+	}
+}
+.o_rtl
+{
+	#style_3 .te_label_name::before
+	{
+		margin-right: 0 !important;
+		margin-left: 5px;
+	}
+}
+
+.o_wsale_layout_list {
+    .te_ribbon-wrapper {
+        @include media-breakpoint-up(md){
+            #style_1 {
+                .te_before {
+                    @include position(absolute,-16px,null,null,65px);
+                }
+                .label_div {
+                    @include position(absolute,-16px,null,null,-10px);
+                }
+                .te_after {
+                    @include position(absolute,57px,null,null,-10px);
+                }
+            }
+            #style_2.label_div {
+                @include position(absolute,20px,null,null,-12px);
+            }
+        }
+
+    }
+}

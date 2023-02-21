@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ================ Added new custom Header in customize option ================ -->
+    <template id="header_custom_options" inherit_id="website.snippet_options">
+        <xpath expr="//we-select[@data-variable='header-template']/we-button[last()]" position="after">
+            <we-button title="Header Style 1"
+                       data-name="header_style_1_opt"
+                       data-customize-website-views="theme_clarico_vega.customize_header_style_1"
+                       data-customize-website-variable="'header_style_1'"
+                       data-img="/theme_clarico_vega/static/src/img/customise_option/h_style-1.jpg"/>
+
+            <we-button title="Header Style 2"
+                       data-name="header_style_2_opt"
+                       data-customize-website-views="theme_clarico_vega.customize_header_style_2"
+                       data-customize-website-variable="'header_style_2'"
+                       data-img="/theme_clarico_vega/static/src/img/customise_option/h_style-2.jpg"/>
+
+            <we-button title="Header Style 3"
+                       data-name="header_style_3_opt"
+                       data-customize-website-views="theme_clarico_vega.customize_header_style_3"
+                       data-customize-website-variable="'header_style_3'"
+                       data-img="/theme_clarico_vega/static/src/img/customise_option/h_style-4.jpg"/>
+
+            <we-button title="Header Style 4"
+                       data-name="header_style_4_opt"
+                       data-customize-website-views="theme_clarico_vega.customize_header_style_4"
+                       data-customize-website-variable="'header_style_4'"
+                       data-img="/theme_clarico_vega/static/src/img/customise_option/h_style-5.jpg"/>
+
+            <we-button title="Header Style 5"
+                       data-name="header_style_5_opt"
+                       data-customize-website-views="theme_clarico_vega.customize_header_style_5"
+                       data-customize-website-variable="'header_style_5'"
+                       data-img="/theme_clarico_vega/static/src/img/customise_option/h_style-7.jpg"/>
+
+            <we-button title="Header Style 6"
+                       data-name="header_style_6_opt"
+                       data-customize-website-views="theme_clarico_vega.customize_header_style_6"
+                       data-customize-website-variable="'header_style_6'"
+                       data-img="/theme_clarico_vega/static/src/img/customise_option/h_style-8.jpg"/>
+
+            <we-button title="Header Style 7"
+                       data-name="header_style_7_opt"
+                       data-customize-website-views="theme_clarico_vega.customize_header_style_7"
+                       data-customize-website-variable="'header_style_7'"
+                       data-img="/theme_clarico_vega/static/src/img/customise_option/h_style-9.jpg"/>
+
+            <we-button title="Header Style 8"
+                       data-name="header_style_8_opt"
+                       data-customize-website-views="theme_clarico_vega.customize_header_style_8"
+                       data-customize-website-variable="'header_style_8'"
+                       data-img="/theme_clarico_vega/static/src/img/customise_option/h_style-10.jpg"/>
+
+            <we-button title="Header Style 9"
+                       data-name="header_style_9_opt"
+                       data-customize-website-views="theme_clarico_vega.customize_header_style_9"
+                       data-customize-website-variable="'header_style_9'"
+                       data-img="/theme_clarico_vega/static/src/img/customise_option/h_style-11.jpg"/>
+
+            <we-button title="Header Style 10"
+                       data-name="header_style_10_opt"
+                       data-customize-website-views="theme_clarico_vega.customize_header_style_10"
+                       data-customize-website-variable="'header_style_10'"
+                       data-img="/theme_clarico_vega/static/src/img/customise_option/h_style-10.png"/>
+        </xpath>
+        <xpath expr="//we-select[@data-variable='header-template']" position="after">
+            <we-colorpicker data-dependencies="header_style_1_opt, header_style_2_opt, header_style_3_opt, header_style_4_opt,
+            header_style_5_opt, header_style_6_opt, header_style_7_opt, header_style_10_opt" string="Header Top BG Color"
+                            data-color="header_top_bg_color" data-color-type="theme" data-customize-website-color=""/>
+            <we-colorpicker data-dependencies="header_style_1_opt, header_style_2_opt, header_style_3_opt, header_style_4_opt,
+            header_style_5_opt, header_style_6_opt, header_style_7_opt, header_style_10_opt" string="Header Top Text Color"
+                            data-color="header_top_text_color" data-color-type="theme" data-customize-website-color=""/>
+        </xpath>
+        <xpath expr="//we-select[@data-variable='header-template']" position="after">
+            <t t-if="request.env['website'].sudo().get_current_website().is_lazy_load">
+                <div data-selector="img">
+                    <we-checkbox string="Lazy Load" data-select-class="lazyload" data-no-preview="true"/>
+                </div>
+            </t>
+            <div data-selector=".te_menu_label">
+                <we-button-group string="Label position">
+                    <we-button data-select-class="te_label_top" title="Position Top">Top</we-button>
+                    <we-button data-select-class="" title="Position Right">Right</we-button>
+                    <we-button data-select-class="te_label_bottom" title="Position Bottom">Bottom</we-button>
+                    <we-button data-select-class="te_label_left" title="Position Left">Left</we-button>
+                </we-button-group>
+            </div>
+            <div data-selector=".s_title_3_ept, .s_title_1_ept">
+                <we-colorpicker string="Gradient color 1" data-color="button_gradient_1" data-color-type="theme"
+                                data-customize-website-color=""/>
+                <we-colorpicker string="Gradient color 1" data-color="button_gradient_2" data-color-type="theme"
+                                data-customize-website-color=""/>
+            </div>
+
+            <div data-selector=".s_button">
+                <we-button-group string="Alignment">
+                    <we-button data-select-class="text-left" title="Left">Left</we-button>
+                    <we-button data-select-class="text-center" title="Center">Center</we-button>
+                    <we-button data-select-class="text-right" title="Right">Right</we-button>
+                </we-button-group>
+            </div>
+
+            <div data-selector=".t_img_hover_1">
+                <we-select string="Transition Effect" data-no-preview="true">
+                    <we-button data-select-class="te_img_effect1">Effect 1</we-button>
+                    <we-button data-select-class="te_img_effect2">Effect 2</we-button>
+                    <we-button data-select-class="te_img_effect3">Effect 3</we-button>
+                    <we-button data-select-class="te_img_effect4">Effect 4</we-button>
+                    <we-button data-select-class="te_img_effect5">Effect 5</we-button>
+                    <we-button data-select-class="te_img_effect6">Effect 6</we-button>
+                </we-select>
+            </div>
+
+        </xpath>
+    </template>
+    <template id="footer_custom_options" inherit_id="website.snippet_options">
+        <xpath expr="//we-select[@data-variable='footer-template']/we-button[last()]" position="after">
+            <we-button title="Footer Style 1"
+                       data-customize-website-views="theme_clarico_vega.customize_footer_style_1"
+                       data-customize-website-variable="'option_footer_01'"
+                       data-img="/theme_clarico_vega/static/src/img/customise_option/footer_1.jpg"/>
+            <we-button title="Footer Style 2"
+                       data-customize-website-views="theme_clarico_vega.customize_footer_style_2"
+                       data-customize-website-variable="'option_footer_02'"
+                       data-img="/theme_clarico_vega/static/src/img/customise_option/footer_2.jpg"/>
+            <we-button title="Footer Style 3"
+                       data-customize-website-views="theme_clarico_vega.customize_footer_style_3"
+                       data-customize-website-variable="'option_footer_03'"
+                       data-img="/theme_clarico_vega/static/src/img/customise_option/footer_3.jpg"/>
+            <we-button title="Footer Style 4"
+                       data-customize-website-views="theme_clarico_vega.customize_footer_style_4"
+                       data-customize-website-variable="'option_footer_04'"
+                       data-img="/theme_clarico_vega/static/src/img/customise_option/footer_4.jpg"/>
+            <we-button title="Footer Style 5"
+                       data-customize-website-views="theme_clarico_vega.customize_footer_style_5"
+                       data-customize-website-variable="'option_footer_05'"
+                       data-img="/theme_clarico_vega/static/src/img/customise_option/footer_5.jpg"/>
+            <we-button title="Footer Style 6"
+                       data-customize-website-views="theme_clarico_vega.customize_footer_style_6"
+                       data-customize-website-variable="'option_footer_06'"
+                       data-img="/theme_clarico_vega/static/src/img/customise_option/footer_6.jpg"/>
+            <we-button title="Footer Style 7"
+                       data-customize-website-views="theme_clarico_vega.customize_footer_style_7"
+                       data-customize-website-variable="'option_footer_07'"
+                       data-img="/theme_clarico_vega/static/src/img/customise_option/footer_7.jpg"/>
+
+        </xpath>
+    </template>
+
+    <!--============================ Mega Menu Styles =======================-->
+    <template id="mega_menu_custom_options" inherit_id="website.snippet_options">
+        <xpath expr="//we-select[@data-name='mega_menu_template_opt']//we-button[last()]" position="after">
+            <t t-set="_label">Mega Menus Style 1</t>
+            <we-button t-att-data-select-label="_label" data-select-template="emipro_theme_base.s_mega_menu_style_1" data-img="/theme_clarico_vega/static/src/img/snippets_thumbs/s_mega_menu_style_1.svg" t-out="_label"/>
+            <t t-set="_label">Mega Menus Style 2</t>
+            <we-button t-att-data-select-label="_label" data-select-template="emipro_theme_base.s_mega_menu_style_2" data-img="/theme_clarico_vega/static/src/img/snippets_thumbs/s_mega_menu_style_2.svg" t-out="_label"/>
+            <t t-set="_label">Mega Menus Style 3</t>
+            <we-button t-att-data-select-label="_label" data-select-template="emipro_theme_base.s_mega_menu_style_3" data-img="/theme_clarico_vega/static/src/img/snippets_thumbs/s_mega_menu_style_3.svg" t-out="_label"/>
+            <t t-set="_label">Mega Menus Style 4</t>
+            <we-button t-att-data-select-label="_label" data-select-template="emipro_theme_base.s_mega_menu_style_4" data-img="/theme_clarico_vega/static/src/img/snippets_thumbs/s_mega_menu_style_4.svg" t-out="_label"/>
+            <t t-set="_label">Mega Menus Style 5</t>
+            <we-button t-att-data-select-label="_label" data-select-template="emipro_theme_base.s_mega_menu_style_5" data-img="/theme_clarico_vega/static/src/img/snippets_thumbs/s_mega_menu_style_5.svg" t-out="_label"/>
+            <t t-set="_label">Mega Menus Style 6</t>
+            <we-button t-att-data-select-label="_label" data-select-template="emipro_theme_base.s_mega_menu_style_6" data-img="/theme_clarico_vega/static/src/img/snippets_thumbs/s_mega_menu_style_6.svg" t-out="_label"/>
+        </xpath>
+    </template>
+
+    <!--============================ Drift Zoom Assets =======================-->
+    <template id="drift_zoom_ept" inherit_id="website.layout" active="True" name="Image Magnifier">
+        <xpath expr="//div[@id='wrapwrap']" position="before">
+                <t t-if="request.website.viewref('website_sale.product_picture_magnify').active or request.website.viewref('website_sale.product_picture_magnify_auto').active">
+                <t t-set="drift_zoom" t-value="1"/>
+                <input type="hidden" name="drift_zoom" class="drift_zoom" t-att-value="drift_zoom"/>
+            </t>
+        </xpath>
+    </template>
+
+</odoo>

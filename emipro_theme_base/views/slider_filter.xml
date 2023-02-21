@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="slider_filter_form_view" model="ir.ui.view">
+        <field name="name">slider.filter.form</field>
+        <field name="model">slider.filter</field>
+        <field name="arch" type="xml">
+            <form string="Product Slider">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" name="website_publish_button"
+                                type="object" icon="fa-globe">
+                            <field name="website_published" widget="website_publish_button"/>
+                        </button>
+                    </div>
+                    <group>
+                        <field name="display_name"/>
+                        <field name="filter_domain" widget="domain" options="{'model': 'product.template'}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="slider_filter_tree_view" model="ir.ui.view">
+        <field name="name">slider.filter.tree.view</field>
+        <field name="model">slider.filter</field>
+        <field name="arch" type="xml">
+            <tree string="Product Sliders">
+                <field name="display_name"/>
+                <field name="filter_domain" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_sliders" model="ir.actions.act_window">
+        <field name="name">Product Slider</field>
+        <field name="res_model">slider.filter</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+            name="Product Sliders"
+            id="menu_sliders"
+            action="action_sliders"
+            parent="website.menu_website_global_configuration"/>
+</odoo>

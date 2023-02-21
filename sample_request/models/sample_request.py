@@ -15,14 +15,18 @@ _logger = logging.getLogger(__name__)
 
 class SampleRequest(models.Model):
     _name = "sample.request"
+    _descriptin='Model for requesting the samples'
+    _inherit = ['mail.thread']
 
     name = fields.Char(string='Name')
     partner_id = fields.Many2one('res.partner',string='Customer')
     partner_shipping_id = fields.Many2one('res.partner')
     request_lines = fields.One2many('sample.request.line','request_id',string='Sample Requests')
-    state = fields.Selection([('draft','Draft'),('request','Request'),('reject','Rejected'),('approve','Approved')],default='draft')
+    state = fields.Selection([('draft','Draft'),('request','Request'),('reject','Rejected'),('approve','Approved')],default='draft',tracking=True)
     sale_id = fields.Many2one('sale.order',string='Order')
     carrier_id = fields.Many2one('delivery.carrier',string='Delivery Method')
+
+
 
     
     def approve_request(self):
@@ -30,7 +34,7 @@ class SampleRequest(models.Model):
             raise UserError('Select the delivery method before approval')
         sale_id = self.env['sale.order'].sudo().create({
             'partner_id':self.partner_id.id,
-            'carrier_id':self.carrier_id.ic,
+            'carrier_id':self.carrier_id.id,
             'partner_shipping_id':self.partner_shipping_id.id if self.partner_shipping_id else self.partner_id.id,
             'order_line':[(0,0,{'product_id':res.product_id.id,'discount':100}) for res in self.request_lines]
         })
@@ -39,9 +43,23 @@ class SampleRequest(models.Model):
         return True
 
 
+    def sent_approval(self):
+        self.state='request'
+
+
     def reject_request(self):
+
         """To Reject Request"""
-        self.state = 'reject'
+        return {
+            'name': ("Reject Reason"),
+                'view_mode': 'form',
+                'view_id': False,
+                'res_model': 'reject.reason',
+                'type': 'ir.actions.act_window',
+                'nodestroy': True,
+                'target': 'new',
+        }
+        # self.state = 'reject'
 
 
 

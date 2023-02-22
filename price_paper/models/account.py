@@ -221,6 +221,7 @@ class AccountMoveLine(models.Model):
 
     @api.onchange('product_id')
     def _onchange_product_id(self):
+        super()._onchange_product_id()
         if self.product_id:
             self.name = self.product_id.name
             self.product_uom_id = self.product_id.uom_id

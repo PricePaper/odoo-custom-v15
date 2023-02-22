@@ -12,8 +12,8 @@ of products and admin have rights to approve to reject them
     'website': 'https://www.confianzit.com',
     'depends': ['website_sale'],
     'data': [  
-        'security/ir.model.access.csv',
         'security/security.xml',
+        'security/ir.model.access.csv',
         'data/sequence.xml',
         'data/mail.xml',
         'wizard/reject_reason.xml',

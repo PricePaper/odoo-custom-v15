@@ -11,6 +11,7 @@ class SaleOrder(models.Model):
     delivery_date = fields.Date(string="Delivery Date")
     #batch_warning = fields.Text(string='Shipment Progress wrarning Message', copy=False)
     order_banner_id = fields.Many2one('order.banner',string='Shipment Progress warning Message',copy=False)
+    sale_default_message = fields.Html(related="company_id.sale_default_message", readonly=True)
 
     def write(self, values):
         if values.get('partner_shipping_id'):

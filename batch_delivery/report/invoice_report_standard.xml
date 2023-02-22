@@ -244,6 +244,7 @@
                             </tbody>
                         </table>
                     </t>
+                    <div t-field="o.sale_default_message"/>
                    <div class="clearfix">
                         <div id="total" class="row">
                             <div style="width:50%">

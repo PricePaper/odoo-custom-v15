@@ -202,13 +202,23 @@ class AccountMoveLine(models.Model):
                     line.profit_margin = 0
                     continue
                 if line.sale_line_ids and len(line.sale_line_ids) == 1:
-                    if line.quantity == line.sale_line_ids.product_uom_qty:
-                        line.profit_margin = line.sale_line_ids.profit_margin
-                    else:
-                        if line.sale_line_ids.product_uom_qty == 0:
-                            line.profit_margin = 0
+                    if line.sale_line_ids.price_unit == line.price_unit:
+                        if line.quantity == line.sale_line_ids.product_uom_qty:
+                            line.profit_margin = line.sale_line_ids.profit_margin
                         else:
-                            line.profit_margin = line.sale_line_ids.profit_margin * line.quantity / line.sale_line_ids.product_uom_qty
+                            if line.sale_line_ids.product_uom_qty == 0:
+                                line.profit_margin = 0
+                            else:
+                                line.profit_margin = line.sale_line_ids.profit_margin * line.quantity / line.sale_line_ids.product_uom_qty
+                    else:
+                        product_price = line.sale_line_ids.working_cost
+                        line_price = line.price_unit
+                        if line.product_id.uom_id == line.product_uom_id and line.quantity % 1 != 0.0:
+                            numer = line.price_unit * line.quantity
+                            denom = (int(line.quantity / 1.0) + (
+                                    (line.quantity % 1) * (100 + line.product_id.categ_id.repacking_upcharge) / 100))
+                            line_price = round(numer / denom, 2)
+                        line.profit_margin = (line_price - product_price) * line.quantity
                     continue
                 product_price = line.working_cost
                 line_price = line.price_unit

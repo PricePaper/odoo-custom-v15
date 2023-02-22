@@ -17,6 +17,7 @@ class AccountMove(models.Model):
     out_standing_credit = fields.Float(compute='_compute_out_standing_credit', string="Out Standing")
     private_partner = fields.Boolean(string='Is Private', default=False,related='partner_id.private_partner')
     is_customer_return = fields.Boolean(string='Customer Return')
+    sale_default_message = fields.Html(related="company_id.sale_default_message", readonly=True)
 
     def _get_mail_template(self):
         """

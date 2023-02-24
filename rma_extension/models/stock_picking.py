@@ -29,7 +29,7 @@ class StockPicking(models.Model):
             rma = self.rma_id
             invoice_line_vals = []
             for rma_line in rma.rma_sale_lines_ids:
-                move_line = self.move_lines.filtered(lambda r: r.state == 'done' and r.product_id == rma_line.product_id)
+                move_line = self.move_lines.filtered(lambda r: r.state == 'done' and r.product_id == rma_line.product_id and r.sale_line_id == rma_line.so_line_id)
                 if not move_line:
                     continue
 

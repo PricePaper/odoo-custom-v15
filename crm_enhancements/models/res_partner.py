@@ -48,6 +48,7 @@ class ResPartner(models.Model):
              ('date_order', '<=', end_date)])
 
         for customer in self.env['res.partner'].search([('customer', '=', True)]):
+
             customer_last_year_sale_order = last_year_sale_orders.filtered(lambda so: so.partner_id == customer)
             customer_last_3_month_sale_orders = last_3_month_sale_orders.filtered(lambda so: so.partner_id == customer)
 
@@ -58,8 +59,8 @@ class ResPartner(models.Model):
 
             if last_3_month_total:
                 customer.mrg_per_lst_3_mon = round(100 * (profit_margin_lst_3_mnt / last_3_month_total), 2)
-            if customer.company_id:
-                company = customer.company_id
+            if self.env.user.company_id:
+                company = self.env.user.company_id
                 if last_year_total > company.amount_a:
                     customer.rnk_lst_12_mon = 'A'
                 elif last_year_total > company.amount_b:

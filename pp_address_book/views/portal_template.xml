@@ -39,8 +39,8 @@
                                         <t t-if="child.type=='contact'" t-esc="child" t-options="dict(widget='contact', fields=['address'], no_marker=True)"/>
 
                                         <t t-else="" t-esc="child" t-options="dict(widget='contact', fields=['name', 'address'], no_marker=True)"/>
-                                        <button t-if='child.type=="contact" and not child.with_context(active_test=False).user_ids[0].has_group("base.group_portal")' t-att-data-partner_id ='child.id' class='btn btn-primary portal_access mt-1 w-100 font-weight-bolder'>Grant Portal Access</button>
-                                        <button t-if='child.type=="contact" and child.with_context(active_test=False).user_ids[0].has_group("base.group_portal")' t-att-data-partner_id ='child.id' class='btn btn-secondary portal_access_deny mt-1 w-100 font-weight-bolder'>Revoke Portal Access</button>
+                                        <button t-if='child.type=="contact" and (not child.with_context(active_test=False).user_ids or not child.with_context(active_test=False).user_ids[0].has_group("base.group_portal"))' t-att-data-partner_id ='child.id' class='btn btn-primary portal_access mt-1 w-100 font-weight-bolder'>Grant Portal Access</button>
+                                        <button t-if='child.type=="contact" and child.with_context(active_test=False).user_ids and child.with_context(active_test=False).user_ids[0].has_group("base.group_portal")' t-att-data-partner_id ='child.id' class='btn btn-secondary portal_access_deny mt-1 w-100 font-weight-bolder'>Revoke Portal Access</button>
                                     </div>
                                 </div>
                             </div>
@@ -123,6 +123,22 @@
                                 <t t-esc="err"/>
                             </p>
                         </div>
+                        <div t-if='not partner_id' t-attf-class="form-group #{error.get('type') and 'o_has_error' or ''}">
+                            
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="type" id="inlineRadio1" value="contact" checked = "True" />
+                                <label class="form-check-label" for="inlineRadio1">Contact</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="type" id="inlineRadio2" value="delivery" />
+                                <label class="form-check-label" for="inlineRadio2">Delivery</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="type" id="inlineRadio3" value="invoice" />
+                                <label class="form-check-label" for="inlineRadio3">Invoice</label>
+                            </div>
+                        </div>
+
                         <div t-attf-class="form-group #{error.get('name') and 'o_has_error' or ''}">
                             <label for="name">
                                 <strong>Name*</strong>

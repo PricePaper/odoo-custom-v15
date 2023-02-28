@@ -78,7 +78,7 @@ odoo.define("pp_address_book.address_book", function (require) {
 
         },
         portalAcess: function (ev) {
-            var msg = _t("We are Granting Payment, please wait ...");
+            var msg = _t("We are Granting Access, please wait ...");
             $.blockUI({
                 'message': '<h2 class="text-white"><img src="/web/static/img/spin.png" class="fa-pulse"/>' +
                     '    <br />' + msg +

@@ -214,6 +214,8 @@ class AccountInvoice(models.Model):
             rec = move.sudo().calculate_commission()
             if rec and move.move_type == 'out_refund' and move.amount_total == 0:
                 rec.sudo().write({'is_paid': True, 'paid_date': date.today()})
+            if rec and move.move_type == 'out_invoice' and move.amount_total == 0:
+                rec.sudo().write({'is_paid': True, 'paid_date': date.today()})
         return res
 
     def check_commission(self, lines):
@@ -225,7 +227,7 @@ class AccountInvoice(models.Model):
                 lambda r: r.sales_person_id == line.sale_person_id)
             if rule_id:
                 if rule_id.based_on in ['profit', 'profit_delivery']:
-                    if profit <= 0 or self.amount_total == 0:
+                    if profit <= 0 or (self.move_type == 'out_refund' and self.amount_total == 0):
                         line.write({'commission': 0})
                         continue
                     commission = profit * (rule_id.percentage / 100)
@@ -285,7 +287,7 @@ class AccountInvoice(models.Model):
                 commission = 0
                 if rec.based_on in ['profit', 'profit_delivery']:
                     commission = profit * (rec.percentage / 100)
-                    if profit <= 0 or self.amount_total == 0:
+                    if profit <= 0 or (self.move_type == 'out_refund' and self.amount_total == 0):
                         commission = 0
                 elif rec.based_on == 'invoice':
                     amount = self.amount_total

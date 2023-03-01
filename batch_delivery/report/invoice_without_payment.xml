@@ -208,7 +208,7 @@
                         </tbody>
                     </table>
                     <t t-set="SL"
-                       t-value="o.mapped('invoice_line_ids').mapped('sale_line_ids.order_id').mapped('order_line').filtered(lambda r: not r.is_delivery and r.product_uom_qty != r.qty_delivered)"/>
+                       t-value="o.mapped('invoice_line_ids').mapped('sale_line_ids.order_id').mapped('order_line').filtered(lambda r: not r.is_delivery and r.product_id.detailed_type != 'service' and r.product_uom_qty != r.qty_delivered)"/>
                     <t t-if="SL">
                         <div style="font-weight: bolder; margin-top:50px;">Product ordered but not
                             delivered</div>

@@ -2,7 +2,7 @@ import xmlrpc.client
 import os, ssl
 
 
-pwd = 'Confianz^PricePaper379'  # the password of the user
+pwd = 'Confianz'  # the password of the user
 dbname15 = 'pricepaper_v6'  # the reference database
 
 sock15 = xmlrpc.client.ServerProxy('http://127.0.0.65:10070/xmlrpc/2/object')

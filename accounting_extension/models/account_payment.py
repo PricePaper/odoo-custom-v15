@@ -104,7 +104,7 @@ class AccountPayment(models.Model):
     balance_to_pay  = fields.Float('Balance to register', compute="_compute_balance")
 
     def wrapper_compute_reconciliation(self):
-        return self._compute_reconciliation_status()
+        return self._compute_reconciliation_status() or True
 
     def _compute_balance(self):
         for payment in self:

@@ -20,6 +20,8 @@
                                 <field name="product_tmpl_id"/>
                                 <field name="supplier_id"/>
                                 <field name="product_barcode"/>
+                                <button class="fa fa-times" name="action_remove" type="object" aria-label="Remove row"
+                                confirm="Are you sure want to remove this Barcode"/>
                             </tree>
                         </field>
                     </page>

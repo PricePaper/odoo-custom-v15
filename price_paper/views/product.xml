@@ -74,6 +74,13 @@
                         </button>
                 </xpath>
 
+                <xpath expr="//div[@name='options']" position="inside">
+                  <span class="d-inline-block">
+                      <field name="allow_out_of_stock_selling"/>
+                      <label for="allow_out_of_stock_selling"/>
+                  </span>
+                </xpath>
+
                 <xpath expr="//div[@name='standard_price_uom']" position="after">
                     <field name="burden_percent"
                            groups="sales_team.group_sale_manager"/>

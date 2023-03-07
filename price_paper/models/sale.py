@@ -176,7 +176,11 @@ class SaleOrder(models.Model):
 
         res = super(SaleOrder, self).action_confirm()
 
+
         for order in self:
+            for picking in order.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done')):
+                if order.carrier_id != picking.carrier_id:
+                    order.carrier_id = picking.carrier_id.id
             for order_line in order.order_line:
                 if order_line.is_delivery:
                     continue
@@ -1010,6 +1014,7 @@ class SaleOrderLine(models.Model):
     @api.onchange('product_uom_qty', 'product_uom', 'route_id')
     def _onchange_product_id_check_availability(self):
         res = self.product_id_check_availability()
+        self.similar_product_price = False
         if self.product_id and self.product_uom_qty and self.product_uom:
             if self.product_id.type == 'product':
                 precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
@@ -1021,7 +1026,18 @@ class SaleOrderLine(models.Model):
                 if float_compare(product.qty_available - product.outgoing_qty, product_qty, precision_digits=precision) == -1:
                     is_available = self.is_mto
                     if not is_available:
-                        products = product.same_product_ids + product.same_product_rel_ids
+                        products = product.same_product_ids | product.same_product_rel_ids
+
+                        alternatives = ''
+                        if products:
+                            alternatives = '\nPlease add an alternate product from list below'
+                            for item in products:
+                                alternatives += '\n' + item.default_code
+                        if not product.allow_out_of_stock_selling:
+                            block_message = 'Product'+ product.display_name + product.uom_id.name + 'is not in stock and can not be oversold.'
+                            if alternatives:
+                                block_message += alternatives
+                            raise ValidationError(block_message)
                         if not products:
                             self.similar_product_price = False
                             return res
@@ -1513,8 +1529,8 @@ class SaleOrderLine(models.Model):
             seller = self.product_id._prepare_sellers(False)[:1]
         if not seller:
             raise UserError("""There is no matching vendor price to generate the purchase order for product %s
-                    (no vendor defined, minimum quantity not reached, dates not valid, ...). Go on the product form and complete the list of vendors.""") % (
-                self.product_id.display_name)
+                    (no vendor defined, minimum quantity not reached, dates not valid, ...). Go on the product form and complete the list of vendors.""" % (
+                self.product_id.display_name))
         return seller
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

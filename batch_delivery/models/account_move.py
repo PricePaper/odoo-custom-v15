@@ -17,6 +17,7 @@ class AccountMove(models.Model):
     out_standing_credit = fields.Float(compute='_compute_out_standing_credit', string="Out Standing")
     private_partner = fields.Boolean(string='Is Private', default=False,related='partner_id.private_partner')
     is_customer_return = fields.Boolean(string='Customer Return')
+    sale_default_message = fields.Html(related="company_id.sale_default_message", readonly=True)
 
     def _get_mail_template(self):
         """
@@ -162,7 +163,7 @@ class AccountMove(models.Model):
         Remove all zero qty lines from invoice
         """
         for move in self.filtered(lambda rec: rec.is_sale_document()):
-            move.invoice_line_ids.filtered(lambda rec: rec.quantity == 0).sudo().unlink()
+            move.invoice_line_ids.filtered(lambda rec: rec.quantity == 0 and rec.display_type == False).sudo().unlink()
             # if an invoice have only one line we need to make sure it's not a delivery charge.
             # if it's a delivery charge, remove it from invoice.
             if len(move.invoice_line_ids) == 1 and move.invoice_line_ids.mapped('sale_line_ids') and any(

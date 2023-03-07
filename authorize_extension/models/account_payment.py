@@ -34,8 +34,8 @@ class AccountPayment(models.Model):
             res['reference'] = "%s-%s" % (res['reference'], count)
         payment_fee = float(self.env['ir.config_parameter'].sudo().get_param('authorize_extension.card_fee') or 0.00)
         if payment_fee:
-            res['amount'] = float_round(self.amount * ((100 + payment_fee) / 100), precision_digits=2)
-            res['transaction_fee'] = float_round(self.amount_total * (payment_fee / 100), precision_digits=2)
+            res['amount'] = float_round(self.amount, precision_digits=2)
+            res['transaction_fee'] = float_round((self.amount_total * (100 / (100+payment_fee))) * (payment_fee / 100), precision_digits=2)
         return res
 
     def action_cancel(self):

@@ -9,6 +9,10 @@
                 <xpath expr="//field[@name='payment_transaction_id']" position="after">
                     <field name="card_payment_type" attrs="{'invisible':[('card_payment_type', '=', False)]}"/>
                 </xpath>
+                <xpath expr="//field[@name='payment_transaction_id']" position="after">
+                   <field name="transaction_fee" attrs="{'invisible':[('transaction_fee','=', 0)]}"/>
+                </xpath>
+
             </field>
         </record>
 

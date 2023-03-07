@@ -19,6 +19,11 @@
                       <field name='an_bank_tx_ref'
                         attrs="{'invisible':[('an_bank_tx_ref', '=', False)], 'readonly': True}" force_save='1'/>
                 </xpath>
+                <xpath expr="//field[@name='invoice_payments_widget']" position="after">
+                    <field name="transaction_fee" widget="monetary" string='Transaction Fee'
+                           options="{'currency_field': 'currency_id', 'field_digits': True}"
+                           attrs="{'invisible':[('transaction_fee','=', 0)]}" class="oe_subtotal_footer_separator"/>
+                </xpath>
             </field>
         </record>
     </data>

@@ -10,6 +10,26 @@ class AccountMove(models.Model):
     is_authorize_tx_failed = fields.Boolean('Authorize.net Transaction Failed')
     an_transaction_ref = fields.Char('Authorize.net Transaction')
     an_bank_tx_ref = fields.Char('Card Transaction Ref')
+    transaction_fee = fields.Monetary(
+        string="Transaction Fee",
+        compute='_compute_transaction_fee'
+    )
+
+    @api.depends('transaction_ids')
+    def _compute_transaction_fee(self):
+        """
+        Sum all the transaction fee amount for which state 
+        is in 'authorized' or 'done'
+        """
+        for invoice in self:
+            invoice.transaction_fee = 0
+            if invoice.transaction_ids.filtered(
+                lambda tx: tx.state in ('authorized', 'done')):
+                invoice.transaction_fee = sum(
+                    invoice.transaction_ids.filtered(
+                        lambda tx: tx.state in ('authorized', 'done')
+                    ).mapped('transaction_fee')
+                )
 
 
     def _post(self, soft=True):

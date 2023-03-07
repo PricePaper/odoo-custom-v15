@@ -283,6 +283,28 @@
                                     <!--Tax totals-->
                                     <t t-set="tax_totals" t-value="json.loads(o.tax_totals_json)"/>
                                     <t t-call="account.document_tax_totals"/>
+                                    <!-- <t t-if="o.transaction_fee > 0">
+                                      <tr class="border-black o_subtotal">
+                                          <td><strong>Transaction Fee</strong></td>
+
+                                          <td class="text-right">
+                                            <span t-field="o.transaction_fee"/>
+                                          </td>
+                                      </tr>
+                                      <t t-set="gross_total" t-value="o.amount_total + o.transaction_fee"/>
+                                      <tr>
+                                        <td>
+                                          If paying by Credit card Total is <span t-field="o.currency_id.symbol" /><span t-esc="gross_total"/>
+                                        </td>
+                                      </tr>
+                                      <tr class="border-black o_total">
+                                          <td><strong>Gross Total</strong></td>
+                                          <td class="text-right">
+                                              <span t-field="o.currency_id.symbol" />
+                                              <span t-esc="gross_total"/>
+                                          </td>
+                                      </tr>
+                                    </t> -->
 
                                     <!--Payments-->
                                     <t t-if="print_with_payments">

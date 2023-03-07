@@ -172,14 +172,14 @@ class PaymentTransaction(models.Model):
             transaction_fee_move = self.env['account.move'].create({
                 'move_type': 'entry',
                 'company_id': self.company_id.id,
-                'journal_id': journal.id,
+                'journal_id': journal,
                 'ref': '%s - Transaction Fee' % self.reference,
                 'line_ids': [(0, 0, {
                     'account_id': account_receivable,
                     'company_currency_id': self.company_id.currency_id.id,
                     'credit': 0.0,
                     'debit': self.transaction_fee,
-                    'journal_id': journal.id,
+                    'journal_id': journal,
                     'name': '%s - Transaction Fee' % self.reference,
                     'partner_id': self.partner_id.id
                 }), (0, 0, {
@@ -187,7 +187,7 @@ class PaymentTransaction(models.Model):
                     'company_currency_id': self.company_id.currency_id.id,
                     'credit': self.transaction_fee,
                     'debit': 0.0,
-                    'journal_id': journal.id,
+                    'journal_id': journal,
                     'name': '%s - Transaction Fee' % self.reference,
                     'partner_id': self.partner_id.id
                 })]

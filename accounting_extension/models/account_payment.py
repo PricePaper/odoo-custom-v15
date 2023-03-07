@@ -3,6 +3,7 @@
 from odoo import fields, models, api, _
 from odoo.exceptions import UserError
 from odoo.tools.misc import formatLang, format_date
+from datetime import datetime
 
 INV_LINES_PER_STUB = 9
 
@@ -124,7 +125,7 @@ class AccountPayment(models.Model):
         return True
 
     @api.depends('move_id.line_ids.amount_residual', 'move_id.line_ids.amount_residual_currency', 'move_id.line_ids.account_id')
-    def _compute_reconciliation_status_deprecated(self):
+    def _compute_reconciliation_status(self):
         """
         Override to fix cash account automatic matching
 
@@ -142,7 +143,8 @@ class AccountPayment(models.Model):
                 pay.is_matched = True
             else:
                 residual_field = 'amount_residual' if pay.currency_id == pay.company_id.currency_id else 'amount_residual_currency'
-                if pay.journal_id.default_account_id and pay.journal_id.default_account_id in liquidity_lines.account_id:
+                lock_date = datetime.strptime("2022-12-31", "%Y-%m-%d")
+                if pay.date < lock_date.date() and pay.journal_id.default_account_id and pay.journal_id.default_account_id in liquidity_lines.account_id:
                     # Allow user managing payments without any statement lines by using the bank account directly.
                     # In that case, the user manages transactions only using the register payment wizard.
                     pay.is_matched = True

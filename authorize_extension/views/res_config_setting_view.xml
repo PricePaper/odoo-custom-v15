@@ -42,6 +42,16 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-12 col-lg-6 o_setting_box" id="transaction_fee_account">
+                    <div class="o_setting_left_pane">
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <span class="o_form_label">Credit card payment fee Journal</span>
+                        <div class="content-group mt16">
+                            <field name="transaction_fee_journal_id" class="text-center oe_inline"/>
+                        </div>
+                    </div>
+                </div>
             </xpath>
         </field>
     </record>

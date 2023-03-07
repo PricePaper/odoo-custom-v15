@@ -9,9 +9,6 @@
                 <xpath expr="//field[@name='type']" position="after">
                   <field name="is_autherize_net" widget="boolean_toggle"/>
                 </xpath>
-                <field name="company_id" position="after">
-                    <field name="is_transaction_fee" widget="boolean_toggle"/>
-                </field>
             </field>
         </record>
     </data>

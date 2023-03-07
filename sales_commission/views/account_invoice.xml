@@ -26,9 +26,10 @@
 <!--                    <attribute name="string">Payment Term</attribute>-->
 
 <!--                </label>-->
-<!--                <field name="invoice_payment_term_id" position="attributes">-->
-<!--                    <attribute name="required">0</attribute>-->
-<!--                </field>-->
+                <field name="invoice_date_due" position="attributes">
+                    <attribute name="required">0</attribute>
+                    <attribute name="attrs">{}</attribute>
+                </field>
 <!--              <field name="invoice_date_due" position="replace"/>-->
               <field name="invoice_date" position="after">
 <!--                  <field name="invoice_date_due" readonly="0" force_save='1' required="1"/>-->

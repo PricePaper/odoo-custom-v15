@@ -6,6 +6,26 @@ class AccountPayment(models.Model):
     _inherit = "account.payment"
 
     card_payment_type = fields.Selection(selection=[('bank', "Direct Bank"), ('authorize', "Through Authorize"), ], string="Card Swipe Payment Type")
+    transaction_fee = fields.Monetary(
+        string="Transaction Fee",
+        compute='_compute_transaction_fee'
+    )
+
+    @api.depends('transaction_ids')
+    def _compute_transaction_fee(self):
+        """
+        Sum all the transaction fee amount for which state
+        is in 'authorized' or 'done'
+        """
+        for payment in self:
+            payment.transaction_fee = 0
+            if payment.payment_transaction_id.filtered(
+                lambda tx: tx.state in ('authorized', 'done')):
+                payment.transaction_fee = sum(
+                    payment.payment_transaction_id.filtered(
+                        lambda tx: tx.state in ('authorized', 'done')
+                    ).mapped('transaction_fee')
+                )
 
     def _prepare_payment_transaction_vals(self, **extra_create_values):
         res = super(AccountPayment, self)._prepare_payment_transaction_vals(**extra_create_values)
@@ -14,8 +34,8 @@ class AccountPayment(models.Model):
             res['reference'] = "%s-%s" % (res['reference'], count)
         payment_fee = float(self.env['ir.config_parameter'].sudo().get_param('authorize_extension.card_fee') or 0.00)
         if payment_fee:
-            res['amount'] = float_round(self.amount * ((100 + payment_fee) / 100), precision_digits=2)
-            res['transaction_fee'] = float_round(self.amount_total * (payment_fee / 100), precision_digits=2)
+            res['amount'] = float_round(self.amount, precision_digits=2)
+            res['transaction_fee'] = float_round((self.amount_total * (100 / (100+payment_fee))) * (payment_fee / 100), precision_digits=2)
         return res
 
     def action_cancel(self):

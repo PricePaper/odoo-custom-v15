@@ -162,7 +162,7 @@ class PaymentTransaction(models.Model):
     def create_transaction_fee_move(self, to_reconcile=True):
         self.ensure_one()
         if self.transaction_fee and not self.transaction_fee_move_id:
-            journal = self.env['account.journal'].search([('is_transaction_fee', '=', True)])
+            journal = int(self.env['ir.config_parameter'].sudo().get_param('authorize_extension.transaction_fee_journal_id'))
             if not journal:
                 raise ValidationError("Credit card transaction fee journal is not configured")
             account_receivable = self.partner_id and self.partner_id.property_account_receivable_id.id or False
@@ -172,14 +172,14 @@ class PaymentTransaction(models.Model):
             transaction_fee_move = self.env['account.move'].create({
                 'move_type': 'entry',
                 'company_id': self.company_id.id,
-                'journal_id': journal.id,
+                'journal_id': journal,
                 'ref': '%s - Transaction Fee' % self.reference,
                 'line_ids': [(0, 0, {
                     'account_id': account_receivable,
                     'company_currency_id': self.company_id.currency_id.id,
                     'credit': 0.0,
                     'debit': self.transaction_fee,
-                    'journal_id': journal.id,
+                    'journal_id': journal,
                     'name': '%s - Transaction Fee' % self.reference,
                     'partner_id': self.partner_id.id
                 }), (0, 0, {
@@ -187,7 +187,7 @@ class PaymentTransaction(models.Model):
                     'company_currency_id': self.company_id.currency_id.id,
                     'credit': self.transaction_fee,
                     'debit': 0.0,
-                    'journal_id': journal.id,
+                    'journal_id': journal,
                     'name': '%s - Transaction Fee' % self.reference,
                     'partner_id': self.partner_id.id
                 })]

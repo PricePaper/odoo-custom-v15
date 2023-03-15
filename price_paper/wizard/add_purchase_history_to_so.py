@@ -99,7 +99,7 @@ class SaleHistoryLinesWizard(models.TransientModel):
                     for item in products:
                         alternatives += '\n' + item.default_code
                     alternatives += '\nusing the Add Product button (not Browse Products).'
-                if not product.allow_out_of_stock_selling:
+                if not product.allow_out_of_stock_order:
                     message1 = 'Product'+ product.display_name + 'is not in stock and can not be oversold.'
                     if alternatives:
                         message1 += alternatives

@@ -13,6 +13,7 @@
                     <field name="update_customer_pricelist"/>
                     <field name="update_vendor_pricelist"/>
                     <field name="update_burden"/>
+                    <field name="user_id" string='Created By'/>
                 </tree>
             </field>
         </record>
@@ -42,6 +43,7 @@
                         <group>
                             <group>
                                 <field name="run_date" required='1' attrs="{'readonly':[('is_done', '=', True)]}"/>
+                                <field name="user_id" string='Created By' readonly='True'/>
                                 <field name="is_done" invisible='1'/>
                                 <field name="update_standard_price" attrs="{'readonly':[('is_done', '=', True)]}"/>
                                 <field name="update_customer_pricelist" attrs="{'readonly':[('is_done', '=', True)]}"/>

@@ -7,7 +7,7 @@ class CustomerContract(models.Model):
     _name = 'customer.contract'
     _description = 'Customer Contract'
 
-    name = fields.Char(default='Draft', readonly=True)
+    name = fields.Char(default='Draft', readonly=True, copy=False)
     partner_ids = fields.Many2many('res.partner')
     expiration_date = fields.Datetime(string="Expiration Date")
     state = fields.Selection([('draft', 'Draft'), ('confirmed', 'Confirmed'), ('expired', 'Expired')], default='draft')

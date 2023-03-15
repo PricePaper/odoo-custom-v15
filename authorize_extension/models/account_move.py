@@ -35,6 +35,10 @@ class AccountMove(models.Model):
         return self.sudo().env.ref('authorize_extension.action_invoice_reauthorize_wizard').read()[0]
 
     def payment_action_capture(self):
+        self.ensure_one()
+        valid_transaction = self.transaction_ids.filtered(lambda rec: rec.state in ('pending', 'authorized', 'done'))
+        if len(valid_transaction) > 1 and self.amount_total <= sum(valid_transaction.mapped('amount')):
+            raise ValidationError("found multiple Authorize.net transactions. total amount is greater than what we authorized. Please get in touch with the administrator.")
         return super(AccountMove, self.with_context({'create_payment': True})).payment_action_capture()
 
     def cron_capture_autherize_invoices(self):

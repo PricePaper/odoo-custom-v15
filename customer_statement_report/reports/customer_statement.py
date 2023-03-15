@@ -47,8 +47,8 @@ class CustomerStatementPdfReport(models.AbstractModel):
 
             if line.get('account_move', False):
                 aml_id = self.env['account.move.line'].browse(line['id'])
-                if line['columns'][1]['name']:
-                    if aml_id.move_id.is_inbound() and today > datetime.strptime(line['columns'][1]['name'], "%m/%d/%Y").date() and not aml_id.reconciled and not aml_id.payment_id:
+                if line['columns'][2]['name']:
+                    if aml_id.move_id.is_inbound() and today > datetime.strptime(line['columns'][2]['name'], "%m/%d/%Y").date() and not aml_id.reconciled and not aml_id.payment_id:
                         data['past_due'] = True
 
                 move = line.get('account_move', False)
@@ -59,7 +59,7 @@ class CustomerStatementPdfReport(models.AbstractModel):
                     {
                         'ref': line.get('name'),
                         'date': line['columns'][0]['name'],
-                        'due_date': line['columns'][1]['name'],
+                        'due_date': line['columns'][2]['name'],
                         'amount': aml_id.balance,
                         'amount_due': ('$ ', '-$ ')[amount_due < 0] + str(round(abs(amount_due), 2) or 0.00),
                         'running_balance': ('$ ', '-$ ')[amount < 0] + str(round(abs(amount), 2) or 0.00),

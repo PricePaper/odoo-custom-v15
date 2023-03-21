@@ -290,7 +290,7 @@ class AuthorizeAPICustom:
     def check_avs_response(self, response):
         if response and response.get('transactionResponse', False):
             avs_res = response.get('transactionResponse').get('avsResultCode', '')
-            if avs_res != 'Y' or avs_res != 'U':
+            if avs_res != 'Y' and avs_res != 'U':
                 msg = ''
                 if avs_res == 'A':
                     msg = 'The street address matched, but the postal code did not.'

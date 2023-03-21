@@ -4,7 +4,10 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
-    <orderEntry type="jdk" jdkName="Remote Python 3.9.2 Docker (registry.digitalocean.com/pricepaper/odoo15-extramodules:latest)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Odoo15" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+  <component name="PackageRequirementsSettings">
+    <option name="requirementsPath" value="$USER_HOME$/lib/odoo/requirements.txt" />
   </component>
 </module>

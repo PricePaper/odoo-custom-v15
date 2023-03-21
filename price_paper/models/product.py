@@ -74,7 +74,6 @@ class ProductProduct(models.Model):
     lst_from_std_price = fields.Float(
         'Standard Price', compute='_compute_lst_price_std_price',
         digits='Product Price')
-    allow_out_of_stock_selling = fields.Boolean(string='Allow Out Of Stock Selling', default=True)
 
     def action_open_quants(self):
         # Override to make the button readonly for non-inventory users.
@@ -195,10 +194,11 @@ class ProductProduct(models.Model):
         """ remove superseded if there is a child product with superseded set while unarchiving,
         archive reordering rules before archiving product
         """
-        if self.qty_available > 0 and self.active:
-            raise ValidationError("Can't archive product with inventory on hand")
-        if self.active:
-            self.env['product.superseded'].search([('old_product', '=', self.id)]).unlink()
+        for product in self:
+            if product.qty_available > 0 and product.active:
+                raise ValidationError("Can't archive product with inventory on hand")
+            if product.active:
+                self.env['product.superseded'].search([('old_product', '=', product.id)]).unlink()
         return super(ProductProduct, self).toggle_active()
 
     def write(self, vals):

@@ -240,7 +240,7 @@
           <value eval="{'noupdate': False}"/>
         </function>
 
-        <record id="account_followup.demo_followup_line1" model="account_followup.followup.line" forcecreate="False">
+	<!--        <record id="account_followup.demo_followup_line1" model="account_followup.followup.line" forcecreate="False">
             <field name="name">First reminder email</field>
             <field name="delay">15</field>
             <field name="company_id" ref="base.main_company"/>
@@ -256,6 +256,7 @@
                  Best Regards,
             </field>
         </record>
+	-->
 
         <record id="account_followup.action_account_followup" model="ir.actions.client">
             <field name="name">Customers Statement</field>

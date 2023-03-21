@@ -179,8 +179,8 @@ class SaleOrder(models.Model):
 
         for order in self:
             for picking in order.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done')):
-                if order.carrier_id != picking.carrier_id:
-                    order.carrier_id = picking.carrier_id.id
+                if picking.carrier_id != order.carrier_id:
+                    picking.carrier_id = order.carrier_id.id
             for order_line in order.order_line:
                 if order_line.is_delivery:
                     continue
@@ -1033,7 +1033,7 @@ class SaleOrderLine(models.Model):
                             alternatives = '\nPlease add an alternate product from list below'
                             for item in products:
                                 alternatives += '\n' + item.default_code
-                        if not product.allow_out_of_stock_selling:
+                        if not product.allow_out_of_stock_order:
                             block_message = 'Product'+ product.display_name + product.uom_id.name + 'is not in stock and can not be oversold.'
                             if alternatives:
                                 block_message += alternatives

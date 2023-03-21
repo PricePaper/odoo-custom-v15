@@ -152,11 +152,11 @@ class PurchaseOrder(models.Model):
             if rec.product_id:
                 if rec.product_id.id in existing_products:
                     continue
-                if rec.product_id.purchase_ok:
+                if rec.product_id.purchase_ok and rec.product_id.active:
                     all_vendor_products.append(rec.product_id.id)
             else:
                 prod_ids = rec.product_tmpl_id.product_variant_ids and \
-                           rec.product_tmpl_id.product_variant_ids.filtered(lambda p: p.purchase_ok).ids or []
+                           rec.product_tmpl_id.product_variant_ids.filtered(lambda p: p.purchase_ok and p.active).ids or []
                 for prod in prod_ids:
                     if prod in existing_products:
                         continue

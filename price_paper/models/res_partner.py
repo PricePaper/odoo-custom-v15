@@ -51,6 +51,16 @@ class ResPartner(models.Model):
             rec.last_paid_date = date_vals[rec].get('last_paid_date')
             rec.last_sold_date = date_vals[rec].get('last_sold_date')
 
+    def toggle_active(self):
+        """
+        Toggle active child ids.
+        """
+        for rec in self:
+            childs = self.env['res.partner'].search([('active', '=', rec.active), ('id', 'not in', self.ids), ('parent_id', '=', rec.id)])
+            if childs:
+                childs.toggle_active()
+        return super(ResPartner, self).toggle_active()
+
     @api.depends('sale_order_ids.date_order', 'invoice_ids', 'invoice_ids.payment_state')
     def _compute_last_established_date(self):
         date_vals = self.get_date_vals()

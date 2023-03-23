@@ -1033,7 +1033,7 @@ class SaleOrderLine(models.Model):
                             alternatives = '\nPlease add an alternate product from list below'
                             for item in products:
                                 alternatives += '\n' + item.default_code
-                        if not product.allow_out_of_stock_selling:
+                        if not product.allow_out_of_stock_order:
                             block_message = 'Product'+ product.display_name + product.uom_id.name + 'is not in stock and can not be oversold.'
                             if alternatives:
                                 block_message += alternatives

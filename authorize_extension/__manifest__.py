@@ -11,6 +11,7 @@
     """,
     'data': [
         'data/data.xml',
+        'data/mail_template.xml',
         'wizard/generate_payment_token_view.xml',
         'wizard/add_transaction_to_invoice.xml',
         'wizard/reauth_invoice_token.xml',

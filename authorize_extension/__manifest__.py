@@ -11,6 +11,7 @@
     """,
     'data': [
         'data/data.xml',
+        'data/mail_template.xml',
         'wizard/generate_payment_token_view.xml',
         'wizard/add_transaction_to_invoice.xml',
         'wizard/reauth_invoice_token.xml',
@@ -19,6 +20,7 @@
         'views/res_config_setting_view.xml',
         'views/account_move.xml',
         'views/batch_payment.xml',
+        'views/payment_receipt.xml',
         'views/account_payment.xml',
         'views/payment_acquirer.xml',
         'views/payment_transaction_form.xml',

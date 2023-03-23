@@ -18,6 +18,9 @@
                     <field name="address_id" domain="[('parent_id', '=', partner_id)]"/>
                     <field name="is_default" widget="boolean_toggle"/>
             </xpath>
+            <xpath expr="//field[@name='property_payment_term_id']" position="after">
+                  <field name="card_fee"/>
+            </xpath>
 
         </field>
     </record>

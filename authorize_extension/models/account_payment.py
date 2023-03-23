@@ -32,7 +32,9 @@ class AccountPayment(models.Model):
         count = self.env['payment.transaction'].search_count([('reference', 'ilike', res['reference'])])
         if count > 0:
             res['reference'] = "%s-%s" % (res['reference'], count)
-        payment_fee = float(self.env['ir.config_parameter'].sudo().get_param('authorize_extension.card_fee') or 0.00)
+        payment_fee = self.partner_id.card_fee
+        if not payment_fee:
+            payment_fee = float(self.env['ir.config_parameter'].sudo().get_param('authorize_extension.card_fee') or 0.00)
         if payment_fee:
             res['amount'] = float_round(self.amount, precision_digits=2)
             res['transaction_fee'] = float_round((self.amount_total * (100 / (100+payment_fee))) * (payment_fee / 100), precision_digits=2)
@@ -53,6 +55,7 @@ class AccountPayment(models.Model):
                 (self.payment_id.line_ids + payment.payment_transaction_id.transaction_fee_move_id.line_ids).filtered(
                     lambda line: line.account_id == self.payment_id.destination_account_id and not line.reconciled
                 ).reconcile()
+                payment.payment_transaction_id.send_receipt_mail()
         return res
 
     def _create_payment_transaction(self, **extra_create_values):
@@ -75,7 +78,9 @@ class AccountPaymentRegister(models.TransientModel):
         for payment in self:
             payment.transaction_fee = 0.0
             if payment.payment_token_id:
-                transaction_fee = float(self.env['ir.config_parameter'].sudo().get_param('authorize_extension.card_fee') or 0.00)
+                transaction_fee = self.partner_id.card_fee
+                if not transaction_fee:
+                    transaction_fee = float(self.env['ir.config_parameter'].sudo().get_param('authorize_extension.card_fee') or 0.00)
                 payment.transaction_fee = payment.source_amount * (transaction_fee / 100)
 
     @api.depends('source_amount', 'source_amount_currency', 'source_currency_id', 'company_id', 'currency_id', 'payment_date', 'transaction_fee',

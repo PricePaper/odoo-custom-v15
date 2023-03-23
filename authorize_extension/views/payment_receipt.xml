@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_payment_document_authorize" inherit_id="account.report_payment_receipt_document">
+        <xpath expr="//th[1]" position="replace">
+            <th><span>Invoice Date</span></th>
+        </xpath>
+        <xpath expr="//th[2]" position="replace">
+            <th><span>Number</span></th>
+        </xpath>
+    </template>
+</odoo>

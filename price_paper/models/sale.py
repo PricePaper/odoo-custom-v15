@@ -179,8 +179,8 @@ class SaleOrder(models.Model):
 
         for order in self:
             for picking in order.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done')):
-                if order.carrier_id != picking.carrier_id:
-                    order.carrier_id = picking.carrier_id.id
+                if picking.carrier_id != order.carrier_id:
+                    picking.carrier_id = order.carrier_id.id
             for order_line in order.order_line:
                 if order_line.is_delivery:
                     continue

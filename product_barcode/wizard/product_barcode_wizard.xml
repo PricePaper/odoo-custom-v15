@@ -82,7 +82,6 @@
                   name="Search Barcode"
                   action="search_barcode_wizard"
                   parent="stock.menu_stock_warehouse_mgmt"
-                  groups="base.group_no_one"
                   sequence="301"/>
     </data>
 </odoo>

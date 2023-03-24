@@ -14,7 +14,13 @@ class AccountMove(models.Model):
         string="Transaction Fee",
         compute='_compute_transaction_fee'
     )
-
+    transaction_fee_manual = fields.Float("Transaction Fee manual")
+    manual_fee_move_ids = fields.Many2many(
+        comodel_name='account.move',
+        relation='account_move_transaction_fee_rel',
+        column1='move_id',
+        column2='transaction_fee_id',
+        string='Manual payment fee moves')
     @api.depends('transaction_ids')
     def _compute_transaction_fee(self):
         """
@@ -23,13 +29,19 @@ class AccountMove(models.Model):
         """
         for invoice in self:
             invoice.transaction_fee = 0
+            fee = 0
             if invoice.transaction_ids.filtered(
-                lambda tx: tx.state in ('authorized', 'done')):
-                invoice.transaction_fee = sum(
+                    lambda tx: tx.state in ('authorized', 'done')):
+                fee = sum(
                     invoice.transaction_ids.filtered(
                         lambda tx: tx.state in ('authorized', 'done')
                     ).mapped('transaction_fee')
                 )
+            if self.transaction_fee_manual:
+                fee += self.transaction_fee_manual
+            if fee:
+                self.transaction_fee = fee
+
 
 
     def _post(self, soft=True):

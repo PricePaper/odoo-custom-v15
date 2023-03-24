@@ -70,12 +70,15 @@ class PaymentTransaction(models.Model):
         feedback_data = {'reference': self.reference, 'response': res_content}
         self._handle_feedback_data('authorize', feedback_data)
 
+
     def action_capture(self):
         res = super(PaymentTransaction, self).action_capture()
         if self.state == 'done' and self._context.get('create_payment'):
             self.invoice_ids.filtered(lambda rec: rec.state == 'draft').action_post()
             self._create_payment()
         self.filtered(lambda rec: rec.state == 'done' and not rec.is_post_processed)._finalize_post_processing()
+        if self.payment_id and self.state == 'done':
+            self.send_receipt_mail()
         return res
 
 
@@ -295,3 +298,7 @@ class PaymentTransaction(models.Model):
         if self.provider == 'authorize' and self.acquirer_reference == '0':
             self.acquirer_reference = acquirer_reference
         return res
+
+    def send_receipt_mail(self):
+        mail_template1 = self.env.ref('authorize_extension.email_credit_card_fee_receipt')
+        mail_template1.send_mail(self.payment_id.id, force_send=True)

@@ -142,7 +142,10 @@ class AddInvoiceTransaction(models.TransientModel):
                     'partner_id': move.partner_id.id
                 })]
             })
-            move.manual_fee_move_ids = [(4,transaction_fee_move.id)]
+            move.write({
+                'manual_fee_move_ids': [(4, transaction_fee_move.id)],
+                'transaction_fee_manual': self.transaction_fee + move.transaction_fee_manual
+            })
             transaction_fee_move.post()
             if to_reconcile:
                 (payment.line_ids + transaction_fee_move.line_ids).filtered(

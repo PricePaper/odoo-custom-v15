@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 {
     'name': 'Account Batch Payment Extension',
     'version': '1.0',

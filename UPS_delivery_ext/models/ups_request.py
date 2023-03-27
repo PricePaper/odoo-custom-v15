@@ -232,10 +232,10 @@ class UPSRequest():
                 package.Dimensions = self.factory_ns2.DimensionsType()
                 package.Dimensions.UnitOfMeasurement = MeasurementType()
                 package.Dimensions.UnitOfMeasurement.Code = p.dimension_unit or ''
-                package.Dimensions.Length = p.dimension['length'] or ''
-                package.Dimensions.Width = p.dimension['width'] or ''
-                package.Dimensions.Height = p.dimension['height'] or ''
-                package.Dimensions.Height = p.dimension['volume'] or ''
+                package.Dimensions.Length = p.dimension['length'] or 0
+                package.Dimensions.Width = p.dimension['width'] or 0
+                package.Dimensions.Height = p.dimension['height'] or 0
+                package.Dimensions.Volume = p.dimension['volume'] or ''
 
             if cod_info:
                 package.PackageServiceOptions = self.factory_ns2.PackageServiceOptionsType()
@@ -328,6 +328,7 @@ class UPSRequest():
 
         shipment.ShipmentRatingOptions = self.factory_ns2.ShipmentRatingOptionsType()
         shipment.ShipmentRatingOptions.NegotiatedRatesIndicator = 1
+
 
         try:
             # Get rate using for provided detail

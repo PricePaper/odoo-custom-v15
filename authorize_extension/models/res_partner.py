@@ -8,8 +8,9 @@ class ResPartner(models.Model):
         string="Payment Tokens",
         comodel_name='payment.token',
         inverse_name='shipping_id')
-    card_fee = fields.Float(
-        string='Credit Card Fee Percentage')
+    property_card_fee = fields.Float(
+        string='Credit Card Fee Percentage', company_dependent=True,
+        )
 
     def create_new_token(self):
         return self.sudo().env.ref('authorize_extension.action_generate_payment_token_wizard').read()[0]

@@ -10,10 +10,6 @@ class ResConfigSettings(models.TransientModel):
         string='Starting Hour',
         config_parameter='authorize_extension.auth_start_hour',
         default=8.0)
-    card_fee = fields.Float(
-        string='Credit Card Fee Percentage',
-        config_parameter='authorize_extension.card_fee',
-        default=3.0)
     transaction_fee_account_id = fields.Many2one(
         'account.account',
         config_parameter='authorize_extension.transaction_fee_account',

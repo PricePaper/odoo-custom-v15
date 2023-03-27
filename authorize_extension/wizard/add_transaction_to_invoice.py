@@ -51,11 +51,11 @@ class AddInvoiceTransaction(models.TransientModel):
                 'amount': move.amount_residual
             })
             amount = move.amount_residual
-        if partner.card_fee:
-            amount_total = float_round(amount * ((100 + partner.card_fee) / 100), precision_digits=2)
-            payment_fee = amount * (partner.card_fee / 100)
+        if partner.property_card_fee > 0:
+            amount_total = float_round(amount * ((100 + partner.property_card_fee) / 100), precision_digits=2)
+            payment_fee = amount * (partner.property_card_fee / 100)
             vals.update({
-                'transaction_fee_percentage': partner.card_fee,
+                'transaction_fee_percentage': partner.property_card_fee,
                 'transaction_fee': payment_fee,
                 'amount_total': amount_total,
             })

@@ -41,8 +41,8 @@ class AccountMove(models.Model):
                 if card_amount:
                     gross_profit -= card_amount * 0.03
                 transaction_fee = 0
-                if self.transaction_fee:
-                    gross_profit += self.transaction_fee
+                if move.transaction_fee:
+                    gross_profit += move.transaction_fee
                 discount = move.get_discount()
                 if discount:
                     gross_profit -= discount
@@ -78,10 +78,10 @@ class AccountMove(models.Model):
                         lambda tx: tx.state in ('authorized', 'done')
                     ).mapped('transaction_fee')
                 )
-            if self.transaction_fee_manual:
-                fee += self.transaction_fee_manual
+            if invoice.transaction_fee_manual:
+                fee += invoice.transaction_fee_manual
             if fee:
-                self.transaction_fee = fee
+                invoice.transaction_fee = fee
 
 
 

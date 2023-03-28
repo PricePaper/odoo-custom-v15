@@ -19,11 +19,12 @@
                     <field name="is_default" widget="boolean_toggle"/>
             </xpath>
             <xpath expr="//field[@name='property_payment_term_id']" position="after">
-                  <field name="card_fee"/>
+                  <field name="property_card_fee" />
             </xpath>
 
         </field>
     </record>
+
     <record id="view_partner_form_inherit_authorize_extension" model="ir.ui.view">
         <field name="name">res.partner.inherit</field>
         <field name="model">res.partner</field>

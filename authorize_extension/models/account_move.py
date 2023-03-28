@@ -21,10 +21,51 @@ class AccountMove(models.Model):
         column1='move_id',
         column2='transaction_fee_id',
         string='Manual payment fee moves')
+
+    def calculate_gross_profit(self):
+        """
+        Compute the gross profit in invoice.
+        """
+        for move in self:
+            if move.move_type not in ('out_invoice', 'out_refund'):
+                move.gross_profit = 0
+                continue
+            if move.payment_state in ('paid', 'in_payment'):
+                gross_profit = 0
+                for line in move.invoice_line_ids:
+                    gross_profit += line.profit_margin
+                card_amount = 0
+                for partial, amount, counterpart_line in move._get_reconciled_invoices_partials():
+                    if counterpart_line.payment_id.payment_method_line_id.code == 'credit_card':
+                        card_amount += amount
+                if card_amount:
+                    gross_profit -= card_amount * 0.03
+                transaction_fee = 0
+                if move.transaction_fee:
+                    gross_profit += move.transaction_fee
+                discount = move.get_discount()
+                if discount:
+                    gross_profit -= discount
+                if move.move_type == 'out_refund':
+                    if gross_profit < 0:
+                        gross_profit = 0
+                move.update({'gross_profit': round(gross_profit, 2)})
+
+            else:
+                gross_profit = 0
+                for line in move.invoice_line_ids:
+                    gross_profit += line.profit_margin
+                if move.invoice_payment_term_id.discount_per > 0:
+                    gross_profit -= move.amount_total * (move.invoice_payment_term_id.discount_per / 100)
+                if move.move_type == 'out_refund':
+                    if gross_profit < 0:
+                        gross_profit = 0
+                move.update({'gross_profit': round(gross_profit, 2)})
+
     @api.depends('transaction_ids')
     def _compute_transaction_fee(self):
         """
-        Sum all the transaction fee amount for which state 
+        Sum all the transaction fee amount for which state
         is in 'authorized' or 'done'
         """
         for invoice in self:
@@ -37,10 +78,10 @@ class AccountMove(models.Model):
                         lambda tx: tx.state in ('authorized', 'done')
                     ).mapped('transaction_fee')
                 )
-            if self.transaction_fee_manual:
-                fee += self.transaction_fee_manual
+            if invoice.transaction_fee_manual:
+                fee += invoice.transaction_fee_manual
             if fee:
-                self.transaction_fee = fee
+                invoice.transaction_fee = fee
 
 
 

@@ -20,18 +20,6 @@
                 </div>
             </xpath>
             <xpath expr="//div[@data-key='account']/div[5]" position="inside">
-                <div class="col-lg-6 o_setting_box" id="transaction_fee">
-                    <div class="o_setting_left_pane"/>
-                    <div class="o_setting_right_pane">
-                        <span class="o_form_label">Credit card Payment Fee</span>
-                        <div class="text-muted">
-                            Percentage
-                        </div>
-                        <div class="content-group mt16">
-                            <field name="card_fee" class="text-center oe_inline"/>
-                        </div>
-                    </div>
-                </div>
                 <div class="col-12 col-lg-6 o_setting_box" id="transaction_fee_account">
                     <div class="o_setting_left_pane">
                     </div>

@@ -1,32 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
-
         <template id="ppt_custom_invoice_template_standard_tr_fee" inherit_id="batch_delivery.ppt_custom_invoice_template_standard">
-            <xpath expr="//div[@id='total']/div[2]/table" position="inside">
-                <t t-if="o.transaction_fee > 0">
-                  <tr class="border-black o_subtotal">
-                      <td><strong>Transaction Fee</strong></td>
+            <xpath expr="//div[@id='total']/div[2]/table/t[2]" position="replace">
+                <t t-foreach="tax_totals['subtotals']" t-as="subtotal">
+                    <tr class="border-black o_subtotal">
+                        <td><strong t-esc="subtotal['name']"/></td>
 
-                      <td class="text-right">
-                        <span t-field="o.transaction_fee"/>
-                      </td>
-                  </tr>
-                  <t t-set="gross_total" t-value="o.amount_total + o.transaction_fee"/>
-                  <tr>
-                    <td>
-                      If paying by Credit card Total is <span t-field="o.currency_id.symbol" /><span t-esc="gross_total"/>
+                        <td class="text-right">
+                            <span
+                                t-att-class="oe_subtotal_footer_separator"
+                                t-esc="subtotal['formatted_amount']"
+                            />
+                        </td>
+                    </tr>
+
+                    <t t-set="subtotal_to_show" t-value="subtotal['name']"/>
+                    <t t-call="account.tax_groups_totals"/>
+                </t>
+                <tr class="border-black o_total">
+                    <t t-if="o.transaction_fee > 0">
+                      <td><strong>Invoice Total</strong></td>
+                    </t>
+                    <t t-if="o.transaction_fee == 0">
+                      <td><strong>Total</strong></td>
+                    </t>
+                    <td class="text-right">
+                        <span t-esc="tax_totals['formatted_amount_total']"/>
                     </td>
-                  </tr>
-                  <!-- <tr class="border-black o_total">
-                      <td><strong>Gross Total</strong></td>
-                      <td class="text-right">
-                          <span t-field="o.currency_id.symbol" />
-                          <span t-esc="gross_total"/>
-                      </td>
-                  </tr> -->
+                </tr>
+                <t t-if="o.transaction_fee > 0">
+                    <tr class="border-black o_subtotal">
+                        <td><strong>Transaction Fee</strong></td>
+
+                        <td class="text-right">
+                          <span t-field="o.transaction_fee"/>
+                        </td>
+                    </tr>
+                    <t t-set="gross_total" t-value="o.amount_total + o.transaction_fee"/>
+                    <tr class="border-black o_total">
+                        <td><strong>Gross Total</strong></td>
+                        <td class="text-right">
+                            <span t-field="o.currency_id.symbol" />
+                            <span t-esc="gross_total"/>
+                        </td>
+                    </tr>
                 </t>
             </xpath>
         </template>
-      </data>
-  </odoo>
+    </data>
+</odoo>

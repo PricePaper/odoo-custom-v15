@@ -11,7 +11,8 @@
                     <field name='is_authorize_tx_failed' invisible='1'/>
                     <button name="action_reautherize_transaction" type="object" string="Reautherize Payment" class="oe_highlight"
                           attrs="{'invisible':[('is_authorize_tx_failed', '=', False)]}"/>
-                    <button name="add_transaction_to_invoice" type="object" string="Add transaction ref"/>
+                    <button name="add_transaction_to_invoice" type="object" string="Add transaction ref"
+                      attrs="{'invisible':['|', ('payment_state', 'in', ('paid', 'in_payment')), ('move_type', 'not in', ('out_invoice', 'out_refund'))]}"/>
                 </xpath>
                 <xpath expr="//div[@name='journal_div']" position="after">
                     <field name='an_transaction_ref'

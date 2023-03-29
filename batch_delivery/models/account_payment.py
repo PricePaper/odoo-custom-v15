@@ -17,4 +17,10 @@ class AccountPayment(models.Model):
             return result
         return super(AccountPayment, self).name_get()
 
+
+class AccountPaymentMethod(models.Model):
+    _inherit = 'account.payment.method'
+
+    payment_fee = fields.Float('Payment Charge %')
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

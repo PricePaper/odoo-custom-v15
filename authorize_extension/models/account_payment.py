@@ -53,7 +53,6 @@ class AccountPayment(models.Model):
                 (self.payment_id.line_ids + payment.payment_transaction_id.transaction_fee_move_id.line_ids).filtered(
                     lambda line: line.account_id == self.payment_id.destination_account_id and not line.reconciled
                 ).reconcile()
-                payment.payment_transaction_id.send_receipt_mail()
         return res
 
     def _create_payment_transaction(self, **extra_create_values):

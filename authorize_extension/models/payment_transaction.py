@@ -196,7 +196,7 @@ class PaymentTransaction(models.Model):
                 })]
             })
             self.transaction_fee_move_id = transaction_fee_move.id
-            transaction_fee_move.post()
+            transaction_fee_move.action_post()
             if to_reconcile:
                 (self.payment_id.line_ids + transaction_fee_move.line_ids).filtered(
                     lambda line: line.account_id == self.payment_id.destination_account_id and not line.reconciled

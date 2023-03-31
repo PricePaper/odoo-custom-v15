@@ -18,6 +18,10 @@
             <field name="category_id" ref="base.module_category_hidden"/>
             <field name="comment">the user will have access to his own customers pricelists</field>
         </record>
-
+        <record id="group_update_product_on_hand_qty" model="res.groups">
+            <field name="name">Update Product Quantity</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
     </data>
 </odoo>

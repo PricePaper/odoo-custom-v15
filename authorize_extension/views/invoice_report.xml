@@ -19,33 +19,40 @@
                     <t t-call="account.tax_groups_totals"/>
                 </t>
                 <tr class="border-black o_total">
-                    <t t-if="o.transaction_fee > 0">
-                      <td><strong>Invoice Total</strong></td>
-                    </t>
-                    <t t-if="o.transaction_fee == 0">
-                      <td><strong>Total</strong></td>
-                    </t>
+                    <td><strong>Invoice Total</strong></td>
+<!--                    <t t-if="o.transaction_fee > 0">-->
+<!--                      <td><strong>Invoice Total</strong></td>-->
+<!--                    </t>-->
+<!--                    <t t-if="o.transaction_fee == 0">-->
+<!--                      <td><strong>Total</strong></td>-->
+<!--                    </t>-->
                     <td class="text-right">
                         <span t-esc="tax_totals['formatted_amount_total']"/>
                     </td>
                 </tr>
-                <t t-if="o.transaction_fee > 0">
-                    <tr class="border-black o_subtotal">
-                        <td><strong>Transaction Fee</strong></td>
+<!--                <t t-if="o.transaction_fee > 0">-->
+                <tr class="border-black o_subtotal">
+                    <td><strong>Credit Card Fee</strong></td>
 
-                        <td class="text-right">
-                          <span t-field="o.transaction_fee"/>
-                        </td>
-                    </tr>
-                    <t t-set="gross_total" t-value="o.amount_total + o.transaction_fee"/>
-                    <tr class="border-black o_total">
-                        <td><strong>Gross Total</strong></td>
-                        <td class="text-right">
-                            <span t-field="o.currency_id.symbol" />
-                            <span t-esc="gross_total"/>
-                        </td>
-                    </tr>
-                </t>
+                    <td class="text-right">
+                        <t t-if="o.transaction_fee > 0">
+                            <span t-field="o.transaction_fee"/>
+                        </t>
+                        <t t-if="o.transaction_fee == 0">
+                            <span t-esc="o.get_transaction_fee()"/>
+                        </t>
+
+                    </td>
+                </tr>
+                <t t-set="gross_total" t-value="o.amount_total + o.transaction_fee"/>
+                <tr class="border-black o_total">
+                    <td><strong>Gross Total</strong></td>
+                    <td class="text-right">
+                        <span t-field="o.currency_id.symbol" />
+                        <span t-esc="gross_total"/>
+                    </td>
+                </tr>
+<!--                </t>-->
             </xpath>
         </template>
     </data>

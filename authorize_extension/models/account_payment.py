@@ -7,14 +7,14 @@ class AccountPayment(models.Model):
 
     card_payment_type = fields.Selection(selection=[('bank', "Direct Bank"), ('authorize', "Through Authorize"), ], string="Card Swipe Payment Type")
     transaction_fee = fields.Monetary(
-        string="Transaction Fee",
+        string="Credit Card Fee",
         compute='_compute_transaction_fee'
     )
 
     @api.depends('transaction_ids')
     def _compute_transaction_fee(self):
         """
-        Sum all the transaction fee amount for which state
+        Sum all the Credit Card fee amount for which state
         is in 'authorized' or 'done'
         """
         for payment in self:
@@ -68,7 +68,7 @@ AccountPayment()
 class AccountPaymentRegister(models.TransientModel):
     _inherit = 'account.payment.register'
 
-    transaction_fee = fields.Float('Transaction fee', compute="_compute_transaction_fee")
+    transaction_fee = fields.Float('Credit Card fee', compute="_compute_transaction_fee")
 
     @api.depends("amount", "payment_token_id")
     def _compute_transaction_fee(self):

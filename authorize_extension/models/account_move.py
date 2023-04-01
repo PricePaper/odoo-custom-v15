@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+from odoo.tools import float_round
 
 
 class AccountMove(models.Model):
@@ -11,10 +12,10 @@ class AccountMove(models.Model):
     an_transaction_ref = fields.Char('Authorize.net Transaction')
     an_bank_tx_ref = fields.Char('Card Transaction Ref')
     transaction_fee = fields.Monetary(
-        string="Transaction Fee",
+        string="Credit Card Fee",
         compute='_compute_transaction_fee'
     )
-    transaction_fee_manual = fields.Float("Transaction Fee manual")
+    transaction_fee_manual = fields.Float("Credit Card Fee manual")
     manual_fee_move_ids = fields.Many2many(
         comodel_name='account.move',
         relation='account_move_transaction_fee_rel',
@@ -66,7 +67,7 @@ class AccountMove(models.Model):
     @api.depends('transaction_ids')
     def _compute_transaction_fee(self):
         """
-        Sum all the transaction fee amount for which state
+        Sum all the Credit Card fee amount for which state
         is in 'authorized' or 'done'
         """
         for invoice in self:
@@ -84,7 +85,9 @@ class AccountMove(models.Model):
             if fee:
                 invoice.transaction_fee = fee
 
-
+    def get_transaction_fee(self):
+        self.ensure_one()
+        return float_round(self.amount_total * (self.partner_id.property_card_fee / 100) or 0, precision_digits=2)
 
     def _post(self, soft=True):
         res = super(AccountMove, self)._post(soft)

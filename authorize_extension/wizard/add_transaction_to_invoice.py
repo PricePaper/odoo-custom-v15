@@ -12,9 +12,9 @@ class AddInvoiceTransaction(models.TransientModel):
     is_bank_tx = fields.Boolean('Is direct Bank Transaction')
     amount = fields.Float('Amount')
     move_id = fields.Many2one('account.move')
-    transaction_fee_percentage = fields.Float('Transaction fee percentage')
-    transaction_fee = fields.Float('Transaction Fee')
-    add_transaction_fee = fields.Boolean('Add transaction fee?', default=True)
+    transaction_fee_percentage = fields.Float('Credit Card fee percentage')
+    transaction_fee = fields.Float('Credit Card Fee')
+    add_transaction_fee = fields.Boolean('Add Credit Card fee?', default=True)
     amount_total = fields.Float('Total')
 
     # @api.onchange(amount)
@@ -114,7 +114,7 @@ class AddInvoiceTransaction(models.TransientModel):
             move = self.move_id
             journal = int(self.env['ir.config_parameter'].sudo().get_param('authorize_extension.transaction_fee_journal_id'))
             if not journal:
-                raise ValidationError("Credit card transaction fee journal is not configured")
+                raise ValidationError("Credit Card fee journal is not configured")
             account_receivable = move.partner_id and move.partner_id.property_account_receivable_id.id or False
             if not account_receivable:
                 account_receivable = int(self.env['ir.property']._get('property_account_receivable_id', 'res.partner'))
@@ -123,14 +123,14 @@ class AddInvoiceTransaction(models.TransientModel):
                 'move_type': 'entry',
                 'company_id': move.company_id.id,
                 'journal_id': journal,
-                'ref': '%s - Transaction Fee' % move.name,
+                'ref': '%s - Credit Card Fee' % move.name,
                 'line_ids': [(0, 0, {
                     'account_id': account_receivable,
                     'company_currency_id': move.company_id.currency_id.id,
                     'credit': 0.0,
                     'debit': self.transaction_fee,
                     'journal_id': journal,
-                    'name': '%s - Transaction Fee' % move.name,
+                    'name': '%s - Credit Card Fee' % move.name,
                     'partner_id': move.partner_id.id
                 }), (0, 0, {
                     'account_id': transaction_fee_account,
@@ -138,7 +138,7 @@ class AddInvoiceTransaction(models.TransientModel):
                     'credit': self.transaction_fee,
                     'debit': 0.0,
                     'journal_id': journal,
-                    'name': '%s - Transaction Fee' % move.name,
+                    'name': '%s - Credit Card Fee' % move.name,
                     'partner_id': move.partner_id.id
                 })]
             })
@@ -146,7 +146,7 @@ class AddInvoiceTransaction(models.TransientModel):
                 'manual_fee_move_ids': [(4, transaction_fee_move.id)],
                 'transaction_fee_manual': self.transaction_fee + move.transaction_fee_manual
             })
-            transaction_fee_move.post()
+            transaction_fee_move.action_post()
             if to_reconcile:
                 (payment.line_ids + transaction_fee_move.line_ids).filtered(
                     lambda line: line.account_id == payment.destination_account_id and not line.reconciled

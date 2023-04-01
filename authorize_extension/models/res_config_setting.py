@@ -14,10 +14,10 @@ class ResConfigSettings(models.TransientModel):
         'account.account',
         config_parameter='authorize_extension.transaction_fee_account',
         domain=[('deprecated', '=', False)],
-        string="Transaction fee account"
+        string="Credit Card fee account"
     )
     transaction_fee_journal_id = fields.Many2one(
         'account.journal',
         config_parameter='authorize_extension.transaction_fee_journal_id',
-        string="Transaction fee Journal"
+        string="Credit Card fee Journal"
     )

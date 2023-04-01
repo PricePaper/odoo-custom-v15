@@ -17,7 +17,7 @@
                         <group>
                             <field name="amount"/>
                             <field name="add_transaction_fee" widget="boolean_toggle"/>
-                            <label for="transaction_fee_percentage" string="Transaction fee %"/>
+                            <label for="transaction_fee_percentage" string="Credit Card fee %"/>
                             <div>
                             <field name="transaction_fee_percentage" force_save="1" readonly="1" attrs="{'invisible':[('add_transaction_fee', '=', False)]}"/>
                                 %

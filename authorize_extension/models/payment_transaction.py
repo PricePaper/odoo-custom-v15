@@ -30,8 +30,8 @@ class PaymentTransaction(models.Model):
     acquirer_reference = fields.Char(
         string="Acquirer Reference", help="The acquirer reference of the transaction",
         readonly=True, tracking=True)
-    transaction_fee = fields.Float('Transaction fee')
-    transaction_fee_move_id = fields.Many2one('account.move', 'Transaction fee move', ondelete="restrict")
+    transaction_fee = fields.Float('Credit Card fee')
+    transaction_fee_move_id = fields.Many2one('account.move', 'Credit Card fee move', ondelete="restrict")
 
     def _check_amount_and_confirm_order(self):
         self.ensure_one()
@@ -167,7 +167,7 @@ class PaymentTransaction(models.Model):
         if self.transaction_fee and not self.transaction_fee_move_id:
             journal = int(self.env['ir.config_parameter'].sudo().get_param('authorize_extension.transaction_fee_journal_id'))
             if not journal:
-                raise ValidationError("Credit card transaction fee journal is not configured")
+                raise ValidationError("Credit Card fee journal is not configured")
             account_receivable = self.partner_id and self.partner_id.property_account_receivable_id.id or False
             if not account_receivable:
                 account_receivable = int(self.env['ir.property']._get('property_account_receivable_id', 'res.partner'))
@@ -176,14 +176,14 @@ class PaymentTransaction(models.Model):
                 'move_type': 'entry',
                 'company_id': self.company_id.id,
                 'journal_id': journal,
-                'ref': '%s - Transaction Fee' % self.reference,
+                'ref': '%s - Credit Card Fee' % self.reference,
                 'line_ids': [(0, 0, {
                     'account_id': account_receivable,
                     'company_currency_id': self.company_id.currency_id.id,
                     'credit': 0.0,
                     'debit': self.transaction_fee,
                     'journal_id': journal,
-                    'name': '%s - Transaction Fee' % self.reference,
+                    'name': '%s - Credit Card Fee' % self.reference,
                     'partner_id': self.partner_id.id
                 }), (0, 0, {
                     'account_id': transaction_fee_account,
@@ -191,7 +191,7 @@ class PaymentTransaction(models.Model):
                     'credit': self.transaction_fee,
                     'debit': 0.0,
                     'journal_id': journal,
-                    'name': '%s - Transaction Fee' % self.reference,
+                    'name': '%s - Credit Card Fee' % self.reference,
                     'partner_id': self.partner_id.id
                 })]
             })

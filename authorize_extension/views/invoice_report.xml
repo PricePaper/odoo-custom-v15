@@ -31,6 +31,16 @@
                     </td>
                 </tr>
 <!--                <t t-if="o.transaction_fee > 0">-->
+                <t t-if="o.transaction_fee == 0">
+                    <tr class="border-black o_subtotal">
+                        <td>If your paying with credit card the total is</td>
+                        <td class="text-white"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-white"></td>
+                        <td class="text-white"></td>
+                    </tr>
+                </t>
                 <tr class="border-black o_subtotal">
                     <td><strong>Credit Card Fee</strong></td>
 
@@ -45,6 +55,9 @@
                     </td>
                 </tr>
                 <t t-set="gross_total" t-value="o.amount_total + o.transaction_fee"/>
+                <t t-if="o.transaction_fee == 0">
+                    <t t-set="gross_total" t-value="o.amount_total + o.get_transaction_fee()"/>
+                </t>
                 <tr class="border-black o_total">
                     <td><strong>Gross Total</strong></td>
                     <td class="text-right">

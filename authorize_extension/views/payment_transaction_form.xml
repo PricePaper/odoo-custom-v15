@@ -2,27 +2,30 @@
 <odoo>
     <data>
 
-       <record id="payment_transaction_form" model="ir.ui.view">
-           <field name="name">Authorize extension Transaction Form</field>
-           <field name="model">payment.transaction</field>
-           <field name="inherit_id" ref="payment.payment_transaction_form"/>
-           <field name="arch" type="xml">
-             <!-- <xpath expr="//button[@name='action_capture']" position="attributes">
-               <attribute name="states"></attribute>
-               <attribute name="attrs">{'invisible': ['|', ('state', 'not in', 'authorized'), ('invoices_count', '=', 0)]}</attribute>
-             </xpath> -->
-             <xpath expr="//button[@name='action_capture']" position="after">
-               <button name="check_pending_status" string="Check Status" type="object" class='oe_highlight' states='pending'/>
-             </xpath>
-             <xpath expr="//form/sheet" position="after">
-                 <div class="oe_chatter">
-                     <field name="message_follower_ids"/>
-                     <field name="message_ids"/>
-                 </div>
-             </xpath>
-
-           </field>
-       </record>
+        <record id="payment_transaction_form" model="ir.ui.view">
+            <field name="name">Authorize extension Transaction Form</field>
+            <field name="model">payment.transaction</field>
+            <field name="inherit_id" ref="payment.payment_transaction_form"/>
+            <field name="arch" type="xml">
+                <!-- <xpath expr="//button[@name='action_capture']" position="attributes">
+                  <attribute name="states"></attribute>
+                  <attribute name="attrs">{'invisible': ['|', ('state', 'not in', 'authorized'), ('invoices_count', '=', 0)]}</attribute>
+                </xpath> -->
+                <xpath expr="//button[@name='action_capture']" position="after">
+                    <button name="check_pending_status" string="Check Status" type="object" class='oe_highlight' states='pending'/>
+                </xpath>
+                <xpath expr="//form/sheet" position="after">
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </xpath>
+                <xpath expr="//field[@name='partner_lang']" position="after">
+                    <field name="transaction_fee"/>
+                    <field name="transaction_fee_move_id"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 
 </odoo>

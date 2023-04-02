@@ -30,6 +30,8 @@ class PaymentTransaction(models.Model):
     acquirer_reference = fields.Char(
         string="Acquirer Reference", help="The acquirer reference of the transaction",
         readonly=True, tracking=True)
+    transaction_fee = fields.Float('Credit Card fee')
+    transaction_fee_move_id = fields.Many2one('account.move', 'Credit Card fee move', ondelete="restrict")
 
     def _check_amount_and_confirm_order(self):
         self.ensure_one()
@@ -56,6 +58,8 @@ class PaymentTransaction(models.Model):
         invoices = self.invoice_ids.filtered(lambda r: r.state == 'posted' and r.payment_state in ('not_paid', 'partial'))
         if invoices:
             due_amount = round(sum(invoices.mapped('amount_residual')), self.currency_id.decimal_places)
+            if self.transaction_fee:
+                due_amount += self.transaction_fee
             rounded_amount = min(rounded_amount, due_amount)
         self.amount = rounded_amount
 
@@ -66,12 +70,15 @@ class PaymentTransaction(models.Model):
         feedback_data = {'reference': self.reference, 'response': res_content}
         self._handle_feedback_data('authorize', feedback_data)
 
+
     def action_capture(self):
         res = super(PaymentTransaction, self).action_capture()
         if self.state == 'done' and self._context.get('create_payment'):
             self.invoice_ids.filtered(lambda rec: rec.state == 'draft').action_post()
             self._create_payment()
         self.filtered(lambda rec: rec.state == 'done' and not rec.is_post_processed)._finalize_post_processing()
+        if self.payment_id and self.state == 'done':
+            self.send_receipt_mail()
         return res
 
 
@@ -144,7 +151,8 @@ class PaymentTransaction(models.Model):
 
         # Track the payment to make a one2one.
         self.payment_id = payment
-
+        if self.transaction_fee:
+            self.create_transaction_fee_move()
         if self.invoice_ids:
             self.invoice_ids.filtered(lambda inv: inv.state == 'draft').action_post()
             (payment.line_ids + self.invoice_ids.filtered(lambda rec: rec.state != 'cancel').line_ids).filtered(
@@ -153,6 +161,47 @@ class PaymentTransaction(models.Model):
             ).reconcile()
 
         return payment
+
+    def create_transaction_fee_move(self, to_reconcile=True):
+        self.ensure_one()
+        if self.transaction_fee and not self.transaction_fee_move_id:
+            journal = int(self.env['ir.config_parameter'].sudo().get_param('authorize_extension.transaction_fee_journal_id'))
+            if not journal:
+                raise ValidationError("Credit Card fee journal is not configured")
+            account_receivable = self.partner_id and self.partner_id.property_account_receivable_id.id or False
+            if not account_receivable:
+                account_receivable = int(self.env['ir.property']._get('property_account_receivable_id', 'res.partner'))
+            transaction_fee_account = int(self.env['ir.config_parameter'].sudo().get_param('authorize_extension.transaction_fee_account'))
+            transaction_fee_move = self.env['account.move'].create({
+                'move_type': 'entry',
+                'company_id': self.company_id.id,
+                'journal_id': journal,
+                'ref': '%s - Credit Card Fee' % self.reference,
+                'line_ids': [(0, 0, {
+                    'account_id': account_receivable,
+                    'company_currency_id': self.company_id.currency_id.id,
+                    'credit': 0.0,
+                    'debit': self.transaction_fee,
+                    'journal_id': journal,
+                    'name': '%s - Credit Card Fee' % self.reference,
+                    'partner_id': self.partner_id.id
+                }), (0, 0, {
+                    'account_id': transaction_fee_account,
+                    'company_currency_id': self.company_id.currency_id.id,
+                    'credit': self.transaction_fee,
+                    'debit': 0.0,
+                    'journal_id': journal,
+                    'name': '%s - Credit Card Fee' % self.reference,
+                    'partner_id': self.partner_id.id
+                })]
+            })
+            self.transaction_fee_move_id = transaction_fee_move.id
+            transaction_fee_move.action_post()
+            if to_reconcile:
+                (self.payment_id.line_ids + transaction_fee_move.line_ids).filtered(
+                    lambda line: line.account_id == self.payment_id.destination_account_id and not line.reconciled
+                ).reconcile()
+            return transaction_fee_move
 
 
     def write_old(self, vals):
@@ -249,3 +298,7 @@ class PaymentTransaction(models.Model):
         if self.provider == 'authorize' and self.acquirer_reference == '0':
             self.acquirer_reference = acquirer_reference
         return res
+
+    def send_receipt_mail(self):
+        mail_template1 = self.env.ref('authorize_extension.email_credit_card_fee_receipt')
+        mail_template1.send_mail(self.payment_id.id, force_send=True)

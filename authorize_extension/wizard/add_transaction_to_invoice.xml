@@ -11,8 +11,18 @@
                         <group>
                             <field name="is_bank_tx" invisible='1'/>
                             <field name="transaction_ref" required='1'/>
+                            <field name="amount_total" readonly="1" force_save="1"/>
+                            <!--<field name="amount" attrs="{'invisible':[('is_bank_tx', '=', False)], 'required':[('is_bank_tx', '=', True)]}" /> -->
+                        </group>
+                        <group>
                             <field name="amount"/>
-                            <!-- <field name="amount" attrs="{'invisible':[('is_bank_tx', '=', False)], 'required':[('is_bank_tx', '=', True)]}" /> -->
+                            <field name="add_transaction_fee" widget="boolean_toggle"/>
+                            <label for="transaction_fee_percentage" string="Credit Card fee %"/>
+                            <div>
+                            <field name="transaction_fee_percentage" force_save="1" readonly="1" attrs="{'invisible':[('add_transaction_fee', '=', False)]}"/>
+                                %
+                            </div>
+                            <field name="transaction_fee" force_save="1" readonly="1" attrs="{'invisible':[('add_transaction_fee', '=', False)]}"/>
                         </group>
                     </group>
                     <footer>

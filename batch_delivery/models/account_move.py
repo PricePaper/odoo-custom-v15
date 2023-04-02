@@ -118,12 +118,13 @@ class AccountMove(models.Model):
                 gross_profit = 0
                 for line in move.invoice_line_ids:
                     gross_profit += line.profit_margin
-                card_amount = 0
+                fee = 0
                 for partial, amount, counterpart_line in move._get_reconciled_invoices_partials():
-                    if counterpart_line.payment_id.payment_method_line_id.code in ('credit_card', 'authorize'):
-                        card_amount += amount
-                if card_amount:
-                    gross_profit -= card_amount * 0.03
+                    payment_method = counterpart_line.payment_id.payment_method_line_id.payment_method_id
+                    if payment_method.payment_fee != 0.0:
+                        fee += amount * (payment_method.payment_fee / 100)
+                if fee:
+                    gross_profit -= fee
                 discount = move.get_discount()
                 if discount:
                     gross_profit -= discount

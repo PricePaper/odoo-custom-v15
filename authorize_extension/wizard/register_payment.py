@@ -24,3 +24,14 @@ class AccountPaymentRegister(models.TransientModel):
             }
 
         return res
+
+    def _create_payments(self):
+        """
+        override to send mail
+        """
+        res = super()._create_payments()
+        if self.transaction_fee:
+            for payment in res:
+                if payment.payment_transaction_id:
+                    payment.payment_transaction_id.send_receipt_mail()
+        return res

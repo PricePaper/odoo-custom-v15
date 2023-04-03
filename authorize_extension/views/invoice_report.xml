@@ -33,7 +33,7 @@
                     <td><strong>Credit Card Total</strong></td>
                     <td class="text-right">
                         <span t-field="o.currency_id.symbol" />
-                        <span t-esc="gross_total"/>
+                        <span t-esc="'%.2f'% gross_total"/>
                     </td>
                 </tr>
             </xpath>
@@ -70,10 +70,11 @@
                     <td><strong>Credit Card Total</strong></td>
                     <td class="text-right">
                         <span t-field="o.currency_id.symbol" />
-                        <span t-esc="gross_total"/>
+                        <span t-esc="'%.2f'% gross_total"/>
                     </td>
                 </tr>
             </xpath>
         </template>
+
     </data>
 </odoo>

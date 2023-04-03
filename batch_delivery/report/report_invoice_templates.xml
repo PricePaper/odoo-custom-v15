@@ -42,10 +42,7 @@
             <xpath expr="//div[@id='total']/div/table" position="replace">
                 <table class="table table-sm" style="page-break-inside: avoid;">
 
-                                    <!--Tax totals-->
-                    <!-- <t t-set="tax_totals" t-value="json.loads(o.tax_totals_json)"/>
-                    <t t-call="account.document_tax_totals"/> -->
-                                    <!--Payments-->
+                                <!--Payments-->
                                 <t t-if="o.payment_state != 'invoicing_legacy'">
                                     <t t-set="payments_vals" t-value="o.sudo()._get_reconciled_info_JSON_values()"/>
                                     <t t-foreach="payments_vals" t-as="payment_vals">
@@ -53,8 +50,12 @@
                                             <td>
                                                 <i class="oe_form_field text-right oe_payment_label">Paid on <t t-esc="payment_vals['date']" t-options='{"widget": "date"}'/></i>
                                             </td>
+                                            <t t-set="payment_amount" t-value="payment_vals['amount']"/>
+                                            <t t-if="o.transaction_fee > 0">
+                                                <t t-set="payment_amount" t-value="payment_vals['amount'] + o.transaction_fee"/>
+                                            </t>
                                             <td class="text-right">
-                                                <span t-esc="payment_vals['amount']" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                                <span t-esc="payment_amount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                             </td>
                                         </tr>
                                     </t>

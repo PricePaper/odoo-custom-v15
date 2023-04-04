@@ -11,7 +11,7 @@ class AccountPayment(models.Model):
         compute='_compute_transaction_fee'
     )
     transaction_fee_manual = fields.Monetary('Credit Card fee')
-    transaction_amount = fields.Monetary('Amount')
+    transaction_amount = fields.Monetary('Credit Card Amount')
 
     @api.onchange("transaction_amount", "payment_token_id", 'journal_id')
     def _onchange_transaction_fee(self):
@@ -50,7 +50,6 @@ class AccountPayment(models.Model):
         if payment_fee:
             res['amount'] = float_round(self.amount, precision_digits=2)
             res['transaction_fee'] = float_round((self.amount_total * (100 / (100+payment_fee))) * (payment_fee / 100), precision_digits=2)
-        if input(res) == 'y':print(k)
         return res
 
     def action_cancel(self):

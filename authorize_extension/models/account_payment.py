@@ -10,6 +10,18 @@ class AccountPayment(models.Model):
         string="Credit Card Fee",
         compute='_compute_transaction_fee'
     )
+    transaction_fee_manual = fields.Monetary('Credit Card fee')
+    transaction_amount = fields.Monetary('Amount')
+
+    @api.onchange("transaction_amount", "payment_token_id", 'journal_id')
+    def _onchange_transaction_fee(self):
+        if self.payment_token_id:
+            transaction_fee = self.partner_id.property_card_fee
+            self.transaction_fee_manual = self.transaction_amount * (transaction_fee / 100)
+            self.amount = self.transaction_fee_manual + self.transaction_amount
+        else:
+            self.amount = self.transaction_amount
+
 
     @api.depends('transaction_ids')
     def _compute_transaction_fee(self):
@@ -29,6 +41,8 @@ class AccountPayment(models.Model):
 
     def _prepare_payment_transaction_vals(self, **extra_create_values):
         res = super(AccountPayment, self)._prepare_payment_transaction_vals(**extra_create_values)
+        if not res['reference'] and self._context.get('payments_need_tx'):
+            res['reference'] = self.name
         count = self.env['payment.transaction'].search_count([('reference', 'ilike', res['reference'])])
         if count > 0:
             res['reference'] = "%s-%s" % (res['reference'], count)
@@ -36,6 +50,7 @@ class AccountPayment(models.Model):
         if payment_fee:
             res['amount'] = float_round(self.amount, precision_digits=2)
             res['transaction_fee'] = float_round((self.amount_total * (100 / (100+payment_fee))) * (payment_fee / 100), precision_digits=2)
+        if input(res) == 'y':print(k)
         return res
 
     def action_cancel(self):
@@ -46,7 +61,16 @@ class AccountPayment(models.Model):
         return res
 
     def action_post(self):
-        res = super().action_post()
+        payments_need_tx = self.filtered(
+            lambda p: p.payment_token_id and not p.payment_transaction_id
+        )
+        if payments_need_tx:
+            ctx = dict(self._context)
+            ctx.update({'payments_need_tx': True})
+            payments_need_tx = payments_need_tx.with_context(ctx)
+            super(AccountPayment, payments_need_tx).action_post()
+
+        res = super(AccountPayment, self - payments_need_tx).action_post()
         for payment in self:
             if payment.payment_transaction_id and payment.payment_transaction_id.state == 'done' and payment.payment_transaction_id.transaction_fee and payment.payment_transaction_id.transaction_fee_move_id:
                 # payment.payment_transaction_id.transaction_fee_move_id.post()

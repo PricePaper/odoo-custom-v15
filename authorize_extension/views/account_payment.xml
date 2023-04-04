@@ -12,7 +12,18 @@
                 <xpath expr="//field[@name='payment_transaction_id']" position="after">
                    <field name="transaction_fee" attrs="{'invisible':[('transaction_fee','=', 0)]}"/>
                 </xpath>
-
+                <label for="amount" position="attributes">
+                    <attribute name="attrs">{'invisible': [('payment_token_id', '!=', False)]}</attribute>
+                </label>
+                <xpath expr="//label[@for='amount']" position="before">
+                    <field name="transaction_amount" attrs="{'invisible': [('payment_token_id', '=', False)]}" />
+                    <field name="transaction_fee_manual" force_save="1"  readonly="1" attrs="{'invisible': [('payment_token_id', '=', False)]}"/>
+                    <label for="amount" string="Credit Card Amount" attrs="{'invisible': [('payment_token_id', '=', False)]}"/>
+                </xpath>
+                <xpath expr="//field[@name='amount']" position="attributes">
+                    <attribute name="attrs">{'readonly': ['|', ('state', '!=', 'draft'), ('payment_token_id', '!=', False)]}</attribute>
+                    <attribute name="force_save">"1"</attribute>
+                </xpath>
             </field>
         </record>
 

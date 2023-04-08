@@ -67,7 +67,7 @@ class PaymentTransaction(models.Model):
             rounded_amount = min(rounded_amount, due_amount)
         self.amount = float_round(rounded_amount, precision_digits=2)
 
-        res_content = authorize_API.capture(self.acquirer_reference, rounded_amount)
+        res_content = authorize_API.capture(self.acquirer_reference, float_round(rounded_amount, precision_digits=2))
         # As the API has no redirection flow, we always know the reference of the transaction.
         # Still, we prefer to simulate the matching of the transaction by crafting dummy feedback
         # data in order to go through the centralized `_handle_feedback_data` method.
@@ -276,7 +276,7 @@ class PaymentTransaction(models.Model):
 
 
         authorize_API = AuthorizeAPI(refund_tx.acquirer_id)
-        rounded_amount = round(amount_to_refund, refund_tx.currency_id.decimal_places)
+        rounded_amount = float_round(amount_to_refund, precision_digits=2)
         res_content = authorize_API.refund(self.acquirer_reference, rounded_amount)
         # As the API has no redirection flow, we always know the reference of the transaction.
         # Still, we prefer to simulate the matching of the transaction by crafting dummy feedback

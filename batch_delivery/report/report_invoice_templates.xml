@@ -40,15 +40,6 @@
             </t>
         </template>
 
-        <!-- <template id="report_ppt_invoice_document_with_payments" inherit_id="batch_delivery.ppt_custom_invoice_template_standard" primary="True">
-            <xpath expr="//div[@id='total']/div/table" position="replace">
-              <table>
-              </table>
-
-            </xpath>
-        </template> -->
-
-
         <template id="report_ppt_selected_invoice_with_payment">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">

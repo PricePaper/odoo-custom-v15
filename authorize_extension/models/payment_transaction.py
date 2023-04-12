@@ -112,6 +112,12 @@ class PaymentTransaction(models.Model):
                 if res_content.get('x_response_reason_text') and not res_content.get('x_trans_id', False):
                     invoice.write({'is_authorize_tx_failed': True})
                     invoice.message_post(body=res_content.get('x_response_reason_text', ''))
+            elif self._context.get('payments_need_tx'):
+                res_content = authorize_api.authorize_capture_transaction(self, self.payment_id)
+                # invoice.write({'is_authorize_tx_failed': False})
+                if res_content.get('x_response_reason_text') and not res_content.get('x_trans_id', False):
+                    # invoice.write({'is_authorize_tx_failed': True})
+                    self.payment_id.message_post(body=res_content.get('x_response_reason_text', ''))
             else:
                 raise ValidationError("Technical error contact administrator")
         elif self.env.context.get('from_invoice_reauth'):

@@ -3,7 +3,7 @@
         <record forcecreate="True" id="property_card_fee" model="ir.property">
             <field name="name">property_card_fee</field>
             <field name="fields_id" search="[('model','=','res.partner'),('name','=','property_card_fee')]"/>
-            <field name="value" eval="3"/>
+            <field name="value" eval="3.09"/>
             <field name="type">float</field>
         </record>
         <record id="seq_batch_payment_authorize" model="ir.sequence">

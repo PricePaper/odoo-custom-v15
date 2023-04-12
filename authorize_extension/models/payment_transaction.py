@@ -7,7 +7,7 @@ from datetime import datetime
 from dateutil import relativedelta
 
 from odoo import api, fields, models, _, SUPERUSER_ID
-from odoo.tools import float_compare
+from odoo.tools import float_round
 from odoo.exceptions import UserError, ValidationError
 from ..authorize_request_custom import AuthorizeAPICustom
 from odoo.addons.payment_authorize.models.authorize_request import AuthorizeAPI
@@ -30,8 +30,9 @@ class PaymentTransaction(models.Model):
     acquirer_reference = fields.Char(
         string="Acquirer Reference", help="The acquirer reference of the transaction",
         readonly=True, tracking=True)
-    transaction_fee = fields.Float('Credit Card fee')
-    transaction_fee_move_id = fields.Many2one('account.move', 'Credit Card fee move', ondelete="restrict")
+    amount = fields.Monetary(tracking=True)
+    transaction_fee = fields.Float('Credit Card fee', tracking=True)
+    transaction_fee_move_id = fields.Many2one('account.move', 'Credit Card fee move', ondelete="restrict", tracking=True)
 
     def _check_amount_and_confirm_order(self):
         self.ensure_one()
@@ -59,11 +60,14 @@ class PaymentTransaction(models.Model):
         if invoices:
             due_amount = round(sum(invoices.mapped('amount_residual')), self.currency_id.decimal_places)
             if self.transaction_fee:
+                new_amount = min(rounded_amount-self.transaction_fee, due_amount)
+                if new_amount != rounded_amount-self.transaction_fee:
+                    self.transaction_fee = float_round(new_amount * self.partner_id.property_card_fee/100, precision_digits=2)
                 due_amount += self.transaction_fee
             rounded_amount = min(rounded_amount, due_amount)
-        self.amount = rounded_amount
+        self.amount = float_round(rounded_amount, precision_digits=2)
 
-        res_content = authorize_API.capture(self.acquirer_reference, rounded_amount)
+        res_content = authorize_API.capture(self.acquirer_reference, float_round(rounded_amount, precision_digits=2))
         # As the API has no redirection flow, we always know the reference of the transaction.
         # Still, we prefer to simulate the matching of the transaction by crafting dummy feedback
         # data in order to go through the centralized `_handle_feedback_data` method.
@@ -272,7 +276,7 @@ class PaymentTransaction(models.Model):
 
 
         authorize_API = AuthorizeAPI(refund_tx.acquirer_id)
-        rounded_amount = round(amount_to_refund, refund_tx.currency_id.decimal_places)
+        rounded_amount = float_round(amount_to_refund, precision_digits=2)
         res_content = authorize_API.refund(self.acquirer_reference, rounded_amount)
         # As the API has no redirection flow, we always know the reference of the transaction.
         # Still, we prefer to simulate the matching of the transaction by crafting dummy feedback

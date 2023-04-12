@@ -53,6 +53,11 @@ class SaleOrder(models.Model):
     delivery_cost = fields.Float(string='Estimated Delivery Cost', readonly=True, copy=False)
     active = fields.Boolean(tracking=True, default=True)
     date_order = fields.Datetime(string='Confirmation Date')
+    commitment_date = fields.Datetime('Commitment Date', copy=False,
+                                      states={'done': [('readonly', True)], 'cancel': [('readonly', True)]},
+                                      help="This is the delivery date promised to the customer. "
+                                           "If set, the delivery order will be scheduled based on "
+                                           "this date rather than product lead times.")
 
     @api.model
     def get_release_deliver_default_date(self):

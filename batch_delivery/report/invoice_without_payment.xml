@@ -130,8 +130,7 @@
                     </table>
                     <t t-if="o.partner_shipping_id.delivery_notes">
                         <t t-set="delivery_notes" t-value="o.partner_shipping_id.delivery_notes.replace('\n', ' ')"/>
-                        <strong class="mr16">Delivery Notes:</strong>
-                        <br/>
+                        <strong class="mr16">Delivery Notes: </strong>
                         <span t-esc="delivery_notes">
                         </span>
                         <br/>

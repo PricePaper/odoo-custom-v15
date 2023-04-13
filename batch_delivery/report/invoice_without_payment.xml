@@ -334,11 +334,14 @@
                                 correctly.</strong><br/>
                         </p>
                     </div>
-                    <strong t-if="o.partner_shipping_id.delivery_notes" class="mr16">Delivery Notes:</strong>
-                    <br/>
-                    <span t-if="o.partner_shipping_id.delivery_notes" t-field="o.partner_shipping_id.delivery_notes">
-                    </span>
-                    <br/>
+                    <t t-if="o.partner_shipping_id.delivery_notes">
+                        <t t-set="delivery_notes" t-value="o.partner_shipping_id.delivery_notes.replace('\n', ' ')"/>
+                        <strong class="mr16">Delivery Notes:</strong>
+                        <br/>
+                        <span t-esc="delivery_notes">
+                        </span>
+                        <br/>
+                    </t>
 
                     <strong t-if="not is_html_empty(o.narration)" class="mr16">Terms and Conditions:</strong>
                     <br/>

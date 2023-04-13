@@ -31,22 +31,24 @@
                 <t t-set="o" t-value="o.with_context(lang=lang)"/>
                 <div class="row mt-2 mb-2">
                     <div class="col-6">
-                      <span><b>Delivery Address:</b></span><br></br>
-                      <div><span t-if="o.partner_shipping_id.customer_code">[<t t-esc="o.partner_shipping_id.customer_code"/>]</span><t t-esc="o.partner_shipping_id.name"></t></div>
-                      <div><span t-if="o.partner_shipping_id.corp_name"><t t-esc="o.partner_shipping_id.corp_name"/></span></div>
-		                  <div><span t-if="o.partner_shipping_id.street"><t t-esc="o.partner_shipping_id.street"/></span></div>
-		                  <div><span t-if="o.partner_shipping_id.street2"><t t-esc="o.partner_shipping_id.street2"/></span></div>
-                      <div><span t-if="o.partner_shipping_id.city"><t t-esc="o.partner_shipping_id.city"/>,&#xA0;</span><span t-if="o.partner_shipping_id.state_id"><t t-esc="o.partner_shipping_id.state_id.code"/>,&#xA0;</span><span t-if="o.partner_shipping_id.zip"><t t-esc="o.partner_shipping_id.zip"/></span></div>
-                  </div>
-                <div class="col-6 text-left">
-                     <span><b>Billing Address:</b></span><br></br>
-                     <div><span t-if="o.partner_id.customer_code">[<t t-esc="o.partner_id.customer_code"/>]</span><t t-esc="o.partner_id.name"></t></div>
-                     <div><span t-if="o.partner_shipping_id.corp_name"><t t-esc="o.partner_shipping_id.corp_name"/></span></div>
-		                 <div><span t-if="o.partner_id.street"><t t-esc="o.partner_id.street"/></span></div>
-		                 <div><span t-if="o.partner_id.street2"><t t-esc="o.partner_id.street2"/></span></div>
-                     <div><span t-if="o.partner_id.city"><t t-esc="o.partner_id.city"/>,&#xA0;</span><span t-if="o.partner_id.state_id"><t t-esc="o.partner_id.state_id.code"/>,&#xA0;</span><span t-if="o.partner_id.zip"><t t-esc="o.partner_id.zip"/></span></div> </div>
+                         <span><b>Customer Address:</b></span><br></br>
+                         <div><span t-if="o.partner_id.customer_code">[<t t-esc="o.partner_id.customer_code"/>]</span><t t-esc="o.partner_id.name"></t></div>
+                         <div><span t-if="o.partner_shipping_id.corp_name"><t t-esc="o.partner_shipping_id.corp_name"/></span></div>
+                         <div><span t-if="o.partner_id.street"><t t-esc="o.partner_id.street"/></span></div>
+                         <div><span t-if="o.partner_id.street2"><t t-esc="o.partner_id.street2"/></span></div>
+                         <div><span t-if="o.partner_id.city"><t t-esc="o.partner_id.city"/>,&#xA0;</span><span t-if="o.partner_id.state_id"><t t-esc="o.partner_id.state_id.code"/>,&#xA0;</span><span t-if="o.partner_id.zip"><t t-esc="o.partner_id.zip"/></span></div>
+                    </div>
+                    <div class="col-6 text-left">
+                        <t t-if="o.partner_id != o.partner_shipping_id">
+                            <span><b>Delivery Address:</b></span><br></br>
+                            <div><span t-if="o.partner_shipping_id.customer_code">[<t t-esc="o.partner_shipping_id.customer_code"/>]</span><t t-esc="o.partner_shipping_id.name"></t></div>
+                            <div><span t-if="o.partner_shipping_id.corp_name"><t t-esc="o.partner_shipping_id.corp_name"/></span></div>
+      		                  <div><span t-if="o.partner_shipping_id.street"><t t-esc="o.partner_shipping_id.street"/></span></div>
+      		                  <div><span t-if="o.partner_shipping_id.street2"><t t-esc="o.partner_shipping_id.street2"/></span></div>
+                            <div><span t-if="o.partner_shipping_id.city"><t t-esc="o.partner_shipping_id.city"/>,&#xA0;</span><span t-if="o.partner_shipping_id.state_id"><t t-esc="o.partner_shipping_id.state_id.code"/>,&#xA0;</span><span t-if="o.partner_shipping_id.zip"><t t-esc="o.partner_shipping_id.zip"/></span></div>
+                        </t>
+                    </div>
                 </div>
-
                 <div class="page">
                      <h2>
                         <span t-if="o.move_type == 'out_invoice' and o.state == 'posted'">Posted Invoice</span>
@@ -126,6 +128,14 @@
                        </td>
                       </tr>
                     </table>
+                    <t t-if="o.partner_shipping_id.delivery_notes">
+                        <t t-set="delivery_notes" t-value="o.partner_shipping_id.delivery_notes.replace('\n', ' ')"/>
+                        <strong class="mr16">Delivery Notes:</strong>
+                        <br/>
+                        <span t-esc="delivery_notes">
+                        </span>
+                        <br/>
+                    </t>
 
                     <t t-set="display_discount" t-value="any([l.discount for l in o.invoice_line_ids])"/>
 
@@ -139,8 +149,8 @@
                                 <th class="text-left"><span>Unit</span></th>
                                 <th class="text-left"><span>Description</span></th>
                                 <th t-attf-class="text-left {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}"
-                                    t-if="o.partner_id.bill_with_goods"><span>Taxes</span></th>
-                                <th class="text-right" t-if="o.partner_id.bill_with_goods">
+                                    t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)"><span>Taxes</span></th>
+                                <th class="text-right" t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)">
                                     <span groups="account.group_show_line_subtotals_tax_excluded">Amount</span>
                                     <span groups="account.group_show_line_subtotals_tax_included">Total Price</span>
                                 </th>
@@ -174,10 +184,10 @@
                                           </t>
                                         </td>
                                         <td t-attf-class="text-left {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}"
-                                            t-if="o.partner_id.bill_with_goods">
+                                            t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)">
                                             <span t-esc="', '.join(map(lambda x: (x.description or x.name), line.tax_ids))"/>
                                         </td>
-                                        <td class="text-right o_price_total" t-if="o.partner_id.bill_with_goods">
+                                        <td class="text-right o_price_total" t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)">
                                             <span t-field="line.price_subtotal"
                                                   groups="account.group_show_line_subtotals_tax_excluded"/>
                                             <span t-field="line.price_total"
@@ -244,11 +254,12 @@
                         </table>
                     </t>
                     <br></br>
-                  <div t-field="o.sale_default_message"/>
-                   <div class="clearfix">
-                     <div id="total" class="row">
-                       <div style="width:50%">
-                           <table class="table table-sm" style="page-break-inside: avoid;">
+                    <div t-field="o.sale_default_message"/>
+                    <div class="clearfix">
+                      <div id="total" class="row mt-2 mb-2">
+                        <div class="col-6">
+                        <!-- <div style="width:50%"> -->
+                          <table class="table table-sm" style="page-break-inside: avoid;">
                                 <t t-if="not print_with_payments">
                                      <tr>
                                          <td>
@@ -305,7 +316,7 @@
 
                            </table>
                        </div>
-                        <div t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)" style="width:50%">
+                        <div t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)" class="col-6">
                                 <table class="table table-sm" style="page-break-inside: avoid;width::100%">
 
                                     <!--Tax totals-->
@@ -334,15 +345,6 @@
                                 correctly.</strong><br/>
                         </p>
                     </div>
-                    <t t-if="o.partner_shipping_id.delivery_notes">
-                        <t t-set="delivery_notes" t-value="o.partner_shipping_id.delivery_notes.replace('\n', ' ')"/>
-                        <strong class="mr16">Delivery Notes:</strong>
-                        <br/>
-                        <span t-esc="delivery_notes">
-                        </span>
-                        <br/>
-                    </t>
-
                     <strong t-if="not is_html_empty(o.narration)" class="mr16">Terms and Conditions:</strong>
                     <br/>
                     <span t-if="not is_html_empty(o.narration)" t-field="o.narration">

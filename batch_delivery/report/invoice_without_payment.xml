@@ -30,7 +30,7 @@
                  style="font-family: 'Lato', 'Noto'; font-size:16px;">
                 <t t-set="o" t-value="o.with_context(lang=lang)"/>
                 <div class="row mt-2 mb-2">
-                    <div class="col-6">
+                    <div class="col-5">
                          <span><b>Customer Address:</b></span><br></br>
                          <div><span t-if="o.partner_id.customer_code">[<t t-esc="o.partner_id.customer_code"/>]</span><t t-esc="o.partner_id.name"></t></div>
                          <div><span t-if="o.partner_shipping_id.corp_name"><t t-esc="o.partner_shipping_id.corp_name"/></span></div>
@@ -38,7 +38,13 @@
                          <div><span t-if="o.partner_id.street2"><t t-esc="o.partner_id.street2"/></span></div>
                          <div><span t-if="o.partner_id.city"><t t-esc="o.partner_id.city"/>,&#xA0;</span><span t-if="o.partner_id.state_id"><t t-esc="o.partner_id.state_id.code"/>,&#xA0;</span><span t-if="o.partner_id.zip"><t t-esc="o.partner_id.zip"/></span></div>
                     </div>
-                    <div class="col-6 text-left">
+                    <div class="col-2">
+                      <t t-if="o.partner_id != o.partner_shipping_id">
+                        <img class="img" src="/batch_delivery/static/src/img/arrow.jpg" />
+                      </t>
+                    </div>
+
+                    <div class="col-5 text-left">
                         <t t-if="o.partner_id != o.partner_shipping_id">
                             <span><b>Delivery Address:</b></span><br></br>
                             <div><span t-if="o.partner_shipping_id.customer_code">[<t t-esc="o.partner_shipping_id.customer_code"/>]</span><t t-esc="o.partner_shipping_id.name"></t></div>

@@ -82,7 +82,10 @@ class SaleOrder(models.Model):
                             transactions.action_void()
                             order.action_payment_hold('Payment Hold: Total Amount increased.Mismatch with Payment Transaction',
                                                       'Cancel Reason : New line added Payment Hold')
-
+        if 'payment_term_id' in vals.keys():
+            for order in self:
+                if not order.payment_term_id.is_pre_payment and order.is_payment_error:
+                    self.write({'is_payment_error': False, 'payment_warning': "", 'hold_state': 'release'})
         return res
 
     def _action_cancel(self):

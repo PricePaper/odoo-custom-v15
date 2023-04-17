@@ -145,6 +145,9 @@ class SaleOrder(models.Model):
                 if tx_sudo.state == 'cancel':
                     error_msg = "The transaction with reference %s for %s is canceled (Authorize.Net)." % (tx_sudo.reference, tx_sudo.amount)
                     self.action_payment_hold(error_msg, error_msg)
+                if tx_sudo.state == 'pending':
+                    picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
+                    picking.write({'is_payment_hold': True})
             if error_msg:
                 self.message_post(body=error_msg)
                 view_id = self.env.ref('price_paper.view_sale_warning_wizard').id

@@ -13,5 +13,5 @@ class StockMove(models.Model):
     def write(self, vals):
         if vals.get('state', False):
             if self.picking_id.is_payment_hold:
-                raise UserError('You can not chnage the state of this DO. Payment Transaction is in hold state please contact Accountant')
+                raise UserError('You can not change the state of %s. Payment Transaction is in hold state please contact Accountant'%(self.picking_id.name))
         return super().write(vals)

@@ -228,14 +228,19 @@ class PaymentTransaction(models.Model):
         authorize_api = AuthorizeAPICustom(self.acquirer_id)
         res_content = authorize_api.get_transaction_detail(self.acquirer_reference)
         status = res_content.get('transaction', {}).get('transactionStatus', '')
+        picking = self.sale_order_ids.picking_ids.filtered(lambda r: r.is_payment_hold)
         if status in ('settledSuccessfully', 'refundSettledSuccessfully', 'capturedPendingSettlement', 'refundPendingSettlement'):
             self.state = 'done'
+            if picking:
+                picking.write({'is_payment_hold': False})
             payment = self.payment_id
             if payment and payment.state == 'cancel':
                 payment.action_draft()
                 payment.action_post()
         elif status == 'authorizedPendingCapture':
             self.state = 'authorized'
+            if picking:
+                picking.write({'is_payment_hold': False})
         elif status == 'voided':
             self.state = 'cancel'
 

@@ -114,6 +114,9 @@
             <field name="model">stock.move.line</field>
             <field name="inherit_id" ref="stock.view_move_line_tree"/>
             <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="default_order">date desc</attribute>
+                </xpath>
                 <xpath expr="//field[@name='product_uom_id']" position="after">
                     <field name="product_onhand_qty"/>
                 </xpath>

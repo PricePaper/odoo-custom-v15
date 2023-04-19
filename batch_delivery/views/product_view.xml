@@ -101,6 +101,18 @@
                         </div>
                     </button>
                 </xpath>
+                <xpath expr="//button[@name='action_view_orderpoints']" position="after">
+                    <button type="object"
+                            name= "action_inventory_history"
+                            attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}"
+                            class="oe_stat_button" icon="fa-building-o"
+                            groups="stock.group_stock_user">
+                            <div class="o_field_widget o_stat_info">
+                                <field name="last_inventoried_date" widget="statinfo" nolabel="1" class="mr4"/>
+                                <span class="o_stat_text">Last Inventoried Date</span>
+                            </div>
+                        </button>
+                </xpath>
             </field>
         </record>
 
@@ -192,7 +204,6 @@
                 </xpath>
             </field>
         </record>
-
 
     </data>
 </odoo>

@@ -12,7 +12,7 @@ class StockQuant(models.Model):
     def _apply_inventory(self):
         super(StockQuant, self.with_context(from_inv_adj=True))._apply_inventory()
         for record in self:
-            if record.product_id:
+            if record.product_id and record.product_id.property_stock_location == record.location_id:
                 record.product_id.last_inventoried_date = date.today()
 
     @api.onchange('product_id', 'company_id')

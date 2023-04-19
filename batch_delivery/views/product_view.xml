@@ -108,7 +108,11 @@
                             class="oe_stat_button" icon="fa-building-o"
                             groups="stock.group_stock_user">
                             <div class="o_field_widget o_stat_info">
-                                <field name="last_inventoried_date" widget="statinfo" nolabel="1" class="mr4"/>
+                                <span>
+                                <field name="last_inventoried_date"
+                                    nolabel="1" class="mr4"
+                                    attrs="{'invisible':[('last_inventoried_date', '=', False)]}"/>
+                                </span>
                                 <span class="o_stat_text">Last Inventoried Date</span>
                             </div>
                         </button>

@@ -18,12 +18,6 @@
                     <t t-set="subtotal_to_show" t-value="subtotal['name']"/>
                     <t t-call="account.tax_groups_totals"/>
                 </t>
-                <tr class="border-black o_total">
-                    <td><strong>Discounted Total</strong></td>
-                    <td class="text-right">
-                        <span t-esc="tax_totals['formatted_amount_total']"/>
-                    </td>
-                </tr>
 
                 <t t-set="gross_total" t-value="o.amount_total + o.transaction_fee"/>
                 <t t-if="o.transaction_fee == 0">
@@ -36,6 +30,14 @@
                         <span t-esc="'%.2f'% gross_total"/>
                     </td>
                 </tr>
+                <tr class="border-black o_total">
+                    <td><strong>Discounted Total</strong></td>
+                    <td class="text-right">
+                        <span t-esc="tax_totals['formatted_amount_total']"/>
+                    </td>
+                </tr>
+
+
             </xpath>
         </template>
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from odoo.tools import float_compare
 
 class SaleOrder(models.Model):
@@ -89,10 +89,10 @@ class SaleOrderLine(models.Model):
             raise UserError(
                 _('You can not remove an order line once stock move is done'))
 
-        elif any(transit_moves.state != 'draft' for transit_moves in transit_move):
+        elif any(transit_moves.state in ('cancel', 'waiting', 'done') for transit_moves in transit_move):
             raise UserError(_('You can only delete draft moves.'))
 
-        elif any(moves.state != 'draft' for moves in move):
+        elif any(moves.state in ('cancel', 'waiting', 'done') for moves in move):
             raise UserError(_('You can only delete draft moves.'))
         else:
             cancel_moves  = transit_move+move
@@ -102,7 +102,7 @@ class SaleOrderLine(models.Model):
     def unlink(self):
        for record in self:
            if not record.is_delivery and record.order_id.state!='draft':
-                record.remove_confirmed_lines()
+                record.remove_move_lines()
        return super(SaleOrderLine, self).unlink()
 
     @api.depends('product_id')

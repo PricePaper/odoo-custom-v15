@@ -55,7 +55,18 @@ class SaleOrder(models.Model):
     def action_payment_hold(self, error_msg='', cancel_reason=''):
         self.ensure_one()
         if self.state not in ('drfat', 'sent'):
+            is_creditexceed = self.is_creditexceed
+            ready_to_release = self.ready_to_release
+            is_low_price = self.is_low_price
+            release_price_hold = self.release_price_hold
+
             self._action_cancel()
+            self.write({
+                'is_creditexceed': is_creditexceed,
+                'ready_to_release': ready_to_release,
+                'is_low_price': is_low_price,
+                'release_price_hold': release_price_hold,
+            })
             self.action_draft()
             self.message_post(body=cancel_reason)
         self.write({

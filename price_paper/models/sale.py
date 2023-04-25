@@ -271,7 +271,7 @@ class SaleOrder(models.Model):
 
     def _action_cancel(self):
         self.ensure_one()
-        self = self.with_context(action_cancel=True)
+        self = self.with_context(action_cancel=True).sudo()
         self.write({
             'is_creditexceed': False,
             'ready_to_release': False,

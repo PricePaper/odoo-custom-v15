@@ -26,10 +26,7 @@ class Product(models.Model):
                 'search_default_done': 1,
             },
             'domain': [
-                ('product_id', '=', self.id),
-                '|',
-                    ('location_id', '=', self.property_stock_location.id),
-                    ('location_dest_id', '=', self.property_stock_location.id),
+                ('product_id', '=', self.id)
             ],
         }
         return action

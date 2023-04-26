@@ -22,3 +22,10 @@ class StockLandedCost(models.Model):
                             input_account = accounts['stock_input']
                             all_amls.filtered(lambda aml: aml.account_id == input_account and not aml.reconciled).reconcile()
         return res
+
+
+class StockLandedCostLine(models.Model):
+    _inherit = 'stock.landed.cost.lines'
+
+    move_line_id = fields.Many2one('account.move.line', 'Invoice Line')
+    move_id = fields.Many2one('account.move', 'Invoice', related="move_line_id.move_id")

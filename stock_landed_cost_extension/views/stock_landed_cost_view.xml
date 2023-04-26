@@ -24,6 +24,10 @@
                         </tree>
                     </field>
                 </notebook>
+                <xpath expr="//form/sheet/notebook/page[@name='additional_costs']/field[@name='cost_lines']/tree/field[@name='account_id']" position="after">
+                    <field name="move_id" optional="show" readonly="1"/>
+                    <field name="move_line_id" optional="show" readonly="1"/>
+                </xpath>
             </field>
         </record>
     </data>

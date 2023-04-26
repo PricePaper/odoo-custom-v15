@@ -11,6 +11,7 @@ class AccountMove(models.Model):
                                          column1='vendor_bill_id', column2='landed_cost_id', string="Vendor")
     # comodel_name = "res.users", relation = "muk_utils_mixins_groups_explicit_users_rel",
     # column1 = "gid", column2 = "uid",
+
     def action_create_landed_cost(self):
         landed_costs_lines = self.mapped('line_ids').filtered(lambda line: line.is_landed_costs_line)
         landed_costs = self.env['stock.landed.cost'].create({
@@ -21,6 +22,7 @@ class AccountMove(models.Model):
                 'account_id': l.product_id.product_tmpl_id.get_product_accounts()['stock_input'].id,
                 'price_unit': l.currency_id._convert(l.price_subtotal, l.company_currency_id, l.company_id, l.move_id.date),
                 'split_method': l.product_id.split_method_landed_cost or 'equal',
+                'move_line_id': l.id,
             }) for l in landed_costs_lines],
         })
         action = self.env["ir.actions.actions"]._for_xml_id("stock_landed_costs.action_stock_landed_cost")

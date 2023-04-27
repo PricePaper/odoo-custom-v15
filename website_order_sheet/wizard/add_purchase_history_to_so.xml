@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_purchase_history_add_so_wiz_inherit" model="ir.ui.view">
+            <field name="name">add.purchase.history.to.so</field>
+            <field name="model">add.purchase.history.so</field>
+            <field name='inherit_id' ref='price_paper.view_purchase_history_add_so_wiz'/>
+            <field name="arch" type="xml">
+                <field name='archived' position='after'>
+                    <field name='active_model' invisible='1'/>
+                </field>
+                <xpath expr="//field[@name='purchase_history_ids']/tree/field[@name='qty_to_be']" position='attributes'>
+                    <attribute name='attrs'>{'column_invisible':[('parent.active_model','=','order.sheet.lines')]}</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='purchase_history_temp_ids']/tree/field[@name='qty_to_be']" position='attributes'>
+                    <attribute name='attrs'>{'column_invisible':[('parent.active_model','=','order.sheet.lines')]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='purchase_history_ids']/tree/field[@name='qty_to_be']" position='after'>
+                    <field name='add_prod' attrs="{'column_invisible':[('parent.active_model','!=','order.sheet.lines')]}"/>
+                </xpath>
+                <xpath expr="//field[@name='purchase_history_temp_ids']/tree/field[@name='qty_to_be']" position='after'>
+                    <field name='add_prod' attrs="{'column_invisible':[('parent.active_model','!=','order.sheet.lines')]}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo> 
+            

@@ -1,0 +1,87 @@
+<odoo>
+    <data>
+
+        <record id="website_order_sheet_form" model="ir.ui.view">
+            <field name="name">account.payment.form</field>
+            <field name="model">website.order.sheet</field>
+            <field name="arch" type="xml">
+                <form string="Register Payment">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name='name'/>
+                            </group>
+                            <group>
+                                <field name='user_id'/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string='Sheet Lines'>
+                                <field name='order_lines'>
+                                    <tree>
+                                        <field name='sequence' widget='handle'/>
+                                        <field name='section'/>
+                                        <field name='line_product_ids' widget="many2many_tags"/>
+                                    </tree>
+                                    <form>
+                                        <sheet>
+                                            <group>
+                                                <group>
+                                                    <field name='user_id' invisible="1"/>
+                                                    <field name='section'/>
+                                                    <button name='section_add_products' type='object' class='btn btn-primary' string='Add Products'/>
+                                                </group>
+                                            </group>
+                                            <notebook>
+                                                <page string='Products' name='section_product'>
+                                                    <field name='line_product_ids'>
+                                                        <tree editable='bottom'>
+                                                            <field name='sequence' widget='handle'/>
+                                                            <field name='product_id'/>
+                                                            <field name='default_code'/>
+                                                        </tree>
+                                                    </field>
+                                                </page>
+                                            </notebook>
+                                            <!-- <group>
+                                                <field name='product_ids'/>
+                                            </group> -->
+
+                                        </sheet>
+                                    </form>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="website_order_sheet_tree" model="ir.ui.view">
+            <field name="name">website.order.sheet.tree</field>
+            <field name="model">website.order.sheet</field>
+            <field name="arch" type="xml">
+                <tree string="Order Sheet">
+                    <field name="name"/>
+                    <field name="user_id" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="website_order_sheet_action" model="ir.actions.act_window">
+            <field name="name">Order Sheet</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">website.order.sheet</field>
+            <!-- <field name="context">{'search_default_is_draft': 1}</field> -->
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p>
+                    Create Record for uset to manage order sheet
+                </p>
+            </field>
+        </record>
+
+        <menuitem action="website_order_sheet_action" id="menu_sale_website_order_sheet" name="Order Sheet" sequence="30" parent='sale.sale_menu_root'/>
+
+    </data>
+</odoo>

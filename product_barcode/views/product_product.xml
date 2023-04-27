@@ -12,7 +12,7 @@
                 <xpath expr="//field[@name='barcode']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
-                <notebook position="inside">
+                <!-- <notebook position="inside">
                     <page string="Barcode" name="barcode">
                         <field name="barcode_ids" readonly="1">
                             <tree editable="bottom">
@@ -23,7 +23,7 @@
                             </tree>
                         </field>
                     </page>
-                </notebook>
+                </notebook> -->
             </field>
         </record>
     </data>

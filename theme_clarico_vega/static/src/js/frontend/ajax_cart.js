@@ -123,7 +123,9 @@ odoo.define('theme_clarico_vega.ajax_cart', function (require) {
                     if(!quantity) {
                        quantity = 1;
                     }
-                    ajax.jsonRpc('/shop/cart/update_custom', 'call',{'product_id':product_product,'add_qty':quantity, 'product_custom_attribute_values':product_custom_attribute_values,'no_variant_attribute_values':no_variant_attribute_values}).then(function(data) {
+                    var uom_id = $("#UomProduct").val()
+                    console.log('hhhhhhhh',uom_id)
+                    ajax.jsonRpc('/shop/cart/update_custom', 'call',{'product_id':product_product,'add_qty':quantity,'uom_id':uom_id, 'product_custom_attribute_values':product_custom_attribute_values,'no_variant_attribute_values':no_variant_attribute_values}).then(function(data) {
                         var ajaxCart = new publicWidget.registry.ajax_cart();
                         if(data) {
                             $('.ajax_cart_modal > .cart_close').trigger('click');
@@ -222,6 +224,8 @@ odoo.define('theme_clarico_vega.ajax_cart', function (require) {
                     var frm = $aSubmit.closest('form');
                     var product_product = frm.find('input[name="product_id"]').val();
                     var quantity = frm.find('.quantity').val();
+                    var uom_id = $("#UomProduct").val()
+                    console.log('hhhhhhhh',uom_id)
                     var product_custom_attribute_values = this.getCustomVariantValues(frm.find('.js_product'));
                     if(!quantity) {
                        quantity = 1;

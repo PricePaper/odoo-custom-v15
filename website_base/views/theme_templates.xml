@@ -1,0 +1,15 @@
+<odoo>
+    <data>
+        <record id="product_page_theme_inherit" model="ir.ui.view">
+            <field name="name">product_page_theme_inherit</field>
+            <field name="inherit_id" search="[('key', '=', 'theme_clarico_vega.product_ept')]"/>
+            <field name="type">qweb</field>
+            <field name="key">website_base.product_page_theme_inherit</field>
+            <field name="arch" type="xml">
+                <xpath expr="//t[@t-call='website_sale.product_price']" position="replace">
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

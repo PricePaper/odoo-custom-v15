@@ -163,7 +163,9 @@ class EmiproThemeBase(http.Controller):
                 add_qty=add_qty,
                 set_qty=set_qty,
                 product_custom_attribute_values=product_custom_attribute_values,
-                no_variant_attribute_values=variant_attr_value)
+                no_variant_attribute_values=variant_attr_value,
+                uom_id = kw.get('uom_id')
+                )
             return True
         return False
 

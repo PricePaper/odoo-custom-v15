@@ -2,6 +2,23 @@
 <odoo>
     <data>
 
+      <record id="view_sales_order_auto_done_setting_inherited" model="ir.ui.view">
+          <field name="name">sale.order.form</field>
+          <field name="model">sale.order</field>
+          <field name="inherit_id" ref="sale.view_sales_order_auto_done_setting"/>
+          <field name="groups_id" eval="[(4, ref('sale.group_auto_done_setting'))]"/>
+          <field name="arch" type="xml">
+              <xpath expr="//button[@name='action_unlock']" position="attributes">
+                  <attribute name="groups"></attribute>
+                  <attribute name="confirm">Are you sure you want to change this?</attribute>
+              </xpath>
+              <xpath expr="//button[@name='action_done']" position="attributes">
+                  <attribute name="groups"></attribute>
+                  <attribute name="confirm">Are you sure you want to change this?</attribute>
+              </xpath>
+          </field>
+      </record>
+
         <record id="price_paper_sale_order_form_view" model="ir.ui.view">
             <field name="name">inherited.sale.order.form.view.batch</field>
             <field name="model">sale.order</field>
@@ -51,9 +68,6 @@
                         />
                     </div>
                 </field>
-                <xpath expr="//form//header//button[@name='action_draft']" position="after">
-                    <button name="action_unlock" type="object" string="Unlock" states="done" groups="sales_team.group_sale_manager"/>
-                </xpath>
                 <xpath expr="//field[@name='validity_date']" position="after">
                     <field name="storage_contract" invisible="1"/>
                     <field name="hold_state" invisible='1'/>

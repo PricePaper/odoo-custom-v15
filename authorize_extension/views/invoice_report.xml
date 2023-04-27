@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <template id="ppt_custom_invoice_template_tr_fee" inherit_id="batch_delivery.ppt_custom_invoice_template">
+            <xpath expr="//div[@id='total']/div[2]/table/t[2]" position="replace">
+                <t t-foreach="tax_totals['subtotals']" t-as="subtotal">
+                    <tr class="border-black o_subtotal">
+                        <td><strong t-esc="subtotal['name']"/></td>
+
+                        <td class="text-right">
+                            <span
+                                t-att-class="oe_subtotal_footer_separator"
+                                t-esc="subtotal['formatted_amount']"
+                            />
+                        </td>
+                    </tr>
+
+                    <t t-set="subtotal_to_show" t-value="subtotal['name']"/>
+                    <t t-call="account.tax_groups_totals"/>
+                </t>
+
+                <t t-set="gross_total" t-value="o.amount_total + o.transaction_fee"/>
+                <t t-if="o.transaction_fee == 0">
+                    <t t-set="gross_total" t-value="round(o.amount_total + o.get_transaction_fee(), 2)"/>
+                </t>
+                <tr class="border-black o_total">
+                    <td><strong>Credit Card Total</strong></td>
+                    <td class="text-right">
+                        <span t-field="o.currency_id.symbol" />
+                        <span t-esc="'%.2f'% gross_total"/>
+                    </td>
+                </tr>
+                <tr class="border-black o_total">
+                    <td><strong>Discounted Total</strong></td>
+                    <td class="text-right">
+                        <span t-esc="tax_totals['formatted_amount_total']"/>
+                    </td>
+                </tr>
+
+
+            </xpath>
+        </template>
+
+    </data>
+</odoo>

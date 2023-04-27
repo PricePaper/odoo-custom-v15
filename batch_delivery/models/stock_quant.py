@@ -11,9 +11,9 @@ class StockQuant(models.Model):
 
     def _apply_inventory(self):
         super(StockQuant, self.with_context(from_inv_adj=True))._apply_inventory()
-        # for record in self:
-        #     if record.product_id:
-        #         record.product_id.last_inventoried_date = date.today()
+        for record in self:
+            if record.product_id:
+                record.product_id.last_inventoried_date = date.today()
 
     @api.onchange('product_id', 'company_id')
     def _onchange_product_id(self):

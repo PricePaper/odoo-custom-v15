@@ -222,19 +222,35 @@ class SaleOrderLine(models.Model):
             msg += "</ul>"
             order.message_post(body=msg)
 
-    def write(self, values):
-        if 'product_uom_qty' in values:
-            precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-            self.filtered(
-                lambda r: r.state != 'sale' and float_compare(r.product_uom_qty, values['product_uom_qty'],
-                                                          precision_digits=precision) != 0)._update_line_quantity(values)
-        if 'price_unit' in values:
-            precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-            if float_compare(self.price_unit, values['price_unit'], precision_digits=precision) != 0:
-                self._update_price_post(values)
+    def _update_product_post(self, old_product):
 
+        msg = "<b>" + _("Product has been changed.") + "</b><ul>"
+        msg += "<li> %s: <br/>" % self.product_id.display_name
+        msg += _(
+            "Product: %(old)s -> %(new)s",
+            old=old_product.display_name,
+            new=self.product_id.display_name
+        ) + "<br/>"
+        msg += "</ul>"
+        self.order_id.message_post(body=msg)
+
+    def write(self, values):
+        if 'product_id' in values:
+            old_product = self.product_id
+        else:
+            if 'product_uom_qty' in values:
+                precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+                self.filtered(
+                    lambda r: r.state != 'sale' and float_compare(r.product_uom_qty, values['product_uom_qty'],
+                                                              precision_digits=precision) != 0)._update_line_quantity(values)
+            if 'price_unit' in values:
+                precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+                if float_compare(self.price_unit, values['price_unit'], precision_digits=precision) != 0:
+                    self._update_price_post(values)
         tax_id = self.tax_id.ids
         result = super(SaleOrderLine, self).write(values)
-        if tax_id and tax_id!=self.tax_id.ids:
+        if 'product_id' in values:
+            self._update_product_post(old_product)
+        if tax_id and tax_id != self.tax_id.ids:
             self._update_tax_valuess(values)
         return result

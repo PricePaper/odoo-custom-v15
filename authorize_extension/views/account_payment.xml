@@ -9,7 +9,38 @@
                 <xpath expr="//field[@name='payment_transaction_id']" position="after">
                     <field name="card_payment_type" attrs="{'invisible':[('card_payment_type', '=', False)]}"/>
                 </xpath>
+                <xpath expr="//field[@name='payment_transaction_id']" position="after">
+                   <field name="transaction_fee" attrs="{'invisible':['|', ('transaction_fee','=', 0), ('transaction_fee_manual', '!=', 0)]}"/>
+                </xpath>
+<!--                <label for="amount" position="attributes">-->
+<!--                    <attribute name="attrs">{'invisible': [('payment_token_id', '!=', False)]}</attribute>-->
+<!--                </label>-->
+                <xpath expr="//label[@for='amount']" position="before">
+                    <field name="transaction_amount" attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('payment_token_id', '=', False)]}" />
+                    <field name="transaction_fee_manual" force_save="1"  readonly="1" attrs="{'invisible': [('payment_token_id', '=', False)]}"/>
+<!--                    <label for="amount" string="Credit Card Amount" attrs="{'invisible': [('payment_token_id', '=', False)]}"/>-->
+                </xpath>
+                <xpath expr="//field[@name='amount']" position="attributes">
+                    <attribute name="attrs">{'readonly': ['|', ('state', '!=', 'draft'), ('payment_token_id', '!=', False)]}</attribute>
+                    <attribute name="force_save">"1"</attribute>
+                </xpath>
             </field>
         </record>
+
+        <record id="view_account_payment_register_form_inherit_transaction_fee" model="ir.ui.view">
+            <field name="name">account.payment.register.form.inherit.payment</field>
+            <field name="model">account.payment.register</field>
+            <field name="inherit_id" ref="account.view_account_payment_register_form"/>
+            <field name="arch" type="xml">
+                <label for="amount"  position="before">
+                    <field name="transaction_fee" attrs="{'invisible': [('payment_token_id', '=', False)]}"/>
+                </label>
+                <field name="amount" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|', ('can_edit_wizard', '=', False), '&amp;', ('can_group_payments', '=', True), ('group_payment', '=', False)],
+                        'readonly':[('transaction_fee','!=', 0)], 'force_save':[('transaction_fee','!=', 0)]}</attribute>
+                </field>
+            </field>
+        </record>
+
     </data>
 </odoo>

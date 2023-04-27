@@ -18,12 +18,13 @@ class DeliveryCarrier(models.Model):
         """
         res = super().rate_shipment(order)
         if self.delivery_type not in ['fixed', 'based_on_rule']:
-            res['cost'] = res['price']
-            # apply margin on computed price
-        if res['price']:
-            res['price'] = float(res['price']) * (1.0 + (self.margin / 100.0))
-            # save the real price in case a free_over rule override it to 0
-            res['carrier_price'] = res['price']
+
+            res['cost'] = res['price'] * (100/(100 + self.margin))
+        # # apply margin on computed price
+        # if res['price']:
+        #     res['price'] = float(res['price']) * (1.0 + (self.margin / 100.0))
+        #     # save the real price in case a free_over rule override it to 0
+        #     res['carrier_price'] = res['price']
         return res
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

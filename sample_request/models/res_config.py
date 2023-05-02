@@ -12,3 +12,4 @@ class ResConfigSettings(models.TransientModel):
     allow_repeat = fields.Boolean(config_parameter = "sample_request.allow_repeat", string='Allow Repeat Sample',default='False')
     allow_guest = fields.Boolean(config_parameter = "sample_request.allow_guest", string='Allow Public user to request for samples',Default=False)
     request_months = fields.Integer(config_parameter = "sample_request.request_months",string='Limit Months')
+    sample_route = fields.Many2one('stock.location.route',config_parameter = "sample_request.sample_route",string='Sample Route')

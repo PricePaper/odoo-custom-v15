@@ -13,6 +13,23 @@ from odoo.exceptions import UserError, ValidationError
 _logger = logging.getLogger(__name__)
 
 
+class SaleOrder(models.Model):
+    _inherit='sale.order'
+
+    is_sample_order = fields.Boolean(string='Sample Order',default=False)
+
+    def action_confirm(self):
+        """
+        create record in price history
+        and also update the customer pricelist if needed.
+        create invoice for bill_with_goods customers.
+
+        """
+        if self.is_sample_order:
+            self = self.with_context(from_import=True)
+        return super(SaleOrder, self).action_confirm()
+
+        
 class SampleRequest(models.Model):
     _name = "sample.request"
     _descriptin='Model for requesting the samples'
@@ -32,11 +49,15 @@ class SampleRequest(models.Model):
     def approve_request(self):
         if not self.carrier_id:
             raise UserError('Select the delivery method before approval')
+        route = self.env['ir.config_parameter'].sudo().get_param('sample_request.sample_route')
+        route = int(route) if route else False
         sale_id = self.env['sale.order'].sudo().create({
             'partner_id':self.partner_id.id,
+            'invoice_address_id':self.partner_id.id,
+            'is_sample_order':True,
             'carrier_id':self.carrier_id.id,
             'partner_shipping_id':self.partner_shipping_id.id if self.partner_shipping_id else self.partner_id.id,
-            'order_line':[(0,0,{'product_id':res.product_id.id,'discount':100}) for res in self.request_lines]
+            'order_line':[(0,0,{'product_id':res.product_id.id,'discount':100,'route_id':route}) for res in self.request_lines]
         })
         self.sale_id = sale_id
         self.state='approve'

@@ -1,0 +1,29 @@
+<odoo>
+    <record id="action_multiple_landed_cost" model="ir.actions.server">
+            <field name="name">Create Landed Cost</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="binding_model_id" ref="account.model_account_move"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                action = records.action_create_landed_cost()
+            </field>
+        </record>
+
+     <record id="account_view_move_form_inherited_landed_cost" model="ir.ui.view">
+        <field name="name">account.view.move.form.inherited</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="stock_landed_costs.account_view_move_form_inherited"/>
+        <field name="groups_id" eval="[(4,ref('stock.group_stock_manager'))]"/>
+        <field name="arch" type="xml">
+             <field name="landed_costs_ids" position="after">
+                  <field name="landed_costs_ids2" invisible="1"/>
+             </field>
+                <button name="action_view_landed_costs" position="attributes">
+                    <attribute name="attrs">{'invisible': [('landed_costs_ids', '=', []), ('landed_costs_ids2', '=', [])]}</attribute>
+                </button>
+
+        </field>
+     </record>
+
+</odoo>

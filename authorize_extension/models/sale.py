@@ -54,7 +54,7 @@ class SaleOrder(models.Model):
 
     def action_payment_hold(self, error_msg='', cancel_reason=''):
         self.ensure_one()
-        if self.state not in ('drfat', 'sent'):
+        if self.state not in ('draft', 'sent'):
             is_creditexceed = self.is_creditexceed
             ready_to_release = self.ready_to_release
             is_low_price = self.is_low_price

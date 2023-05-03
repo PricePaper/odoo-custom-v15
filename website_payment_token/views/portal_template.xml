@@ -165,13 +165,13 @@
                                             <t t-esc='token.is_default'/>
                                             <br/>
 
-                                            <span class='text-secondary' style="font-size:12px">Profile Id</span> :    
+                                            <!-- <span class='text-secondary' style="font-size:12px">Profile Id</span> :    
                                             <t t-esc='token.authorize_profile'/>
                                             <br/>
 
                                             <span class='text-secondary' style="font-size:12px">Payment Profile</span> :   
                                             <t t-esc='token.acquirer_ref'/>
-                                            <br/>
+                                            <br/> -->
 
                                             <span class='text-secondary' style="font-size:12px">Payment Type</span> :                                            <t t-esc='"Credit Card" if token.authorize_payment_method_type=="credit_card" else "Bank" '/>
                                             <br/>

@@ -35,8 +35,8 @@
                         </div>
                         <group>
                             <group>
-                                <field name='partner_id'/>
-                                <field name='partner_shipping_id' string='Delivery Address'/>
+                                <field name='partner_id'  widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}" domain="[('type','=','contact'),('parent_id','=',False),('customer','=',True)]"/>
+                                <field name='partner_shipping_id'  domain="['|',('id','=',partner_id),('parent_id','=',partner_id)]" string='Delivery Address'/>
                             </group>
 
                             <group>

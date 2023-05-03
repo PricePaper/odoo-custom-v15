@@ -18,6 +18,17 @@ class SaleOrder(models.Model):
 
     is_sample_order = fields.Boolean(string='Sample Order',default=False)
 
+    @api.model
+    def create(self, vals):
+        if vals.get('is_sample_order'):
+            sequence = self.env.ref('sample_request.seq_sc_sale_order_sample', raise_if_not_found=False)
+            if sequence:
+                vals['name'] = sequence._next()
+        order = super(SaleOrder, self).create(vals)
+        return order
+
+
+
     def action_confirm(self):
         """
         create record in price history

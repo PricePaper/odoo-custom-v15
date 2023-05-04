@@ -23,6 +23,7 @@
                         <button name="action_expire" type="object" string="Expire" states="confirmed"/>
                         <button name="action_reset" type="object" string="Reset" states="expired"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirmed"/>
+                        <field name="active" invisible="1"/>
                     </header>
                     <sheet>
                         <div class="oe_title">

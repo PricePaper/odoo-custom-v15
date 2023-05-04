@@ -11,7 +11,7 @@ class SaleOrderLine(models.Model):
         res = super(SaleOrderLine, self)._compute_purchase_price()
         for line in self:
             if line.is_delivery:
-                if self.order_id.carrier_id.delivery_type not in ['fixed', 'based_on_rule']:
+                if self.order_id.carrier_id.delivery_type not in ['fixed', 'base_on_rule']:
                     line.purchase_price = line.working_cost
                 else:
                     line.purchase_price = line.order_id.carrier_id.average_company_cost

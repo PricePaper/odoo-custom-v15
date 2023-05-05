@@ -11,9 +11,8 @@
     """,
     'data': [],
     'depends': [
-        'delivery_ups'
+        'delivery_ups', 'sale_margin', 'price_paper'
     ],
     'installable': True,
     'application': False,
 }
-

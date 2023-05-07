@@ -82,7 +82,7 @@ class StockPicking(models.Model):
                        # rma.invoice_address_id.property_account_receivable_id.id or
                        # False,
                     'invoice_line_ids': invoice_line_vals,
-                    'invoice_date': self.scheduled_date or rma.rma_date or False,
+                    'invoice_date': rma.rma_date or False,#self.scheduled_date or
                     'rma_id': rma.id,
                 }
                 salereps = rma.mapped('rma_sale_lines_ids').mapped('so_line_id').mapped('order_id').mapped('sales_person_ids')

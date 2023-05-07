@@ -7,3 +7,4 @@ from . import account_followup_report
 from . import account_batch_payment
 from . import account_partner_ledger
 from . import res_partner
+

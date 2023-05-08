@@ -9,7 +9,7 @@
     'description': """
     UPS integration extension for PPT
     """,
-    'data': ['views/sale_order.xml'],
+    'data': [],
     'depends': [
         'delivery_ups', 'sale_margin', 'price_paper'
     ],

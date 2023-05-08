@@ -27,7 +27,13 @@ class SaleReport(models.Model):
 
     def _get_fiscal_year(self, date, mode='current'):
         if mode == 'last':
-            if int(self.env.user.company_id.fiscalyear_last_month) > date.month:
+            if int(self.env.user.company_id.fiscalyear_last_month) == 12:
+                start_date = datetime.strptime("%s-%s-%s" % (date.year - 1, 1, 1),
+                                               DEFAULT_SERVER_DATE_FORMAT)
+                end_date = datetime.strptime(
+                    "%s-%s-%s" % (date.year -1, int(self.env.user.company_id.fiscalyear_last_month), self.env.user.company_id.fiscalyear_last_day),
+                    DEFAULT_SERVER_DATE_FORMAT)
+            elif int(self.env.user.company_id.fiscalyear_last_month) > date.month:
                 start_date = datetime.strptime("%s-%s-%s" % (date.year - 1, int(self.env.user.company_id.fiscalyear_last_month) + 1, 1),
                                                DEFAULT_SERVER_DATE_FORMAT)
                 end_date = datetime.strptime(
@@ -40,7 +46,13 @@ class SaleReport(models.Model):
                     "%s-%s-%s" % (date.year - 1, self.env.user.company_id.fiscalyear_last_month, self.env.user.company_id.fiscalyear_last_day),
                     DEFAULT_SERVER_DATE_FORMAT)
         else:
-            if int(self.env.user.company_id.fiscalyear_last_month) > date.month:
+            if int(self.env.user.company_id.fiscalyear_last_month) == 12:
+                start_date = datetime.strptime("%s-%s-%s" % (date.year, 1, 1),
+                                               DEFAULT_SERVER_DATE_FORMAT)
+                end_date = datetime.strptime(
+                    "%s-%s-%s" % (date.year, int(self.env.user.company_id.fiscalyear_last_month), self.env.user.company_id.fiscalyear_last_day),
+                    DEFAULT_SERVER_DATE_FORMAT)
+            elif int(self.env.user.company_id.fiscalyear_last_month) > date.month:
                 start_date = datetime.strptime("%s-%s-%s" % (date.year, int(self.env.user.company_id.fiscalyear_last_month) + 1, 1),
                                                DEFAULT_SERVER_DATE_FORMAT)
                 end_date = datetime.strptime(

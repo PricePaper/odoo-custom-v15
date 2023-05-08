@@ -19,3 +19,10 @@ class ProductBarcode(models.Model):
         barcode = self.env['product.barcode'].search([('product_barcode', '=', self.product_barcode), ('id', '!=', self.id)])
         if barcode:
             raise ValidationError('Barcode already exist')
+
+    def action_remove(self):
+        """
+        Remove record
+        """
+        for rec in self:
+            rec.unlink()

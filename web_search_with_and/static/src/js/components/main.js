@@ -53,7 +53,7 @@ patch(ControlPanelModelExtension.prototype, 'web_search_with_and', {
             }
             return Domain.prototype.arrayToString(domain);
         });
-        
+
         if (this.config.context.webSearchWithOR) {
             return pyUtils.assembleDomains(domains, 'OR');
         } else {

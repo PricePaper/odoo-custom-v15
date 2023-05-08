@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
 from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.tools.float_utils import float_round
 
 
 class SaleOrder(models.Model):
@@ -53,8 +54,19 @@ class SaleOrder(models.Model):
 
     def action_payment_hold(self, error_msg='', cancel_reason=''):
         self.ensure_one()
-        if self.state not in ('drfat', 'sent'):
+        if self.state not in ('draft', 'sent'):
+            is_creditexceed = self.is_creditexceed
+            ready_to_release = self.ready_to_release
+            is_low_price = self.is_low_price
+            release_price_hold = self.release_price_hold
+
             self._action_cancel()
+            self.write({
+                'is_creditexceed': is_creditexceed,
+                'ready_to_release': ready_to_release,
+                'is_low_price': is_low_price,
+                'release_price_hold': release_price_hold,
+            })
             self.action_draft()
             self.message_post(body=cancel_reason)
         self.write({
@@ -81,7 +93,10 @@ class SaleOrder(models.Model):
                             transactions.action_void()
                             order.action_payment_hold('Payment Hold: Total Amount increased.Mismatch with Payment Transaction',
                                                       'Cancel Reason : New line added Payment Hold')
-
+        if 'payment_term_id' in vals.keys():
+            for order in self:
+                if not order.payment_term_id.is_pre_payment and order.is_payment_error:
+                    self.write({'is_payment_error': False, 'payment_warning': "", 'hold_state': 'release'})
         return res
 
     def _action_cancel(self):
@@ -116,10 +131,16 @@ class SaleOrder(models.Model):
                 count = self.env['payment.transaction'].sudo().search_count([('reference', 'ilike', self.name)])
                 if count:
                     reference = '%s - %s' % (self.name, count)
+                payment_fee = self.partner_id.property_card_fee
+                amount = self.amount_total
+                if payment_fee:
+                    amount = float_round(self.amount_total * ((100+payment_fee) / 100), precision_digits=2)
+                    payment_fee = self.amount_total * (payment_fee/100)
                 tx_sudo = self.env['payment.transaction'].sudo().create({
                     'acquirer_id': self.token_id.acquirer_id.id,
                     'reference': reference,
-                    'amount': self.amount_total,
+                    'amount': amount,
+                    'transaction_fee': payment_fee,
                     'currency_id': self.currency_id.id,
                     'partner_id': self.partner_id.id,
                     'token_id': self.token_id.id,

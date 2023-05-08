@@ -152,11 +152,11 @@ class PurchaseOrder(models.Model):
             if rec.product_id:
                 if rec.product_id.id in existing_products:
                     continue
-                if rec.product_id.purchase_ok:
+                if rec.product_id.purchase_ok and rec.product_id.active:
                     all_vendor_products.append(rec.product_id.id)
             else:
                 prod_ids = rec.product_tmpl_id.product_variant_ids and \
-                           rec.product_tmpl_id.product_variant_ids.filtered(lambda p: p.purchase_ok).ids or []
+                           rec.product_tmpl_id.product_variant_ids.filtered(lambda p: p.purchase_ok and p.active).ids or []
                 for prod in prod_ids:
                     if prod in existing_products:
                         continue
@@ -322,8 +322,20 @@ class PurchaseOrderLine(models.Model):
     gross_volume = fields.Float(string="Gross Volume", compute='_compute_gross_weight_volume')
     gross_weight = fields.Float(string="Gross Weight", compute='_compute_gross_weight_volume')
     qty_owed = fields.Float("Owed Qty", compute='_compute_qty_owed')
+    purchase_method = fields.Selection(
+        lambda r: r.env["product.template"]._fields["purchase_method"].selection
+    )
 
-    @api.depends('invoice_lines.move_id.state', 'invoice_lines.quantity', 'qty_received', 'product_uom_qty', 'order_id.state')
+
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        res = super(PurchaseOrderLine, self).onchange_product_id()
+        if self.product_id:
+            self.purchase_method = self.product_id.purchase_method
+        else:
+            self.purchase_method = False
+
+    @api.depends('invoice_lines.move_id.state', 'invoice_lines.quantity', 'qty_received', 'product_uom_qty', 'order_id.state', 'purchase_method')
     def _compute_qty_invoiced(self):
         for line in self:
             # compute qty_invoiced
@@ -337,13 +349,23 @@ class PurchaseOrderLine(models.Model):
             line.qty_invoiced = qty
 
             # compute qty_to_invoice
-            if line.order_id.state in ['purchase', 'done', 'received']:
-                if line.product_id.purchase_method == 'purchase':
-                    line.qty_to_invoice = line.product_qty - line.qty_invoiced
+            if line.purchase_method:
+                print()
+                if line.order_id.state in ['purchase', 'done', 'received']:
+                    if line.purchase_method == 'purchase':
+                        line.qty_to_invoice = line.product_qty - line.qty_invoiced
+                    else:
+                        line.qty_to_invoice = line.qty_received - line.qty_invoiced
                 else:
-                    line.qty_to_invoice = line.qty_received - line.qty_invoiced
+                    line.qty_to_invoice = 0
             else:
-                line.qty_to_invoice = 0
+                if line.order_id.state in ['purchase', 'done', 'received']:
+                    if line.product_id.purchase_method == 'purchase':
+                        line.qty_to_invoice = line.product_qty - line.qty_invoiced
+                    else:
+                        line.qty_to_invoice = line.qty_received - line.qty_invoiced
+                else:
+                    line.qty_to_invoice = 0
 
     @api.depends('move_ids.state', 'move_ids.product_uom_qty', 'move_ids.product_uom')
     def _compute_qty_owed(self):

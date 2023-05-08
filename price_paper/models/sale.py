@@ -53,6 +53,11 @@ class SaleOrder(models.Model):
     delivery_cost = fields.Float(string='Estimated Delivery Cost', readonly=True, copy=False)
     active = fields.Boolean(tracking=True, default=True)
     date_order = fields.Datetime(string='Confirmation Date')
+    commitment_date = fields.Datetime('Commitment Date', copy=False,
+                                      states={'done': [('readonly', True)], 'cancel': [('readonly', True)]},
+                                      help="This is the delivery date promised to the customer. "
+                                           "If set, the delivery order will be scheduled based on "
+                                           "this date rather than product lead times.")
 
     @api.model
     def get_release_deliver_default_date(self):
@@ -179,8 +184,8 @@ class SaleOrder(models.Model):
 
         for order in self:
             for picking in order.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done')):
-                if order.carrier_id != picking.carrier_id:
-                    order.carrier_id = picking.carrier_id.id
+                if picking.carrier_id != order.carrier_id:
+                    picking.carrier_id = order.carrier_id.id
             for order_line in order.order_line:
                 if order_line.is_delivery:
                     continue
@@ -266,7 +271,7 @@ class SaleOrder(models.Model):
 
     def _action_cancel(self):
         self.ensure_one()
-        self = self.with_context(action_cancel=True)
+        self = self.with_context(action_cancel=True).sudo()
         self.write({
             'is_creditexceed': False,
             'ready_to_release': False,
@@ -568,6 +573,7 @@ class SaleOrder(models.Model):
         if price_unit != self._get_delivery_line_price() or not self._get_delivery_line_price():
             self.with_context(adjust_delivery=True)._remove_delivery_line()
             self._create_delivery_line(self.carrier_id, price_unit)
+        self.with_context(from_adjust_delivery=True).write({'delivery_cost': res.get('cost', 0)})
 
         return True
 
@@ -1014,6 +1020,7 @@ class SaleOrderLine(models.Model):
     @api.onchange('product_uom_qty', 'product_uom', 'route_id')
     def _onchange_product_id_check_availability(self):
         res = self.product_id_check_availability()
+        self.similar_product_price = False
         if self.product_id and self.product_uom_qty and self.product_uom:
             if self.product_id.type == 'product':
                 precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
@@ -1025,7 +1032,18 @@ class SaleOrderLine(models.Model):
                 if float_compare(product.qty_available - product.outgoing_qty, product_qty, precision_digits=precision) == -1:
                     is_available = self.is_mto
                     if not is_available:
-                        products = product.same_product_ids + product.same_product_rel_ids
+                        products = product.same_product_ids | product.same_product_rel_ids
+
+                        alternatives = ''
+                        if products:
+                            alternatives = '\nPlease add an alternate product from list below'
+                            for item in products:
+                                alternatives += '\n' + item.default_code
+                        if not product.allow_out_of_stock_order:
+                            block_message = 'Product'+ product.display_name + product.uom_id.name + 'is not in stock and can not be oversold.'
+                            if alternatives:
+                                block_message += alternatives
+                            raise ValidationError(block_message)
                         if not products:
                             self.similar_product_price = False
                             return res

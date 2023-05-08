@@ -77,7 +77,7 @@ class ProductProduct(models.Model):
 
     def action_open_quants(self):
         # Override to make the button readonly for non-inventory users.
-        if not self.env.user.has_group('stock.group_stock_user'):
+        if not self.env.user.has_group('price_paper.group_update_product_on_hand_qty'):
             return {}
         return super().action_open_quants()
 
@@ -194,10 +194,11 @@ class ProductProduct(models.Model):
         """ remove superseded if there is a child product with superseded set while unarchiving,
         archive reordering rules before archiving product
         """
-        if self.qty_available > 0 and self.active:
-            raise ValidationError("Can't archive product with inventory on hand")
-        if self.active:
-            self.env['product.superseded'].search([('old_product', '=', self.id)]).unlink()
+        for product in self:
+            if product.qty_available > 0 and product.active:
+                raise ValidationError("Can't archive product with inventory on hand")
+            if product.active:
+                self.env['product.superseded'].search([('old_product', '=', product.id)]).unlink()
         return super(ProductProduct, self).toggle_active()
 
     def write(self, vals):

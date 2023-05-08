@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record model="ir.ui.menu" id="stock.menu_action_inventory_tree">
+            <field eval="[(6,0,[ref('price_paper.group_update_product_on_hand_qty')])]" name="groups_id"/>
+        </record>
+        <record id="product_form_view_procurement_button_inherit_price_paper" model="ir.ui.view">
+            <field name="name">product.product.location</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="stock.product_form_view_procurement_button"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_update_quantity_on_hand']" position="attributes">
+                    <attribute name="groups">price_paper.group_update_product_on_hand_qty</attribute>
+                </xpath>
+            </field>
+        </record>
         <record id="product_kanban_view_inherit_pricepaper" model="ir.ui.view">
           <field name="name">product.kanban.view.inherit.pricepaper</field>
           <field name="model">product.product</field>

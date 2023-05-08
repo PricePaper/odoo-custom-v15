@@ -1,5 +1,5 @@
 from odoo import fields, models, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_is_zero
 
 
@@ -29,7 +29,7 @@ class StockPicking(models.Model):
             rma = self.rma_id
             invoice_line_vals = []
             for rma_line in rma.rma_sale_lines_ids:
-                move_line = self.move_lines.filtered(lambda r: r.state == 'done' and r.product_id == rma_line.product_id)
+                move_line = self.move_lines.filtered(lambda r: r.state == 'done' and r.product_id == rma_line.product_id and r.sale_line_id == rma_line.so_line_id)
                 if not move_line:
                     continue
 
@@ -82,7 +82,7 @@ class StockPicking(models.Model):
                        # rma.invoice_address_id.property_account_receivable_id.id or
                        # False,
                     'invoice_line_ids': invoice_line_vals,
-                    'invoice_date': rma.rma_date or False,
+                    'invoice_date': rma.rma_date or False,#self.scheduled_date or
                     'rma_id': rma.id,
                 }
                 salereps = rma.mapped('rma_sale_lines_ids').mapped('so_line_id').mapped('order_id').mapped('sales_person_ids')

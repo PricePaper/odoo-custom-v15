@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from odoo.tools.float_utils import float_round
 
@@ -11,6 +11,25 @@ class Product(models.Model):
     last_inventoried_date = fields.Date(string="Last Inventoried Date")
     in_qty = fields.Float("IN Qty", compute='_compute_in_out_quantities', digits='Product Unit of Measure')
     out_qty = fields.Float("OUT Qty", compute='_compute_in_out_quantities', digits='Product Unit of Measure')
+
+
+    def action_inventory_history(self):
+        self.ensure_one()
+        action = {
+            'name': _('History'),
+            'view_mode': 'list,form',
+            'res_model': 'stock.move.line',
+            'views': [(self.env.ref('stock.view_move_line_tree').id, 'list'), (False, 'form')],
+            'type': 'ir.actions.act_window',
+            'context': {
+                'search_default_inventory': 1,
+                'search_default_done': 1,
+            },
+            'domain': [
+                ('product_id', '=', self.id)
+            ],
+        }
+        return action
 
 
     @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done')

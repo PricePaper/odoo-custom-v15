@@ -20,9 +20,9 @@ class OrderSheetLines(models.Model):
 
 
     sequence = fields.Integer(string='Sequence')
-    sheet_id = fields.Many2one('website.order.sheet',required=True,strring="Sheet")
+    sheet_id = fields.Many2one('website.order.sheet',required=True,string="Sheet")
     user_id = fields.Many2one('res.users','User')
-    new_sheet_id = fields.Many2one('website.order.sheet',strring="Sheet")
+    new_sheet_id = fields.Many2one('website.order.sheet',string="Sheet")
     section = fields.Char(string='Section Name',required=True)
     product_ids = fields.Many2many('product.product',string='Products')
     line_product_ids = fields.One2many('section.product',"sheet_line_id",string='Section Products')

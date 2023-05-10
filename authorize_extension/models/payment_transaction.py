@@ -56,18 +56,19 @@ class PaymentTransaction(models.Model):
 
         authorize_API = AuthorizeAPI(self.acquirer_id)
         rounded_amount = round(self.amount, self.currency_id.decimal_places)
+
         invoices = self.invoice_ids.filtered(lambda r: r.state == 'posted' and r.payment_state in ('not_paid', 'partial'))
         if invoices:
             due_amount = round(sum(invoices.mapped('amount_residual')), self.currency_id.decimal_places)
             if self.transaction_fee:
-                new_amount = min(rounded_amount-self.transaction_fee, due_amount)
-                if new_amount != rounded_amount-self.transaction_fee:
+                new_amount = min(round(rounded_amount-self.transaction_fee, 2), due_amount)
+                if new_amount != round(rounded_amount-self.transaction_fee, 2):
                     self.transaction_fee = float_round(new_amount * self.partner_id.property_card_fee/100, precision_digits=2)
                 due_amount += self.transaction_fee
-            rounded_amount = min(rounded_amount, due_amount)
-        self.amount = float_round(rounded_amount, precision_digits=2)
+            rounded_amount = round(min(rounded_amount, due_amount), self.currency_id.decimal_places)
+        self.amount = rounded_amount
 
-        res_content = authorize_API.capture(self.acquirer_reference, float_round(rounded_amount, precision_digits=2))
+        res_content = authorize_API.capture(self.acquirer_reference, rounded_amount)
         # As the API has no redirection flow, we always know the reference of the transaction.
         # Still, we prefer to simulate the matching of the transaction by crafting dummy feedback
         # data in order to go through the centralized `_handle_feedback_data` method.

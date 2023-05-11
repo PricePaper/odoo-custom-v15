@@ -30,7 +30,8 @@ class StockMove(models.Model):
             return res
         if res['product_uom_qty'] > self.product_uom_qty:
             res['product_uom_qty'] = self.product_uom_qty
-        elif res['product_uom_qty'] < self.product_uom_qty and math.ceil(res['product_uom_qty']) == self.product_uom_qty:
+        elif res['product_uom_qty'] < self.product_uom_qty:
+            #and math.ceil(res['product_uom_qty']) == self.product_uom_qty:
             difference = self.product_uom_qty - res['product_uom_qty']
             if difference < 0.005:
                 res['product_uom_qty'] = self.product_uom_qty

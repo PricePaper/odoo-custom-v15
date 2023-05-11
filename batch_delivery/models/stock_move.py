@@ -26,12 +26,11 @@ class StockMove(models.Model):
 
     def _prepare_move_line_vals(self, quantity=None, reserved_quant=None):
         res = super()._prepare_move_line_vals(quantity=quantity, reserved_quant=reserved_quant)
-        print(reserved_quant, quantity,'===============================================================', res)
         if not res.get('product_uom_qty'):
             return res
         if res['product_uom_qty'] > self.product_uom_qty:
             res['product_uom_qty'] = self.product_uom_qty
-        elif res['product_uom_qty'] < self.product_uom_qty:# and math.ceil(res['product_uom_qty']) == self.product_uom_qty:
+        elif res['product_uom_qty'] < self.product_uom_qty and math.ceil(res['product_uom_qty']) == self.product_uom_qty:
             difference = self.product_uom_qty - res['product_uom_qty']
             if difference < 0.005:
                 res['product_uom_qty'] = self.product_uom_qty

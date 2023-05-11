@@ -80,6 +80,14 @@ class StockPicking(models.Model):
             if picking.transit_move_lines.filtered(lambda rec: rec.procure_method == 'make_to_order') and self.state not in ('done', 'cancel'):
                 picking.show_reset = True
 
+    def do_unreserve(self):
+        if self.picking_type_code == 'outgoing' and not self.is_return:
+            if self.transit_move_lines:
+                self.transit_move_lines._do_unreserve()
+                self.package_level_ids.filtered(lambda p: not p.move_ids).unlink()
+        else:
+            super(StockPicking, self).do_unreserve()
+
     def internal_move_from_customer_returned(self):
         location = self.env.user.company_id.destination_location_id
         quants = self.env['stock.quant'].search([('quantity', '>', 0.01), ('location_id', '=', location.id)])

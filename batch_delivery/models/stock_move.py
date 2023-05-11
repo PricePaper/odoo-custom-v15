@@ -24,6 +24,12 @@ class StockMove(models.Model):
     invoice_line_ids = fields.Many2many(comodel_name='account.move.line', compute="_get_aml_ids", string="Invoice Lines")
 
     def _prepare_move_line_vals(self, quantity=None, reserved_quant=None):
+        res = super()._prepare_move_line_vals(quantity=quantity, reserved_quant=reserved_quant)
+        if res['product_uom_qty'] > self.product_uom_qty:
+            res['product_uom_qty'] = self.product_uom_qty
+        return res
+
+    def _prepare_move_line_vals_old(self, quantity=None, reserved_quant=None):
         self.ensure_one()
         vals = {
             'move_id': self.id,

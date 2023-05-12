@@ -14,6 +14,7 @@ publicWidget.registry.searchNBar = publicWidget.Widget.extend({
         'focusout': '_onFocusOut',
         'keydown .search-query': '_onKeydown',
         'search .search-query': '_onSearch',
+        'click .item_section':'item_selected'
     },
     autocompleteMinWidth: 300,
 
@@ -123,6 +124,7 @@ publicWidget.registry.searchNBar = publicWidget.Widget.extend({
             },
         });
         const fieldNames = [
+            'id',
             'name',
             'description',
             'extra_link',
@@ -145,6 +147,16 @@ publicWidget.registry.searchNBar = publicWidget.Widget.extend({
         });
         return res;
     },
+    item_selected:function(ev){
+        $('.selected_section_product').append(`<div class='card m-2' product_id="`
+        +$(ev.currentTarget).attr('data-product-id')+
+        `"</div> 
+        <div class='card-body'> 
+            <span>` +$(ev.currentTarget).attr('data-product-name')+`
+        </div>`)
+        console.log('hello')
+    },
+
     /**
      * @private
      */

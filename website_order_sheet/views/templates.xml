@@ -29,6 +29,33 @@
                 </li>
             </t>
         </template>
+
+        <template id='website_order_sheet.section_li'>
+            <li class='list-group-item border-0' >
+                <ul class='sub_ul list-group'>
+                    <li class='list-group-item main_element bg-light' t-att-data-id = "section.id">
+                        <span>
+
+                            <span class="font-weight-bold section_name" t-esc='section.section'/>
+                            <a class='section_edit ml-2' herf="#">
+                                <i class='fa fa-edit'/>
+                            </a>
+                        </span>
+                        <a href="#" t-att-data-line = "section.id" class='ml-3 browse_product float-right' data-toggle="modal" data-target="#browseHistory">
+                            <i class='fa fa-plus'/>
+                                                    Browse History
+                        </a>
+
+                        <a href="#"  t-att-data-line = "section.id" class='add_product float-right' data-toggle="modal" data-target="#addProduct">
+                            <i class='fa fa-plus'/>
+                                                    Add Product
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+        </template>
+
         <template id='website_order_sheet.history_table'>
             <div class='main_history'>
                 <div class='float-right '>
@@ -133,10 +160,12 @@
                                         </div>
                                         <input name="order" type="hidden" class="o_search_order_byn" data-oe-model="ir.ui.view" data-oe-id="4438" data-oe-field="arch" data-oe-xpath="/data/xpath[3]/form/input[1]" value="name asc"/>
                                     </form>
+                                    <div class='selected_section_product d-flex pt-2 flex-wrap'>
+                                    </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary">Save changes</button>
+                                    <button type="button" class="btn add_prod btn-primary">Save changes</button>
                                 </div>
                             </div>
                         </div>
@@ -169,7 +198,7 @@
                                                     Browse History
                                                 </a>
 
-                                                <a href="#" class='add_product float-right' data-toggle="modal" data-target="#addProduct">
+                                                <a href="#"  t-att-data-line = "line.id" class='add_product float-right' data-toggle="modal" data-target="#addProduct">
                                                     <i class='fa fa-plus'/>
                                                     Add Product
                                                 </a>

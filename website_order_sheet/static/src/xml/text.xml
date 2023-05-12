@@ -14,8 +14,9 @@
         <!-- is not on the same element as dropdown-item-text -->
         <span class="dropdown-item-text text-muted">No results found. Please try another search.</span>
     </t>
+        <!-- <t t-out='JSON.stringify(results)'/> -->
     <a t-foreach="results" t-as="result"
-        class="dropdown-item p-2 text-wrap">
+        class="dropdown-item p-2 text-wrap item_section"  t-att-data-product-name="result['name']" t-att-data-product-id="result['image_url'].replace('/web/image/product.template/','').replace('/image_128','')">
         <div class="media align-items-center o_search_result_item">
             <t t-if="widget.displayImage">
                 <img t-if="result['image_url']" t-att-src="result['image_url']" class="flex-shrink-0 o_image_64_contain"/>

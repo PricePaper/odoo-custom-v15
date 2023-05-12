@@ -8,6 +8,31 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
     var _t = core._t;
 
 
+    publicWidget.registry.AddProduct = publicWidget.Widget.extend({
+        selector: '#addProduct',
+        events: {
+
+            // 'click .next_set,.prev_set': '_getSet',
+            'click .add_prod': '_addProd',
+
+        },
+        _addProd: function (ev) {
+            var section_key = window.localStorage.getItem("sectionKey");
+            var selec_prod = []
+            $('.selected_section_product .card').each(function () {
+                selec_prod.push($(this).attr('product_id'))
+            }).promise().done(function () {
+                ajax.jsonRpc('/add/section/product', 'call', { 'section_key': section_key, 'prod_ids': selec_prod }).then(function (data) {
+                    window.location.reload()
+                    // $target.parents('.o_wsale_product_grid_wrapper').find('.oe_product_image img').attr('src', data);
+                });
+                
+            })
+        
+        }
+    })
+
+
     publicWidget.registry.BrowseHistory = publicWidget.Widget.extend({
         selector: '#browseHistory',
         events: {
@@ -55,7 +80,7 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
                     // console.log('rrrrr',arr)
                     // window.localStorage.removeItem(arr[i]);
                 }
-                
+
                 return main_ids
 
 
@@ -79,16 +104,16 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
                     prod_ids: prod_ids
                 }
             }).then(function (res) {
-                console.log($(document).find('li[data-id='+section_key+']'))
+                console.log($(document).find('li[data-id=' + section_key + ']'))
                 $('#browseHistory').modal('hide')
-               $(document).find('li[data-id='+section_key+']').after(res.prod_li)
-            })           
+                $(document).find('li[data-id=' + section_key + ']').after(res.prod_li)
+            })
         },
         _getSet: function (ev) {
             this.setprod()
             var $self = this
             var offset = $(ev.currentTarget).attr('data-offset')
-            
+
             this._rpc({
                 route: '/sheet/browse/set',
                 params: {
@@ -98,7 +123,7 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
                 $(document).find('.main_history').replaceWith(res.history_table)
 
                 var history = $self.getprod(offset)
-                
+
 
                 if (history) {
 
@@ -120,7 +145,8 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
             'click .input-group-append': '_addQuantity',
             'click .create_section': "_createSection",
             'click .save_data': "_saveSheet",
-            'click .browse_product': "_browseProduct"
+            'click .browse_product': "_browseProduct",
+            'click .add_product': "_addProduct",
 
 
         },
@@ -138,7 +164,7 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
                     product_ids.push(product_id)
                 }).promise().done(function () {
                     var main_id = main_element.attr('data-id')
-                    
+
                     var section_name = main_element.find('.section_name').text()
                     if (main_id == 'new') {
                         new_data.push({ 'section': section_name, 'product_ids': product_ids })
@@ -168,24 +194,12 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
                 showCancelButton: true
             }).then((result) => {
                 if (result.value) {
-                    $(".main_ul").append(`
-                   <li class='list-group-item border-0' >
-                   <ul class='sub_ul list-group'>
-                       <li class='list-group-item main_element bg-light' data-id=new>
-                           <span>
-                               
-                               <span class="font-weight-bold section_name">`+ result.value + `
-                               </span>
-                                   <a class='section_edit ml-2' herf="#">
-                                   <i class='fa fa-edit'/>
-                                   </a>
-                           </span>
-                            <a href="#" class='add_product float-right'>
-                           <i class='fa fa-plus'/>
-                               Add Product
-                       </a>
-                       </li>
-                   `)
+                    ajax.jsonRpc('/create/section', 'call', { 'section_name': result.value }).then(function (data) {
+                        $(".main_ul").append(data.section_li);
+                        initsortable()
+                        // $target.parents('.o_wsale_product_grid_wrapper').find('.oe_product_image img').attr('src', data);
+                    });
+
                     initsortable()
                 }
             });
@@ -227,7 +241,11 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
         _browseProduct: function (ev) {
             var section_line = $(ev.currentTarget).attr('data-line')
             window.localStorage.setItem("sectionKey", section_line);
-        }
+        },
+        _addProduct: function (ev) {
+            var section_line = $(ev.currentTarget).attr('data-line')
+            window.localStorage.setItem("sectionKey", section_line);
+        },
     })
 
     function initsortable() {

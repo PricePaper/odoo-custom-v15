@@ -8,6 +8,32 @@ _logger = logging.getLogger(__name__)
 
 class WebsiteSale(main.WebsiteSale):
 
+    @http.route('/add/section/product',type='json',auth='user',website=True,csrf=False)
+    def add_section_product(self,section_key,prod_ids):
+        product_ids = list(map(int,prod_ids))
+        # _logger.info(f"======================={product_ids}")
+        request.env['order.sheet.lines'].browse(int(section_key)).write({'line_product_ids':[(0,0,{'product_id':prod})for prod in product_ids]})
+ 
+    @http.route('/create/section',type='json',auth='user',website=True,csrf=False)
+    def ceate_section(self,section_name,**kwargs):
+        order_sheet = request.env['website.order.sheet'].search([('user_id','=',request.env.user.id)],limit=1)
+        if not order_sheet:
+            order_sheet = request.env['website.order.sheet'].create({'name':request.env.user.name,'user_id':request.env.user.id})
+        value ={}
+
+        section_id = request.env['order.sheet.lines'].create({
+            'section':section_name,
+            'sheet_id':order_sheet.id
+        })
+        value['section_li'] = request.env['ir.ui.view']._render_template("website_order_sheet.section_li", {
+            'section':section_id
+        })
+        return value
+        # order_sheet.order_lines = [(0,0,{'section':section_name})]
+        
+
+
+
     @http.route('/save/sheet',type='json',auth="user",website=True,csrf=False)
     def save_sheet(self,sheet_data,new_data=False):
         user = request.env.user

@@ -4,7 +4,6 @@
     'category': 'sale',
     'license': 'AGPL-3',
     'description': """
-==============================================    
 This is a module allows users to manage it's child contacts and addresses from the website,
 and to grant or revoke the portal access of it's contacts
 ==============================================

@@ -90,6 +90,8 @@ class CostChangeParent(models.Model):
 
     def cost_change_method(self):
         for rec in self:
+            if not rec.run_date:
+                rec.run_date = fields.Date.today()
             for line in rec.cost_change_lines:
                 line.cost_change_method()
             rec.is_done = True

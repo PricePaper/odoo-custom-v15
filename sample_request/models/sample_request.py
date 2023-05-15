@@ -40,6 +40,26 @@ class SaleOrder(models.Model):
             self = self.with_context(from_import=True)
         return super(SaleOrder, self).action_confirm()
 
+class SaleOrderLine(models.Model):
+    _inherit='sale.order.line'
+
+    @api.depends('product_id', 'product_uom')
+    def _compute_lst_cost_prices(self):
+        super(SaleOrderLine,self)._compute_lst_cost_prices()
+        for line in self:
+            if line.order_id.is_sample_order:
+                line.lst_price = 0.0
+
+    @api.depends('product_id', 'product_uom_qty', 'price_unit', 'order_id.delivery_cost')
+    def calculate_profit_margin(self):
+        """
+        Calculate profit margin for SO line
+        """
+        super(SaleOrderLine,self).calculate_profit_margin()
+        for line in self:
+            if line.order_id.is_sample_order:
+                line.profit_margin = 0.0
+        
         
 class SampleRequest(models.Model):
     _name = "sample.request"
@@ -68,7 +88,13 @@ class SampleRequest(models.Model):
             'is_sample_order':True,
             'carrier_id':self.carrier_id.id,
             'partner_shipping_id':self.partner_shipping_id.id if self.partner_shipping_id else self.partner_id.id,
-            'order_line':[(0,0,{'product_id':res.product_id.id,'discount':100,'route_id':route}) for res in self.request_lines]
+            'order_line':[(0,0,{
+                'product_id':res.product_id.id,
+                'price_unit':0.0,
+                'lst_price':0.0,
+                'route_id':route
+                }) 
+                for res in self.request_lines]
         })
         self.sale_id = sale_id
         self.state='approve'
@@ -91,11 +117,6 @@ class SampleRequest(models.Model):
                 'nodestroy': True,
                 'target': 'new',
         }
-        # self.state = 'reject'
-
-
-
-        
 
     @api.model
     def create(self, vals):
@@ -134,5 +155,5 @@ class SampleRequest(models.Model):
 class SampleRequestLine(models.Model):
     _name = "sample.request.line"
 
-    request_id = fields.Many2one('sample.request')
+    request_id = fields.Many2one('sample.request', 'Request')
     product_id = fields.Many2one('product.product','Product')

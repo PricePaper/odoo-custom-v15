@@ -15,16 +15,14 @@ class StockLandedCost(models.Model):
             product_lines = {}
             for line in self.valuation_adjustment_lines:
                 if line.product_id in product_lines:
-                    # product_lines[line.product_id] += line.price_per_unit - line.product_id.standard_price
-                    product_lines[line.product_id] += line.final_cost / line.quantity
+                    product_lines[line.product_id] += line.additional_landed_cost / line.quantity
                 else:
-                    # product_lines[line.product_id] = line.price_per_unit - line.product_id.standard_price
-                    product_lines[line.product_id] = line.additional_landed_cost / line.quantity
+                    product_lines[line.product_id] = (line.former_cost / line.quantity) + (line.additional_landed_cost / line.quantity)
             for product in product_lines:
                 self.env['cost.change'].create(
                     {'price_filter': 'fixed',
                      'product_id': product.id,
-                     'price_change': product_lines[product]+product.standard_price,
+                     'price_change': product_lines[product],
                      'cost_change_parent': cost_cron.id,
                      })
 

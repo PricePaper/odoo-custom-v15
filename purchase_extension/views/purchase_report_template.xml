@@ -29,6 +29,14 @@
                 </t>
 
             </xpath>
+            <xpath expr="//h2" position="after">
+              <div id="informations" class="row mt32 mb32">
+                <div t-if="o.date_planned" class="col-3 bm-2">
+                    <strong>Date Wanted:</strong>
+                    <p t-field="o.date_planned" class="m-0"/>
+                </div>
+              </div>
+            </xpath>
             <xpath expr="//table/thead/tr/th[1]" position="before">
                 <th><strong>Product Code</strong></th>
             </xpath>

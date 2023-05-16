@@ -42,7 +42,7 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="run_date" required='1' attrs="{'readonly':[('is_done', '=', True)]}"/>
+                                <field name="run_date" required='0' attrs="{'readonly':[('is_done', '=', True)]}"/>
                                 <field name="user_id" string='Created By' readonly='True'/>
                                 <field name="is_done" invisible='1'/>
                                 <field name="update_standard_price" attrs="{'readonly':[('is_done', '=', True)]}"/>

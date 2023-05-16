@@ -233,7 +233,7 @@ class PaymentTransaction(models.Model):
             self.state = 'done'
             payment = self.payment_id
             if self.transaction_fee_move_id and self.transaction_fee_move_id == 'cancel':
-                self.transaction_fee_move_id.action_post()
+                self.transaction_fee_move_id.action_draft()
                 self.transaction_fee_move_id.action_post()
             if payment and payment.state == 'cancel':
                 payment.action_draft()

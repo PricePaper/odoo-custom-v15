@@ -232,7 +232,7 @@ class PaymentTransaction(models.Model):
         if status in ('settledSuccessfully', 'refundSettledSuccessfully', 'capturedPendingSettlement', 'refundPendingSettlement'):
             self.state = 'done'
             payment = self.payment_id
-            if self.transaction_fee_move_id and self.transaction_fee_move_id == 'cancel':
+            if self.transaction_fee_move_id and self.transaction_fee_move_id.state == 'cancel':
                 self.transaction_fee_move_id.action_draft()
                 self.transaction_fee_move_id.action_post()
             if payment and payment.state == 'cancel':

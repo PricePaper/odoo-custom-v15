@@ -81,7 +81,9 @@ class SampleRequest(models.Model):
         if not self.carrier_id:
             raise UserError('Select the delivery method before approval')
         route = self.env['ir.config_parameter'].sudo().get_param('sample_request.sample_route')
+        uom = self.env['ir.config_parameter'].sudo().get_param('sample_request.sample_uom')
         route = int(route) if route else False
+        uom = int(uom) if uom else False
         sale_id = self.env['sale.order'].sudo().create({
             'partner_id':self.partner_id.id,
             'invoice_address_id':self.partner_id.id,
@@ -92,7 +94,8 @@ class SampleRequest(models.Model):
                 'product_id':res.product_id.id,
                 'price_unit':0.0,
                 'lst_price':0.0,
-                'route_id':route
+                'route_id':route,
+                'product_uom':uom
                 }) 
                 for res in self.request_lines]
         })

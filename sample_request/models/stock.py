@@ -143,6 +143,12 @@ class StockRule(models.Model):
                         days=procurement.values['supplier'].delay)
                     if fields.Date.to_date(order_date_planned) < fields.Date.to_date(po.date_order):
                         po.date_order = order_date_planned
+
+            for val in po_line_values:
+                val.update({
+                    'product_qty':1,
+                    'product_uom':int(self.env['ir.config_parameter'].sudo().get_param('sample_request.sample_uom')) or 1
+                })
             po_line_ids = self.env['purchase.order.line'].sudo().create(po_line_values)
             po._create_sample_request_picking()
             po_line_ids.write({

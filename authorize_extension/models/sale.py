@@ -208,5 +208,88 @@ class SaleOrder(models.Model):
             return super(SaleOrder, self.with_context({'create_payment': True})).payment_action_capture()
         raise ValidationError("authorised amount and invoiced amount is not matching\n please correct the invoice.")
 
+    def sale_create_transaction(self):
+        reference = self.name
+        count = self.env['payment.transaction'].sudo().search_count([('reference', 'ilike', self.name)])
+        if count:
+            reference = '%s - %s' % (self.name, count)
+        payment_fee = self.partner_id.property_card_fee
+        amount = self.amount_total
+        if payment_fee:
+            amount = float_round(self.amount_total * ((100+payment_fee) / 100), precision_digits=2)
+            payment_fee = self.amount_total * (payment_fee/100)
+        tx_sudo = self.env['payment.transaction'].sudo().create({
+            'acquirer_id': self.token_id.acquirer_id.id,
+            'reference': reference,
+            'amount': amount,
+            'transaction_fee': payment_fee,
+            'currency_id': self.currency_id.id,
+            'partner_id': self.partner_id.id,
+            'token_id': self.token_id.id,
+            'operation': 'offline',
+            'tokenize': False,
+            'sale_order_ids': [(4, self.id)]
+        })
+        return tx_sudo
+
+    def sale_reauthorize_transaction(self, transactions):
+        transactions.action_void()
+        tx_sudo = self.sale_create_transaction()
+        tx_sudo.with_context({'from_authorize_custom': True})._send_payment_request()
+        error_msg = ''
+        if tx_sudo.state == 'error':
+            error_msg = tx_sudo.state_message
+            error_msg += "\nThe transaction with reference %s for %s has error(Authorize.Net)." % (tx_sudo.reference, tx_sudo.amount)
+            picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
+            picking.write({'is_payment_hold': True})
+        elif tx_sudo.state == 'cancel':
+            error_msg = "The transaction with reference %s for %s is canceled (Authorize.Net)." % (tx_sudo.reference, tx_sudo.amount)
+            picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
+            picking.write({'is_payment_hold': True})
+        elif tx_sudo.state == 'pending':
+            picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
+            picking.write({'is_payment_hold': True})
+        else:
+            picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
+            picking.write({'is_payment_hold': False})
+        if error_msg:
+            self.message_post(body=error_msg)
+
+    def write(self, vals):
+        """
+        Cancel and create tx if amount increase.
+        """
+        amount = {}
+        if vals.get('order_line', False):
+            for order in self:
+                if order.state == 'sale':
+                    amount[order.id] = order.amount_total
+        res = super(SaleOrder, self).write(vals)
+        for order in self:
+            transactions = order.transaction_ids.filtered(lambda r: r.state not in ('cancel', 'done', 'error'))
+            if transactions:
+                if order.id in amount and amount[order.id] < order.amount_total:
+                    pending_invoices = order.partner_id.invoice_ids.filtered(
+                        lambda rec: rec.move_type == 'out_invoice' and rec.state == 'posted' and rec.payment_state not in ('paid', 'in_payment', 'reversed') and (
+                                rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
+
+                    msg = ''
+                    invoice_name = []
+                    for invoice in pending_invoices:
+                        term_line = invoice.invoice_payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
+                        date_due = invoice.invoice_date_due
+                        if term_line and term_line.grace_period:
+                            date_due = date_due + timedelta(days=term_line.grace_period)
+                        if date_due and date_due < date.today():
+                            invoice_name.append(invoice.name)
+                    if invoice_name:
+                        msg += 'Customer has pending invoices.\n %s ' % '\n'.join(invoice_name)
+                    if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
+                        msg+='Credit limit Exceed'
+                    if not msg:
+                        if order.transaction_ids.filtered(lambda r: r.state not in ('cancel', 'done', 'error')):
+                            order.sale_reauthorize_transaction(transactions)
+        return res
+
 
 SaleOrder()

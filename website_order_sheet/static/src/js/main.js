@@ -26,9 +26,9 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
                     window.location.reload()
                     // $target.parents('.o_wsale_product_grid_wrapper').find('.oe_product_image img').attr('src', data);
                 });
-                
+
             })
-        
+
         }
     })
 
@@ -147,11 +147,32 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
             'click .save_data': "_saveSheet",
             'click .browse_product': "_browseProduct",
             'click .add_product': "_addProduct",
+            'click .create_order': "_CreateOrder"
 
 
         },
+        _CreateOrder: function (ev) {
+            var prodct_li = $(document).find('li.product')
+            var prod_data = {}
+            var partner_id = $("input[name='partner_id']").val()
+            prodct_li.each(function () {
+                var product_id = $(this).attr('data-id')
+                var uom = $(this).find('.uom_select').val()
+                
+                var quantity = parseInt($(this).find('.js_quantity').val())
+                if (quantity != 0) {
+
+                    prod_data[product_id] = { 'uom': uom, 'quantity': quantity }
+                }
+            }).promise().done(function () {
+                ajax.jsonRpc('/create/order', 'call', { 'prod_data': prod_data, 'partner_id': partner_id }).then(function (data) {
+                    window.location.reload()
+                    // $target.parents('.o_wsale_product_grid_wrapper').find('.oe_product_image img').attr('src', data);
+                });
+            })
+        },
         _saveSheet: function (ev) {
-            var main_ul = $(document).find($('.main_ul>li'))
+            var main_ul = $(document).find('.main_ul>li')
             var sheet_data = {}
             var new_data = []
             main_ul.each(function () {
@@ -194,7 +215,8 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
                 showCancelButton: true
             }).then((result) => {
                 if (result.value) {
-                    ajax.jsonRpc('/create/section', 'call', { 'section_name': result.value }).then(function (data) {
+                    var partner_id = $("input[name='partner_id']").val()
+                    ajax.jsonRpc('/create/section', 'call', { 'section_name': result.value, 'partner_id': partner_id }).then(function (data) {
                         $(".main_ul").append(data.section_li);
                         initsortable()
                         // $target.parents('.o_wsale_product_grid_wrapper').find('.oe_product_image img').attr('src', data);
@@ -274,7 +296,7 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
         })
 
 
-
     })
+
 
 })

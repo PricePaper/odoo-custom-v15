@@ -20,13 +20,15 @@
         'security/ir.model.access.csv',
         'wizard/add_purchase_history_to_so.xml',
         'views/sheet_view.xml',
-        'views/templates.xml'
+        'views/partner.xml',
+        'views/templates.xml',
+        'views/portal_template.xml',
         
     ],
     "assets":{
         "web.assets_frontend":[
             'website_order_sheet/static/src/js/main.js',
-            'website_order_sheet/static/src/js/test.js'
+            'website_order_sheet/static/src/js/product_search.js'
         ]
     },
     'demo': [],

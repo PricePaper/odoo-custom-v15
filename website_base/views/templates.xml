@@ -31,6 +31,10 @@
                 </div>
             </xpath>
         </template>
-
     </data>
+    <template id="pay_meth_link_inherit"  inherit_id="payment.pay_meth_link">
+        <xpath expr="//a[@href='/my/payment_method']" position="replace">
+             <a href="/my/payment/token">Manage payment methods</a>
+        </xpath>
+    </template>
 </odoo>

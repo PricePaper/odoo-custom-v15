@@ -5,11 +5,11 @@ from odoo import models, fields, api
 
 class WebsiteOrderSheet(models.Model):
     _name = "website.order.sheet"
-    _description='Model for managing user order sheet'
+    _description='Model for managing Partner order sheet'
     
 
     name = fields.Char(string='Name')
-    user_id = fields.Many2one('res.users','User')
+    partner_id = fields.Many2one('res.partner','Partner')
     order_lines = fields.One2many('order.sheet.lines','sheet_id',string='Order Lines')
 
 
@@ -21,7 +21,7 @@ class OrderSheetLines(models.Model):
 
     sequence = fields.Integer(string='Sequence')
     sheet_id = fields.Many2one('website.order.sheet',required=True,string="Sheet")
-    user_id = fields.Many2one('res.users','User')
+    partner_id = fields.Many2one('res.partner','Partner')
     new_sheet_id = fields.Many2one('website.order.sheet',string="Sheet")
     section = fields.Char(string='Section Name',required=True)
     product_ids = fields.Many2many('product.product',string='Products')
@@ -29,8 +29,8 @@ class OrderSheetLines(models.Model):
 
 
     @api.onchange('section')
-    def user_section(self):
-        self.user_id = self.sheet_id.user_id.id    
+    def Partner_section(self):
+        self.partner_id = self.sheet_id.partner_id.id    
 
     def section_add_products(self):
         
@@ -38,10 +38,10 @@ class OrderSheetLines(models.Model):
         Return 'add purchase history to so wizard'
         """
         view_id = self.env.ref('price_paper.view_purchase_history_add_so_wiz').id
-        user_id = self.user_id
+        partner_id = self.partner_id
         # products = self.order_line.mapped('product_id').ids
         sales_history = self.env['sale.history'].search(
-            ['|', ('active', '=', False), ('active', '=', True), ('partner_id', '=', user_id.partner_id.id),
+            ['|', ('active', '=', False), ('active', '=', True), ('partner_id', '=', partner_id.partner_id.id),
               ('product_id', '!=', False)]).filtered(
             lambda r: not r.product_id.categ_id.is_storage_contract  and not r.product_id.id in self.product_ids.ids)
         # addons product filtering
@@ -56,7 +56,7 @@ class OrderSheetLines(models.Model):
         }       
         
         return {
-            'name': '%s # %s' % (user_id.partner_id.display_name, self.section ),
+            'name': '%s # %s' % (partner_id.partner_id.display_name, self.section ),
             'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'add.purchase.history.so',

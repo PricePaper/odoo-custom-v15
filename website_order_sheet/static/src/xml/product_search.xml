@@ -3,7 +3,7 @@
 
 <!-- Search Bar autocomplete item -->
 <div t-name="website_order_sheet.s_searchbar.autocomplete"
-    class="dropdown-menu show w-100">
+    class="dropdown-menu search_main show w-100">
     <t t-if="fuzzySearch and results.length">
         <!-- TODO adapt in master, this is patched in JS so that text-muted -->
         <!-- is not on the same element as dropdown-item-text -->

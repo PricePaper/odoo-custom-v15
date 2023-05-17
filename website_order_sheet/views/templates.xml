@@ -98,9 +98,12 @@
                 </table>
             </div>
         </template>
+
+
         <template id = 'website_order_sheet.user_sheet'>
-            <t t-call="website.layout">
+            <t t-call="portal.portal_layout">
                 <div class='container order_sheet mt-2 mb-2'>
+                    <input type='hidden' name='partner_id' t-att-value = 'partner_id' />
                     <div class="modal fade" id="browseHistory" tabindex="-1" role="dialog" aria-labelledby="browseproduct" aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                             <div class="modal-content">
@@ -211,7 +214,7 @@
                                                             <t t-esc='product.product_id.name'/>
                                                         </div>
                                                         <div class='col-3'>
-                                                            <select class="form-select" aria-label="Default select example">
+                                                            <select class="form-select uom_select" aria-label="Default select example">
                                                                 <t t-foreach='product.product_id.sale_uoms' t-as ='uom'>
                                                                     <option t-att-value="uom.id">
                                                                         <t t-out='uom.name'/>
@@ -249,7 +252,7 @@
                         </div>
                         <div class='col-12 mt-4'>
                             <button class='btn btn-dark font-weight-bold save_data btn-md'>Save Sheet</button>
-                            <button class='btn btn-primary font-weight-bold create_order btn-md float-right'>Save &amp; Ceate Order </button>
+                            <button class='btn btn-primary font-weight-bold create_order btn-md float-right'>Save &amp; create Order </button>
                         </div>
                     </div>
                 </div>

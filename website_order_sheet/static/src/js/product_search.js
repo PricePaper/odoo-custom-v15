@@ -1,5 +1,5 @@
 /** @odoo-module **/
-
+console.log('hellooo')
 import concurrency from 'web.concurrency';
 import publicWidget from 'web.public.widget';
 
@@ -8,13 +8,13 @@ import {Markup} from 'web.utils';
 
 publicWidget.registry.searchNBar = publicWidget.Widget.extend({
     selector: '.o_searchbar_formn',
-    xmlDependencies: ['/website_order_sheet/static/src/xml/text.xml'],
+    xmlDependencies: ['/website_order_sheet/static/src/xml/product_search.xml'],
     events: {
         'input .search-query': '_onInput',
-        'focusout': '_onFocusOut',
+        // 'focusout': '_onFocusOut',
         'keydown .search-query': '_onKeydown',
         'search .search-query': '_onSearch',
-        'click .item_section':'item_selected'
+        'click .item_section':'_item_selected'
     },
     autocompleteMinWidth: 300,
 
@@ -147,13 +147,14 @@ publicWidget.registry.searchNBar = publicWidget.Widget.extend({
         });
         return res;
     },
-    item_selected:function(ev){
+    _item_selected:function(ev){
         $('.selected_section_product').append(`<div class='card m-2' product_id="`
         +$(ev.currentTarget).attr('data-product-id')+
         `"</div> 
         <div class='card-body'> 
             <span>` +$(ev.currentTarget).attr('data-product-name')+`
         </div>`)
+        this._onFocusOut()
         console.log('hello')
     },
 

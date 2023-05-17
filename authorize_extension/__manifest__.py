@@ -17,6 +17,7 @@
         'wizard/reauth_invoice_token.xml',
         'views/invoice_report.xml',
         'views/stock_picking.xml',
+        'views/saleorder_report.xml',
         'views/res_partner.xml',
         'views/res_config_setting_view.xml',
         'views/account_move.xml',

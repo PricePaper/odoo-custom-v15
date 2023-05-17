@@ -98,9 +98,9 @@
             <field name="name">Customers</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">res.partner</field>
-            <field name="view_mode">kanban,tree,form</field>
+            <field name="view_mode">tree,form</field>
             <field name="domain">[('customer', '=', True)]</field>
-            <field name="context">{"search_default_customer": 1}</field>
+            <field name="context">{"search_default_customer": 1, 'default_is_company': True, 'default_customer_rank': 1, 'default_customer':1}</field>
             <field name="search_view_id" ref="base.view_res_partner_filter"/>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
@@ -114,7 +114,7 @@
         </record>
 
         <record id="action_partner_crm_enhance__form_view1" model="ir.actions.act_window.view">
-            <field eval="0" name="sequence"/>
+            <field eval="3" name="sequence"/>
             <field name="view_mode">kanban</field>
             <field name="view_id" ref="res_partner_forecast_kanban_view"/>
             <field name="act_window_id" ref="action_partner_crm_enhance"/>
@@ -132,6 +132,16 @@
             <field name="view_mode">tree</field>
             <field name="view_id" ref="base.view_partner_tree"/>
             <field name="act_window_id" ref="action_partner_crm_enhance"/>
+        </record>
+        <record id="action_create_opportunity" model="ir.actions.server">
+            <field name="name">Create opportunity</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="binding_model_id" ref="base.model_res_partner"/>
+            <field name="binding_view_types">form</field>
+            <field name="state">code</field>
+            <field name="code">
+                action = records.create_opportunity()
+            </field>
         </record>
 
         <menuitem id="crm.res_partner_menu_crm"

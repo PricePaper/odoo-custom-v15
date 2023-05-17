@@ -296,12 +296,15 @@ class PurchaseOrder(models.Model):
                     quantity=line.product_qty,
                     date=line.order_id.date_order and line.order_id.date_order.date(),
                     uom_id=line.product_uom)
+                if not supplierinfo.get('product_id', False):
+                    supplierinfo['product_id'] = line.product_id.id
                 if seller:
                     supplierinfo['product_name'] = seller.product_name
                     supplierinfo['product_code'] = seller.product_code
                 vals = {
                     'seller_ids': [(0, 0, supplierinfo)],
                 }
+
                 try:
                     if not vendor_prices:
                         line.product_id.with_context({'user': self.user_id and self.user_id.id, 'from_purchase': True}).write(vals)
@@ -311,6 +314,7 @@ class PurchaseOrder(models.Model):
 
                 except AccessError:  # no write access rights -> just ignore
                     break
+
 
     def button_received(self):
         return self.write({'state': 'received'})
@@ -465,6 +469,8 @@ class PurchaseOrderLine(models.Model):
                 if seller:
                     supplierinfo['product_name'] = seller.product_name
                     supplierinfo['product_code'] = seller.product_code
+                if not supplierinfo.get('product_id', False):
+                    supplierinfo['product_id'] = line.product_id.id
                 vals = {
                     'seller_ids': [(0, 0, supplierinfo)],
                 }

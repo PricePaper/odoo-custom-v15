@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- STOCK.LANDED.COST -->
+        <record id='view_stock_landed_cost_form_inherited' model='ir.ui.view'>
+            <field name="name">stock.landed.cost.form</field>
+            <field name="model">stock.landed.cost</field>
+            <field name="inherit_id" ref="stock_landed_costs.view_stock_landed_cost_form"/>
+            <field name="arch" type="xml">
+                <notebook position="before">
+                    <field name="vendor_bill_ids" readonly="1">
+                        <tree>
+                            <field name="name" decoration-bf="1"/>
+                            <field name="partner_id" invisible="1"/>
+                            <field name="payment_state"
+                                   widget="badge"
+                                   decoration-danger="payment_state == 'not_paid'"
+                                   decoration-warning="payment_state in ('partial', 'in_payment')"
+                                   decoration-success="payment_state in ('paid', 'reversed')"
+                                   attrs="{'invisible': [('payment_state', 'in', ('invoicing_legacy'))]}"
+                                   optional="show"/>
+                            <field name="state" widget="badge" decoration-success="state == 'posted'" decoration-info="state == 'draft'"
+                                   optional="show"/>
+                        </tree>
+                    </field>
+                </notebook>
+                <xpath expr="//form/sheet/notebook/page[@name='additional_costs']/field[@name='cost_lines']/tree/field[@name='account_id']" position="after">
+                    <field name="move_id" optional="show" readonly="1"/>
+                    <field name="move_line_id" optional="show" readonly="1"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

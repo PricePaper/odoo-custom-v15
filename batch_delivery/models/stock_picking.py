@@ -423,6 +423,9 @@ class StockPicking(models.Model):
             if 'route_id' in vals.keys() and picking.batch_id and picking.batch_id.state in ('done', 'no_payment', 'paid'):
                 raise UserError("Batch is already in done state. You can not remove the picking")
             route_id = vals.get('route_id', False)
+            route_exist = False
+            if self.route_id:
+                route_exist = True
             if route_id:
                 batch = self.env['stock.picking.batch'].search([('state', '=', 'in_progress'), ('route_id', '=', route_id)], limit=1)
                 if batch:
@@ -442,8 +445,8 @@ class StockPicking(models.Model):
                 if not batch:
                     batch = self.env['stock.picking.batch'].create({'route_id': route_id})
                 picking.batch_id = batch
-
-                vals['is_late_order'] = batch.state in ('in_progress', 'in_truck')
+                if route_exist:
+                    vals['is_late_order'] = batch.state in ('in_progress', 'in_truck')
             if 'route_id' in vals.keys() and not (
                     vals.get('route_id', False)) and picking.batch_id and picking.batch_id.state == 'draft':
                 vals.update({'batch_id': False})

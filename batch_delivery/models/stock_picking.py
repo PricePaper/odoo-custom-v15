@@ -423,6 +423,9 @@ class StockPicking(models.Model):
             if 'route_id' in vals.keys() and picking.batch_id and picking.batch_id.state in ('done', 'no_payment', 'paid'):
                 raise UserError("Batch is already in done state. You can not remove the picking")
             route_id = vals.get('route_id', False)
+            route_exist = False
+            if self.route_id:
+                route_exist = True
             if route_id:
                 batch = self.env['stock.picking.batch'].search([('state', '=', 'in_progress'), ('route_id', '=', route_id)], limit=1)
                 if batch:
@@ -442,8 +445,8 @@ class StockPicking(models.Model):
                 if not batch:
                     batch = self.env['stock.picking.batch'].create({'route_id': route_id})
                 picking.batch_id = batch
-
-                vals['is_late_order'] = batch.state in ('in_progress', 'in_truck')
+                if not route_exist:
+                    vals['is_late_order'] = batch.state in ('in_progress', 'in_truck')
             if 'route_id' in vals.keys() and not (
                     vals.get('route_id', False)) and picking.batch_id and picking.batch_id.state == 'draft':
                 vals.update({'batch_id': False})
@@ -459,20 +462,21 @@ class StockPicking(models.Model):
                     if vals.get('is_late_order', False):
                         if sale_order:
                             order_line = sale_order.mapped('order_line').filtered(lambda r: r.product_id and r.product_id == late_product)
+                            sale_flag = False
+                            if sale_order.state == 'done':
+                                sale_order.write({'state': 'sale'})
+                                sale_flag = True
                             if not order_line:
                                 sale_vals = {'product_id': late_product.id,
                                         'product_uom_qty': 1,
                                         'price_unit': late_product.cost,
                                         'order_id':sale_order.id}
-                                order_line = self.env['sale.order.line'].create(sale_vals)
+                                sale_order.with_context(from_late_order=True).write({'order_line':[(0, 0, sale_vals)]})
                             else:
-                                sale_flag = False
-                                if sale_order.state == 'done':
-                                    sale_order.write({'state': 'sale'})
-                                    sale_flag = True
-                                order_line.write({'product_uom_qty': 1,})
-                                if sale_flag:
-                                    sale_order.write({'state': 'done'})
+                                sale_order.with_context(from_late_order=True).write({'order_line':[(1, order_line.id, {'product_uom_qty': 1})]})
+                            if sale_flag:
+                                sale_order.write({'state': 'done'})
+                        order_line = sale_order.mapped('order_line').filtered(lambda r: r.product_id and r.product_id == late_product)
                         if invoice:
                             invoice_line = invoice.mapped('invoice_line_ids').filtered(lambda r: r.product_id and r.product_id == late_product)
                             if not invoice_line:

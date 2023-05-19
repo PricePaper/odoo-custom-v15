@@ -22,6 +22,8 @@ class SaleOrder(models.Model):
     is_payment_low = fields.Boolean('Is payment Low?', copy=False)
     token_id = fields.Many2one('payment.token', 'Payment Token')
     is_pre_payment = fields.Boolean('Is prepayment?', related='payment_term_id.is_pre_payment')
+    is_transaction_pending = fields.Boolean('Transaction Pending')
+    is_transaction_error = fields.Boolean('Transaction Failed')
 
 
     @api.onchange('partner_shipping_id', 'payment_term_id')
@@ -159,6 +161,7 @@ class SaleOrder(models.Model):
                 if tx_sudo.state == 'pending':
                     picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
                     picking.write({'is_payment_hold': True})
+                    self.is_transaction_pending = True
             if error_msg:
                 self.message_post(body=error_msg)
                 view_id = self.env.ref('price_paper.view_sale_warning_wizard').id
@@ -232,8 +235,7 @@ class SaleOrder(models.Model):
         })
         return tx_sudo
 
-    def sale_reauthorize_transaction(self, transactions):
-        transactions.action_void()
+    def sale_reauthorize_transaction(self):
         tx_sudo = self.sale_create_transaction()
         tx_sudo.with_context({'from_authorize_custom': True})._send_payment_request()
         error_msg = ''
@@ -242,18 +244,25 @@ class SaleOrder(models.Model):
             error_msg += "\nThe transaction with reference %s for %s has error(Authorize.Net)." % (tx_sudo.reference, tx_sudo.amount)
             picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
             picking.write({'is_payment_hold': True})
+            self.is_transaction_error = True
         elif tx_sudo.state == 'cancel':
             error_msg = "The transaction with reference %s for %s is canceled (Authorize.Net)." % (tx_sudo.reference, tx_sudo.amount)
             picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
             picking.write({'is_payment_hold': True})
+            self.is_transaction_error = True
         elif tx_sudo.state == 'pending':
             picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
             picking.write({'is_payment_hold': True})
+            self.is_transaction_pending = True
         else:
+            self.is_transaction_pending = False
+            self.is_transaction_error = False
             picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
             picking.write({'is_payment_hold': False})
+
         if error_msg:
             self.message_post(body=error_msg)
+
 
     def write(self, vals):
         """
@@ -262,7 +271,7 @@ class SaleOrder(models.Model):
         amount = {}
         if vals.get('order_line', False):
             for order in self:
-                if order.state == 'sale':
+                if order.state in ('sale', 'done'):
                     amount[order.id] = order.amount_total
         res = super(SaleOrder, self).write(vals)
         for order in self:
@@ -288,7 +297,9 @@ class SaleOrder(models.Model):
                         msg+='Credit limit Exceed'
                     if not msg:
                         if order.transaction_ids.filtered(lambda r: r.state not in ('cancel', 'done', 'error')):
-                            order.sale_reauthorize_transaction(transactions)
+                            transactions.action_void()
+                            order.sale_reauthorize_transaction()
+
         return res
 
 

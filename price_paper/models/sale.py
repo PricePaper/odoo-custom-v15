@@ -494,18 +494,19 @@ class SaleOrder(models.Model):
                             rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
 
                 msg = ''
-                invoice_name = []
-                for invoice in pending_invoices:
-                    term_line = invoice.invoice_payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
-                    date_due = invoice.invoice_date_due
-                    if term_line and term_line.grace_period:
-                        date_due = date_due + timedelta(days=term_line.grace_period)
-                    if date_due and date_due < date.today():
-                        invoice_name.append(invoice.name)
-                if invoice_name:
-                    msg += 'Customer has pending invoices.\n %s ' % '\n'.join(invoice_name)
-                if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
-                    msg+='Credit limit Exceed'
+                if not order._context.get('from_late_order', False):
+                    invoice_name = []
+                    for invoice in pending_invoices:
+                        term_line = invoice.invoice_payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
+                        date_due = invoice.invoice_date_due
+                        if term_line and term_line.grace_period:
+                            date_due = date_due + timedelta(days=term_line.grace_period)
+                        if date_due and date_due < date.today():
+                            invoice_name.append(invoice.name)
+                    if invoice_name:
+                        msg += 'Customer has pending invoices.\n %s ' % '\n'.join(invoice_name)
+                    if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
+                        msg+='Credit limit Exceed'
 
                 if msg:
                     if order.picking_ids.filtered(lambda r: r.state in ('in_transit', 'transit_confirmed')):

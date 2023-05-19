@@ -47,14 +47,23 @@
                 <field name='credit_warning' position="after">
                     <field name='is_payment_error' invisible="1"/>
                     <field name='is_payment_bypassed' invisible="1"/>
+                    <field name='is_transaction_error' invisible="1"/>
+                    <field name='is_transaction_pending' invisible="1"/>
                     <!-- <field name='is_payment_low' invisible="1"/> -->
                     <field name='payment_warning' class="alert alert-warning mb-0" role="alert"
                            attrs="{'invisible':[('is_payment_error', '=', False)]}"/>
                 </field>
+                <xpath expr="//field[@name='name']" position='before'>
+                    <widget name="web_ribbon" title="Authorize Pending" attrs="{'invisible': [('is_transaction_pending','=', False)]}"/>
+                    <widget name="web_ribbon" title="Authorize Error" attrs="{'invisible': [('is_transaction_error','=', False)]}"/>
+                </xpath>
                 <xpath expr="//form//header//button[@name='action_release_price_hold']" position="after">
                     <button name="action_confirm" type="object" string="Retry Payment" class="oe_highlight"
                             attrs="{'invisible':[('is_payment_error', '=', False)]}"
                             groups="sales_team.group_sale_manager, account.group_account_invoice"/>
+                    <button name="sale_reauthorize_transaction" type="object" string="Reauthorize"
+                            attrs="{'invisible':[('is_transaction_error', '=', False)]}"
+                            groups="sales_team.group_sale_manager, account.group_account_manager"/>
                     <button name="action_confirm_bypass" type="object" string="confirm without payment"
                             confirm="You cannot make authorise.net payment afte this step"
                             attrs="{'invisible':[('is_payment_error', '=', False)]}" context="{'bypass_payment':True}"

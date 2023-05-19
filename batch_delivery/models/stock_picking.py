@@ -445,7 +445,7 @@ class StockPicking(models.Model):
                 if not batch:
                     batch = self.env['stock.picking.batch'].create({'route_id': route_id})
                 picking.batch_id = batch
-                if route_exist:
+                if not route_exist:
                     vals['is_late_order'] = batch.state in ('in_progress', 'in_truck')
             if 'route_id' in vals.keys() and not (
                     vals.get('route_id', False)) and picking.batch_id and picking.batch_id.state == 'draft':

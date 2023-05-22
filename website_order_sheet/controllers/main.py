@@ -61,7 +61,7 @@ class WebsiteSale(main.WebsiteSale):
         _logger.info(f"+============={new_data}")
         if new_data:
             data_list = [(0,0,{'section':rec['section'],'line_product_ids':[(0,0,{"product_id":product})for product in rec['product_ids']]} ) for rec in new_data]
-            order_sheet = request.env['website.order.sheet'].search([('user_id','=',user.id)],limit=1)
+            order_sheet = request.env['website.order.sheet'].search([('user_id','=',user.partner_id.id)],limit=1)
             order_sheet.order_lines = data_list
         return({'result':True})
 
@@ -91,7 +91,7 @@ class WebsiteSale(main.WebsiteSale):
     @http.route(['/sheet/browse/set'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
     def order_history_table(self, offset):
         user = request.env.user
-        sheet_id = request.env['website.order.sheet'].sudo().search([('user_id','=',user.id)],limit=1)
+        sheet_id = request.env['website.order.sheet'].sudo().search([('user_id','=',user.partner_id.id)],limit=1)
 
 
         # products = self.order_line.mapped('product_id').ids

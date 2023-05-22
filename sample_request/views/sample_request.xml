@@ -9,21 +9,17 @@
                     <field name='name'/>
                     <field name='partner_id'/>
                 </tree>
-
             </field>
         </record>
-
-
         <record id="view_sample_request_form" model="ir.ui.view">
             <field name="name">sample.request.form</field>
             <field name="model">sample.request</field>
             <field name="mode">primary</field>
             <field name="arch" type="xml">
-
                 <form>
                     <header>
-                        <button name='approve_request' class='btn-primary' type='object' string='Approve Request' attrs="{'invisible':[('state','!=','request')]}"/>
-                        <button name='reject_request' type='object' string='Reject Request' attrs="{'invisible':[('state','!=','request')]}"/>
+                        <button name='approve_request' class='btn-primary' type='object' string='Approve Request' attrs="{'invisible':[('state','!=','request')]}" groups='sample_request.group_manager'/>
+                        <button name='reject_request' groups='sample_request.group_manager' type='object' string='Reject Request' attrs="{'invisible':[('state','!=','request')]}"/>
                         <button name='sent_approval' type='object' string='Send For Approval' attrs="{'invisible':[('state','!=','draft')]}"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,request,approve"/>
                     </header>
@@ -38,9 +34,9 @@
                                 <field name='partner_id'  widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}" domain="[('type','=','contact'),('parent_id','=',False),('customer','=',True)]"/>
                                 <field name='partner_shipping_id'  domain="['|',('id','=',partner_id),('parent_id','=',partner_id)]" string='Delivery Address'/>
                             </group>
-
                             <group>
                                 <field name='sale_id' readonly='1' attrs="{'inivisible':[('state','=','draft')]}"/>
+                                <field name='lead_id' string='Lead/Opportunity' required="1"/>
                                 <field name='carrier_id'/>
                             </group>
                         </group>
@@ -61,41 +57,36 @@
                 </form>
             </field>
         </record>
-
-
-
         <record id="action_sample_request" model="ir.actions.act_window">
             <field name="name">Sample Request</field>
             <field name="res_model">sample.request</field>
             <field name="view_mode">tree,form</field>
-            <!-- <field name="domain">[('state', '=', 'request')]</field> -->
-
+            <field name="domain">[('state', 'in', ['request','draft'])]</field>
         </record>
-
-
         <record id="action_sample_request_approve" model="ir.actions.act_window">
-            <field name="name">Sample Request</field>
+            <field name="name">Approved Sample Request</field>
             <field name="res_model">sample.request</field>
             <field name="view_mode">tree,form</field>
             <field name="domain">[('state', '=', 'approve')]</field>
-
         </record>
-
         <record id="action_sample_request_reject" model="ir.actions.act_window">
-            <field name="name">Sample Request</field>
+            <field name="name">Rejected Sample Request</field>
             <field name="res_model">sample.request</field>
             <field name="view_mode">tree,form</field>
             <field name="domain">[('state', '=', 'reject')]</field>
-
         </record>
-
-
         <menuitem id="sample_request_root" name="Sample Requests" sequence="30" parent='sale.sale_menu_root' groups='sample_request.group_manager,sample_request.group_user'/>
-
-
         <menuitem id="sample_request_draft" name="Sample Requests" sequence="30" parent='sample_request_root' action='sample_request.action_sample_request'/>
         <menuitem id="sample_request_approve" name="Approved Requests" sequence="30" parent='sample_request_root' action='sample_request.action_sample_request_approve'/>
         <menuitem id="sample_request_reject" name="Rejectd Requests" sequence="30" parent='sample_request_root' action='sample_request.action_sample_request_reject'/>
-
+        <menuitem
+        id="crm_sample_root"
+        name="Sample Requests"
+        parent="crm.crm_menu_root"
+        groups='sample_request.group_manager,sample_request.group_user'
+        sequence="99"/>
+        <menuitem id="crm_sample_request_draft" name="Sample Requests" sequence="30" parent='crm_sample_root' action='sample_request.action_sample_request'/>
+        <menuitem id="crm_sample_request_approve" name="Approved Requests" sequence="30" parent='crm_sample_root' action='sample_request.action_sample_request_approve'/>
+        <menuitem id="crm_sample_request_reject" name="Rejectd Requests" sequence="30" parent='crm_sample_root' action='sample_request.action_sample_request_reject'/>
     </data>
 </odoo>

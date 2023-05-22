@@ -17,6 +17,7 @@ class SaleOrder(models.Model):
     _inherit='sale.order'
 
     is_sample_order = fields.Boolean(string='Sample Order',default=False)
+    
 
     @api.model
     def create(self, vals):
@@ -73,6 +74,7 @@ class SampleRequest(models.Model):
     state = fields.Selection([('draft','Draft'),('request','Request'),('reject','Rejected'),('approve','Approved')],default='draft',tracking=True)
     sale_id = fields.Many2one('sale.order',string='Order')
     carrier_id = fields.Many2one('delivery.carrier',string='Delivery Method')
+    lead_id = fields.Many2one('crm.lead',string='crm.lead')
 
 
 

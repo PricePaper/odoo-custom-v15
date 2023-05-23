@@ -22,6 +22,7 @@
                     <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ['draft']), ('is_payment_error', '=', True)]}</attribute>
                 </xpath>
                 <field name='payment_term_id' position="after">
+                  <field name='is_payment_error' invisible="1"/>
                     <field name='is_pre_payment' invisible="1"/>
                     <field name="token_id"
                            domain="[('partner_id','=', partner_id), '|', ('shipping_id', '=', False), ('shipping_id', '=', partner_shipping_id)]"

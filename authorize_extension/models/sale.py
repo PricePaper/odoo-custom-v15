@@ -22,8 +22,8 @@ class SaleOrder(models.Model):
     is_payment_low = fields.Boolean('Is payment Low?', copy=False)
     token_id = fields.Many2one('payment.token', 'Payment Token')
     is_pre_payment = fields.Boolean('Is prepayment?', related='payment_term_id.is_pre_payment')
-    is_transaction_pending = fields.Boolean('Transaction Pending')
-    is_transaction_error = fields.Boolean('Transaction Failed')
+    is_transaction_pending = fields.Boolean('Transaction Pending', copy=False)
+    is_transaction_error = fields.Boolean('Transaction Failed', copy=False)
 
 
     @api.onchange('partner_shipping_id', 'payment_term_id')

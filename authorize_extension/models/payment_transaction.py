@@ -125,6 +125,8 @@ class PaymentTransaction(models.Model):
             res_content = authorize_api.authorize_transaction_from_invoice(self, self.invoice_ids)
         else:
             res_content = authorize_api.authorize_transaction(self, self.sale_order_ids)
+        if res_content.get('x_pending_avs_msg', ''):
+            self.message_post(body='AVS Response: ' + res_content.get('x_pending_avs_msg', ''))
         feedback_data = {'reference': self.reference, 'response': res_content}
         self._handle_feedback_data('authorize', feedback_data)
 

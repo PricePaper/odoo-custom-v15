@@ -575,7 +575,7 @@ class SaleOrder(models.Model):
             to_delete = delivery_lines.filtered(lambda rec: rec.qty_invoiced != 0)
             if not to_delete:
                 self.with_context(adjust_delivery=True)._remove_delivery_line()
-            self._create_delivery_line(self.carrier_id, price_unit)
+                self._create_delivery_line(self.carrier_id, price_unit)
         self.with_context(from_adjust_delivery=True).write({'delivery_cost': res.get('cost', 0)})
 
         return True

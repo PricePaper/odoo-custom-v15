@@ -60,7 +60,12 @@
                             confirm="You cannot make authorise.net payment afte this step"
                             attrs="{'invisible':[('is_payment_error', '=', False)]}" context="{'bypass_payment':True}"
                             groups="base.group_erp_manager, account.group_account_manager"/>
+                    <button name="sale_reauthorize_transaction" type="object" string="Authorize"
+                            class="oe_highlight"
+                            attrs="{'invisible': ['|', '|', ('transaction_ids', '!=', []), ('state', '!=', 'sale'), ('token_id', '=', False)]}"
+                            groups="sales_team.group_sale_manager, account.group_account_manager"/>
                 </xpath>
+
 
             </field>
         </record>

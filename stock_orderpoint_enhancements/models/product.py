@@ -142,7 +142,7 @@ class ProductProduct(models.Model):
         to_date = datetime.date.today()
         msg=''
 
-        vendor = self.seller_ids.filtered(lambda s: s.date_start < to_date and s.date_end > to_date)
+        vendor = self.seller_ids.filtered(lambda s: (s.date_start and s.date_end and s.date_start < to_date and s.date_end > to_date) or (not s.date_start or not s.date_end))
 
         if not vendor:
             server_log.error('Supplier is not set for product %s' % self.name)

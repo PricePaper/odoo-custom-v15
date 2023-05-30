@@ -235,17 +235,15 @@ class SaleOrder(models.Model):
         return tx_sudo
 
     def sale_reauthorize_transaction(self):
-       tx_sudo = self.sale_create_transaction()
-       tx_sudo.with_context({'from_authorize_custom': True})._send_payment_request()
-       error_msg = ''
-       if tx_sudo.state == 'error':
-           error_msg = tx_sudo.state_message
-           error_msg += "\nThe transaction with reference %s for %s has error(Authorize.Net)." % (tx_sudo.reference, tx_sudo.amount)
-       elif tx_sudo.state == 'cancel':
-           error_msg = "The transaction with reference %s for %s is canceled (Authorize.Net)." % (tx_sudo.reference, tx_sudo.amount)
-    #    elif tx_sudo.state == 'pending':
-    #        error_msg = "The transaction with reference %s for %s is in Pending state (Authorize.Net)." % (tx_sudo.reference, tx_sudo.amount)
-       if error_msg:
-           self.message_post(body=error_msg)
+        tx_sudo = self.sale_create_transaction()
+        tx_sudo.with_context({'from_authorize_custom': True})._send_payment_request()
+        error_msg = ''
+        if tx_sudo.state == 'error':
+            error_msg = tx_sudo.state_message
+            error_msg += "\nThe transaction with reference %s for %s has error(Authorize.Net)." % (tx_sudo.reference, tx_sudo.amount)
+        elif tx_sudo.state == 'cancel':
+            error_msg = "The transaction with reference %s for %s is canceled (Authorize.Net)." % (tx_sudo.reference, tx_sudo.amount)
+        if error_msg:
+            self.message_post(body=error_msg)
 
 SaleOrder()

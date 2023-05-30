@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="crm_lead_view_form_inherit_sample_request" model="ir.ui.view">
+        <field name="name">crm.lead.view.form.inherit</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <field name="sample_request_id" invisible='1' />
+                <button name="sample_request_action" type="object" attrs="{'invisible':[('sample_request_id','=',False)]}" class="oe_stat_button" icon="fa-list">
+                    <span>Sample Request</span>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

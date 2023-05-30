@@ -70,6 +70,13 @@ class WebsiteSale(main.WebsiteSale):
         redirection = self.checkout_request_redirection(request_id)
         if redirection:
             return redirection
+        crm_vals ={
+            'name':f'{request_id.partner_id.name} sample request.',
+            'partner_id':request_id.partner_id.id,
+            'sample_request_id':request_id.id
+        }
+        crm =  request.env['crm.lead'].sudo().create(crm_vals)
+        request_id.lead_id = crm.id
         request_id.state='request'
 
         return request.render("sample_request.sample_request", {'request_id':request_id})

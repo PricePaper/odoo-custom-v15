@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="product_normal_form_view_inherit_uom_extension">
+            <field name="name">view.product.normal.form.inherit.uom.extension</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='uom_id']" position="after">
+                    <field name="ppt_uom_id" string="Unit of Measure"/>
+                </xpath>
+                <xpath expr="//field[@name='uom_id']" position="attributes">
+                        <attribute name="domain">[]</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_open_quants']/div/span/field[@name='uom_name']" position="before">
+                    <field name="quantity_available" widget="statinfo" nolabel="1" style="margin-right:1px;"/>
+                </xpath>
+                <xpath expr="//field[@name='qty_available']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_view_sales']/div/span/field[@name='uom_name']" position="before">
+                    <field name="sales_total_count" widget="statinfo" nolabel="1" style="margin-right:1px;"/>
+                </xpath>
+<!--                <xpath expr="//button[@name='action_view_po']/div/span/field[@name='uom_name']" position="before">-->
+<!--                    <field name="purchased_product_qty_mod" widget="statinfo" nolabel="1" style="margin-right:3px;"/>-->
+<!--                </xpath>-->
+                <xpath expr="//button[@name='1585']" position="inside">
+                    <field name="qty_available_not_res_mod" widget="statinfo" string="Unreserved" style="margin-right:1px;"/>
+                </xpath>
+                <xpath expr="//field[@name='sales_count']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+<!--                <xpath expr="//field[@name='purchased_product_qty']" position="attributes">-->
+<!--                    <attribute name="invisible">1</attribute>-->
+<!--                </xpath>-->
+                <xpath expr="//button[@name='1585']/field[@name='qty_available_not_res']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+<!--                <xpath expr="//button[@name='%(purchase.act_res_partner_2_purchase_order)d']" position="attributes">-->
+<!--                    <attribute name="invisible">1</attribute>-->
+<!--                </xpath>-->
+<!--                <button name="%(purchase.act_res_partner_2_purchase_order)d'" position="attributes">-->
+<!--                    <attribute name="invisible">1</attribute>-->
+<!--                </button>-->
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="view_product_product_tree_inherit_uom_extension">
+            <field name="name">view.product.product.tree.inherit.uom.extension</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='uom_id']" position="before">
+                    <field name="incoming_quantity"/>
+                    <field name="outgoing_quantity"/>
+                    <field name="qty_available_not_res_mod"/>
+                    <field name="virtually_available"/>
+                    <field name="ppt_uom_id" string="Unit of Measure"/>
+                </xpath>
+                <xpath expr="//field[@name='qty_available']" position="after">
+                    <field name="quantity_available" string="Qty on Hand"/>
+                    <field name="reordering_min_qty_mod" string="Min Qty"/>
+                </xpath>
+                <xpath expr="//field[@name='reordering_min_qty']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='uom_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='qty_available']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='qty_available_not_res']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='transit_qty']" position="attributes">
+                    <attribute name="invisible">0</attribute>
+                </xpath>
+                <xpath expr="//field[@name='virtual_available']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='incoming_qty']" position="attributes">-->
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='outgoing_qty']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+
+
+    </data>
+</odoo>

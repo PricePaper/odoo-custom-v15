@@ -80,6 +80,8 @@ class SaleOrderLine(models.Model):
         res = super(SaleOrderLine, self).product_uom_change()
         unit_price = self.calculate_unit_price_and_contract()[0]
         if unit_price:
+            if self.product_id.burden_percent:
+                unit_price = unit_price * (1+(self.product_id.burden_percent/100))
             # self.price_unit = unit_price
             self.lst_price = unit_price
             self.working_cost = unit_price
@@ -111,6 +113,8 @@ class SaleOrderLine(models.Model):
             line.vendor_id = line.compute_vendor()
             unit_price = line.calculate_unit_price_and_contract()[0]
             if unit_price:
+                if line.product_id.burden_percent:
+                    unit_price = unit_price * (1+(line.product_id.burden_percent/100))
                 line.lst_price = unit_price
                 line.working_cost = unit_price
         return res

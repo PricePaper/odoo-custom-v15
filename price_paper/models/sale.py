@@ -571,8 +571,11 @@ class SaleOrder(models.Model):
         price_unit = res.get('price', 0)
 
         if price_unit != self._get_delivery_line_price() or not self._get_delivery_line_price():
-            self.with_context(adjust_delivery=True)._remove_delivery_line()
-            self._create_delivery_line(self.carrier_id, price_unit)
+            delivery_lines = self.env['sale.order.line'].search([('order_id', 'in', self.ids), ('is_delivery', '=', True)])
+            to_delete = delivery_lines.filtered(lambda rec: rec.qty_invoiced != 0)
+            if not to_delete:
+                self.with_context(adjust_delivery=True)._remove_delivery_line()
+                self._create_delivery_line(self.carrier_id, price_unit)
         self.with_context(from_adjust_delivery=True).write({'delivery_cost': res.get('cost', 0)})
 
         return True
@@ -1101,18 +1104,22 @@ class SaleOrderLine(models.Model):
     def _compute_lst_cost_prices(self):
         for line in self:
             if line.product_id and line.product_uom:
-                uom_price = line.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == line.product_uom)
-                if uom_price:
-                    line.lst_price = uom_price[0].price
-                    if line.product_id.cost:
-                        line.working_cost = uom_price[0].cost
+                if line.storage_contract_line_id:
+                    line.working_cost = 0
+                    line.lst_price = 0
                 else:
-                    line.product_id.job_queue_standard_price_update()
                     uom_price = line.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == line.product_uom)
                     if uom_price:
                         line.lst_price = uom_price[0].price
                         if line.product_id.cost:
                             line.working_cost = uom_price[0].cost
+                    else:
+                        line.product_id.job_queue_standard_price_update()
+                        uom_price = line.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == line.product_uom)
+                        if uom_price:
+                            line.lst_price = uom_price[0].price
+                            if line.product_id.cost:
+                                line.working_cost = uom_price[0].cost
             if line.is_delivery and line.order_id.carrier_id and line.order_id.carrier_id.delivery_type not in [
                 'base_on_rule', 'fixed']:
                 line.working_cost = line.order_id.delivery_cost

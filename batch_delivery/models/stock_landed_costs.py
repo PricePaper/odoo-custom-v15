@@ -15,16 +15,24 @@ class StockLandedCost(models.Model):
             product_lines = {}
             for line in self.valuation_adjustment_lines:
                 if line.product_id in product_lines:
-                    product_lines[line.product_id] += line.price_per_unit - line.product_id.standard_price
+                    product_lines[line.product_id] += line.additional_landed_cost / line.quantity
                 else:
-                    product_lines[line.product_id] = line.price_per_unit - line.product_id.standard_price
+                    product_lines[line.product_id] = (line.former_cost / line.quantity) + (line.additional_landed_cost / line.quantity)
             for product in product_lines:
                 self.env['cost.change'].create(
                     {'price_filter': 'fixed',
                      'product_id': product.id,
-                     'price_change': product_lines[product]+product.standard_price,
+                     'price_change': product_lines[product],
                      'cost_change_parent': cost_cron.id,
                      })
+    def button_show_lines(self):
+        lines = self.mapped('valuation_adjustment_lines')
+        action = self.env["ir.actions.actions"]._for_xml_id("batch_delivery.action_landed_cost_lines")
+        if len(lines) > 0:
+            action['domain'] = [('id', 'in', lines.ids)]
+        else:
+            action = {'type': 'ir.actions.act_window_close'}
+        return action
 
     def action_view_cost_cron(self):
 
@@ -47,8 +55,9 @@ class StockLandedCost(models.Model):
 class AdjustmentLines(models.Model):
     _inherit = 'stock.valuation.adjustment.lines'
 
-    price_per_unit = fields.Monetary('Cost Per Unit', compute='compute_price_per_unit')
+    price_per_unit = fields.Monetary('Cost Per Unit', compute='compute_price_per_unit', store=True)
 
+    @api.depends('additional_landed_cost', 'quantity')
     def compute_price_per_unit(self):
         for line in self:
-            line.price_per_unit = line.final_cost / line.quantity
+            line.price_per_unit = line.additional_landed_cost / line.quantity

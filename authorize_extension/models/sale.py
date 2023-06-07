@@ -205,5 +205,45 @@ class SaleOrder(models.Model):
             return super(SaleOrder, self.with_context({'create_payment': True})).payment_action_capture()
         raise ValidationError("authorised amount and invoiced amount is not matching\n please correct the invoice.")
 
+    def sale_create_transaction(self):
+        reference = self.name
+        count = self.env['payment.transaction'].sudo().search_count([('reference', 'ilike', self.name)])
+        if count:
+            reference = '%s - %s' % (self.name, count)
+        payment_fee = self.partner_id.property_card_fee
+        amount = self.amount_total
+        if payment_fee:
+            amount = float_round(self.amount_total * ((100+payment_fee) / 100), precision_digits=2)
+            payment_fee = self.amount_total * (payment_fee/100)
+        invoice = []
+        for inv in self.invoice_ids.filtered(lambda r:r.state != 'cancel' and r.payment_state not in ('in_payment', 'paid') and r.move_type == 'out_invoice'):
+            invoice.append((4, inv.id))
+
+        tx_sudo = self.env['payment.transaction'].sudo().create({
+           'acquirer_id': self.token_id.acquirer_id.id,
+           'reference': reference,
+           'amount': amount,
+           'transaction_fee': payment_fee,
+           'currency_id': self.currency_id.id,
+           'partner_id': self.partner_id.id,
+           'token_id': self.token_id.id,
+           'operation': 'offline',
+           'tokenize': False,
+           'sale_order_ids': [(4, self.id)],
+           'invoice_ids': invoice
+        })
+        return tx_sudo
+
+    def sale_reauthorize_transaction(self):
+        tx_sudo = self.sale_create_transaction()
+        tx_sudo.with_context({'from_authorize_custom': True})._send_payment_request()
+        error_msg = ''
+        if tx_sudo.state == 'error':
+            error_msg = tx_sudo.state_message
+            error_msg += "\nThe transaction with reference %s for %s has error(Authorize.Net)." % (tx_sudo.reference, tx_sudo.amount)
+        elif tx_sudo.state == 'cancel':
+            error_msg = "The transaction with reference %s for %s is canceled (Authorize.Net)." % (tx_sudo.reference, tx_sudo.amount)
+        if error_msg:
+            self.message_post(body=error_msg)
 
 SaleOrder()

@@ -142,11 +142,12 @@ class ProductProduct(models.Model):
         to_date = datetime.date.today()
         msg=''
 
-        vendor = self.seller_ids.filtered(lambda seller: seller.is_available) and \
-                 self.seller_ids.filtered(lambda seller: seller.is_available)[0]
+        vendor = self.seller_ids.filtered(lambda s: (s.date_start and s.date_end and s.date_start < to_date and s.date_end > to_date) or (not s.date_start or not s.date_end))
+
         if not vendor:
             server_log.error('Supplier is not set for product %s' % self.name)
         else:
+            vendor = vendor[0]
             delivery_lead_time = vendor.delay or 0
             if not delivery_lead_time:
                 delivery_lead_time = vendor.name.delay or 0

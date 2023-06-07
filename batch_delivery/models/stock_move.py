@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import math
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from operator import itemgetter
@@ -24,6 +25,19 @@ class StockMove(models.Model):
     invoice_line_ids = fields.Many2many(comodel_name='account.move.line', compute="_get_aml_ids", string="Invoice Lines")
 
     def _prepare_move_line_vals(self, quantity=None, reserved_quant=None):
+        res = super()._prepare_move_line_vals(quantity=quantity, reserved_quant=reserved_quant)
+        if not res.get('product_uom_qty'):
+            return res
+        if res['product_uom_qty'] > self.product_uom_qty:
+            res['product_uom_qty'] = self.product_uom_qty
+        elif res['product_uom_qty'] < self.product_uom_qty:
+            #and math.ceil(res['product_uom_qty']) == self.product_uom_qty:
+            difference = self.product_uom_qty - res['product_uom_qty']
+            if difference < 0.008:
+                res['product_uom_qty'] = self.product_uom_qty
+        return res
+
+    def _prepare_move_line_vals_old(self, quantity=None, reserved_quant=None):
         self.ensure_one()
         vals = {
             'move_id': self.id,

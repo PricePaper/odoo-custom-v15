@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'UPS Extension',
+    'name': 'Sale Margin Extension',
     'version': '15.0.0',
     'license': 'LGPL-3',
-    'summary': 'UPS Extension',
+    'summary': 'Sale Margin Extension',
     'author': 'Confianz',
     'website': 'https://www.confianzit.com',
     'description': """
-    UPS integration extension for PPT
+     Modifications to Sale Margin module for PPT
     """,
-    'data': [],
+    'data': ['views/sale_order.xml'],
     'depends': [
-        'delivery_ups', 'sale_margin', 'price_paper'
+        'sale_margin', 'price_paper'
     ],
     'installable': True,
     'application': False,

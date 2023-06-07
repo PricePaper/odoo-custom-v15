@@ -80,6 +80,14 @@ class StockPicking(models.Model):
             if picking.transit_move_lines.filtered(lambda rec: rec.procure_method == 'make_to_order') and self.state not in ('done', 'cancel'):
                 picking.show_reset = True
 
+    def do_unreserve(self):
+        if self.picking_type_code == 'outgoing' and not self.is_return:
+            if self.transit_move_lines:
+                self.transit_move_lines._do_unreserve()
+                self.package_level_ids.filtered(lambda p: not p.move_ids).unlink()
+        else:
+            super(StockPicking, self).do_unreserve()
+
     def internal_move_from_customer_returned(self):
         location = self.env.user.company_id.destination_location_id
         quants = self.env['stock.quant'].search([('quantity', '>', 0.01), ('location_id', '=', location.id)])
@@ -415,6 +423,9 @@ class StockPicking(models.Model):
             if 'route_id' in vals.keys() and picking.batch_id and picking.batch_id.state in ('done', 'no_payment', 'paid'):
                 raise UserError("Batch is already in done state. You can not remove the picking")
             route_id = vals.get('route_id', False)
+            route_exist = False
+            if self.route_id:
+                route_exist = True
             if route_id:
                 batch = self.env['stock.picking.batch'].search([('state', '=', 'in_progress'), ('route_id', '=', route_id)], limit=1)
                 if batch:
@@ -434,8 +445,8 @@ class StockPicking(models.Model):
                 if not batch:
                     batch = self.env['stock.picking.batch'].create({'route_id': route_id})
                 picking.batch_id = batch
-
-                vals['is_late_order'] = batch.state in ('in_progress', 'in_truck')
+                if not route_exist:
+                    vals['is_late_order'] = batch.state in ('in_progress', 'in_truck')
             if 'route_id' in vals.keys() and not (
                     vals.get('route_id', False)) and picking.batch_id and picking.batch_id.state == 'draft':
                 vals.update({'batch_id': False})

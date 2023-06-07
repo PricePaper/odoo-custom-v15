@@ -4,6 +4,7 @@ import calendar
 import datetime
 
 from dateutil.relativedelta import *
+from odoo.exceptions import UserError
 
 from odoo import models, fields, api
 
@@ -158,6 +159,28 @@ class ResPartner(models.Model):
                      attachments=attachments, attachment_ids=attachment_ids,
                      add_sign=add_sign, record_name=record_name,
                      **kwargs)
+
+    def create_opportunity(self):
+        if self.active:
+            raise UserError('Selected partner is not archived.')
+        else:
+            opportunity = self.env['crm.lead'].create({
+                'partner_id': self.id,
+                'name': self.name,
+                'type': 'opportunity',
+                'state_id': 5
+            })
+
+            action = self.env["ir.actions.actions"]._for_xml_id("crm.crm_lead_all_leads")
+            form_view = [(self.env.ref('crm.crm_lead_view_form').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state,view) for state,view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
+            action['res_id'] = opportunity.id
+            return action
+
+
 
 
 

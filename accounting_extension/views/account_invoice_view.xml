@@ -21,6 +21,9 @@
                     <button name="compute_taxes" type="object" string="Update Tax" class="fa fa-pencil-square-o oe_right btn-danger"
                             attrs="{'invisible': [('state', '!=', 'draft')]}" groups="account.group_account_user"/>
                 </xpath>
+                <xpath expr="//group[@id='header_right_group']/field[@name='date']" position="attributes">
+                     <attribute name="attrs">{'invisible': [('move_type', 'in', ('out_invoice', 'out_receipt'))], 'readonly': [('state', '!=', 'draft')],}</attribute>
+                 </xpath>
             </field>
         </record>
 

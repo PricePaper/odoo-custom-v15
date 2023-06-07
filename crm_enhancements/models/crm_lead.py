@@ -44,11 +44,14 @@ class Lead(models.Model):
                 partner = lead.partner_id
                 partner.rev_per_trans = lead.rev_per_trans or vals.get('rev_per_trans', 0.00)
                 partner.business_freq = lead.business_freq or vals.get('business_freq', '')
+            if lead.stage_id.name in ['Lost', 'Disqualified'] and lead.partner_id:
+                if lead.partner_id.active:
+                    lead.partner_id.toggle_active()
         return res
 
 
     def _prepare_customer_values(self, partner_name, is_company=False, parent_id=False):
-        """Adding sales persons data while creating partner from Convert to opportunity wizard 
+        """Adding sales persons data while creating partner from Convert to opportunity wizard
         with Create a new customer option"""
 
         result = super(Lead, self)._prepare_customer_values(partner_name,is_company,parent_id)

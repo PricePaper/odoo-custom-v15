@@ -73,6 +73,9 @@
                     <button name="sale_reauthorize_transaction" type="object" string="Reauthorize"
                             attrs="{'invisible':[('is_transaction_error', '=', False)]}"
                             groups="sales_team.group_sale_manager, account.group_account_manager"/>
+                    <button name="release_credit_hold_picking" type="object" string="Release Credit Hold"
+                            groups="price_paper.group_allow_more_than_credit_limit"
+                            attrs="{'invisible': [('credit_hold_after_confirm', '=', False)]}"/>
                     <button name="action_confirm_bypass" type="object" string="confirm without payment"
                             confirm="You cannot make authorise.net payment afte this step"
                             attrs="{'invisible':[('is_payment_error', '=', False)]}" context="{'bypass_payment':True}"

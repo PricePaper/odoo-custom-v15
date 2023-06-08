@@ -7,6 +7,11 @@ class StockPicking(models.Model):
 
     is_payment_hold = fields.Boolean(string='Payment Hold', copy=False)
 
+    def create_invoice(self):
+        for picking in self:
+            if picking.is_payment_hold:
+                raise UserError('%s Delivery Order in hold state'%(picking.name))
+
 class StockMove(models.Model):
     _inherit = 'stock.move'
 

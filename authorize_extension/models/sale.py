@@ -2,6 +2,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools.float_utils import float_round
+from datetime import date
 
 
 class SaleOrder(models.Model):
@@ -269,6 +270,15 @@ class SaleOrder(models.Model):
         if error_msg:
             self.message_post(body=error_msg)
 
+    def release_credit_hold_picking(self):
+        self.credit_hold_after_confirm = False
+        transactions = self.transaction_ids.filtered(lambda r: r.state not in ('cancel', 'done', 'error'))
+        if transactions:
+            transactions.action_void()
+            order.sale_reauthorize_transaction()
+        else:
+            picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
+            picking.write({'is_payment_hold': False})
 
     def write(self, vals):
         """
@@ -281,30 +291,35 @@ class SaleOrder(models.Model):
                     amount[order.id] = order.amount_total
         res = super(SaleOrder, self).write(vals)
         for order in self:
-            transactions = order.transaction_ids.filtered(lambda r: r.state not in ('cancel', 'done', 'error'))
-            if transactions:
-                if order.id in amount and amount[order.id] < order.amount_total:
-                    pending_invoices = order.partner_id.invoice_ids.filtered(
-                        lambda rec: rec.move_type == 'out_invoice' and rec.state == 'posted' and rec.payment_state not in ('paid', 'in_payment', 'reversed') and (
-                                rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
+            if order.id in amount and amount[order.id] < order.amount_total:
+                pending_invoices = order.partner_id.invoice_ids.filtered(
+                    lambda rec: rec.move_type == 'out_invoice' and rec.state == 'posted' and rec.payment_state not in ('paid', 'in_payment', 'reversed') and (
+                            rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
 
-                    msg = ''
-                    invoice_name = []
-                    for invoice in pending_invoices:
-                        term_line = invoice.invoice_payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
-                        date_due = invoice.invoice_date_due
-                        if term_line and term_line.grace_period:
-                            date_due = date_due + timedelta(days=term_line.grace_period)
-                        if date_due and date_due < date.today():
-                            invoice_name.append(invoice.name)
-                    if invoice_name:
-                        msg += 'Customer has pending invoices.\n %s ' % '\n'.join(invoice_name)
-                    if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
-                        msg+='Credit limit Exceed'
-                    if not msg:
-                        if order.transaction_ids.filtered(lambda r: r.state not in ('cancel', 'done', 'error')):
-                            transactions.action_void()
-                            order.sale_reauthorize_transaction()
+                msg = ''
+                invoice_name = []
+                for invoice in pending_invoices:
+                    term_line = invoice.invoice_payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
+                    date_due = invoice.invoice_date_due
+                    if term_line and term_line.grace_period:
+                        date_due = date_due + timedelta(days=term_line.grace_period)
+                    if date_due and date_due < date.today():
+                        invoice_name.append(invoice.name)
+                if invoice_name:
+                    msg += 'Customer has pending invoices.\n %s ' % '\n'.join(invoice_name)
+                if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
+                    msg+='Credit limit Exceed'
+                if msg:
+                    order.message_post(body=msg)
+                    order.credit_hold_after_confirm = True
+                    picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
+                    if picking:
+                        picking.write({'is_payment_hold': True})
+                else:
+                    transactions = order.transaction_ids.filtered(lambda r: r.state not in ('cancel', 'done', 'error'))
+                    if transactions:
+                        transactions.action_void()
+                        order.sale_reauthorize_transaction()
 
         return res
 

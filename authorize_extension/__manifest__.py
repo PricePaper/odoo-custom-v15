@@ -12,6 +12,7 @@
     'data': [
         'data/data.xml',
         'data/mail_template.xml',
+        'wizard/batch_warning.xml',
         'wizard/generate_payment_token_view.xml',
         'wizard/add_transaction_to_invoice.xml',
         'wizard/reauth_invoice_token.xml',
@@ -30,6 +31,7 @@
         'views/account_payment_token_view.xml',
         'views/account_payment_term_view.xml',
         'views/account_fiscal_position.xml',
+        'views/batch_delivery_view.xml',
         'views/sale_order_view.xml',
         'security/ir.model.access.csv',
     ],

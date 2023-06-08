@@ -22,6 +22,73 @@
               <xpath expr="//field[@name='final_cost']" position="after">
                   <field name="price_per_unit"/>
               </xpath>
+              <xpath expr="//field[@name='valuation_adjustment_lines']" position="before">
+                  <button name="button_show_lines" string="Grouped view" type="object" class='oe_highlight'/>
+              </xpath>
+            </field>
+        </record>
+        <record id="view_laned_cost_lines_tree" model="ir.ui.view">
+            <field name="name">stock.valuation.adjustment.lines</field>
+            <field name="model">stock.valuation.adjustment.lines</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="cost_line_id"/>
+                    <field name="product_id" invisible='1'/>
+                    <field name="quantity"/>
+                    <field name="former_cost"/>
+                    <field name="final_cost"/>
+                    <field name="price_per_unit"/>
+                    <field name="additional_landed_cost"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_laned_cost_lines_search" model="ir.ui.view">
+          <field name="name">stock.valuation.adjustment.lines</field>
+          <field name="model">stock.valuation.adjustment.lines</field>
+            <field name="arch" type="xml">
+                <search string="Search Landed Cost Lines">
+                    <field name="product_id"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Product" name="group_by_product" domain="[]" context="{'group_by':'product_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="view_laned_cost_lines_form" model="ir.ui.view">
+          <field name="name">stock.valuation.adjustment.lines</field>
+          <field name="model">stock.valuation.adjustment.lines</field>
+            <field name="arch" type="xml">
+                <form string="Landed cost lines">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="product_id" />
+                                <field name="quantity" />
+                            </group>
+                            <group>
+                                <field name="former_cost" />
+                                <field name="price_per_unit" />
+                                <field name="additional_landed_cost" />
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_landed_cost_lines" model="ir.actions.act_window">
+            <field name="name">Landed cost lines</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">stock.valuation.adjustment.lines</field>
+            <field name="view_mode">tree</field>
+            <field name="search_view_id" ref="view_laned_cost_lines_search"/>
+            <field name="context">{'search_default_group_by_product': 1}</field>
+            <field name="help" type="html">
+                <p>
+                    No Records found.
+                </p>
             </field>
         </record>
     </data>

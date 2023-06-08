@@ -20,8 +20,6 @@ class ResPartner(models.Model):
     last_so = fields.Char(string='Last Sale order', compute='get_last_sale_order', store=True)
     last_so_date = fields.Datetime(string='Last Sale Date', compute='get_last_sale_order', store=True)
     sales_person_code = fields.Char(string='Sale Person Code')
-    payment_method = fields.Selection([('credit_card', 'Credit Card'), ('cash', 'Cash')], string='Payment Method',
-                                      required=True, default='cash')
 
     def _inverse_set_salespersons(self):
         for partner in self:

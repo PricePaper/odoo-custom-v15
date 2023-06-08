@@ -222,17 +222,22 @@ class SaleOrder(models.Model):
         if payment_fee:
             amount = float_round(self.amount_total * ((100+payment_fee) / 100), precision_digits=2)
             payment_fee = self.amount_total * (payment_fee/100)
+        invoice = []
+        for inv in self.invoice_ids.filtered(lambda r:r.state != 'cancel' and r.payment_state not in ('in_payment', 'paid') and r.move_type == 'out_invoice'):
+            invoice.append((4, inv.id))
+
         tx_sudo = self.env['payment.transaction'].sudo().create({
-            'acquirer_id': self.token_id.acquirer_id.id,
-            'reference': reference,
-            'amount': amount,
-            'transaction_fee': payment_fee,
-            'currency_id': self.currency_id.id,
-            'partner_id': self.partner_id.id,
-            'token_id': self.token_id.id,
-            'operation': 'offline',
-            'tokenize': False,
-            'sale_order_ids': [(4, self.id)]
+           'acquirer_id': self.token_id.acquirer_id.id,
+           'reference': reference,
+           'amount': amount,
+           'transaction_fee': payment_fee,
+           'currency_id': self.currency_id.id,
+           'partner_id': self.partner_id.id,
+           'token_id': self.token_id.id,
+           'operation': 'offline',
+           'tokenize': False,
+           'sale_order_ids': [(4, self.id)],
+           'invoice_ids': invoice
         })
         return tx_sudo
 

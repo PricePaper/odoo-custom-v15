@@ -253,7 +253,7 @@ class AccountMoveLine(models.Model):
         if self.move_id.is_sale_document():
             prices_all = self.env['customer.product.price']
             for rec in self.move_id.partner_id.customer_pricelist_ids:
-                if not rec.pricelist_id.expiry_date or rec.pricelist_id.expiry_date >= str(date.today()):
+                if not rec.pricelist_id.expiry_date or rec.pricelist_id.expiry_date >= date.today():
                     prices_all |= rec.pricelist_id.customer_product_price_ids
             prices_all = prices_all.filtered(
                 lambda r: r.product_id.id == self.product_id.id and r.product_uom.id == self.product_uom_id.id and (

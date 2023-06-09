@@ -2,7 +2,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools.float_utils import float_round
-from datetime import date
+from datetime import date, timedelta
 
 
 class SaleOrder(models.Model):

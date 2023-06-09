@@ -11,6 +11,7 @@ class StockPicking(models.Model):
         for picking in self:
             if picking.is_payment_hold:
                 raise UserError('%s Delivery Order in hold state'%(picking.name))
+        return super(StockPicking, self).create_invoice()
 
 class StockMove(models.Model):
     _inherit = 'stock.move'

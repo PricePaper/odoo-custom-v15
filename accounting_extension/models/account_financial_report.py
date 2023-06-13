@@ -23,8 +23,8 @@ class ReportAccountFinancialReport(models.Model):
                     if 'percent' in dict.keys():
                         style_col = True
                         break
-                if l.get('columns', False) and len(l.get('columns', False)) == 1  or (self.user_has_groups('base.group_no_one') and len(l.get('columns', False))>=2 and not style_col) and (l.get('class') not in ['o_account_reports_totals_below_sections','total'] or l.get('name')=='Total Gross Profit'):
-                    if l.get('caret_options') or l.get('id') == 'total_6' or l.get('name') == 'Total Gross Profit' or l.get(
+                if l.get('columns', False) and len(l.get('columns', False)) == 1  or (self.user_has_groups('base.group_no_one') and len(l.get('columns', False))>=2 and not style_col) and (l.get('class') not in ['o_account_reports_totals_below_sections','total'] or l.get('name') in ('Total Gross Profit', 'Cost of Revenue', 'Direct Labor', 'Operating Income', 'Other Income')):
+                    if l.get('caret_options') or l.get('id') == 'total_6' or l.get('name') in ('Total Gross Profit', 'Cost of Revenue', 'Direct Labor', 'Operating Income', 'Other Income') or l.get(
                             'id') == 4 and l.get('class') == 'total':
                         s = l['columns'][0].get('no_format')
                         p = t > 0.0 and (s / t) * 100 or 0.0
@@ -106,7 +106,7 @@ class ReportAccountFinancialReport(models.Model):
                             style_col = True
                             break
                     if l.get('columns', False) and len(l.get('columns', False)) == 1 and l.get('class') not in ['o_account_reports_totals_below_sections','total'] or (self.user_has_groups('base.group_no_one') and len(l.get('columns', False))>=2 and not style_col):
-                            if l.get('caret_options') or l.get('id') == 'total_6' or l.get('name') == 'Total Gross Profit' or l.get(
+                            if l.get('caret_options') or l.get('id') == 'total_6' or l.get('name') in ('Total Gross Profit', 'Cost of Revenue', 'Direct Labor', 'Operating Income', 'Other Income') or l.get(
                                     'id') == 4 and l.get('class') == 'total':
                                 s = l['columns'][0].get('no_format')
                                 p = t > 0.0 and (s / t) * 100 or 0.0
@@ -127,6 +127,10 @@ class ReportAccountFinancialReport(models.Model):
         def create_date_domain(options_date):
             date_field = options_date.get('date_field', 'date')
             domain = [(date_field, '<=', options_date['date_to'])]
+            date_tmp = fields.Date.from_string(options_date['date_to'])
+            date_tmp = self.env.company.compute_fiscalyear_dates(date_tmp)['date_from']
+            date_from = date_tmp.strftime('%Y-%m-%d')
+            domain += [(date_field, '>=', date_from)]
             if options_date['mode'] == 'range' and options_date['date_from'] and not options.get('exclude_from_date'):
                 strict_range = options_date.get('strict_range')
                 if not strict_range:

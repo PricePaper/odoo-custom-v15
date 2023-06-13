@@ -2,6 +2,20 @@
 <odoo>
     <data>
 
+      <record id="view_sales_order_auto_done_setting_inherited" model="ir.ui.view">
+          <field name="name">sale.order.form</field>
+          <field name="model">sale.order</field>
+          <field name="inherit_id" ref="sale.view_sales_order_auto_done_setting"/>
+          <field name="arch" type="xml">
+              <xpath expr="//button[@name='action_unlock']" position="attributes">
+                  <attribute name="invisible">1</attribute>
+              </xpath>
+              <xpath expr="//button[@name='action_done']" position="attributes">
+                  <attribute name="invisible">1</attribute>
+              </xpath>
+          </field>
+      </record>
+
         <record id="price_paper_sale_order_form_view" model="ir.ui.view">
             <field name="name">inherited.sale.order.form.view.batch</field>
             <field name="model">sale.order</field>
@@ -20,6 +34,14 @@
                         </p>
                     </div>
                 </sheet>
+                <xpath expr="//form//header//button[@name='action_draft']" position="after">
+                   <button name="action_done" type="object" string="Lock" states="sale"
+                        help="If the sale is locked, you can not modify it anymore. However, you will still be able to invoice or deliver."
+                        confirm="Are you sure you want to change this?"/>
+                    <button name="action_unlock" type="object" string="Unlock"
+                      states="done"
+                      confirm="Are you sure you want to change this?"/>
+                </xpath>
 
                 <field name="payment_term_id" position="after">
                     <field name="carrier_id"/>
@@ -51,9 +73,6 @@
                         />
                     </div>
                 </field>
-                <xpath expr="//form//header//button[@name='action_draft']" position="after">
-                    <button name="action_unlock" type="object" string="Unlock" states="done" groups="sales_team.group_sale_manager"/>
-                </xpath>
                 <xpath expr="//field[@name='validity_date']" position="after">
                     <field name="storage_contract" invisible="1"/>
                     <field name="hold_state" invisible='1'/>
@@ -138,10 +157,10 @@
                     <attribute name="decoration-bf">procure_method == 'make_to_order'</attribute>
                 </xpath>
 
-                <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="attributes">
+                <!-- <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="attributes">
                     <attribute name="options">{"no_create": False}</attribute>
                     <attribute name="widget">False</attribute>
-                </xpath>
+                </xpath> -->
                 <xpath expr="//field[@name='order_line']/form//field[@name='product_uom']" position="before">
                     <field name="sale_uom_ids" invisible="1"/>
                 </xpath>
@@ -202,19 +221,50 @@
                     <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
                 </xpath>
 
-                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='product_id']"
+                <!-- <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='product_id']"
                        position="attributes">
                     <attribute name="options">{"no_create": 1, "no_create_edit": 1}</attribute>
                     <attribute name="domain">[('sale_ok', '=', True), ('categ_id.is_storage_contract', '=', False)]
                     </attribute>
+                </xpath> -->
+                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]" position="before">
+                  <label for='product_id' attrs="{'invisible': [('display_type', '!=', False)]}"/>
+                  <field name="product_id"
+                      domain="[('sale_ok', '=', True), ('categ_id.is_storage_contract', '=', False)]"
+                      context="{'partner_id':parent.partner_id,
+                          'show_uom_name': 1,
+                          'quantity':product_uom_qty,
+                          'pricelist':parent.pricelist_id,
+                          'uom':product_uom,
+                          'company_id': parent.company_id}"
+                      attrs="{
+                          'invisible': [('display_type', '!=', False)],
+                          'readonly': [('product_updatable', '=', False)],
+                          'required': [('display_type', '=', False)],
+                      }"
+                      force_save="1"
+                     />
                 </xpath>
+                <xpath expr="//field[@name='order_line']/form/group[1]/group[1]/field[@name='product_id']"
+                       position="attributes">
+                       <attribute name="invisible">1</attribute>
+                       <attribute name="widget">False</attribute>
+                       <attribute name="context">{'partner_id':parent.partner_id,
+                           'show_uom_name': 1,
+                           'quantity':product_uom_qty,
+                           'pricelist':parent.pricelist_id,
+                           'uom':product_uom,
+                           'company_id': parent.company_id}</attribute>
+                      <attribute name="domain">[('sale_ok', '=', True), ('categ_id.is_storage_contract', '=', False)]</attribute>
+                </xpath>
+
 
                 <xpath expr="//field[@name='order_line']/form/group[1]" position="after">
                     <div>
                         <group>
                             <group>
 
-                                <field name="procure_method" invisible="0"/>
+                                <field name="procure_method" attrs="{'invisible': [('display_type', '!=', False)]}"/>
                                 <field name="product_onhand" readonly='1'
                                        attrs="{'invisible': [('display_type', '!=', False)]}" help='Qty on hand'/>
                                 <field name="note" attrs="{'invisible': [('display_type', '!=', False)]}"/>
@@ -577,8 +627,11 @@
                                 <field name="partner_id" widget="res_partner_many2one" domain="[('customer','=',True)]"
                                        context="{'search_default_customer':1, 'show_address': 1, 'show_vat': True}"
                                        options='{"always_reload": True}'/>
+                               <field name="invoice_address_id" required='1'
+                                      context="{'default_type': 'invoice', 'address_inline': 1, 'show_address': 1, 'tree_view_ref': 'price_paper.view_partner_tree_search_more'}"
+                                      domain="['|', ('id', '=', partner_id), '&amp;', ('parent_id', '=', partner_id), ('type', '=', 'invoice')]"/>
                                 <field name="partner_invoice_id" groups="sale.group_delivery_invoice_address"
-                                       context="{'default_type':'invoice'}" options='{"always_reload": True}'/>
+                                       context="{'default_type':'invoice'}" options='{"always_reload": True}' invisible="1"/>
                                 <field name="partner_shipping_id" groups="sale.group_delivery_invoice_address"
                                        context="{'default_type':'delivery'}" options='{"always_reload": True}'/>
                                 <field name="company_id" invisible="1"/>

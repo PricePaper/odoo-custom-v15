@@ -17,6 +17,7 @@ class AccountMove(models.Model):
     out_standing_credit = fields.Float(compute='_compute_out_standing_credit', string="Out Standing")
     private_partner = fields.Boolean(string='Is Private', default=False,related='partner_id.private_partner')
     is_customer_return = fields.Boolean(string='Customer Return')
+    sale_default_message = fields.Html(related="company_id.sale_default_message", readonly=True)
 
     def _get_mail_template(self):
         """
@@ -117,12 +118,13 @@ class AccountMove(models.Model):
                 gross_profit = 0
                 for line in move.invoice_line_ids:
                     gross_profit += line.profit_margin
-                card_amount = 0
+                fee = 0
                 for partial, amount, counterpart_line in move._get_reconciled_invoices_partials():
-                    if counterpart_line.payment_id.payment_method_line_id.code == 'credit_card':
-                        card_amount += amount
-                if card_amount:
-                    gross_profit -= card_amount * 0.03
+                    payment_method = counterpart_line.payment_id.payment_method_line_id.payment_method_id
+                    if payment_method.payment_fee != 0.0:
+                        fee += amount * (payment_method.payment_fee / 100)
+                if fee:
+                    gross_profit -= fee
                 discount = move.get_discount()
                 if discount:
                     gross_profit -= discount
@@ -162,7 +164,7 @@ class AccountMove(models.Model):
         Remove all zero qty lines from invoice
         """
         for move in self.filtered(lambda rec: rec.is_sale_document()):
-            move.invoice_line_ids.filtered(lambda rec: rec.quantity == 0).sudo().unlink()
+            move.invoice_line_ids.filtered(lambda rec: rec.quantity == 0 and rec.display_type == False).sudo().unlink()
             # if an invoice have only one line we need to make sure it's not a delivery charge.
             # if it's a delivery charge, remove it from invoice.
             if len(move.invoice_line_ids) == 1 and move.invoice_line_ids.mapped('sale_line_ids') and any(

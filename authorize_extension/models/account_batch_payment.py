@@ -13,7 +13,7 @@ class AccountBatchPayment(models.Model):
     def create_autherize_batch_payment(self):
 
         last_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-        start_date = (datetime.now() - timedelta(15)).strftime("%Y-%m-%dT%H:%M:%S")
+        start_date = (datetime.now() - timedelta(30)).strftime("%Y-%m-%dT%H:%M:%S")
 
         acquirer = self.env['payment.acquirer'].search([('provider', '=', 'authorize')])
 
@@ -85,23 +85,26 @@ class AccountBatchPayment(models.Model):
                 if payments_to_batch:
 
                     #add card swipe payments direct to the bank
-                    payment_last_date = fields.Date.today()
-                    payment_start_date = fields.Date.today() - timedelta(1)
-                    direct_bank_payments = payment_obj.search([('card_payment_type', '=', 'bank'),
-                        ('batch_payment_id', '=', False),
-                        ('date', '<=', payment_last_date),
-                        ('date', '>=', payment_start_date)])
-                    if direct_bank_payments:
-                        payments_to_batch |= direct_bank_payments
+                    # payment_last_date = fields.Date.today()
+                    # payment_start_date = fields.Date.today() - timedelta(1)
+                    # direct_bank_payments = payment_obj.search([('card_payment_type', '=', 'bank'),
+                    #     ('batch_payment_id', '=', False),
+                    #     ('date', '<=', payment_last_date),
+                    #     ('date', '>=', payment_start_date)])
+                    # if direct_bank_payments:
+                    #     payments_to_batch |= direct_bank_payments
 
 
-                    journals = payments_to_batch.mapped('journal_id')
-                    payment_methods = payments_to_batch.mapped('payment_method_line_id')
+                    journals = [*set(payments_to_batch.mapped('journal_id'))]
+                    payment_methods = [*set(payments_to_batch.mapped('payment_method_line_id'))]
                     for journal in journals:
                         for p_method in payment_methods:
+
                             filtered_payments = payments_to_batch.filtered(lambda r: r.journal_id == journal and r.payment_method_line_id == p_method)
                             if filtered_payments:
+                                name = self.env['ir.sequence'].with_context(sequence_date=filtered_payments[0].date).next_by_code('authorize.batch.payment')
                                 new_batch = self.env['account.batch.payment'].create({
+                                    'name': name,
                                     'journal_id': journal.id,
                                     'date': filtered_payments[0].date,
                                     'payment_method_line_id': p_method.id,
@@ -109,27 +112,29 @@ class AccountBatchPayment(models.Model):
 
                                     })
                                 filtered_payments.write({'batch_payment_id': new_batch.id})
-        if not new_batch:
-            payment_last_date = fields.Date.today()
-            payment_start_date = fields.Date.today() - timedelta(1)
-            payments_to_batch = payment_obj.search([('card_payment_type', '=', 'bank'),
-                ('batch_payment_id', '=', False),
-                ('date', '<=', payment_last_date),
-                ('date', '>=', payment_start_date)])
-            if payments_to_batch:
-                journals = payments_to_batch.mapped('journal_id')
-                payment_methods = payments_to_batch.mapped('payment_method_line_id')
-                for journal in journals:
-                    for p_method in payment_methods:
-                        filtered_payments = payments_to_batch.filtered(lambda r: r.journal_id == journal and r.payment_method_line_id == p_method)
-                        if filtered_payments:
-                            new_batch = self.env['account.batch.payment'].create({
-                                'journal_id': journal.id,
-                                'payment_method_line_id': p_method.id,
-                                'authorize_batch_ref': 'Direct Bank payments'
+        # create batch for direct payment
+        payment_last_date = fields.Date.today()
+        payment_start_date = fields.Date.today() - timedelta(1)
+        payments_to_batch = payment_obj.search([('card_payment_type', '=', 'bank'),
+            ('batch_payment_id', '=', False),
+            ('date', '<=', payment_last_date),
+            ('date', '>=', payment_start_date)])
+        if payments_to_batch:
+            journals = payments_to_batch.mapped('journal_id')
+            payment_methods = payments_to_batch.mapped('payment_method_line_id')
+            for journal in journals:
+                for p_method in payment_methods:
+                    filtered_payments = payments_to_batch.filtered(lambda r: r.journal_id == journal and r.payment_method_line_id == p_method)
+                    if filtered_payments:
+                        name = self.env['ir.sequence'].with_context(sequence_date=filtered_payments[0].date).next_by_code('direct.batch.payment')
+                        new_batch = self.env['account.batch.payment'].create({
+                            'name': name,
+                            'journal_id': journal.id,
+                            'payment_method_line_id': p_method.id,
+                            'authorize_batch_ref': 'Direct Bank payments'
 
-                                })
-                            filtered_payments.write({'batch_payment_id': new_batch.id})
+                            })
+                        filtered_payments.write({'batch_payment_id': new_batch.id})
 
 
 

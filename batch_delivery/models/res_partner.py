@@ -19,6 +19,16 @@ class ResPartner(models.Model):
     is_driver_available = fields.Boolean(string='Is Driver Available', default=True)
     private_partner = fields.Boolean(string='Is Private', default=False)
 
+    def _get_unreconciled_aml_domain(self):
+        return [
+            ('reconciled', '=', False),
+            ('account_id.deprecated', '=', False),
+            ('account_id.internal_type', 'in', ('receivable', 'payable')),
+            ('move_id.state', '=', 'posted'),
+            ('partner_id', 'in', self.ids),
+            ('company_id', '=', self.env.company.id),
+        ]
+
     @api.model_create_multi
     def create(self, vals_list):
         if self._context.get('search_default_customer') and vals_list:

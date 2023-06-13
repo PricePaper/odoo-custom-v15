@@ -114,7 +114,7 @@
             <field name="formulas">CURR_YEAR_EARNINGS_PNL + CURR_YEAR_EARNINGS_ALLOC</field>
         </record>
         <record id="account_reports.account_financial_current_year_earnings_line_1" model="account.financial.html.report.line">
-            <field name="formulas">-sum</field>
+            <field name="formulas">NEP</field>
         </record>
         <record id="account_reports.account_financial_current_year_earnings_line_2" model="account.financial.html.report.line">
             <field name="domain" eval="[('account_id.user_type_id', '=', ref('account.data_unaffected_earnings'))]"/>

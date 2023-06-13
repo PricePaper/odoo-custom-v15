@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data>
+          <record id="email_credit_card_fee_receipt" model="mail.template">
+              <field name="name">Payment Receipt Mail</field>
+              <field name="model_id" ref="account.model_account_payment"/>
+              <field name="subject">Your payment receipt</field>
+              <field name="email_from">{{(user.email or '')}}</field>
+              <field name="email_to">{{object.partner_id.email}}</field>
+              <field name="report_template" ref="account.action_report_payment_receipt"/>
+              <field name="report_name">payment_receipt</field>
+              <field name="body_html" type="html">
+                  <p>
+                    Please find the attached receipt for your recent payment of <t t-out="object.amount"/>
+                  </p>
+              </field>
+              <field name="auto_delete" eval="True"/>
+          </record>
+    </data>
+</odoo>

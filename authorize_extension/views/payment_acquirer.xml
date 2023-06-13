@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr='//field[@name="authorize_signature_key"]' position='after'>
                 <field name="is_avs_check" groups="base.group_system"/>
+                <field name="support_refund" groups="base.group_system"/>
             </xpath>
         </field>
     </record>

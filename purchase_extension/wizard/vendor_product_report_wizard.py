@@ -29,6 +29,7 @@ class VendorProductReportWizard(models.TransientModel):
     _name = 'vedor.product.report.wizard'
     _description = "Vendor Product Report Wizard"
     _rec_name = "start_date"
+
     vendor_ids = fields.Many2many('res.partner', string="Vendors")
     categ_ids = fields.Many2many('product.category', string="Category")
     start_date = fields.Datetime(string='Start Date')
@@ -39,23 +40,32 @@ class VendorProductReportWizard(models.TransientModel):
 
     report_lines = fields.One2many('vedor.product.lines', 'parent_id', string="Sale Report")
 
+    @api.onchange('vendor_ids', 'categ_ids')
+    def onchange_vendor_categ(self):
+        self.product_ids = False
+        self.report_lines = False
+
     def generate_products(self):
+
+        domain = []
+        res_prd = self.env['product.product']
+        if self.categ_ids:
+            domain = [('categ_id.id', 'child_of', self.categ_ids.ids)]
+        products = self.env['product.template'].search(domain)
+        res_prd |= products.mapped('product_variant_id')
         if self.vendor_ids:
             res_prd = self.env['product.product']
-            domain = [('name', 'in', self.vendor_ids.ids), '|', ('date_end', '=', False), ('date_end', '>', fields.Date.today())]
-            if self.categ_ids:
-                domain.append(('product_id.categ_id.id', 'child_of', self.categ_ids.ids))
-            products = self.env['product.supplierinfo'].search(domain).mapped('product_id')
+            v_domain = [('product_tmpl_id', 'in', products.ids), ('name', 'in', self.vendor_ids.ids), '|', ('date_end', '=', False), ('date_end', '>', fields.Date.today())]
+
+            products = self.env['product.supplierinfo'].search(v_domain).mapped('product_tmpl_id').mapped('product_variant_id')
+
             for product in products:
                 vend_seq = product.seller_ids.filtered(lambda r: r.name in self.vendor_ids).mapped('sequence')
                 non_seq = product.seller_ids.filtered(
                     lambda r: r.name not in self.vendor_ids and (not r.date_end or r.date_end > fields.Date.today())).mapped('sequence')
                 if not non_seq or min(vend_seq) <= min(non_seq):
                     res_prd |= product
-            self.product_ids = res_prd
-        else:
-            self.product_ids = False
-            raise UserError(_('Vendor should be selected'))
+        self.product_ids = res_prd
 
     def generate_lines(self):
         if not self.product_ids:

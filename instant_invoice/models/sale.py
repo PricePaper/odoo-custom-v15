@@ -31,11 +31,12 @@ class SaleOrder(models.Model):
         if self._context.get('action_cancel'):
             return res
         for order in self:
-            if order.state != 'done' and ('state' not in vals or vals.get('state', '') != 'done') and not self._context.get('action_confrim'):
-                if not order.quick_sale and order.carrier_id:
-                    order.adjust_delivery_line()
-                # else:
-                #     order._remove_delivery_line()
+            if not self._context.get('from_adjust_delivery', False):
+                if order.state != 'done' and ('state' not in vals or vals.get('state', '') != 'done') and not self._context.get('action_confrim'):
+                    if not order.quick_sale and order.carrier_id:
+                        order.adjust_delivery_line()
+                    # else:
+                    #     order._remove_delivery_line()
         return res
 
     def action_quick_sale(self):

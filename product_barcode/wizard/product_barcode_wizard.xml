@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="product_barcode_form" model="ir.ui.view">
+            <field name="name">product.barcode.wizard.form</field>
+            <field name="model">product.barcode.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="product_tmpl_id" required="True" invisible="1"/>
+                                <field name="product_id" required="True"/>
+                            </group>
+                            <group>
+                                <field name="supplier_id" domain="[('product_tmpl_id','=',product_tmpl_id)]" required="True"/>
+                                <field name="product_barcode" required="True" invisible="0" widget='rt_widget_field_char_qr_cam'/>
+                            </group>
+                        </group>
+                        <footer>
+                            <button string='Apply' type='object' class="btn-primary" name='apply_barcode'/>
+                            <button string="Close" class="btn-primary" special="cancel"/>
+                        </footer>
+                  </sheet>
+              </form>
+            </field>
+        </record>
+
+        <record id="product_barcode_wizard" model="ir.actions.act_window">
+            <field name="name">Add Barcode</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.barcode.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="product_barcode_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <record id="search_product_barcode_form" model="ir.ui.view">
+            <field name="name">search.barcode.wizard.form</field>
+            <field name="model">product.barcode.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="barcode_search" widget='rt_widget_field_char_qr_cam'/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="product_tmpl_id" readonly="1" invisible="1"/>
+                                <field name="product_id" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="supplier_id" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <footer>
+                            <button string="Close" class="btn-primary" special="cancel"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="search_barcode_wizard" model="ir.actions.act_window">
+            <field name="name">Search Barcode</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.barcode.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="search_product_barcode_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="menu_barcode"
+                  name="Add Barcode"
+                  action="product_barcode_wizard"
+                  parent="stock.menu_stock_warehouse_mgmt"
+                  sequence="300"/>
+        <menuitem id="menu_search_barcode"
+                  name="Search Barcode"
+                  action="search_barcode_wizard"
+                  parent="stock.menu_stock_warehouse_mgmt"
+                  sequence="301"/>
+    </data>
+</odoo>

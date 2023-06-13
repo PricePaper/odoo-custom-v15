@@ -53,6 +53,11 @@ class SaleOrder(models.Model):
     delivery_cost = fields.Float(string='Estimated Delivery Cost', readonly=True, copy=False)
     active = fields.Boolean(tracking=True, default=True)
     date_order = fields.Datetime(string='Confirmation Date')
+    commitment_date = fields.Datetime('Commitment Date', copy=False,
+                                      states={'done': [('readonly', True)], 'cancel': [('readonly', True)]},
+                                      help="This is the delivery date promised to the customer. "
+                                           "If set, the delivery order will be scheduled based on "
+                                           "this date rather than product lead times.")
 
     @api.model
     def get_release_deliver_default_date(self):
@@ -65,7 +70,7 @@ class SaleOrder(models.Model):
 
         for order in self:
             pending_invoices = order.partner_id.invoice_ids.filtered(
-                lambda rec: rec.move_type == 'out_invoice' and rec.state == 'posted' and rec.payment_state not in ('paid', 'in_payment') and (
+                lambda rec: rec.move_type == 'out_invoice' and rec.state == 'posted' and rec.payment_state not in ('paid', 'in_payment', 'reversed') and (
                         rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
 
             msg = ''
@@ -176,7 +181,11 @@ class SaleOrder(models.Model):
 
         res = super(SaleOrder, self).action_confirm()
 
+
         for order in self:
+            for picking in order.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done')):
+                if picking.carrier_id != order.carrier_id:
+                    picking.carrier_id = order.carrier_id.id
             for order_line in order.order_line:
                 if order_line.is_delivery:
                     continue
@@ -210,7 +219,7 @@ class SaleOrder(models.Model):
             if order.partner_id:
                 sc_order = self.env['sale.order'].search([('storage_contract', '=', True), ('state', '=', 'released'),
                                                           ('partner_id', '=', order.partner_id.id)])
-                count = sc_order.mapped('order_line').filtered(lambda r: r.storage_remaining_qty > 0)
+                count = sc_order.mapped('order_line').filtered(lambda r: r.storage_remaining_qty > 0 and r.product_id.active and r.product_id.type != 'service')
                 order.show_contract_line = len(count) > 0
 
     @api.depends('order_line.product_id', 'order_line.product_uom_qty')
@@ -262,7 +271,7 @@ class SaleOrder(models.Model):
 
     def _action_cancel(self):
         self.ensure_one()
-        self = self.with_context(action_cancel=True)
+        self = self.with_context(action_cancel=True).sudo()
         self.write({
             'is_creditexceed': False,
             'ready_to_release': False,
@@ -480,11 +489,29 @@ class SaleOrder(models.Model):
         res = super(SaleOrder, self).write(vals)
         for order in self:
             if order.id in amount and amount[order.id] < order.amount_total:
+                pending_invoices = order.partner_id.invoice_ids.filtered(
+                    lambda rec: rec.move_type == 'out_invoice' and rec.state == 'posted' and rec.payment_state not in ('paid', 'in_payment', 'reversed') and (
+                            rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
+
+                msg = ''
+                invoice_name = []
+                for invoice in pending_invoices:
+                    term_line = invoice.invoice_payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
+                    date_due = invoice.invoice_date_due
+                    if term_line and term_line.grace_period:
+                        date_due = date_due + timedelta(days=term_line.grace_period)
+                    if date_due and date_due < date.today():
+                        invoice_name.append(invoice.name)
+                if invoice_name:
+                    msg += 'Customer has pending invoices.\n %s ' % '\n'.join(invoice_name)
                 if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
+                    msg+='Credit limit Exceed'
+
+                if msg:
                     if order.picking_ids.filtered(lambda r: r.state in ('in_transit', 'transit_confirmed')):
                         raise UserError('You can not add product to a Order which has a DO in transit state')
                     order._action_cancel()
-                    order.message_post(body='Cancel Reason : Credit limit Exceed Auto cancel')
+                    order.message_post(body='Cancel Reason : Auto cancel.\n'+msg)
                     order.action_draft()
                     order.action_confirm()
 
@@ -544,8 +571,12 @@ class SaleOrder(models.Model):
         price_unit = res.get('price', 0)
 
         if price_unit != self._get_delivery_line_price() or not self._get_delivery_line_price():
-            self.with_context(adjust_delivery=True)._remove_delivery_line()
-            self._create_delivery_line(self.carrier_id, price_unit)
+            delivery_lines = self.env['sale.order.line'].search([('order_id', 'in', self.ids), ('is_delivery', '=', True)])
+            to_delete = delivery_lines.filtered(lambda rec: rec.qty_invoiced != 0)
+            if not to_delete:
+                self.with_context(adjust_delivery=True)._remove_delivery_line()
+                self._create_delivery_line(self.carrier_id, price_unit)
+        self.with_context(from_adjust_delivery=True).write({'delivery_cost': res.get('cost', 0)})
 
         return True
 
@@ -626,6 +657,7 @@ class SaleOrder(models.Model):
                 order.action_confirm()
             else:
                 order.hold_state = 'credit_hold'
+        return True
 
     @api.onchange('payment_term_id')
     def onchange_payment_term(self):
@@ -991,6 +1023,7 @@ class SaleOrderLine(models.Model):
     @api.onchange('product_uom_qty', 'product_uom', 'route_id')
     def _onchange_product_id_check_availability(self):
         res = self.product_id_check_availability()
+        self.similar_product_price = False
         if self.product_id and self.product_uom_qty and self.product_uom:
             if self.product_id.type == 'product':
                 precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
@@ -1002,7 +1035,18 @@ class SaleOrderLine(models.Model):
                 if float_compare(product.qty_available - product.outgoing_qty, product_qty, precision_digits=precision) == -1:
                     is_available = self.is_mto
                     if not is_available:
-                        products = product.same_product_ids + product.same_product_rel_ids
+                        products = product.same_product_ids | product.same_product_rel_ids
+
+                        alternatives = ''
+                        if products:
+                            alternatives = '\nPlease add an alternate product from list below'
+                            for item in products:
+                                alternatives += '\n' + item.default_code
+                        if not product.allow_out_of_stock_order:
+                            block_message = 'Product'+ product.display_name + product.uom_id.name + 'is not in stock and can not be oversold.'
+                            if alternatives:
+                                block_message += alternatives
+                            raise ValidationError(block_message)
                         if not products:
                             self.similar_product_price = False
                             return res
@@ -1060,18 +1104,22 @@ class SaleOrderLine(models.Model):
     def _compute_lst_cost_prices(self):
         for line in self:
             if line.product_id and line.product_uom:
-                uom_price = line.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == line.product_uom)
-                if uom_price:
-                    line.lst_price = uom_price[0].price
-                    if line.product_id.cost:
-                        line.working_cost = uom_price[0].cost
+                if line.storage_contract_line_id:
+                    line.working_cost = 0
+                    line.lst_price = 0
                 else:
-                    line.product_id.job_queue_standard_price_update()
                     uom_price = line.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == line.product_uom)
                     if uom_price:
                         line.lst_price = uom_price[0].price
                         if line.product_id.cost:
                             line.working_cost = uom_price[0].cost
+                    else:
+                        line.product_id.job_queue_standard_price_update()
+                        uom_price = line.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == line.product_uom)
+                        if uom_price:
+                            line.lst_price = uom_price[0].price
+                            if line.product_id.cost:
+                                line.working_cost = uom_price[0].cost
             if line.is_delivery and line.order_id.carrier_id and line.order_id.carrier_id.delivery_type not in [
                 'base_on_rule', 'fixed']:
                 line.working_cost = line.order_id.delivery_cost
@@ -1494,8 +1542,8 @@ class SaleOrderLine(models.Model):
             seller = self.product_id._prepare_sellers(False)[:1]
         if not seller:
             raise UserError("""There is no matching vendor price to generate the purchase order for product %s
-                    (no vendor defined, minimum quantity not reached, dates not valid, ...). Go on the product form and complete the list of vendors.""") % (
-                self.product_id.display_name)
+                    (no vendor defined, minimum quantity not reached, dates not valid, ...). Go on the product form and complete the list of vendors.""" % (
+                self.product_id.display_name))
         return seller
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -23,7 +23,8 @@
                                        'order_id.storage_contract', '=', True),
                                        ('is_downpayment', '=', False),
                                        ('storage_remaining_qty', '&gt;', 0),
-                                       ('order_id.partner_id', '=', partner_id)]"/>
+                                       ('order_id.partner_id', '=', partner_id),
+                                       ('product_id.active', '=', True)]"/>
                             </group>
                             <group>
                                 <field name="order_qty" required="1" style="width: 85px;"/>

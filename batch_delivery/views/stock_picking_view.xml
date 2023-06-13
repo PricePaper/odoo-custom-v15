@@ -220,9 +220,9 @@
                         attrs="{'invisible': [('state', 'not in', ('in_transit'))]}"
                         class="oe_highlight"
                         groups="stock.group_stock_user"/>
-                    <button name="action_validate" type="object" string="Confirm Transfer" groups="account.group_account_invoice"
+                    <button name="action_validate" type="object" string="Confirm Delivery" groups="account.group_account_invoice"
                             attrs="{'invisible': ['|', '|', ('state', '=', 'done'), ('is_return', '=', False), ('picking_type_code', '!=', 'outgoing')]}" class="oe_highlight"/>
-                    <button name="action_validate" type="object" string="Confirm Transfer" groups="account.group_account_invoice"
+                    <button name="action_validate" type="object" string="Confirm Delivery" groups="account.group_account_invoice"
                             attrs="{'invisible': ['|', ('state', 'not in', ('in_transit', 'transit_confirmed')), ('is_invoiced', '=', False)]}" class="oe_highlight"/>
                     <button name="%(action_view_picking_full_reeturn_wizard_form)d" type="action" string="Full Return"
                             attrs="{'invisible': ['|', '|', '|', ('is_transit_confirmed', '=', False), ('is_return', '=', True), ('is_transit', '=', False), ('is_invoiced', '=', False)]}"

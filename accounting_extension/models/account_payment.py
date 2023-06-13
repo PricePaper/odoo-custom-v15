@@ -3,6 +3,7 @@
 from odoo import fields, models, api, _
 from odoo.exceptions import UserError
 from odoo.tools.misc import formatLang, format_date
+from datetime import datetime
 
 INV_LINES_PER_STUB = 9
 
@@ -103,6 +104,9 @@ class AccountPayment(models.Model):
     discount_move_id = fields.Many2one('account.move', 'Discount Move')
     balance_to_pay  = fields.Float('Balance to register', compute="_compute_balance")
 
+    def wrapper_compute_reconciliation(self):
+        return self._compute_reconciliation_status() or True
+
     def _compute_balance(self):
         for payment in self:
             balance = sum(self.move_id.line_ids.filtered(lambda rec: rec.account_id.internal_type in ('receivable', 'payable')).mapped('amount_residual'))
@@ -126,8 +130,10 @@ class AccountPayment(models.Model):
         Override to fix cash account automatic matching
 
         """
+
         cash_payments = self.filtered(lambda rec: rec.journal_id.default_account_id.reconcile)
         for pay in cash_payments:
+
             liquidity_lines, counterpart_lines, writeoff_lines = pay._seek_for_lines()
             if not pay.currency_id or not pay.id:
                 pay.is_reconciled = False
@@ -137,8 +143,13 @@ class AccountPayment(models.Model):
                 pay.is_matched = True
             else:
                 residual_field = 'amount_residual' if pay.currency_id == pay.company_id.currency_id else 'amount_residual_currency'
-                pay.is_matched = pay.currency_id.is_zero(sum(liquidity_lines.mapped(residual_field)))
-
+                lock_date = datetime.strptime("2022-12-31", "%Y-%m-%d")
+                if pay.date < lock_date.date() and pay.journal_id.default_account_id and pay.journal_id.default_account_id in liquidity_lines.account_id:
+                    # Allow user managing payments without any statement lines by using the bank account directly.
+                    # In that case, the user manages transactions only using the register payment wizard.
+                    pay.is_matched = True
+                else:
+                    pay.is_matched = pay.currency_id.is_zero(sum(liquidity_lines.mapped(residual_field)))
                 reconcile_lines = (counterpart_lines + writeoff_lines).filtered(lambda line: line.account_id.reconcile)
                 pay.is_reconciled = pay.currency_id.is_zero(sum(reconcile_lines.mapped(residual_field)))
         return super(AccountPayment, self - cash_payments)._compute_reconciliation_status()

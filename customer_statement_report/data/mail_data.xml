@@ -9,6 +9,7 @@
             <field name="model_id" ref="base.model_res_partner"/>
             <field name="auto_delete" eval="True"/>
             <field name="lang">${object.company_id.lang}</field>
+            <field name='reply_to'>customerservice@pricepaper.com</field>
             <field name="body_html"><![CDATA[
             <div style="font-family: Verdana, Geneva, sans-serif; font-size: 13px; color: rgb(34, 34, 34); background-color: #FFF; ">
                 <p>Dear Sir/Madam,</p>

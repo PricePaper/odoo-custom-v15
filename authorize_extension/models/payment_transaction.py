@@ -247,8 +247,11 @@ class PaymentTransaction(models.Model):
                 payment.action_post()
         elif status == 'authorizedPendingCapture':
             self.state = 'authorized'
+            if self.sale_order_ids.filtered(lambda r: r.is_transaction_pending):
+                self.sale_order_ids.filtered(lambda r: r.is_transaction_pending).write({'is_transaction_pending': False})
             if picking:
                 picking.write({'is_payment_hold': False})
+
         elif status == 'voided':
             self.state = 'cancel'
 

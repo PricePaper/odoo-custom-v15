@@ -318,7 +318,13 @@ class SaleOrder(models.Model):
                 else:
                     transactions = order.transaction_ids.filtered(lambda r: r.state not in ('cancel', 'done', 'error'))
                     if transactions:
-                        transactions.action_void()
+                        for tx in transactions:
+                            if tx.state == 'pending':
+                                tx.check_pending_status()
+                                if tx.state == 'pending':
+                                    tx.sudo()._send_void_request()
+                            else:
+                                tx.action_void()
                         order.sale_reauthorize_transaction()
 
         return res

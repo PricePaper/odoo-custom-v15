@@ -1,5 +1,15 @@
 <odoo>
     <data>
+        <record id="purchase_order_search_inherit_pp" model="ir.ui.view">
+            <field name="name">purchase.order.list.select.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='draft']" position="attributes">
+                    <attribute name="domain">[('state', 'in', ('draft', 'sent', 'to approve', 'in_progress'))]</attribute>
+                </xpath>
+            </field>
+        </record>
         <record id="purchase_order_inherit_price_paper" model="ir.ui.view">
             <field name="name">Purchase.order.form.pricepaper</field>
             <field name="model">purchase.order</field>

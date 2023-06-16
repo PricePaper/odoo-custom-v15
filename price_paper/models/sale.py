@@ -1399,7 +1399,7 @@ class SaleOrderLine(models.Model):
         if not self.product_id:
             vals.update({'lst_price': lst_price, 'working_cost': working_cost})
         else:
-            warn_msg = not self.product_id.purchase_ok and "This item can no longer be purchased from vendors" or ""
+            warn_msg = ""
             if not self.order_id.storage_contract and sum(
                     [1 for line in self.order_id.order_line if line.product_id.id == self.product_id.id]) > 1:
                 warn_msg += "\n{} is already in SO.".format(self.product_id.name)

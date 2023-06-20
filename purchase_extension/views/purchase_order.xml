@@ -5,8 +5,11 @@
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
             <field name="arch" type="xml">
+                <xpath expr="//filter[@name='draft']" position="attributes">
+                    <attribute name="domain">[('state', 'in', ('draft', 'to approve'))]</attribute>
+                </xpath>
                 <xpath expr="//filter[@name='draft']" position="after">
-                    <filter name="in_progress" string="In progress" domain="[('state', '=', 'in_progress')]"/>
+                    <filter name="in_progress" string="In progress" domain="[('state', 'in', ('in_progress', 'sent'))]"/>
                 </xpath>
             </field>
         </record>

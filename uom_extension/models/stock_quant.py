@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 
 
 class StockQuant(models.Model):
@@ -58,7 +58,6 @@ class StockQuant(models.Model):
         if not res:
             for quant in self:
                 quant.inventory_quantity_mod = quant.quantity_onhand
-
         return res
 
     def action_apply_inventory(self):

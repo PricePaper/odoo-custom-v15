@@ -10,7 +10,8 @@ Uom Extension
 Modifying default uom
     """,
     'author': 'Confianz Global',
-    'depends': ['product','price_paper', 'batch_delivery', 'stock_available_unreserved','price_paper', 'purchase', 'stock','stock_orderpoint_enhancements'],
+    'depends': ['product','price_paper', 'batch_delivery', 'stock_available_unreserved','price_paper', 'purchase', 'stock',
+                'stock_orderpoint_enhancements', 'purchase_stock'],
     'sequence': 1600,
     'demo': [
     ],

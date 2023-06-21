@@ -7,22 +7,24 @@ import datetime
 import logging as server_log
 from dateutil.relativedelta import *
 
+
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
     ppt_uom_id = fields.Many2one('uom.uom', string="PPT Uom id")
 
-    reordering_min_qty_mod =fields.Float(
+    reordering_min_qty_mod = fields.Float(
         compute='_compute_min_max_reordering_rules', compute_sudo=False)
     reordering_max_qty_mod = fields.Float(
         compute='_compute_min_max_reordering_rules', compute_sudo=False)
 
-    @api.depends('reordering_min_qty','reordering_max_qty')
+    @api.depends('reordering_min_qty', 'reordering_max_qty')
     def _compute_min_max_reordering_rules(self):
         for product in self:
             if product.ppt_uom_id:
-                product.reordering_min_qty_mod = product.uom_id._compute_quantity(product.reordering_min_qty, product.ppt_uom_id,
-                                                                              rounding_method='HALF-UP')
+                product.reordering_min_qty_mod = product.uom_id._compute_quantity(product.reordering_min_qty,
+                                                                                  product.ppt_uom_id,
+                                                                                  rounding_method='HALF-UP')
                 product.reordering_max_qty_mod = product.uom_id._compute_quantity(product.reordering_max_qty,
                                                                                   product.ppt_uom_id,
                                                                                   rounding_method='HALF-UP')
@@ -36,18 +38,18 @@ class ProductProduct(models.Model):
 
     uom_name = fields.Char(string='Unit of Measure Name', related='ppt_uom_id.name', readonly=True)
     quantity_available = fields.Float(
-                        'Quantity On Hand', compute='_compute_quantities_modified',
-                        digits='Product Unit of Measure',
-                        help="Current quantity of products.\n"
-                             "In a context with a single Stock Location, this includes "
-                             "goods stored at this Location, or any of its children.\n"
-                             "In a context with a single Warehouse, this includes "
-                             "goods stored in the Stock Location of this Warehouse, or any "
-                             "of its children.\n"
-                             "stored in the Stock Location of the Warehouse of this Shop, "
-                             "or any of its children.\n"
-                             "Otherwise, this includes goods stored in any Stock Location "
-                             "with 'internal' type.")
+        'Quantity On Hand', compute='_compute_quantities_modified',
+        digits='Product Unit of Measure',
+        help="Current quantity of products.\n"
+             "In a context with a single Stock Location, this includes "
+             "goods stored at this Location, or any of its children.\n"
+             "In a context with a single Warehouse, this includes "
+             "goods stored in the Stock Location of this Warehouse, or any "
+             "of its children.\n"
+             "stored in the Stock Location of the Warehouse of this Shop, "
+             "or any of its children.\n"
+             "Otherwise, this includes goods stored in any Stock Location "
+             "with 'internal' type.")
     incoming_quantity = fields.Float(
         'Incoming', compute='_compute_quantities_modified',
         digits='Product Unit of Measure',
@@ -111,7 +113,8 @@ class ProductProduct(models.Model):
     def _compute_sales_total_count(self):
         for product in self:
             if product.ppt_uom_id:
-                product.sales_total_count = float_round(product.sales_count, precision_rounding=product.ppt_uom_id.rounding)
+                product.sales_total_count = float_round(product.sales_count,
+                                                        precision_rounding=product.ppt_uom_id.rounding)
 
             else:
                 product.sales_total_count = 0
@@ -121,14 +124,15 @@ class ProductProduct(models.Model):
         for product in self:
             if product.ppt_uom_id:
                 product.quantity_available = product.uom_id._compute_quantity(product.qty_available, product.ppt_uom_id,
-                                                                               rounding_method='HALF-UP')
+                                                                              rounding_method='HALF-UP')
                 product.incoming_quantity = product.uom_id._compute_quantity(product.incoming_qty, product.ppt_uom_id,
-                                                                               rounding_method='HALF-UP')
+                                                                             rounding_method='HALF-UP')
                 product.outgoing_quantity = product.uom_id._compute_quantity(product.outgoing_qty, product.ppt_uom_id,
+                                                                             rounding_method='HALF-UP')
+                product.virtually_available = product.uom_id._compute_quantity(product.virtual_available,
+                                                                               product.ppt_uom_id,
                                                                                rounding_method='HALF-UP')
-                product.virtually_available = product.uom_id._compute_quantity(product.virtual_available, product.ppt_uom_id,
-                                                                               rounding_method='HALF-UP')
-                
+
             else:
                 product.quantity_available = 0
                 product.incoming_quantity = 0
@@ -142,8 +146,9 @@ class ProductProduct(models.Model):
         """
         for product in self:
             if product.ppt_uom_id:
-                product.qty_available_not_res_mod = product.uom_id._compute_quantity(product.qty_available_not_res, product.ppt_uom_id,
-                                                                               rounding_method='HALF-UP')
+                product.qty_available_not_res_mod = product.uom_id._compute_quantity(product.qty_available_not_res,
+                                                                                     product.ppt_uom_id,
+                                                                                     rounding_method='HALF-UP')
             else:
                 product.qty_available_not_res_mod = 0
 
@@ -199,9 +204,6 @@ class ProductProduct(models.Model):
             else:
                 product.transit_qty = qty_dict[product.id]['qty_available']
 
-
-
-
     def _compute_lst_price_std_price(self):
         """overridden from price_paper module
            calculates standard price in new uom_id(ppt_uom_id)
@@ -216,10 +218,10 @@ class ProductProduct(models.Model):
         for product in self:
             if product.ppt_uom_id:
                 product.purchased_product_qty_mod = product.uom_id._compute_quantity(product.purchased_product_qty,
-                                                                       product.ppt_uom_id, rounding_method='HALF-UP')
+                                                                                     product.ppt_uom_id,
+                                                                                     rounding_method='HALF-UP')
             else:
                 product.purchased_product_qty_mod = 0
-
 
     def job_queue_forecast(self):
         """
@@ -228,7 +230,7 @@ class ProductProduct(models.Model):
         """
 
         to_date = datetime.date.today()
-        msg=''
+        msg = ''
 
         vendor = self.seller_ids.filtered(lambda seller: seller.is_available) and \
                  self.seller_ids.filtered(lambda seller: seller.is_available)[0]
@@ -252,30 +254,26 @@ class ProductProduct(models.Model):
                 if config.start_date:
                     from_date = config.start_date
 
-            min_forecast = self.forecast_sales(config, str(from_date), periods=delivery_lead_time, freq='d', to_date=str(to_date))
+            min_forecast = self.forecast_sales(config, str(from_date), periods=delivery_lead_time, freq='d',
+                                               to_date=str(to_date))
             min_quantity = self.calculate_qty(min_forecast, to_date, to_date_plus_delay)
 
             max_quantity = min_quantity
             if delivery_lead_time != max_delivery_lead_time:
-                max_forecast = self.forecast_sales(config, str(from_date), periods=max_delivery_lead_time, freq='d', to_date=str(to_date))
+                max_forecast = self.forecast_sales(config, str(from_date), periods=max_delivery_lead_time, freq='d',
+                                                   to_date=str(to_date))
                 max_quantity = self.calculate_qty(max_forecast, to_date, max_to_date_plus_delay)
 
-            orderpoint = self.env['stock.warehouse.orderpoint'].search(['|', ('active', '=', False), ('active', '=',True), ('product_id', '=', self.id)])
+            orderpoint = self.env['stock.warehouse.orderpoint'].search(
+                ['|', ('active', '=', False), ('active', '=', True), ('product_id', '=', self.id)])
             orderpoint = orderpoint and orderpoint[0] or False
 
             # converting to new uom
-
             if orderpoint:
                 if not self.orderpoint_update_date or self.orderpoint_update_date < str(datetime.date.today()):
-                    if self.ppt_uom_id:
-                        orderpoint.write({'product_min_qty_mod': ceil(min_quantity),
-                                          'product_max_qty_mod': ceil(max_quantity),
-                                          'active': True
-                                          })
-                    else:
-                        orderpoint.write({'product_min_qty_mod': 0,
-                                          'product_max_qty_mod': 0,
-                                          'active': True
+                    orderpoint.write({'product_min_qty_mod': ceil(min_quantity) if self.ppt_uom_id else 0,
+                                        'product_max_qty_mod': ceil(max_quantity) if self.ppt_uom_id else 0,
+                                        'active': True
                                           })
             else:
                 values = {
@@ -286,7 +284,38 @@ class ProductProduct(models.Model):
                     'product_uom': self.uom_id.id,
                     'product_ppt_uom': self.ppt_uom_id.id if self.ppt_uom_id else False,
                 }
-                self.env['stock.warehouse.orderpoint'].create({values})
+                self.env['stock.warehouse.orderpoint'].create(values)
             self.last_op_update_date = datetime.datetime.today()
-            msg = 'Min qty: ' + str(ceil(min_quantity)) + '\n' + 'Max qty: ' +  str(ceil(max_quantity))
+            msg = 'Min qty: ' + str(ceil(min_quantity)) + '\n' + 'Max qty: ' + str(ceil(max_quantity))
         return msg
+
+    @api.model
+    def filler_to_append_zero_qty(self, result, to_date, from_date):
+        """
+        Process result of query by adding missing days
+        with qty(0.0) between start_date and to_date
+        Converts uom_qty into base uom_qty
+        """
+        res = []
+        start_date = result and result[0] and result[0][0]
+        start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+        # converting to ppt_uom_id
+        while (start_date <= to_date):
+            val = start_date.strftime("%Y-%m-%d")
+            in_list = [rec for rec in result if rec and str(rec[0]) == val]
+
+            if not in_list:
+                res.append((val, 0.0))
+            else:
+                qty = 0
+                # modified to handle uom change
+                uom_id = self.ppt_uom_id if self.ppt_uom_id else self.uom_id
+                for product_uom_qty in in_list:
+                    if product_uom_qty[2] == uom_id.id:
+                        qty += product_uom_qty[1]
+                    else:
+                        sale_uom_factor = self.env['uom.uom'].browse(product_uom_qty[2]).factor
+                        qty += ((product_uom_qty[1] * uom_id.factor) / sale_uom_factor)
+                res.append((val, qty))
+            start_date = start_date + relativedelta(days=1)
+        return res

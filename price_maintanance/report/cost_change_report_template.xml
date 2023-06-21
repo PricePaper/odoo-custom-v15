@@ -1,0 +1,53 @@
+<odoo>
+     <template id="report_cost_change">
+        <t t-call="web.basic_layout">
+            <div class="page">
+                <h4 style="text-align: center;">
+                    <span>Cost Change Report - <t t-esc="datetime.datetime.now().strftime('%b.%d.%Y')"/> </span>
+                </h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th name="product" class="text-left">Product</th>
+                            <th name="th_price_filter" class="text-left">Increase Cost as</th>
+                            <th name="th_price_change" class="text-right">Cost change</th>
+                            <th name="th_oldcost" class="text-right">Old Cost</th>
+                            <th name="th_newcost" class="text-right">New Cost</th>
+                            <th name="th_price_difference" class="text-right">Price Difference</th>
+                            <th name="th_price_difference_per" class="text-right">Price Difference %</th>
+                        </tr>
+                    </thead>
+                    <t t-foreach="docs" t-as="record">
+                        <tbody class="lc_tbody">
+                            <t t-foreach="record.cost_change_lines" t-as="line">
+                                <tr>
+                                    <td name="product_id">
+                                        <span t-field="line.product_id"/>
+                                    </td>
+                                    <td name="price_filter">
+                                        <span t-field="line.price_filter"/>
+                                    </td>
+                                    <td name="price_change" class="text-right">
+                                        <span t-field="line.price_change"/>
+                                    </td>
+                                    <td name="old_cost" class="text-right">
+                                        <span t-field="line.old_cost"/>
+                                    </td>
+                                    <td name="new_cost" class="text-right">
+                                        <span t-field="line.new_cost"/>
+                                    </td>
+                                    <td name="price_difference" class="text-right">
+                                        <span t-field="line.price_difference"/>
+                                    </td>
+                                    <td name="price_difference_per" class="text-right">
+                                        <span t-field="line.price_difference_per" t-options='{"widget": "float", "decimal_precision": "Product Price"}'/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </t>
+                </table>
+            </div>
+            </t>
+    </template>
+</odoo>

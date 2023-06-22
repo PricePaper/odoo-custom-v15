@@ -33,8 +33,6 @@
                                    attrs="{'required': [('price_lock', '=', True)], 'invisible': [('price_lock', '=', False)]}"/>
                         </group>
                     </group>
-                    <button name="%(action_upload_pricelist_wizard)d" type="action" string="Upload CSV File"
-                            context="{'pricelist_id':active_id,'is_competitor':type}"/>
                 </xpath>
 
                 <xpath expr="//field[@name='country_group_ids']" position="attributes">

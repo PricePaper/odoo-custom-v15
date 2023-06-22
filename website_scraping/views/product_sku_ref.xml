@@ -23,7 +23,7 @@
                     <field name="product_id" string="Product"/>
                     <field name="competitor_sku" string="Competitor SKU"/>
                     <filter name='filter_by_wdepot' string="Webstaurant Store" domain="[('competitor','=','wdepot')]"/>
-                    <filter name='filter_by_rdepot' string="Restuarant Depot" domain="[('competitor','=','rdepot')]"/>
+                    <filter name='filter_by_rdepot' string="Restaurant Depot" domain="[('competitor','=','rdepot')]"/>
                     <filter string="In Exception(include Unavailable)" name='in_exception_all' domain="[('in_exception','=', True)]"/>
                     <separator />
                     <filter string="In Exception" name='in_exception' domain="[('in_exception','=', True), ('is_unavailable','!=', True)]"/>

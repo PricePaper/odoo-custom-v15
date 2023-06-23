@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_update_unit_price" model="ir.ui.view">
+            <field name="name">update.unit.price</field>
+            <field name="model">update.unit.price</field>
+            <field name="arch" type="xml">
+                <form string="Add Products from sales history">
+                    <script>
+                        $(document).ready(function(){
+                        $('.modal-dialog').css({'width': '550PX', 'height': '450PX'});
+                        });
+                    </script>
+                    <group>
+                        <field name="po_price_unit" readonly="1"/>
+                        <field name="new_price_unit"/>
+                    </group>
+                    <footer>
+                    <button name="update_unit_price" type="object" string="Update" class="btn btn-primary"/>
+                    or
+                   <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_update_unit_price" model="ir.actions.act_window">
+            <field name="name">Update Unit Price</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">update.unit.price</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

@@ -21,16 +21,20 @@ class UpdateUnitPrice(models.TransientModel):
     def update_unit_price(self):
         def _get_line_write_vals(line, price_unit):
             vals = line._get_price_total_and_subtotal(price_unit=price_unit)
-            print(vals)
             vals.update(line._get_fields_onchange_subtotal(price_subtotal=vals.get('price_subtotal')))
             vals.update(line._get_fields_onchange_balance(price_subtotal=vals.get('price_subtotal'), force_computation=True))
             return [1, line.id, vals]
 
         self.ensure_one()
+        # Check the price is valid
         if self.new_price_unit <= 0:
             raise ValidationError("Unit price cannot be zero")
+
+        # Check if any invoice lines are in the 'posted' state
         if any(line.parent_state == 'posted' for line in self.purchase_line_id.invoice_lines):
             raise ValidationError("Cannot update the price of a posted invoice")
+
+        # Update price unit for moves and stock valuation layers
         for move in self.purchase_line_id.move_ids:
             if self.new_price_unit != move.price_unit:
                 price_unit = self.purchase_line_id.product_uom._compute_price(self.new_price_unit, move.product_uom)
@@ -40,17 +44,19 @@ class UpdateUnitPrice(models.TransientModel):
                     svl.write({'unit_cost': svl_price_unit})
                     if svl.account_move_id:
                         svl.account_move_id.button_draft()
+                        # Update debit and credit values in account move lines
                         vals = [(1, line.id, {'debit': abs(svl.value) if line.debit else 0, 'credit': abs(svl.value) if line.credit else 0}) for line
                                 in svl.account_move_id.line_ids]
                         svl.account_move_id.write({"line_ids": vals})
                         svl.account_move_id.action_post()
+        # Update price unit and other fields for invoice lines
         for invoice_line in self.purchase_line_id.invoice_lines:
             price_unit = self.purchase_line_id.product_uom._compute_price(self.new_price_unit, invoice_line.product_uom_id)
             existing_terms_lines = invoice_line.move_id.line_ids.filtered(lambda line: line.account_id.user_type_id.type in ('receivable', 'payable'))
             other_lines = invoice_line.move_id.line_ids - existing_terms_lines - invoice_line
             company_currency_id = (invoice_line.move_id.company_id or self.env.company).currency_id
-            vals = []
-            vals.append(_get_line_write_vals(invoice_line, price_unit))
+            vals = [_get_line_write_vals(invoice_line, price_unit)]
+            # Update price unit, subtotal, and other fields for invoice line
             total = sum(other_lines.mapped(lambda l: company_currency_id.round(l.balance)))
             total += vals[0][2].get('price_total')
             dr = vals[0][2].get('debit', 0) > 0
@@ -61,6 +67,7 @@ class UpdateUnitPrice(models.TransientModel):
                 term_line[2].update({'credit': 0, 'debit': term_line[2].get('credit')})
             vals.append(term_line)
             invoice_line.move_id.write({'line_ids': vals})
+        # Update price unit for purchase line
         self.purchase_line_id.write({'price_unit': self.new_price_unit})
 
 

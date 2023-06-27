@@ -23,6 +23,8 @@ class ChangeProductUom(models.TransientModel):
     duplicate_pricelist = fields.Boolean(string='Copy Pricelist')
     is_alternate_product = fields.Boolean(string='Add the new product to the old products Alternate Products?')
     is_supercede_product = fields.Boolean(string='Supercede old product with the new product?')
+    mapper_ids = fields.One2many('sale.uom.mapper', 'change_id', string='Sale Uom Mapping')
+    maintain_price_ratio = fields.Boolean(string='Maintain price ratio')
 
     @api.onchange('new_default_code')
     def _onchange_default_code(self):
@@ -35,6 +37,19 @@ class ChangeProductUom(models.TransientModel):
                 'title': _("Note:"),
                 'message': _("The Internal Reference '%s' already exists.", self.new_default_code),
             }}
+
+    def default_get(self, vals):
+        product = self.env['product.product'].browse(self._context.get('active_id'))
+        res = super(ChangeProductUom, self).default_get(vals)
+        res['mapper_ids'] = [(0, 0, {'old_uom_id': sale_uom.id}) for sale_uom in product.sale_uoms]
+        return res
+
+    @api.onchange('duplicate_pricelist')
+    def onchange_duplicate_pricelist(self):
+        if not self.duplicate_pricelist:
+            self.maintain_price_ratio = False
+        else:
+            self.maintain_price_ratio = True
 
     def create_duplicate_product(self):
         default_vals = {
@@ -54,7 +69,8 @@ class ChangeProductUom(models.TransientModel):
         price = 0
         if price_rec:
             for uom in res.sale_uoms:
-                price = float_round(price_rec[0].price * (uom.ratio / self.product_id.uom_id.ratio ), precision_digits=2)
+                price = float_round(price_rec[0].price * (uom.ratio / self.product_id.uom_id.ratio),
+                                    precision_digits=2)
                 vals = {'product_id': res.id,
                         'uom_id': uom.id,
                         'price': price}
@@ -63,32 +79,23 @@ class ChangeProductUom(models.TransientModel):
             res.job_queue_standard_price_update()
         standard_price_days = self.env.user.company_id.standard_price_config_days or 75
         res.standard_price_date_lock = date.today() + relativedelta(days=standard_price_days)
+
         if self.duplicate_pricelist:
+            new_uom_ids = self.mapper_ids.mapped('new_uom_id')
+            if not all(mapper_id.new_uom_id for mapper_id in self.mapper_ids):
+                raise ValidationError('Please add the New UOMs for price list mapping')
+
             lines = self.env['customer.product.price'].search([('product_id', '=', self.product_id.id)])
-
-            for line in lines:
-                default_1 = {'product_id': res.id}
-                if line.product_uom == line.product_id.uom_id:
-                    new_price = line.product_uom._compute_price(line.price, res.uom_id)
-                    default_1['price'] = new_price
-                    default_1['product_uom'] = res.uom_id.id
+            for map_id in self.mapper_ids:
+                for line in lines.filtered(lambda r: r.product_uom == map_id.old_uom_id):
+                    default_1 = {'product_id': res.id, 'product_uom': map_id.new_uom_id.id}
+                    if self.maintain_price_ratio:
+                        new_price = map_id.old_uom_id._compute_price(line.price, map_id.new_uom_id)
+                        default_1['price'] = new_price
+                    else:
+                        default_1['price'] = line.price
                     line.copy(default=default_1)
-                elif line.product_uom in res.sale_uoms:
-                    product = line.product_id
-                    old_working_cost = product.cost
-                    old_list_price = line.price
-                    if product.uom_id != line.product_uom:
-                        old_working_cost = product.uom_id._compute_price(product.cost, line.product_uom) * (
-                                    (100 + product.categ_id.repacking_upcharge) / 100)
-                    margin = (old_list_price - old_working_cost) / old_list_price
-                    new_working_cost = res.cost
 
-                    if res.uom_id != line.product_uom:
-                        new_working_cost = res.uom_id._compute_price(new_working_cost, line.product_uom) * ((100 + res.categ_id.repacking_upcharge) / 100)
-
-                    new_price = float_round(new_working_cost / (1 - margin), precision_digits=2)
-                    default_1['price'] = new_price
-                    line.copy(default=default_1)
         if self.is_alternate_product:
             new_ids = self.product_id.same_product_ids.ids
             if new_ids:
@@ -106,3 +113,16 @@ class ChangeProductUom(models.TransientModel):
             'res_model': 'product.product',
             'res_id': res.id,
         }
+
+
+class SaleUomMapper(models.TransientModel):
+    _name = 'sale.uom.mapper'
+    _description = 'Map Sale Uom'
+
+    change_id = fields.Many2one('change.product.uom', string='Change Id')
+    old_uom_id = fields.Many2one('uom.uom', string='Old Uom')
+    new_uom_id = fields.Many2one('uom.uom', string='New Uom')
+
+
+
+

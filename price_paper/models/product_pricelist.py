@@ -41,11 +41,22 @@ class ProductPricelist(models.Model):
     def search(self, args, offset=0, limit=None, order=None, count=False):
         if self.env.user.has_group('price_paper.group_salesman_customer_own_pricelist') and not self.env.user.has_group(
                 'base.group_system'):
-            records = super(ProductPricelist, self).search(args, offset, limit, order, count)
-            out_result = records.filtered(
-                lambda rec: rec.type == 'competitor' or self.env.user.partner_id.id in rec.mapped('partner_ids').mapped('sales_person_ids').ids)
-            return out_result
-        return super(ProductPricelist, self).search(args, offset, limit, order, count)
+            records = super(ProductPricelist, self).search(args, 0, None, order, count)
+            if count:
+                records = super(ProductPricelist, self).search(args, 0, None, order, False)
+                records = records.filtered(
+                    lambda rec: rec.type == 'competitor' or self.env.user.partner_id.id in rec.mapped('partner_ids').mapped('sales_person_ids').ids)
+                records = len(records)
+            else:
+                records = records.filtered(
+                    lambda rec: rec.type == 'competitor' or self.env.user.partner_id.id in rec.mapped('partner_ids').mapped('sales_person_ids').ids)
+                if offset:
+                    records = records[offset:]
+                if limit:
+                    records = records[0:limit]
+            return records
+        res = super(ProductPricelist, self).search(args, offset, limit, order, count)
+        return res
 
     @api.model
     def _cron_update_price_change_lock(self):

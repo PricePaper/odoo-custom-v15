@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, api, fields
+import logging as server_log
 
 class CostChangeParent(models.Model):
     _inherit = 'cost.change.parent'
@@ -9,11 +10,12 @@ class CostChangeParent(models.Model):
 
     @api.model
     def cost_change_mail_cron(self):
+
+        email_to = self.env['ir.config_parameter'].sudo().get_param('price_maintanance.cost_change_email_ids')
+        if not email_to:
+            server_log.error('Cost change mail : receiver email is not configured.')
         records = self.env['cost.change.parent'].search([('is_mail_sent', '!=', True), ('is_done', '=', 'True')])
         if records:
-            email_string = self.env['ir.config_parameter'].sudo().get_param('price_maintanance.cost_change_email_ids')
-            email_to = ','.join(email_string.strip().split(',')) if email_string else ''
-
             mail_template = self.env.ref('price_maintanance.email_template_cost_change')
             mail_template.with_context(email_from=self.env.company.email, email_to=email_to, records=records).send_mail(self.id,
                                                                                                        force_send=True)

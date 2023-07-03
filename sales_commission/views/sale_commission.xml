@@ -135,17 +135,20 @@
                                   domain="[('is_sales_person', '=', True)]"
                                   context="{'search_default_salesperson':1}"
                                   options="{'no_create': true, 'create_edit': false}"/>
-                                <field name="commission_date" required='0'  invisible="1"/>
-                                <field name="paid_date" required='1'/>
+                                <field name="commission_date"
+                                  attrs="{'invisible': ['|', ('invoice_type', '!=', 'manual'), ('is_paid', '=', True)]}"/>
+                                <field name="paid_date"
+                                  attrs="{'invisible': [('invoice_type', '=', 'manual'), ('is_paid', '=', False)]}"/>
+                                <field name="invoice_type"/>
+                                <field name="is_paid" />
                             </group>
                             <group>
-                                <field name="invoice_type"/>
-                                <field name="sale_id" readonly="1"/>
-                                <field name="partner_id" readonly="1"/>
-                                <field name="invoice_id" readonly="1"/>
-                                <field name="invoice_amount" readonly="1"/>
+
+                                <field name="sale_id" />
+                                <field name="partner_id" />
+                                <field name="invoice_id" />
+                                <field name="invoice_amount" />
                                 <field name="commission" />
-                                <field name="is_paid" readonly="1"/>
                                 <field name="is_cancelled" invisible="1"/>
                                 <field name="is_settled" readonly="1"/>
                                 <field name="is_removed" invisible="1"/>

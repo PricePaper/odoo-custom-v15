@@ -31,13 +31,14 @@
                         </div>
                         <group>
                             <group>
-                                <field name='partner_id'  widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}" domain="[('type','=','contact'),('parent_id','=',False),('customer','=',True)]"/>
-                                <field name='partner_shipping_id'  domain="['|',('id','=',partner_id),('parent_id','=',partner_id)]" string='Delivery Address'/>
+                                <field name='lead_id' string='Lead/Opportunity' required="1"/>
+                                <field name="sample_route"/>
+                                <field name='carrier_id'/>
                             </group>
                             <group>
+                                <field name='partner_id'  widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}" domain="[('type','=','contact'),('parent_id','=',False),('customer','=',True)]"/>
+                                <field name='partner_shipping_id'  domain="['|',('id','=',partner_id),('parent_id','=',partner_id)]" string='Delivery Address'/>
                                 <field name='sale_id' readonly='1' attrs="{'inivisible':[('state','=','draft')]}"/>
-                                <field name='lead_id' string='Lead/Opportunity' required="1"/>
-                                <field name='carrier_id'/>
                             </group>
                         </group>
                         <notebook>
@@ -78,7 +79,7 @@
         <menuitem id="sample_request_root" name="Sample Requests" sequence="30" parent='sale.sale_menu_root' groups='sample_request.group_manager,sample_request.group_user'/>
         <menuitem id="sample_request_draft" name="Sample Requests" sequence="30" parent='sample_request_root' action='sample_request.action_sample_request'/>
         <menuitem id="sample_request_approve" name="Approved Requests" sequence="30" parent='sample_request_root' action='sample_request.action_sample_request_approve'/>
-        <menuitem id="sample_request_reject" name="Rejectd Requests" sequence="30" parent='sample_request_root' action='sample_request.action_sample_request_reject'/>
+        <menuitem id="sample_request_reject" name="Rejected Requests" sequence="30" parent='sample_request_root' action='sample_request.action_sample_request_reject'/>
         <menuitem
         id="crm_sample_root"
         name="Sample Requests"
@@ -87,6 +88,6 @@
         sequence="99"/>
         <menuitem id="crm_sample_request_draft" name="Sample Requests" sequence="30" parent='crm_sample_root' action='sample_request.action_sample_request'/>
         <menuitem id="crm_sample_request_approve" name="Approved Requests" sequence="30" parent='crm_sample_root' action='sample_request.action_sample_request_approve'/>
-        <menuitem id="crm_sample_request_reject" name="Rejectd Requests" sequence="30" parent='crm_sample_root' action='sample_request.action_sample_request_reject'/>
+        <menuitem id="crm_sample_request_reject" name="Rejected Requests" sequence="30" parent='crm_sample_root' action='sample_request.action_sample_request_reject'/>
     </data>
 </odoo>

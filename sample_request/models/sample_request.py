@@ -69,20 +69,40 @@ class SampleRequest(models.Model):
 
     name = fields.Char(string='Name')
     partner_id = fields.Many2one('res.partner',string='Customer')
+    sample_route = fields.Many2one('stock.location.route', string='Sample Route',default=lambda self:int(self.env['ir.config_parameter'].sudo().get_param('sample_request.sample_route')) or False)
     partner_shipping_id = fields.Many2one('res.partner')
     request_lines = fields.One2many('sample.request.line','request_id',string='Sample Requests')
     state = fields.Selection([('draft','Draft'),('request','Request'),('reject','Rejected'),('approve','Approved')],default='draft',tracking=True)
     sale_id = fields.Many2one('sale.order',string='Order')
     carrier_id = fields.Many2one('delivery.carrier',string='Delivery Method')
     lead_id = fields.Many2one('crm.lead',string='crm.lead')
+    sales_person_ids = fields.Many2many('res.partner', string='Associated Sales Persons',store=True,compute='partner_id_change')
 
+    @api.depends('partner_id')
+    def partner_id_change(self):
+        for rec in self:
+            if rec.partner_id and rec.partner_id.sales_person_ids:
+                rec.sales_person_ids = rec.partner_id.sales_person_ids.filtered(lambda r: r.active)
+            else:
+                rec.sales_person_ids = False
+    
+    @api.onchange('partner_id')
+    def partner_id_ch(self):
+        return {'domain':{'lead_id':[('partner_id','=',self.partner_id.id)]}}
+        
+    
 
+    @api.onchange('lead_id')
+    def lead_change_change(self):
+        for rec in self:
+            if rec.lead_id and rec.lead_id.partner_id:
+                rec.partner_id = rec.lead_id.partner_id.id
 
     
     def approve_request(self):
         if not self.carrier_id:
             raise UserError('Select the delivery method before approval')
-        route = self.env['ir.config_parameter'].sudo().get_param('sample_request.sample_route')
+        route = self.sample_route
         uom = self.env['ir.config_parameter'].sudo().get_param('sample_request.sample_uom')
         route = int(route) if route else False
         uom = int(uom) if uom else False
@@ -102,6 +122,7 @@ class SampleRequest(models.Model):
                 for res in self.request_lines]
         })
         self.sale_id = sale_id
+        sale_id.action_confirm()
         self.state='approve'
         return True
 

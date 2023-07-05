@@ -10,7 +10,7 @@ of products and admin have rights to approve to reject them
 """,
     'author': 'Confianz Global,Inc.',
     'website': 'https://www.confianzit.com',
-    'depends': ['website_sale','price_paper','crm'],
+    'depends': ['website_sale','price_paper','crm','sales_commission'],
     'data': [  
         'security/security.xml',
         'security/ir.model.access.csv',

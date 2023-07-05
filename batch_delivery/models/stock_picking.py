@@ -40,7 +40,7 @@ class StockPicking(models.Model):
                                          string='Easiness Of Shipping')
     is_transit = fields.Boolean(string='Transit', copy=False)
     is_late_order = fields.Boolean(string='Late Order', copy=False)
-    reserved_qty = fields.Float('Available Quantity', compute='_compute_available_qty')
+    reserved_qty = fields.Float('Available Quantity', compute='_compute_available_qty', search='_search_reserved_qty')
     low_qty_alert = fields.Boolean(string="Low Qty", compute='_compute_available_qty')
     sequence = fields.Integer(string='Order', default=1)
     is_invoiced = fields.Boolean(string="Invoiced", compute='_compute_state_flags')
@@ -196,6 +196,14 @@ class StockPicking(models.Model):
             rec.invoice_ref = False
             if rec.invoice_ids:
                 rec.invoice_ref = rec.invoice_ids[-1].name
+
+    def _search_reserved_qty(self, operator, value):
+        domain = [('state', 'not in', ('draft', 'done', 'cancel')), ('carrier_id.show_in_route', '=', True)]
+        picking_ids = []
+        for picking in self.env['stock.picking'].search(domain):
+            if picking.reserved_qty > 0:
+                picking_ids.append(picking.id)
+        return [('id', 'in', picking_ids)]
 
     @api.depends('move_lines.reserved_availability')
     def _compute_available_qty(self):

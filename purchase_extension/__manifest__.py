@@ -21,6 +21,7 @@ Custom module implemented for Purchase extension.
         'views/purchase_requisition_views.xml',
         'views/res_company.xml',
         'views/res_partner.xml',
+        'views/product_pricelist.xml',
         'views/sale_order.xml',
         'views/report_pdf_vendor_product.xml',
         'views/report_template.xml',

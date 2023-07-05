@@ -11,4 +11,4 @@ access_vedor_product_lines_user,access_vedor_product_lines,model_vedor_product_l
 access_vedor_product_report_wizard_user,access_vedor_product_report_wizard,model_vedor_product_report_wizard,base.group_user,1,1,1,1
 access_view_sales_history_po_user,access_view_sales_history_po,model_view_sales_history_po,base.group_user,1,1,1,1
 access_update_unit_price,access_update_unit_price,model_update_unit_price,base.group_user,1,1,1,1
-
+access_sale_uom_mapper_user,access_sale_uom_mapper,model_sale_uom_mapper,base.group_user,1,1,1,1

@@ -10,7 +10,8 @@
                     <field name="ppt_uom_id" string="Unit of Measure"/>
                 </xpath>
                 <xpath expr="//field[@name='uom_id']" position="attributes">
-                        <attribute name="domain">[]</attribute>
+                    <attribute name="domain">[]</attribute>
+                    <attribute name="groups">base.group_no_one</attribute>
                 </xpath>
                 <xpath expr="//button[@name='action_open_quants']/div/span/field[@name='uom_name']" position="before">
                     <field name="quantity_available" widget="statinfo" nolabel="1" style="margin-right:1px;"/>
@@ -21,27 +22,34 @@
                 <xpath expr="//button[@name='action_view_sales']/div/span/field[@name='uom_name']" position="before">
                     <field name="sales_total_count" widget="statinfo" nolabel="1" style="margin-right:1px;"/>
                 </xpath>
-<!--                <xpath expr="//button[@name='action_view_po']/div/span/field[@name='uom_name']" position="before">-->
-<!--                    <field name="purchased_product_qty_mod" widget="statinfo" nolabel="1" style="margin-right:3px;"/>-->
-<!--                </xpath>-->
+                <xpath expr="//button[@name='get_number_of_days']" position="after">
+                    <button name="action_view_orderpoints" type="object"
+                            attrs="{'invisible':['|',('type', 'not in', ['product', 'consu']),('nbr_reordering_rules', '!=', 1)]}"
+                            class="oe_stat_button" icon="fa-refresh">
+                        <div class="o_field_widget o_stat_info mr4">
+                            <span class="o_stat_text">Min:</span>
+                            <span class="o_stat_text">Max:</span>
+                        </div>
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="reordering_min_qty_mod"/>
+                            </span>
+                            <span class="o_stat_value">
+                                <field name="reordering_max_qty_mod"/>
+                            </span>
+                        </div>
+                    </button>
+                </xpath>
                 <xpath expr="//button[@name='1585']" position="inside">
-                    <field name="qty_available_not_res_mod" widget="statinfo" string="Unreserved" style="margin-right:1px;"/>
+                    <field name="qty_available_not_res_mod" widget="statinfo" string="Unreserved"
+                           style="margin-right:1px;"/>
                 </xpath>
                 <xpath expr="//field[@name='sales_count']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
-<!--                <xpath expr="//field[@name='purchased_product_qty']" position="attributes">-->
-<!--                    <attribute name="invisible">1</attribute>-->
-<!--                </xpath>-->
                 <xpath expr="//button[@name='1585']/field[@name='qty_available_not_res']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
-<!--                <xpath expr="//button[@name='%(purchase.act_res_partner_2_purchase_order)d']" position="attributes">-->
-<!--                    <attribute name="invisible">1</attribute>-->
-<!--                </xpath>-->
-<!--                <button name="%(purchase.act_res_partner_2_purchase_order)d'" position="attributes">-->
-<!--                    <attribute name="invisible">1</attribute>-->
-<!--                </button>-->
             </field>
         </record>
 
@@ -55,6 +63,7 @@
                     <field name="incoming_quantity"/>
                     <field name="outgoing_quantity"/>
                     <field name="qty_available_not_res_mod"/>
+                    <field name="transit_qty"/>
                     <field name="virtually_available"/>
                     <field name="ppt_uom_id" string="Unit of Measure"/>
                 </xpath>
@@ -65,6 +74,9 @@
                 <xpath expr="//field[@name='reordering_min_qty']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+                <xpath expr="//field[@name='transit_qty']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
                 <xpath expr="//field[@name='uom_id']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
@@ -73,9 +85,6 @@
                 </xpath>
                 <xpath expr="//field[@name='qty_available_not_res']" position="attributes">
                     <attribute name="invisible">1</attribute>
-                </xpath>
-                <xpath expr="//field[@name='transit_qty']" position="attributes">
-                    <attribute name="invisible">0</attribute>
                 </xpath>
                 <xpath expr="//field[@name='virtual_available']" position="attributes">
                     <attribute name="invisible">1</attribute>
@@ -89,7 +98,15 @@
             </field>
         </record>
 
-
-
+        <record model="ir.ui.view" id="product_form_view_procurement_button_inherit_uom_extension">
+            <field name="name">product.form.view.procurement.button.inherit.uom.extension</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="stock.product_form_view_procurement_button"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='button_box']/button[position()=11]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

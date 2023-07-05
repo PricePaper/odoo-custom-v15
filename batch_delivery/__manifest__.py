@@ -49,6 +49,7 @@ This module sets up the batch delivery process for price paper.
         'views/product_view.xml',
         'views/stock_picking_return.xml',
         'views/stock_move.xml',
+        'views/stock_scrap.xml',
         'views/sale_view.xml',
         'views/batch_payment_common.xml',
         'views/delivery_carrier_view.xml',

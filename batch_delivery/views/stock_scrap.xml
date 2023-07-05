@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="stock_scrap_form_view_inherited_pricepaper" model="ir.ui.view">
+        <field name="name">stock.scrap.view</field>
+        <field name="model">stock.scrap</field>
+        <field name="inherit_id" ref="stock.stock_scrap_form_view"/>
+        <field name="arch" type="xml">
+            <button name='action_validate' position='after'>
+                <button name="action_reverse" type="object" attrs="{'invisible':['|', ('reverse_move_id','!=',False), ('state', '!=', 'done')]}" string="Reverse" class="oe_highlight"/>
+            </button>
+            <xpath expr="//div[@name='button_box']" position="inside">
+              <button class="oe_stat_button" name="action_get_reverse_stock_move_lines"
+                      string="Reverse Moves" type="object"
+                      attrs="{'invisible':[('reverse_move_id','=',False)]}" icon="fa-exchange"/>
+              <field name="reverse_move_id" invisible="1"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

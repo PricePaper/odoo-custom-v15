@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="email_template_cost_change" model="mail.template">
+            <field name="name">Cost Change details</field>
+            <field name="model_id" ref="price_maintanance.model_cost_change_parent"/>
+            <field name="subject">Cost change report - {{(datetime.datetime.now().strftime('%b.%d.%Y'))}}</field>
+            <field name="email_from">{{(ctx.get('email_from') or '')}}</field>
+            <field name="email_to">{{ (ctx.get('email_to') or '') }}</field>
+            <field name="report_template" ref="price_maintanance.cost_change_report"/>
+            <field name="report_name">cost_change_report_{{(datetime.datetime.now().strftime('%b_%d_%Y'))}}</field>
+            <field name="body_html" type="html">
+            <div>
+                <h3>Cost change details</h3>
+                <p>Please find the attached Cost Change Report dated <t t-esc="datetime.date.today()"/>
+                </p>
+            </div>
+
+            </field>
+
+        </record>
+    </data>
+</odoo>

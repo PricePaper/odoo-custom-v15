@@ -1,5 +1,18 @@
 <odoo>
     <data>
+        <record id="purchase_order_search_inherit_pp" model="ir.ui.view">
+            <field name="name">purchase.order.list.select.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='draft']" position="attributes">
+                    <attribute name="domain">[('state', 'in', ('draft', 'to approve'))]</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='draft']" position="after">
+                    <filter name="in_progress" string="In progress" domain="[('state', 'in', ('in_progress', 'sent'))]"/>
+                </xpath>
+            </field>
+        </record>
         <record id="purchase_order_inherit_price_paper" model="ir.ui.view">
             <field name="name">Purchase.order.form.pricepaper</field>
             <field name="model">purchase.order</field>
@@ -83,6 +96,9 @@
                 <xpath expr="//field[@name='order_line']/tree/field[@name='product_qty']" position="before">
                     <button name="show_sales_history" type="object" icon="fa-history" string="Show sales history"/>
                 </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
+                    <button name="update_unit_price" type="object" icon="fa-pencil-square-o" help="Update Unit Price"/>
+                </xpath>
                 <xpath expr="//notebook" position="after">
                     <separator/>
                     <field name="purchase_default_message"/>
@@ -97,7 +113,7 @@
         </record>
 
         <record id="purchase.purchase_rfq" model="ir.actions.act_window">
-            <field name="context">{'search_default_my_purchases':1, 'search_default_draft':1}</field>
+            <field name="context">{'search_default_my_purchases':1, 'search_default_draft':1, 'search_default_in_progress':1}</field>
         </record>
 
         <record id="res_config_settings_view_form_purchase" model="ir.ui.view">

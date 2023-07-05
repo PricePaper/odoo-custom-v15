@@ -28,6 +28,7 @@
                                     <group>
                                         <field name="product_price" />
                                         <field name="seller_id" />
+                                        <field name="seller_partner_ids" widget='many2many_tags' readonly='1'/>
                                         <field name="seller_price" />
                                     </group>
                                 </group>
@@ -58,6 +59,7 @@
                     <field name="product_price"/>
                     <field name="seller_price"/>
                     <field name="seller_id"/>
+                    <field name="seller_partner_ids" widget='many2many_tags'/>
                     <field name="uom_id" groups="uom.group_uom" />
                     <field name="currency_id" invisible="1" />
                     <field name="wizard_id" invisible="1" />
@@ -75,10 +77,12 @@
                     <field name="product_id"/>
                     <field name="categ_id" />
                     <field name="seller_id" />
+                    <field name="seller_partner_ids" />
                     <separator/>
                     <group expand='0' string='Group by...'>
                         <filter string='Vendor' name="group_by_seller_id" context="{'group_by': 'seller_id'}"/>
                         <filter string='Category' name="group_by_categ_id" context="{'group_by': 'categ_id'}"/>
+                        <filter string='Purchaser' name="group_by_categ_id" context="{'group_by': 'seller_partner_ids'}"/>
                     </group>
 
                 </search>

@@ -407,15 +407,17 @@ class StockPicking(models.Model):
                 raise UserError(_('Please enter done quantities in %s before proceed..' % picking.name))
             if picking.sale_id.invoice_status in ['no', 'invoiced']:
                 continue
+            invoice = False
             if picking.sale_id.invoice_status == 'to invoice':
                 # picking.sale_id.adjust_delivery_line()
-                picking.sale_id._create_invoices(final=True)
+                invoice = picking.sale_id._create_invoices(final=True)
                 picking.is_invoiced = True
-            if picking.batch_id:
-                invoice = picking.invoice_ids.filtered(lambda rec: rec.state not in ('posted', 'cancel' ))
-                invoice.write({'invoice_date': picking.batch_id.date})
-            for inv in picking.invoice_ids.filtered(lambda rec: rec.state == 'draft'):
-                picking.invoice_ref = inv.name
+            if invoice:
+                if picking.batch_id:
+                    invoice.write({'invoice_date': picking.batch_id.date})
+                else:
+                    invoice.write({'invoice_date': fields.Date.context_today(picking)})
+                picking.invoice_ref = invoice.name
 
     def write(self, vals):
         # res = super(StockPicking, self).write(vals)

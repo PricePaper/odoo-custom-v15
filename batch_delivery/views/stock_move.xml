@@ -35,7 +35,8 @@
                 <xpath expr="//group/group[position()=1]" position="after">
                     <group>
                         <field name="location_dest_id"/>
-                        <field name="reason_id"/>
+                        <field name="is_reason_added" invisible="1"/>
+                        <field name="reason_id" attrs="{'required': [('is_reason_added', '=', True)]}"/>
                     </group>
                 </xpath>
             </field>

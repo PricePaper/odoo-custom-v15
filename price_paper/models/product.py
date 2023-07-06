@@ -4,6 +4,8 @@ import operator as py_operator
 from lxml import etree
 from odoo import fields, models, api, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.float_utils import float_round
+from datetime import timedelta, time
 
 OPERATORS = {
     '<': py_operator.lt,
@@ -88,15 +90,19 @@ class ProductProduct(models.Model):
             if not self.env.user.has_group('stock.group_stock_user') and self.env.user.has_group('base.group_user'):
                 rec.is_base_user = True
 
-
     def action_view_sales(self):
+        """
+        Overridden to include superseded product's sale quantity in sale analysis report
+        :return: Sale analysis report action
+        """
         action = self.env["ir.actions.actions"]._for_xml_id("sale.report_all_channels_sales_action")
-        action['domain'] = [('product_id', 'in', self.ids)]
+        product_ids = self.ids + self.superseded.mapped('old_product').ids
+        action['domain'] = [('product_id', 'in', product_ids)]
         action['context'] = {
             'pivot_measures': ['product_uom_qty'],
             'active_id': self._context.get('active_id'),
             'search_default_last_year': 1,
-            'search_default_current_month':1,
+            'search_default_current_month': 1,
             'active_model': 'sale.report',
             'time_ranges': {'field': 'date', 'range': 'last_365_days'},
         }
@@ -350,6 +356,33 @@ class ProductProduct(models.Model):
                 raise ValidationError('Weight should be greater than Zero')
             if rec.volume <= 0 and rec.type == 'product':
                 raise ValidationError('Volume should be greater than Zero')
+
+    def _compute_sales_count(self):
+        """
+        Overridden to include superseded products sale quantity in product sale_count
+        :return: sale_count
+        """
+        r = {}
+        self.sales_count = 0
+        if not self.user_has_groups('sales_team.group_sale_salesman'):
+            return r
+        date_from = fields.Datetime.to_string(fields.datetime.combine(fields.datetime.now() - timedelta(days=365),
+                                                                      time.min))
+
+        done_states = self.env['sale.report']._get_done_states()
+        domain = [
+            ('state', 'in', done_states),
+            ('product_id', 'in', self.ids),
+            ('date', '>=', date_from),
+        ]
+        for group in self.env['sale.report'].read_group(domain, ['product_id', 'product_uom_qty'], ['product_id']):
+            r[group['product_id'][0]] = group['product_uom_qty']
+        for product in self:
+            if not product.id:
+                product.sales_count = 0.0
+                continue
+            product.sales_count = float_round(r.get(product.id, 0), precision_rounding=product.uom_id.rounding) + sum(product.superseded.old_product.mapped('sales_count'))
+        return r
 
 
 class ProductUom(models.Model):

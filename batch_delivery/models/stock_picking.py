@@ -472,20 +472,21 @@ class StockPicking(models.Model):
                     if vals.get('is_late_order', False):
                         if sale_order:
                             order_line = sale_order.mapped('order_line').filtered(lambda r: r.product_id and r.product_id == late_product)
+                            sale_flag = False
+                            if sale_order.state == 'done':
+                                sale_order.write({'state': 'sale'})
+                                sale_flag = True
                             if not order_line:
                                 sale_vals = {'product_id': late_product.id,
                                         'product_uom_qty': 1,
                                         'price_unit': late_product.cost,
                                         'order_id':sale_order.id}
-                                order_line = self.env['sale.order.line'].create(sale_vals)
+                                sale_order.with_context(from_late_order=True).write({'order_line':[(0, 0, sale_vals)]})
                             else:
-                                sale_flag = False
-                                if sale_order.state == 'done':
-                                    sale_order.write({'state': 'sale'})
-                                    sale_flag = True
-                                order_line.write({'product_uom_qty': 1,})
-                                if sale_flag:
-                                    sale_order.write({'state': 'done'})
+                                sale_order.with_context(from_late_order=True).write({'order_line':[(1, order_line.id, {'product_uom_qty': 1})]})
+                            if sale_flag:
+                                sale_order.write({'state': 'done'})
+                        order_line = sale_order.mapped('order_line').filtered(lambda r: r.product_id and r.product_id == late_product)
                         if invoice:
                             invoice_line = invoice.mapped('invoice_line_ids').filtered(lambda r: r.product_id and r.product_id == late_product)
                             if not invoice_line:

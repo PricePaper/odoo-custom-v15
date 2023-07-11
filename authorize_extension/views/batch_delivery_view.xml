@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_picking_tree_batch_inherit_auth" model="ir.ui.view">
+            <field name="name">stock.picking.batch.tree.inherrit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock_picking_batch.view_picking_tree_batch"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="is_payment_hold" invisible="1"/>
+                </field>
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="decoration-warning">is_payment_hold==True</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

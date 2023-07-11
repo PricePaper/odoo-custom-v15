@@ -193,6 +193,7 @@ class AuthorizeAPICustom:
                 'x_response_code': response.get('transactionResponse', {}).get('responseCode'),
                 'x_trans_id': response.get('transactionResponse', {}).get('transId'),
                 'x_type': operation,
+                'x_pending_avs_msg': response.get('pending_avs_msg', '')
             }
 
     def get_payment_profile_info(self, payment_response):
@@ -317,8 +318,11 @@ class AuthorizeAPICustom:
                 elif avs_res == 'Z':
                     msg = 'The postal code matched, but the street address did not.'
                 if msg:
-                    raise ValidationError(msg)
-
+                    if response.get('transactionResponse').get('responseCode', '') == '4':
+                        return msg
+                    else:
+                        raise ValidationError(msg)
+        return ''
     def authorize_transaction(self, transaction, order, invoice=False):
         """
             Authorize a transaction
@@ -382,7 +386,9 @@ class AuthorizeAPICustom:
 
         })
         if self.avs_warning_check:
-            self.check_avs_response(response)
+            msg = self.check_avs_response(response)
+            if msg:
+                response['pending_avs_msg'] = msg
         return self._format_response(response, 'auth_only')
 
 
@@ -444,7 +450,9 @@ class AuthorizeAPICustom:
 
         })
         if self.avs_warning_check:
-            self.check_avs_response(response)
+            msg = self.check_avs_response(response)
+            if msg:
+                response['pending_avs_msg'] = msg
         return self._format_response(response, 'auth_only')
 
     # authCaptureTransaction

@@ -117,15 +117,16 @@ class ProductProduct(models.Model):
             else:
                 break
         if result:
-            result = self.filler_to_append_zero_qty(result, to_date, from_date)
+            result, result_type = self.filler_to_append_zero_qty(result, to_date, from_date)
+            # print(result)
             date_to = (to_date + relativedelta(days=periods)).strftime('%Y-%m-%d')
-            try:
-                forecast = self.env['odoo_fbprophet.prophet.bridge'].run_prophet(result, from_date, date_to,
+            # try:
+            forecast = self.env['odoo_fbprophet.prophet.bridge'].run_prophet(result, from_date, date_to,
                                                                                  periods=periods, freq=freq,
-                                                                                 config=config)
-            except Exception as e:
-                server_log.error("Exception in run_prophet for product %s" % (self.name))
-                server_log.error(e)
+                                                                                 config=config, result_type=result_type)
+            # except Exception as e:
+            #     server_log.error("Exception in run_prophet for product %s" % (self.name))
+            #     server_log.error(e)
         else:
             server_log.error("No data available for the product %s to forecast sales" % (self.name))
         return forecast
@@ -201,8 +202,13 @@ class ProductProduct(models.Model):
         Converts uom_qty into base uom_qty
         """
         res = []
+        monthly_res = []
         start_date = result and result[0] and result[0][0]
         start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+
+        month = start_date.month
+        year = start_date.year
+        month_qty = 0
 
         while (start_date <= to_date):
             val = start_date.strftime("%Y-%m-%d")
@@ -219,8 +225,25 @@ class ProductProduct(models.Model):
                         sale_uom_factor = self.env['uom.uom'].browse(product_uom_qty[2]).factor
                         qty += ((product_uom_qty[1] * self.uom_id.factor) / sale_uom_factor)
                 res.append((val, qty))
+                if year != start_date.year or month != start_date.month:
+                    date_val = start_date.replace(day=1, year=year, month=month)
+                    monthly_res.append((date_val, month_qty))
+                    month_qty = qty
+                    year = start_date.year
+                    month = start_date.month
+                else:
+                    month_qty += qty
             start_date = start_date + relativedelta(days=1)
-        return res
+        date_val = start_date.replace(day=1, year=year, month=month)
+        monthly_res.append((date_val, month_qty))
+        month_total = sum([rec[1] for rec in monthly_res])
+        avg = month_total / len(monthly_res)
+        monthly_min_qty = int(self.env['ir.config_parameter'].sudo().get_param('stock_orderpoint_enhancements.prophet_min_qty'))
+        
+        if avg < monthly_min_qty:
+            return monthly_res, 'monthly'
+
+        return res, 'daily'
 
     def calculate_qty(self, forecast, to_date, to_date_plus_delay):
         flag = False

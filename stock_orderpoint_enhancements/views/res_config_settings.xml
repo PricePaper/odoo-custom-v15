@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_inherit_prophet" model="ir.ui.view">
+        <field name="name">res.config.settings.inherit.cost.change</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="stock.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='operations_setting_container']" position="inside">
+                <div class="col-12 col-lg-6 o_setting_box" id="prophet_min_qty">
+                    <div class="o_setting_left_pane"/>
+                    <div class="o_setting_right_pane">
+                        <label for="prophet_min_qty"/>
+                        <div class="text-muted">
+                            FBProphet monthly minimum sale Qty
+                        </div>
+                        <div class="content-group">
+                            <div class="row mt16">
+                                <field name="prophet_min_qty" style="width:300px;margin-left:10px;"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

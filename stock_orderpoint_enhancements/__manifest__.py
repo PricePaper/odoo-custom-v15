@@ -25,6 +25,7 @@
         'wizard/product_forecast_views.xml',
         'wizard/forecast_days.xml',
         'views/res_company.xml',
+        'views/res_config_settings.xml',
         'views/product.xml',
         'views/partner.xml',
         'views/fbprophet_config_view.xml',

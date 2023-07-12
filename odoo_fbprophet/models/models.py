@@ -135,7 +135,7 @@ class ProphetBridge(models.AbstractModel):
         return prophet_obj
 
     @api.model
-    def run_prophet(self, dataset, date_from, date_to, periods=12, freq='m', config=False):
+    def run_prophet(self, dataset, date_from, date_to, periods=12, freq='m', config=False, result_type='daily'):
         """
         the core method that calls the fbprophet forecasting
         date from and date to is used to denotet the holidays
@@ -153,9 +153,15 @@ class ProphetBridge(models.AbstractModel):
             dataframe['floor'] = config.dataframe_floor
 
         m = self.create_prophet_object(date_from, date_to, config=config)
-        m.fit(dataframe)  # pass historical dataframe
-        future = m.make_future_dataframe(periods=periods, freq=freq)  # make future dataframe
-        future = self.remove_non_shipping_days_from_dataframe(future)
+        if result_type == 'monthly':
+            m.seasonality_mode = 'multiplicative'
+            m.fit(dataframe)
+            future = m.make_future_dataframe(periods=2, freq='MS')
+            # future = self.remove_non_shipping_days_from_dataframe(future)
+        else:
+            m.fit(dataframe)  # pass historical dataframe
+            future = m.make_future_dataframe(periods=periods, freq=freq)  # make future dataframe
+            future = self.remove_non_shipping_days_from_dataframe(future)
 
         if config and config.growth == 'logistic':  # cap and floor values needs to be set if growth is set as logistic
             future['cap'] = config.dataframe_cap
@@ -166,7 +172,6 @@ class ProphetBridge(models.AbstractModel):
         forecast['ds'] = pd.to_datetime(forecast['ds']).apply(lambda x: x.date().strftime('%Y-%m-%d'))
         forecast = list(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].itertuples(index=False,
                                                                                         name=None))  # convert the result back to list of tuples
-
         return forecast
 
     @api.model

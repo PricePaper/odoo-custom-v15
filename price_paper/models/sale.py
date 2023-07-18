@@ -1035,8 +1035,7 @@ class SaleOrderLine(models.Model):
                 if float_compare(product.qty_available - product.outgoing_qty, product_qty, precision_digits=precision) == -1:
                     is_available = self.is_mto
                     if not is_available:
-                        products = product.same_product_ids | product.same_product_rel_ids
-
+                        products = product.alternative_product_ids 
                         alternatives = ''
                         if products:
                             alternatives = '\nPlease add an alternate product from list below'

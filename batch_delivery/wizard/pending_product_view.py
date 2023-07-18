@@ -82,7 +82,7 @@ class PendingProductView(models.TransientModel):
                 'product_uom': move.product_uom.id,
                 'picking_id': move.transit_picking_id.id if move.transit_picking_id else move.picking_id.id,
                 'followers': [(6, 0, move.group_id.sale_id.message_partner_ids.filtered(lambda u: u.user_ids).ids)],
-                'same_product_ids': [(6, 0, move.product_id.same_product_ids.ids)]
+                'same_product_ids': [(6, 0, move.product_id.alternative_product_ids.ids)]
             }) for move in records]
         return res
 

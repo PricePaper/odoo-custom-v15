@@ -31,10 +31,10 @@ class ResPartner(models.Model):
                     'warning': {'title': 'Warning!', 'message': msg}}
 
     def write(self, vals):
-        token_domain = ['|', ('address_id', '=', self._origin.id), ('partner_id', '=', self._origin.id)]
+        token_domain = ['|', ('address_id', 'in', self._origin.ids), ('partner_id', 'in', self._origin.ids)]
         address_fields = ['street', 'street2', 'city', 'state_id', 'zip', 'zip_id', 'country_id']
         res = super(ResPartner, self).write(vals)
-        if self._origin.id:
+        if self._origin.ids:
             if res and any(key in address_fields for key in vals) and self.env['payment.token'].search_count(token_domain):
                 self.message_post(body="Address modified")
                 if self.parent_id:

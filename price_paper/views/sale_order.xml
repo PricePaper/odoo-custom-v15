@@ -279,6 +279,11 @@
                             <group>
                                 <field name="similar_product_price" readonly="1" nolabel='1' force_save="1"/>
                             </group>
+                            <group>
+                                <field name="show_accessory_product" widget='boolean_toggle'
+                                      attrs="{'invisible': [('product_id', '=', 'False')]}"/>
+                                <field name="accessory_product" readonly="1" nolabel='1' force_save="1"/>
+                            </group>
                         </group>
                     </div>
                     <div attrs="{'invisible': [('display_type', '!=', False)]}">

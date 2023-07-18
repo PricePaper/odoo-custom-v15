@@ -17,6 +17,7 @@
     'license': 'LGPL-3',
     'depends': ['website_sale','theme_clarico_vega'],
     'data': [
+        'security/ir.model.access.csv',
         'views/templates.xml',
         'views/theme_templates.xml'
             

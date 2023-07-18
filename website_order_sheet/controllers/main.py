@@ -8,6 +8,27 @@ _logger = logging.getLogger(__name__)
 
 class WebsiteSale(main.WebsiteSale):
 
+
+    @http.route('/shop/delivery/cart',type='http',auth='user',website=True,csrf=False)
+    def delivery_cart(self,**kw):
+        partner = request.env.user.partner_id
+        delivery_addresses = partner.delivery_location
+        sale_orders = request.env['sale.order'].search([('partner_shipping_id','in',delivery_addresses.ids),('state','=','draft')])
+        return request.render('website_order_sheet.multiple_cart',{'sale_order_ids':sale_orders})
+    
+    @http.route('/set/cart/order/<int:order_id>',type='http',auth='user',website=True,csrf=False)
+    def set_cart_order(self,order_id):
+        order = request.env['sale.order'].browse([int(order_id)])
+        print(order)
+        request.website.sale_reset()
+        # order.state='draft'
+        request.session.update({
+            'sale_order_id': order.sudo().id,
+            'website_sale_current_pl': order.sudo().pricelist_id.id,
+            'sale_last_order_id' : order.id
+        })
+        return request.redirect('/shop/cart')
+
     @http.route('/add/section/product',type='json',auth='user',website=True,csrf=False)
     def add_section_product(self,section_key,prod_ids):
         product_ids = list(map(int,prod_ids))

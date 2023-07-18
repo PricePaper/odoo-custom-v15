@@ -1,5 +1,50 @@
 <odoo>
     <data>
+        <template id="multiple_cart" name="Multiple Cart">
+            <t t-call="website.layout">
+                <div class='wrap'>
+                    <div class='container pb64 pt64'>
+                        <h2>
+                            Delivery Address
+                        </h2>
+                        <div class='row'>
+                            <t t-foreach='sale_order_ids' t-as='order'>
+                                <div class='col-4 mb32'>
+                                    <div class='card h-100'>
+                                        <div class='card-header'>
+                                            <t t-esc='order.partner_shipping_id.name'/>
+                                        </div>
+                                        <div class='card-body'>
+                                            <table class='w-100'>
+                                                <tr>
+                                                    <th>
+                                                Delivery Address:
+                                            </th>
+                                                    <td class='text-end'>
+                                                        <t t-esc="order.partner_shipping_id" t-options="dict(widget='contact', fields=['address'], no_marker=True)"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>
+                                                        Total Amount:
+                                                    </th>
+                                                    <td class='text-end'>
+                                                        <t t-esc='order.amount_total'  t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class='card-footer'>
+                                            <a class='btn btn-primary w-100' t-attf-href='/set/cart/order/#{order.id}'>Select Cart</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
         <template id='website_order_sheet.prod_li'>
             <t t-foreach='product_ids' t-as='product'>
                 <li class='list-group-item product' t-att-data-id='product.id'>
@@ -9,7 +54,6 @@
                             <t t-esc='product.name'/>
                         </div>
                         <div class="col-4 css_quantity input-group mx-auto justify-content-center">
-
                             <div class="input-group-prepend">
                                 <a t-attf-href="#" class="btn btn-link js_add_cart_json d-none d-md-inline-block" aria-label="Remove one" title="Remove one">
                                     <i class="fa fa-minus"></i>
@@ -21,21 +65,16 @@
                                     <i class="fa fa-plus"></i>
                                 </a>
                             </div>
-
-
-
                         </div>
                     </div>
                 </li>
             </t>
         </template>
-
         <template id='website_order_sheet.section_li'>
             <li class='list-group-item border-0' >
                 <ul class='sub_ul list-group'>
                     <li class='list-group-item main_element bg-light' t-att-data-id = "section.id">
                         <span>
-
                             <span class="font-weight-bold section_name" t-esc='section.section'/>
                             <a class='section_edit ml-2' herf="#">
                                 <i class='fa fa-edit'/>
@@ -45,7 +84,6 @@
                             <i class='fa fa-plus'/>
                                                     Browse History
                         </a>
-
                         <a href="#"  t-att-data-line = "section.id" class='add_product float-right' data-toggle="modal" data-target="#addProduct">
                             <i class='fa fa-plus'/>
                                                     Add Product
@@ -53,9 +91,7 @@
                     </li>
                 </ul>
             </li>
-
         </template>
-
         <template id='website_order_sheet.history_table'>
             <div class='main_history'>
                 <div class='float-right '>
@@ -84,9 +120,7 @@
                         <tr>
                             <td class='text-center'>
                                 <input class="form-check-input prod_selec" t-att-data-id='sale.order_line_id.product_id.id' type="checkbox" value="" />
-
                             </td>
-
                             <td>
                                 <span t-out='sale.order_line_id.product_id.display_name'/>
                             </td>
@@ -98,8 +132,6 @@
                 </table>
             </div>
         </template>
-
-
         <template id = 'website_order_sheet.user_sheet'>
             <t t-call="portal.portal_layout">
                 <div class='container order_sheet mt-2 mb-2'>
@@ -119,14 +151,12 @@
                                     <div>
 
                                     </div>
-
                                     <div>
                                         <h3>
                                         Order History
                                         </h3>
                                         <t t-call='website_order_sheet.history_table'/>
                                     </div>
-
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -135,7 +165,6 @@
                             </div>
                         </div>
                     </div>
-
                     <!-- Modal -->
                     <div class="modal fade" id="addProduct" tabindex="-1" role="dialog" aria-labelledby="addProductLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -173,8 +202,6 @@
                             </div>
                         </div>
                     </div>
-
-
                     <div class='row mt-3 mb-3'>
                         <div class='col-12 mb-3'>
                             <div class='d-flex justify-content-between'>
@@ -183,14 +210,12 @@
                             </div>
                         </div>
                         <div class='col-12'>
-
                             <ul class='main_ul list-group'>
                                 <t t-foreach='sheet.order_lines' t-as='line'>
                                     <li class='list-group-item border-0' >
                                         <ul class='sub_ul list-group'>
                                             <li class='list-group-item main_element bg-light' t-att-data-id = "line.id">
                                                 <span>
-
                                                     <span class="font-weight-bold section_name" t-esc='line.section'/>
                                                     <a class='section_edit ml-2' herf="#">
                                                         <i class='fa fa-edit'/>
@@ -200,7 +225,6 @@
                                                     <i class='fa fa-plus'/>
                                                     Browse History
                                                 </a>
-
                                                 <a href="#"  t-att-data-line = "line.id" class='add_product float-right' data-toggle="modal" data-target="#addProduct">
                                                     <i class='fa fa-plus'/>
                                                     Add Product
@@ -220,11 +244,9 @@
                                                                         <t t-out='uom.name'/>
                                                                     </option>
                                                                 </t>
-
                                                             </select>
                                                         </div>
                                                         <div class="col-3 css_quantity input-group mx-auto justify-content-center">
-
                                                             <div class="input-group-prepend">
                                                                 <a t-attf-href="#" class="btn btn-link js_add_cart_json d-none d-md-inline-block" aria-label="Remove one" title="Remove one">
                                                                     <i class="fa fa-minus"></i>
@@ -236,9 +258,6 @@
                                                                     <i class="fa fa-plus"></i>
                                                                 </a>
                                                             </div>
-
-
-
                                                         </div>
                                                     </div>
                                                 </li>
@@ -246,9 +265,7 @@
                                         </ul>
                                     </li>
                                 </t>
-
                             </ul>
-
                         </div>
                         <div class='col-12 mt-4'>
                             <button class='btn btn-dark font-weight-bold save_data btn-md'>Save Sheet</button>
@@ -258,5 +275,25 @@
                 </div>
             </t>
         </template>
+        <template id="cart_popover" name="Cart" inherit_id="website_sale.cart_popover">
+            <xpath expr='//a[@href="/shop/cart"]' position="after">
+                <a role="button" class="btn btn-primary" href="/shop/delivery/cart">
+                    Select Delivery Cart
+                </a>
+            </xpath>
+        </template>
+        <record id="cart_popover_theme_inherit" model="ir.ui.view">
+            <field name="name">cart_popover_theme_inherit</field>
+            <field name="inherit_id" search="[('key', '=', 'theme_clarico_vega.cart_popover_ept')]"/>
+            <field name="type">qweb</field>
+            <field name="key">website_base.cart_popover_inheirt</field>
+            <field name="arch" type="xml">
+                <xpath expr='//a[@href="/shop/cart"]' position="after">
+                    <a role="button" class="btn btn-primary te_theme_button mb-2" href="/shop/delivery/cart">
+                        Select Delivery Cart
+                    </a>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

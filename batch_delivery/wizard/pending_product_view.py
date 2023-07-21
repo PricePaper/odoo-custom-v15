@@ -74,7 +74,6 @@ class PendingProductView(models.TransientModel):
                 records += self.env['stock.picking.batch'].browse(self._context.get('default_batch_ids')). \
                     mapped('picking_ids').filtered(lambda pick: pick.state in ['in_transit', 'transit_confirmed']). \
                     mapped('move_lines').filtered(lambda l: l.product_uom_qty != l.reserved_availability)
-
             res['pending_line_ids'] = [(0, 0, {
                 'product_id': move.product_id.id,
                 'product_uom_qty': move.product_uom_qty,
@@ -82,7 +81,7 @@ class PendingProductView(models.TransientModel):
                 'product_uom': move.product_uom.id,
                 'picking_id': move.transit_picking_id.id if move.transit_picking_id else move.picking_id.id,
                 'followers': [(6, 0, move.group_id.sale_id.message_partner_ids.filtered(lambda u: u.user_ids).ids)],
-                'same_product_ids': [(6, 0, move.product_id.alternative_product_ids.ids)]
+                'same_product_ids': [(6, 0, move.product_id.alternative_product_ids.product_variant_id.ids)]
             }) for move in records]
         return res
 

@@ -97,12 +97,12 @@ class ChangeProductUom(models.TransientModel):
                     line.copy(default=default_1)
 
         if self.is_alternate_product:
-            new_ids = self.product_id.same_product_ids.ids
+            new_ids = self.product_id.alternative_product_ids.ids
             if new_ids:
                 new_ids.append(res.id)
             else:
                 new_ids = [res.id]
-            self.product_id.write({'same_product_ids': new_ids})
+            self.product_id.write({'alternative_product_ids': new_ids})
         if self.is_supercede_product:
             res.write({'superseded': [(0, 0, {'old_product': self.product_id.id, 'product_child_id': res.id})]})
         return {
@@ -122,7 +122,3 @@ class SaleUomMapper(models.TransientModel):
     change_id = fields.Many2one('change.product.uom', string='Change Id')
     old_uom_id = fields.Many2one('uom.uom', string='Old Uom')
     new_uom_id = fields.Many2one('uom.uom', string='New Uom')
-
-
-
-

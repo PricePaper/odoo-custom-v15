@@ -6,6 +6,9 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//notebook/page[@name='sales_purchases']/group//field[@name='destination_code']" position="after">
+                    <field name="property_payment_method_id"/>
+                </xpath>
                 <notebook position="inside">
                     <page string="Payment Tokens" groups="account.group_account_invoice">
                         <field name="payment_token_ids" context="{'default_partner_id': id}">
@@ -29,7 +32,7 @@
                                 </sheet>
                             </form>
                             <tree string="Payment Tokens" default_order="sequence">
-                                <field name="sequence" widget="handle" />
+                                <field name="sequence" widget="handle"/>
                                 <field name="name"/>
                                 <field name="acquirer_id" readonly="1"/>
                                 <field name="acquirer_ref" string="Authorize.Net Payment Profile" readonly="1"/>
@@ -40,6 +43,7 @@
                 </notebook>
             </field>
         </record>
+
         <record id="res_partner_account_inherit_bank" model="ir.ui.view">
             <field name="name">res.partner.acc.bank</field>
             <field name="model">res.partner</field>
@@ -50,5 +54,17 @@
                 </xpath>
             </field>
         </record>
+
+        <record id="view_partner_property_form" model="ir.ui.view">
+            <field name="name">res.partner.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="account_check_printing.view_partner_property_form"/>
+            <field name="arch" type="xml">
+                <field name="property_payment_method_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+            </field>
+        </record>
+
     </data>
 </odoo>

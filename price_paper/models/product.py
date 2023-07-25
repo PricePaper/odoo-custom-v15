@@ -63,11 +63,7 @@ class ProductProduct(models.Model):
     need_sub_product = fields.Boolean(string='Need Sub-Products')
     similar_product_ids = fields.Many2many('product.product', 'product_similar_product_rel', 'product_id',
                                            'similar_product_id', string="Similar Products")
-    same_product_ids = fields.Many2many('product.product', 'product_same_product_rel', 'product_id',
-                                        'same_product_id', string="Alternative Product")
     count_in_uom = fields.Integer(string='Count in One Unit')
-    same_product_rel_ids = fields.Many2many('product.product', 'product_same_product_rel', 'same_product_id',
-                                            'product_id', string="Alternative Product Reverse")
     volume = fields.Float('Volume', help="The volume in m3.", copy=False)
     weight = fields.Float(
         'Weight', digits='Stock Weight',

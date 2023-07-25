@@ -801,6 +801,26 @@ class SaleOrderLine(models.Model):
     tax_domain_ids = fields.Many2many('account.tax', compute='_compute_tax_domain')
     procure_method = fields.Selection(string='Supply Method', selection=[('make_to_stock', 'Take from stock'), ('make_to_order', 'Make to Order')],
                                       compute="_compute_procure_method")
+    show_accessory_product = fields.Boolean(string='Show accessory Products')
+    accessory_product = fields.Html(string='Accessory Products')
+
+    @api.onchange('show_accessory_product', 'product_id')
+    def onchange_show_accessory_product(self):
+        if self.show_accessory_product and self.product_id:
+            accessory_product = False
+            if self.product_id.accessory_product_ids:
+                accessory_product = "<table style='width:400px'>\
+                                        <tr><th>Accessory Products</th></tr>"
+                for product in self.product_id.accessory_product_ids:
+                    name = product.name
+                    if product.default_code:
+                        name = '[' + product.default_code + ']' + name
+                    accessory_product += "<tr><td>{}</td></tr>".format(name)
+                accessory_product += "</table>"
+            self.accessory_product = accessory_product
+
+        else:
+            self.accessory_product = False
 
     def _compute_procure_method(self):
         for line in self:
@@ -1036,8 +1056,7 @@ class SaleOrderLine(models.Model):
                 if float_compare(product.qty_available - product.outgoing_qty, product_qty, precision_digits=precision) == -1:
                     is_available = self.is_mto
                     if not is_available:
-                        products = product.same_product_ids | product.same_product_rel_ids
-
+                        products = product.alternative_product_ids 
                         alternatives = ''
                         if products:
                             alternatives = '\nPlease add an alternate product from list below'

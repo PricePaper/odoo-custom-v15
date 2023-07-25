@@ -18,6 +18,25 @@ class AccountJournal(models.Model):
 class AccountRegisterPayment(models.TransientModel):
     _inherit = "account.payment.register"
 
+    @api.depends('payment_type', 'journal_id', 'partner_id')
+    def _compute_payment_method_line_id(self):
+        super()._compute_payment_method_line_id()
+        for record in self:
+
+            if record.payment_type == 'outbound':
+                preferred = record.partner_id.with_company(record.company_id).property_payment_method_id
+                method_line = record.journal_id.outbound_payment_method_line_ids.filtered(
+                    lambda l: l.payment_method_id == preferred
+                )
+                if method_line:
+                    record.payment_method_line_id = method_line[0]
+            elif record.payment_type == 'inbound':
+                preferred = record.partner_id.with_company(record.company_id).property_payment_method_id
+                method_line = record.journal_id.inbound_payment_method_line_ids.filtered(
+                    lambda l: l.payment_method_id == preferred
+                )
+                if method_line:
+                    record.payment_method_line_id = method_line[0]
     def _post_payments(self, to_process, edit_mode=False):
         """
         override to post discount move if exist
@@ -103,6 +122,25 @@ class AccountPayment(models.Model):
 
     discount_move_id = fields.Many2one('account.move', 'Discount Move')
     balance_to_pay  = fields.Float('Balance to register', compute="_compute_balance")
+
+    @api.depends('payment_type', 'journal_id', 'partner_id')
+    def _compute_payment_method_line_id(self):
+        super()._compute_payment_method_line_id()
+        for record in self:
+            if record.payment_type == 'outbound':
+                preferred = record.partner_id.with_company(record.company_id).property_payment_method_id
+                method_line = record.journal_id.outbound_payment_method_line_ids.filtered(
+                    lambda l: l.payment_method_id == preferred
+                )
+                if method_line:
+                    record.payment_method_line_id = method_line[0]
+            elif record.payment_type == 'inbound':
+                preferred = record.partner_id.with_company(record.company_id).property_payment_method_id
+                method_line = record.journal_id.inbound_payment_method_line_ids.filtered(
+                    lambda l: l.payment_method_id == preferred
+                )
+                if method_line:
+                    record.payment_method_line_id = method_line[0]
 
     def wrapper_compute_reconciliation(self):
         return self._compute_reconciliation_status() or True

@@ -92,7 +92,7 @@ class SaleHistoryLinesWizard(models.TransientModel):
 
             if message:
 
-                products = product.same_product_ids | product.same_product_rel_ids
+                products = product.alternative_product_ids
                 alternatives = ''
                 if products:
                     alternatives = '\nPlease add an alternate product'

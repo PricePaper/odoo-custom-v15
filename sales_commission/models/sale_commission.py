@@ -21,14 +21,14 @@ class SaleCommission(models.Model):
         selection=[('out_invoice', 'Invoice'), ('out_refund', 'Refund'), ('draw', 'Weekly Draw'),
                    ('bounced_cheque', 'Cheque Bounce'), ('cancel', 'Invoice Cancelled'),
                    ('aging', 'Commission Aging'), ('unreconcile', 'Invoice Unreconciled'),
-                   ('bounced_reverse', 'Cheque Bounce Reverse')], string='Type')
+                   ('bounced_reverse', 'Cheque Bounce Reverse'), ('manual', 'Manual')], string='Type')
     invoice_amount = fields.Float(string='Amount')
     date_invoice = fields.Date(related='invoice_id.invoice_date', string="Invoice Date", readonly=True, store=True)
     sale_id = fields.Many2one('sale.order', string="Sale Order")
     is_settled = fields.Boolean(string='Settled')
     is_removed = fields.Boolean(string='Removed')
     settlement_id = fields.Many2one('sale.commission.settlement', string='Settlement')
-    commission_date = fields.Date('Date')
+    commission_date = fields.Date('Paid Date')
     paid_date = fields.Date('Paid Date', compute='get_invoice_paid_date', store=True)
     partner_id = fields.Many2one(related='invoice_id.partner_id', string="Customer")
     settlement_date = fields.Date('Settlement Date')
@@ -46,7 +46,7 @@ class SaleCommission(models.Model):
                     paid_date_list = reconciled_amls.mapped('date')
                     if paid_date_list:
                         paid_date = max(paid_date_list)
-                elif rec.invoice_type in ('draw', 'bounced_cheque', 'cancel', 'unreconcile'):
+                elif rec.invoice_type in ('draw', 'bounced_cheque', 'cancel', 'unreconcile', 'manual'):
                     paid_date = rec.commission_date
             rec.paid_date = paid_date
 

@@ -17,7 +17,7 @@ class PortalRequest(CustomerPortal):
         return values
     
     @http.route(['/my/order/sheet', '/my/order/sheet/page/<int:page>'], type='http', auth="user", website=True)
-    def portal_my_requests(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, **kw):
+    def portal_my_requests_test(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, **kw):
         values = self._prepare_portal_layout_values()
         delivery_location = request.env.user.partner_id.delivery_location
         values.update({

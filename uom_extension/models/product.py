@@ -106,7 +106,8 @@ class ProductProduct(models.Model):
 
     def write(self, vals):
         ctx = dict(self._context)
-        ctx.update({'check_uom_change': True})
+        if 'uom_id' in vals:
+            ctx.update({'check_uom_change': True})
         return super(ProductProduct, self.with_context(ctx)).write(vals)
 
     @api.depends('sales_count')

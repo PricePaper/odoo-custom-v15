@@ -24,6 +24,16 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
 
+    @api.depends('move_lines.date_deadline', 'move_type')
+    def _compute_date_deadline(self):
+        for picking in self:
+            if picking.move_type == 'direct':
+                picking.date_deadline = min(picking.move_lines.filtered('date_deadline').mapped('date_deadline'), default=False)
+                if picking.picking_type_code == 'incoming' and not picking.is_return:
+                    picking.date_deadline = max(picking.move_lines.filtered('date_deadline').mapped('date_deadline'), default=False)
+            else:
+                picking.date_deadline = max(picking.move_lines.filtered('date_deadline').mapped('date_deadline'), default=False)
+
     def _log_activity_get_documents_old(self, orig_obj_changes, stream_field, stream, sorted_method=False, groupby_method=False):
         """
         For PO line qty chnage to reflect in the Stock picking

@@ -24,16 +24,35 @@ class PurchaseOrder(models.Model):
         ('in_progress', 'In Progress RFQ'),
         ('received', 'Received')])
     is_fully_billed = fields.Boolean('Is Fully Billed', default=False)
+    date_wanted = fields.Date(string='Date Wanted')
+
+
+    @api.depends('order_line.date_planned')
+    def _compute_date_planned(self):
+      """ date_planned = the last date_planned across all order lines. """
+      for order in self:
+          dates_list = order.order_line.filtered(lambda x: not x.display_type and x.date_planned).mapped('date_planned')
+          if dates_list:
+              order.date_planned = fields.Datetime.to_string(max(dates_list))
+          else:
+              order.date_planned = False
 
 
     def action_rfq_send(self):
-        """
-         override to change model description for in progress
-        """
-        res = super().action_rfq_send()
-        if self.state == 'in_progress':
-            res['context']['model_description'] = 'Request for Quotation'
-        return res
+      """
+       override to change model description for in progress
+      """
+      if not self.date_wanted:
+          raise ValidationError(_('Please Fill Date wanted.'))
+      res = super().action_rfq_send()
+      if self.state == 'in_progress':
+          res['context']['model_description'] = 'Request for Quotation'
+      return res
+
+    def print_quotation(self):
+      if not self.date_wanted:
+          raise ValidationError(_('Please Fill Date wanted.'))
+      return super().print_quotation()
 
     def po_fully_billed(self):
         if self.filtered(lambda r: r.state not in ('done', 'received', 'purchase')):
@@ -213,6 +232,8 @@ class PurchaseOrder(models.Model):
         """
         cancel all other RFQ under the same purchase agreement
         """
+        if not self.date_wanted:
+            raise ValidationError(_('Please Fill Date wanted.'))
         for purchase_order in self:
             orders = self.search(
                 [('requisition_id', '!=', False), ('requisition_id', '=', purchase_order.requisition_id.id),
@@ -422,16 +443,6 @@ class PurchaseOrderLine(models.Model):
             price_unit = order.currency_id._convert(
                 price_unit, order.company_id.currency_id, self.company_id, self.date_order or fields.Date.today(), round=False)
         return price_unit
-
-    @api.onchange('product_qty', 'product_uom')
-    def _onchange_quantity(self):
-        res = super(PurchaseOrderLine, self)._onchange_quantity()
-        date_order = self.order_id.date_order
-        delay = self.order_id.vendor_delay
-        if date_order and delay:
-            planned_date = date_order + relativedelta(days=delay)
-            self.date_planned = planned_date.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-        return res
 
     @api.model
     def create(self, vals):

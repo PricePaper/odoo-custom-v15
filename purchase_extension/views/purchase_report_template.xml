@@ -30,16 +30,10 @@
 
             </xpath>
             <xpath expr="//h2" position="after">
-              <!-- <div id="informations" class="row mt32 mb32">
-                <div t-if="o.date_planned" class="col-3 bm-2">
-                    <strong>Date Planned:</strong>
-                    <p t-field="o.date_planned" class="m-0"/>
-                </div>
-              </div> -->
               <div id="informations" class="row mt32 mb32">
-                <div t-if="o.date_wanted" class="col-3 bm-2">
+                <div t-if="o.date_planned" class="col-3 bm-2">
                     <strong>Date Wanted:</strong>
-                    <p t-field="o.date_wanted" class="m-0"/>
+                    <p t-field="o.date_planned" class="m-0"/>
                 </div>
               </div>
             </xpath>
@@ -87,9 +81,9 @@
                 </t>
              </xpath>
             <xpath expr="//div[hasclass('page')]/div[@id='informations']/div[3]" position="after">
-                <div t-if="o.date_wanted" class="col-3 bm-2">
+                <div t-if="o.date_planned" class="col-3 bm-2">
                     <strong>Date Wanted:</strong>
-                    <p t-field="o.date_wanted" class="m-0"/>
+                    <p t-field="o.date_planned" class="m-0"/>
                 </div>
             </xpath>
              <xpath expr="//table/tbody/t/tr/t/td[1]/span" position="replace">
@@ -122,11 +116,6 @@
                 </div>
               </div>
             </xpath>
-        </template>
-        <template id="purchase_order_portal_content_ppt" inherit_id="purchase.purchase_order_portal_content">
-             <xpath expr="//span[@t-field='order.date_planned']" position="replace">
-               <span class="ml-1" t-field="order.date_wanted" />
-             </xpath>
         </template>
 
     </data>

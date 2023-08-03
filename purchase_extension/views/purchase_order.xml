@@ -46,8 +46,11 @@
                 <field name='payment_term_id' position='attributes'>
                     <attribute name='domain'>[('order_type', '=', 'purchase')]</attribute>
                 </field>
+                <xpath expr="//label[@for='date_planned']" position="before">
+                    <field name="date_wanted" attrs="{'required': [('state', 'not in', ('draft', 'in_progress', 'cancel'))]}"/>
+                </xpath>
                 <xpath expr="//label[@for='date_planned']" position="attributes">
-                    <attribute name="string">Date Wanted</attribute>
+                    <attribute name="string">Planned Date</attribute>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="attributes">
                     <attribute name="domain">[('supplier', '=', True), ('parent_id', '=', False)]</attribute>

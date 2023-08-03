@@ -124,9 +124,14 @@
             </xpath>
         </template>
         <template id="purchase_order_portal_content_ppt" inherit_id="purchase.purchase_order_portal_content">
-             <xpath expr="//span[@t-field='order.date_planned']" position="replace">
-               <span class="ml-1" t-field="order.date_wanted" />
-             </xpath>
+              <xpath expr="//div[@id='informations']/div[2]/div/div" position="replace">
+              </xpath>
+              <xpath expr="//address[@t-field='order.company_id.partner_id']" position="after">
+                  <div t-att-class="'d-inline' if order.date_wanted else 'd-none'">
+                    <strong>Date Wanted:</strong><span class="ml-1" t-field="order.date_wanted"/>
+                  </div>
+                  <br></br>
+              </xpath>
         </template>
 
     </data>

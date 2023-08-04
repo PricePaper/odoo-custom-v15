@@ -13,54 +13,7 @@ from odoo.exceptions import UserError, ValidationError
 _logger = logging.getLogger(__name__)
 
 
-class SaleOrder(models.Model):
-    _inherit='sale.order'
 
-    is_sample_order = fields.Boolean(string='Sample Order',default=False)
-    
-
-    @api.model
-    def create(self, vals):
-        if vals.get('is_sample_order'):
-            sequence = self.env.ref('sample_request.seq_sc_sale_order_sample', raise_if_not_found=False)
-            if sequence:
-                vals['name'] = sequence._next()
-        order = super(SaleOrder, self).create(vals)
-        return order
-
-
-
-    def action_confirm(self):
-        """
-        create record in price history
-        and also update the customer pricelist if needed.
-        create invoice for bill_with_goods customers.
-
-        """
-        if self.is_sample_order:
-            self = self.with_context(from_import=True)
-        return super(SaleOrder, self).action_confirm()
-
-class SaleOrderLine(models.Model):
-    _inherit='sale.order.line'
-
-    @api.depends('product_id', 'product_uom')
-    def _compute_lst_cost_prices(self):
-        super(SaleOrderLine,self)._compute_lst_cost_prices()
-        for line in self:
-            if line.order_id.is_sample_order:
-                line.lst_price = 0.0
-
-    @api.depends('product_id', 'product_uom_qty', 'price_unit', 'order_id.delivery_cost')
-    def calculate_profit_margin(self):
-        """
-        Calculate profit margin for SO line
-        """
-        super(SaleOrderLine,self).calculate_profit_margin()
-        for line in self:
-            if line.order_id.is_sample_order:
-                line.profit_margin = 0.0
-        
         
 class SampleRequest(models.Model):
     _name = "sample.request"
@@ -90,13 +43,11 @@ class SampleRequest(models.Model):
     def partner_id_ch(self):
         return {'domain':{'lead_id':[('partner_id','=',self.partner_id.id)]}}
         
-    
-
     @api.onchange('lead_id')
     def lead_change_change(self):
-        for rec in self:
-            if rec.lead_id and rec.lead_id.partner_id:
-                rec.partner_id = rec.lead_id.partner_id.id
+        if self.lead_id and self.lead_id.partner_id:
+            self.partner_id = self.lead_id.partner_id.id
+        return {'domain':{'partner_id':[('id','=',self.lead_id.partner_id.id)]}}
 
     
     def approve_request(self):
@@ -183,3 +134,4 @@ class SampleRequestLine(models.Model):
 
     request_id = fields.Many2one('sample.request', 'Request')
     product_id = fields.Many2one('product.product','Product')
+    note = fields.Char(string='Notes')

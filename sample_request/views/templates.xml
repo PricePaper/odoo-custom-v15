@@ -13,7 +13,7 @@
 
         <template id ='request_cart' name='Sample Request Cart'>
             <t t-call='website.layout'>
-                <div class='container mt32 mt64'>
+                <div class='container sample_request_cart mt32 mt64'>
                     <h2> Sample Request</h2>
                     <div class='row'>
                         <div class='col'>
@@ -28,19 +28,23 @@
                                 <thead>
                                     <tr>
                                         <th> Product </th>
+                                        <th>Notes</th>
 
                                         <th/>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <t t-foreach="sample.request_lines" t-as="line">
-                                        <tr>
+                                        <tr > 
                                             <td align="left" t-if="line.product_id.product_tmpl_id" class='td-img'>
 
                                                 <span t-field="line.product_id.image_128" t-options="{'widget': 'image', 'qweb_img_responsive': False, 'class': 'rounded o_image_64_max'}" />
                                                 <t t-call="website_sale.cart_line_product_link">
                                                     <strong t-field="line.product_id.display_name" />
                                                 </t>
+                                            </td>
+                                            <td>
+                                                <input type='text' name='note_line' t-att-data-line='line.id' t-att-value='line.note'/>
                                             </td>
 
                                             <td>
@@ -57,7 +61,7 @@
                     <div class='row'>
                         <div class='col'>
                             <div class="float-right">
-                                <a href='/sample/address' class='btn btn-primary'>
+                                <a href='/sample/address' class='btn btn-primary process_request'>
                                     Process Request
                                 </a>
                             </div>
@@ -144,7 +148,6 @@
 
         <template id='sample_request' name='Sample'>
 
-
             <t t-call='website.layout'>
                 <div class='container mt32 mt64'>
                     <h2> Sample Request Submitted</h2>
@@ -161,7 +164,9 @@
                                 <thead>
                                     <tr>
                                         <th> Product </th>
-
+                                        <th>
+                                            Notes
+                                        </th>
 
                                     </tr>
                                 </thead>
@@ -169,14 +174,14 @@
                                     <t t-foreach="request_id.request_lines" t-as="line">
                                         <tr>
                                             <td align="left" t-if="line.product_id.product_tmpl_id" class='td-img'>
-
                                                 <span t-field="line.product_id.image_128" t-options="{'widget': 'image', 'qweb_img_responsive': False, 'class': 'rounded o_image_64_max'}" />
                                                 <t t-call="website_sale.cart_line_product_link">
                                                     <strong t-field="line.product_id.display_name" />
                                                 </t>
                                             </td>
-
-
+                                            <td>
+                                                <span t-esc='line.note'/>
+                                            </td>
                                         </tr>
                                     </t>
                                 </tbody>
@@ -292,16 +297,12 @@
                                                 </select>
                                             </div>
                                             <div class="w-100"/>
-
                                         </div>
-
                                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
                                         <input type="hidden" name="submitted" value="1" />
                                         <input type="hidden" name="partner_id" t-att-value="partner_id or '0'" />
                                         <input type="hidden" name="callback" t-att-value="callback" />
-
                                         <input type="hidden" name="field_required" t-att-value="'phone,name'" />
-
                                         <div class="d-flex justify-content-between">
                                             <a role="button" href="/sample/address" class="btn btn-secondary mb32">
                                                 <i class="fa fa-chevron-left"/>

@@ -46,6 +46,7 @@
                                 <field name='request_lines'>
                                     <tree editable='bottom'>
                                         <field name='product_id'/>
+                                        <field name="note"/>
                                     </tree>
                                 </field>
                             </page>

@@ -87,7 +87,7 @@ class SaleOrder(models.Model):
                 if not order.is_payment_bypassed and order.state in ('sale', 'done'):  # and not order.storage_contract:
                     txs = order.transaction_ids.filtered(lambda r: r.state in ('authorized', 'done'))
                     if txs:
-                        amount = sum(txs.mapped('amount'))
+                        amount = sum(txs.mapped('amount')) - sum(txs.mapped('transaction_fee'))
                         if amount < order.amount_total:
                             transactions = order.transaction_ids.filtered(lambda r: r.state == 'authorized')
                             transactions.action_void()

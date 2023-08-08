@@ -6,10 +6,28 @@
             <field name="model">stock.picking</field>
             <field name="inherit_id" ref="stock.view_picking_form"/>
             <field name="arch" type="xml">
+              <sheet position='before'>
+                  <div class="alert alert-warning mb-0" role="alert" attrs="{'invisible':[('is_payment_hold', '=', False)]}">
+                      <p class="oe_text_center">
+                          <b>
+                              Picking is in Hold State.
+                          </b>
+                      </p>
+                  </div>
+              </sheet>
                 <field name="origin" position="after">
-                    <field name="is_payment_hold" invisible='1'/>
+                    <field name="is_payment_hold" invisible='1' />
                 </field>
             </field>
         </record>
+
+        <!-- <record id="view_picking_form_inherited_au" model="ir.ui.view">
+            <field name="name">stock_picking_batch.picking.form</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock_picking_batch.view_picking_form_inherited"/>
+            <field name="arch" type="xml">
+
+            </field>
+        </record> -->
     </data>
 </odoo>

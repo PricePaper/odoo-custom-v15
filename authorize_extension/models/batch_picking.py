@@ -11,14 +11,18 @@ class StockPickingBatch(models.Model):
         pickings_on_hold = self.picking_ids.filtered(lambda r:r.is_payment_hold == True)
         if pickings_on_hold:
             msg = ''
-            orders = pickings_on_hold.mapped('sale_id').filtered(lambda r: r.is_transaction_pending or r.is_transaction_error).mapped('name')
+            order_names = ''
+            orders = pickings_on_hold.mapped('sale_id').filtered(lambda r: r.is_transaction_pending or r.is_transaction_error)
+            for order in  orders:
+                order_names = order.name + '(' + order.partner_id.name + '),'
             if orders:
-                order_names = ",".join(orders)
-                msg += 'Order/s '+ order_names + ' has/have Transaction Issues please contact Accounting Manager'
-            orders = pickings_on_hold.mapped('sale_id').filtered(lambda r:r.credit_hold_after_confirm or r.is_transaction_error).mapped('name')
+                msg += 'Order '+ order_names + ' has Transaction Issues please contact Accounting Manager\n'
+            orders = pickings_on_hold.mapped('sale_id').filtered(lambda r:r.credit_hold_after_confirm or r.is_transaction_error)
+            order_names = ''
+            for order in  orders:
+                order_names = order.name + '(' + order.partner_id.name + '),'
             if orders:
-                order_names = ",".join(orders)
-                msg += 'Order/s '+ order_names + ' is/are in Credit hold please contact Credit Manager'
+                msg += 'Order '+ order_names + ' is in Credit hold please contact Credit Manager'
             if not msg:
                 msg = 'Some pickings are in Hold State'
 
@@ -33,11 +37,11 @@ class StockPickingBatch(models.Model):
         for picking in self.picking_ids.filtered(lambda r:r.is_payment_hold == True):
             order = picking.sale_id
             if order.is_transaction_pending:
-                msg += '\nOrder:'+ order.name + ' in Transaction Pending state'
+                msg += '\nOrder:'+ order.name + 'Customer: '+ order.partner_id.name + ' is in Transaction Pending state'
             if order.is_transaction_error:
-                msg += '\nOrder:'+ order.name + ' in Transaction Pending state'
+                msg += '\nOrder:'+ order.name + 'Customer: '+ order.partner_id.name + ' is in Transaction Pending state'
             if order.credit_hold_after_confirm:
-                msg += '\nOrder: %s in Credit Hold state'
+                msg += '\nOrder:'+ order.name + 'Customer: '+ order.partner_id.name + ' is in Credit Hold state'
         if msg:
             msg += '\n\nPlease contact Accounting Manager for Transaction related issue.\nContact Credit Manager for credit hold issue'
             view_id = self.env.ref('authorize_extension.view_batch_warning_wizard').id

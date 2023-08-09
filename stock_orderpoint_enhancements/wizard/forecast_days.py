@@ -2,6 +2,7 @@
 
 from odoo import models, fields, api, _
 import datetime
+from odoo.exceptions import UserError
 
 class CostChangePercentage(models.TransientModel):
     _name = 'prophet.forecast.days'
@@ -11,11 +12,18 @@ class CostChangePercentage(models.TransientModel):
     from_date = fields.Date(string='From Date')
     to_date = fields.Date(string='To Date')
 
+    @api.onchange('from_date')
+    def onchange_from_date(self):
+        if self.from_date and self.from_date < datetime.date.today():
+            return {'warning': {'title': 'Warning', 'message': 'From Date is less than today'}}
+
 
     def show_forecast(self):
         """
         Show forecast
         """
+        if self.from_date > self.to_date:
+            raise UserError(_("From date should be less than To date."))
 
         active_id = self._context.get('active_id')
         product = self.env['product.product'].browse(active_id)

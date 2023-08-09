@@ -26,7 +26,7 @@ class CostChangePercentage(models.TransientModel):
         flag = False
         count = 0
         for ele in forecast:
-            if datetime.datetime.strptime(ele[0], '%Y-%m-%d').date() >= to_date:
+            if datetime.datetime.strptime(ele[0], '%Y-%m-%d').date() >= self.from_date:
                 flag = True
             if flag:
                 count += 1

@@ -278,13 +278,11 @@ class ProductProduct(models.Model):
         Return a graph and pivot views which are
         ploted with the forecast result
         """
-        # to_date = datetime.date.today()
-        to_date = forecast_fr_date
+        to_date = datetime.date.today()
+        # to_date = forecast_fr_date
         self.ensure_one()
         from_date = (to_date - relativedelta(days=self.past_days)).strftime('%Y-%m-%d')
-        # periods = no_of_days
-        periods = (forecast_to_date - forecast_fr_date).days
-        print(periods)
+        periods = (forecast_to_date - to_date).days
         config = self.get_fbprophet_config()
         if not config:
             raise UserError(_("FB prophet configuration not found"))

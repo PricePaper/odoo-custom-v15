@@ -10,8 +10,12 @@
                         <separator string="FBProphet Forecast days"/>
                         <group>
                             <group>
-                                <field name="number_of_days" help='Number of days Forecast to be done'/>
+                                <field name="from_date" />
                             </group>
+                            <group>
+                                <field name="to_date" />
+                            </group>
+
                         </group>
                     </sheet>
                     <footer>

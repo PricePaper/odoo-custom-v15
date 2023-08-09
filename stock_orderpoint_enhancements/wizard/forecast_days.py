@@ -8,6 +8,8 @@ class CostChangePercentage(models.TransientModel):
     _description = "FB prophet forecast days"
 
     number_of_days = fields.Integer(string='# of days', default=30)
+    from_date = fields.Date(string='From Date')
+    to_date = fields.Date(string='To Date')
 
 
     def show_forecast(self):
@@ -17,7 +19,7 @@ class CostChangePercentage(models.TransientModel):
 
         active_id = self._context.get('active_id')
         product = self.env['product.product'].browse(active_id)
-        forecast, to_date = product.show_forecast(no_of_days=self.number_of_days)
+        forecast, to_date = product.show_forecast(self.from_date, self.to_date)
 
 
         self.env['product.forecast'].search([]).unlink()
@@ -28,7 +30,7 @@ class CostChangePercentage(models.TransientModel):
                 flag = True
             if flag:
                 count += 1
-                
+
                 self.env['product.forecast'].create({
                     'product_id': product.id,
                     'date': ele[0],

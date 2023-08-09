@@ -273,15 +273,18 @@ class ProductProduct(models.Model):
             name = name1+name
             product.with_delay(description=name, channel='root.Product_Orderpoint').job_queue_forecast()
 
-    def show_forecast(self, no_of_days=31):
+    def show_forecast(self, forecast_fr_date, forecast_to_date):
         """
         Return a graph and pivot views which are
         ploted with the forecast result
         """
-        to_date = datetime.date.today()
+        # to_date = datetime.date.today()
+        to_date = forecast_fr_date
         self.ensure_one()
         from_date = (to_date - relativedelta(days=self.past_days)).strftime('%Y-%m-%d')
-        periods = no_of_days
+        # periods = no_of_days
+        periods = (forecast_to_date - forecast_fr_date).days
+        print(periods)
         config = self.get_fbprophet_config()
         if not config:
             raise UserError(_("FB prophet configuration not found"))

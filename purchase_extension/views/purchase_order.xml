@@ -99,6 +99,9 @@
                 <xpath expr="//field[@name='order_line']/tree/field[@name='product_qty']" position="before">
                     <button name="show_sales_history" type="object" icon="fa-history" string="Show sales history"/>
                 </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
+                    <button name="update_unit_price" type="object" icon="fa-pencil-square-o" help="Update Unit Price"/>
+                </xpath>
                 <xpath expr="//notebook" position="after">
                     <separator/>
                     <field name="purchase_default_message"/>

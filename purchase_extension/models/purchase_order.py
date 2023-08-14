@@ -571,4 +571,7 @@ class PurchaseOrderLine(models.Model):
             line.gross_volume = volume
             line.gross_weight = weight
 
+    def update_unit_price(self):
+        return self.env.ref('purchase_extension.action_update_unit_price').read()[0]
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

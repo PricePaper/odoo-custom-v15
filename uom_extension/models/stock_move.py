@@ -13,7 +13,7 @@ class StockMove(models.Model):
     @api.model
     def search(self, args, offset=0, limit=None, order=None, count=False):
         if self._context.get('check_uom_change', None):
-            args += [('state', 'not in', ['done', 'cancel'])]
+            args += [('state', 'in', ['draft'])]
         return super(StockMove, self).search(args, offset, limit, order, count=count)
 
     def wrapper_action_done_inventory(self):

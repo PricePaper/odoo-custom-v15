@@ -1412,6 +1412,10 @@ class SaleOrderLine(models.Model):
                 if partner_history and not partner_history.tax:
                     self.tax_id = [(5, _, _)]
 
+            #if default uom not in sale_uoms set 0th sale_uoms as line uom
+            if self.product_id.sale_uoms and self.product_id.uom_id not in self.product_id.sale_uoms:
+                vals.update({'product_uom':self.product_id.sale_uoms.ids[0]})
+
             msg, product_price, price_from = self.calculate_customer_price()
             warn_msg += msg and "\n\n{}".format(msg)
             if self.product_id.sale_delay > 0:
@@ -1421,10 +1425,6 @@ class SaleOrderLine(models.Model):
                 res.update({'warning': {'title': 'Warning!', 'message': warn_msg}})
 
             vals.update({'price_unit': product_price, 'price_from': price_from})
-
-            #if default uom not in sale_uoms set 0th sale_uoms as line uom
-            if self.product_id.sale_uoms and self.product_id.uom_id not in self.product_id.sale_uoms:
-                vals.update({'product_uom':self.product_id.sale_uoms.ids[0]})
 
             # get this customers last time sale description for this product and update it in the line
             note = self.env['product.notes'].search(

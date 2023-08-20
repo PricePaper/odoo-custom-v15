@@ -41,6 +41,8 @@ class AccountMove(models.Model):
                 executed_ids |= move
         res = super(AccountMove, self-executed_ids).button_draft()
         self.write({'discount_date': False})
+        # update preferred payment method
+        self._compute_preferred_payment_method_idd()
         return res
 
 
@@ -147,6 +149,11 @@ class AccountMove(models.Model):
             move.button_cancel()
         return self.ids
 
+    def _post(self, soft=True):
+        res = super(AccountMove, self)._post(soft)
+        # update preferred payment method
+        self._compute_preferred_payment_method_idd()
+        return res
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'

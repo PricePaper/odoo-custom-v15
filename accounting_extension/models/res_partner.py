@@ -1,5 +1,6 @@
 from odoo import api, fields, models
 
+
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
@@ -10,3 +11,10 @@ class ResPartner(models.Model):
         company_dependent=True,
         domain="[('payment_type', 'in', ('outbound', 'inbound'))]",
     )
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'property_payment_method_id' in vals.keys():
+            self.env['account.move'].search([('partner_id', '=', self.id), ('state', '=', 'posted'), ('payment_state', '=', 'not_paid')])\
+                ._compute_preferred_payment_method_idd()
+        return res

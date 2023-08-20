@@ -227,6 +227,10 @@ class StockMove(models.Model):
         """ Returns the unit price for the move"""
         """overridden to fix uom change issue"""
         self.ensure_one()
+        # uom conversion moves takes the unit cost wrong
+        if self.is_inventory and self.name == 'Product Quantity Confirmed RPC Call':
+            return self.product_uom._compute_price(self.price_unit or self.product_id.standard_price, self.product_id.uom_id)
+
         if not self.origin_returned_move_id and self.purchase_line_id and self.product_id.id == self.purchase_line_id.product_id.id:
             price_unit_prec = self.env['decimal.precision'].precision_get('Product Price')
             line = self.purchase_line_id

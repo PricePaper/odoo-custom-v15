@@ -41,13 +41,25 @@ class SampleRequest(models.Model):
     
     @api.onchange('partner_id')
     def partner_id_ch(self):
-        return {'domain':{'lead_id':[('partner_id','=',self.partner_id.id)]}}
+        if self.partner_id:
+            if self.lead_id and self.lead_id.partner_id.id !=self.partner_id.id:
+                self.lead_id = False 
+            return {'domain':{'lead_id':[('partner_id','=',self.partner_id.id)]}}
+        else:
+            self.lead_id = False
+            return {'domain':{'lead_id':[]}}
         
     @api.onchange('lead_id')
     def lead_change_change(self):
-        if self.lead_id and self.lead_id.partner_id:
-            self.partner_id = self.lead_id.partner_id.id
-        return {'domain':{'partner_id':[('id','=',self.lead_id.partner_id.id)]}}
+        if self.lead_id:
+            if self.lead_id.partner_id:
+                self.partner_id = self.lead_id.partner_id.id
+            else:
+                self.partner_id = False
+            return {'domain':{'partner_id':[('id','=',self.lead_id.partner_id.id)]}}
+        else:
+            self.partner_id = False
+            return {'domain':{'partner_id':[]}}
 
     
     def approve_request(self):

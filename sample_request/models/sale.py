@@ -16,8 +16,15 @@ _logger = logging.getLogger(__name__)
 class SaleOrder(models.Model):
     _inherit='sale.order'
 
+
     is_sample_order = fields.Boolean(string='Sample Order',default=False)
     
+    def check_payment_term(self):
+        """
+        Can only proceed with order if payment term is set
+        """
+        if self and not self.is_sample_order and not self.payment_term_id:
+            raise ValidationError('Payment term is not set for this order please set to proceed.')
 
     @api.model
     def create(self, vals):

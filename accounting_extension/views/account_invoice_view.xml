@@ -46,6 +46,8 @@
                             "['&amp;','&amp;',('discount_date','&gt;=',time.strftime('%Y-%m-%d')),('discount_date','&lt;=',(context_today()+relativedelta(weeks=0, weekday=-3)).strftime('%Y-%m-%d')),('state','=','posted'), ('payment_state', 'in', ('paid', 'in_payment'))]"/>
                     <filter name="discountable_this_month" string='Discountable This Month' domain=
                             "['&amp;','&amp;',('discount_date','&gt;=',time.strftime('%Y-%m-%d')),('discount_date','&lt;=',(context_today()+relativedelta(day=31)).strftime('%Y-%m-%d')),('state','=','posted'), ('payment_state', 'in', ('paid', 'in_payment'))]"/>
+                    <filter name="ach_payment" string="ACH" domain="[('preferred_payment_method_id', 'ilike', 'NACHA')]"/>
+                    <filter name="ach_payment_group" string="ACH" domain="[]" context="{'group_by': 'preferred_payment_method_id'}"/>
                 </filter>
             </field>
         </record>

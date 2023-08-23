@@ -80,7 +80,8 @@ class SampleRequest(models.Model):
                 'price_unit':0.0,
                 'lst_price':0.0,
                 'route_id':route,
-                'product_uom':uom
+                'product_uom':uom,
+                'sales_person_ids':[(6,0,self.partner_id.sales_person_ids.ids)],
                 }) 
                 for res in self.request_lines]
         })

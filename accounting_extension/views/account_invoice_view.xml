@@ -32,6 +32,13 @@
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_account_invoice_filter"/>
             <field name="arch" type="xml">
+                <filter name="late" position="before">
+                    <filter name="due_today" string="Due Today" domain="[
+                        ('invoice_date_due', '=', time.strftime('%%Y-%%m-%%d')),
+                        ('state', '=', 'posted'),
+                        ('payment_state', 'in', ('not_paid', 'partial'))
+                    ]" />
+                </filter>
                 <filter name="late" position="after">
                     <filter name="discountable_today" string='Discountable Today'
                             domain="['&amp;',('discount_date','&gt;=',time.strftime('%Y-%m-%d')),('state','=','posted'), ('payment_state', 'in', ('paid', 'in_payment'))]"/>

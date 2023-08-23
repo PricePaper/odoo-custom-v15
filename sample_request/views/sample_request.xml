@@ -43,10 +43,12 @@
                         </group>
                         <notebook>
                             <page string='Requests'>
-                                <field name='request_lines'>
+                                <field name='request_lines' attrs="{'readonly':[('state','in',['reject','approve'])]}">
                                     <tree editable='bottom'>
-                                        <field name='product_id'/>
-                                        <field name="note"/>
+                                        <field name='product_id' attrs="{'readonly':['|',('is_reject','=',True),('parent.state','in',['reject','approve'])]}"/>
+                                        <field name="note" attrs="{'readonly':['|',('is_reject','=',True),('parent.state','in',['reject','approve'])]}"/>
+                                        <field name="is_reject" readonly="1"></field>
+                                        <button attrs="{'invisible':['|',('is_reject','=',True),('parent.state','in',['reject','approve'])]}" string="Reject" name="action_reject" type="object" class="oe_highlight"/>
                                     </tree>
                                 </field>
                             </page>

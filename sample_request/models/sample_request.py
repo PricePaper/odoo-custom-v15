@@ -69,22 +69,27 @@ class SampleRequest(models.Model):
         uom = self.env['ir.config_parameter'].sudo().get_param('sample_request.sample_uom')
         route = int(route) if route else False
         uom = int(uom) if uom else False
-        sale_id = self.env['sale.order'].sudo().create({
-            'partner_id':self.partner_id.id,
-            'invoice_address_id':self.partner_id.id,
-            'is_sample_order':True,
-            'carrier_id':self.carrier_id.id,
-            'partner_shipping_id':self.partner_shipping_id.id if self.partner_shipping_id else self.partner_id.id,
-            'order_line':[(0,0,{
-                'product_id':res.product_id.id,
-                'price_unit':0.0,
-                'lst_price':0.0,
-                'route_id':route,
-                'product_uom':uom,
-                'sales_person_ids':[(6,0,self.partner_id.sales_person_ids.ids)],
-                }) 
-                for res in self.request_lines]
-        })
+        request_lines = self.request_lines.filtered(lambda line: not line.is_reject)
+        if request_lines:
+
+            sale_id = self.env['sale.order'].sudo().create({
+                'partner_id':self.partner_id.id,
+                'invoice_address_id':self.partner_id.id,
+                'is_sample_order':True,
+                'carrier_id':self.carrier_id.id,
+                'partner_shipping_id':self.partner_shipping_id.id if self.partner_shipping_id else self.partner_id.id,
+                'order_line':[(0,0,{
+                    'product_id':res.product_id.id,
+                    'price_unit':0.0,
+                    'lst_price':0.0,
+                    'route_id':route,
+                    'product_uom':uom,
+                    'sales_person_ids':[(6,0,self.partner_id.sales_person_ids.ids)],
+                    }) 
+                    for res in request_lines]
+            })
+        else:
+            raise UserError('No Request lines for creating sample order')
         self.sale_id = sale_id
         sale_id.action_confirm()
         self.state='approve'
@@ -147,4 +152,12 @@ class SampleRequestLine(models.Model):
 
     request_id = fields.Many2one('sample.request', 'Request')
     product_id = fields.Many2one('product.product','Product')
+    is_reject = fields.Boolean(string='Rejected',default=False)
     note = fields.Char(string='Notes')
+
+    def action_reject(self):
+        for res in self:
+            if res.note:
+                res.is_reject = True
+            else:
+                raise UserError('Please Enter the reason for rejection')

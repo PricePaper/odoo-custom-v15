@@ -104,8 +104,7 @@
             <field name="domain">['|', '|', '|', ('hold_state','=', 'price_hold'), ('hold_state','=', 'credit_hold'), ('hold_state','=', 'both_hold'),
                 ('hold_state', '=', 'payment_hold')]
             </field>
-            <field name="context">{"search_default_ready_to_release": 1, "search_default_release_price_hold": 1, "search_default_payment_hold": 1}
-            </field>
+            <field name="context">{}</field>
         </record>
     </data>
 </odoo>

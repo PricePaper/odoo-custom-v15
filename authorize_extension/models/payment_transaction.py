@@ -236,7 +236,8 @@ class PaymentTransaction(models.Model):
             self.state = 'done'
             if picking:
                 picking.write({'is_payment_hold': False})
-                self.sale_order_ids.write({'is_transaction_pending': False})
+                self.sale_order_ids.write({'is_transaction_pending': False, 'hold_state': 'release'})
+
 
             payment = self.payment_id
             if self.transaction_fee_move_id and self.transaction_fee_move_id.state == 'cancel':
@@ -248,7 +249,7 @@ class PaymentTransaction(models.Model):
         elif status == 'authorizedPendingCapture':
             self.state = 'authorized'
             if self.sale_order_ids.filtered(lambda r: r.is_transaction_pending):
-                self.sale_order_ids.filtered(lambda r: r.is_transaction_pending).write({'is_transaction_pending': False})
+                self.sale_order_ids.filtered(lambda r: r.is_transaction_pending).write({'is_transaction_pending': False, 'hold_state': 'release'})
             if picking:
                 picking.write({'is_payment_hold': False})
 

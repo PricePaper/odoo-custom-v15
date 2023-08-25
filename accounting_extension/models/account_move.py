@@ -3,6 +3,7 @@
 from odoo import api, fields, models, _
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
+import logging
 
 
 class AccountMove(models.Model):
@@ -154,6 +155,26 @@ class AccountMove(models.Model):
         # update preferred payment method
         self._compute_preferred_payment_method_idd()
         return res
+
+    @api.model
+    def message_new(self, msg_dict, custom_values=None):
+        # override to select the parent partner in vendor bills
+        move = super().message_new(msg_dict, custom_values=custom_values)
+        try:
+            company = self.env['res.company'].browse(custom_values['company_id']) if custom_values.get('company_id') else self.env.company
+
+            def is_internal_partner(partner):
+                # Helper to know if the partner is an internal one.
+                return partner == company.partner_id or (partner.user_ids and all(user.has_group('base.group_user') for user in partner.user_ids))
+
+            if move.move_type == 'in_invoice' and move.partner_id.parent_id:
+                move.partner_id = move.partner_id.parent_id.id
+                if is_internal_partner(move.partner_id):
+                    move.message_subscribe(list(move.partner_id.ids))
+        except Exception as e:
+            logging.error("Incoming vendor bill processing code by DP failed\n The error is %s" % e)
+        return move
+
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'

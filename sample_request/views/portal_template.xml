@@ -44,20 +44,22 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <t t-foreach="requests" t-as="request">
+                        <t t-foreach="requests" t-as="sam_request">
                             <tr>
                                 <td>
-                                    <a t-attf-href="/my/request/#{request.id}" t-att-title="request.name">
-                                        <t t-esc="request.name"/>
+                                    <a t-attf-href="/my/request/#{sam_request.id}" t-att-title="sam_request.name">
+                                        <t t-esc="sam_request.name"/>
 
                                     </a>
                                 </td>
                                 <td>
-                                    <span t-field="request.create_date"/>
+                                    <span t-field="sam_request.create_date"/>
                                 </td>
 
                                 <td class="tx_status text-center">
-                                    <span t-field='request.state'/>
+
+                                    <span t-if='not sam_request.parital_approved' t-field='sam_request.state'/>
+                                    <span t-else=''>Partially Approved</span>
                                 </td>
 
                             </tr>
@@ -135,17 +137,21 @@
                             <tr>
                                 <th/>
                                 <th class="text-left">Products</th>
+                                <th>Noted</th>
 
                             </tr>
                         </thead>
                         <tbody class="sale_tbody">
                             <t t-foreach="sample_request.request_lines" t-as="line">
                                 <tr t-attf-class="bg-200 font-weight-bold">
-                                <td>
-                                     <span t-field="line.product_id.image_128" t-options="{'widget': 'image', 'qweb_img_responsive': False, 'class': 'rounded o_image_64_max'}" />
-                                </td>
+                                    <td>
+                                        <span t-field="line.product_id.image_128" t-options="{'widget': 'image', 'qweb_img_responsive': False, 'class': 'rounded o_image_64_max'}" />
+                                    </td>
                                     <td id="product_name">
                                         <span t-field="line.product_id.display_name"/>
+                                    </td>
+                                    <td>
+                                          <span t-field="line.note"/>
                                     </td>
                                 </tr>
                             </t>

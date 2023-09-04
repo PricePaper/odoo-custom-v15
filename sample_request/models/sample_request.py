@@ -30,6 +30,17 @@ class SampleRequest(models.Model):
     carrier_id = fields.Many2one('delivery.carrier',string='Delivery Method')
     lead_id = fields.Many2one('crm.lead',string='crm.lead')
     sales_person_ids = fields.Many2many('res.partner', string='Associated Sales Persons',store=True,compute='partner_id_change')
+    parital_approved = fields.Boolean(default=False,string='Partial Approved',compute='_cal_partial_approve')
+
+    @api.depends('request_lines')
+    def _cal_partial_approve(self):
+        for res in self:
+            is_rej = res.request_lines.filtered(lambda line : line.is_reject)
+            if is_rej:
+                res.parital_approved = True
+            else:
+                res.parital_approved = False
+
 
     @api.depends('partner_id')
     def partner_id_change(self):

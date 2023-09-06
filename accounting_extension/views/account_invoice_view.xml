@@ -12,6 +12,17 @@
             <field name="type">form</field>
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
+                <sheet position='before'>
+                    <field name="is_stj_date_diff" invisible='1'/>
+                    <div class="alert alert-warning mb-0" role="alert" attrs="{'invisible':[('is_stj_date_diff', '=', False)]}">
+                        <p class="oe_text_center">
+                            <b>
+                                Stock Journal have diffrent accounting date.
+                            </b>
+                        </p>
+                    </div>
+                </sheet>
+
                 <xpath expr="//label[@for='invoice_payment_term_id']" position="before">
                     <field name="discount_date" readonly="1" attrs="{'invisible' : [('move_type','not in',('out_invoice','out_refund'))]}"/>
                 </xpath>

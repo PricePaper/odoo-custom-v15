@@ -11,6 +11,18 @@ class AccountMove(models.Model):
 
     # field used in search view
     discount_date = fields.Date('Discount Till')
+    is_stj_date_diff = fields.Boolean('STJ Diff', compute='_compute_stj_date_diff')
+
+    def _compute_stj_date_diff(self):
+        for move in self:
+            if move.move_type in ['in_invoice', 'in_refund']:
+                stj_move = move.invoice_line_ids.purchase_line_id.move_ids.account_move_ids
+                if stj_move:
+                    stj_date = max(stj_move.mapped('date'))
+                    if stj_date != move.date:
+                        move.is_stj_date_diff = True
+                        continue
+            move.is_stj_date_diff = False
 
     @api.onchange('invoice_date', 'highest_name', 'company_id')
     def _onchange_invoice_date(self):
@@ -21,6 +33,7 @@ class AccountMove(models.Model):
                 self.date = self.invoice_date
 
     def button_draft(self):
+
         executed_ids = self.env['account.move']
         for move in self.filtered(lambda r: r.move_type != 'entry'):
             discount_line = move.get_discount_line()

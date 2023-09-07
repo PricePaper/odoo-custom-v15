@@ -29,8 +29,8 @@ class ProductTemplate(models.Model):
                                                                                   product.ppt_uom_id,
                                                                                   rounding_method='HALF-UP')
             else:
-                product.reordering_min_qty_mod = 0
-                product.reordering_max_qty_mod = 0
+                product.reordering_min_qty_mod = product.reordering_min_qty
+                product.reordering_max_qty_mod = product.reordering_max_qty
 
 
 class ProductProduct(models.Model):
@@ -118,16 +118,18 @@ class ProductProduct(models.Model):
                                                         precision_rounding=product.ppt_uom_id.rounding)
 
             else:
-                product.sales_total_count = 0
+                product.sales_total_count = product.sales_count
 
-    @api.depends('qty_available', 'incoming_qty', 'virtual_available')
+    @api.depends('qty_available', 'incoming_qty', 'virtual_available', 'outgoing_qty')
     def _compute_quantities_modified(self):
         for product in self:
+            print(product.uom_id, product.ppt_uom_id)
             if product.ppt_uom_id:
                 product.quantity_available = product.uom_id._compute_quantity(product.qty_available, product.ppt_uom_id,
                                                                               rounding_method='HALF-UP')
                 product.incoming_quantity = product.uom_id._compute_quantity(product.incoming_qty, product.ppt_uom_id,
                                                                              rounding_method='HALF-UP')
+
                 product.outgoing_quantity = product.uom_id._compute_quantity(product.outgoing_qty, product.ppt_uom_id,
                                                                              rounding_method='HALF-UP')
                 product.virtually_available = product.uom_id._compute_quantity(product.virtual_available,
@@ -135,10 +137,10 @@ class ProductProduct(models.Model):
                                                                                rounding_method='HALF-UP')
 
             else:
-                product.quantity_available = 0
-                product.incoming_quantity = 0
-                product.outgoing_quantity = 0
-                product.virtually_available = 0
+                product.quantity_available = product.qty_available
+                product.incoming_quantity = product.incoming_qty
+                product.outgoing_quantity = product.outgoing_qty
+                product.virtually_available = product.virtual_available
 
     def _compute_qty_available_not_reserved_mod(self):
         """
@@ -151,7 +153,7 @@ class ProductProduct(models.Model):
                                                                                      product.ppt_uom_id,
                                                                                      rounding_method='HALF-UP')
             else:
-                product.qty_available_not_res_mod = 0
+                product.qty_available_not_res_mod = product.qty_available_not_res
 
     @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done')
     def _compute_in_out_quantities(self):
@@ -193,6 +195,10 @@ class ProductProduct(models.Model):
 
     @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done')
     def _compute_transit_quantities(self):
+        """
+        overridden from batch delivery
+        @return:
+        """
         transit_location = self.env['stock.location'].search([('is_transit_location', '=', True)])
         qty_dict = self.with_context(location=transit_location.ids)._compute_quantities_dict(
             self._context.get('lot_id'), self._context.get('owner_id'), self._context.get('package_id'),
@@ -222,7 +228,7 @@ class ProductProduct(models.Model):
                                                                                      product.ppt_uom_id,
                                                                                      rounding_method='HALF-UP')
             else:
-                product.purchased_product_qty_mod = 0
+                product.purchased_product_qty_mod = product.purchased_product_qty
 
     def job_queue_forecast(self):
         """
@@ -320,3 +326,13 @@ class ProductProduct(models.Model):
                 res.append((val, qty))
             start_date = start_date + relativedelta(days=1)
         return res
+
+    def _compute_quantities(self):
+        """
+        overridden from batch delivery custom module,
+        either remove the function or overwrite there to avoid repetition
+        @return:
+        """
+        super(ProductProduct, self)._compute_quantities()
+        for product in self:
+            product.outgoing_quantity -= product.transit_qty

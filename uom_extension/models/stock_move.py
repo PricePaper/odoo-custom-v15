@@ -23,6 +23,7 @@ class StockMove(models.Model):
     """
         overridden methods from stock_account to fix journal entry issues related to uom change
     """
+
     def _create_in_svl(self, forced_quantity=None):
         """Create a `stock.valuation.layer` from `self`.
 
@@ -63,10 +64,11 @@ class StockMove(models.Model):
             valued_quantity = 0
             for valued_move_line in valued_move_lines:
                 valued_quantity += valued_move_line.product_uom_id._compute_quantity(valued_move_line.qty_done,
-                                                                                     move.product_id.ppt_uom_id)
+                                                                                     move.product_id.ppt_uom_id or move.product_id.uom_id)
             if float_is_zero(forced_quantity or valued_quantity,
-                             precision_rounding=move.product_id.ppt_uom_id.rounding):
+                             precision_rounding=move.product_id.ppt_uom_id.rounding or move.product_id.uom_id.rounding):
                 continue
+            print("\n\n reached svl vals")
             svl_vals = move.product_id._prepare_out_svl_vals(forced_quantity or valued_quantity, move.company_id)
             svl_vals.update(move._prepare_common_svl_vals())
             if forced_quantity:
@@ -139,7 +141,8 @@ class StockMove(models.Model):
         elif self.product_id.valuation == 'real_time':
             accounts_data = self.product_id.product_tmpl_id.get_product_accounts()
             account_valuation = accounts_data.get('stock_valuation', False)
-            analytic_line_vals = self.stock_valuation_layer_ids.account_move_id.line_ids.filtered(lambda l: l.account_id == account_valuation)._prepare_analytic_line()
+            analytic_line_vals = self.stock_valuation_layer_ids.account_move_id.line_ids.filtered(
+                lambda l: l.account_id == account_valuation)._prepare_analytic_line()
             amount = - sum(vals['amount'] for vals in analytic_line_vals)
             unit_amount = - sum(vals['unit_amount'] for vals in analytic_line_vals)
         elif sum(self.stock_valuation_layer_ids.mapped('quantity')):
@@ -223,10 +226,43 @@ class StockMove(models.Model):
             }
         return rslt
 
+    # def _get_price_unit(self):
+    #     """ Returns the unit price for the move"""
+    #     """overridden to fix uom change issue"""
+    #     self.ensure_one()
+    #     # uom conversion moves takes the unit cost wrong
+    #     if self.is_inventory and self.name == 'Product Quantity Confirmed RPC Call':
+    #         return self.product_uom._compute_price(self.price_unit or self.product_id.standard_price, self.product_id.uom_id)
+    #
+    #     if not self.origin_returned_move_id and self.purchase_line_id and self.product_id.id == self.purchase_line_id.product_id.id:
+    #         price_unit_prec = self.env['decimal.precision'].precision_get('Product Price')
+    #         line = self.purchase_line_id
+    #         order = line.order_id
+    #         price_unit = line.price_unit
+    #         if line.taxes_id:
+    #             qty = line.product_qty or 1
+    #             price_unit = line.taxes_id.with_context(round=False).compute_all(price_unit, currency=line.order_id.currency_id, quantity=qty)['total_void']
+    #             price_unit = float_round(price_unit / qty, precision_digits=price_unit_prec)
+    #         if line.product_uom.id != line.product_id.ppt_uom_id.id:
+    #             price_unit *= line.product_uom.factor / line.product_id.ppt_uom_id.factor
+    #         if order.currency_id != order.company_id.currency_id:
+    #             # The date must be today, and not the date of the move since the move move is still
+    #             # in assigned state. However, the move date is the scheduled date until move is
+    #             # done, then date of actual move processing. See:
+    #             # https://github.com/odoo/odoo/blob/2f789b6863407e63f90b3a2d4cc3be09815f7002/addons/stock/models/stock_move.py#L36
+    #             price_unit = order.currency_id._convert(
+    #                 price_unit, order.company_id.currency_id, order.company_id, fields.Date.context_today(self), round=False)
+    #         return price_unit
+    #     return super(StockMove, self)._get_price_unit()
+
     def _get_price_unit(self):
         """ Returns the unit price for the move"""
         """overridden to fix uom change issue"""
         self.ensure_one()
+        # uom conversion moves takes the unit cost wrong
+        if self.is_inventory and self.name == 'Product Quantity Confirmed RPC Call':
+            return self.product_uom._compute_price(self.price_unit or self.product_id.standard_price,
+                                                   self.product_id.uom_id)
         if not self.origin_returned_move_id and self.purchase_line_id and self.product_id.id == self.purchase_line_id.product_id.id:
             price_unit_prec = self.env['decimal.precision'].precision_get('Product Price')
             line = self.purchase_line_id
@@ -234,7 +270,9 @@ class StockMove(models.Model):
             price_unit = line.price_unit
             if line.taxes_id:
                 qty = line.product_qty or 1
-                price_unit = line.taxes_id.with_context(round=False).compute_all(price_unit, currency=line.order_id.currency_id, quantity=qty)['total_void']
+                price_unit = \
+                line.taxes_id.with_context(round=False).compute_all(price_unit, currency=line.order_id.currency_id,
+                                                                    quantity=qty)['total_void']
                 price_unit = float_round(price_unit / qty, precision_digits=price_unit_prec)
             if line.product_uom.id != line.product_id.ppt_uom_id.id:
                 price_unit *= line.product_uom.factor / line.product_id.ppt_uom_id.factor
@@ -244,6 +282,38 @@ class StockMove(models.Model):
                 # done, then date of actual move processing. See:
                 # https://github.com/odoo/odoo/blob/2f789b6863407e63f90b3a2d4cc3be09815f7002/addons/stock/models/stock_move.py#L36
                 price_unit = order.currency_id._convert(
-                    price_unit, order.company_id.currency_id, order.company_id, fields.Date.context_today(self), round=False)
+                    price_unit, order.company_id.currency_id, order.company_id, fields.Date.context_today(self),
+                    round=False)
             return price_unit
-        return super(StockMove, self)._get_price_unit()
+
+        """ Override to return RMA moves's price"""
+        if self.picking_id and self.picking_id.rma_id:
+            original_move = self.sale_line_id.move_ids.filtered(lambda r: r.picking_code == 'outgoing')
+            if original_move:
+                layers = original_move.sudo().stock_valuation_layer_ids
+                if layers:
+                    quantity = sum(layers.mapped("quantity"))
+                    if not float_is_zero(quantity, precision_rounding=layers.uom_id.rounding):
+                        return layers.currency_id.round(sum(layers.mapped("value")) / quantity)
+
+        """ Returns the unit price to value this stock move """
+        price_unit = self.price_unit
+        precision = self.env['decimal.precision'].precision_get('Product Price')
+        # If the move is a return, use the original move's price unit.
+        if self.origin_returned_move_id and self.origin_returned_move_id.sudo().stock_valuation_layer_ids:
+            layers = self.origin_returned_move_id.sudo().stock_valuation_layer_ids
+            layers |= layers.stock_valuation_layer_ids
+            quantity = sum(layers.mapped("quantity"))
+            return layers.currency_id.round(sum(layers.mapped("value")) / quantity) if not float_is_zero(quantity,
+                                                                                                         precision_rounding=layers.uom_id.rounding) else 0
+        return price_unit if not float_is_zero(price_unit,
+                                               precision) or self._should_force_price_unit() else self.product_id.standard_price
+
+    @api.depends('product_id', 'product_uom_qty', 'product_uom')
+    def _cal_move_weight(self):
+        moves_with_weight = self.filtered(lambda moves: moves.product_id.weight > 0.00)
+        for move in moves_with_weight:
+            quantity_in_ppt_uom_id = move.product_id.uom_id._compute_quantity(move.product_qty,
+                                                                              move.product_id.ppt_uom_id or move.product_id.uom_id)
+            move.weight = (quantity_in_ppt_uom_id * move.product_id.weight)
+        (self - moves_with_weight).weight = 0

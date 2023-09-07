@@ -15,11 +15,11 @@ class AccountMove(models.Model):
 
     def _compute_stj_date_diff(self):
         for move in self:
-            if move.move_type in ['in_invoice', 'in_refund']:
+            if move.move_type in ['in_invoice', 'in_refund'] and move.date:
                 stj_move = move.invoice_line_ids.purchase_line_id.move_ids.account_move_ids
                 if stj_move:
                     stj_date = max(stj_move.mapped('date'))
-                    if stj_date != move.date:
+                    if stj_date and stj_date.month != move.date.month:
                         move.is_stj_date_diff = True
                         continue
             move.is_stj_date_diff = False

@@ -34,9 +34,12 @@ class StockValuationPriceDiff(models.TransientModel):
                 seller = rec.product_id.seller_ids
                 seller_id = False
                 seller_price = 0
+                purchasers = []
                 if seller:
                     seller_id = seller[0].name.id
                     seller_price = seller[0].price
+                    for purchaser in seller[0].name.seller_partner_ids:
+                        purchasers.append((4, purchaser.id))
                 new_vals = {
                             'company_id': rec.company_id.id,
                             'move_date': rec.create_date,
@@ -53,6 +56,7 @@ class StockValuationPriceDiff(models.TransientModel):
                             'account_move_id': rec.account_move_id.id,
                             'product_price': rec.product_id.standard_price,
                             'seller_id': seller_id,
+                            'seller_partner_ids': purchasers,
                             'seller_price': seller_price,
                             'wizard_id': self.id
                             }
@@ -89,5 +93,6 @@ class StockValuationPriceDiff(models.TransientModel):
     product_price = fields.Float(string='Product Cost', digits='Product Price', readonly=True)
     seller_price = fields.Float(string='Vendor Price', digits='Product Price', readonly=True)
     seller_id = fields.Many2one('res.partner', string='Vendor', readonly=True)
+    seller_partner_ids = fields.Many2many('res.partner', string='Purchaser')
     move_date = fields.Datetime('Date', readonly=True)
     wizard_id = fields.Many2one('stock.valuation.price.diff.wizard', string='Wizard')

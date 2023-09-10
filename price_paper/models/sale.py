@@ -481,39 +481,40 @@ class SaleOrder(models.Model):
         """
         auto save the delivery line.
         """
-        amount = {}
-        if vals.get('order_line', False):
-            for order in self:
-                if order.state == 'sale':
-                    amount[order.id] = order.amount_total
+        # amount = {}
+        # if vals.get('order_line', False):
+        #     for order in self:
+        #         if order.state == 'sale':
+        #             amount[order.id] = order.amount_total
         res = super(SaleOrder, self).write(vals)
-        for order in self:
-            if order.id in amount and amount[order.id] < order.amount_total:
-                pending_invoices = order.partner_id.invoice_ids.filtered(
-                    lambda rec: rec.move_type == 'out_invoice' and rec.state == 'posted' and rec.payment_state not in ('paid', 'in_payment', 'reversed') and (
-                            rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
-
-                msg = ''
-                invoice_name = []
-                for invoice in pending_invoices:
-                    term_line = invoice.invoice_payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
-                    date_due = invoice.invoice_date_due
-                    if term_line and term_line.grace_period:
-                        date_due = date_due + timedelta(days=term_line.grace_period)
-                    if date_due and date_due < date.today():
-                        invoice_name.append(invoice.name)
-                if invoice_name:
-                    msg += 'Customer has pending invoices.\n %s ' % '\n'.join(invoice_name)
-                if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
-                    msg+='Credit limit Exceed'
-
-                if msg:
-                    if order.picking_ids.filtered(lambda r: r.state in ('in_transit', 'transit_confirmed')):
-                        raise UserError('You can not add product to a Order which has a DO in transit state')
-                    order._action_cancel()
-                    order.message_post(body='Cancel Reason : Auto cancel.\n'+msg)
-                    order.action_draft()
-                    order.action_confirm()
+        # for order in self:
+        #     if order.id in amount and amount[order.id] < order.amount_total:
+        #         pending_invoices = order.partner_id.invoice_ids.filtered(
+        #             lambda rec: rec.move_type == 'out_invoice' and rec.state == 'posted' and rec.payment_state not in ('paid', 'in_payment', 'reversed') and (
+        #                     rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
+        #
+        #         msg = ''
+        #         if not order._context.get('from_late_order', False):
+        #             invoice_name = []
+        #             for invoice in pending_invoices:
+        #                 term_line = invoice.invoice_payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
+        #                 date_due = invoice.invoice_date_due
+        #                 if term_line and term_line.grace_period:
+        #                     date_due = date_due + timedelta(days=term_line.grace_period)
+        #                 if date_due and date_due < date.today():
+        #                     invoice_name.append(invoice.name)
+        #             if invoice_name:
+        #                 msg += 'Customer has pending invoices.\n %s ' % '\n'.join(invoice_name)
+        #             if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
+        #                 msg+='Credit limit Exceed'
+        #
+        #         if msg:
+        #             if order.picking_ids.filtered(lambda r: r.state in ('in_transit', 'transit_confirmed')):
+        #                 raise UserError('You can not add product to a Order which has a DO in transit state')
+        #             order._action_cancel()
+        #             order.message_post(body='Cancel Reason : Auto cancel.\n'+msg)
+        #             order.action_draft()
+        #             order.action_confirm()
 
         if not self._context.get('from_import'):
             self.check_payment_term()
@@ -800,6 +801,26 @@ class SaleOrderLine(models.Model):
     tax_domain_ids = fields.Many2many('account.tax', compute='_compute_tax_domain')
     procure_method = fields.Selection(string='Supply Method', selection=[('make_to_stock', 'Take from stock'), ('make_to_order', 'Make to Order')],
                                       compute="_compute_procure_method")
+    show_accessory_product = fields.Boolean(string='Show accessory Products')
+    accessory_product = fields.Html(string='Accessory Products')
+
+    @api.onchange('show_accessory_product', 'product_id')
+    def onchange_show_accessory_product(self):
+        if self.show_accessory_product and self.product_id:
+            accessory_product = False
+            if self.product_id.accessory_product_ids:
+                accessory_product = "<table style='width:400px'>\
+                                        <tr><th>Accessory Products</th></tr>"
+                for product in self.product_id.accessory_product_ids:
+                    name = product.name
+                    if product.default_code:
+                        name = '[' + product.default_code + ']' + name
+                    accessory_product += "<tr><td>{}</td></tr>".format(name)
+                accessory_product += "</table>"
+            self.accessory_product = accessory_product
+
+        else:
+            self.accessory_product = False
 
     def _compute_procure_method(self):
         for line in self:
@@ -1035,13 +1056,12 @@ class SaleOrderLine(models.Model):
                 if float_compare(product.qty_available - product.outgoing_qty, product_qty, precision_digits=precision) == -1:
                     is_available = self.is_mto
                     if not is_available:
-                        products = product.same_product_ids | product.same_product_rel_ids
-
+                        products = product.alternative_product_ids 
                         alternatives = ''
                         if products:
                             alternatives = '\nPlease add an alternate product from list below'
                             for item in products:
-                                alternatives += '\n' + item.default_code
+                                alternatives += '\n %s' % item.default_code or 0
                         if not product.allow_out_of_stock_order:
                             block_message = 'Product'+ product.display_name + product.uom_id.name + 'is not in stock and can not be oversold.'
                             if alternatives:
@@ -1399,7 +1419,7 @@ class SaleOrderLine(models.Model):
         if not self.product_id:
             vals.update({'lst_price': lst_price, 'working_cost': working_cost})
         else:
-            warn_msg = not self.product_id.purchase_ok and "This item can no longer be purchased from vendors" or ""
+            warn_msg = ""
             if not self.order_id.storage_contract and sum(
                     [1 for line in self.order_id.order_line if line.product_id.id == self.product_id.id]) > 1:
                 warn_msg += "\n{} is already in SO.".format(self.product_id.name)

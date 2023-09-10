@@ -168,7 +168,6 @@ class ProductProduct(models.Model):
             name = 'Standard Price: '+ name
             product.with_delay(description=name, channel='root.standardprice').job_queue_standard_price_update()
 
-
     def job_queue_standard_price_update(self):
         """
         Create job for standard price update
@@ -186,10 +185,11 @@ class ProductProduct(models.Model):
                 ('order_id.date_order', '>=', date_to.strftime('%Y-%m-%d')),
                 ('order_id.state', 'in', ['sale', 'done']),
                 ('product_uom', '=', uom.id),
-                ('product_id', 'in', product_list.ids)
+                ('product_id', 'in', product_list.ids),
+                ('price_unit', '>', 0)
             ]
             OrderLine = self.env['sale.order.line']
-            lines = OrderLine.search(domain, order="date_order desc")
+            lines = OrderLine.search(domain)
             partners = lines.mapped('order_id.partner_id')
             partner_count = len(partners)
             partner_count_company = self.env.user.company_id.partner_count or 0

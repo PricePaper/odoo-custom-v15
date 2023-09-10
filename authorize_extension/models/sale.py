@@ -2,6 +2,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools.float_utils import float_round
+from datetime import date, timedelta
 
 
 class SaleOrder(models.Model):
@@ -22,6 +23,9 @@ class SaleOrder(models.Model):
     is_payment_low = fields.Boolean('Is payment Low?', copy=False)
     token_id = fields.Many2one('payment.token', 'Payment Token')
     is_pre_payment = fields.Boolean('Is prepayment?', related='payment_term_id.is_pre_payment')
+    is_transaction_pending = fields.Boolean('Transaction Pending', copy=False)
+    is_transaction_error = fields.Boolean('Transaction Failed', copy=False)
+    credit_hold_after_confirm = fields.Boolean('Credit Hold After Confirm', copy=False)
 
 
     @api.onchange('partner_shipping_id', 'payment_term_id')
@@ -87,7 +91,7 @@ class SaleOrder(models.Model):
                 if not order.is_payment_bypassed and order.state in ('sale', 'done'):  # and not order.storage_contract:
                     txs = order.transaction_ids.filtered(lambda r: r.state in ('authorized', 'done'))
                     if txs:
-                        amount = sum(txs.mapped('amount'))
+                        amount = sum(txs.mapped('amount')) - sum(txs.mapped('transaction_fee'))
                         if amount < order.amount_total:
                             transactions = order.transaction_ids.filtered(lambda r: r.state == 'authorized')
                             transactions.action_void()
@@ -156,6 +160,11 @@ class SaleOrder(models.Model):
                 if tx_sudo.state == 'cancel':
                     error_msg = "The transaction with reference %s for %s is canceled (Authorize.Net)." % (tx_sudo.reference, tx_sudo.amount)
                     self.action_payment_hold(error_msg, error_msg)
+                if tx_sudo.state == 'pending':
+                    picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
+                    picking.write({'is_payment_hold': True})
+                    self.is_transaction_pending = True
+                    self.hold_state = 'payment_hold'
             if error_msg:
                 self.message_post(body=error_msg)
                 view_id = self.env.ref('price_paper.view_sale_warning_wizard').id
@@ -241,9 +250,91 @@ class SaleOrder(models.Model):
         if tx_sudo.state == 'error':
             error_msg = tx_sudo.state_message
             error_msg += "\nThe transaction with reference %s for %s has error(Authorize.Net)." % (tx_sudo.reference, tx_sudo.amount)
+            picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
+            picking.write({'is_payment_hold': True})
+            self.is_transaction_error = True
+            self.hold_state = 'payment_hold'
         elif tx_sudo.state == 'cancel':
             error_msg = "The transaction with reference %s for %s is canceled (Authorize.Net)." % (tx_sudo.reference, tx_sudo.amount)
+            picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
+            picking.write({'is_payment_hold': True})
+            self.is_transaction_error = True
+            self.hold_state = 'payment_hold'
+        elif tx_sudo.state == 'pending':
+            picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
+            picking.write({'is_payment_hold': True})
+            self.is_transaction_pending = True
+            self.hold_state = 'payment_hold'
+        else:
+            self.is_transaction_pending = False
+            self.is_transaction_error = False
+            picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
+            picking.write({'is_payment_hold': False})
+            self.hold_state = 'release'
+
         if error_msg:
             self.message_post(body=error_msg)
+
+    def release_credit_hold_picking(self):
+        self.credit_hold_after_confirm = False
+        self.hold_state = 'release'
+        transactions = self.transaction_ids.filtered(lambda r: r.state not in ('cancel', 'done', 'error'))
+        if transactions:
+            transactions.action_void()
+            order.sale_reauthorize_transaction()
+        else:
+            picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
+            picking.write({'is_payment_hold': False})
+
+    def write(self, vals):
+        """
+        Cancel and create tx if amount increase.
+        """
+        amount = {}
+        if vals.get('order_line', False):
+            for order in self:
+                if order.state in ('sale', 'done'):
+                    amount[order.id] = order.amount_total
+        res = super(SaleOrder, self).write(vals)
+        for order in self:
+            if order.id in amount and amount[order.id] < order.amount_total:
+                pending_invoices = order.partner_id.invoice_ids.filtered(
+                    lambda rec: rec.move_type == 'out_invoice' and rec.state == 'posted' and rec.payment_state not in ('paid', 'in_payment', 'reversed') and (
+                            rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
+
+                msg = ''
+                invoice_name = []
+                for invoice in pending_invoices:
+                    term_line = invoice.invoice_payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
+                    date_due = invoice.invoice_date_due
+                    if term_line and term_line.grace_period:
+                        date_due = date_due + timedelta(days=term_line.grace_period)
+                    if date_due and date_due < date.today():
+                        invoice_name.append(invoice.name)
+                if invoice_name:
+                    msg += 'Customer has pending invoices.\n %s ' % '\n'.join(invoice_name)
+                if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
+                    msg+='Credit limit Exceed'
+                if msg:
+                    order.message_post(body=msg)
+                    order.credit_hold_after_confirm = True
+                    order.hold_state = 'credit_hold'
+                    picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
+                    if picking:
+                        picking.write({'is_payment_hold': True})
+                else:
+                    transactions = order.transaction_ids.filtered(lambda r: r.state not in ('cancel', 'done', 'error'))
+                    if transactions:
+                        for tx in transactions:
+                            if tx.state == 'pending':
+                                tx.check_pending_status()
+                                if tx.state == 'pending':
+                                    tx.sudo()._send_void_request()
+                            else:
+                                tx.action_void()
+                        order.sale_reauthorize_transaction()
+
+        return res
+
 
 SaleOrder()

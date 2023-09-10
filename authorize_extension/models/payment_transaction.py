@@ -125,6 +125,8 @@ class PaymentTransaction(models.Model):
             res_content = authorize_api.authorize_transaction_from_invoice(self, self.invoice_ids)
         else:
             res_content = authorize_api.authorize_transaction(self, self.sale_order_ids)
+        if res_content.get('x_pending_avs_msg', ''):
+            self.message_post(body='AVS Response: ' + res_content.get('x_pending_avs_msg', ''))
         feedback_data = {'reference': self.reference, 'response': res_content}
         self._handle_feedback_data('authorize', feedback_data)
 
@@ -229,8 +231,14 @@ class PaymentTransaction(models.Model):
         authorize_api = AuthorizeAPICustom(self.acquirer_id)
         res_content = authorize_api.get_transaction_detail(self.acquirer_reference)
         status = res_content.get('transaction', {}).get('transactionStatus', '')
+        picking = self.sale_order_ids.picking_ids.filtered(lambda r: r.is_payment_hold)
         if status in ('settledSuccessfully', 'refundSettledSuccessfully', 'capturedPendingSettlement', 'refundPendingSettlement'):
             self.state = 'done'
+            if picking:
+                picking.write({'is_payment_hold': False})
+                self.sale_order_ids.write({'is_transaction_pending': False, 'hold_state': 'release'})
+
+
             payment = self.payment_id
             if self.transaction_fee_move_id and self.transaction_fee_move_id.state == 'cancel':
                 self.transaction_fee_move_id.button_draft()
@@ -240,6 +248,11 @@ class PaymentTransaction(models.Model):
                 payment.action_post()
         elif status == 'authorizedPendingCapture':
             self.state = 'authorized'
+            if self.sale_order_ids.filtered(lambda r: r.is_transaction_pending):
+                self.sale_order_ids.filtered(lambda r: r.is_transaction_pending).write({'is_transaction_pending': False, 'hold_state': 'release'})
+            if picking:
+                picking.write({'is_payment_hold': False})
+
         elif status == 'voided':
             self.state = 'cancel'
 

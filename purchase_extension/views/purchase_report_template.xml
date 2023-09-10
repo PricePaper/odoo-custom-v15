@@ -30,12 +30,12 @@
 
             </xpath>
             <xpath expr="//h2" position="after">
-              <div id="informations" class="row mt32 mb32">
-                <div t-if="o.date_planned" class="col-3 bm-2">
-                    <strong>Date Wanted:</strong>
-                    <p t-field="o.date_planned" class="m-0"/>
+                <div id="informations" class="row mt32 mb32">
+                    <div t-if="o.date_wanted" class="col-3 bm-2">
+                        <strong>Date Wanted:</strong>
+                        <p t-field="o.date_wanted" class="m-0"/>
+                    </div>
                 </div>
-              </div>
             </xpath>
             <xpath expr="//table/thead/tr/th[1]" position="before">
                 <th><strong>Product Code</strong></th>
@@ -81,9 +81,9 @@
                 </t>
              </xpath>
             <xpath expr="//div[hasclass('page')]/div[@id='informations']/div[3]" position="after">
-                <div t-if="o.date_planned" class="col-3 bm-2">
+                <div t-if="o.date_wanted" class="col-3 bm-2">
                     <strong>Date Wanted:</strong>
-                    <p t-field="o.date_planned" class="m-0"/>
+                    <p t-field="o.date_wanted" class="m-0"/>
                 </div>
             </xpath>
              <xpath expr="//table/tbody/t/tr/t/td[1]/span" position="replace">
@@ -116,6 +116,17 @@
                 </div>
               </div>
             </xpath>
+        </template>
+
+        <template id="purchase_order_portal_content_ppt" inherit_id="purchase.purchase_order_portal_content">
+              <xpath expr="//div[@id='informations']/div[2]/div/div" position="replace">
+              </xpath>
+              <xpath expr="//address[@t-field='order.company_id.partner_id']" position="after">
+                  <div t-att-class="'d-inline' if order.date_wanted else 'd-none'">
+                    <strong>Date Wanted:</strong><span class="ml-1" t-field="order.date_wanted"/>
+                  </div>
+                  <br></br>
+              </xpath>
         </template>
 
     </data>

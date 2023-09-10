@@ -12,6 +12,17 @@
             <field name="type">form</field>
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
+                <sheet position='before'>
+                    <field name="is_stj_date_diff" invisible='1'/>
+                    <div class="alert alert-warning mb-0" role="alert" attrs="{'invisible':[('is_stj_date_diff', '=', False)]}">
+                        <p class="oe_text_center">
+                            <b>
+                                Stock Journal have diffrent accounting date.
+                            </b>
+                        </p>
+                    </div>
+                </sheet>
+
                 <xpath expr="//label[@for='invoice_payment_term_id']" position="before">
                     <field name="discount_date" readonly="1" attrs="{'invisible' : [('move_type','not in',('out_invoice','out_refund'))]}"/>
                 </xpath>
@@ -32,6 +43,13 @@
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_account_invoice_filter"/>
             <field name="arch" type="xml">
+                <filter name="late" position="before">
+                    <filter name="due_today" string="Due Today" domain="[
+                        ('invoice_date_due', '=', time.strftime('%%Y-%%m-%%d')),
+                        ('state', '=', 'posted'),
+                        ('payment_state', 'in', ('not_paid', 'partial'))
+                    ]" />
+                </filter>
                 <filter name="late" position="after">
                     <filter name="discountable_today" string='Discountable Today'
                             domain="['&amp;',('discount_date','&gt;=',time.strftime('%Y-%m-%d')),('state','=','posted'), ('payment_state', 'in', ('paid', 'in_payment'))]"/>
@@ -39,6 +57,9 @@
                             "['&amp;','&amp;',('discount_date','&gt;=',time.strftime('%Y-%m-%d')),('discount_date','&lt;=',(context_today()+relativedelta(weeks=0, weekday=-3)).strftime('%Y-%m-%d')),('state','=','posted'), ('payment_state', 'in', ('paid', 'in_payment'))]"/>
                     <filter name="discountable_this_month" string='Discountable This Month' domain=
                             "['&amp;','&amp;',('discount_date','&gt;=',time.strftime('%Y-%m-%d')),('discount_date','&lt;=',(context_today()+relativedelta(day=31)).strftime('%Y-%m-%d')),('state','=','posted'), ('payment_state', 'in', ('paid', 'in_payment'))]"/>
+                    <separator/>
+                    <filter name="ach_payment" string="ACH" domain="[('preferred_payment_method_id', 'ilike', 'NACHA')]"/>
+                    <filter name="ach_payment_group" string="ACH" domain="[]" context="{'group_by': 'preferred_payment_method_id'}"/>
                 </filter>
             </field>
         </record>

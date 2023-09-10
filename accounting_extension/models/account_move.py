@@ -3,6 +3,7 @@
 from odoo import api, fields, models, _
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
+import logging
 
 
 class AccountMove(models.Model):
@@ -10,6 +11,18 @@ class AccountMove(models.Model):
 
     # field used in search view
     discount_date = fields.Date('Discount Till')
+    is_stj_date_diff = fields.Boolean('STJ Diff', compute='_compute_stj_date_diff')
+
+    def _compute_stj_date_diff(self):
+        for move in self:
+            if move.move_type in ['in_invoice', 'in_refund'] and move.date:
+                stj_move = move.invoice_line_ids.purchase_line_id.move_ids.account_move_ids
+                if stj_move:
+                    stj_date = max(stj_move.mapped('date'))
+                    if stj_date and stj_date.month != move.date.month:
+                        move.is_stj_date_diff = True
+                        continue
+            move.is_stj_date_diff = False
 
     @api.onchange('invoice_date', 'highest_name', 'company_id')
     def _onchange_invoice_date(self):
@@ -20,6 +33,7 @@ class AccountMove(models.Model):
                 self.date = self.invoice_date
 
     def button_draft(self):
+
         executed_ids = self.env['account.move']
         for move in self.filtered(lambda r: r.move_type != 'entry'):
             discount_line = move.get_discount_line()
@@ -41,6 +55,8 @@ class AccountMove(models.Model):
                 executed_ids |= move
         res = super(AccountMove, self-executed_ids).button_draft()
         self.write({'discount_date': False})
+        # update preferred payment method
+        self._compute_preferred_payment_method_idd()
         return res
 
 
@@ -146,6 +162,31 @@ class AccountMove(models.Model):
             move.button_draft()
             move.button_cancel()
         return self.ids
+
+    def _post(self, soft=True):
+        res = super(AccountMove, self)._post(soft)
+        # update preferred payment method
+        self._compute_preferred_payment_method_idd()
+        return res
+
+    @api.model
+    def message_new(self, msg_dict, custom_values=None):
+        # override to select the parent partner in vendor bills
+        move = super().message_new(msg_dict, custom_values=custom_values)
+        try:
+            company = self.env['res.company'].browse(custom_values['company_id']) if custom_values.get('company_id') else self.env.company
+
+            def is_internal_partner(partner):
+                # Helper to know if the partner is an internal one.
+                return partner == company.partner_id or (partner.user_ids and all(user.has_group('base.group_user') for user in partner.user_ids))
+
+            if move.move_type == 'in_invoice' and move.partner_id.parent_id:
+                move.partner_id = move.partner_id.parent_id.id
+                if is_internal_partner(move.partner_id):
+                    move.message_subscribe(list(move.partner_id.ids))
+        except Exception as e:
+            logging.error("Incoming vendor bill processing code by DP failed\n The error is %s" % e)
+        return move
 
 
 class AccountMoveLine(models.Model):

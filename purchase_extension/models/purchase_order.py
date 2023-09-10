@@ -29,30 +29,30 @@ class PurchaseOrder(models.Model):
 
     @api.depends('order_line.date_planned')
     def _compute_date_planned(self):
-        """ date_planned = the last date_planned across all order lines. """
-        for order in self:
-            dates_list = order.order_line.filtered(lambda x: not x.display_type and x.date_planned).mapped('date_planned')
-            if dates_list:
-                order.date_planned = fields.Datetime.to_string(max(dates_list))
-            else:
-                order.date_planned = False
+      """ date_planned = the last date_planned across all order lines. """
+      for order in self:
+          dates_list = order.order_line.filtered(lambda x: not x.display_type and x.date_planned).mapped('date_planned')
+          if dates_list:
+              order.date_planned = fields.Datetime.to_string(max(dates_list))
+          else:
+              order.date_planned = False
 
 
     def action_rfq_send(self):
-        """
-         override to change model description for in progress
-        """
-        if not self.date_wanted:
-            raise ValidationError(_('Please Fill Date wanted.'))
-        res = super().action_rfq_send()
-        if self.state == 'in_progress':
-            res['context']['model_description'] = 'Request for Quotation'
-        return res
+      """
+       override to change model description for in progress
+      """
+      if not self.date_wanted:
+          raise ValidationError(_('Please Fill Date wanted.'))
+      res = super().action_rfq_send()
+      if self.state == 'in_progress':
+          res['context']['model_description'] = 'Request for Quotation'
+      return res
 
     def print_quotation(self):
-        if not self.date_wanted:
-            raise ValidationError(_('Please Fill Date wanted.'))
-        return super().print_quotation()
+      if not self.date_wanted:
+          raise ValidationError(_('Please Fill Date wanted.'))
+      return super().print_quotation()
 
     def po_fully_billed(self):
         if self.filtered(lambda r: r.state not in ('done', 'received', 'purchase')):
@@ -359,7 +359,6 @@ class PurchaseOrderLine(models.Model):
             self.purchase_method = self.product_id.purchase_method
         else:
             self.purchase_method = False
-
 
     @api.depends('invoice_lines.move_id.state', 'invoice_lines.quantity', 'qty_received', 'product_uom_qty', 'order_id.state', 'purchase_method')
     def _compute_qty_invoiced(self):

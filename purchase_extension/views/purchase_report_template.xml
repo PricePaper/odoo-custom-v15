@@ -30,18 +30,12 @@
 
             </xpath>
             <xpath expr="//h2" position="after">
-              <!-- <div id="informations" class="row mt32 mb32">
-                <div t-if="o.date_planned" class="col-3 bm-2">
-                    <strong>Date Planned:</strong>
-                    <p t-field="o.date_planned" class="m-0"/>
+                <div id="informations" class="row mt32 mb32">
+                    <div t-if="o.date_wanted" class="col-3 bm-2">
+                        <strong>Date Wanted:</strong>
+                        <p t-field="o.date_wanted" class="m-0"/>
+                    </div>
                 </div>
-              </div> -->
-              <div id="informations" class="row mt32 mb32">
-                <div t-if="o.date_wanted" class="col-3 bm-2">
-                    <strong>Date Wanted:</strong>
-                    <p t-field="o.date_wanted" class="m-0"/>
-                </div>
-              </div>
             </xpath>
             <xpath expr="//table/thead/tr/th[1]" position="before">
                 <th><strong>Product Code</strong></th>
@@ -123,6 +117,7 @@
               </div>
             </xpath>
         </template>
+
         <template id="purchase_order_portal_content_ppt" inherit_id="purchase.purchase_order_portal_content">
               <xpath expr="//div[@id='informations']/div[2]/div/div" position="replace">
               </xpath>

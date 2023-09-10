@@ -91,7 +91,7 @@ class SaleOrder(models.Model):
                 if not order.is_payment_bypassed and order.state in ('sale', 'done'):  # and not order.storage_contract:
                     txs = order.transaction_ids.filtered(lambda r: r.state in ('authorized', 'done'))
                     if txs:
-                        amount = sum(txs.mapped('amount'))
+                        amount = sum(txs.mapped('amount')) - sum(txs.mapped('transaction_fee'))
                         if amount < order.amount_total:
                             transactions = order.transaction_ids.filtered(lambda r: r.state == 'authorized')
                             transactions.action_void()
@@ -164,6 +164,7 @@ class SaleOrder(models.Model):
                     picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
                     picking.write({'is_payment_hold': True})
                     self.is_transaction_pending = True
+                    self.hold_state = 'payment_hold'
             if error_msg:
                 self.message_post(body=error_msg)
                 view_id = self.env.ref('price_paper.view_sale_warning_wizard').id
@@ -252,26 +253,31 @@ class SaleOrder(models.Model):
             picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
             picking.write({'is_payment_hold': True})
             self.is_transaction_error = True
+            self.hold_state = 'payment_hold'
         elif tx_sudo.state == 'cancel':
             error_msg = "The transaction with reference %s for %s is canceled (Authorize.Net)." % (tx_sudo.reference, tx_sudo.amount)
             picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
             picking.write({'is_payment_hold': True})
             self.is_transaction_error = True
+            self.hold_state = 'payment_hold'
         elif tx_sudo.state == 'pending':
             picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
             picking.write({'is_payment_hold': True})
             self.is_transaction_pending = True
+            self.hold_state = 'payment_hold'
         else:
             self.is_transaction_pending = False
             self.is_transaction_error = False
             picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
             picking.write({'is_payment_hold': False})
+            self.hold_state = 'release'
 
         if error_msg:
             self.message_post(body=error_msg)
 
     def release_credit_hold_picking(self):
         self.credit_hold_after_confirm = False
+        self.hold_state = 'release'
         transactions = self.transaction_ids.filtered(lambda r: r.state not in ('cancel', 'done', 'error'))
         if transactions:
             transactions.action_void()
@@ -312,6 +318,7 @@ class SaleOrder(models.Model):
                 if msg:
                     order.message_post(body=msg)
                     order.credit_hold_after_confirm = True
+                    order.hold_state = 'credit_hold'
                     picking = self.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done'))
                     if picking:
                         picking.write({'is_payment_hold': True})

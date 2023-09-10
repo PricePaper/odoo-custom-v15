@@ -13,8 +13,9 @@ class AssignRouteWizard(models.TransientModel):
         pickings = self.env['stock.picking'].search([
             ('state', 'in', ['confirmed', 'waiting', 'assigned', 'in_transit', 'transit_confirmed']),
             ('picking_type_code', '=', 'outgoing'),
-            ('route_id', '=', False)
+            ('route_id', '=', False), ('reserved_qty', '>', 0)
         ])
+
 
         # group all potential pickings into a dictionary based on partner_id.
         # this dictionary is later used to assign routes for pickings
@@ -38,7 +39,6 @@ class AssignRouteWizard(models.TransientModel):
                 if partner in partners_assigned:
                     continue
                 if partner.id in picking_dict.keys():
-                    print(picking.partner_id.name, 'pppppp', picking.origin)
                     for new_picking in picking_dict[partner.id]:
                         new_picking.write({'route_id': line.route_id.id, 'sequence': sequence})
                         sequence +=1

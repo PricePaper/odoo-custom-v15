@@ -100,7 +100,7 @@
                     <button name="show_sales_history" type="object" icon="fa-history" string="Show sales history"/>
                 </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
-                    <button name="update_unit_price" type="object" icon="fa-pencil-square-o" help="Update Unit Price"/>
+                    <button name="update_unit_price" type="object" icon="fa-pencil-square-o" help="Update Unit Price" groups="purchase_extension.group_fifo_price_adjust"/>
                 </xpath>
                 <xpath expr="//notebook" position="after">
                     <separator/>

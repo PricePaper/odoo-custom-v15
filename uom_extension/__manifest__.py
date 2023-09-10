@@ -11,7 +11,7 @@ Modifying default uom
     """,
     'author': 'Confianz Global',
     'depends': ['product','price_paper', 'batch_delivery', 'stock_available_unreserved','price_paper', 'purchase', 'stock',
-                'stock_orderpoint_enhancements', 'purchase_stock'],
+                'stock_orderpoint_enhancements', 'purchase_stock', 'delivery'],
     'sequence': 1600,
     'demo': [
     ],

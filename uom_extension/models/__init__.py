@@ -6,3 +6,6 @@ from . import product_standard_price
 from . import stock_orderpoint
 from . import stock_valuation_layer
 from . import purchase
+from . import sale_report
+from . import sale
+from . import stock_picking

@@ -22,6 +22,9 @@
                 <xpath expr="//button[@name='action_view_sales']/div/span/field[@name='uom_name']" position="before">
                     <field name="sales_total_count" widget="statinfo" nolabel="1" style="margin-right:1px;"/>
                 </xpath>
+                <xpath expr="//button[@name='action_view_po']/div/span/field[@name='uom_name']" position="before">
+                    <field name="purchased_product_qty_mod" widget="statinfo" nolabel="1" style="margin-right:1px;"/>
+                </xpath>
                 <xpath expr="//button[@name='get_number_of_days']" position="after">
                     <button name="action_view_orderpoints" type="object"
                             attrs="{'invisible':['|',('type', 'not in', ['product', 'consu']),('nbr_reordering_rules', '!=', 1)]}"
@@ -45,6 +48,9 @@
                            style="margin-right:1px;"/>
                 </xpath>
                 <xpath expr="//field[@name='sales_count']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='purchased_product_qty']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//button[@name='1585']/field[@name='qty_available_not_res']" position="attributes">

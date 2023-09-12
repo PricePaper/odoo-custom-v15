@@ -93,7 +93,7 @@ class SampleRequest(models.Model):
                     'product_id':res.product_id.id,
                     'price_unit':0.0,
                     'lst_price':0.0,
-                    'route_id':route,
+                    'route_id':res.sample_route.id if res.sample_route else route,
                     'product_uom':uom,
                     'sales_person_ids':[(6,0,self.partner_id.sales_person_ids.ids)],
                     }) 
@@ -164,7 +164,19 @@ class SampleRequestLine(models.Model):
     request_id = fields.Many2one('sample.request', 'Request')
     product_id = fields.Many2one('product.product','Product')
     is_reject = fields.Boolean(string='Rejected',default=False)
+    sample_route = fields.Many2one('stock.location.route', string='Sample Route')
     note = fields.Char(string='Notes')
+
+    @api.onchange('product_id')
+    def product_route(self):
+        for rec in self:
+            if not rec.sample_route:
+                rec.sample_route = rec.request_id.sample_route.id
+    
+    def _get_parent_route(self):
+        for res in self:
+            print(res.request_id.sample_route)
+            res.sample_route = res.request_id.sample_route
 
     def action_reject(self):
         for res in self:

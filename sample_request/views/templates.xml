@@ -15,6 +15,8 @@
             <t t-call='website.layout'>
                 <div class='container sample_request_cart mt32 mt64'>
                     <h2> Sample Request</h2>
+                    <div t-if="sample.request_lines">
+
                     <div class='row'>
                         <div class='col'>
                             <div class="float-right te_clear_cart">
@@ -66,6 +68,10 @@
                                 </a>
                             </div>
                         </div>
+                    </div>
+                    </div>
+                    <div t-else="">
+                       <strong> Currently you have not requested any samples, Feel free to browse our <a href="/shop">shop</a> </strong>
                     </div>
                 </div>
             </t>

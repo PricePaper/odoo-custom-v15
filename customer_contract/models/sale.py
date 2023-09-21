@@ -72,7 +72,7 @@ class SaleOrderLine(models.Model):
             self.product_id = self.customer_contract_line_id.product_id
             self.product_uom = self.customer_contract_line_id.product_id.uom_id
             self.price_unit = self.customer_contract_line_id.price
-            self.product_uom_qty = self.customer_contract_line_id.min_qty
+            self.product_uom_qty = self.customer_contract_line_id.min_qty or 1.0
         else:
             msg, product_price, price_from = super(SaleOrderLine, self).calculate_customer_price()
             self.price_unit = product_price
@@ -86,6 +86,7 @@ class SaleOrderLine(models.Model):
         """
         unit_price = 0
         contract_id = False
+        min_qty = 0
         for record in self:
             contract_ids = record.order_partner_id.customer_contract_ids.filtered(
                 lambda rec: rec.expiration_date > datetime.now())
@@ -95,8 +96,9 @@ class SaleOrderLine(models.Model):
                 if contract_product_cost_id:
                     unit_price = contract_product_cost_id.price
                     contract_id = contract_product_cost_id.id
+                    min_qty = contract_product_cost_id.min_qty
                     break
-        return unit_price, contract_id
+        return unit_price, contract_id, min_qty
 
     @api.onchange('product_id')
     def product_id_change(self):
@@ -106,7 +108,7 @@ class SaleOrderLine(models.Model):
         """
         res = super(SaleOrderLine, self).product_id_change()
         if self.product_id and self.order_id.show_customer_contract_line:
-            unit_price, contract_id = self.calculate_customer_contract()
+            unit_price, contract_id, min_qty = self.calculate_customer_contract()
             if unit_price or contract_id:
                 domain = [
                     ('contract_id.expiration_date', '>', fields.Datetime.now()),
@@ -118,7 +120,8 @@ class SaleOrderLine(models.Model):
                     res['domain']['customer_contract_line_id'] = domain
                 else:
                     res['domain'] = {'customer_contract_line_id': domain}
-                res.update({'value': {'price_unit': unit_price, 'customer_contract_line_id': contract_id}})
+                res.update({'value': {'price_unit': unit_price, 'customer_contract_line_id': contract_id,
+                                      'product_uom_qty': min_qty}})
         return res
 
     @api.onchange('product_uom', 'product_uom_qty')
@@ -138,18 +141,18 @@ class SaleOrderLine(models.Model):
             elif self.product_uom_qty <= remaining_qty:
                 if self.product_uom_qty < contract_line.min_qty:
                     warning_mess = {
-                        'title': 'Less than Minimum qty',
-                        'message': 'You are going to sell less than minimum qty(%s) in the contract.' % (contract_line.min_qty)
+                        'title': 'Less than Minimum Quantity',
+                        'message': 'You are going to sell less than minimum quantity(%s) in the contract.' % (contract_line.min_qty)
                     }
-                    self.product_uom_qty = 0
+                    self.product_uom_qty = contract_line.min_qty
                     res.update({'warning': warning_mess})
             elif self.product_uom_qty > remaining_qty:
                 warning_mess = {
                     'title': _('More than Customer Contract'),
                     'message': _(
-                        'You are going to Sell more than in customer contract.Only %s is remaining in this contract.' % (remaining_qty))
+                        f'You are selling {self.product_uom_qty} which is more than the {remaining_qty} remaining in this contract.')
                 }
-                self.product_uom_qty = self._origin.product_uom_qty
+                self.product_uom_qty = remaining_qty
                 res.update({'warning': warning_mess})
         return res
 

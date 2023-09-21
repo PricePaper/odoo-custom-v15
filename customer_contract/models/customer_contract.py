@@ -43,6 +43,7 @@ class CustomerContractLine(models.Model):
     contract_id = fields.Many2one('customer.contract')
     state = fields.Selection(related='contract_id.state', readonly=True, store=True)
     sale_line_ids = fields.One2many('sale.order.line', 'customer_contract_line_id')
+    min_qty = fields.Float('Minimum Quantity')
 
     @api.depends('sale_line_ids.product_uom_qty', 'product_qty', 'sale_line_ids.order_id.state')
     def _compute_remaining_qty(self):

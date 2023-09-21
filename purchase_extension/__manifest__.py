@@ -16,6 +16,7 @@ Custom module implemented for Purchase extension.
         'data/mail_template.xml',
         'views/account_vendor_bill.xml',
         'views/product_view.xml',
+        'views/product_pricelist.xml',
         'security/ir.model.access.csv',
         'views/purchase_order.xml',
         'views/purchase_order_line.xml',

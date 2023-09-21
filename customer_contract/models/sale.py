@@ -72,6 +72,7 @@ class SaleOrderLine(models.Model):
             self.product_id = self.customer_contract_line_id.product_id
             self.product_uom = self.customer_contract_line_id.product_id.uom_id
             self.price_unit = self.customer_contract_line_id.price
+            self.product_uom_qty = self.customer_contract_line_id.min_qty
         else:
             msg, product_price, price_from = super(SaleOrderLine, self).calculate_customer_price()
             self.price_unit = product_price
@@ -122,21 +123,35 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('product_uom', 'product_uom_qty')
     def product_uom_change(self):
-        result = super(SaleOrderLine, self).product_uom_change()
+        res = super(SaleOrderLine, self).product_uom_change()
         if self.customer_contract_line_id:
+
             self.price_unit = self.customer_contract_line_id.price
-            remaining = self.customer_contract_line_id.remaining_qty
+            contract_line = self.customer_contract_line_id
+            remaining_qty = contract_line.remaining_qty
+
             if self.order_id.state == 'sale' and self._origin in self.customer_contract_line_id.sale_line_ids:
-                remaining = self.customer_contract_line_id.remaining_qty + self._origin.product_uom_qty
-            if self.product_uom_qty > remaining:
+                remaining_qty = self.customer_contract_line_id.remaining_qty + self._origin.product_uom_qty
+
+            if remaining_qty <= contract_line.min_qty:
+                self.product_uom_qty = remaining_qty
+            elif self.product_uom_qty <= remaining_qty:
+                if self.product_uom_qty < contract_line.min_qty:
+                    warning_mess = {
+                        'title': 'Less than Minimum qty',
+                        'message': 'You are going to sell less than minimum qty(%s) in the contract.' % (contract_line.min_qty)
+                    }
+                    self.product_uom_qty = 0
+                    res.update({'warning': warning_mess})
+            elif self.product_uom_qty > remaining_qty:
                 warning_mess = {
                     'title': _('More than Customer Contract'),
                     'message': _(
-                        'You are going to Sell more than in customer contract.Only %s is remaining in this contract.' % (remaining))
+                        'You are going to Sell more than in customer contract.Only %s is remaining in this contract.' % (remaining_qty))
                 }
                 self.product_uom_qty = self._origin.product_uom_qty
-                result.update({'warning': warning_mess})
-        return result
+                res.update({'warning': warning_mess})
+        return res
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

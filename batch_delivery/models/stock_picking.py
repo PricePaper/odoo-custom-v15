@@ -40,7 +40,7 @@ class StockPicking(models.Model):
                                          string='Easiness Of Shipping')
     is_transit = fields.Boolean(string='Transit', copy=False)
     is_late_order = fields.Boolean(string='Late Order', copy=False)
-    reserved_qty = fields.Float('Available Quantity', compute='_compute_available_qty')
+    reserved_qty = fields.Float('Available Quantity', compute='_compute_available_qty', search='_search_reserved_qty')
     low_qty_alert = fields.Boolean(string="Low Qty", compute='_compute_available_qty')
     sequence = fields.Integer(string='Order', default=1)
     is_invoiced = fields.Boolean(string="Invoiced", compute='_compute_state_flags')
@@ -79,6 +79,14 @@ class StockPicking(models.Model):
             picking.show_reset = False
             if picking.transit_move_lines.filtered(lambda rec: rec.procure_method == 'make_to_order') and self.state not in ('done', 'cancel'):
                 picking.show_reset = True
+
+    def do_unreserve(self):
+        if self.picking_type_code == 'outgoing' and not self.is_return:
+            if self.transit_move_lines:
+                self.transit_move_lines._do_unreserve()
+                self.package_level_ids.filtered(lambda p: not p.move_ids).unlink()
+        else:
+            super(StockPicking, self).do_unreserve()
 
     def internal_move_from_customer_returned(self):
         location = self.env.user.company_id.destination_location_id
@@ -188,6 +196,14 @@ class StockPicking(models.Model):
             rec.invoice_ref = False
             if rec.invoice_ids:
                 rec.invoice_ref = rec.invoice_ids[-1].name
+
+    def _search_reserved_qty(self, operator, value):
+        domain = [('state', 'not in', ('draft', 'done', 'cancel')), ('carrier_id.show_in_route', '=', True)]
+        picking_ids = []
+        for picking in self.env['stock.picking'].search(domain):
+            if picking.reserved_qty > 0:
+                picking_ids.append(picking.id)
+        return [('id', 'in', picking_ids)]
 
     @api.depends('move_lines.reserved_availability')
     def _compute_available_qty(self):
@@ -399,15 +415,17 @@ class StockPicking(models.Model):
                 raise UserError(_('Please enter done quantities in %s before proceed..' % picking.name))
             if picking.sale_id.invoice_status in ['no', 'invoiced']:
                 continue
+            invoice = False
             if picking.sale_id.invoice_status == 'to invoice':
                 # picking.sale_id.adjust_delivery_line()
-                picking.sale_id._create_invoices(final=True)
+                invoice = picking.sale_id._create_invoices(final=True)
                 picking.is_invoiced = True
-            if picking.batch_id:
-                invoice = picking.invoice_ids.filtered(lambda rec: rec.state not in ('posted', 'cancel' ))
-                invoice.write({'invoice_date': picking.batch_id.date})
-            for inv in picking.invoice_ids.filtered(lambda rec: rec.state == 'draft'):
-                picking.invoice_ref = inv.name
+            if invoice:
+                if picking.batch_id:
+                    invoice.write({'invoice_date': picking.batch_id.date})
+                else:
+                    invoice.write({'invoice_date': fields.Date.context_today(picking)})
+                picking.invoice_ref = invoice.name
 
     def write(self, vals):
         # res = super(StockPicking, self).write(vals)
@@ -415,6 +433,9 @@ class StockPicking(models.Model):
             if 'route_id' in vals.keys() and picking.batch_id and picking.batch_id.state in ('done', 'no_payment', 'paid'):
                 raise UserError("Batch is already in done state. You can not remove the picking")
             route_id = vals.get('route_id', False)
+            route_exist = False
+            if self.route_id:
+                route_exist = True
             if route_id:
                 batch = self.env['stock.picking.batch'].search([('state', '=', 'in_progress'), ('route_id', '=', route_id)], limit=1)
                 if batch:
@@ -434,8 +455,8 @@ class StockPicking(models.Model):
                 if not batch:
                     batch = self.env['stock.picking.batch'].create({'route_id': route_id})
                 picking.batch_id = batch
-
-                vals['is_late_order'] = batch.state in ('in_progress', 'in_truck')
+                if not route_exist:
+                    vals['is_late_order'] = batch.state in ('in_progress', 'in_truck')
             if 'route_id' in vals.keys() and not (
                     vals.get('route_id', False)) and picking.batch_id and picking.batch_id.state == 'draft':
                 vals.update({'batch_id': False})
@@ -451,20 +472,21 @@ class StockPicking(models.Model):
                     if vals.get('is_late_order', False):
                         if sale_order:
                             order_line = sale_order.mapped('order_line').filtered(lambda r: r.product_id and r.product_id == late_product)
+                            sale_flag = False
+                            if sale_order.state == 'done':
+                                sale_order.write({'state': 'sale'})
+                                sale_flag = True
                             if not order_line:
                                 sale_vals = {'product_id': late_product.id,
                                         'product_uom_qty': 1,
                                         'price_unit': late_product.cost,
                                         'order_id':sale_order.id}
-                                order_line = self.env['sale.order.line'].create(sale_vals)
+                                sale_order.with_context(from_late_order=True).write({'order_line':[(0, 0, sale_vals)]})
                             else:
-                                sale_flag = False
-                                if sale_order.state == 'done':
-                                    sale_order.write({'state': 'sale'})
-                                    sale_flag = True
-                                order_line.write({'product_uom_qty': 1,})
-                                if sale_flag:
-                                    sale_order.write({'state': 'done'})
+                                sale_order.with_context(from_late_order=True).write({'order_line':[(1, order_line.id, {'product_uom_qty': 1})]})
+                            if sale_flag:
+                                sale_order.write({'state': 'done'})
+                        order_line = sale_order.mapped('order_line').filtered(lambda r: r.product_id and r.product_id == late_product)
                         if invoice:
                             invoice_line = invoice.mapped('invoice_line_ids').filtered(lambda r: r.product_id and r.product_id == late_product)
                             if not invoice_line:

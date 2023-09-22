@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_batch_warning_wizard" model="ir.ui.view">
+            <field name="name">batch.warning.wizard</field>
+            <field name="model">batch.warning.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Warning">
+                    <sheet>
+                        <field name="warning_message" readonly='1'/>
+                    </sheet>
+                    <footer>
+                        <button string="Close" type="object" name="close_window" class="btn-warning"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -16,6 +16,21 @@
             <field name="header_spacing">10</field>
             <field name="dpi">90</field>
         </record>
+        <record id="paperformat_cost_cron" model="report.paperformat">
+            <field name="name">Commission Settlement</field>
+            <field name="default" eval="False"/>
+            <field name="format">Letter</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">10</field>
+            <field name="margin_bottom">0</field>
+            <field name="margin_left">10</field>
+            <field name="margin_right">0</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
 
          <record id="pricelist_report" model="ir.actions.report">
             <field name="name">PriceList Report</field>
@@ -27,6 +42,17 @@
              <field name="paperformat_id" ref="paperformat_pricelist_report"/>
             <field name="binding_model_id" ref="product.model_product_pricelist"/>
             <field name="binding_type">report</field>
+        </record>
+        <record id="cost_change_report" model="ir.actions.report">
+            <field name="name">Cost change report</field>
+            <field name="model">cost.change.parent</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">price_maintanance.report_cost_change</field>
+            <field name="report_file">price_maintanance.report_cost_change</field>
+            <field name="print_report_name">'Cost_Change'</field>
+            <field name="binding_model_id" ref="model_cost_change_parent"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="paperformat_cost_cron"/>
         </record>
     </data>
 </odoo>

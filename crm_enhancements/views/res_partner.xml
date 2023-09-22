@@ -133,6 +133,16 @@
             <field name="view_id" ref="base.view_partner_tree"/>
             <field name="act_window_id" ref="action_partner_crm_enhance"/>
         </record>
+        <record id="action_create_opportunity" model="ir.actions.server">
+            <field name="name">Create opportunity</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="binding_model_id" ref="base.model_res_partner"/>
+            <field name="binding_view_types">form</field>
+            <field name="state">code</field>
+            <field name="code">
+                action = records.create_opportunity()
+            </field>
+        </record>
 
         <menuitem id="crm.res_partner_menu_crm"
                   parent="crm.crm_menu_root"

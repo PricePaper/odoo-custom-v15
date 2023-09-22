@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 
 class ProductSkuReference(models.Model):
@@ -18,6 +19,15 @@ class ProductSkuReference(models.Model):
     scheduled_ids = fields.One2many('price.fetch.schedule', 'product_sku_ref_id', string='Scheduled Price Fetches')
     in_exception = fields.Boolean(string='Exception', default=False)
     is_unavailable = fields.Boolean(string='Unavailable', default=False)
+
+
+    @api.constrains('competitor_sku', 'web_config')
+    def check_total_amount(self):
+        for sku in self:
+            if sku.competitor_sku and sku.web_config:
+                sku_exist = self.env['product.sku.reference'].search([('competitor_sku', '=', sku.competitor_sku), ('web_config', '=', sku.web_config.id), ('id', '!=', sku.id)])
+                if sku_exist:
+                    raise ValidationError('Competitor sku already exist')
 
     @api.depends('product_id', 'competitor')
     def name_get(self):

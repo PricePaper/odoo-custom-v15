@@ -10,5 +10,6 @@ from . import product
 from . import stock_move
 from . import ir_actions
 from . import purchase_bill
+from . import product_pricelist
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

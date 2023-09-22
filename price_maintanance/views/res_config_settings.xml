@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_inherit_cost_change" model="ir.ui.view">
+        <field name="name">res.config.settings.inherit.cost.change</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="purchase.res_config_settings_view_form_purchase"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='purchase_setting_container']" position="inside">
+                <div class="col-12 col-lg-6 o_setting_box" id="email_cost_changes">
+                    <div class="o_setting_left_pane"/>
+                    <div class="o_setting_right_pane">
+                        <label for="cost_change_email_ids"/>
+                        <div class="text-muted">
+                            Email ids for cost change report mail
+                        </div>
+                        <div class="content-group">
+                            <div class="row mt16">
+                                <field name="cost_change_email_ids" placeholder="Emails ids comma separated" style="width:300px;margin-left:10px;" modifiers="{}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -172,14 +172,12 @@
                 </button>
                 <xpath expr="//button[@name='action_done'][1]" position="attributes">
                   <attribute name="attrs">{'invisible': ['|', ('invoice_ids', '=', []), '|',
-                    ('state', '!=', 'in_progress'), '|', ('show_check_availability', '=', True),
-                    ('show_validate', '=', False)]}</attribute>
+                    ('state', '!=', 'in_progress'), ('show_check_availability', '=', True)]}</attribute>
                 </xpath>
                 <xpath expr="//button[@name='action_done'][2]" position="attributes">
                     <attribute name="attrs">{'invisible': ['|', ('invoice_ids', '=', []),
-                      '|', ('state', '!=', 'in_progress'), '|',
-                      ('show_check_availability', '=', False),
-                      ('show_validate', '=', False)]}</attribute>
+                      '|', ('state', '!=', 'in_progress'),
+                      ('show_check_availability', '=', False)]}</attribute>
                 </xpath>
                 <xpath expr="//notebook/page[1]" position="before">
                     <xpath expr="//notebook/page[3]" position="move"/>

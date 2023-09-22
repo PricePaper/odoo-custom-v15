@@ -2,33 +2,43 @@
 
 from odoo import models, fields, api, _
 import datetime
+from odoo.exceptions import UserError
 
 class CostChangePercentage(models.TransientModel):
     _name = 'prophet.forecast.days'
     _description = "FB prophet forecast days"
 
     number_of_days = fields.Integer(string='# of days', default=30)
+    from_date = fields.Date(string='From Date')
+    to_date = fields.Date(string='To Date')
+
+    @api.onchange('from_date')
+    def onchange_from_date(self):
+        if self.from_date and self.from_date < datetime.date.today():
+            return {'warning': {'title': 'Warning', 'message': 'From Date is less than today'}}
 
 
     def show_forecast(self):
         """
         Show forecast
         """
+        if self.from_date > self.to_date:
+            raise UserError(_("From date should be less than To date."))
 
         active_id = self._context.get('active_id')
         product = self.env['product.product'].browse(active_id)
-        forecast, to_date = product.show_forecast(no_of_days=self.number_of_days)
+        forecast, to_date = product.show_forecast(self.from_date, self.to_date)
 
 
         self.env['product.forecast'].search([]).unlink()
         flag = False
         count = 0
         for ele in forecast:
-            if datetime.datetime.strptime(ele[0], '%Y-%m-%d').date() >= to_date:
+            if datetime.datetime.strptime(ele[0], '%Y-%m-%d').date() >= self.from_date:
                 flag = True
             if flag:
                 count += 1
-                
+
                 self.env['product.forecast'].create({
                     'product_id': product.id,
                     'date': ele[0],

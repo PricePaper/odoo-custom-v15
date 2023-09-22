@@ -6,15 +6,12 @@
           <field name="name">sale.order.form</field>
           <field name="model">sale.order</field>
           <field name="inherit_id" ref="sale.view_sales_order_auto_done_setting"/>
-          <field name="groups_id" eval="[(4, ref('sale.group_auto_done_setting'))]"/>
           <field name="arch" type="xml">
               <xpath expr="//button[@name='action_unlock']" position="attributes">
-                  <attribute name="groups"></attribute>
-                  <attribute name="confirm">Are you sure you want to change this?</attribute>
+                  <attribute name="invisible">1</attribute>
               </xpath>
               <xpath expr="//button[@name='action_done']" position="attributes">
-                  <attribute name="groups"></attribute>
-                  <attribute name="confirm">Are you sure you want to change this?</attribute>
+                  <attribute name="invisible">1</attribute>
               </xpath>
           </field>
       </record>
@@ -37,6 +34,14 @@
                         </p>
                     </div>
                 </sheet>
+                <xpath expr="//form//header//button[@name='action_draft']" position="after">
+                   <button name="action_done" type="object" string="Lock" states="sale"
+                        help="If the sale is locked, you can not modify it anymore. However, you will still be able to invoice or deliver."
+                        confirm="Are you sure you want to change this?"/>
+                    <button name="action_unlock" type="object" string="Unlock"
+                      states="done"
+                      confirm="Are you sure you want to change this?"/>
+                </xpath>
 
                 <field name="payment_term_id" position="after">
                     <field name="carrier_id"/>
@@ -273,6 +278,11 @@
                             </group>
                             <group>
                                 <field name="similar_product_price" readonly="1" nolabel='1' force_save="1"/>
+                            </group>
+                            <group>
+                                <field name="show_accessory_product" widget='boolean_toggle'
+                                      attrs="{'invisible': [('product_id', '=', 'False')]}"/>
+                                <field name="accessory_product" readonly="1" nolabel='1' force_save="1"/>
                             </group>
                         </group>
                     </div>

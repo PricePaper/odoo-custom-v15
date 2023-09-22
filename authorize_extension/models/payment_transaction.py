@@ -56,18 +56,19 @@ class PaymentTransaction(models.Model):
 
         authorize_API = AuthorizeAPI(self.acquirer_id)
         rounded_amount = round(self.amount, self.currency_id.decimal_places)
+
         invoices = self.invoice_ids.filtered(lambda r: r.state == 'posted' and r.payment_state in ('not_paid', 'partial'))
         if invoices:
             due_amount = round(sum(invoices.mapped('amount_residual')), self.currency_id.decimal_places)
             if self.transaction_fee:
-                new_amount = min(rounded_amount-self.transaction_fee, due_amount)
-                if new_amount != rounded_amount-self.transaction_fee:
+                new_amount = min(round(rounded_amount-self.transaction_fee, 2), due_amount)
+                if new_amount != round(rounded_amount-self.transaction_fee, 2):
                     self.transaction_fee = float_round(new_amount * self.partner_id.property_card_fee/100, precision_digits=2)
                 due_amount += self.transaction_fee
-            rounded_amount = min(rounded_amount, due_amount)
-        self.amount = float_round(rounded_amount, precision_digits=2)
+            rounded_amount = round(min(rounded_amount, due_amount), self.currency_id.decimal_places)
+        self.amount = rounded_amount
 
-        res_content = authorize_API.capture(self.acquirer_reference, float_round(rounded_amount, precision_digits=2))
+        res_content = authorize_API.capture(self.acquirer_reference, rounded_amount)
         # As the API has no redirection flow, we always know the reference of the transaction.
         # Still, we prefer to simulate the matching of the transaction by crafting dummy feedback
         # data in order to go through the centralized `_handle_feedback_data` method.
@@ -124,6 +125,8 @@ class PaymentTransaction(models.Model):
             res_content = authorize_api.authorize_transaction_from_invoice(self, self.invoice_ids)
         else:
             res_content = authorize_api.authorize_transaction(self, self.sale_order_ids)
+        if res_content.get('x_pending_avs_msg', ''):
+            self.message_post(body='AVS Response: ' + res_content.get('x_pending_avs_msg', ''))
         feedback_data = {'reference': self.reference, 'response': res_content}
         self._handle_feedback_data('authorize', feedback_data)
 
@@ -228,14 +231,28 @@ class PaymentTransaction(models.Model):
         authorize_api = AuthorizeAPICustom(self.acquirer_id)
         res_content = authorize_api.get_transaction_detail(self.acquirer_reference)
         status = res_content.get('transaction', {}).get('transactionStatus', '')
+        picking = self.sale_order_ids.picking_ids.filtered(lambda r: r.is_payment_hold)
         if status in ('settledSuccessfully', 'refundSettledSuccessfully', 'capturedPendingSettlement', 'refundPendingSettlement'):
             self.state = 'done'
+            if picking:
+                picking.write({'is_payment_hold': False})
+                self.sale_order_ids.write({'is_transaction_pending': False, 'hold_state': 'release'})
+
+
             payment = self.payment_id
+            if self.transaction_fee_move_id and self.transaction_fee_move_id.state == 'cancel':
+                self.transaction_fee_move_id.button_draft()
+                self.transaction_fee_move_id.action_post()
             if payment and payment.state == 'cancel':
                 payment.action_draft()
                 payment.action_post()
         elif status == 'authorizedPendingCapture':
             self.state = 'authorized'
+            if self.sale_order_ids.filtered(lambda r: r.is_transaction_pending):
+                self.sale_order_ids.filtered(lambda r: r.is_transaction_pending).write({'is_transaction_pending': False, 'hold_state': 'release'})
+            if picking:
+                picking.write({'is_payment_hold': False})
+
         elif status == 'voided':
             self.state = 'cancel'
 

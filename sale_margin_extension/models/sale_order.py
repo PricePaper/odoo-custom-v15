@@ -20,6 +20,8 @@ class SaleOrderLine(models.Model):
                         line.purchase_price = line.working_cost
                     else:
                         line.purchase_price = line.order_id.carrier_id.average_company_cost
+                elif line.storage_contract_line_id:
+                    line.purchase_price = 0
                 else:
                     if line.working_cost:
                         line.purchase_price = line.working_cost

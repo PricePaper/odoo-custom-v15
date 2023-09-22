@@ -142,11 +142,12 @@ class ProductProduct(models.Model):
         to_date = datetime.date.today()
         msg=''
 
-        vendor = self.seller_ids.filtered(lambda seller: seller.is_available) and \
-                 self.seller_ids.filtered(lambda seller: seller.is_available)[0]
+        vendor = self.seller_ids.filtered(lambda s: (s.date_start and s.date_end and s.date_start < to_date and s.date_end > to_date) or (not s.date_start or not s.date_end))
+
         if not vendor:
             server_log.error('Supplier is not set for product %s' % self.name)
         else:
+            vendor = vendor[0]
             delivery_lead_time = vendor.delay or 0
             if not delivery_lead_time:
                 delivery_lead_time = vendor.name.delay or 0
@@ -272,15 +273,16 @@ class ProductProduct(models.Model):
             name = name1+name
             product.with_delay(description=name, channel='root.Product_Orderpoint').job_queue_forecast()
 
-    def show_forecast(self, no_of_days=31):
+    def show_forecast(self, forecast_fr_date, forecast_to_date):
         """
         Return a graph and pivot views which are
         ploted with the forecast result
         """
         to_date = datetime.date.today()
+        # to_date = forecast_fr_date
         self.ensure_one()
         from_date = (to_date - relativedelta(days=self.past_days)).strftime('%Y-%m-%d')
-        periods = no_of_days
+        periods = (forecast_to_date - to_date).days
         config = self.get_fbprophet_config()
         if not config:
             raise UserError(_("FB prophet configuration not found"))

@@ -78,6 +78,33 @@ class SaleOrderLine(models.Model):
     lot_id = fields.Many2one('stock.production.lot', 'Lot')
     info = fields.Char(compute='_get_price_lock_info_JSON')
 
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_confirmed(self):
+        pass
+
+    def remove_move_lines(self):
+        move = self.mapped('move_ids').filtered(lambda r: r.state != 'cancel')
+        transit_move = self.mapped('move_ids').mapped('move_orig_ids').filtered(lambda r: r.state != 'cancel')
+        if transit_move and transit_move.picking_id.state in ['in_transit''done']:
+            raise ValidationError(
+                _('You can not remove an order line once stock move is done'))
+
+        elif any(transit_moves.state == 'done' for transit_moves in transit_move):
+            raise ValidationError(_('You can only delete draft moves.'))
+
+        elif any(moves.state == 'done' for moves in move):
+            raise ValidationError(_('You can only delete draft moves.'))
+        else:
+            cancel_moves  = transit_move+move
+            cancel_moves.sudo()._action_cancel()
+            cancel_moves.sudo().unlink()
+
+    def unlink(self):
+        for record in self:
+            if not record.is_delivery and record.order_id.state!='draft':
+                record.remove_move_lines()
+        return super(SaleOrderLine, self).unlink()
+
     @api.depends('product_id')
     def _get_price_lock_info_JSON(self):
         for line in self:

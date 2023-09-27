@@ -21,14 +21,12 @@ class StockPicking(models.Model):
             ['picking_id', 'product_id', 'product_uom_id', 'qty_done'],
             lazy=False, orderby='qty_done asc'
         )
-        print('res_groups', res_groups)
         products_by_id = {
             product_res['id']: (product_res['ppt_uom_id'][0], product_res['uom_id'][0], product_res['weight'])
             for product_res in
             self.env['product.product'].with_context(active_test=False).search_read(
                 [('id', 'in', list(set(grp["product_id"][0] for grp in res_groups)))], ['ppt_uom_id', 'uom_id', 'weight'])
         }
-        print('products_by_id', products_by_id)
         for res_group in res_groups:
             ppt_uom_id, uom_id, weight = products_by_id[res_group['product_id'][0]]
 

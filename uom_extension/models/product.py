@@ -123,7 +123,6 @@ class ProductProduct(models.Model):
     @api.depends('qty_available', 'incoming_qty', 'virtual_available', 'outgoing_qty')
     def _compute_quantities_modified(self):
         for product in self:
-            print(product.uom_id, product.ppt_uom_id)
             if product.ppt_uom_id:
                 product.quantity_available = product.uom_id._compute_quantity(product.qty_available, product.ppt_uom_id,
                                                                               rounding_method='HALF-UP')
@@ -174,24 +173,15 @@ class ProductProduct(models.Model):
                                                         ('picking_id.rma_id', '=', False)])
             product_qty = 0
             for move in purchase_moves:
-                product_qty += move.product_qty
-            # converting to ppt_uom_id
-            if product.ppt_uom_id:
-                product.in_qty = product.uom_id._compute_quantity(product_qty, product.ppt_uom_id,
+                product_qty += move.product_uom._compute_quantity(move.product_uom_qty, product.ppt_uom_id or product.uom_id,
                                                                   rounding_method='HALF-UP')
-            else:
-                product.in_qty = product_qty
+            product.in_qty = product_qty
 
             product_qty = 0
             for move in sale_moves:
-                product_qty += move.product_qty
-
-            # converting to ppt_uom_id
-            if product.ppt_uom_id:
-                product.out_qty = product.uom_id._compute_quantity(product_qty, product.ppt_uom_id,
-                                                                   rounding_method='HALF-UP')
-            else:
-                product.out_qty = product_qty
+                product_qty += move.product_uom._compute_quantity(move.product_uom_qty, product.ppt_uom_id or product.uom_id,
+                                                                  rounding_method='HALF-UP')
+            product.out_qty = product_qty
 
     @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done')
     def _compute_transit_quantities(self):
@@ -279,9 +269,9 @@ class ProductProduct(models.Model):
             if orderpoint:
                 if not self.orderpoint_update_date or self.orderpoint_update_date < str(datetime.date.today()):
                     orderpoint.write({'product_min_qty_mod': ceil(min_quantity) if self.ppt_uom_id else 0,
-                                        'product_max_qty_mod': ceil(max_quantity) if self.ppt_uom_id else 0,
-                                        'active': True
-                                          })
+                                      'product_max_qty_mod': ceil(max_quantity) if self.ppt_uom_id else 0,
+                                      'active': True
+                                      })
             else:
                 values = {
                     'product_id': self.id,
@@ -327,6 +317,11 @@ class ProductProduct(models.Model):
             start_date = start_date + relativedelta(days=1)
         return res
 
+    @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state')
+    @api.depends_context(
+        'lot_id', 'owner_id', 'package_id', 'from_date', 'to_date',
+        'location', 'warehouse',
+    )
     def _compute_quantities(self):
         """
         overridden from batch delivery custom module,
@@ -336,3 +331,13 @@ class ProductProduct(models.Model):
         super(ProductProduct, self)._compute_quantities()
         for product in self:
             product.outgoing_quantity -= product.transit_qty
+
+    def _stock_account_get_anglo_saxon_price_unit(self, uom=False):
+        # overriding to fix the uom conversion
+        price = self.standard_price
+        print(price,'gggggggggggggggggggggggggggg',uom , self.ppt_uom_id, self.uom_id.id , uom.id)
+        if not self or not uom or self.uom_id.id == uom.id:
+            print('without com')
+            return price or 0.0
+        print('conversion is the problem', self.ppt_uom_id._compute_price(price, uom))
+        return self.ppt_uom_id._compute_price(price, uom)

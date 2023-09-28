@@ -2,7 +2,7 @@
 <odoo>
     <template id="product_labels_template" name="Product Label" inherit_id="batch_delivery.product_labels_template">
         <xpath expr="//div[@t-field='line[0].picking_id.scheduled_date']" position="before">
-            <div t-if="line[0].sale_id and line[0].sale_id.is_sample_order" style="float:left;">Sample</div>
+            <div t-if="line[0].sale_line_id and line[0].sale_line_id.order_id.is_sample_order" style="float:left;">Sample</div>
         </xpath>
     </template>
 

@@ -24,7 +24,7 @@ class ProductPricelist(models.Model):
                 'data': {'model': 'product.pricelist',
                          'options': json.dumps(data, default=date_utils.json_default),
                          'output_format': 'xlsx',
-                         'report_name': 'Excel Report',
+                         'report_name': '%s - Date Prepared - %s - Date Valid Until - %s' % (self.name, datetime.now().strftime("%m/%d/%Y"), self.expiry_date or '')
                          }
                 }
 

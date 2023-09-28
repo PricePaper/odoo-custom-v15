@@ -1056,7 +1056,7 @@ class SaleOrderLine(models.Model):
                 if float_compare(product.qty_available - product.outgoing_qty, product_qty, precision_digits=precision) == -1:
                     is_available = self.is_mto
                     if not is_available:
-                        products = product.alternative_product_ids 
+                        products = product.alternative_product_ids
                         alternatives = ''
                         if products:
                             alternatives = '\nPlease add an alternate product from list below'
@@ -1434,7 +1434,7 @@ class SaleOrderLine(models.Model):
 
             #if default uom not in sale_uoms set 0th sale_uoms as line uom
             if self.product_id.sale_uoms and self.product_id.uom_id not in self.product_id.sale_uoms:
-                vals.update({'product_uom':self.product_id.sale_uoms.ids[0]})
+                self.update({'product_uom':self.product_id.sale_uoms.ids[0]})
 
             msg, product_price, price_from = self.calculate_customer_price()
             warn_msg += msg and "\n\n{}".format(msg)

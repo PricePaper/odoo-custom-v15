@@ -38,7 +38,7 @@
             <field name="report_type">qweb-pdf</field>
             <field name="report_name">price_maintanance.report_pricelist</field>
             <field name="report_file">price_maintanance.report_pricelist</field>
-            <field name="print_report_name">'%s - Date Prepared - %s - Date Valid Until - %s' % (object.name, time.strftime('%m-%d-%Y'), object.expiry_date or '')</field>
+            <field name="print_report_name">'%s - Date Prepared - %s - Date Valid Until - %s' % (object.name, time.strftime('%m-%d-%Y'), object.expiry_date.strftime('%m-%d-%Y') or '')</field>
              <field name="paperformat_id" ref="paperformat_pricelist_report"/>
             <field name="binding_model_id" ref="product.model_product_pricelist"/>
             <field name="binding_type">report</field>

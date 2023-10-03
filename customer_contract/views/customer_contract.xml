@@ -40,6 +40,7 @@
                             <field name="product_line_ids" nolabel="1">
                                 <tree editable="bottom">
                                     <field name="product_id" required="1"/>
+                                    <field name="min_qty" />
                                     <field name="product_qty" required="1"/>
                                     <field name="remaining_qty"/>
                                     <field name="price" required="1"/>

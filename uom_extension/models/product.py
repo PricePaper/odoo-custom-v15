@@ -95,6 +95,21 @@ class ProductProduct(models.Model):
     sales_total_count = fields.Float(compute='_compute_sales_total_count', string='Sold')
     purchased_product_qty_mod = fields.Float(compute='_compute_purchased_product_qty_mod', string='Purchased')
 
+    def name_get(self):
+        res = super(ProductProduct, self).name_get()
+        if not self._context.get('show_uom_name', False):
+            return res
+        result = []
+        for rec in res:
+            product = self.env['product.product'].browse(rec[0])
+            if product.ppt_uom_id:
+                name = product.ppt_uom_id.name or ''
+            else:
+                name = product.uom_id.name or ''
+            result.append((rec[0], rec[1]+'_'+name))
+
+        return result
+
     @api.onchange('sale_uoms')
     def onchange_sale_uoms(self):
         """

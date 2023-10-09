@@ -58,9 +58,9 @@ class StockPicking(models.Model):
         if self.picking_type_code == 'incoming':
             self.mapped('purchase_id').button_received()
             so = self.env['sale.order']
-            for line in self.move_lines:
+            for line in self.move_lines.filtered(lambda rec: rec.state == 'done'):
                 if line.is_storage_contract and line.purchase_line_id:
-                    line.sale_line_id.qty_delivered = line.quantity_done
+                    line.sale_line_id.qty_delivered += line.quantity_done
                     so |= line.sale_line_id.order_id
             if so:
                 so.action_received()

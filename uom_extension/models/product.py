@@ -6,6 +6,7 @@ from math import ceil
 import datetime
 import logging as server_log
 from dateutil.relativedelta import *
+from odoo.addons.price_paper.models import margin
 
 
 class ProductTemplate(models.Model):
@@ -95,6 +96,21 @@ class ProductProduct(models.Model):
     sales_total_count = fields.Float(compute='_compute_sales_total_count', string='Sold')
     purchased_product_qty_mod = fields.Float(compute='_compute_purchased_product_qty_mod', string='Purchased')
 
+    def name_get(self):
+        res = super(ProductProduct, self).name_get()
+        if not self._context.get('show_uom_name', False):
+            return res
+        result = []
+        for rec in res:
+            product = self.env['product.product'].browse(rec[0])
+            if product.ppt_uom_id:
+                name = product.ppt_uom_id.name or ''
+            else:
+                name = product.uom_id.name or ''
+            result.append((rec[0], rec[1]+'_'+name))
+
+        return result
+
     @api.onchange('sale_uoms')
     def onchange_sale_uoms(self):
         """
@@ -123,7 +139,6 @@ class ProductProduct(models.Model):
     @api.depends('qty_available', 'incoming_qty', 'virtual_available', 'outgoing_qty')
     def _compute_quantities_modified(self):
         for product in self:
-            print(product.uom_id, product.ppt_uom_id)
             if product.ppt_uom_id:
                 product.quantity_available = product.uom_id._compute_quantity(product.qty_available, product.ppt_uom_id,
                                                                               rounding_method='HALF-UP')
@@ -174,24 +189,15 @@ class ProductProduct(models.Model):
                                                         ('picking_id.rma_id', '=', False)])
             product_qty = 0
             for move in purchase_moves:
-                product_qty += move.product_qty
-            # converting to ppt_uom_id
-            if product.ppt_uom_id:
-                product.in_qty = product.uom_id._compute_quantity(product_qty, product.ppt_uom_id,
+                product_qty += move.product_uom._compute_quantity(move.product_uom_qty, product.ppt_uom_id or product.uom_id,
                                                                   rounding_method='HALF-UP')
-            else:
-                product.in_qty = product_qty
+            product.in_qty = product_qty
 
             product_qty = 0
             for move in sale_moves:
-                product_qty += move.product_qty
-
-            # converting to ppt_uom_id
-            if product.ppt_uom_id:
-                product.out_qty = product.uom_id._compute_quantity(product_qty, product.ppt_uom_id,
-                                                                   rounding_method='HALF-UP')
-            else:
-                product.out_qty = product_qty
+                product_qty += move.product_uom._compute_quantity(move.product_uom_qty, product.ppt_uom_id or product.uom_id,
+                                                                  rounding_method='HALF-UP')
+            product.out_qty = product_qty
 
     @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state', 'stock_move_ids.quantity_done')
     def _compute_transit_quantities(self):
@@ -279,9 +285,9 @@ class ProductProduct(models.Model):
             if orderpoint:
                 if not self.orderpoint_update_date or self.orderpoint_update_date < str(datetime.date.today()):
                     orderpoint.write({'product_min_qty_mod': ceil(min_quantity) if self.ppt_uom_id else 0,
-                                        'product_max_qty_mod': ceil(max_quantity) if self.ppt_uom_id else 0,
-                                        'active': True
-                                          })
+                                      'product_max_qty_mod': ceil(max_quantity) if self.ppt_uom_id else 0,
+                                      'active': True
+                                      })
             else:
                 values = {
                     'product_id': self.id,
@@ -327,6 +333,11 @@ class ProductProduct(models.Model):
             start_date = start_date + relativedelta(days=1)
         return res
 
+    @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state')
+    @api.depends_context(
+        'lot_id', 'owner_id', 'package_id', 'from_date', 'to_date',
+        'location', 'warehouse',
+    )
     def _compute_quantities(self):
         """
         overridden from batch delivery custom module,
@@ -336,3 +347,53 @@ class ProductProduct(models.Model):
         super(ProductProduct, self)._compute_quantities()
         for product in self:
             product.outgoing_quantity -= product.transit_qty
+
+    def _stock_account_get_anglo_saxon_price_unit(self, uom=False):
+        # overriding to fix the uom conversion
+        price = self.standard_price
+        print(price,'gggggggggggggggggggggggggggg',uom , self.ppt_uom_id, self.uom_id.id , uom.id)
+        if not self or not uom or self.uom_id.id == uom.id:
+            print('without com')
+            return price or 0.0
+        print('conversion is the problem', self.ppt_uom_id._compute_price(price, uom))
+        return self.ppt_uom_id._compute_price(price, uom)
+
+    def get_price_from_competitor_or_categ(self, uom):
+        """
+        Get price from category or competitor
+        """
+        new_lst_price = 0
+        cost = self.cost
+        restaurant_id = self.env.ref('website_scraping.website_scraping_cofig_1').id
+        webstaurant_id = self.env.ref('website_scraping.website_scraping_cofig_2').id
+        new_lst_price = self.get_from_competitor(restaurant_id, uom)
+        price_from = uom.name + ' Price is from Competitor: Restaurant Depot.\n'
+        if not new_lst_price:
+            price_from = uom.name + ' Price is from Competitor: Webstaurant Depot.\n'
+            new_lst_price = self.get_from_competitor(webstaurant_id, uom)
+        if not new_lst_price:
+            price_from = uom.name + ' Price is from Category.\n'
+            if uom != self.ppt_uom_id:
+                uom_cost = float_round(self.ppt_uom_id._compute_price(cost, uom), precision_digits=2)
+                cost = float_round(uom_cost * (1 + (self.categ_id.repacking_upcharge / 100)), precision_digits=2)
+            new_lst_price = margin.get_price(cost, self.categ_id.standard_price, percent=True)
+        return new_lst_price,price_from
+
+    def get_from_competitor(self, competitor_id, uom):
+        """
+        Fetch price from competitor
+        """
+        new_lst_price = 0
+        pricelist = self.env['product.pricelist'].search([
+            ('type', '=', 'competitor'),
+            ('competitor_id', '=', competitor_id),
+            ('competietor_margin', '=', 10)])
+        pricelist_line = pricelist.customer_product_price_ids.filtered(lambda p: p.product_id == self)
+        if pricelist_line:
+            new_lst_price = float_round(pricelist_line[0].product_uom._compute_price(pricelist_line[0].price, uom),
+                                        precision_digits=2)
+            if uom != self.ppt_uom_id:
+                competitor_price = float_round(new_lst_price * (1 + (self.categ_id.repacking_upcharge / 100)),
+                                               precision_digits=2)
+                new_lst_price = margin.get_price(competitor_price, self.categ_id.standard_price, percent=True)
+        return new_lst_price

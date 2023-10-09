@@ -86,7 +86,6 @@ class StockQuant(models.Model):
                     (quant.owner_id and quant.owner_id != quant.company_id.partner_id):
                 quant.value = 0
                 continue
-            print('quant.value2', quant.value)
             if quant.product_id.cost_method == 'fifo':
                 quantity = quant.product_id.with_company(quant.company_id).quantity_svl
                 if float_is_zero(quantity, precision_rounding=quant.product_id.uom_id.rounding):

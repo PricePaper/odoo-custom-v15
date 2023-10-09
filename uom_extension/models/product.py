@@ -6,6 +6,7 @@ from math import ceil
 import datetime
 import logging as server_log
 from dateutil.relativedelta import *
+from odoo.addons.price_paper.models import margin
 
 
 class ProductTemplate(models.Model):
@@ -356,3 +357,43 @@ class ProductProduct(models.Model):
             return price or 0.0
         print('conversion is the problem', self.ppt_uom_id._compute_price(price, uom))
         return self.ppt_uom_id._compute_price(price, uom)
+
+    def get_price_from_competitor_or_categ(self, uom):
+        """
+        Get price from category or competitor
+        """
+        new_lst_price = 0
+        cost = self.cost
+        restaurant_id = self.env.ref('website_scraping.website_scraping_cofig_1').id
+        webstaurant_id = self.env.ref('website_scraping.website_scraping_cofig_2').id
+        new_lst_price = self.get_from_competitor(restaurant_id, uom)
+        price_from = uom.name + ' Price is from Competitor: Restaurant Depot.\n'
+        if not new_lst_price:
+            price_from = uom.name + ' Price is from Competitor: Webstaurant Depot.\n'
+            new_lst_price = self.get_from_competitor(webstaurant_id, uom)
+        if not new_lst_price:
+            price_from = uom.name + ' Price is from Category.\n'
+            if uom != self.ppt_uom_id:
+                uom_cost = float_round(self.ppt_uom_id._compute_price(cost, uom), precision_digits=2)
+                cost = float_round(uom_cost * (1 + (self.categ_id.repacking_upcharge / 100)), precision_digits=2)
+            new_lst_price = margin.get_price(cost, self.categ_id.standard_price, percent=True)
+        return new_lst_price,price_from
+
+    def get_from_competitor(self, competitor_id, uom):
+        """
+        Fetch price from competitor
+        """
+        new_lst_price = 0
+        pricelist = self.env['product.pricelist'].search([
+            ('type', '=', 'competitor'),
+            ('competitor_id', '=', competitor_id),
+            ('competietor_margin', '=', 10)])
+        pricelist_line = pricelist.customer_product_price_ids.filtered(lambda p: p.product_id == self)
+        if pricelist_line:
+            new_lst_price = float_round(pricelist_line[0].product_uom._compute_price(pricelist_line[0].price, uom),
+                                        precision_digits=2)
+            if uom != self.ppt_uom_id:
+                competitor_price = float_round(new_lst_price * (1 + (self.categ_id.repacking_upcharge / 100)),
+                                               precision_digits=2)
+                new_lst_price = margin.get_price(competitor_price, self.categ_id.standard_price, percent=True)
+        return new_lst_price

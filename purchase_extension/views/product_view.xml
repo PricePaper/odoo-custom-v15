@@ -2,7 +2,7 @@
 <odoo>
     <data>
 
-        <record id="product_product_view_form_easy_inherit_purchase_extension" model="ir.ui.view">
+        <!-- <record id="product_product_view_form_easy_inherit_purchase_extension" model="ir.ui.view">
             <field name="name">product.product.pricepaper.purchase</field>
             <field name="model">product.product</field>
             <field name="inherit_id" ref="stock.product_form_view_procurement_button"/>
@@ -13,7 +13,7 @@
                       help="Duplicate(change UOM) or Create new similar Product"/>
               </button>
             </field>
-        </record>
+        </record> -->
 
         <record id="product_supplierinfo_search_view_inherit_purchase_ext" model="ir.ui.view">
             <field name="name">product.supplierinfo.search.view</field>

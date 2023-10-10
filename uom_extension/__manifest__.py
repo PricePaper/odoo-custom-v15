@@ -19,6 +19,7 @@ Modifying default uom
     'security/ir.model.access.csv',
     'views/product_view.xml',
     'views/stock_quant_view.xml',
+    'views/change_product_uom.xml',
     'views/stock_orderpoint_view.xml',
     ],
     'installable': True,

@@ -397,3 +397,14 @@ class ProductProduct(models.Model):
                                                precision_digits=2)
                 new_lst_price = margin.get_price(competitor_price, self.categ_id.standard_price, percent=True)
         return new_lst_price
+
+    def action_change_uom(self):
+        return {
+            'name': 'Change Product UOM',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'change.product.uom',
+            'view_id': self.env.ref('uom_extension.view_change_product_uom_wizard').id,
+            'target': 'new',
+            'context': {'default_product_id': self.id,}
+        }

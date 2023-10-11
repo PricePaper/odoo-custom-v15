@@ -52,3 +52,27 @@ class ChangeProductUom(models.TransientModel):
                     else:
                         default_1['price'] = line.price
                     line.copy(default=default_1)
+
+    def create_duplicate_product(self):
+        default_vals = {
+            'name': self.new_name,
+            'default_code': self.new_default_code,
+            'standard_price': self.new_cost,
+            'ppt_uom_id': self.new_uom.id,
+            'uom_po_id': self.new_uom.id,
+            'sale_ok': True,
+            'weight': self.weight,
+            'volume': self.volume
+        }
+        res = self.product_id.with_context(from_change_uom=True).copy(default=default_vals)
+        res.sale_uoms = [(5, _, _)]
+        res.sale_uoms = self.new_sale_uoms
+
+        return {
+            'name': 'Product Variants',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'view_id': self.env.ref('product.product_normal_form_view').id,
+            'res_model': 'product.product',
+            'res_id': res.id,
+        }

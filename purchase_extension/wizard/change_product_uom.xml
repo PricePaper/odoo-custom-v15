@@ -10,14 +10,6 @@
                         <group>
                             <group>
                                 <field name="product_id" readonly='1'/>
-                                <field name="duplicate_pricelist" widget='boolean_toggle'
-                                       help="Duplicate customer product priclist lines with new product"/>
-                                <field name="maintain_price_ratio" widget="boolean_toggle"
-                                       attrs="{'invisible': [('duplicate_pricelist','=',False)]}"/>
-                            </group>
-                            <group>
-                                <field name="is_alternate_product" widget='boolean_toggle'/>
-                                <field name="is_supercede_product" widget='boolean_toggle'/>
                             </group>
                         </group>
                         <separator string="New Product Details"/>
@@ -34,16 +26,6 @@
                                 <field name="volume"/>
                             </group>
                         </group>
-                        <notebook>
-                            <page string="Sale UOM Mapper" attrs="{'invisible': [('duplicate_pricelist','=',False)]}">
-                                <field name="mapper_ids">
-                                    <tree editable="bottom" create="0" delete="0">
-                                        <field name="old_uom_id" string="Old uom" required='1'/>
-                                        <field name="new_uom_id" string="New uom" domain="[('id', 'in', parent.new_sale_uoms)]" required='1'/>
-                                    </tree>
-                                </field>
-                            </page>
-                        </notebook>
                         <footer>
                             <button string="Create New Product" type="object" name="create_duplicate_product" calss="btn-success"/>
                             or

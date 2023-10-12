@@ -114,7 +114,7 @@
                 </xpath>
 
                 <xpath expr="//field[@name='vat']" position="replace">
-                    <field name="vat" attrs="{'readonly':True}"/>
+                    <field name="vat" attrs="{'readonly':['|', ('supplier', '=', False), ('customer', '=', True)]}"/>
                     <field name="fax_number"/>
                 </xpath>
                 <xpath expr="//group[@name='sale']/field[@name='property_payment_term_id']" position="replace">

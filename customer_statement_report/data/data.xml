@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="Customer_Statement" model="queue.job.channel">
+            <field name="name">customerstatement</field>
+            <field name="parent_id" ref="queue_job.channel_root" />
+        </record>
+        <record id="job_function_Customer_Statement" model="queue.job.function">
+            <field name="model_id" ref="sale.model_res_partner"></field>
+            <field name="method">job_queue_mail_customer_statement</field>
+            <field name="channel_id" ref="Customer_Statement" />
+            <field name="retry_pattern" eval="{1: 60, 2: 180, 3: 10, 5: 300}" />
+        </record>
+    </data>
+</odoo>

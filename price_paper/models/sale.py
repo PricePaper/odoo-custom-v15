@@ -1056,7 +1056,7 @@ class SaleOrderLine(models.Model):
                 if float_compare(product.qty_available - product.outgoing_qty, product_qty, precision_digits=precision) == -1:
                     is_available = self.is_mto
                     if not is_available:
-                        products = product.alternative_product_ids 
+                        products = product.alternative_product_ids
                         alternatives = ''
                         if products:
                             alternatives = '\nPlease add an alternate product from list below'
@@ -1309,6 +1309,16 @@ class SaleOrderLine(models.Model):
         for line in self:
             if vals.get('price_unit') and line.order_id.state == 'sale':
                 line.update_price_list()
+            if vals.get('tax_id') and line.order_id.state in ('sale', 'done'):
+                sale_tax_history = self.env['sale.tax.history'].search(
+                    [('partner_id', '=', line.order_id.partner_shipping_id.id),
+                     ('product_id', '=', line.product_id.id)],
+                    limit=1)
+                if sale_tax_history:
+                    if line.tax_id:
+                        sale_tax_history.tax = True
+                    else:
+                        sale_tax_history.tax = False
         return res
 
     def _prepare_procurement_values(self, group_id=False):

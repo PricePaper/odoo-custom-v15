@@ -14,6 +14,7 @@ Customer Statement Report
     'data': [
         'security/ir.model.access.csv',
         'reports/customer_statement_report.xml',
+        'data/data.xml',
         'data/mail_data.xml',
         'wizard/customer_statement_wizard.xml',
         'views/res_partner_view.xml',

@@ -1,15 +1,5 @@
 <odoo>
     <data>
-        <record id="make_invisible" model="res.groups">
-            <field name="name">Invisible</field>
-        </record>
-        <menuitem
-            id="crm.res_partner_menu_customer"
-            name="Customers"
-            parent="crm.crm_menu_sales"
-            action="base.action_partner_form"
-            groups="make_invisible"
-            sequence="5"/>
         <record id="res_partner_inherit_crm_enhance" model="ir.ui.view">
             <field name="name">res.partner.crm.enhance</field>
             <field name="model">res.partner</field>

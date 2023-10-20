@@ -9,7 +9,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='button_draft']" position="after">
                     <field name='is_authorize_tx_failed' invisible='1'/>
-                    <button name="action_reautherize_transaction" type="object" string="Reautherize Payment" class="oe_highlight"
+                    <button name="action_reauthorize_transaction" type="object" string="Reauthorize Payment" class="oe_highlight"
                           attrs="{'invisible':[('is_authorize_tx_failed', '=', False)]}"/>
                     <button name="add_transaction_to_invoice" type="object" string="Add transaction ref"
                       attrs="{'invisible':['|', ('payment_state', 'in', ('paid', 'in_payment')), ('move_type', 'not in', ('out_invoice', 'out_refund'))]}"/>

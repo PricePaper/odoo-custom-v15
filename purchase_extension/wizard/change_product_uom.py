@@ -15,7 +15,7 @@ class ChangeProductUom(models.TransientModel):
     product_id = fields.Many2one('product.product', string='Old Product')
     new_name = fields.Char('Name')
     new_default_code = fields.Char('Internal reference')
-    new_uom = fields.Many2one('uom.uom', string='New UOM')
+    new_uom = fields.Many2one('uom.uom', string='New Stocking UOM')
     new_sale_uoms = fields.Many2many('uom.uom', 'change_product_uom_rel', 'change_id', 'uom_id', string='New Sale UOMS')
     new_cost = fields.Float(string='Cost', digits='Product Price')
     volume = fields.Float(string='Volume')
@@ -52,7 +52,7 @@ class ChangeProductUom(models.TransientModel):
             self.maintain_price_ratio = True
 
     def create_duplicate_product(self):
-        pass 
+        pass
 
 
 class SaleUomMapper(models.TransientModel):

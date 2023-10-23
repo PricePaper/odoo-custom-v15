@@ -21,6 +21,8 @@
                             <group>
                                 <field name="new_sale_uoms" widget="many2many_tags" required='1'/>
                                 <field name="new_uom" required='1'/>
+                                <field name="new_cost" />
+
                             </group>
                         </group>
                         <notebook>

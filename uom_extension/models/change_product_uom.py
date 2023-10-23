@@ -14,17 +14,19 @@ class ChangeProductUom(models.TransientModel):
     def action_change_uom(self):
 
         product = self.product_id
+        old_uom = product.ppt_uom_id
         product.sale_uoms = [(5, _, _)]
         product.sale_uoms = self.new_sale_uoms
         product.ppt_uom_id = self.new_uom.id
-        price_rec = self.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == self.product_id.ppt_uom_id)
+        product.uom_po_id = self.new_uom.id
+        price_rec = self.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == old_uom)
         price = 0
         if price_rec:
             price = price_rec[0].price
         self.product_id.uom_standard_prices.unlink()
-        if price_rec:
+        if price:
             for uom in product.sale_uoms:
-                price = float_round(price * (uom.ratio / self.product_id.ppt_uom_id.ratio),
+                price = float_round(price * (uom.ratio / old_uom.ratio),
                                     precision_digits=2)
                 vals = {'product_id': product.id,
                         'uom_id': uom.id,

@@ -332,7 +332,7 @@ class AuthorizeAPICustom:
             return : transaction id
         """
         response = self._make_request("createTransactionRequest", {
-            "refId": transaction.reference,
+            "refId": transaction.reference and transaction.reference[:20] or '',
             "transactionRequest": {
                 "transactionType": "authOnlyTransaction",
                 "amount": transaction.amount,
@@ -351,7 +351,7 @@ class AuthorizeAPICustom:
                 },
                 "terminalNumber": transaction.env.user.id,
                 "order": {
-                    "invoiceNumber": transaction.reference,
+                    "invoiceNumber": transaction.reference and transaction.reference[:20] or '',
                     "description": order.note and order.note[:254] or 'No description available',
                 },
                 "lineItems": self.get_line_item_info(order),
@@ -402,7 +402,7 @@ class AuthorizeAPICustom:
             return : transaction id
         """
         response = self._make_request("createTransactionRequest", {
-            "refId": transaction.reference,
+            "refId": transaction.reference and transaction.reference[:20] or '',
             "transactionRequest": {
                 "transactionType": ttype,
                 "amount": transaction.amount,
@@ -416,7 +416,7 @@ class AuthorizeAPICustom:
 
                 "terminalNumber": transaction.env.user.id,
                 "order": {
-                    "invoiceNumber": transaction.reference,
+                    "invoiceNumber": transaction.reference and transaction.reference[:20] or '',
                     "description": invoice.narration and invoice.narration[:254] or 'No description available',
                 },
                 "lineItems": self.get_invoice_line_item_info(invoice),

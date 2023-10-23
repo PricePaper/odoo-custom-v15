@@ -2,6 +2,7 @@
 from odoo import models, fields, api, _
 from ..authorize_request_custom import AuthorizeAPICustom
 from odoo.exceptions import ValidationError
+from odoo.tools.float_utils import float_round
 
 
 class ReauthInvoiceToken(models.TransientModel):
@@ -43,10 +44,16 @@ class ReauthInvoiceToken(models.TransientModel):
                 count = self.env['payment.transaction'].sudo().search_count([('reference', 'ilike', invoice.name)])
                 if count:
                     reference = '%s - %s' % (invoice.name, count)
+                payment_fee = self.partner_id.property_card_fee
+                amount = invoice.amount_residual
+                if payment_fee:
+                    amount = float_round(amount * ((100+payment_fee) / 100), precision_digits=2)
+                    payment_fee = invoice.amount_residual * (payment_fee/100)
                 tx_sudo = self.env['payment.transaction'].sudo().create({
                     'acquirer_id': token.acquirer_id.id,
                     'reference': reference,
-                    'amount': invoice.amount_total,
+                    'amount': amount,
+                    'transaction_fee': payment_fee,
                     'currency_id': invoice.currency_id.id,
                     'partner_id': invoice.partner_id.id,
                     'token_id': token.id,

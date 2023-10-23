@@ -1298,18 +1298,29 @@ class SaleOrderLine(models.Model):
                 self.price_from.lastsale_history_date = fields.Date.today()
 
     def write(self, vals):
-        for line in self:
-            if vals.get('price_unit') and line.order_id.state == 'sale':
-                if not self.env.user.has_group('sales_team.group_sale_manager') and line.product_id.type != 'service':
+        if vals.get('price_unit'):
+            for line in self:
+                if line.order_id.state == 'sale' and not self.env.user.has_group('sales_team.group_sale_manager') and line.product_id.type != 'service':
                     if line.working_cost > line.price_unit > vals.get('price_unit'):
                         raise ValidationError('You are not allowed to reduce price below product cost. Contact your sales Manager.')
                     if line.price_unit >= line.working_cost > vals.get('price_unit'):
                         raise ValidationError('You are not allowed to reduce price below product cost. Contact your sales Manager.')
         res = super().write(vals)
-        for line in self:
-            if vals.get('price_unit') and line.order_id.state == 'sale':
-                line.update_price_list()
+        if vals.get('price_unit') or vals.get('tax_id'):
+            for line in self:
+                if vals.get('price_unit') and line.order_id.state == 'sale':
+                    line.update_price_list()
+                if vals.get('tax_id') and line.order_id.state in ('sale', 'done'):
+                    sale_tax_history = self.env['sale.tax.history'].search(
+                        [('partner_id', '=', line.order_id.partner_shipping_id.id),
+                         ('product_id', '=', line.product_id.id)], limit=1)
+                    if sale_tax_history:
+                        if line.tax_id:
+                            sale_tax_history.tax = True
+                        else:
+                            sale_tax_history.tax = False
         return res
+
 
     def _prepare_procurement_values(self, group_id=False):
         """ Prepare specific key for moves or other components that will be created from a stock rule

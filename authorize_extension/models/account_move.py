@@ -107,7 +107,7 @@ class AccountMove(models.Model):
         return super(AccountMove, self).action_register_payment()
 
 
-    def action_reautherize_transaction(self):
+    def action_reauthorize_transaction(self):
 
         return self.sudo().env.ref('authorize_extension.action_invoice_reauthorize_wizard').read()[0]
 

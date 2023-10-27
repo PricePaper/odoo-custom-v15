@@ -545,6 +545,7 @@ class StockPicking(models.Model):
         self.ensure_one()
         if self.picking_type_id.code == 'outgoing' and not self.purchase_id:
             self.check_return_reason()
+            self = self.with_context(skip_immediate=True)
         return self.button_validate()
 
     def action_cancel(self):

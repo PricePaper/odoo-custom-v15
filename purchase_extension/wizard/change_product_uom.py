@@ -21,8 +21,6 @@ class ChangeProductUom(models.TransientModel):
     volume = fields.Float(string='Volume')
     weight = fields.Float(string='Weight')
     duplicate_pricelist = fields.Boolean(string='Copy Pricelist')
-    # is_alternate_product = fields.Boolean(string='Add the new product to the old products Alternate Products?')
-    # is_supercede_product = fields.Boolean(string='Supercede old product with the new product?')
     mapper_ids = fields.One2many('sale.uom.mapper', 'change_id', string='Sale Uom Mapping')
     maintain_price_ratio = fields.Boolean(string='Maintain price ratio')
 
@@ -43,13 +41,6 @@ class ChangeProductUom(models.TransientModel):
         res = super(ChangeProductUom, self).default_get(vals)
         res['mapper_ids'] = [(0, 0, {'old_uom_id': sale_uom.id}) for sale_uom in product.sale_uoms]
         return res
-
-    @api.onchange('duplicate_pricelist')
-    def onchange_duplicate_pricelist(self):
-        if not self.duplicate_pricelist:
-            self.maintain_price_ratio = False
-        else:
-            self.maintain_price_ratio = True
 
     def create_duplicate_product(self):
         pass

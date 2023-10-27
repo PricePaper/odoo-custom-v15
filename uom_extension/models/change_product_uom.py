@@ -11,6 +11,8 @@ from odoo.tools import float_round
 class ChangeProductUom(models.TransientModel):
     _inherit = 'change.product.uom'
 
+    new_po_uom = fields.Many2one('uom.uom', string='New Purchase UOM')
+
     def action_change_uom(self):
 
         product = self.product_id
@@ -19,21 +21,21 @@ class ChangeProductUom(models.TransientModel):
         product.sale_uoms = self.new_sale_uoms
         product.ppt_uom_id = self.new_uom.id
         product.uom_po_id = self.new_uom.id
-        price_rec = self.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == old_uom)
-        price = 0
-        if price_rec:
-            price = price_rec[0].price
-        self.product_id.uom_standard_prices.unlink()
-        if price:
-            for uom in product.sale_uoms:
-                price = float_round(price * (uom.ratio / old_uom.ratio),
-                                    precision_digits=2)
-                vals = {'product_id': product.id,
-                        'uom_id': uom.id,
-                        'price': price}
-                self.env['product.standard.price'].create(vals)
-        else:
+
+
+        for price_rec in self.product_id.uom_standard_prices:
+            mapper_uom = self.mapper_ids.filtered(lambda r: r.old_uom_id == price_rec.uom_id)
+            if self.maintain_price_ratio:
+                new_price = mapper_uom.old_uom_id._compute_price(price_rec.price, mapper_uom.new_uom_id)
+                price_rec.write({'uom_id': mapper_uom.new_uom_id.id,
+                                 'price': new_price})
+            else:
+                price_rec.write({'uom_id': mapper_uom.new_uom_id.id})
+
+        if not self.product_id.uom_standard_prices:
             product.job_queue_standard_price_update()
+
+
         standard_price_days = self.env.user.company_id.standard_price_config_days or 75
         product.standard_price_date_lock = date.today() + relativedelta(days=standard_price_days)
 
@@ -61,7 +63,7 @@ class ChangeProductUom(models.TransientModel):
             'default_code': self.new_default_code,
             'standard_price': self.new_cost,
             'ppt_uom_id': self.new_uom.id,
-            'uom_po_id': self.new_uom.id,
+            'uom_po_id': self.new_po_uom.id,
             'sale_ok': True,
             'weight': self.weight,
             'volume': self.volume

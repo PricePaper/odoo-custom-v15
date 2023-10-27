@@ -406,5 +406,6 @@ class ProductProduct(models.Model):
             'res_model': 'change.product.uom',
             'view_id': self.env.ref('uom_extension.view_change_product_uom_wizard').id,
             'target': 'new',
-            'context': {'default_product_id': self.id,}
+            'context': {'default_product_id': self.id,
+                        'default_new_cost': self.standard_price}
         }

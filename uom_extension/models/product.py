@@ -97,10 +97,10 @@ class ProductProduct(models.Model):
     purchased_product_qty_mod = fields.Float(compute='_compute_purchased_product_qty_mod', string='Purchased')
 
     def name_get(self):
-        res = super(ProductProduct, self).name_get()
         if not self._context.get('show_uom_name', False):
-            return res
+            return super(ProductProduct, self).name_get()
         result = []
+        res = super(ProductProduct, self).with_context(show_uom_name=False).name_get()
         for rec in res:
             product = self.env['product.product'].browse(rec[0])
             if product.ppt_uom_id:

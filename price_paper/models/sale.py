@@ -1445,7 +1445,8 @@ class SaleOrderLine(models.Model):
 
             #if default uom not in sale_uoms set 0th sale_uoms as line uom
             if self.product_id.sale_uoms and self.product_id.uom_id not in self.product_id.sale_uoms:
-                self.update({'product_uom':self.product_id.sale_uoms.ids[0]})
+                # self.update({'product_uom':self.product_id.sale_uoms.ids[0]})
+                self.update({'product_uom':self.product_id.ppt_uom_id.id})
 
             msg, product_price, price_from = self.calculate_customer_price()
             warn_msg += msg and "\n\n{}".format(msg)

@@ -67,25 +67,35 @@
             <field name="model">product.product</field>
             <field name="inherit_id" ref="stock_orderpoint_enhancements.product_stock_order_point_inherit"/>
             <field name="arch" type="xml">
-              <xpath expr="//button[@name='get_number_of_days']" position="after">
-                  <button name="action_view_orderpoints" type="object"
-                          attrs="{'invisible':['|',('type', 'not in', ['product', 'consu']),('nbr_reordering_rules', '!=', 1)]}"
-                          class="oe_stat_button" icon="fa-refresh">
-                      <div class="o_field_widget o_stat_info mr4">
-                          <span class="o_stat_text">Min:</span>
-                          <span class="o_stat_text">Max:</span>
-                      </div>
-                      <div class="o_field_widget o_stat_info">
-                          <span class="o_stat_value">
-                              <field name="reordering_min_qty_mod"/>
-                          </span>
-                          <span class="o_stat_value">
-                              <field name="reordering_max_qty_mod"/>
-                          </span>
-                      </div>
-                  </button>
-              </xpath>
-
+                <xpath expr="//button[@name='action_view_orderpoints'][1]" position="attributes">
+                   <attribute name="invisible">1</attribute>
+                </xpath>
+                <!-- <xpath expr="//button[@name='action_view_orderpoints'][3]" position="attributes">
+                   <attribute name="invisible">1</attribute>
+                </xpath> -->
+                <!-- <xpath expr="//button[@name='get_number_of_days']" position="attributes">
+                   <attribute name="invisible">1</attribute>
+                </xpath> -->
+                <xpath expr="//button[@name='reset_orderpoint']" position="before">
+                    <button name="action_view_orderpoints" type="object"
+                            attrs="{'invisible':['|',('type', 'not in', ['product', 'consu']),('nbr_reordering_rules', '!=', 1)]}"
+                            class="oe_stat_button" icon="fa-refresh">
+                        <div class="o_field_widget o_stat_info mr4">
+                            <span class="o_stat_text">Min:</span>
+                            <span class="o_stat_text">Max:</span>
+                        </div>
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="reordering_min_qty" invisible='1'/>
+                                <field name="reordering_min_qty_mod"/>
+                            </span>
+                            <span class="o_stat_value">
+                                <field name="reordering_max_qty" invisible='1'/>
+                                <field name="reordering_max_qty_mod"/>
+                            </span>
+                        </div>
+                    </button>
+                </xpath>
             </field>
         </record>
 

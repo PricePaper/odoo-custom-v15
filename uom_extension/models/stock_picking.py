@@ -6,6 +6,19 @@ from collections import defaultdict
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
+    @api.depends('move_lines.reserved_availability')
+    def _compute_available_qty(self):
+        for pick in self:
+            moves = pick.mapped('transit_move_lines').filtered(lambda move: move.state != 'cancel')
+            if pick.state in ('in_transit', 'transit_confirmed'):
+                moves = pick.mapped('move_lines').filtered(lambda move: move.state != 'cancel')
+            res_qty = 0
+            for move in moves:
+                if move.forecast_availability:
+                    res_qty += move.product_id.uom_id._compute_quantity(move.forecast_availability, move.product_uom)
+            pick.reserved_qty = res_qty
+            pick.low_qty_alert = pick.item_count != pick.reserved_qty and pick.state != 'done'
+
     @api.depends('move_line_ids', 'move_line_ids.result_package_id', 'move_line_ids.product_uom_id',
                  'move_line_ids.qty_done')
     def _compute_bulk_weight(self):

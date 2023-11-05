@@ -1,0 +1,104 @@
+@if o-website-value('header-template')=='header_style_1_pricepaper' {
+    header {
+        background-color: #749551;
+        height: 80px;
+
+        nav {
+            background-color: #749551 !important;
+            height: 100%;
+            &.shadow-sm{
+
+                box-shadow: unset !important;
+            }
+
+            .logo {
+                img {
+                    height: 3.5rem !important;
+                }
+            }
+
+            #top_menu_collapse {
+
+
+                #top_menu {
+                    background-color: #749551 !important;
+                    display: flex;
+                    justify-content: flex-end;
+
+                    .nav-link {
+                        font-size: 16px;
+                        color: white;
+                        padding-right: 0.5rem;
+                        padding-left: 0.5rem;
+                        padding: 0.5rem 1rem;
+                        position: relative;
+
+                        &.active,
+                        &:hover {
+                            color: rgba(0, 0, 0, .9);
+                            font-weight: normal !important;
+
+                            &::before {
+                                content: "";
+                                display: block;
+                                width: 30px;
+                                height: 4px;
+                                background: #000;
+                                position: absolute;
+                                border-radius: 3px;
+                                bottom: 0;
+                                transition: all 0.15s ease-in-out;
+                            }
+
+                            &::after {
+                                content: "";
+                                display: block;
+                                width: 4px;
+                                height: 4px;
+                                background: #000;
+                                position: absolute;
+                                border-radius: 3px;
+                                bottom: 0;
+                                left: 50px;
+                                transition: all 0.15s ease-in-out;
+                            }
+
+
+                        }
+
+                    }
+
+                }
+            }
+        }
+    }
+
+    .search_bar_contact {
+        a.contact {
+            font-size: 16px !important;
+            padding: 13px 29px;
+            border-radius: 0 20px 0 20px;
+
+            height: 50px;
+
+            &:hover {
+                background-color: white !important;
+                color: black !important;
+            }
+        }
+
+        .btn-search {
+            width: 50px;
+            height: 50px;
+            border-radius: 0 20px 0 20px;
+            padding: 12px 0;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+
+
+        }
+    }
+}

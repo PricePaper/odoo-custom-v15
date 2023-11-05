@@ -1,0 +1,36 @@
+.manufactures {
+    .ppt-container{
+        position: unset !important;
+    }
+    background: #635147;
+    padding: 120px 0 187px;
+    border-radius: 0 0 0 83px;
+    z-index: 0;
+    position: relative;
+
+    &::before {
+        background: inherit;
+        content: "";
+        width: 100%;
+        height: 101px;
+        position: absolute;
+        top: -100px;
+        z-index: -2;
+    }
+
+    .curvy-line {
+        background: url(../../img/curvy-line3.svg);
+        background-repeat: no-repeat;
+        position: absolute;
+        bottom: -32px;
+        right: 0;
+        width: 429px;
+        height: 297px;
+        z-index: 1;
+    }
+
+    .image-2 {
+        max-width: 414px;
+        margin-left: 20px;
+    }
+}

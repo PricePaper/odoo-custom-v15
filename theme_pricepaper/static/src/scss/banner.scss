@@ -1,0 +1,42 @@
+.home-main-banner {
+    background-color: #749551;
+
+    .home-banner {
+        // background: url("/theme_pricepaper/static/src/img/home-banner.webp");
+        background-size: cover !important;
+        // background-color: #749551;
+        width: 100%;
+        min-height: 830px;
+        background-position: left bottom !important;
+        position: relative;
+        overflow: hidden;
+
+        &::after {
+            background: url("../img/black-dots.webp");
+            content: "";
+            position: absolute;
+            height: 438px;
+            width: 30vw;
+            top: 50px;
+            right: -23%;
+            opacity: .8;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        h1 {
+            font-size: 5rem !important;
+            margin-top: 100px;
+            font-weight: 700;
+        }
+
+        .btn-black {
+            font-size: 22px;
+            padding: 12px 30px;
+            border-radius: 0 25px 0 25px;
+            border-width: 2px;
+            color: white;
+        }
+    }
+}
+

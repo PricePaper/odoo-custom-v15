@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="your_product" name="Your Product">
+        <section class="your-product py-md-5">
+            <div class="container ppt-container py-md-5">
+                <div class="row py-md-5">
+
+                    <div class="col-lg-7">
+                        <h3 class="display-6 fw-sb mb-4" style="max-width:887px;">We find the right products for your
+                        business</h3>
+                        <p class="mb-5">Why wrestle with search bars like they're pop quiz questions? Our human intelligence
+                        trumps AI any day. With a combined experience spanning over 300 years, our real-life experts
+                        aren't bots; they're your culinary comrades. Imagine ditching Google marathons trying to find
+                        packaging for Grandma's pot pie recipe in favor of a quick chat with someone who knows their
+                        onions (and pot pies). It's like having a teacher slip you the answer sheet mid-exam. Rather
+                        invest your time birthing a brilliant business idea or soaking up Aruba's sun, right? We're not
+                        just a company; we're your shortcut to samples you can touch, options you can grasp, and choices
+                        that fit like a chef's kiss. No more return-refund rigmarole. We ace it from the get-go.</p>
+
+                        <p class="mb-4">A targeted variety of products to suit your needs.</p>
+                        <ul class="list-style-1">
+                            <li>Want eco-friendly products? We have them.</li>
+                            <li>Want something to showcase your product? We have them.</li>
+                            <li>Need something inexpensive to fill a need? We have that as well.</li>
+                        </ul>
+                        <a href="/shop" class="btn btn-black mt-4">Explore products</a>
+                    </div>
+                    <div class="col-lg-5 text-center">
+                        <img class="image-2 img-fluid" src="/theme_pricepaper/static/src/img/image-2.webp" alt=""/>
+                    </div>
+                </div>
+                <div class="sector-1"></div>
+                <div class="curvy-line"></div>
+                <div class="y-dots"></div>
+            </div>
+        </section>
+
+    </template>
+
+</odoo>

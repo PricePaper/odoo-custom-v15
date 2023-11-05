@@ -1,0 +1,58 @@
+.your-product{
+    .ppt-container{
+        position: unset !important;
+    }
+	position: relative;
+	z-index: 2;
+	.image-2{
+		// margin: -80px 0 0;
+		z-index: 2;
+		position: relative;
+	}
+	.sector-1{
+		width: 125px;
+		height: 125px;
+		background-color: $primary;
+		border-radius: 0 0 100% 0;
+		position: absolute;
+		top: -60px;
+		left: 37%;
+		width: 10vw;
+		height: 10vw;
+		max-width: 148px;
+		max-height: 148px;
+	}
+	.curvy-line {
+		background: url(../../img/curvy-line2.svg);
+		background-size: contain;
+		position: absolute;
+		top: -83px;
+		left: 36%;
+		width: 34vw;
+		height: 503px;
+		transform: rotate(4deg);
+		z-index: -1;
+		background-repeat: no-repeat;
+	}
+	.y-dots{
+		background: url("../../img/yellow-dots.svg");
+		position: absolute;
+		bottom: 140px;
+		right: 30%;
+		max-width: 442px;
+		max-height: 337px;
+		z-index: 1;
+		width: 18vw;
+		height: 18vw;
+		background-size: contain;
+		background-repeat: no-repeat;
+		@media (max-width:1200px) {
+			top: 40%;
+    		right: 20%;
+		}
+		@media  (max-width:992px) {
+			display: none;			
+		}
+	}
+	
+}

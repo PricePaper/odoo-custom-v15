@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--===============All Snippet List================== -->
+    <template id="theme_pricepaper_snippets" inherit_id="website.snippets">
+        <xpath expr="//div[@id='snippet_structure']/div[hasclass('o_panel_header')]" position="before">
+            <!--=== Dynamic Snippets ==== -->
+            <div class="o_panel_header">
+                <i class="fa fa-file"/>
+                Pricepaper Snippets
+            </div>
+            <div class="o_panel_body">
+                <!-- Product Carousel -->
+                <t t-snippet="theme_pricepaper.banner_home">
+                    <keywords>Top Snippet</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.banner_home_video">
+                    <keywords>Video Banner</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.good_fit">
+                    <keywords>Good Fit</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.your_product">
+                    <keywords>Your Product</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.price_paper">
+                    <keywords>Paper People</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.manufactures">
+                    <keywords>Manufactures</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.contact_us">
+                    <keywords>Contact Us</keywords>
+                </t>
+            </div>
+        </xpath>
+    </template>
+</odoo>

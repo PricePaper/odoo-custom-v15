@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="banner_home_video" name="Video Banner">
+        <section class='sq-wrapper'>
+            <div class="success-quality">
+                <div class="container ppt-container">
+                    <div class="row">
+                        <div class="col-lg-7 col-md-9">
+                            <h2 class="display-2 fw-sb pt-5 text-white" style="max-width: 717px; position: relative; z-index : 1;">Wrap up your
+                            success with <span class="text-primary">premium</span>
+                            quality</h2>
+                        </div>
+
+                    </div>
+                </div>
+                <video autoplay='autoplay' muted="muted" loop="loop" playsinline="playsinline" id="myVideo" type='video/mp4'>
+                    <source src="/theme_pricepaper/static/video/Price-Paper-Service-Demo.mp4" type="video/mp4"/>
+                </video>
+                <div class="y-dots"></div>
+
+            </div>
+            <div class="b-dots"></div>
+        </section>
+    </template>
+
+</odoo>

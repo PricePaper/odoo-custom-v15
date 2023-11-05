@@ -1,0 +1,165 @@
+.good-fit {
+    position: relative;
+    overflow: hidden;
+    background: #F1F9FF;
+    border-radius: 0px 0px 0 83px;
+    .ppt-container{
+        position: unset !important;
+    }
+
+    .image-1 {
+        position: relative;
+        z-index: 1;
+        margin-top: 68px;
+    }
+
+    .we-serve {
+        align-items: end;
+        justify-content: space-between;
+        text-align: center;
+        flex-wrap: wrap;
+        padding: 0 50px;
+
+        img {
+            margin-bottom: 15px;
+            max-height: 65px;
+        }
+    }
+
+    .sector-1 {
+        // background: url(../images/sector-yellow.svg);
+        position: absolute;
+        top: 0px;
+        right: 0;
+        max-width: 148px;
+        max-height: 148px;
+        width: 16vw;
+        height: 16vw;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-color: $secondary;
+        border-radius: 0 0 0 145px;
+    }
+
+    .sector-2 {
+        // background: url('../images/sector-yellow.svg');
+        position: absolute;
+        top: 20%;
+        left: 11%;
+        max-width: 148px;
+        max-height: 148px;
+        width: 16vw;
+        height: 16vw;
+        background-size: contain;
+        z-index: 0;
+        background-repeat: no-repeat;
+        background-color: #CC7722;
+        border-radius: 0 0 0 145px;
+    }
+
+    .b-dots {
+        background: url('../../img/black-dots.svg');
+        position: absolute;
+        top: -15%;
+        left: -7%;
+        width: 385px;
+        height: 337px;
+        z-index: 0;
+
+        &.b-dots-2 {
+            top: 63%;
+            left: 95%;
+            transform: rotate(180deg);
+            opacity: .4;
+        }
+    }
+
+    .curvy-line {
+        background: url("../../img/curvy-line1.svg");
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 652px;
+        height: 200px;
+        z-index: 0;
+        transform: rotate(-39deg) translate(-180px, 0px);
+    }
+
+    .carousel-control-next,
+    .carousel-control-prev {
+        border: unset !important;
+        background: #000;
+        height: 50px;
+        width: 50px;
+        opacity: 1;
+        border-radius: 0 20px 0 20px;
+        margin-top: 25px;
+
+        .carousel-control-next-icon,
+        .carousel-control-prev-icon {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            background-repeat: no-repeat;
+            background-position: 50%;
+            background-size: 100% 100%;
+        }
+    }
+
+
+    #carouselServices {
+        .card {
+            background: #f1f9ff;
+            border: none;
+        }
+
+        @media (max-width: 767px) {
+            .carousel-inner .carousel-item>div {
+                display: none;
+            }
+
+            .carousel-inner .carousel-item>div:first-child {
+                display: block;
+            }
+
+            .carousel-inner .carousel-item>div:first-child+div {
+                display: block;
+            }
+
+            .carousel-inner .carousel-item-end.active,
+            .carousel-inner .carousel-item-next {
+                transform: translateX(50%);
+            }
+
+            .carousel-inner .carousel-item-start.active,
+            .carousel-inner .carousel-item-prev {
+                transform: translateX(-50%);
+            }
+        }
+
+        .carousel-inner .carousel-item.active,
+        .carousel-inner .carousel-item-next,
+        .carousel-inner .carousel-item-prev {
+            display: flex;
+        }
+
+        /* medium and up screens */
+        @media (min-width: 768px) {
+
+            .carousel-inner .carousel-item-end.active,
+            .carousel-inner .carousel-item-next {
+                transform: translateX(25%);
+            }
+
+            .carousel-inner .carousel-item-start.active,
+            .carousel-inner .carousel-item-prev {
+                transform: translateX(-25%);
+            }
+        }
+
+        .carousel-inner .carousel-item-end,
+        .carousel-inner .carousel-item-start {
+            transform: translateX(0);
+        }
+    }
+}

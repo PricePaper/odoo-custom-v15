@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="good_fit" name="Good Fit">
+        <section class="good-fit pt-4 pt-md-5">
+            <div class="container ppt-container">
+                <div class="row pt-4 pt-md-5">
+                    <div class="col text-center align-self-end">
+                        <img class="image-1 img-fluid" src="/theme_pricepaper/static/src/img/girl.webp" alt=""/>
+                    </div>
+                    <div class="col-lg-7 mb-4">
+                        <h3 class="display-6 fw-sb my-4" style="max-width:740px;">Doing business “Your way”</h3>
+                        <p class="mb-5" style="max-width:993px;">Tired of the endless routines of ordering products for your
+                        business? Yeah, we get it. The last thing anyone dreams of is spending quality life moments on a
+                        shopping spree for plates. Wouldn't you rather be plotting world domination, perfecting your
+                        shuffleboard skills, or even pondering the cosmic mysteries of your cat's fascination with laser
+                        pointers? We thought so. Enter Price Paper, the valiant saviors of your time and sanity. With us
+                        at the helm, you'll have more hours to expand your empire, coach mini Messi-wannabes in soccer,
+                        and nail that captain's pose on your imaginary yacht. Let's face it, life's too short for paper
+                        product shenanigans, and that's exactly where Price Paper marches in with a cape (figuratively
+                        speaking).</p>
+
+                        <h6 class="fs-28 mb-md-5 mb-3">We serve</h6>
+
+                        <div id="carouselServices" class="carousel slide " data-bs-ride="carousel">
+                            <div class="carousel-inner we-serve">
+                                <div class="carousel-item active">
+                                    <div class="col-md-3 col-6">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/cafeterias.svg" alt=""/>
+                                                <p>Restaurants</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="col-md-3 col-6">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/fire-houses.svg" alt=""/>
+                                                <p>Firehouses</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="col-md-3 col-6">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/hospital.svg" alt=""/>
+                                                <p>Hospitals</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="col-md-3 col-6">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/schools.svg" alt=""/>
+                                                <p>Schools</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="col-md-3 col-6">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/pizzeria.svg" alt=""/>
+                                                <p>Pizzerias</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselServices" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselServices" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="sector-1"></div>
+                <!-- <div class="sector-2"></div> -->
+
+                <div class="curvy-line"></div>
+                <div class="b-dots b-dots-2"></div>
+            </div>
+        </section>
+
+    </template>
+
+</odoo>

@@ -1,0 +1,124 @@
+.footer {
+    background-color: #000;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+
+    h5 {
+        font-size: 33px;
+    }
+
+    a.nav-link {
+        color: #fff;
+        opacity: .83;
+
+        &:hover {
+            color: $primary;
+        }
+    }
+
+    .nav {
+        li {
+            color: rgba($color: #ffffff, $alpha: .50);
+            margin-bottom: 26px;
+            font-size: 20px;
+            font-weight: 300;
+            position: relative;
+            padding-left: 40px;
+
+            &::after {
+                content: "";
+                background-color: $primary;
+                width: 20px;
+                height: 20px;
+                position: absolute;
+                left: 0px;
+                top: 2px;
+                border-radius: 0px 100px 0px 0px;
+            }
+
+        }
+    }
+
+    .s-sprite {
+        background: url("../img/social-icons.svg");
+        height: 50px;
+        width: 50px;
+        display: inline-block;
+
+        &.s-icon-1 {
+            background-position: 0 0;
+            width: 30px;
+        }
+
+        &.s-icon-2 {
+            background-position: -50px 0;
+        }
+
+        &.s-icon-3 {
+            background-position: -122px 0;
+            width: 65px;
+        }
+
+        &.s-icon-4 {
+            background-position: -200px 0;
+        }
+
+        &.s-icon-5 {
+            background-position: -270px 0;
+        }
+
+        &.s-icon-6 {
+            background-position: -360px 0;
+        }
+
+        &.s-icon-7 {
+            background-position: -426px 0;
+        }
+    }
+
+    .curvy-line {
+        background: url(../img/curvy-line-white.svg);
+        background-repeat: no-repeat;
+        content: "";
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 275px;
+        height: 220px;
+        z-index: 0;
+    }
+
+    .sector-1 {
+        position: absolute;
+        bottom: 105px;
+        right: 0%;
+        width: 77px;
+        height: 77px;
+        border-radius: 100% 0 0 0;
+        background: #947565;
+    }
+
+    .y-dots {
+        // background: url(../img/yellow-dots.svg);
+        background: url("../img/yellow-dots.svg");
+        position: absolute;
+        top: -14vw;
+        right: 30%;
+        max-width: 442px;
+        max-height: 337px;
+        z-index: 1;
+        width: 18vw;
+        height: 18vw;
+        background-size: contain;
+        background-repeat: no-repeat;
+        transform: rotate(180deg);
+    }
+
+    .copyright {
+        color: rgba(255, 255, 255, 0.46);
+    }
+}
+.o_footer_copyright{
+    display: none !important;
+}

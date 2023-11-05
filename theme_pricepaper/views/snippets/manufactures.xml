@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="manufactures" name="Manufactures">
+        <section class="manufactures">
+            <div class="container ppt-container">
+                <div class="row">
+                    <div class="col-lg-5">
+                        <img class="image-2 mt-5 img-fluid" src="/theme_pricepaper/static/src/img/manufactures.webp" alt=""/>
+                    </div>
+                    <div class="col-lg-7 text-white">
+                        <h3 class="display-6  fw-sb mb-4 mb-md-5 mt-md-4" style="max-width:740px;">We save you time at no
+                        extra cost</h3>
+                        <ul class="list-style-1">
+                            <li>
+                                <b class="fw-sb"> Choose your convenience.</b> Online, text, call, email, or we’ll even drop
+                            by. Our team can visit to check inventory and create orders for you also.</li>
+                            <li>
+                                <b class="fw-sb">Ease in paying.</b> Choose check, credit, debit, Zelle, Chase Bill Pay, or
+                            ACH. We can even auto-debit your bills from your bank when they're due, cutting your clock.
+                            </li>
+                            <li>
+                                <b class="fw-sb">Swift online orders.</b> Arrange purchases as you track inventory – no more
+                            digging through endless product lists. We'll even drop by to set it all up at your place.
+                            </li>
+                            <li>
+                                <b class="fw-sb">Meet reliability.</b> Our Price Paper team sticks around. Your delivery pro
+                            becomes a familiar face, showing up almost every time you order (they do sneak in some
+                            vacations). They'll even master your preferences – upstairs for foil rolls, basement for
+                            takeout containers. Your process becomes their mission.</li>
+                        </ul>
+                    </div>
+
+                </div>
+                <div class="curvy-line"></div>
+
+            </div>
+        </section>
+    </template>
+
+</odoo>

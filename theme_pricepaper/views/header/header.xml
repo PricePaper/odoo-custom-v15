@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="template_header_default_pricepaper" inherit_id="website.layout" name="Template Header Default" active="False">
+        <xpath expr="//header//nav" position="replace">
+
+            <t t-call="website.navbar">
+                <t t-set="_navbar_classes" t-valuef="shadow-sm"/>
+                <div id="top_menu_container" class="container justify-content-between">
+                    <!-- Brand -->
+                    <t t-call="website.placeholder_header_brand">
+                        <t t-set="_link_class" t-valuef="me-4"/>
+                    </t>
+                    <!-- Navbar Collapse -->
+                    <div id="top_menu_collapse" class="collapse navbar-collapse order-last order-lg-0">
+                        <t t-call="website.navbar_nav">
+                            <t t-set="_nav_class" t-valuef="flex-grow-1"/>
+                            <!-- Menu -->
+                            <t t-foreach="website.menu_id.child_id" t-as="submenu">
+                                <t t-call="website.submenu">
+                                    <t t-set="item_class" t-valuef="nav-item"/>
+                                    <t t-set="link_class" t-valuef="nav-link"/>
+                                </t>
+                            </t>
+                            <!-- Sign In -->
+                            <t t-call="portal.placeholder_user_sign_in">
+                                <t t-set="_item_class" t-valuef="nav-item ms-lg-auto"/>
+                                <t t-set="_link_class" t-valuef="nav-link fw-bold"/>
+                            </t>
+                            <!-- User Dropdown -->
+                            <t t-call="portal.user_dropdown">
+                                <t t-set="_user_name" t-value="true"/>
+                                <t t-set="_item_class" t-valuef="nav-item dropdown ms-lg-auto"/>
+                                <t t-set="_link_class" t-valuef="nav-link fw-bold"/>
+                            </t>
+                        </t>
+
+                        <!-- Language Selector -->
+                        <t t-call="website.placeholder_header_language_selector">
+                            <t t-set="_div_classes" t-valuef="my-auto ms-lg-2"/>
+                        </t>
+                    </div>
+                    <!-- Call To Action -->
+                    <!--<t t-call="website.placeholder_header_call_to_action">-->
+                    <!--    <t t-set="_div_classes" t-valuef="ms-lg-4"/>-->
+                    <!--</t>-->
+                    <div class='search_bar_contact d-flex align-items-center'>
+                        <a class="nav-link btn btn-white btn-search" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="/theme_pricepaper/static/img/search-icon.svg" alt=""/>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end  search-wrapper" aria-labelledby="navbarDropdown">
+                            <li>
+                                <div class="search-input-container">
+                                    <div class="inner-form">
+                                        <div class="input-field first-wrap">
+                                            <div class="svg-wrapper">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z">
+                                                    </path>
+                                                </svg>
+                                            </div>
+                                            <input id="search" type="text" placeholder="What are you looking for?"/>
+                                        </div>
+                                        <div class="input-field second-wrap">
+                                            <button class="search-btn" type="button">SEARCH</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                        <a class="nav-link btn btn-black contact" href="/contactus">Contact</a>
+
+                    </div>
+                    <!-- Navbar Toggler -->
+                    <t t-call="website.navbar_toggler">
+                        <t t-set="_toggler_class" t-valuef="ms-auto"/>
+                    </t>
+                </div>
+            </t>
+        </xpath>
+
+    </template>
+
+</odoo>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="banner_home" name="banner">
+        <section class='home-main-banner'>
+            <div class='wrapper'>
+
+                <section class="home-banner" style='background: url("/theme_pricepaper/static/src/img/home-banner.webp");'>
+                    <div class="container h-100">
+                        <div class="row h-100">
+                            <div class="col"></div>
+                            <div class="col-xl-7 col-lg-8">
+                                <h1 class="fw-b display-1 text-white">Do you have the big yellow truck?</h1>
+                                <a class="btn btn-black mt-3 mt-sm-5">Let's discuss</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </section>
+
+    </template>
+
+</odoo>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="contact_us" name="Contact Us">
+
+        <section class="home-contact-us">
+            <div class="container ppt-container">
+                <div class="row">
+
+                    <div class="col-lg-6 pe-xl-5">
+                        <h3 class="display-6  fw-sb mb-4" style="max-width:740px;">Contact us</h3>
+                        <p class="mb-5">Hunting for service that's crazier than a squirrel in a coffee shop and a truck as
+                            bold as a banana? Drop your deets in this snappy form and let's roll toward first-rate paper
+                            goodies!
+                        </p>
+
+                        <div class="address">
+                            <p class="mb-0">Price paper company 
+                                <br/>
+                                379 North main St.
+                                <br/>
+                                Freeport, New York 11520
+                            </p>
+                        </div>
+
+                        <div class="numbers">
+                            <p class="mb-0 text-white">1-844-YELLOW-T <br/>
+                            516-378-7842 <br/>
+                            631-405-5025 <br/>
+                            Fax: 516-378-7995</p>
+                </div>
+
+            </div>
+            <div class="col-lg-6">
+                <div class="home-contact-form">
+                    <form class="row g-3">
+                        <div class="col-md-6">
+                            <label for="" class="form-label">Name</label>
+                            <input type="text" class="form-control" id=""/>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="" class="form-label">Company name</label>
+                            <input type="text" class="form-control" id=""/>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inputEmail4" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="inputEmail4"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inputPassword4" class="form-label">Phone number</label>
+                            <input type="text" class="form-control" id="inputPassword4"/>
+                        </div>
+                        <div class="col-12">
+                            <label for="inputAddress" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="inputAddress" placeholder=""/>
+                        </div>
+                        <div class="col-12">
+                            <label for="exampleFormControlTextarea1" class="form-label">What type of business do you
+                                    operate?</label>
+                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+
+
+                        </div>
+                        <div class="col-12 text-end">
+                            <button type="submit" class="btn btn-black mr-auto">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+        <div class="sector-1"></div>
+        <div class="sector-2"></div>
+    </div>
+
+    <div class="contact-footer"></div>
+    <div class="b-dots"></div>
+</section>
+</template>
+
+</odoo>

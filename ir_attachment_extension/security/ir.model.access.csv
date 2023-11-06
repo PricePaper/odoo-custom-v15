@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+ir_attachment_extension.access_ir_attachment_tags,ir_attachment_extension,ir_attachment_extension.model_ir_attachment_tags,base.group_user,1,1,1,1

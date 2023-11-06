@@ -12,5 +12,15 @@
                 </xpath>
             </field>
         </record>
+        <record id="customer_statement_report_res_partner_form_inherit" model="ir.ui.view">
+            <field name="name">customer_statement_report.view_res_partner_form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="mail.res_partner_view_form_inherit_mail"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='email']" position="attributes">
+                    <attribute name="attrs">{'required': ['|', ('user_ids','!=', []), ('parent_id', '=', False), ('statement_method','=', 'email')]}</attribute>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_warehouse_orderpoint_tree_editable_config_inherit_uom_extension">
+            <field name="name">view.stock.warehouse.orderpoint.tree.inherit.uom.extension</field>
+            <field name="model">stock.warehouse.orderpoint</field>
+            <field name="inherit_id" ref="stock.view_warehouse_orderpoint_tree_editable_config"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='qty_multiple']" position="before">
+                    <field name="product_min_qty_mod"/>
+                    <field name="product_max_qty_mod"/>
+                </xpath>
+                <xpath expr="//field[@name='qty_multiple']" position="after">
+                    <field name="product_ppt_uom_name" string="UoM"/>
+                </xpath>
+                <xpath expr="//field[@name='product_min_qty']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='product_max_qty']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='product_uom_name']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

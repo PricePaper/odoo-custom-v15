@@ -29,14 +29,16 @@ class ReturnPicking(models.TransientModel):
             if move.state in ('partially_available', 'assigned'):
                 quantity -= sum(move.move_line_ids.mapped('product_qty'))
             elif move.state in ('done'):
-                quantity -= move.product_qty
+                quantity -= move.product_uom._compute_quantity(move.product_qty,
+                                                                      stock_move.product_uom,
+                                                                      rounding_method='HALF-UP')
         quantity = float_round(quantity, precision_rounding=stock_move.product_id.uom_id.rounding)
 
         return {
             'product_id': stock_move.product_id.id,
             'quantity': quantity,
             'move_id': stock_move.id,
-            'uom_id': stock_move.product_id.uom_id.id,
+            'uom_id': stock_move.product_uom.id,
             'unit_price':price_unit
         }
 
@@ -46,7 +48,7 @@ class ReturnPicking(models.TransientModel):
         vals = {
             'product_id': return_line.product_id.id,
             'product_uom_qty': return_line.quantity,
-            'product_uom': return_line.product_id.uom_id.id,
+            'product_uom': return_line.move_id.product_uom.id,
             'price_unit':return_line.unit_price,
             'picking_id': new_picking.id,
             'state': 'draft',
@@ -59,6 +61,3 @@ class ReturnPicking(models.TransientModel):
             'procure_method': 'make_to_stock',
         }
         return vals
-
-
-

@@ -41,7 +41,7 @@ class UpdateUnitPrice(models.TransientModel):
                 move.write({'price_unit': price_unit})
                 for svl in move.stock_valuation_layer_ids:
                     svl_price_unit = self.purchase_line_id.product_uom._compute_price(self.new_price_unit, svl.uom_id)
-                    svl.write({'unit_cost': svl_price_unit})
+                    svl.write({'unit_cost': svl_price_unit, 'value': svl_price_unit * svl.quantity})
                     if svl.account_move_id:
                         svl.account_move_id.button_draft()
                         # Update debit and credit values in account move lines

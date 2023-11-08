@@ -1,10 +1,33 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from collections import defaultdict
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
+
+    @api.model
+    def _purchase_order_picking_confirm_message_content(self, picking, purchase_dict):
+        if not purchase_dict:
+            purchase_dict = {}
+        title = _("Receipt confirmation %s") % (picking.name)
+        message = "<h3>%s</h3>" % title
+        message += _(
+            "The following items have now been received in Incoming Shipment %s:"
+        ) % (picking.name)
+        message += "<ul>"
+        for purchase_line_id in purchase_dict.values():
+            display_name = purchase_line_id["purchase_line"].product_id.display_name
+            product_qty = purchase_line_id["stock_move"].product_uom_qty
+            uom = purchase_line_id["stock_move"].product_uom.name
+            message += _(
+                "<li><b>%(display_name)s</b>: Received quantity %(product_qty)s %(uom)s</li>",
+                display_name=display_name,
+                product_qty=product_qty,
+                uom=uom,
+            )
+        message += "</ul>"
+        return message
 
     @api.depends('move_lines.reserved_availability')
     def _compute_available_qty(self):

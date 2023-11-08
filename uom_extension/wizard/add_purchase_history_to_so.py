@@ -26,24 +26,24 @@ class SaleHistoryLinesWizard(models.TransientModel):
                 warehouse=order_id.warehouse_id.id,
                 lang=order_id.partner_id.lang or self.env.user.lang or 'en_US'
             )
-            product_qty = self.product_uom._compute_quantity(self.qty_to_be, product.uom_id)
+            product_qty = self.product_uom._compute_quantity(self.qty_to_be, product.ppt_uom_id)
             if float_compare(product.quantity_available - product.outgoing_quantity, product_qty, precision_digits=precision) == -1:
                 is_mto = self.order_line.is_mto
                 if not self.order_line.is_mto:
                     message += _(
                         'You plan to sell %s %s of %s but you only have %s %s available in %s warehouse.\n\n') % \
                                (self.qty_to_be, self.product_uom.name, self.product_name,
-                                product.quantity_available - product.outgoing_quantity, product.uom_id.name, order_id.warehouse_id.name)
+                                product.quantity_available - product.outgoing_quantity, product.ppt_uom_id.name, order_id.warehouse_id.name)
                     # We check if some products are available in other warehouses.
                     if float_compare(product.quantity_available - product.outgoing_quantity,
                         self.order_line.product_id.quantity_available - self.order_line.product_id.outgoing_quantity, precision_digits=precision) == -1:
                         message += _('There are %s %s available across all warehouses.\n\n') % \
-                                   (self.order_line.product_id.quantity_available - self.order_line.product_id.outgoing_quantity, product.uom_id.name)
+                                   (self.order_line.product_id.quantity_available - self.order_line.product_id.outgoing_quantity, product.ppt_uom_id.name)
                         for warehouse in self.env['stock.warehouse'].search([]):
                             quantity = self.order_line.product_id.with_context(warehouse=warehouse.id).quantity_available - self.order_line.product_id.with_context(warehouse=warehouse.id).outgoing_quantity
                             if quantity > 0:
                                 message += _(
-                                    "%s: %s %s\n" % (warehouse.name, quantity, self.order_line.product_id.uom_id.name))
+                                    "%s: %s %s\n" % (warehouse.name, quantity, self.order_line.product_id.ppt_uom_id.name))
 
             if message:
 

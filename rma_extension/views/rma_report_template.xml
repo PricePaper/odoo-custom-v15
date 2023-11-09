@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="scs_rma.report_mer_auth" model="ir.actions.report">
+          <field name="print_report_name">object.name</field>
+    </record>
+</odoo>

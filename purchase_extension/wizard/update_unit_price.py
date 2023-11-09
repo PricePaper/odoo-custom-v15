@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
 
@@ -68,7 +68,19 @@ class UpdateUnitPrice(models.TransientModel):
             vals.append(term_line)
             invoice_line.move_id.write({'line_ids': vals})
         # Update price unit for purchase line
+
         self.purchase_line_id.write({'price_unit': self.new_price_unit})
+        # post message
+        msg = "<b>" + _("Unit price has been updated.") + "</b><ul>"
+
+        msg += "<li> %s: <br/>" % self.purchase_line_id.product_id.display_name
+        msg += _(
+            "Unit Price: %(old_price)s -> %(new_price)s",
+            old_price=self.po_price_unit,
+            new_price=self.new_price_unit
+        ) + "<br/>"
+        msg += "</ul>"
+        self.purchase_line_id.order_id.message_post(body=msg)
 
 
 UpdateUnitPrice()

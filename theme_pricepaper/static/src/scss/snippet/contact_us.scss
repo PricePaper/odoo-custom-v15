@@ -3,7 +3,7 @@
 
     padding-top: 120px;
     background: #F1F9FF;
-    position: relative;
+    // position: relative;
     border-radius: 0 0 0 83px;
 
     &::before {
@@ -119,19 +119,26 @@
     .b-dots {
         background: url("../../img/black-dots.svg");
         position: absolute;
-        top: 6%;
-        right: 0%;
+        top: 8%;
+        right: 4%;
         width: 385px;
         height: 337px;
         z-index: 0;
         transform: rotate(-90deg);
     }
 }
-.home-contact-form{
-	background: #fff;
+
+.home-contact-form {
+    background: #fff;
     padding: 60px 50px;
-	border-radius: 0 62px 0 62px;
-	position: relative !important;
+    border-radius: 0 62px 0 62px;
+    position: relative !important;
+
+    .row>* {
+       
+        margin-top: 1rem;
+
+    }
 }
 
 label.form-label {

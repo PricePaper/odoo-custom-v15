@@ -317,7 +317,7 @@ p {
 
     .home-contact-us {
         .home-contact-form {
-            padding: 50px 40px;
+            padding: 50px 40px !important;
 
             label.form-label {
                 font-size: 16px;
@@ -331,14 +331,14 @@ p {
         }
 
         .address {
-            width: 375px;
-            height: 200px;
+            width: 375px !important;
+            height: 200px !important;
         }
 
         .numbers {
-            padding: 36px;
-            margin-left: auto;
-            transform: none;
+            padding: 36px !important;
+            margin-left: auto !important;
+            transform: none !important;
         }
     }
 
@@ -592,3 +592,10 @@ p {
     }
 }
 
+.pe-xl-5 {
+    padding-right: 3rem !important;
+}
+.py-md-5 {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+  }

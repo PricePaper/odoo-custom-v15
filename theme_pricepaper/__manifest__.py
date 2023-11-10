@@ -28,16 +28,18 @@
     ],
     'assets': {
         'web.assets_frontend': [
-            'theme_pricepaper/static/src/js/main.js',
+            'theme_pricepaper/static/src/lib/owl_carosuell/*',
             'theme_pricepaper/static/src/scss/header.scss',
             'theme_pricepaper/static/src/scss/footer.scss',
             'theme_pricepaper/static/src/scss/common.scss',
             'theme_pricepaper/static/src/scss/banner.scss',
             'theme_pricepaper/static/src/scss/snippet/*',
+            'theme_pricepaper/static/src/js/main.js',
         ],
     },
     'auto_install': False,
     'application': False,
+   
    
 }
 

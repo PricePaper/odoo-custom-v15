@@ -22,10 +22,11 @@
 
                         <h6 class="fs-28 mb-md-5 mb-3">We serve</h6>
 
-                        <div id="carouselServices" class="carousel slide " data-bs-ride="carousel">
-                            <div class="carousel-inner we-serve">
-                                <div class="carousel-item active">
-                                    <div class="col-md-3 col-6">
+                        <div id="carouselServices">
+                            <div class="owl-carousel owl-theme we-serve">
+
+                                <div class="item active">
+                                    <div class="">
                                         <div class="card">
                                             <div class="card-img">
                                                 <img src="/theme_pricepaper/static/src/img/cafeterias.svg" alt=""/>
@@ -34,8 +35,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="carousel-item">
-                                    <div class="col-md-3 col-6">
+                                <div class="item">
+                                    <div class="">
                                         <div class="card">
                                             <div class="card-img">
                                                 <img src="/theme_pricepaper/static/src/img/fire-houses.svg" alt=""/>
@@ -44,8 +45,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="carousel-item">
-                                    <div class="col-md-3 col-6">
+                                <div class="item">
+                                    <div class="">
                                         <div class="card">
                                             <div class="card-img">
                                                 <img src="/theme_pricepaper/static/src/img/hospital.svg" alt=""/>
@@ -54,8 +55,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="carousel-item">
-                                    <div class="col-md-3 col-6">
+                                <div class="item">
+                                    <div class="">
                                         <div class="card">
                                             <div class="card-img">
                                                 <img src="/theme_pricepaper/static/src/img/schools.svg" alt=""/>
@@ -64,8 +65,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="carousel-item">
-                                    <div class="col-md-3 col-6">
+                                <div class="item">
+                                    <div class="">
                                         <div class="card">
                                             <div class="card-img">
                                                 <img src="/theme_pricepaper/static/src/img/pizzeria.svg" alt=""/>

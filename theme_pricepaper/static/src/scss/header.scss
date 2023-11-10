@@ -1,7 +1,7 @@
 @if o-website-value('header-template')=='header_style_1_pricepaper' {
     header {
         background-color: #749551;
-        height: 80px;
+        height: fit-content;
 
         nav {
             background-color: #749551 !important;

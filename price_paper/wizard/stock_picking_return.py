@@ -29,10 +29,11 @@ class ReturnPicking(models.TransientModel):
             if move.state in ('partially_available', 'assigned'):
                 quantity -= sum(move.move_line_ids.mapped('product_qty'))
             elif move.state in ('done'):
-                quantity -= move.product_uom._compute_quantity(move.product_qty,
-                                                                      stock_move.product_uom,
-                                                                      rounding_method='HALF-UP')
-        quantity = float_round(quantity, precision_rounding=stock_move.product_id.uom_id.rounding)
+                quantity -= move.product_qty
+        quantity = float_round(stock_move.product_id.uom_id._compute_quantity(quantity,
+                                                              stock_move.product_uom,
+                                                              rounding_method='HALF-UP'),
+                                precision_rounding=stock_move.product_id.uom_id.rounding)
 
         return {
             'product_id': stock_move.product_id.id,

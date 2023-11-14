@@ -95,6 +95,9 @@
                     <button name="action_transit_adjustment" type="object" string="Adjust Transit"
                         attrs="{'invisible': [('state', 'not in', ('transit_confirmed'))]}" />
                 </xpath>
+                <xpath expr="//field[@name='carrier_id']" position="after">
+                    <field name="delivery_notes"/>
+                </xpath>
             </field>
         </record>
 

@@ -82,6 +82,9 @@ This module sets up the batch delivery process for price paper.
         ],
         'web.assets_qweb': [
         ],
+        'web.report_assets_common': [
+        'batch_delivery/static/src/scss/invoice_fonts.scss',
+    ],
     },
     'installable': True,
     'auto_install': False,

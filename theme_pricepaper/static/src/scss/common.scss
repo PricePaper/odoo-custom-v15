@@ -5,6 +5,7 @@ $color_3: #fff;
 $font-family_1: 'Poppins', sans-serif;
 
 //***Font weight and size Mixins
+//***Font weight and size Mixins
 $font-weight: (
     el:200,
     l: 300,
@@ -36,25 +37,12 @@ $val in $font-weight {
     }
 }
 
-@each $br in (2, 4, 6, 8, 10, 15, 25, 30, 35, 40, 45, 50, 60, 80, 100) {
-    .br-#{$br} {
-        border-radius: #{$br}px;
-    }
-}
-
-
-body {
-    font-family: $font-family_1;
-
-}
-
 p {
     font-size: 21px;
     line-height: 48px;
     margin-bottom: 15px;
     // font-weight: 300;
 }
-
 
 .btn {
     font-size: 27px;
@@ -70,10 +58,10 @@ p {
 
 .btn-outline-black {
     padding: 20px 54px;
-    border: 3px solid;
+    border: 2px solid;
     border-radius: 0 38px 0 38px;
-    background: $primary;
 
+    // background: $primary;
     &:hover {
         background: #060606;
         border-color: #060606;
@@ -89,7 +77,7 @@ p {
 
 .btn-outline-white {
     padding: 20px 54px;
-    border: 3px solid #fff;
+    border: 2px solid #fff;
     border-radius: 0 38px 0 38px;
     color: #fff;
 
@@ -120,6 +108,7 @@ p {
     background: #060606;
     border-color: #060606;
     color: #fff;
+    border-width: 2px;
 
     &:hover {
         background: $primary;
@@ -132,25 +121,18 @@ p {
     color: $primary !important;
 }
 
-.carousel-control-prev-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z'/%3e%3c/svg%3e");
+.bg-primary {
+    background-color: $primary !important;
 }
 
-.carousel-control-next-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+a[href^="tel"] {
+    color: inherit;
+    text-decoration: none;
 }
 
-.visually-hidden,
-.visually-hidden-focusable:not(:focus):not(:focus-within) {
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    padding: 0 !important;
-    margin: -1px !important;
-    overflow: hidden !important;
-    clip: rect(0, 0, 0, 0) !important;
-    white-space: nowrap !important;
-    border: 0 !important;
+a {
+    word-wrap: break-word;
+    cursor: pointer;
 }
 
 .list-style-1 {
@@ -180,6 +162,7 @@ p {
             &:after {
                 width: 16px;
                 height: 16px;
+                top: 6px;
             }
         }
     }
@@ -189,6 +172,34 @@ p {
     background-color: $primary;
     width: 100%;
 }
+
+.text-primary {
+    color: $primary !important;
+}
+
+.carousel-control-prev-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z'/%3e%3c/svg%3e");
+}
+
+.carousel-control-next-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+.visually-hidden,
+.visually-hidden-focusable:not(:focus):not(:focus-within) {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+
+
 
 .display-6 {
     font-size: calc(1.375rem + 1.5vw);
@@ -257,7 +268,7 @@ p {
         .home-banner {
             h1 {
                 // font-size: 4rem;
-                max-width: 770px;
+                max-width: 770px !important;
             }
         }
     }
@@ -377,8 +388,22 @@ p {
     }
 
     section.home-banner {
-        min-height: 768px;
-        background-position: left bottom;
+        min-height: 500px !important;
+        background-position: left bottom !important;
+        background-size: auto 572px !important;
+        background-repeat: no-repeat !important;
+
+        h1 {
+            margin-top: 30px !important;
+            line-height: 1.3 !important;
+            font-size: 50px !important;
+            max-width: 440px !important;
+        }
+
+        .col-lg-8 {
+            flex: 0 0 auto;
+            width: 58.33333333%;
+        }
     }
 
     .success-quality .display-2 {
@@ -389,11 +414,155 @@ p {
     .footer .curvy-line {
         display: none;
     }
+
+    .list-style-1 li {
+        margin-bottom: 10px;
+    }
+
+    .about-price-paper {
+        right: 0;
+        bottom: -68px;
+        max-width: 300px;
+        top: initial;
+    }
+
+    .meet-people .carousel-item img {
+        max-width: 280px !important;
+    }
+
+    .meet-people .sector-1 {
+        width: 10vw;
+        height: 10vw;
+    }
+
+    .meet-people .curvy-line {
+        display: none;
+    }
+
+    .meet-people .team-heading {
+        transform: translateY(25px);
+    }
+
+    .meet-people {
+        p {
+            font-size: 12px;
+            line-height: 30px;
+        }
+
+        .carousel-indicators {
+            bottom: 24px;
+            margin-left: 30%;
+        }
+    }
+
+    section.blog-banner {
+        .image-1 {
+            margin-bottom: -30px;
+        }
+
+        h1 {
+            font-size: 30px;
+        }
+
+        &:after {
+            height: 240px;
+            width: 60px;
+            right: 0;
+            top: 140px;
+        }
+    }
+
+    .food-council-2 .forum {
+        transform: translate(0%, 0%);
+        margin: 45px 0;
+    }
+
+    .product-spotlight .carousel-item .card {
+        width: 210px;
+        height: 330px;
+        border-radius: 25px;
+        padding: 25px;
+
+        img {
+            width: 100%;
+        }
+    }
+
+    .food-council-2 {
+        background-position: left center;
+    }
+
+    .login .login-right-column span.g-icon {
+        width: 30px;
+        height: 30px;
+    }
+
+    #team img.team-member+.dot-bg {
+        width: 140px;
+        height: 130px;
+        top: 60px;
+        right: 193px;
+        background-size: cover;
+    }
+
+    #team .team-member-caption {
+        width: 380px;
+        top: -33px;
+        left: -60px;
+
+        .left-border-primary {
+            h3 {
+                font-size: 14px;
+            }
+
+            p {
+                font-size: 12px;
+            }
+        }
+
+        &::after {
+            width: 80px;
+            height: 80px;
+            bottom: -40px;
+            right: -40px;
+        }
+    }
+
+    .meet-people {
+        padding: 0 0;
+    }
+
+    .team-header {
+        margin-bottom: -160px;
+
+        h3 {
+            margin: 0 !important;
+        }
+    }
+
+    #team .team-member-caption::before {
+        width: 140px;
+        height: 100px;
+        top: -74px;
+        left: -4px;
+    }
+
+    .meet-people .carousel-indicators {
+        bottom: 0px;
+        margin-left: 30%;
+    }
+
+    .meet-people .carousel-indicators [data-bs-target] {
+        width: 10px;
+        height: 10px;
+        margin-right: 7px;
+        margin-left: 7px;
+    }
 }
 
 @media (max-width: 992px) {
     section.home-banner {
-        min-height: 616px;
+        min-height: 575px;
         background-position: left bottom;
         background-size: 611px;
         background-repeat: no-repeat;
@@ -421,7 +590,8 @@ p {
             height: 300px;
         }
 
-        .curvy-line-yellow {
+        .curvy-line-yellow,
+        .curvy-line-yellow1 {
             display: none;
         }
     }
@@ -452,6 +622,10 @@ p {
         max-height: 600px;
     }
 
+    .price-paper-way .y-dots {
+        display: none;
+    }
+
     .manufactures .curvy-line {
         display: none;
     }
@@ -480,6 +654,68 @@ p {
         margin-top: 15px !important;
     }
 
+    section.about-banner {
+        background-position: 62% 0px;
+        background-size: 40vw;
+    }
+
+    .meet-people {
+        .curvy-line {
+            display: none;
+        }
+
+        .team-heading {
+            transform: translateY(0);
+        }
+    }
+
+    section.blog-banner .image-1 {
+        margin-bottom: 40px;
+    }
+
+    .food-council-2 {
+        background-position: left bottom;
+        padding-bottom: 12vw;
+    }
+
+    .paper-bag h6 {
+        font-size: 18px;
+    }
+
+    #team .team-member-caption::after {
+        width: 40px;
+        height: 40px;
+        bottom: -20px;
+        right: -30px;
+    }
+
+    #team .team-member-caption {
+        width: 300px;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 10px;
+    }
+
+    #team img.team-member+.dot-bg {
+        width: 140px;
+        height: 130px;
+        top: 60px;
+        left: 25%;
+        background-size: cover;
+    }
+
+    .team-header {
+        margin-bottom: 0px;
+    }
+
+    #team .team-member-caption::before {
+        display: none;
+    }
+
+    #team img.team-member {
+        margin-bottom: 0px;
+    }
 }
 
 @media (max-width: 767px) {
@@ -568,7 +804,66 @@ p {
     .manufactures .image-2 {
         max-width: 100%;
     }
+
+    section.blog-banner:after,
+    .paper-bag .sector-1 {
+        display: none;
+    }
+
+    .food-council-2 .forum {
+        padding: 30px;
+    }
+
+    .food-council-1 {
+        padding: 50px 0 0;
+    }
+
+    .food-council-1 p,
+    .food-council-1 h4 {
+        font-size: 16px;
+    }
+
+    .food-council-1 a {
+        font-size: 16px;
+    }
+
+    .product-spotlight {
+        padding: 50px 0;
+    }
 }
+
+@media (max-width: 576px) {
+    .cover-container section.home-banner {
+        min-height: 590px;
+
+        h1 {
+            font-size: calc(1.625rem + 4.5vw);
+            max-width: 356px !important;
+        }
+    }
+
+    .product-spotlight .carousel {
+        margin-left: -25px;
+        margin-right: -25px;
+    }
+
+    .product-spotlight {
+        .carousel-control-next {
+            right: 0;
+        }
+
+        .carousel-control-prev {
+            left: 0;
+        }
+    }
+
+    .login .login-left-column {
+        background-position: -30px 84px;
+    }
+}
+
+
+
 
 .ppt-container {
     @media (min-width: 576px) {
@@ -595,7 +890,55 @@ p {
 .pe-xl-5 {
     padding-right: 3rem !important;
 }
+
 .py-md-5 {
     padding-top: 3rem !important;
     padding-bottom: 3rem !important;
+}
+
+.cover-container.right-corner {
+    border-radius: 0 0 100px 0;
+	.paper-bag{ border-radius: 0 0 83px 0;}
+}
+
+.display-5 {
+    font-size: calc(1.425rem + 2.1vw);
+    // font-weight: 300;
+    line-height: 1.2;
   }
+  @media (min-width: 1200px) {
+    .display-5 {
+      font-size: 3rem !important;
+    }
+  }
+  #o_wblog_post_main{
+    // p.o_default_snippet_text{
+    //     display: none !important;
+    // }
+    padding: unset !important;
+    padding-bottom: unset !important;
+    padding-top: unset !important;
+    padding-left: unset !important;
+    padding-right: unset !important;
+    margin: unset !important;
+    margin-bottom: unset !important;
+    margin-top: unset !important;
+    margin-left: unset !important;
+    margin-right: unset !important;
+  }
+
+  .exempt-bags{
+	border-radius: 0 83px;
+	position: relative;
+	.curvy-line {
+	    background: url(../img/curvy-line-green.webp);
+		background-repeat: no-repeat;
+		position: absolute;
+		bottom: 0px;
+		right: 0;
+		width: 363px;
+		height: 290px;
+		z-index: 1;
+		@media (max-width: 992px){ display: none;}
+	}
+}

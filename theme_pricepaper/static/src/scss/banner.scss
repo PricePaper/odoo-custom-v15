@@ -3,7 +3,7 @@
 
     .home-banner {
         // background: url("/theme_pricepaper/static/src/img/home-banner.webp");
-        background-size: cover !important;
+        background-size: cover;
         // background-color: #749551;
         width: 100%;
         min-height: 830px;
@@ -22,12 +22,19 @@
             opacity: .8;
             background-size: contain;
             background-repeat: no-repeat;
+
+            @media (min-width:1700px) {
+                right: -25%;
+
+            }
         }
 
         h1 {
-            font-size: 5rem !important;
-            margin-top: 100px;
-            font-weight: 700;
+            margin-top: 30px;
+            line-height: 1.5;
+            &.display-1{
+                font-size: 5rem !important;
+            }
         }
 
         .btn-black {
@@ -39,4 +46,3 @@
         }
     }
 }
-

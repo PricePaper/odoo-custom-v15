@@ -31,6 +31,13 @@
                 <t t-snippet="theme_pricepaper.contact_us">
                     <keywords>Contact Us</keywords>
                 </t>
+                  <t t-snippet="theme_pricepaper.use_of_bag">
+                    <keywords>Contact Us</keywords>
+                </t>
+                 <t t-snippet="theme_pricepaper.black_bag">
+                    <keywords>Contact Us</keywords>
+                </t>
+                
             </div>
         </xpath>
     </template>

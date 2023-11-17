@@ -5,7 +5,7 @@
         <section class='home-main-banner'>
             <div class='wrapper'>
 
-                <section class="home-banner" style='background: url("/theme_pricepaper/static/src/img/home-banner.webp");'>
+                <section class="home-banner" style='background: url("/theme_pricepaper/static/src/img/home-banner.webp");background-size:cover'>
                     <div class="container h-100">
                         <div class="row h-100">
                             <div class="col"></div>

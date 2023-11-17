@@ -8,7 +8,7 @@
     'license': 'LGPL-3',
     'category': 'Theme/eCommerce',
     'depends': [
-        'website_sale'
+        'website_sale','website_blog'
     ],
     'data': [
         'views/header/header.xml',
@@ -21,7 +21,9 @@
         'views/snippets/price_paper.xml',
         'views/snippets/manufactures.xml',
         'views/snippets/contact_us.xml',
+        'views/snippets/use_of_bag.xml',
         'views/snippets.xml',
+        'views/blog.xml'
     ],
     'demo': [
         ''

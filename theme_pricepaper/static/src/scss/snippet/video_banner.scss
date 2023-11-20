@@ -33,7 +33,7 @@
         overflow: hidden;
         border-radius: 0 83px 0 83px;
         h2{
-            font-size: 5rem !important;
+            font-size: calc(1.625rem + 4.5vw) !important;
         }
         #myVideo {
             position: absolute;

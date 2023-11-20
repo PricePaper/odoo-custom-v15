@@ -17,7 +17,7 @@
                 <video autoplay='autoplay' muted="muted" loop="loop" playsinline="playsinline" id="myVideo" type='video/mp4'>
                     <source src="/theme_pricepaper/static/video/Price-Paper-Service-Demo.mp4" type="video/mp4"/>
                 </video>
-                <div class="y-dots"></div>
+                <!-- <div class="y-dots"></div> -->
 
             </div>
             <div class="b-dots"></div>

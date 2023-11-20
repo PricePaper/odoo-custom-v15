@@ -19,11 +19,17 @@
         justify-content: space-between;
         text-align: center;
         flex-wrap: wrap;
-        padding: 0 50px;
+        padding: 0 60px;
 
         img {
             margin-bottom: 15px;
             max-height: 65px;
+        }
+
+        p {
+            line-height: 1.2;
+            // font-weight: 500;
+            // padding: 0 15px;
         }
     }
 
@@ -40,6 +46,11 @@
         background-repeat: no-repeat;
         background-color: $secondary;
         border-radius: 0 0 0 145px;
+
+        @media (max-width:1200px) {
+            width: 120px;
+            height: 120px;
+        }
     }
 
     .sector-2 {
@@ -134,13 +145,14 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                &:focus{
+
+                &:focus {
                     outline: unset;
                 }
 
                 span {
-                   font-size: 2.5rem;
-                   color: white;
+                    font-size: 2.5rem;
+                    color: white;
                 }
             }
         }
@@ -154,4 +166,50 @@
         // }
 
     }
+}
+
+
+@media (max-width:1700px) {
+    .good-fit {
+        .curvy-line {
+            width: 461px;
+            height: 164px;
+            transform: rotate(-39deg) translate(-124px, 0px);
+            background-size: contain;
+            background-repeat: no-repeat;
+
+            .b-dots {
+                background: url("../images/black-dots.svg");
+                position: absolute;
+                top: -180px;
+                left: -184px;
+                width: 385px;
+                height: 337px;
+                z-index: 0;
+                background-size: cover;
+                background-repeat: no-repeat;
+            }
+        }
+    }
+}
+
+@media (max-width:767px) {
+    .good-fit .we-serve {
+        max-width: 360px;
+        margin: auto;
+    }
+
+    .good-fit .we-serve img {
+        max-height: 40px;
+    }
+
+    .good-fit .we-serve p {
+        font-size: 12px;
+        min-height: 60px;
+    }
+    .good-fit .sector-2 {
+        top: 9%;
+        left: 20%;
+    }
+
 }

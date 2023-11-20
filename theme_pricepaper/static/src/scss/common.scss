@@ -213,11 +213,49 @@ a {
     }
 }
 
-@media (max-width: 1700px) {
 
-    .logo {
-        width: 190px;
+
+.ppt-container {
+    max-width: 100%;
+    margin: 0 50px;
+    padding: 0 30px;
+    width: calc(100% - 100px);
+
+    // @media (min-width: 576px){
+    // 	max-width: 540px;
+    // 	padding: 0 40px;
+    // }
+    // @media (min-width: 768px){
+    // 	max-width: 720px;
+    // }
+    // @media (min-width: 992px){
+    // 	max-width: 960px;
+    // }
+    // @media (min-width: 1200px){
+    // 	max-width: 1200px;
+    // }
+    // @media (min-width: 1700px) {
+    // 	max-width: 1700px;
+    // }
+    @media (max-width: 1200px) {
+        margin: 0 15px;
+        width: calc(100% - 30px);
     }
+
+    @media (max-width: 992px) {
+        margin: 0;
+        width: calc(100% - 0px);
+    }
+}
+
+@media (min-width:1700px) {
+    .second-col {
+        margin-left: -100px;
+    }
+
+}
+
+@media (max-width: 1700px) {
 
     p {
         font-size: 16px;
@@ -231,127 +269,28 @@ a {
         border-width: 2px;
     }
 
-    nav.navbar {
-        padding-top: 30px;
-    }
 
-    .navbar-nav {
-        li.nav-item {
-            padding: 10px 4px;
-
-            a.nav-link {
-                font-size: 16px;
-
-                &.btn.btn-black {
-                    padding: 13px 29px;
-                    height: 50px;
-                }
-            }
-        }
-
-        .btn-search {
-            width: 50px;
-            height: 50px;
-            border-radius: 0 20px 0 20px;
-            padding: 12px 0;
-            margin: auto;
-
-            img {
-                width: 22px;
-            }
-        }
-
-    }
 
     .cover-container {
 
         .home-banner {
             h1 {
                 // font-size: 4rem;
-                max-width: 770px !important;
+                max-width: 770px;
+
             }
         }
     }
 
     .success-quality {
         min-height: 500px;
-
-        .display-1 {
-            font-size: 4rem;
-        }
     }
 
-    .good-fit {
-        .curvy-line {
-            width: 461px;
-            height: 164px;
-            transform: rotate(-39deg) translate(-124px, 0px);
-            background-size: contain;
-            background-repeat: no-repeat;
 
-            .b-dots {
-                background: url("../../img/black-dots.svg");
-                position: absolute;
-                top: -180px;
-                left: -184px;
-                width: 385px;
-                height: 337px;
-                z-index: 0;
-                background-size: cover;
-                background-repeat: no-repeat;
-            }
-        }
-    }
 
-    .your-product {
-        padding: 100px 0 !important;
 
-        .sector-1 {
-            left: 38% !important;
-            max-width: 120px !important;
-            max-height: 120px !important;
-        }
-    }
 
-    .price-paper {
-        padding: 100px 0;
 
-        ul li {
-            font-size: 16px;
-
-            &::after {
-                width: 16px;
-                height: 16px;
-            }
-        }
-    }
-
-    .home-contact-us {
-        .home-contact-form {
-            padding: 50px 40px !important;
-
-            label.form-label {
-                font-size: 16px;
-            }
-
-            input.form-control {
-                border-radius: 10px;
-                height: 60px;
-                margin-bottom: 14px;
-            }
-        }
-
-        .address {
-            width: 375px !important;
-            height: 200px !important;
-        }
-
-        .numbers {
-            padding: 36px !important;
-            margin-left: auto !important;
-            transform: none !important;
-        }
-    }
 
     label.form-label {
         font-size: 16px;
@@ -363,23 +302,111 @@ a {
         margin-bottom: 10px;
     }
 
-    .footer {
-        h5 {
-            font-size: 1.25rem;
-        }
 
-        .nav li {
-            font-size: 16px;
 
-            &:after {
-                width: 16px;
-                height: 16px;
-                left: 0px;
-                top: 2px;
-            }
-        }
-
+    .meet-people .carousel-item img {
+        max-width: 430px !important;
     }
+
+    .about-price-paper {
+        width: 396px;
+    }
+
+    section.blog-banner {
+        h1 {
+            font-size: 38px;
+            margin-left: 0;
+        }
+
+        .image-1 {
+            margin-bottom: -48px;
+        }
+
+        &:after {
+            height: 300px;
+            width: 76px;
+            right: 0;
+            top: 200px;
+        }
+    }
+
+    .food-council-2 {
+        background: url(../images/blog-img3.webp);
+        background-size: 33vw;
+        background-repeat: no-repeat;
+        background-position: left top;
+        position: relative;
+
+        .forum {
+            padding: 50px 70px;
+            border-radius: 40px;
+            transform: translate(5%, -20%);
+        }
+
+        .sector-1 {
+            bottom: 68px;
+            right: 0;
+            max-width: 100px;
+            max-height: 100px;
+            width: 10vw;
+            height: 10vw;
+            background-color: #635147;
+        }
+    }
+
+    .paper-bag h6 {
+        font-size: 22px;
+    }
+
+    .product-spotlight .carousel-item .card {
+        width: 260px;
+        height: 370px;
+    }
+
+    .product-spotlight .carousel-control-prev,
+    .product-spotlight .carousel-control-next {
+        margin-top: 156px;
+    }
+
+    .product-spotlight {
+        .carousel-control-next {
+            right: -25px;
+        }
+
+        .carousel-control-prev {
+            left: -25px;
+        }
+    }
+
+    #team img.team-member+.dot-bg {
+        width: 300px;
+        height: 300px;
+        top: -10px;
+        right: 150px;
+    }
+
+    #team .team-member-caption {
+        padding: 20px 30px;
+        width: 500px;
+        top: -50px;
+        left: -60px;
+
+        .left-border-primary {
+            padding: 10px 0px 10px 20px;
+        }
+
+        &::before {
+            width: 225px;
+            height: 150px;
+            top: -100px;
+            left: -30px;
+        }
+    }
+
+
+
+
+
 }
 
 @media (max-width: 1200px) {
@@ -388,21 +415,16 @@ a {
     }
 
     section.home-banner {
-        min-height: 500px !important;
-        background-position: left bottom !important;
-        background-size: auto 572px !important;
-        background-repeat: no-repeat !important;
+        min-height: 500px;
+        background-position: left bottom;
+        background-size: auto 572px;
+        background-repeat: no-repeat;
 
         h1 {
-            margin-top: 30px !important;
-            line-height: 1.3 !important;
-            font-size: 50px !important;
+            margin-top: 30px;
+            line-height: 1.3;
+            font-size: 50px;
             max-width: 440px !important;
-        }
-
-        .col-lg-8 {
-            flex: 0 0 auto;
-            width: 58.33333333%;
         }
     }
 
@@ -420,10 +442,7 @@ a {
     }
 
     .about-price-paper {
-        right: 0;
-        bottom: -68px;
         max-width: 300px;
-        top: initial;
     }
 
     .meet-people .carousel-item img {
@@ -461,7 +480,7 @@ a {
         }
 
         h1 {
-            font-size: 30px;
+            font-size: 29px;
         }
 
         &:after {
@@ -517,6 +536,7 @@ a {
 
             p {
                 font-size: 12px;
+                line-height: normal;
             }
         }
 
@@ -557,6 +577,32 @@ a {
         height: 10px;
         margin-right: 7px;
         margin-left: 7px;
+    }
+
+    .logo {
+        width: 185px;
+    }
+
+    .home-contact-us.about-us .sector-2 {
+        top: -165px;
+        left: 477px;
+        width: 100px;
+        height: 100px;
+    }
+
+    .good-fit .we-serve img {
+        max-height: 50px;
+    }
+
+    .good-fit .we-serve p {
+        font-size: 13px;
+        min-height: 60px;
+    }
+
+
+
+    .price-paper {
+        padding: 80px 0;
     }
 }
 
@@ -630,25 +676,6 @@ a {
         display: none;
     }
 
-    .home-contact-form {
-        background: #fff;
-        padding: 20px 20px;
-        border-radius: 0 30px 0 30px;
-        position: relative;
-    }
-
-    .home-contact-us {
-        padding-top: 60px;
-
-        .address {
-            margin-top: 0;
-        }
-
-        .contact-footer::after {
-            width: 42vw;
-            min-width: 322px;
-        }
-    }
 
     .search-wrapper {
         margin-top: 15px !important;
@@ -716,6 +743,18 @@ a {
     #team img.team-member {
         margin-bottom: 0px;
     }
+
+    .home-contact-us .numbers {
+        margin-left: 28vw;
+    }
+
+    .home-contact-us .contact-footer::after {
+        bottom: 0;
+    }
+
+    .home-contact-us .contact-footer::after {
+        height: 180px;
+    }
 }
 
 @media (max-width: 767px) {
@@ -729,43 +768,20 @@ a {
     }
 
     .sq-wrapper .b-dots {
-        bottom: -60px;
-        left: 0;
-        width: 148px;
-        height: 120px;
-        background-size: contain;
-        background-repeat: no-repeat;
+        bottom: -60px !important;
+        left: 0 !important;
+        width: 148px !important;
+        height: 120px !important;
+        background-size: contain !important;
+        background-repeat: no-repeat !important;
     }
 
     .sq-wrapper .success-quality .y-dots {
         top: -290px;
     }
 
-    .good-fit .sector-2 {
-        top: 9%;
-        left: 20%;
-    }
 
-    .footer {
-        text-align: center;
 
-        .nav li {
-            padding-left: 0;
-
-            &:after {
-                display: none;
-            }
-        }
-
-        .sector-1,
-        .curvy-line {
-            display: none;
-        }
-
-        .social-icons {
-            justify-content: center;
-        }
-    }
 
     .search-wrapper.show .inner-form {
         width: 280px;
@@ -818,6 +834,10 @@ a {
         padding: 50px 0 0;
     }
 
+    .food-council-1 h3 {
+        font-size: 1.5rem;
+    }
+
     .food-council-1 p,
     .food-council-1 h4 {
         font-size: 16px;
@@ -830,6 +850,39 @@ a {
     .product-spotlight {
         padding: 50px 0;
     }
+
+
+
+    .footer .social-icons {
+        grid-gap: 15px;
+    }
+
+    #team .team-member-caption {
+        width: 200px;
+    }
+
+    .good-fit .carousel-control-next,
+    .good-fit .carousel-control-prev {
+        height: 30px;
+        width: 30px;
+        border-radius: 0 12px 0 12px;
+
+        .carousel-control-next-icon,
+        .carousel-control-prev-icon {
+            width: 14px;
+            height: 14px;
+        }
+    }
+
+    .good-fit #carouselServices {
+        max-width: 380px;
+        margin: 40px auto 10px;
+    }
+
+    div#team {
+        min-height: 428px;
+    }
+
 }
 
 @media (max-width: 576px) {
@@ -857,33 +910,34 @@ a {
         }
     }
 
+    .food-council-1 a {
+        font-size: 12px;
+    }
+
     .login .login-left-column {
         background-position: -30px 84px;
     }
+
+    .home-contact-us .numbers {
+        margin-left: auto;
+    }
+
+    .good-fit .we-serve p {
+        width: 90px;
+        margin: auto;
+        padding: 0 5px;
+        font-size: 10px;
+        font-weight: 600;
+    }
 }
 
+@media (max-width:1200px) and (min-height:992px) {
 
-
-
-.ppt-container {
-    @media (min-width: 576px) {
-        max-width: 540px;
-    }
-
-    @media (min-width: 768px) {
-        max-width: 720px;
-    }
-
-    @media (min-width: 992px) {
-        max-width: 960px;
-    }
-
-    @media (min-width: 1200px) {
-        max-width: 1200px;
-    }
-
-    @media (min-width: 1700px) {
-        max-width: 1700px;
+    .login .login-right-column,
+    .login .login-left-column {
+        min-height: auto !important;
+        height: auto !important;
+        width: 100%;
     }
 }
 
@@ -898,20 +952,25 @@ a {
 
 .cover-container.right-corner {
     border-radius: 0 0 100px 0;
-	.paper-bag{ border-radius: 0 0 83px 0;}
+
+    .paper-bag {
+        border-radius: 0 0 83px 0;
+    }
 }
 
 .display-5 {
     font-size: calc(1.425rem + 2.1vw);
     // font-weight: 300;
     line-height: 1.2;
-  }
-  @media (min-width: 1200px) {
+}
+
+@media (min-width: 1200px) {
     .display-5 {
-      font-size: 3rem !important;
+        font-size: 3rem !important;
     }
-  }
-  #o_wblog_post_main{
+}
+
+#o_wblog_post_main {
     // p.o_default_snippet_text{
     //     display: none !important;
     // }
@@ -925,20 +984,34 @@ a {
     margin-top: unset !important;
     margin-left: unset !important;
     margin-right: unset !important;
-  }
+}
 
-  .exempt-bags{
-	border-radius: 0 83px;
-	position: relative;
-	.curvy-line {
-	    background: url(../img/curvy-line-green.webp);
-		background-repeat: no-repeat;
-		position: absolute;
-		bottom: 0px;
-		right: 0;
-		width: 363px;
-		height: 290px;
-		z-index: 1;
-		@media (max-width: 992px){ display: none;}
-	}
+.exempt-bags {
+    border-radius: 0 83px;
+    position: relative;
+
+    .curvy-line {
+        background: url(../img/curvy-line-green.webp);
+        background-repeat: no-repeat;
+        position: absolute;
+        bottom: 0px;
+        right: 0;
+        width: 363px;
+        height: 290px;
+        z-index: 1;
+
+        @media (max-width: 992px) {
+            display: none;
+        }
+    }
+}
+
+.ps-5 {
+    padding-left: 3rem !important;
+}
+
+.display-1 {
+    font-size: calc(1.625rem + 4.5vw);
+    
+    line-height: 1.2;
 }

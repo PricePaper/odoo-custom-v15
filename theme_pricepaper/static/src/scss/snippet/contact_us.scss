@@ -1,9 +1,7 @@
 .home-contact-us {
-
-
     padding-top: 120px;
     background: #F1F9FF;
-    // position: relative;
+    position: relative;
     border-radius: 0 0 0 83px;
 
     &::before {
@@ -33,6 +31,7 @@
         position: relative;
         max-width: 100%;
         color: #fff;
+        font-weight: 300;
 
         &::before {
             content: "";
@@ -41,7 +40,7 @@
             background: $secondary;
             border-radius: 0 0 100% 0;
             position: absolute;
-            top: -80px;
+            top: -88px;
             left: 0;
         }
     }
@@ -58,6 +57,15 @@
         margin-left: auto;
         max-width: 100%;
         margin-bottom: 30px;
+        font-weight: 300;
+
+        @media (min-width: 1700px) {
+            margin-right: 165px;
+        }
+    }
+
+    .contact-p {
+        max-width: 722px;
     }
 
     .sector-1 {
@@ -85,7 +93,7 @@
         background: $primary;
         border-radius: 0 80px 0 80px;
         z-index: 0;
-        position: relative !important;
+        position: relative;
         margin-top: -175px;
 
         &::after {
@@ -93,9 +101,9 @@
             background-size: contain;
             content: "";
             position: absolute;
-            bottom: 0;
-            left: -13%;
-            width: 50vw;
+            bottom: -120px;
+            left: -14%;
+            width: 54vw;
             height: 600px;
             z-index: 5;
             max-width: 100vw;
@@ -111,7 +119,7 @@
         position: absolute;
         width: 100%;
         height: 100px;
-        bottom: 0px;
+        bottom: -1px;
         left: 0;
         z-index: -1;
     }
@@ -119,27 +127,83 @@
     .b-dots {
         background: url("../../img/black-dots.svg");
         position: absolute;
-        top: 8%;
-        right: 4%;
+        top: 144px;
+        right: 1%;
         width: 385px;
         height: 337px;
         z-index: 0;
         transform: rotate(-90deg);
+
+        @media (max-width:1200px) {
+            right: -18px;
+        }
     }
+
 }
 
 .home-contact-form {
     background: #fff;
     padding: 60px 50px;
     border-radius: 0 62px 0 62px;
-    position: relative !important;
+    position: relative;
+    margin-top: 50px;
+}
 
-    .row>* {
-       
-        margin-top: 1rem;
+@media (max-width: 1700px) {
+    .home-contact-us {
+        .home-contact-form {
+            padding: 50px 40px;
 
+            label.form-label {
+                font-size: 16px;
+            }
+
+            input.form-control {
+                border-radius: 10px;
+                height: 60px;
+                margin-bottom: 14px;
+            }
+        }
+
+        .address {
+            width: 375px !important;
+            height: 200px !important;
+        }
+
+        .numbers {
+            width: 280px !important;
+            height: 238px !important;
+            margin-left: auto;
+            transform: none;
+            margin-right: 100px;
+        }
     }
 }
+
+@media (max-width:992px) {
+    .home-contact-form {
+        background: #fff;
+        padding: 20px 20px !important;
+        border-radius: 0 30px 0 30px;
+        position: relative;
+    }
+
+    .home-contact-us {
+        padding-top: 60px;
+
+        .address {
+            margin-top: 0;
+        }
+
+        .contact-footer::after {
+            width: 42vw !important;
+            min-width: 322px !important;
+            bottom: 0;
+            height: 180px;
+        }
+    }
+}
+
 
 label.form-label {
     font-family: 'Poppins';

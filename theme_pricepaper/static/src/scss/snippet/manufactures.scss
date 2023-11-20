@@ -1,12 +1,16 @@
 .manufactures {
-    .ppt-container{
-        position: unset !important;
-    }
     background: #635147;
-    padding: 120px 0 187px;
+    padding: 80px 0 187px;
     border-radius: 0 0 0 83px;
     z-index: 0;
     position: relative;
+    .container{
+        position: unset !important;
+    }
+
+    @media (max-width:1200px) {
+        padding: 60px 0 170px;
+    }
 
     &::before {
         background: inherit;
@@ -24,13 +28,19 @@
         position: absolute;
         bottom: -32px;
         right: 0;
-        width: 415px;
+        width: 400px;
         height: 297px;
         z-index: 1;
     }
 
     .image-2 {
-        max-width: 414px;
-        margin-left: 20px;
+        width: 490px;
+        max-width: 100%;
+
+        // margin-left: 20px;
+        @media (max-width: 1199px) {
+            max-width: 300px;
+            margin-left: 0;
+        }
     }
 }

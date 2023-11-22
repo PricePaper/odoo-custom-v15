@@ -2,9 +2,9 @@
 <odoo>
 
     <template id="your_product" name="Your Product">
-        <section class="your-product py-md-5">
-            <div class="container ppt-container py-md-5">
-                <div class="row py-md-5">
+        <section class="your-product py-xl-5 py-lg-0 py-4">
+            <div class="container ppt-container py-md-4 py-lg-5">
+                <div class="row py-lg-5">
 
                     <div class="col-lg-7">
                         <h3 class="display-6 fw-sb mb-4" style="max-width:887px;">We find the right products for your

@@ -141,8 +141,9 @@ section.home-banner {
 
     .btn-black {
 
-        &:focus{
-            color: white !important;
+        &:focus,&:hover{
+            color: black !important;
+            background: transparent !important;
         }
         background: #060606;
         border-color: #060606;

@@ -33,7 +33,7 @@
                                 <t t-set="_item_class" t-valuef="nav-item dropdown ms-lg-auto"/>
                                 <t t-set="_link_class" t-valuef="nav-link fw-bold"/>
                             </t>
-                            <li>
+                            <li class='mb-2'>
                                 <div class='search_bar_contact d-flex align-items-center'>
                                     <div class='dropdown'>
                                         <a class="nav-link btn btn-white btn-search" data-toggle="dropdown" aria-expanded="false">

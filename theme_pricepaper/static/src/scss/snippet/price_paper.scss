@@ -1,13 +1,17 @@
-.price-paper{
-    .ppt-container,.img_div{
-        position: unset !important;
-    }
+.price-paper {
+
+	.ppt-container,
+	.img_div {
+		position: unset !important;
+	}
+
 	background: #000;
 	border-radius: 0 83px 0 83px;
 	padding: 120px 0;
 	position: relative;
 	z-index: 1;
-	.image-2{
+
+	.image-2 {
 		// transform: translate(84px, 186px); 
 		position: absolute;
 		z-index: 1;
@@ -15,7 +19,8 @@
 		top: 200px;
 		max-width: 300px;
 	}
-	.y-dots{
+
+	.y-dots {
 		background: url(../../img/yellow-dots2.svg);
 		position: absolute;
 		bottom: -76px;
@@ -29,6 +34,7 @@
 		height: 40vw;
 		z-index: 0;
 	}
+
 	.curvy-line-yellow {
 		background: url(../../img/curvy-line-yellow.svg);
 		background-repeat: no-repeat;
@@ -40,6 +46,22 @@
 		z-index: 1;
 	}
 }
+
+@media (max-width: 1700px) {
+	.price-paper {
+		padding: 100px 0;
+
+		ul li {
+			font-size: 16px;
+
+			&::after {
+				width: 16px;
+				height: 16px;
+			}
+		}
+	}
+}
+
 @media (max-width: 992px) {
 
 
@@ -58,21 +80,6 @@
 		.curvy-line-yellow,
 		.curvy-line-yellow1 {
 			display: none;
-		}
-	}
-}
-
-@media (max-width: 1700px) {
-	.price-paper {
-		padding: 100px 0;
-
-		ul li {
-			font-size: 16px;
-
-			&::after {
-				width: 16px;
-				height: 16px;
-			}
 		}
 	}
 }

@@ -60,9 +60,11 @@
                                             </li>
                                         </ul>
                                     </div>
-                                    <a class="nav-link btn btn-black contact" href="/contactus">Contact</a>
 
                                 </div>
+                            </li>
+                            <li>
+                                    <a class="nav-link btn btn-black contact" href="/contactus">Contact</a>
                             </li>
 
                         </t>

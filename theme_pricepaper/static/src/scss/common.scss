@@ -784,23 +784,23 @@ a {
 
 
     .search-wrapper.show .inner-form {
-        width: 280px;
+        width: 280px !important;
 
         .input-field.first-wrap {
             padding: 10px;
 
             .svg-wrapper {
-                display: none;
+                display: none !important;
             }
         }
 
         .input-field.second-wrap {
-            min-width: 106px;
+            min-width: 106px !important;
         }
 
         .input-field {
             input {
-                font-size: 12px;
+                font-size: 12px !important;
             }
         }
     }

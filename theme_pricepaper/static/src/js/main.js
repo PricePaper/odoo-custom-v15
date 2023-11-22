@@ -26,8 +26,14 @@ odoo.define('theme_pricepaper.common', function (require) {
 
         responsive: {
             0: {
-                items: 5
+                items: 2
             },
+            400:{
+                items: 3
+            },
+            700:{
+                items: 5
+            }
 
         }
     })

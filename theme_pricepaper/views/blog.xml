@@ -73,5 +73,11 @@
         </xpath>
     </template>
 
+    <template id="blog_post_content" name="Blog Post" inherit_id="website_blog.blog_post_content">
+        <xpath expr="//div[@t-field='blog_post.content']" position="replace">
+            <div data-editor-message="WRITE HERE OR DRAG BUILDING BLOCKS" t-attf-class="o_wblog_post_content_field oe_structure #{'js_tweet' if opt_blog_post_select_to_tweet else ''} #{'js_comment' if opt_blog_post_select_to_comment else ''} #{'o_wblog_read_text' if opt_blog_post_readable else ''}"/>
+        </xpath>
+    </template>
+
 
 </odoo>

@@ -31,13 +31,34 @@
                 <t t-snippet="theme_pricepaper.contact_us">
                     <keywords>Contact Us</keywords>
                 </t>
-                  <t t-snippet="theme_pricepaper.use_of_bag">
+                <t t-snippet="theme_pricepaper.use_of_bag">
                     <keywords>Contact Us</keywords>
                 </t>
-                 <t t-snippet="theme_pricepaper.black_bag">
+                <t t-snippet="theme_pricepaper.black_bag">
                     <keywords>Contact Us</keywords>
                 </t>
-                
+
+            </div>
+            <div class="o_panel_header">
+                <i class="fa fa-file"/>
+                About Us Snippet
+            </div>
+            <div class="o_panel_body">
+                <!-- Product Carousel -->
+                <t t-snippet="theme_pricepaper.about_banner">
+                    <keywords>Top Snippet</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.pricepaer_way">
+                    <keywords>Way</keywords>
+                </t>
+
+                <t t-snippet="theme_pricepaper.who_pricepaper">
+                    <keywords>Who</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.meet_people">
+                    <keywords>Meet</keywords>
+                </t>
+
             </div>
         </xpath>
     </template>

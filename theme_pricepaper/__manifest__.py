@@ -22,6 +22,7 @@
         'views/snippets/manufactures.xml',
         'views/snippets/contact_us.xml',
         'views/snippets/use_of_bag.xml',
+        'views/aboutus.xml',
         'views/snippets.xml',
         'views/blog.xml'
     ],
@@ -35,6 +36,7 @@
             'theme_pricepaper/static/src/scss/header.scss',
             'theme_pricepaper/static/src/scss/footer.scss',
             'theme_pricepaper/static/src/scss/banner.scss',
+            'theme_pricepaper/static/src/scss/about_us.scss',
             'theme_pricepaper/static/src/scss/snippet/*',
             'theme_pricepaper/static/src/js/main.js',
         ],

@@ -1,6 +1,9 @@
 .your-product{
 	position: relative;
 	z-index: 2;
+	.ppt-container{
+		position: unset;
+	}
 	.col-lg-7{
 		position: relative;
 		z-index: 4;

@@ -8,8 +8,9 @@
 	background: #000;
 	border-radius: 0 83px 0 83px;
 	padding: 120px 0;
+	padding: 144px 0;
 	position: relative;
-	z-index: 1;
+	z-index: 2;
 
 	.image-2 {
 		// transform: translate(84px, 186px); 
@@ -23,16 +24,21 @@
 	.y-dots {
 		background: url(../../img/yellow-dots2.svg);
 		position: absolute;
-		bottom: -76px;
-		right: 9%;
+		bottom: 0;
+		right: 213px;
 		max-width: 385px;
 		max-height: 245px;
 		z-index: 0;
 		background-size: contain;
 		background-repeat: no-repeat;
-		width: 40vw;
-		height: 40vw;
+		width: 19vw;
+		height: 150px;
 		z-index: 0;
+		@media (max-width:1700px) {		
+			right: 171px;
+			width: 320px;
+			height: 134px;
+		}
 	}
 
 	.curvy-line-yellow {

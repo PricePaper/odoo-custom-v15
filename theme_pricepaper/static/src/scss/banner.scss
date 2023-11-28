@@ -72,6 +72,21 @@
 
 .home-main-banner {
     background-color: #749551;
+    .wrapper{
+        .y-dots {
+            background: url(../img/white-dots.svg);
+            position: absolute;
+            bottom: -80px;
+            right: 20%;
+            max-width: 384px;
+            height: 324px;
+            z-index: 3;
+            width: 26vw;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center bottom;
+        }
+    }
 }
 
 section.home-banner {

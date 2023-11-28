@@ -4,6 +4,10 @@ $color_2: #000;
 $color_3: #fff;
 $font-family_1: 'Poppins', sans-serif;
 
+body,p,span,h2,h1,h3,h4,h5,h6,div,a,.btn {
+    font-family: $font-family_1;
+}
+
 //***Font weight and size Mixins
 //***Font weight and size Mixins
 $font-weight: (
@@ -803,7 +807,7 @@ a {
         }
     }
 
-    
+
 
 
     .manufactures .image-2 {
@@ -999,6 +1003,6 @@ a {
 
 .display-1 {
     font-size: calc(1.625rem + 4.5vw);
-    
+
     line-height: 1.2;
 }

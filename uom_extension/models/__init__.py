@@ -13,3 +13,4 @@ from . import account_move
 from . import change_product_uom
 from . import cost_change
 from . import stock_scrap
+from . import stock_move_line

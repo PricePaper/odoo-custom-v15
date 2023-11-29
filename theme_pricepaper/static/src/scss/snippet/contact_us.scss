@@ -147,6 +147,9 @@
     border-radius: 0 62px 0 62px;
     position: relative;
     margin-top: 50px;
+    .row>*{
+        margin-top: 1rem;
+    }
 }
 
 @media (max-width: 1700px) {

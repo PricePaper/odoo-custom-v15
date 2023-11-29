@@ -56,19 +56,19 @@
                             <div class="col-lg-3 col-md-9 mb-3">
                                 <h5 class="">Follow us on</h5>
                                 <div class="d-flex flex-row flex-wrap w-100 mt-4 social-icons">
-                                    <a href="https://www.facebook.com/pricepaper">
+                                    <a target="new" href="https://www.facebook.com/pricepaper">
                                         <span class="s-sprite s-icon-1"></span>
                                     </a>
-                                    <a href="https://www.instagram.com/pricepaper/">
+                                    <a target="new" href="https://www.instagram.com/pricepaper/">
                                         <span class="s-sprite s-icon-2"></span>
                                     </a>
-                                    <a href="https://www.youtube.com/@pricepaper">
+                                    <a target="new" href="https://www.youtube.com/@pricepaper">
                                         <span class="s-sprite s-icon-3"></span>
                                     </a>
-                                    <a href="https://www.alignable.com/freeport-ny/price-paper-twine-company-2">
+                                    <a target="new" href="https://www.alignable.com/freeport-ny/price-paper-twine-company-2">
                                         <span class="s-sprite s-icon-4"></span>
                                     </a>
-                                    <a href="https://www.linkedin.com/company/pricepaper">
+                                    <a target="new" href="https://www.linkedin.com/company/pricepaper">
                                         <span class="s-sprite s-icon-5"></span>
                                     </a>
                                 </div>

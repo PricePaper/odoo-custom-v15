@@ -207,9 +207,23 @@
         font-size: 12px;
         min-height: 60px;
     }
+
     .good-fit .sector-2 {
         top: 9%;
         left: 20%;
     }
 
+}
+
+@media (max-width: 576px) {
+    .good-fit {
+        .we-serve {
+            p {
+                width: 90px;
+                margin: auto;
+                font-size: 10px;
+                font-weight: 600;
+            }
+        }
+    }
 }

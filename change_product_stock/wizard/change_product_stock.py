@@ -26,17 +26,17 @@ class ChangeProductStock(models.TransientModel):
                     rec.stock_valuation_layer_id = stock_value_ids.sorted('create_date')[0]
 
 
-    def _get_inventory_move_values(self, quant, qty, location_id, location_dest_id, out=False):
+    def _get_inventory_move_values(self, product, qty, location_id, location_dest_id, out=False):
         """
         return move vals
         """
         name = _('Product Quantity Updated')
         return {
             'name': name,
-            'product_id': quant.product_id.id,
+            'product_id': product.id,
             'product_uom': self.stock_valuation_layer_id.uom_id.id,
             'product_uom_qty': qty,
-            'company_id': quant.company_id.id or self.env.company.id,
+            'company_id': product.company_id.id or self.env.company.id,
             'state': 'confirmed',
             'location_id': location_id.id,
             'location_dest_id': location_dest_id.id,
@@ -44,16 +44,12 @@ class ChangeProductStock(models.TransientModel):
             'price_unit': self.stock_valuation_layer_id.unit_cost,
             'date': self.stock_valuation_layer_id.create_date,
             'move_line_ids': [(0, 0, {
-                'product_id': quant.product_id.id,
+                'product_id': product.id,
                 'product_uom_id': self.stock_valuation_layer_id.uom_id.id,
                 'qty_done': qty,
                 'location_id': location_id.id,
                 'location_dest_id': location_dest_id.id,
-                'company_id': quant.company_id.id or self.env.company.id,
-                'lot_id': quant.lot_id.id,
-                'package_id': out and quant.package_id.id or False,
-                'result_package_id': (not out) and quant.package_id.id or False,
-                'owner_id': quant.owner_id.id,
+                'company_id': product.company_id.id or self.env.company.id,
             })]
         }
 
@@ -66,15 +62,14 @@ class ChangeProductStock(models.TransientModel):
             raise UserError(_('Please insert qty less than valuation Layer remaining qty'))
         if self.qty > source_quant.product_uom_id._compute_quantity(source_quant.available_quantity, self.stock_valuation_layer_id.uom_id):
             raise UserError(_('Product location does not have enough qty'))
-        dest_quant = Quant.search([('product_id', '=', self.dest_product_id.id), ('location_id', '=', self.dest_product_id.property_stock_location.id)])
-        out_move_vals = self._get_inventory_move_values(source_quant, self.qty,
-                                         source_quant.location_id,
-                                         source_quant.product_id.with_company(source_quant.company_id).property_stock_inventory,
+        out_move_vals = self._get_inventory_move_values(self.source_product_id, self.qty,
+                                         self.source_product_id.property_stock_location,
+                                         self.source_product_id.with_company(self.source_product_id.company_id).property_stock_inventory,
                                          out=True)
 
-        in_move_vals = self._get_inventory_move_values(dest_quant, self.qty,
-                                         dest_quant.product_id.with_company(dest_quant.company_id).property_stock_inventory,
-                                         dest_quant.location_id)
+        in_move_vals = self._get_inventory_move_values(self.dest_product_id, self.qty,
+                                         self.dest_product_id.with_company(self.dest_product_id.company_id).property_stock_inventory,
+                                         self.dest_product_id.property_stock_location)
 
         out_move = self.env['stock.move'].with_context(inventory_mode=False, from_inv_adj=True).create(out_move_vals)
         in_move = self.env['stock.move'].with_context(inventory_mode=False, from_inv_adj=True).create(in_move_vals)
@@ -91,6 +86,7 @@ class ChangeProductStock(models.TransientModel):
         self._cr.execute("UPDATE stock_valuation_layer set create_date = '%s' WHERE id=%s" % (self.stock_valuation_layer_id.create_date, out_move.stock_valuation_layer_ids.ids[0]))
 
         in_move._action_done()
+        dest_quant = Quant.search([('product_id', '=', self.dest_product_id.id), ('location_id', '=', self.dest_product_id.property_stock_location.id)])
         dest_quant.location_id.write({'last_inventory_date': fields.Date.today()})
         date_by_location = {loc: loc._get_next_inventory_date() for loc in dest_quant.mapped('location_id')}
         dest_quant.inventory_date = date_by_location[dest_quant.location_id]

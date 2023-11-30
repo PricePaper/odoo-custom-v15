@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_change_product_stock_wiz" model="ir.ui.view">
+            <field name="name">change.product.stock</field>
+            <field name="model">change.product.stock</field>
+            <field name="arch" type="xml">
+                <form string="Change Product Stock">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="dest_product_id" readonly='1'/>
+
+                            </group>
+                            <group>
+                                <field name="source_product_id" required='1'/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="stock_valuation_layer_ids">
+                                <tree>
+                                  <field name="create_date" />
+                                  <field name="remaining_qty" />
+                                  <field name="unit_cost" />
+                                </tree>
+                            </field>
+                        </group>
+                        <group>
+                            <group>
+                              <field name="stock_valuation_layer_id" required='1'
+                                domain="[('id', 'in', stock_valuation_layer_ids)]"
+                                context="{'from_change_stock_move': True}" invisible='1' />
+                              <field name="qty" required='1'/>
+                            </group>
+                        </group>
+
+                        <footer>
+                            <button string="Get Stock" type="object" name="change_stock" calss="btn-success"/>
+                            or
+                            <button string="Cancel" class="btn-danger" special="cancel"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

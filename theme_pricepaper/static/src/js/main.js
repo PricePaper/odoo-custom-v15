@@ -31,7 +31,7 @@ odoo.define('theme_pricepaper.common', function (require) {
             400:{
                 items: 3
             },
-            800:{
+            1100:{
                 items: 4
             },
 

@@ -22,6 +22,7 @@ Modifying default uom
     'views/change_product_uom.xml',
     'views/stock_orderpoint_view.xml',
     'views/stock_move_line.xml',
+    'views/master_pick_ticket_report.xml'
     ],
     'installable': True,
     'auto_install': False,

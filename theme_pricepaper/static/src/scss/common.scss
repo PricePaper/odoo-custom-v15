@@ -90,7 +90,7 @@ $val in $font-weight {
 }
 @media (min-width: 1200px) {
     .display-1 {
-        font-size: 5rem;
+        font-size: 5rem !important;
     }
 }
 p {

@@ -9,8 +9,8 @@
                         <img class="image-2 mt-4 img-fluid" src="/theme_pricepaper/static/src/img/manufactures.webp" alt=""/>
                     </div>
                     <div class="col-lg-8 col-xl-7 text-white">
-                        <h3 class="display-6  fw-sb mb-4 mb-md-5 mt-md-4 ps-5 ms-4" style="max-width:740px;">We save you time at no extra cost</h3>
-                        <ul class="list-style-1 ms-4">
+                        <h3 class="display-6  fw-sb mb-4 mb-md-5 mt-md-4 ps-5 ml-4" style="max-width:740px;">We save you time at no extra cost</h3>
+                        <ul class="list-style-1 ml-4">
                             <li>
                                 <b class="fw-sb"> Choose your convenience.</b> Online, text, call, email, or we’ll even drop by. Our team can visit to check inventory and create orders for you also.</li>
                             <li>

@@ -16,25 +16,31 @@ odoo.define('theme_pricepaper.common', function (require) {
         //         next = next.nextElementSibling
         //     }
         // })
-    })
-    $('.owl-carousel').owlCarousel({
-        loop: true,
-        margin: 10,
-        nav: true,
-        dots: false,
-        autoplay: true,
+        if ($('#wrapwrap').hasClass('odoo-editor-editable')) {
+            $('.owl-carousel').addClass('d-flex')
+        }
+        else {
 
-        responsive: {
-            0: {
-                items: 2
-            },
-            400:{
-                items: 3
-            },
-            1100:{
-                items: 4
-            },
+            $('.owl-carousel').owlCarousel({
+                loop: true,
+                margin: 10,
+                nav: true,
+                dots: false,
+                autoplay: true,
 
+                responsive: {
+                    0: {
+                        items: 2
+                    },
+                    400: {
+                        items: 3
+                    },
+                    1100: {
+                        items: 4
+                    },
+
+                }
+            })
         }
     })
 });

@@ -58,8 +58,24 @@
                                 bottom: 0;
                                 transition: all 0.15s ease-in-out;
                             }
+                            &.dropdown-toggle{
+                                span{
+                                    &:after {
+                                        content: "";
+                                        display: block;
+                                        width: 4px;
+                                        height: 4px;
+                                        background: #000;
+                                        position: absolute;
+                                        border-radius: 3px;
+                                        bottom: 0;
+                                        left: 50px;
+                                        transition: all 0.15s ease-in-out;
+                                    }
+                                }
+                            }
 
-                            &::after {
+                            &:not(.dropdown-toggle):after {
                                 content: "";
                                 display: block;
                                 width: 4px;
@@ -238,6 +254,7 @@
 
                     &.btn.btn-black {
                         padding: 13px 29px;
+                        border-radius: 0 20px 0 20px;
                         height: 50px;
                     }
                 }
@@ -257,4 +274,7 @@
 
         }
     }
+}
+.js_usermenu{
+    text-align: center !important;
 }

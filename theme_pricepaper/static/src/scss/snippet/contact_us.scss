@@ -150,6 +150,10 @@
     .row>*{
         margin-top: 1rem;
     }
+    label.form-label {
+        font-size: 16px;
+        font-weight: unset !important;
+    }
 }
 
 @media (max-width: 1700px) {

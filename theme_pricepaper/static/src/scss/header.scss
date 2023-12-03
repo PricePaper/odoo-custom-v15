@@ -43,10 +43,10 @@
                             color: rgba(0, 0, 0, .9);
                             font-weight: normal !important;
 
-                            &::before {
-                                &.main_user {
-                                    left: 1rem;
-                                }
+                            &:not(.dropdown-toggle):not(.search_bar_contact)::before {
+                                // &.main_user {
+                                //     left: 1rem;
+                                // }
 
                                 content: "";
                                 display: block;
@@ -58,8 +58,43 @@
                                 bottom: 0;
                                 transition: all 0.15s ease-in-out;
                             }
-                            &.dropdown-toggle{
-                                span{
+
+                            &.search_bar_contact {
+                                a.btn-search {
+                                    position: relative;
+
+                                    &::before {
+
+                                        content: "";
+                                        left: 0;
+                                        display: block;
+                                        width: 30px;
+                                        height: 4px;
+                                        background: #000;
+                                        position: absolute;
+                                        border-radius: 3px;
+                                        bottom: -10px;
+                                        transition: all 0.15s ease-in-out;
+                                    }
+                                    &::after{
+                                        content: "";
+                                        display: block;
+                                        width: 4px;
+                                        height: 4px;
+                                        background: #000;
+                                        position: absolute;
+                                        border-radius: 3px;
+                                        bottom: -10px;
+                                        left: 35px;
+                                        transition: all 0.15s ease-in-out;
+                                    }
+                                }
+                            }
+
+                            &.dropdown-toggle {
+                                span {
+                                    position: relative;
+
                                     &:after {
                                         content: "";
                                         display: block;
@@ -68,14 +103,27 @@
                                         background: #000;
                                         position: absolute;
                                         border-radius: 3px;
-                                        bottom: 0;
-                                        left: 50px;
+                                        bottom: -7px;
+                                        left: 35px;
+                                        transition: all 0.15s ease-in-out;
+                                    }
+
+                                    &::before {
+                                        content: "";
+                                        left: 0;
+                                        display: block;
+                                        width: 30px;
+                                        height: 4px;
+                                        background: #000;
+                                        position: absolute;
+                                        border-radius: 3px;
+                                        bottom: -7px;
                                         transition: all 0.15s ease-in-out;
                                     }
                                 }
                             }
 
-                            &:not(.dropdown-toggle):after {
+                            &:not(.dropdown-toggle):not(.search_bar_contact)::after {
                                 content: "";
                                 display: block;
                                 width: 4px;
@@ -275,6 +323,7 @@
         }
     }
 }
-.js_usermenu{
+
+.js_usermenu {
     text-align: center !important;
 }

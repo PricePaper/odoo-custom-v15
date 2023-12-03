@@ -1,0 +1,58 @@
+.oe_login_form,
+.oe_signup_form,
+.oe_reset_password_form {
+    max-width: unset !important;
+    position: unset !important;
+    margin: unset !important;
+}
+
+.oe_website_login_container {
+    .form_wrap {
+        padding: 50px;
+    }
+
+    form {
+        label {
+            font-weight: unset !important;
+            font-size: 12px !important;
+            font-family: "Poppins" !important;
+        }
+
+        input {
+            border-radius: 10px;
+            border-color: #060606 !important;
+        }
+
+        .oe_login_buttons {
+            .btn-primary {
+
+                padding: 10px 54px !important;
+                // font-size: 19px;
+                border-radius: 0 20px;
+                background: #060606;
+                border-color: #060606;
+                color: #fff;
+            }
+
+            .btn-link {
+                font-size: 14px;
+            }
+
+            .o_login_auth {
+                .o_auth_oauth_providers {
+                    padding: 10px 54px !important;
+                    font-size: 14px;
+                    border-radius: 0 20px;
+                    border: solid black;
+
+                    a {
+                        width: 100%;
+                        border: unset;
+                        font-size: 22px;
+                        text-align: center;
+                    }
+                }
+            }
+        }
+    }
+}

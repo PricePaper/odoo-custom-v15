@@ -24,7 +24,8 @@
         'views/snippets/use_of_bag.xml',
         'views/aboutus.xml',
         'views/snippets.xml',
-        'views/blog.xml'
+        'views/blog.xml',
+        'views/login.xml',
     ],
     'demo': [
         ''

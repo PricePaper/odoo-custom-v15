@@ -62,13 +62,23 @@
 .js_blog.website_blog {
     overflow: hidden;
     font-family: "Poppins" !important;
-    background: #749551;
+    // background: #749551;
 
     #o_wblog_index_content {
         background: white;
     }
 
     nav {
+&::after{
+
+    content: "";
+    width: 100%;
+    height: 101px;
+    position: absolute;
+    top: 0;
+    z-index: -1;
+    background: #749551;
+}
         .blog_container {
             .main_nav {
                 .blog_head {

@@ -80,7 +80,13 @@
         </xpath>
 
     </template>
-
+<template id="user_sign_in" name="User Sign In" inherit_id="portal.user_sign_in">
+    <xpath expr="//li" position="replace">
+         <li groups="base.group_public" t-attf-class="#{_item_class} o_no_autohide_item">
+                <a t-attf-href="/web/login" t-attf-class="#{_link_class}">Login<span t-if="request.session.profile_session" class="text-danger fa fa-circle"/></a>
+            </li>
+    </xpath>
+</template>
     <!-- Navbar Hamburger Options -->
     <template id="option_header_off_canvas_snippet" inherit_id="website.navbar_nav" customize_show='True' name="snippet header" active="False">
         <xpath expr="//ul[@id='top_menu']" position="inside">

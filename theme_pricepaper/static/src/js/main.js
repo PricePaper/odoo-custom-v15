@@ -1,5 +1,49 @@
 odoo.define('theme_pricepaper.common', function (require) {
     'use strict';
+    var core = require('web.core');
+    const publicWidget = require('web.public.widget');
+    var ajax = require('web.ajax');
+    publicWidget.registry.Crmform = publicWidget.Widget.extend({
+        selector: '.home-contact-form',
+        events: {
+            'click button[type=submit]': '_onFormSubmit',
+
+        },
+        _onFormSubmit: function (ev) {
+            var curr = $(ev.currentTarget)
+            curr.prop('disabled',true)
+            ev.preventDefault()
+            ev.stopPropagation();
+            var $form = $(this.$target).find('form')
+            var data = {}
+            var flag = false
+            $form.find('input,textarea').each(function () {
+                if (!$(this).val()) {
+                    console.log('hello', $(this))
+                    $(this).get(0).setCustomValidity('Please Enter Correct Information');
+                    $(this).get(0).reportValidity()
+                    flag = true
+
+                    curr.prop('disabled',false)
+                    return
+                }
+                else {
+
+                    data[$(this).attr('name')] = $(this).val()
+                }
+
+            }).promise().done(function () {
+                if (!flag) {
+                    console.log(data)
+                    ajax.jsonRpc('/contact/crm/lead', 'call', data).then(function (result) {
+                        if (result.status){
+                            $form.replaceWith("<strong> Thanks for contacting us , Our team will get back to you shortly</strong>")
+                        }
+                    })
+                }
+            })
+        }
+    })
     $(document).ready(function () {
         // let items = document.querySelectorAll('.carousel .carousel-item')
 

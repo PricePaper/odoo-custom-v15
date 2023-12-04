@@ -38,7 +38,7 @@
 		width: 19vw;
 		height: 150px;
 		z-index: 0;
-		@media (max-width:2000px) {		
+		@media (max-width:1700px) {		
 			right: 171px;
 			width: 320px;
 			height: 134px;
@@ -54,6 +54,32 @@
 		width: 370px;
 		height: 370px;
 		z-index: 1;
+	}
+	.curvy-line-yellow1 {
+		background: url(../../img/curvy-line-yellow.webp);
+		background-repeat: no-repeat;
+		position: absolute;
+		top: -64px;
+		right: -12px;
+		width: 270px;
+		height: 315px;
+		z-index: 1;
+		background-size: contain;
+	}
+	li{
+		color: #f5f3f3;
+		font-weight: 300;
+	}
+	.img-wrap{
+		position: absolute;
+		bottom: 0;
+		right: 20px;
+		@media (min-width:992px) {
+			margin-top: 130px;
+		}
+		@media(max-width:990px){
+			position: unset;
+		}
 	}
 }
 

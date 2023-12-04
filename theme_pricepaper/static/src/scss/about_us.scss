@@ -27,22 +27,24 @@ section.about-banner {
     }
 
     h1 {
-        font-size: 36px;
+        font-size: 36px !important;
         margin: 0 0 70px;
-
-        @media (min-width: 1200px) {
-            margin-top: 50px;
-            font-size: 44px;
-            margin-left: -60px;
-        }
 
         @media (min-width: 1700px) {
             margin-left: -80px;
             margin-top: 70px;
             max-width: 854px;
-            font-size: 60px;
+            font-size: 60px !important;
             line-height: 1.5;
         }
+
+        @media (min-width: 1200px)and (max-width:1699px) {
+            margin-top: 50px;
+            font-size: 44px !important;
+            margin-left: -60px;
+        }
+
+
 
         @media (max-width: 992px) {
             margin-top: 60px;
@@ -79,6 +81,9 @@ section.about-banner {
     border-radius: 0 0 0 83px;
     z-index: 1;
     padding: 0 0 70px;
+    @media (max-width:1200px){
+        padding: 0 0;
+    }
 
     &::before {
         background: $primary;
@@ -108,6 +113,10 @@ section.about-banner {
 
     .carousel-control-next,
     .carousel-control-prev {
+
+        box-shadow: unset;
+        outline: unset;
+        border: unset;
         background: #000;
         height: 50px;
         width: 50px;
@@ -147,8 +156,8 @@ section.about-banner {
         background: url(../img/curvy-line3.svg);
         background-repeat: no-repeat;
         position: absolute;
-        bottom: -32px;
-        right: 0;
+        bottom: -92px;
+        right: -47px;
         width: 400px;
         height: 297px;
         z-index: 1;
@@ -233,5 +242,127 @@ section.about-banner {
             border-radius: 0 100px 0 0;
             display: block;
         }
+    }
+}
+
+
+
+.about-price-paper {
+    position: absolute;
+    z-index: 1;
+    right: 20px;
+    bottom: 0;
+    max-width: 500px;
+
+    @media (max-width:992px) {
+        position: static;
+        height: 300px;
+    }
+}
+
+@media (max-width: 1700px) {
+    .about-price-paper {
+        width: 396px;
+    }
+
+    #team img.team-member+.dot-bg {
+        width: 300px;
+        height: 300px;
+        top: -10px;
+        right: 150px;
+    }
+    #team .team-member-caption {
+        padding: 20px 30px;
+        width: 500px;
+        top: -50px;
+        left: -60px;
+
+        .left-border-primary {
+            padding: 10px 0px 10px 20px;
+        }
+
+        &::before {
+            width: 225px;
+            height: 150px;
+            top: -100px;
+            left: -30px;
+        }
+    }
+}
+
+@media (max-width:1200px) {
+    .about-price-paper {
+        max-width: 300px;
+    }
+
+    #team img.team-member+.dot-bg {
+        width: 140px;
+        height: 130px;
+        top: 60px;
+        right: 193px;
+        background-size: cover;
+    }
+    #team .team-member-caption {
+        width: 380px;
+        top: -33px;
+        left: -60px;
+
+        .left-border-primary {
+            h3 {
+                font-size: 14px;
+            }
+
+            p {
+                font-size: 12px;
+                line-height: normal;
+            }
+        }
+
+        &::after {
+            width: 80px;
+            height: 80px;
+            bottom: -40px;
+            right: -40px;
+        }
+    }
+    #team .team-member-caption::before {
+        width: 140px;
+        height: 100px;
+        top: -74px;
+        left: -4px;
+    }
+}
+
+@media (max-width:992px) {
+    #team img.team-member+.dot-bg {
+        width: 140px;
+        height: 130px;
+        top: 60px;
+        left: 25%;
+        background-size: cover;
+    }
+    #team .team-member-caption::after {
+        width: 40px;
+        height: 40px;
+        bottom: -20px;
+        right: -30px;
+    }
+
+    #team .team-member-caption {
+        width: 300px;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 10px;
+    }
+    #team .team-member-caption::before {
+        display: none;
+    }
+}
+@media(max-width:767px){
+    
+    
+    #team .team-member-caption {
+        width: 200px;
     }
 }

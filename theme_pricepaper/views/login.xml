@@ -54,7 +54,7 @@
 
         </xpath>
          <xpath expr="//div[hasclass('field-password')]/label" position="replace">
-            <label for="login">Email*</label>
+            <label for="login">Password*</label>
 
         </xpath>
     </template>

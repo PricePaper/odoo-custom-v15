@@ -51,7 +51,12 @@ $secondary: #83754D;
 $color_2: #000;
 $color_3: #fff;
 $font-family_1: 'Poppins', sans-serif;
+@media (min-width: 992px){
 
+    .text-lg-end {
+        text-align: right !important;
+      }
+}
 body,p,span,h2,h1,h3,h4,h5,h6,div,a,.btn {
     font-family: $font-family_1;
 }
@@ -435,37 +440,32 @@ a {
         }
     }
 
-    #team img.team-member+.dot-bg {
-        width: 300px;
-        height: 300px;
-        top: -10px;
-        right: 150px;
-    }
+    
 
-    #team .team-member-caption {
-        padding: 20px 30px;
-        width: 500px;
-        top: -50px;
-        left: -60px;
-
-        .left-border-primary {
-            padding: 10px 0px 10px 20px;
-        }
-
-        &::before {
-            width: 225px;
-            height: 150px;
-            top: -100px;
-            left: -30px;
-        }
-    }
+    
 
 
 
 
 
 }
-
+.team-header {
+    margin-bottom: -200px;
+}
+.left-border-primary{
+	position: relative;
+    padding-left: 30px;
+	&::before{
+		content: "";
+		background: #749551;
+		width: 4px;
+		height: 100%;
+		display: inline-block;
+		border-radius: 2px;
+		position: absolute;
+		left: 0;
+	}
+}
 @media (max-width: 1200px) {
     .btn {
         font-size: 16px;
@@ -573,37 +573,9 @@ a {
         height: 30px;
     }
 
-    #team img.team-member+.dot-bg {
-        width: 140px;
-        height: 130px;
-        top: 60px;
-        right: 193px;
-        background-size: cover;
-    }
+ 
 
-    #team .team-member-caption {
-        width: 380px;
-        top: -33px;
-        left: -60px;
-
-        .left-border-primary {
-            h3 {
-                font-size: 14px;
-            }
-
-            p {
-                font-size: 12px;
-                line-height: normal;
-            }
-        }
-
-        &::after {
-            width: 80px;
-            height: 80px;
-            bottom: -40px;
-            right: -40px;
-        }
-    }
+    
 
     .meet-people {
         padding: 0 0;
@@ -617,12 +589,7 @@ a {
         }
     }
 
-    #team .team-member-caption::before {
-        width: 140px;
-        height: 100px;
-        top: -74px;
-        left: -4px;
-    }
+    
 
     .meet-people .carousel-indicators {
         bottom: 0px;
@@ -766,36 +733,15 @@ a {
         font-size: 18px;
     }
 
-    #team .team-member-caption::after {
-        width: 40px;
-        height: 40px;
-        bottom: -20px;
-        right: -30px;
-    }
+    
 
-    #team .team-member-caption {
-        width: 300px;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 10px 10px;
-    }
 
-    #team img.team-member+.dot-bg {
-        width: 140px;
-        height: 130px;
-        top: 60px;
-        left: 25%;
-        background-size: cover;
-    }
 
     .team-header {
         margin-bottom: 0px;
     }
 
-    #team .team-member-caption::before {
-        display: none;
-    }
+
 
     #team img.team-member {
         margin-bottom: 0px;
@@ -903,9 +849,7 @@ a {
         grid-gap: 15px;
     }
 
-    #team .team-member-caption {
-        width: 200px;
-    }
+
 
     .good-fit .carousel-control-next,
     .good-fit .carousel-control-prev {

@@ -1,0 +1,138 @@
+#o_wblog_blog_top {
+    .o_record_cover_container {
+        display: none !important;
+    }
+}
+
+.js_blog.website_blog {
+    font-family: "Poppins" !important;
+
+    nav {
+        .blog_container {
+            .main_nav {
+                .blog_head {
+                    font-family: "Poppins";
+                    font-size: 40px;
+                    font-weight: normal;
+                    line-height: 25px;
+                    font-style: normal;
+                    text-align: left;
+                    color: #ffffff;
+                    @media(max-width:770px){
+                        font-size: 20px;
+                    }
+                }
+                @media(max-width:770px){
+                    flex-direction: column;
+                    align-items: center;
+                    ul{
+                        margin-top: 15px;
+                    }
+                }
+                ul{
+
+                    .nav-link {
+                        border-color: rgba(0, 0, 0, 0.7);
+                        font-family: "Poppins";
+                        border-width: 2px;
+                        border-style: solid;
+                        border-radius: 20px;
+                        min-width: 110px;
+                        height: 57px;
+                        margin-right: 10px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+    
+                        &.active {
+                            background: #000000;
+                            color: white;
+                        }
+    
+                        &:hover {
+                            background: #000000;
+                            color: white;
+                        }
+    
+    
+                    }
+                    @media(max-width:500px){
+                        display: flex;
+                        flex-wrap: wrap;
+                        flex-direction: row;
+                        .nav-link{
+                            font-size: 12px !important;
+                            height: 48px;
+                            min-width: 95px;
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+        height: 182px;
+        // border-color: #000000;
+        // border-width: 1px;
+        // border-style: dashed;
+        border-top-left-radius: 0px;
+        border-top-right-radius: 60px;
+        border-bottom-right-radius: 0px;
+        border-bottom-left-radius: 60px;
+        background: #635147;
+
+        border-top-left-radius: 0px;
+
+        .o_searchbar_form {
+            display: none !important;
+        }
+
+
+    }
+
+    .o_wblog_page_cards_bg {
+        font-family: "Poppins" !important;
+
+        #o_wblog_posts_loop {
+            font-family: "Poppins" !important;
+
+            .o_wblog_post {
+                font-family: "Poppins" !important;
+                padding: 34px;
+                height: 400.7px !important;
+                border-radius: 30px;
+                border-color: #749551;
+
+                .blog-date {
+                    font-family: "Poppins";
+                    font-size: 16px;
+                    font-weight: 500;
+                    line-height: 42px;
+                    font-style: normal;
+                    text-align: left;
+                    color: #3f3f3f;
+                }
+
+                .o_blog_post_title {
+                    font-family: "Poppins";
+                    font-size: 19px;
+                    font-weight: normal;
+                    // line-height: 25px;
+                    font-style: normal;
+                    text-align: left;
+                    color: #060606 !important;
+                }
+
+                .o_record_cover_container {
+                    border-radius: 20px;
+                    overflow: hidden;
+                    height: 138px !important;
+
+                }
+            }
+        }
+    }
+
+}

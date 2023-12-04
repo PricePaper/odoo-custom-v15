@@ -20,7 +20,7 @@
 
     </template>
     <template id="pricepaer_way" name="Pricepaper Way">
-        <section class="py-md-5 py-3 price-paper-way">
+        <section class="py-lg-5 py-3 price-paper-way">
             <div class="container py-lg-5 ppt-container">
                 <div class="row">
                     <div class="col-md-7">

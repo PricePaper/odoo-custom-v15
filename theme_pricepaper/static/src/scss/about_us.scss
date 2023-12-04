@@ -51,10 +51,16 @@ section.about-banner {
         }
     }
 }
-
+.price-paper{
+    overflow: hidden;
+}
 .price-paper-way {
     position: relative;
     z-index: 3;
+    overflow: hidden;
+    .container{
+        position: unset !important;
+    }
 
     .y-dots {
         background: url("../img/yellow-dots.svg");
@@ -76,6 +82,7 @@ section.about-banner {
 }
 
 .meet-people {
+    overflow: hidden;
     background: #635147;
     position: relative;
     border-radius: 0 0 0 83px;

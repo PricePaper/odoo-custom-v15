@@ -1,5 +1,8 @@
 .use-of-bag {
 	position: relative;
+	.container{
+		position: unset !important;
+	}
 	z-index: 1;
 	.sector-1 {
 			position: absolute;

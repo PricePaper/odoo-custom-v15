@@ -270,7 +270,7 @@ section.about-banner {
     bottom: 0;
     max-width: 500px;
 
-    @media (max-width:1024) {
+    @media (max-width:1024px) {
         position: static;
         height: 300px;
     }

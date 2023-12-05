@@ -13,8 +13,10 @@
         // min-height: unset !important;
 
         .form-wrap {
-            margin-top: 100px;
-            @media(max-width:1010px){
+            margin-top: 50px;
+            z-index: 99;
+
+            @media(max-width:1010px) {
                 margin-top: unset;
             }
         }
@@ -30,15 +32,21 @@
     }
 
     .login-left-column {
+        .img-wrap-login {
+            display: flex;
+            align-items: end;
+        }
+
         .login-img {
             width: 100%;
             object-fit: cover;
             // object-fit: contain;
             object-position: top;
             margin-left: 6%;
-            height: 83vh;
-            @media(max-width:1010px){
-                .logo{
+            height: 100%;
+
+            @media(max-width:1010px) {
+                .logo {
                     display: none !important;
                 }
             }
@@ -322,6 +330,29 @@
 
         .form-wrap {
             padding: 10px;
+        }
+    }
+
+    @media (min-width:1000px) and(max-width:1200px) {
+        .login-left-column{
+
+            .img-wrap-login {
+                .login-img{
+                    height: 80%;
+                    object-fit: fill;
+                }
+            }
+            padding-left: 2rem !important;
+            padding-right: 2rem !important;
+        }
+
+
+
+        .login-right-column {
+            .form-wrap {
+                margin-top: unset;
+                padding: 20px;
+            }
         }
     }
 }

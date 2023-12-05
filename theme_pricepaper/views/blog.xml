@@ -73,16 +73,14 @@
         </xpath>
     </template>
 
-    <template id="blog_post_content" name="Blog Post" inherit_id="website_blog.blog_post_content">
-        <xpath expr="//div[@t-field='blog_post.content']" position="replace">
-            <div data-editor-message="WRITE HERE OR DRAG BUILDING BLOCKS" t-attf-class="o_wblog_post_content_field oe_structure #{'js_tweet' if opt_blog_post_select_to_tweet else ''} #{'js_comment' if opt_blog_post_select_to_comment else ''} #{'o_wblog_read_text' if opt_blog_post_readable else ''}"/>
+    <template id="blog_post_content" name="Blog Post Content" inherit_id="website_blog.blog_post_content">
+        <xpath expr="//div[@t-if='len(blogs) > 1 or len(blog_post.tag_ids) > 0']" position="attributes">
+
+            <attribute name="class" separator=" " add="d-none"/>
+            
         </xpath>
     </template>
-    <template id="blog_post_short" name="Blog Posts" inherit_id="website_blog.blog_post_short">
-        <xpath expr="//t[@t-call='website_blog.blogs_nav']" position="before">
-            <div class="oe_structure" id="oe_structure_blog_filtered_header" t-att-data-editor-sub-message="oe_structure_blog_filtered_header_description"/>
-        </xpath>
-    </template>
+
     <template id="blogs_nav" name="Blogs Bar Template" inherit_id="website_blog.blogs_nav">
         <xpath expr="//nav" position="replace">
             <!-- <template id="blogs_nav" name="Blogs Bar Template"> -->
@@ -281,7 +279,7 @@
     <template id="opt_blog_cover_post_fullwidth_design" active="True" customize_show="True" name="Full Width Price" inherit_id="website_blog.opt_blog_cover_post_fullwidth_design">
         <xpath expr="//t[@t-call='website.record_cover']" position="replace">
             <div class='price-container'>
-            <div class='y-dots'/>
+                <div class='y-dots'/>
                 <t t-if="blog or first_post" t-call="website.record_cover">
                     <t t-set="_record" t-value="blog or first_post"/>
                     <t t-set="use_filters" t-value="True"/>
@@ -303,15 +301,15 @@
                             <div>
                                 <span t-if="not blog and blog_post" class="text-white small mt-2 mb-3">
                                     in <i class="fa fa-folder-open text-white-75"/>
-                                    <a t-attf-href="#{blog_url(blog=blog_post.blog_id)}" class="text-white" t-field="blog_post.blog_id"/>
-                                </span>
-                                <span t-else="">&amp;nbsp;</span>
-                            </div>
+                                <a t-attf-href="#{blog_url(blog=blog_post.blog_id)}" class="text-white" t-field="blog_post.blog_id"/>
+                            </span>
+                            <span t-else="">&amp;nbsp;</span>
                         </div>
                     </div>
-                </t>
-            </div>
-        
-        </xpath>
-    </template>
+                </div>
+            </t>
+        </div>
+
+    </xpath>
+</template>
 </odoo>

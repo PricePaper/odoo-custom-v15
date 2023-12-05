@@ -88,6 +88,15 @@ section.about-banner {
     border-radius: 0 0 0 83px;
     z-index: 1;
     padding: 0 0 70px;
+    // &::before{
+    //     background: inherit;
+    //     content: "";
+    //     width: 100%;
+    //     height: 101px;
+    //     position: absolute;
+    //     top: -100px;
+    //     z-index: -2;
+    // }
     @media (max-width:1200px){
         padding: 0 0;
     }

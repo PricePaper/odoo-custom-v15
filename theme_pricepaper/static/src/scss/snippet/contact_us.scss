@@ -86,6 +86,12 @@
         height: 148px;
         border-radius: 0 0 100% 0;
         background: #000;
+        @media(max-width:1200px){
+            top: -165px;
+            left: 477px;
+            width: 100px;
+            height: 100px;
+        }
     }
 
     .contact-footer {
@@ -188,6 +194,15 @@
             transform: none;
             margin-right: 100px;
         }
+    }
+}
+
+@media(max-width:1200px){
+    .home-contact-us.about-us .sector-2 {
+        top: -165px;
+        left: 477px;
+        width: 100px;
+        height: 100px;
     }
 }
 

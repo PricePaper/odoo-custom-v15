@@ -57,7 +57,7 @@ $font-family_1: 'Poppins', sans-serif;
         text-align: right !important;
       }
 }
-body,p,span,h2,h1,h3,h4,h5,h6,div,a,.btn,a.contact {
+body,p,span,h2,h1,h3,h4,h5,h6,div,a,.btn,a.contact,.h1,.h2,.h3,.h3,.h4,.h5,.h6 {
     font-family: $font-family_1;
 }
 
@@ -591,10 +591,10 @@ a {
 
     
 
-    .meet-people .carousel-indicators {
-        bottom: 0px;
-        margin-left: 30%;
-    }
+    // .meet-people .carousel-indicators {
+    //     bottom: 0px;
+    //     margin-left: 30%;
+    // }
 
     .meet-people .carousel-indicators [data-target] {
         width: 10px;
@@ -607,12 +607,7 @@ a {
         width: 185px;
     }
 
-    .home-contact-us.about-us .sector-2 {
-        top: -165px;
-        left: 477px;
-        width: 100px;
-        height: 100px;
-    }
+
 
     .good-fit .we-serve img {
         max-height: 50px;

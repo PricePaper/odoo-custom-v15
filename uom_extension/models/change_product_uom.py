@@ -20,7 +20,7 @@ class ChangeProductUom(models.TransientModel):
         product.sale_uoms = [(5, _, _)]
         product.sale_uoms = self.new_sale_uoms
         product.ppt_uom_id = self.new_uom.id
-        product.uom_po_id = self.new_uom.id
+        product.uom_po_id = self.new_po_uom.id
 
 
         for price_rec in self.product_id.uom_standard_prices:

@@ -64,15 +64,15 @@ class Product(models.Model):
         for product in self:
             product.transit_qty = qty_dict[product.id]['qty_available']
 
-    @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state')
-    @api.depends_context(
-        'lot_id', 'owner_id', 'package_id', 'from_date', 'to_date',
-        'location', 'warehouse',
-    )
-    def _compute_quantities(self):
-        super(Product, self)._compute_quantities()
-        for product in self:
-            product.outgoing_qty -= product.transit_qty
+    # @api.depends('stock_move_ids.product_qty', 'stock_move_ids.state')
+    # @api.depends_context(
+    #     'lot_id', 'owner_id', 'package_id', 'from_date', 'to_date',
+    #     'location', 'warehouse',
+    # )
+    # def _compute_quantities(self):
+    #     super(Product, self)._compute_quantities()
+    #     for product in self:
+    #         product.outgoing_qty -= product.transit_qty
 
     def action_open_transit_moves(self):
         action = self.sudo().env.ref('stock.stock_move_action').read()[0]

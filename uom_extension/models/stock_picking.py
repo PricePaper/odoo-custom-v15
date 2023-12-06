@@ -1,10 +1,33 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from collections import defaultdict
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
+
+    @api.model
+    def _purchase_order_picking_confirm_message_content(self, picking, purchase_dict):
+        if not purchase_dict:
+            purchase_dict = {}
+        title = _("Receipt confirmation %s") % (picking.name)
+        message = "<h3>%s</h3>" % title
+        message += _(
+            "The following items have now been received in Incoming Shipment %s:"
+        ) % (picking.name)
+        message += "<ul>"
+        for purchase_line_id in purchase_dict.values():
+            display_name = purchase_line_id["purchase_line"].product_id.display_name
+            product_qty = purchase_line_id["stock_move"].product_uom_qty
+            uom = purchase_line_id["stock_move"].product_uom.name
+            message += _(
+                "<li><b>%(display_name)s</b>: Received quantity %(product_qty)s %(uom)s</li>",
+                display_name=display_name,
+                product_qty=product_qty,
+                uom=uom,
+            )
+        message += "</ul>"
+        return message
 
     @api.depends('move_lines.reserved_availability')
     def _compute_available_qty(self):
@@ -52,3 +75,26 @@ class StockPicking(models.Model):
             )
         for picking in self:
             picking.weight_bulk = picking_weights[picking.id]
+
+
+    def load_products(self):
+        self.ensure_one()
+        self.move_lines.unlink()
+        if not self.location_id:
+            raise UserError("Source location should be selected")
+        quants = self.env['stock.quant'].search([('location_id', '=', self.location_id.id)])
+        quants = quants.filtered(lambda r: r.quantity - r.reserved_quantity > 0)
+        for quant in quants:
+            product = quant.mapped('product_id')
+            qty = quant.quantity - quant.reserved_quantity
+            qty = product.uom_id._compute_quantity(qty, product.ppt_uom_id)
+            if not product.property_stock_location:
+                continue
+            self.env['stock.move'].create({'product_id': product.id,
+                                           'picking_id': self.id,
+                                           'name': product.name,
+                                           'location_id': self.location_id.id,
+                                           'product_uom': product.ppt_uom_id.id,
+                                           'location_dest_id': product.property_stock_location.id,
+                                           'product_uom_qty': qty
+                                           })

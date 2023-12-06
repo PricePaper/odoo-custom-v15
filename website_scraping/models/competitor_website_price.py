@@ -26,7 +26,7 @@ class CompetitorItems(models.Model):
         for record in self:
             price = 0.0
             if record.product_sku_ref_id.qty_in_uom:
-                price = (record.item_price / record.competitor_item_uom) * record.product_id.uom_id.factor_inv
+                price = (record.item_price / record.competitor_item_uom) * record.product_id.ppt_uom_id.factor_inv
             record.price = price
 
     @api.depends('product_sku_ref_id')
@@ -59,15 +59,15 @@ class CompetitorItems(models.Model):
                 lines = pricelist.customer_product_price_ids.filtered(lambda p: p.product_id.id == rec.product_id.id)
                 price = rec.price + (rec.price * pricelist.competietor_margin / 100)
                 for line in lines:
-                    if line.price != price or line.product_uom != rec.product_id.uom_id:
+                    if line.price != price or line.product_uom != rec.product_id.ppt_uom_id:
                         line.write({'price': price,
-                                    'product_uom': rec.product_id.uom_id.id,
+                                    'product_uom': rec.product_id.ppt_uom_id.id,
                                     })
                 if not lines:
                     self.env['customer.product.price'].create({'pricelist_id': pricelist.id,
                                                                'product_id': rec.product_id.id,
                                                                'price': price,
-                                                               'product_uom': rec.product_id.uom_id.id,
+                                                               'product_uom': rec.product_id.ppt_uom_id.id,
                                                                })
         return True
 

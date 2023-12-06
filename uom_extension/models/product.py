@@ -346,7 +346,11 @@ class ProductProduct(models.Model):
         """
         super(ProductProduct, self)._compute_quantities()
         for product in self:
-            product.outgoing_quantity -= product.transit_qty
+            if product.ppt_uom_id:
+                product.outgoing_qty -= product.ppt_uom_id._compute_quantity(product.transit_qty,
+                                                                       product.uom_id, rounding_method='HALF-UP')
+            else:
+                product.outgoing_qty -= product.transit_qty
 
     def _stock_account_get_anglo_saxon_price_unit(self, uom=False):
         # overriding to fix the uom conversion

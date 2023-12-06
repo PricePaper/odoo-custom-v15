@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record model="ir.ui.view" id="view_change_product_uom_wiz_inherited">
+            <field name="name">change.product.uom.ext</field>
+            <field name="model">change.product.uom</field>
+            <field name="inherit_id" ref="purchase_extension.view_change_product_uom_wiz"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='new_uom']" position="after">
+                    <field name="new_po_uom" required='1'/>
+                </xpath>
+            </field>
+        </record>
         <record id="view_change_product_uom_wizard" model="ir.ui.view">
             <field name="name">change.product.uom</field>
             <field name="model">change.product.uom</field>

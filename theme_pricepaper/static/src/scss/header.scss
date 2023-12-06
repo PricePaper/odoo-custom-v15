@@ -14,6 +14,12 @@
 
             .logo {
                 width: 190px;
+                @media (max-width:2000px){
+                        width: 280px ;
+                }
+                @media (max-width:1024px){
+                    width: 190px;
+                }
 
                 img {
                     width: auto !important;
@@ -289,9 +295,9 @@
     }
 
     @media (max-width: 2000px) {
-        .logo {
-            width: 280px !important;
-        }
+        // .logo {
+        //     width: 280px !important;
+        // }
 
         nav.navbar {
             padding-top: 40px;

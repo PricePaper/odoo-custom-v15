@@ -67,6 +67,28 @@ class VendorProductReportWizard(models.TransientModel):
                     res_prd |= product
         self.product_ids = res_prd
 
+    def calculate_result_dict(self, result):
+        out_lines = {}
+        for result_line in result:
+            product = self.env['product.product'].browse(result_line[0])
+            if product.uom_id.id == result_line[3]:
+                if product in out_lines:
+                    out_lines[product]['ordered_qty'] = out_lines[product]['ordered_qty'] + result_line[1]
+                    out_lines[product]['delivered_qty'] = out_lines[product]['delivered_qty'] + result_line[2]
+                else:
+                    out_lines[product] = {'ordered_qty': result_line[1], 'delivered_qty': result_line[2]}
+
+            else:
+                uom = self.env['uom.uom'].browse(result_line[3])
+                ordered_qty = uom._compute_quantity(result_line[1], product.uom_id)
+                delivered_qty = uom._compute_quantity(result_line[2], product.uom_id)
+                if product in out_lines:
+                    out_lines[product]['ordered_qty'] = out_lines[product]['ordered_qty'] + ordered_qty
+                    out_lines[product]['delivered_qty'] = out_lines[product]['delivered_qty'] + delivered_qty
+                else:
+                    out_lines[product] = {'ordered_qty': ordered_qty, 'delivered_qty': delivered_qty}
+        return out_lines
+
     def generate_lines(self):
         if not self.product_ids:
             raise UserError(_('There is no Product for the choosen criteria'))
@@ -99,25 +121,8 @@ class VendorProductReportWizard(models.TransientModel):
                     break
             if not result:
                 raise UserError(_('No sale data for the choosen date range'))
-            out_lines = {}
-            for result_line in result:
-                product = self.env['product.product'].browse(result_line[0])
-                if product.uom_id.id == result_line[3]:
-                    if product in out_lines:
-                        out_lines[product]['ordered_qty'] = out_lines[product]['ordered_qty'] + result_line[1]
-                        out_lines[product]['delivered_qty'] = out_lines[product]['delivered_qty'] + result_line[2]
-                    else:
-                        out_lines[product] = {'ordered_qty': result_line[1], 'delivered_qty': result_line[2]}
+            out_lines = self.calculate_result_dict(result)
 
-                else:
-                    uom = self.env['uom.uom'].browse(result_line[3])
-                    ordered_qty = uom._compute_quantity(result_line[1], product.uom_id)
-                    delivered_qty = uom._compute_quantity(result_line[2], product.uom_id)
-                    if product in out_lines:
-                        out_lines[product]['ordered_qty'] = out_lines[product]['ordered_qty'] + ordered_qty
-                        out_lines[product]['delivered_qty'] = out_lines[product]['delivered_qty'] + delivered_qty
-                    else:
-                        out_lines[product] = {'ordered_qty': ordered_qty, 'delivered_qty': delivered_qty}
             report_lines = []
             for prd, value in out_lines.items():
                 report_lines.append((0, 0, {

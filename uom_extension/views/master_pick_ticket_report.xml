@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="ppt_uom_master_pick_ticket_report" inherit_id="batch_delivery.master_pick_ticket_report">
+            <xpath expr="//table//t/t/t/tr/td[3]/span" position="replace">
+                <span t-esc="'%.2f'% product.quantity_available"/>
+            </xpath>
+        </template>
+    </data>
+</odoo>

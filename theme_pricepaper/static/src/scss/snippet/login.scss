@@ -68,6 +68,11 @@
                 max-width: 100%;
                 margin: auto;
                 padding: 50px;
+                h3{
+                    @media(max-width: 119px){
+                        font-size: 40px;
+                    }
+                }
 
                 label {
                     font-family: "Poppins";
@@ -100,6 +105,9 @@
                         background: #060606;
                         border-color: #060606;
                         color: #fff;
+                        @media(max-width:1025px){
+                            font-size: 22px;
+                        }
                     }
 
                     .btn-link {
@@ -187,9 +195,9 @@
 
 
     @media (max-height: 850px) {
-        h3 {
-            font-size: 24px;
-        }
+        // h3 {
+        //     font-size: 24px;
+        // }
 
         p {
             font-size: 12px;

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="product_product_view_form_inherit_change_stock" model="ir.ui.view">
+            <field name="name">product.product.change.stock</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="stock.product_form_view_procurement_button"/>
+            <field name="arch" type="xml">
+              <button name="action_update_quantity_on_hand" position='after'>
+                 <button name="action_change_product_stock" string="Get Stock"
+                      type="object" attrs="{'invisible': [('type', '!=', 'product')]}"
+                      help="Get stock from another product"/>
+              </button>
+            </field>
+        </record>
+    </data>
+</odoo>

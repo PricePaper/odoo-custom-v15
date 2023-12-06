@@ -21,14 +21,14 @@
 
 
                 <div class="row bg-primary ">
-                    <div class="col-xl-7 col-lg-6 d-flex align-items-end px-5 bg-primary login-left-column">
+                    <div class="col-xl-7 col-12 d-flex align-items-end px-5 bg-primary login-left-column">
                         <div class="h-100 align-content-between d-grid w-100 img-wrap-login">
                             <!-- <img class="img-fluid mt-4 mt-md-5 logo" style="position:relative;z-index:-1 !important" src="/theme_pricepaper/static/src/img/logo.png" alt=""/> -->
                             <img class="img-fluid login-img" src="/theme_pricepaper/static/src/img/login-img.webp" alt=""/>
                         </div>
                         <div class="login-bg"></div>
                     </div>
-                    <div class="col-xl-5 col-lg-6 align-items-center bg-white  d-flex login-right-column">
+                    <div class="col-xl-5 col-12 align-items-center bg-white  d-flex login-right-column">
                         <div class="form-wrap">
                             <div class="">
                                 <h3 class="mt-4 mt-lg-0 display-6 fw-b">Welcome !</h3>

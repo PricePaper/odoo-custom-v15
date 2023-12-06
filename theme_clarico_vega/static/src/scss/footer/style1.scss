@@ -1,0 +1,153 @@
+/*================ Footer Style 1 ==================*/
+@if o-website-value('footer-template') == 'option_footer_01' {
+    .te_footer_add_tel_email
+    {
+        li {
+            margin-top: 14px;
+            list-style-type: none;
+        }
+        li:first-child{
+            margin-top: 22px;
+        }
+        .te_footer_info_text {
+            margin: 0;
+            padding: 0;
+        }
+        .te_ftr_text_style {
+            font-size: inherit;
+            > span {
+                padding-right: 0.22rem;
+            }
+            @include media-breakpoint-down(xs) {
+                padding-left: 0.5rem;
+            }
+        }
+        .te_footer_add_tel_email_text_ept {
+            vertical-align: top;
+        }
+        .te_footer_social_icon {
+            margin: 8px 0 12px 0;
+            a:first-child {
+                margin:0;
+                padding-left:0;
+            }
+            >a {
+                color: inherit;
+                font-size: inherit;
+                @include transition(all,0.25s,ease-out,0s);
+                @include transform(scale(1));
+                padding:0;
+                span {
+                    display:inline-block;
+                    padding: 0.625rem 0.3125rem;
+                }
+                &:hover {
+                    @include transition(all,0.25s,ease-out,0s)
+                    @include transform(scale(1.2))
+                }
+                span {
+                    display:inline-block;
+                }
+            }
+            > a:first-child{
+                span{
+                    padding-left: 0px;
+                }
+            }
+        }
+        .te_footer_logo_img {
+            > img {
+                /*---- Dynamic height for logo -----*/
+                height: $o-theme-navbar-logo-height;
+                @include media-breakpoint-down(sm) {
+                    height: auto;
+                    max-height: min($o-theme-navbar-logo-height, 5rem);
+                }
+            }
+        }
+    }
+    .s_text_block .te_language {
+        @include media-breakpoint-down(xs) {
+            margin-top: 8px;
+            margin-bottom: 30px;
+        }
+    }
+    /*---- static Menu -----*/
+    .te_footer_info_ept {
+        margin: 0;
+        padding: 0;
+        li {
+            padding: 10px 0;
+            list-style-type: none;
+            @include transition(padding,.5s,ease,0s)
+            cursor: pointer;
+            &:hover {
+                padding-left: 10px;
+            }
+            a {
+                font-size: inherit;
+                display: block;
+            }
+        }
+    }
+    .te_footer_title_text {
+        @include style(4,10);
+        margin-top:12px;
+        display:inline-block;
+    }
+    /*--- Payment Image -----*/
+    .te_footer_text_img {
+        margin-bottom: 14px;
+        margin-top: 12px;
+        @include media-breakpoint-down(sm){
+            margin-bottom: 0px;
+        }
+    }
+    section.te_newsletter_margin {
+        margin: 16px 0;
+    }
+
+    /*--- Multiple Language Selected -----*/
+    .te_language {
+        .js_language_selector .dropdown-menu{
+            @include media-breakpoint-down(sm){
+                transform: translate3d(65px, -73px, 0px) !important;
+            }
+        }
+    }
+    /*--- Bottom Static Menu ---*/
+    .te_body_bg{
+        .te_footer_inline_menu_t {
+            font-size:nth($f_sizes,3);
+            list-style-type: none;
+            text-align:center;
+            margin-bottom:0px;
+            padding: 0;
+             li {
+                padding: 0 14px 14px;
+                display: inline-block;
+                @include transition(null,0.3s);
+                &:hover {
+                    @include transition(null,0.3s)
+                }
+            }
+            @media (max-width:500px) {
+                padding-top: 16px;
+                padding-bottom: 16px;
+                > li {
+                    padding: 8px 6px;
+                }
+            }
+        }
+        .te_copyright_add_language {
+            text-align: center;
+            padding-bottom:16px;
+            @include media-breakpoint-down(sm) {
+                font-size:nth($f_sizes,3);
+            }
+        }
+    }
+    section.te_payment_list img {
+        max-height: 30px;
+    }
+}

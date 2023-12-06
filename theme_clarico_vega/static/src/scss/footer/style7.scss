@@ -1,0 +1,203 @@
+/*================ Footer Style 7 ==================*/
+@if o-website-value('footer-template') == 'option_footer_07' {
+    footer.o_footer
+    {
+        margin-top: 1.5rem;
+        a{
+            font-size: $o-font-size-base - 0.125rem;
+        }
+        ul
+        {
+            padding: 0;
+            list-style-type: none;
+            li
+            {
+                padding: 4px 0;
+            }
+        }
+        .te_footer_info_ept section
+        {
+            &:first-child
+            {
+                li
+                {
+                    padding-top:0;
+                }
+            }
+            li
+            {
+                display: block;
+                i
+                {
+                    font-size: inherit;
+                    @include position(relative, 0);
+                    opacity: 0;
+                    @include transition(all, .5s);
+                    margin-right: -15px;
+                }
+                &:hover
+                {
+                    i {
+                        opacity: 1;
+                        margin-right: 5px;
+                    }
+                }
+            }
+        }
+        .te_block_title
+        {
+            font-size: inherit;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+        .te_company_content
+        {
+            @media (min-width:1600px)
+            {
+                font-size: $o-font-size-base - 0.125rem;
+            }
+        }
+        .te_footer_info_text
+        {
+            >li
+            {
+                padding: 10px 0;
+            }
+            .te_ftr_text_style
+            {
+                width: calc(100% - 24px);
+                font-size: $o-font-size-base - 0.125rem;
+                vertical-align: middle;
+                a
+                {
+                    font-size: $o-font-size-base - 0.125rem;
+                    vertical-align: middle;
+                }
+            }
+        }
+        .te_footer_social_icon
+        {
+            margin-bottom: 10px;
+            > a
+            {
+                width: 40px;
+                height: 40px;
+                line-height: 40px;
+                border-radius: 50%;
+                background-color:rgba(nth($f_color,3),0.2);
+                text-align: center;
+                padding: 0;
+                margin-right: 5px;
+                margin-bottom: 5px;
+                font-size: 18px !important;
+                span
+                {
+                    display:inline-block;
+                }
+                &:last-child
+                {
+                    margin-right: 0px;
+                }
+            }
+        }
+        .te_newsletter_title h5 {
+           margin-bottom: 12px;
+           font-size: $o-font-size-base - 0.125rem;
+        }
+        .js_language_selector
+        {
+            margin-top: 0px;
+            li
+            {
+                padding: 0;
+            }
+        }
+        .te_footer_payment_img
+        {
+            margin-top: 16px;
+        }
+        .te_newsletter_content {
+            @include media-breakpoint-down(sm){
+                padding-bottom: 5px;
+            }
+        }
+        .te_copyright_add_language {
+            text-align: right;
+            @include media-breakpoint-down(sm)
+            {
+                text-align: left;
+                margin-top: 16px;
+            }
+        }
+        .te_informations_s {
+            padding-bottom: 0px !important;
+            @include media-breakpoint-down(sm){
+                padding-bottom: 1.5rem !important;
+            }
+        }
+    }
+    .js_subscribe{
+        .js_subscribe_btn,
+        .js_subscribe_email{
+             font-size: $o-font-size-base - 0.125rem;
+             padding:0.2rem 0.5rem;
+             height:36px;
+             line-height:1.8;
+        }
+    }
+    .o_footer_copyright{
+        .o_footer_copyright_name{
+             font-size: $o-font-size-base - 0.125rem;
+        }
+    }
+    .te_footer_detail
+    {
+        position: relative;
+        padding: 0;
+        .te_footer_logo_title_socialicon
+        {
+            background-color:nth($f_color,5);
+            color: nth($f_color,3);
+            margin-top: -70px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(128, 128, 128, 0.1);
+            .te_footer_logo_img
+            {
+                img
+                {
+                    max-width: 100px;
+                }
+            }
+            @include media-breakpoint-down(sm)
+            {
+                width: 90%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+        .te_company_content{
+            font-size: $o-font-size-base - 0.125rem;
+        }
+        span.te_footer_add_tel_email_text_ept {
+            width: 15px;
+            display: inline-block;
+            vertical-align: middle;
+            span{
+                font-size: $o-font-size-base - 0.125rem;
+            }
+        }
+    }
+    .te_newsletter_main .js_language_selector .dropdown-menu{
+        @include media-breakpoint-down(sm){
+            transform: translate3d(65px, -73px, 0px) !important;
+        }
+    }
+    .te_newsletter{
+        h5{
+           font-size: $h5-font-size - 0.125rem;
+        }
+    }
+    section.te_payment_list img {
+        max-height: 30px;
+    }
+}

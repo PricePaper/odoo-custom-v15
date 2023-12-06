@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="price_paper" name="Price Paper People">
+        <section class="price-paper">
+            <div class="container ppt-container">
+                <div class="row align-items-center">
+
+                    <div class="col-xl-10 col-lg-9">
+                        <h3 class="display-6 fw-sb mb-md-5 mb-4 text-white" style="max-width:1294px;">The value of dealing
+                        with a local veteran-owned small business</h3>
+
+                        <ul class="list-style-1 text-white mt-2">
+                            <li>We are a small business, so we understand small business. We have similar challenges and
+                            similar needs.</li>
+                            <li>We’re nimble and can adapt quickly.</li>
+                            <li>We’re local, and buying from us helps support the local economy, which in turn helps support
+                            our customers.
+                            The money never leaves our area.</li>
+                            <li>While our competitors flex their massive warehouses, fixated on corporate profits, we've got
+                            a different approach.
+                            We're focused on you. Does the water's depth matter(5 feet or 200 feet) when you're
+                            swimming? Nope. Similarly,
+                            warehouse size doesn't matter; what matters is timely delivery. Unlike the big corps, we're
+                            all about your business value.</li>
+                        </ul>
+                        <a href="" class="btn btn-outline-white mt-4">Meet the paper people</a>
+                    </div>
+                    <div class="col-xl-2 col-lg-3 text-center img_div">
+                        <img class="image-2 img-fluid" src="/theme_pricepaper/static/src/img/price-paper.webp" alt=""/>
+                    </div>
+                </div>
+            </div>
+            <div class="y-dots"></div>
+            <div class="curvy-line-yellow"></div>
+        </section>
+    </template>
+
+</odoo>

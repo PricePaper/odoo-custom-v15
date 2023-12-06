@@ -1,0 +1,161 @@
+/*================ Footer Style 6 ==================*/
+@if o-website-value('footer-template') == 'option_footer_06' {
+    footer.o_footer
+    {
+        @include position(relative);
+
+        @if color('footer') {
+            @include o-bg-color(color('footer'));
+            border-top: 1px solid nth($f_color,8);
+        }
+        a
+        {
+            color: inherit;
+            font-size: inherit;
+        }
+        .te_footer_payment_img
+        {
+            text-align: center;
+            @include media-breakpoint-down(sm)
+            {
+                text-align: left;
+            }
+        }
+    }
+    #footer
+    {
+        .te_block_title
+        {
+            font-size: inherit;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        ul
+        {
+            padding: 0;
+            list-style-type: none;
+            margin: 0;
+            li
+            {
+                padding: 12px 0;
+            }
+        }
+        .te_end_ftr_container
+        {
+            border-top: 1px solid nth($f_color,8);
+            padding-top: 1.5rem;
+            margin-top: 0.6rem;
+            padding-bottom: 1.5rem !important;
+            @include media-breakpoint-down(md){
+                margin-top: 0px !important;
+            }
+        }
+        .te_footer_info_text
+        {
+            li
+            {
+                padding: 12px 0;
+                &:first-child
+                {
+                    padding-top:0;
+                }
+                .te_footer_add_tel_email_text_ept span
+                {
+                    width: 15px;
+                    @include media-breakpoint-down(sm){
+                        width: 20px;
+                    }
+                }
+                .te_ftr_text_style
+                {
+                    width: calc(100% - 30px);
+                    color: inherit;
+                    font-size: inherit;
+                    vertical-align: text-top;
+                    a
+                    {
+                        color: inherit;
+                        font-size: inherit;
+                    }
+                }
+                span.te_footer_add_tel_email_text_ept {
+                    vertical-align: text-bottom;
+                }
+                .te_title_span
+                {
+                    line-height: 1;
+                    color: inherit;
+                    font-size: inherit;
+                    margin-bottom: 5px;
+                }
+            }
+        }
+        .te_footer_social_icon > a
+        {
+            margin: 10px 3px 8px 0;
+            padding:0;
+            span
+            {
+                display:inline-block;
+                padding: 0.625rem 0.3125rem;
+            }
+        }
+        .te_footer_info_ept
+        {
+            >section:first-child
+            {
+                li
+                {
+                    padding-top:0;
+                }
+            }
+            a{
+                padding-left: 0;
+                @include transition(all, 0.5s, ease-in-out);
+                display: inline-block;
+                word-break: break-word;
+                &:hover
+                {
+                    padding-left: 10px;
+                }
+            }
+        }
+        .te_footer_add_tel_email .js_language_selector .dropdown-menu{
+            @include media-breakpoint-down(sm){
+                transform: translate3d(65px, -73px, 0px) !important;
+            }
+        }
+        @include media-breakpoint-down(md)
+        {
+            padding-top:0;
+            .s_text_block
+            {
+                padding-top: 24px !important;
+                padding-bottom: 20px;
+                .te_footer_add_tel_email
+                {
+                    margin-bottom: 30px;
+                    border-bottom: 1px solid nth($f_color,8);
+                    padding-bottom: 20px;
+                }
+            }
+        }
+        @include media-breakpoint-down(sm)
+        {
+            .te_contact_info
+            {
+                border-top: 1px solid nth($f_color,8);
+                padding-top: 30px;
+            }
+        }
+        .te_footer_links {
+            @include media-breakpoint-down(sm){
+                padding-bottom: 20px;
+            }
+        }
+    }
+    section.te_payment_list img {
+        max-height: 30px;
+    }
+}

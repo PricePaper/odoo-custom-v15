@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_website_order_sheet,portal_website_order_sheet,model_website_order_sheet,,1,1,1,1
+access_order_sheet_lines,portal_order_sheet_lines,model_order_sheet_lines,,1,1,1,1
+access_section_product,portal_section_product,model_section_product,,1,1,1,1

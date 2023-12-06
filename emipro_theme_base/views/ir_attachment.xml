@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="view_product_document_tree" model="ir.ui.view">
+        <field name="model">ir.attachment</field>
+        <field name="arch" type="xml">
+            <tree string="Attachments">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="type"/>
+                <field name="file_size"/>
+                <field name="create_uid"/>
+                <field name="create_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_product_document_attachment_form" model="ir.ui.view">
+        <field name="model">ir.attachment</field>
+        <field name="arch" type="xml">
+            <form string="Attachments">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object" name="config_product_document" class="oe_stat_button"
+                                                        icon="fa-cubes">
+                            <span class="text-muted">Products</span>
+                        </button>
+                    </div>
+                    <label for="name"/>
+                    <h1>
+                        <field name="name"/>
+                    </h1>
+                    <group>
+                        <group>
+                            <field name="type" string="Document Type"/>
+                            <field name="datas" filename="name" attrs="{'invisible':[('type','=','url')]}" string="File"/>
+                            <field name="url" widget="url" attrs="{'invisible':[('type','=','binary')]}"/>
+                            <field name="public" invisible="1"/>
+                            <field name="is_product_document" invisible="1"/>
+                        </group>
+                        <group/>
+                    </group>
+                    <group>
+                        <div class="text-danger" attrs="{'invisible':[('type','!=','url')]}">
+                            <span >Please provide complete URL along with its HTTP(S) Protocol.</span>
+                        </div>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_attachment_product_document" model="ir.actions.act_window">
+        <field name="name">Product Documents</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">ir.attachment</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                        (0, 0, {'view_mode': 'tree', 'view_id': ref('emipro_theme_base.view_product_document_tree')}),
+                        (0, 0, {'view_mode': 'form', 'view_id': ref('emipro_theme_base.view_product_document_attachment_form')})]"/>
+        <field name="domain">[('is_product_document', '=', 1)]</field>
+        <field name="context">{'default_is_product_document': 1, 'default_public': 1}</field>
+    </record>
+
+    <menuitem id="menu_action_product_document"
+              action="emipro_theme_base.action_attachment_product_document"
+              parent="website_sale.menu_catalog"/>
+</odoo>

@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="about_banner" name="About Us Banner">
+        <section class="pt-md-5 about-banner">
+            <div class="container h-100 ppt-container">
+                <div class="row h-100">
+                    <div class="col">
+                        <img class="image-1 img-fluid" src="/theme_pricepaper/static/src/img/about-img1.webp" alt=""/>
+                    </div>
+                    <div class="col-xl-7 col-lg-8">
+                        <h1 class="fw-b display-5 text-white ">Unboxing our dedication to 
+                            eco-friendly and rock-solid
+                            parcel packaging</h1>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </template>
+    <template id="pricepaer_way" name="Pricepaper Way">
+        <section class="py-lg-5 py-3 price-paper-way">
+            <div class="container py-lg-5 ppt-container">
+                <div class="row">
+                    <div class="col-md-7">
+                        <h3 class="display-6 fw-sb my-4" style="max-width:740px;">The Price paper way</h3>
+                        <p class="fw-m" style="max-width: 935px;">
+                        We fill landfills for a living. Everything we sell is trash, waiting to become garbage, or preferably - compost or recycled. Price Paper is a food packaging distributor. We sell products such as take out cups, napkins, containers, paper bags, and wrap used by restaurants and supermarkets located in Long Island, Brooklyn, Queens and Manhattan. We're a family owned and operated, third generation small business, that chooses to specialize in working with other small and medium sized businesses. We understand their needs, and their challenges because we have them as well. Bigger is not always better. Better is better.
+                        </p>
+                        <a href="" class="btn btn-primary mt-md-5 mb-5 mb-md-0 text-white">Read more</a>
+                    </div>
+                    <div class="col-md-5">
+                        <img class="image-1 img-fluid" src="/theme_pricepaper/static/src/img/about-img2.webp" alt=""/>
+                    </div>
+                </div>
+                <div class="y-dots"></div>
+            </div>
+        </section>
+
+    </template>
+    <template id="who_pricepaper" name="Who is Pricepaper">
+        <section class="price-paper">
+            <div class="container ppt-container">
+                <div class="row align-items-start">
+
+                    <div class="col-lg-10">
+                        <h3 class="display-6 fw-sb mb-4 text-white" style="max-width:740px;">Who is Price Paper?</h3>
+                        <p class="mb-md-5 mb-4 text-white">We're the armada of people providing the fanatical service behind "The Big Yellow Truck". Since 1946 we've been delivering paper products, packaging, catering and janitorial supplies to Long Island and the Metro New York City area.</p>
+
+                        <!-- <a href="" class="btn btn-outline-white mt-4">Meet the paper people</a> -->
+                    </div>
+                    <div class="col-md-5">
+                        <ul class="list-style-1 text-white">
+                            <li>Over 1,200 active customers</li>
+                            <li>We ship over 12,000 orders &amp; 200,000 pieces a year</li>
+
+                        </ul>
+                    </div>
+                    <div class="col-md-5">
+                        <ul class="list-style-1 text-white">
+                            <li>Delivered over 2000 special deliveries a year</li>
+                            <li>99.6% fill rate on all of our orders</li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-2 text-center img-wrap">
+                        <img class="about-price-paper img-fluid" src="/theme_pricepaper/static/src/img/about-price-paper.webp" alt=""/>
+                    </div>
+                </div>
+            </div>
+            <div class="y-dots"></div>
+            <div class="curvy-line-yellow1"></div>
+        </section>
+
+    </template>
+
+    <template id="meet_people" name="Meet People">
+        <section class="meet-people">
+            <div class="containerfluid py-lg-5 py-3 bg-primary team-header">
+                <div class="row m-0">
+                    <div class="col-lg-12 text-center">
+                        <h3 class="display-5  fw-sb mb-4 mb-md-5 mt-md-4 text-white ">Meet the paper people</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="container ppt-container py-lg-5 py-3">
+
+                <div id="team" class="carousel slide py-lg-5" data-ride="carousel">
+                    <div class="carousel-indicators">
+                        <button type="button" data-target="#team" data-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                        <button type="button" data-target="#team" data-slide-to="1" aria-label="Slide 2"></button>
+                        <button type="button" data-target="#team" data-slide-to="2" aria-label="Slide 3"></button>
+                        <button type="button" data-target="#team" data-slide-to="3" aria-label="Slide 4"></button>
+                        <button type="button" data-target="#team" data-slide-to="4" aria-label="Slide 5"></button>
+                        <button type="button" data-target="#team" data-slide-to="5" aria-label="Slide 6"></button>
+                        <button type="button" data-target="#team" data-slide-to="6" aria-label="Slide 7"></button>
+                        <button type="button" data-target="#team" data-slide-to="7" aria-label="Slide 8"></button>
+                        <button type="button" data-target="#team" data-slide-to="8" aria-label="Slide 9"></button>
+                        <button type="button" data-target="#team" data-slide-to="9" aria-label="Slide 10"></button>
+                        <button type="button" data-target="#team" data-slide-to="10" aria-label="Slide 11"></button>
+                    </div>
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <div class="row align-items-end py-4">
+                                <div class="col-lg-6 text-lg-end text-center">
+                                    <div class="position-relative">
+                                        <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/anthony-koutsouradis.png" alt="" style="max-width:560px"/>
+                                        <span class="dot-bg"></span>
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-6 text-white pt-lg-5">
+                                    <div class="team-member-caption">
+                                        <div class="left-border-primary">
+                                            <h3 class="h3">Anthony Koutsouradis </h3>
+                                            <p class="mb-0"> Director of Operations and Purchasing</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="row align-items-end py-4">
+                                <div class="col-lg-6  text-lg-end text-center">
+                                    <div class="position-relative">
+                                        <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/ean-j-price.png" alt="" style="max-width:560px"/>
+                                        <span class="dot-bg"></span>
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-6 text-white pt-lg-5">
+                                    <div class="team-member-caption">
+                                        <div class="left-border-primary">
+                                            <h3 class="h3">Ean J Price</h3>
+                                            <p class="mb-0"> Benevolent Dictator and Chief Cat Herder</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="row align-items-end py-4">
+                                <div class="col-lg-6  text-lg-end text-center">
+                                    <div class="position-relative">
+                                        <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/gregory-tomao.png" alt="" style="max-width:560px"/>
+                                        <span class="dot-bg"></span>
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-6 text-white pt-lg-5">
+                                    <div class="team-member-caption">
+                                        <div class="left-border-primary">
+                                            <h3 class="h3">Gregory Tomao</h3>
+                                            <p class="mb-0"> Sales Manager</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="row align-items-end py-4">
+                                <div class="col-lg-6  text-lg-end text-center">
+                                    <div class="position-relative">
+                                        <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/ira-spector.png" alt="" style="max-width:560px"/>
+                                        <span class="dot-bg"></span>
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-6 text-white pt-lg-5">
+                                    <div class="team-member-caption">
+                                        <div class="left-border-primary">
+                                            <h3 class="h3">Ira Spector</h3>
+                                            <p class="mb-0">  VP of Sales</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="row align-items-end py-4">
+                                <div class="col-lg-6  text-lg-end text-center">
+                                    <div class="position-relative">
+                                        <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/alan-oberstein.png" alt="" style="max-width:560px"/>
+                                        <span class="dot-bg"></span>
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-6 text-white pt-lg-5">
+                                    <div class="team-member-caption">
+                                        <div class="left-border-primary">
+                                            <h3 class="h3">Alan Oberstein</h3>
+                                            <p class="mb-0">Sales Rep</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="row align-items-end py-4">
+                                <div class="col-lg-6  text-lg-end text-center">
+                                    <div class="position-relative">
+                                        <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/bob-miller.png" alt="" style="max-width:560px"/>
+                                        <span class="dot-bg"></span>
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-6 text-white pt-lg-5">
+                                    <div class="team-member-caption">
+                                        <div class="left-border-primary">
+                                            <h3 class="h3">Bob Miller</h3>
+                                            <p class="mb-0">Sales Rep</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="row align-items-end py-4">
+                                <div class="col-lg-6  text-lg-end text-center">
+                                    <div class="position-relative">
+                                        <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/john-jaroski.png" alt="" style="max-width:560px"/>
+                                        <span class="dot-bg"></span>
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-6 text-white pt-lg-5">
+                                    <div class="team-member-caption">
+                                        <div class="left-border-primary">
+                                            <h3 class="h3">John Jaroski</h3>
+                                            <p class="mb-0">Sales Rep</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="row align-items-end py-4">
+                                <div class="col-lg-6  text-lg-end text-center">
+                                    <div class="position-relative">
+                                        <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/baker.png" alt="" style="max-width:560px"/>
+                                        <span class="dot-bg"></span>
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-6 text-white pt-lg-5">
+                                    <div class="team-member-caption">
+                                        <div class="left-border-primary">
+                                            <h3 class="h3">Mr. Baker</h3>
+                                            <p class="mb-0">Sales Rep</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="row align-items-end py-4">
+                                <div class="col-lg-6  text-lg-end text-center">
+                                    <div class="position-relative">
+                                        <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/rob-kopilow.png" alt="" style="max-width:560px"/>
+                                        <span class="dot-bg"></span>
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-6 text-white pt-lg-5">
+                                    <div class="team-member-caption">
+                                        <div class="left-border-primary">
+                                            <h3 class="h3">Rob Kopilow</h3>
+                                            <p class="mb-0">Sales Rep</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="row align-items-end py-4">
+                                <div class="col-lg-6  text-lg-end text-center">
+                                    <div class="position-relative">
+                                        <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/seth-oberstein.png" alt="" style="max-width:560px"/>
+                                        <span class="dot-bg"></span>
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-6 text-white pt-lg-5">
+                                    <div class="team-member-caption">
+                                        <div class="left-border-primary">
+                                            <h3 class="h3">Seth Oberstein</h3>
+                                            <p class="mb-0">Sales Rep</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="row align-items-end py-4">
+                                <div class="col-lg-6  text-lg-end text-center">
+                                    <div class="position-relative">
+                                        <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/steve-attard.png" alt="" style="max-width:560px"/>
+                                        <span class="dot-bg"></span>
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-6 text-white pt-lg-5">
+                                    <div class="team-member-caption">
+                                        <div class="left-border-primary">
+                                            <h3 class="h3">Steve Attard</h3>
+                                            <p class="mb-0">Sales Rep</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-target="#team" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-target="#team" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+
+                <div class="curvy-line"></div>
+
+            </div>
+        </section>
+
+    </template>
+</odoo>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="login_button" inherit_id="web.login">
+        <xpath expr="//button[@type='submit']" position="attributes">
+            <attribute name="class">btn btn-primary btn-block te_theme_button</attribute>
+        </xpath>
+    </template>
+    <template id="signup_button" inherit_id="auth_signup.signup">
+        <xpath expr="//button[hasclass('btn-block')]" position="attributes">
+            <attribute name="class">btn btn-primary btn-block te_theme_button</attribute>
+        </xpath>
+    </template>
+    <template id="reset_password_button" inherit_id="auth_signup.reset_password">
+        <xpath expr="//div[hasclass('oe_login_buttons')]//button[hasclass('btn-primary')]" position="attributes">
+            <attribute name="class">btn btn-primary te_theme_button py-1 px-4</attribute>
+        </xpath>
+    </template>
+    <template id="contact_form_button" inherit_id="website.contactus">
+        <xpath expr="//section[hasclass('s_website_form')]//div[hasclass('s_website_form_submit')]//a[hasclass('s_website_form_send')]" position="attributes">
+            <attribute name="class" add="te_theme_button" separator=" "></attribute>
+        </xpath>
+    </template>
+    <template id="s_website_form_button" inherit_id="website.s_website_form">
+        <xpath expr="//a[hasclass('btn-primary')]" position="attributes">
+            <attribute name="class">btn btn-primary btn-lg s_website_form_send te_theme_button</attribute>
+        </xpath>
+    </template>
+    <template id="s_media_list_button" inherit_id="website.s_color_blocks_2">
+        <xpath expr="//a[hasclass('btn-primary')]" position="attributes">
+            <attribute name="class">btn btn-primary te_theme_button</attribute>
+        </xpath>
+    </template>
+    <template id="s_color_blocks_2_button" inherit_id="website.s_media_list">
+        <xpath expr="//a[hasclass('btn-primary')]" position="attributes">
+            <attribute name="class">btn btn-primary te_theme_button</attribute>
+        </xpath>
+    </template>
+    <template id="s_color_blocks_2_button" inherit_id="website.s_call_to_action">
+        <xpath expr="//a[hasclass('btn-primary')]" position="attributes">
+            <attribute name="class">btn btn-primary btn-lg te_theme_button</attribute>
+        </xpath>
+    </template>
+    <template id="s_product_list_button" inherit_id="website.s_product_list">
+        <xpath expr="//div[hasclass('row')]/div[1]//a[hasclass('btn-primary')]" position="attributes">
+            <attribute name="class">btn btn-primary te_theme_button</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('row')]/div[2]//a[hasclass('btn-primary')]" position="attributes">
+            <attribute name="class">btn btn-primary te_theme_button</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('row')]/div[3]//a[hasclass('btn-primary')]" position="attributes">
+            <attribute name="class">btn btn-primary te_theme_button</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('row')]/div[4]//a[hasclass('btn-primary')]" position="attributes">
+            <attribute name="class">btn btn-primary te_theme_button</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('row')]/div[5]//a[hasclass('btn-primary')]" position="attributes">
+            <attribute name="class">btn btn-primary te_theme_button</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('row')]/div[6]//a[hasclass('btn-primary')]" position="attributes">
+            <attribute name="class">btn btn-primary te_theme_button</attribute>
+        </xpath>
+    </template>
+    <template id="s_showcase_button" inherit_id="website.s_showcase">
+        <xpath expr="//a[hasclass('btn-primary')]" position="attributes">
+            <attribute name="class">btn btn-primary te_theme_button</attribute>
+        </xpath>
+    </template>
+    <template id="sale_order_portal_button" inherit_id="sale.sale_order_portal_template">
+        <xpath expr="//a[hasclass('o_download_btn')]" position="attributes">
+            <attribute name="class">btn btn-secondary btn-block o_download_btn te_theme_button</attribute>
+        </xpath>
+        <xpath expr="//a[hasclass('o_portal_invoice_print')]" position="attributes">
+            <attribute name="class">btn btn-secondary btn-block o_print_btn o_portal_invoice_print te_theme_button
+            </attribute>
+        </xpath>
+        <xpath expr="//a[hasclass('btn-primary')]" position="attributes">
+            <attribute name="class">btn btn-primary btn-block mb8 te_theme_button</attribute>
+        </xpath>
+        <xpath expr="//a[@id='o_sale_portal_paynow']" position="attributes">
+            <attribute name="t-att-class">'btn-block te_theme_button mb8 %s' % ('btn btn-light' if
+                sale_order.transaction_ids else 'btn btn-primary')
+            </attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('justify-content-center')]/t/div[1]/a" position="attributes">
+            <attribute name="class">btn btn-primary te_theme_button</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('justify-content-center')]/t/div[2]/a" position="attributes">
+            <attribute name="class">btn btn-secondary te_theme_button</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('justify-content-center')]/t/div[3]/a" position="attributes">
+            <attribute name="class">btn btn-danger te_theme_button</attribute>
+        </xpath>
+        <xpath expr="//footer/button[1]" position="attributes">
+            <attribute name="class">btn btn-danger te_theme_button</attribute>
+        </xpath>
+        <xpath expr="//footer/button[2]" position="attributes">
+            <attribute name="class">btn btn-primary te_theme_button</attribute>
+        </xpath>
+    </template>
+    <template id="product_buy_now_button" inherit_id="website_sale.product_buy_now">
+        <xpath expr="//a[hasclass('o_we_buy_now')]" position="attributes">
+            <attribute name="class">btn btn-outline-primary btn-lg mt16 d-block d-sm-inline-block te_theme_button
+                o_we_buy_now
+            </attribute>
+            <attribute name="t-if">False if website.b2b_hide_add_to_cart and website.is_public_user() else True</attribute>
+        </xpath>
+        <xpath expr="//a[hasclass('o_we_buy_now')]" position="attributes">
+            <attribute name="t-attf-class">btn btn-outline-primary btn-lg mt16 te_theme_button o_we_buy_now
+                #{'w-50 sticky_enable' if request.website.viewref('theme_clarico_vega.product_sticky_details_container').active else 'w-100 d-inline-block'}
+            </attribute>
+            <attribute name="t-if">False if website.b2b_hide_add_to_cart and website.is_public_user() else True</attribute>
+        </xpath>
+    </template>
+</odoo>

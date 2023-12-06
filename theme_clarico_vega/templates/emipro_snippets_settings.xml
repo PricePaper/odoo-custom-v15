@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Snippets menu -->
+    <template id="snippets_ept" inherit_id="web_editor.snippets">
+        <xpath expr="//div[@id='snippets_menu']" position="inside">
+            <button type="button" tabindex="4" class="o_we_customize_theme_btn_ept text-uppercase"
+                    data-title="Emipro Theme Settings" accesskey="4">
+                <span>Clarico Vega</span>
+            </button>
+        </xpath>
+        <xpath expr="//div[@id='snippet_options']" position="after">
+            <div id="theme_settings" class="d-none">
+                <t t-call="theme_clarico_vega.vega_theme_options"/>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="vega_theme_options" name="Manage Theme Features">
+        <div data-js="ThemeOptionsEpt" data-selector="theme-options-ept" data-no-check="true">
+            <we-select string="Choose Button Style" data-variable="button-template">
+                <we-button data-name="button_style_1"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/g1-16.gif"
+                           data-customize-website-variable="'button_style_1'"
+                           data-customize-website-views=""/>
+                <we-button data-name="button_style_2"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/g2-16.gif"
+                           data-customize-website-variable="'button_style_2'"
+                           data-customize-website-views=""/>
+                <we-button data-name="button_style_3"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/g3-16.gif"
+                           data-customize-website-variable="'button_style_3'"
+                           data-customize-website-views=""/>
+                <we-button data-name="button_style_4"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/g4-16.gif"
+                           data-customize-website-variable="'button_style_4'"
+                           data-customize-website-views=""/>
+                <we-button data-name="button_style_5"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/g5-16.gif"
+                           data-customize-website-variable="'button_style_5'"
+                           data-customize-website-views=""/>
+                <we-button data-name="button_style_6"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/g6-16.gif"
+                           data-customize-website-variable="'button_style_6'"
+                           data-customize-website-views=""/>
+                <we-button data-name="button_style_7"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/g7-16.gif"
+                           data-customize-website-variable="'button_style_7'"
+                           data-customize-website-views=""/>
+                <we-button data-name="button_style_8"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/g8-16.gif"
+                           data-customize-website-variable="'button_style_8'"
+                           data-customize-website-views=""/>
+                <we-button data-name="button_style_9"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/g9-16.gif"
+                           data-customize-website-variable="'button_style_9'"
+                           data-customize-website-views=""/>
+                <we-button data-name="button_style_10"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/g10-16.gif"
+                           data-customize-website-variable="'button_style_10'"
+                           data-customize-website-views=""/>
+                <we-button data-name="button_style_11"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/button_11.gif"
+                           data-customize-website-variable="'button_style_11'"
+                           data-customize-website-views=""/>
+                <we-button data-name="button_style_12"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/button_12.gif"
+                           data-customize-website-variable="'button_style_12'"
+                           data-customize-website-views=""/>
+                <we-button data-name="button_style_13"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/button_13.gif"
+                           data-customize-website-variable="'button_style_13'"
+                           data-customize-website-views=""/>
+                <we-button data-name="button_style_14"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/button_14.gif"
+                           data-customize-website-variable="'button_style_14'"
+                           data-customize-website-views=""/>
+                <we-button data-name="button_style_15"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/button_15.gif"
+                           data-customize-website-variable="'button_style_15'"
+                           data-customize-website-views=""/>
+                <we-button data-name="button_style_16"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/button_16.gif"
+                           data-customize-website-variable="'button_style_16'"
+                           data-customize-website-views=""/>
+                <we-button data-name="button_style_17"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/button_15.gif"
+                           data-customize-website-variable="'button_style_17'"
+                           data-customize-website-views=""/>
+                <we-button data-name="button_style_18"
+                           data-img="/theme_clarico_vega/static/src/img/customise_option/button_15.gif"
+                           data-customize-website-variable="'button_style_18'"
+                           data-customize-website-views=""/>
+            </we-select>
+            <we-colorpicker data-dependencies="button_style_16" string="Gradient color 1"
+                            data-color="button_gradient_1" data-color-type="theme" data-customize-website-color=""/>
+            <we-colorpicker data-dependencies="button_style_16" string="Gradient color 1"
+                            data-color="button_gradient_2" data-color-type="theme" data-customize-website-color=""/>
+            <we-checkbox string="AJAX Shopping Cart"
+                         data-customize-website-views="theme_clarico_vega.ajaxcart_popup"
+                         data-reload="/"/>
+<!--            <we-checkbox string="Display info of product in cart"
+                         data-customize-website-views="theme_clarico_vega.render_product_info_in_cart"
+                         data-reload="/"/>-->
+            <we-checkbox string="Load Products Through Ajax"
+                         data-customize-website-views="theme_clarico_vega.load_products_through_ajax"
+                         data-reload="/"/>
+            <we-checkbox string="Quick View"
+                         data-customize-website-views="theme_clarico_vega.quickview_icon_shop_product_item"
+                         data-reload="/"/>
+            <we-checkbox string="Vertical Menu"
+                         data-customize-website-views="theme_clarico_vega.menu_vertical"
+                         data-reload="/"/>
+            <we-checkbox string="Menu Label"
+                         data-customize-website-views="theme_clarico_vega.website_submenu_label_ept"
+                         data-reload="/"/>
+            <we-checkbox string="Advance Mini cart"
+                         data-customize-website-views="theme_clarico_vega.custom_template"
+                         data-reload="/"/>
+            <we-checkbox string="Login Popup"
+                         data-customize-website-views="theme_clarico_vega.login_popup_ept"
+                         data-reload="/"/>
+            <we-checkbox string="Filter in Sidebar" data-name="filter_sidebar"
+                         data-customize-website-views="theme_clarico_vega.clarico_filter_sidebar"
+                         data-reload="/"/>
+            <we-checkbox string="Sticky Attribute &amp; Category Filter"
+                         data-customize-website-views="theme_clarico_vega.sticky_product_categories"
+                         data-reload="/"/>
+            <we-checkbox string="Sticky Product Gallary"
+                         data-customize-website-views="theme_clarico_vega.product_sticky_gallary"
+                         data-reload="/"/>
+            <we-checkbox string="Image Magnifier"
+                         data-customize-website-views="theme_clarico_vega.drift_zoom_ept"
+                         data-reload="/"/>
+            <we-checkbox string="Sticky Product Details"
+                         data-customize-website-views="theme_clarico_vega.product_sticky_details_container"
+                         data-reload="/"/>
+            <we-checkbox string="Product Brand"
+                         data-name="product_brand"
+                         data-customize-website-views="theme_clarico_vega.product_brand_attribute_custom"
+                         data-reload="/"/>
+            <we-checkbox string="Show Brand Logo"
+                         data-dependencies="product_brand"
+                         data-customize-website-views="theme_clarico_vega.product_show_brand_logo"
+                         data-reload="/"/>
+            <we-checkbox string="Show Associated Attribute Value"
+                         data-customize-website-views="theme_clarico_vega.display_product_associate_attribute_value_ept"
+                         data-reload="/"/>
+            <we-checkbox string="Product Count In Shop Filter"
+                         data-customize-website-views="theme_clarico_vega.website_attribute_values_count_ept"
+                         data-reload="/"/>
+            <we-checkbox string="Product Label" data-name="product_label"
+                         data-customize-website-views="theme_clarico_vega.clarico_shop_products_label"
+                         data-reload="/"/>
+            <we-colorpicker data-dependencies="product_label" string="Label Color"
+                            data-color="product_label" data-color-type="theme" data-customize-website-color=""/>
+
+            <we-checkbox string="Hide Description and Variants Values" data-customize-website-views="theme_clarico_vega.hide_variant_info_in_cart_ept, theme_clarico_vega.hide_variant_details_cart_summary_ept_ext" data-reload="/"/>
+
+            <we-checkbox string="Horizontal Category" data-name="horizontal_category"
+                         data-customize-website-views="theme_clarico_vega.shop_horizontal_category"
+                         data-reload="/"/>
+
+            <we-select string="Choose Category Style" data-dependencies="horizontal_category">
+                <we-button data-name="category_round_style" string="Rounded image style"
+                           data-customize-website-views="theme_clarico_vega.option_round_image_style" data-reload="/"/>
+                <we-button data-name="category_pill_style" string="Pill Style"
+                           data-customize-website-views="theme_clarico_vega.option_pill_style" data-reload="/"/>
+            </we-select>
+
+            <we-checkbox string="Color Variant"
+                         data-customize-website-views="theme_clarico_vega.shop_color_variant_ept" data-reload="/"/>
+            <!-- Clear Cart Button -->
+            <we-checkbox string="Clear Cart" data-name="clear_cart"
+                                     data-customize-website-views="theme_clarico_vega.clear_cart_link_ept" data-reload="/"/>
+        </div>
+    </template>
+
+    <template id="shop_page_product_snippet_options" inherit_id="website_sale.snippet_options"
+              name="shop page snippet options">
+        <xpath expr="//we-select[hasclass('o_wsale_ppr_submenu')]" position="inside">
+            <we-button data-set-ppr="5">5</we-button>
+            <we-button data-set-ppr="6">6</we-button>
+        </xpath>
+    </template>
+
+    <template id="s_website_form_options" inherit_id="website.snippet_options">
+        <!-- Extend drop locations to columns -->
+        <xpath expr="//t[@t-set='so_content_addition_selector']" position="inside">, .s_button</xpath>
+        <xpath expr="//div[@data-js='sizing_y']" position="attributes">
+            <attribute name="data-selector" add=".s_button" separator=","/>
+        </xpath>
+    </template>
+
+
+</odoo>

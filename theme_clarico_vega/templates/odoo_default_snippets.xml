@@ -1,0 +1,958 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="clarico_snippets" inherit_id="website.snippets">
+        <!-- Title (Heading) -->
+        <xpath
+                expr="//div[@id='snippet_structure']/div[hasclass('o_panel_body')]/t[@t-snippet='website.s_title']"
+                position="replace">
+        </xpath>
+        <!-- Text-Block (Content) -->
+        <xpath
+                expr="//div[@id='snippet_structure']/div[hasclass('o_panel_body')]/t[@t-snippet='website.s_text_block']"
+                position="attributes">
+            <attribute name="t-thumbnail">/theme_clarico_vega/static/src/img/snippets/snippets_icon/style_3.jpg
+            </attribute>
+        </xpath>
+        <!-- Picture -->
+        <xpath
+                expr="//div[@id='snippet_structure']/div[hasclass('o_panel_body')]/t[@t-snippet='website.s_picture']"
+                position="attributes">
+            <attribute name="t-thumbnail">/theme_clarico_vega/static/src/img/snippets/snippets_icon/picture.jpg
+            </attribute>
+        </xpath>
+        <!-- Image-Text -->
+        <xpath
+                expr="//div[@id='snippet_structure']/div[hasclass('o_panel_body')]/t[@t-snippet='website.s_image_text']"
+                position="attributes">
+            <attribute name="t-thumbnail">/theme_clarico_vega/static/src/img/snippets/snippets_icon/snippet11.jpg
+            </attribute>
+        </xpath>
+        <!-- Text-Image -->
+        <xpath
+                expr="//div[@id='snippet_structure']/div[hasclass('o_panel_body')]/t[@t-snippet='website.s_text_image']"
+                position="attributes">
+            <attribute name="t-thumbnail">/theme_clarico_vega/static/src/img/snippets/snippets_icon/text_img.jpg
+            </attribute>
+        </xpath>
+        <!-- 3 Columans Style 1 -->
+        <xpath
+                expr="//div[@id='snippet_structure']/div[hasclass('o_panel_body')]/t[@t-snippet='website.s_three_columns']"
+                position="replace">
+        </xpath>
+        <!-- Features (Three Columns) -->
+        <xpath
+                expr="//div[@id='snippet_structure']/div[hasclass('o_panel_body')]/t[@t-snippet='website.s_features']"
+                position="replace">
+        </xpath>
+        <!-- Comparisons (Pricing - 3 Column) -->
+        <xpath
+                expr="//div[@id='snippet_feature']/div[hasclass('o_panel_body')]/t[@t-snippet='website.s_comparisons']"
+                position="attributes">
+            <attribute name="t-thumbnail">/theme_clarico_vega/static/src/img/snippets/snippets_icon/snippet_13.jpg
+            </attribute>
+        </xpath>
+        <!-- Carousel -->
+        <xpath
+                expr="//div[@id='snippet_structure']/div[hasclass('o_panel_body')]/t[@t-snippet='website.s_carousel']"
+                position="replace">
+        </xpath>
+        <!-- Company Team -->
+        <xpath
+                expr="//div[@id='snippet_feature']/div[hasclass('o_panel_body')]/t[@t-snippet='website.s_company_team']"
+                position="attributes">
+            <attribute name="t-thumbnail">/theme_clarico_vega/static/src/img/snippets/snippets_icon/company_team.jpg
+            </attribute>
+        </xpath>
+    </template>
+    <!-- Latest Blog - Big Images -->
+    <template id="clarico_snippets_blog" inherit_id="website_blog.website_blog">
+        <xpath expr="//t[@t-snippet='website_blog.s_blog_posts']" position="attributes">
+            <attribute name="t-thumbnail">/theme_clarico_vega/static/src/img/snippets/snippets_icon/blog_3_col_snippet.jpg
+            </attribute>
+        </xpath>
+    </template>
+
+    <!-- Title (Heading) -->
+    <template id="s_title_ept" inherit_id="website.s_title">
+        <xpath expr="//section" position="replace">
+            <section>
+                <div class="container">
+                    <div class="row s_nb_column_fixed">
+                        <div class="col-lg-12 s_title" style="text-align: center;">
+                            <h4 class="te_s_title_default">My Heading 4</h4>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+
+    <!--===================== Text-Block (Content) ====================-->
+    <template id="s_text_block" inherit_id="website.s_text_block">
+        <xpath expr="//section[hasclass('s_text_block')]" position="replace">
+            <section class="s_text_block">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12  pt32 pb32">
+                            <p class="lead">Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire
+                                persius. Duis meis quas vim ex, ius no oblique phaedrum.
+                            </p>
+                            <p>
+                                <b>Lorem ipsum dolor sit amet.</b>
+                                Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius. Duis meis
+                                quas vim ex, ius no oblique phaedrum pertinacia. Ornatus referrentur nec cu, dicam
+                                dolore vivendum ne mea. Usu bonorum inermis efficiantur ad, nec at detracto repudiandae,
+                                erat denique percipit at est.
+                            </p>
+                            <p>
+                                <b>Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.</b>
+                                Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius. Duis meis
+                                quas vim ex, ius no oblique phaedrum pertinacia. Ornatus referrentur nec cu, dicam
+                                dolore vivendum ne mea,
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+
+    <!--=================== Image-Text ==================-->
+    <template id="s_image_text" inherit_id="website.s_image_text">
+        <xpath expr="//section[hasclass('s_text_image')]" position="replace">
+            <section class="s_text_image pt32 pb32">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6">
+                            <div class="t_img_hover_1 te_img_txt_s1">
+                                <img src="/theme_clarico_vega/static/src/img/snippets/structure/image_text/700_506.jpg"
+                                     class="img img-fluid mx-auto" alt="Clarico-Image-Text"/>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <h2 class=" te_s_it_heading">My Heading 2</h2>
+                            <div class="s_hr text-left pb32 pt8">
+                                <hr class="border-600 s_hr_solid w-25 mr-auto s_hr_4px border-alpha"/>
+                            </div>
+                            <p class="mb16">Lorem ipsum dolor sit amet, eam et reque justo quidam, audire<br/>ius no
+                                oblique phaedrum pertinacia. Ornatus referrentur nec dicam<br/>Lorem ipsum
+                            </p>
+                            <p class="mb16">Lorem ipsum dolor sit amet, eam et reque justo quidam, audire<br/>ius no
+                                oblique phaedrum pertinacia. Ornatus referrentur nec dicam<br/>Lorem ipsum dolor sit
+                                amet, eam et reque justo quidam, audire persius.
+                            </p>
+                            <div class="s_btn text-left pt16 pb16">
+                                <a href="#" class="btn btn-primary te_theme_button">Know more</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+
+    <!--================== Text-Image =======================-->
+    <template id="s_text_image" inherit_id="website.s_text_image">
+        <xpath expr="//section[hasclass('s_text_image')]" position="replace">
+            <section class="s_text_image pt32 pb32">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6">
+                            <h2 class=" te_s_it_heading">My Heading 2</h2>
+                            <div class="s_hr text-left pb32 pt8">
+                                <hr class="border-600 s_hr_solid w-25 mr-auto s_hr_4px border-alpha"/>
+                            </div>
+                            <p class="mb16">Lorem ipsum dolor sit amet, eam et reque justo quidam, audire<br/>ius no
+                                oblique phaedrum pertinacia. Ornatus referrentur nec dicam<br/>Lorem ipsum
+                            </p>
+                            <p class="mb16">Lorem ipsum dolor sit amet, eam et reque justo quidam, audire<br/>ius no
+                                oblique phaedrum pertinacia. Ornatus referrentur nec dicam<br/>Lorem ipsum dolor sit
+                                amet, eam et reque justo quidam, audire persius.
+                            </p>
+                            <div class="s_btn text-left pt16 pb16">
+                                <a href="#" class="btn btn-primary te_theme_button">Know more</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="t_img_hover_1 te_txt_img_s1">
+                                <img src="/theme_clarico_vega/static/src/img/snippets/structure/text_image/437_500.jpg"
+                                     class="img img-fluid mx-auto" alt="Clarico-Text-Image"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+    <!--==================== Picture =====================-->
+    <template id="picture_ept" inherit_id="website.s_picture">
+        <xpath expr="//section[hasclass('s_picture')]" position="replace">
+            <section class="s_picture bg-100 pt32 pb32">
+                <div class="container">
+                    <div class="row s_nb_column_fixed">
+                        <div class="col-lg-12">
+                            <h2 class="te_text_small_title" style="text-align:center;">My Heading 2</h2>
+                        </div>
+                        <div class="col-lg-12 pt16 pb16">
+                            <p style="text-align: center;">Lorem ipsum dolor sit amet, eam et reque, te est audire
+                                persius.
+                                <br/>
+                                ius no oblique phaedrum pertinacia. Ornatus referrentur nec cu, dicam dolore vivendum ne
+                                mea. ad<br/>dicam dolore vivendum ne mea Usu bonorum inermis efficiantur ad
+                            </p>
+                        </div>
+                        <div class="col-lg-12 s_btn pt16 pb16 text-center mb32" data-name="Buttons">
+                            <a href="/start" class="btn btn-primary te_theme_button">Know more</a>
+                        </div>
+                        <div class="col-lg-8 offset-lg-2">
+                            <figure class="figure t_img_hover_1 te_picture_img">
+                                <img src="/theme_clarico_vega/static/src/img/snippets/structure/picture/950_450.png"
+                                     class="figure-img img-fluid rounded img-thumbnail padding-large"
+                                     alt="Clarico-Picture"/>
+                                <figcaption class="figure-caption py-3 text-center"><span
+                                        class="fa fa-1x fa-picture-o mr-2"/>Add a caption to enhance the meaning of this
+                                    image.
+                                </figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+    <!--================== Features (Three Columns) ========================-->
+    <template id="s_features_ept" name="Style 13" inherit_id="website.s_features">
+        <xpath expr="//section[hasclass('s_features')]" position="replace">
+            <section class="s_features pt32 pb32">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-4 col-lg-4 te_menu_flip_box te_feature_flip">
+                            <span class="te_menu_flip_box_inner w-auto fa fa-3x fa-gear"/>
+                            <div class="mt-3 te_feature_content">
+                                <a href="#" class="te_features_link">Lorem ipsum</a>
+                                <p class="te_features_discreption mt8">Lorem ipsum dolor sit amet, eam et reque, te est
+                                    audire persius. Ornatus referrentur nec cu, dicam dolore vivendum ne mea
+                                </p>
+                            </div>
+                            <section class="te_feature_btn mt-3">
+                                <a href="#">
+                                    <span>Read More</span>
+                                </a>
+                                <span class="fa fa-angle-right"/>
+                            </section>
+                        </div>
+                        <div class="col-md-4 col-lg-4 te_menu_flip_box te_feature_flip">
+                            <span class="te_menu_flip_box_inner w-auto fa fa-3x fa-photo"/>
+                            <div class="mt-3 te_feature_content">
+                                <a href="#" class="te_features_link">Lorem ipsum</a>
+                                <p class="te_features_discreption mt8">Lorem ipsum dolor sit amet, eam et reque, te est
+                                    audire persius. Ornatus referrentur nec cu, dicam dolore vivendum ne mea
+                                </p>
+                            </div>
+                            <section class="te_feature_btn mt-3">
+                                <a href="#">
+                                    <span>Read More</span>
+                                </a>
+                                <span class="fa fa-angle-right"/>
+                            </section>
+                        </div>
+                        <div class="col-md-4 col-lg-4 te_menu_flip_box te_feature_flip">
+                            <span class="te_menu_flip_box_inner w-auto fa fa-3x fa-leaf"/>
+                            <div class="mt-3 te_feature_content">
+                                <a href="#" class="te_features_link">Lorem ipsum</a>
+                                <p class="te_features_discreption mt8">Lorem ipsum dolor sit amet, eam et reque, te est
+                                    audire persius. Ornatus referrentur nec cu, dicam dolore vivendum ne mea
+                                </p>
+                            </div>
+                            <section class="te_feature_btn mt-3">
+                                <a href="#">
+                                    <span>Read More</span>
+                                </a>
+                                <span class="fa fa-angle-right"/>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+    <!--================== Accordion ===========================-->
+    <template id="t_faq_collapse_ept" name="Accordion" inherit_id="website.s_faq_collapse">
+        <xpath expr="//div[hasclass('container')]" position="replace">
+            <div class="container te_section_accordion">
+                <div class="row s_nb_column_fixed">
+                </div>
+                <div class="row s_col_no_bgcolor">
+                    <div class="col-lg-12 pt16 pb16">
+                        <div id="myCollapse" class="accordion" role="tablist">
+                            <div class="card bg-white">
+                                <a href="#" role="tab" data-toggle="collapse" aria-expanded="true" class="card-header">
+                                    Lorem ipsum dolor
+                                </a>
+                                <div class="collapse show" role="tabpanel">
+                                    <div class="card-body">
+                                        <p class="card-text">Lorem ipsum dolor sit amet, eam et reque justo quidam, te
+                                            est audire persius. Duis meis quas vim ex, ius no oblique phaedrum
+                                            pertinacia. Ornatus referrentur nec cu, dicam dolore vivendum ne mea. Usu
+                                            bonorum inermis efficiantur ad, nec at detracto repudiandae, erat denique
+                                            percipit at est.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card bg-white">
+                                <a href="#" role="tab" data-toggle="collapse" aria-expanded="false"
+                                   class="collapsed card-header">Lorem ipsum dolor sit
+                                </a>
+                                <div class="collapse" role="tabpanel">
+                                    <div class="card-body">
+                                        <p class="card-text">Lorem ipsum dolor sit amet, eam et reque justo quidam, te
+                                            est audire persius. Duis meis quas vim ex, ius no oblique phaedrum
+                                            pertinacia. Ornatus referrentur nec cu, dicam dolore vivendum ne mea. Usu
+                                            bonorum inermis efficiantur
+                                        </p>
+                                        <p class="card-text">Lorem ipsum dolor sit amet, eam et reque justo quidam, te
+                                            est audire persius. Duis meis quas vim ex, ius no oblique phaedrum
+                                            pertinacia. Ornatus referrentur nec cu, dicam dolore vivendum ne mea. Usu
+                                            bonorum inermis efficiantur
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card bg-white">
+                                <a href="#" role="tab" data-toggle="collapse" aria-expanded="false"
+                                   class="collapsed card-header">Lorem ipsum dolor
+                                </a>
+                                <div class="collapse" role="tabpanel">
+                                    <div class="card-body">
+                                        <p class="card-text">Lorem ipsum dolor sit amet, eam et reque justo quidam, te
+                                            est audire persius. Duis meis quas vim ex, ius no oblique phaedrum
+                                            pertinacia. Ornatus referrentur nec cu, dicam dolore vivendum ne mea.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+        <xpath expr="//section[hasclass('s_faq_collapse')]" position="attributes">
+            <attribute name="class">s_faq_collapse</attribute>
+        </xpath>
+    </template>
+    <!--======================= Tabs ============================-->
+    <template id="t_tabs_ept" name="Tabs" inherit_id="website.s_tabs">
+        <xpath expr="//div[hasclass('container')]" position="replace">
+            <div class="container">
+                <div class="row s_col_no_bgcolor te_tabs_design">
+                    <div class="col-lg-12">
+                        <div class="card bg-white">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active"
+                                           id="nav_tabs_link_1"
+                                           data-toggle="tab"
+                                           href="#nav_tabs_content_1"
+                                           role="tab"
+                                           aria-controls="nav_tabs_content_1"
+                                           aria-selected="true">Lorem
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link"
+                                           id="nav_tabs_link_2"
+                                           data-toggle="tab"
+                                           href="#nav_tabs_content_2"
+                                           role="tab"
+                                           aria-controls="nav_tabs_content_2"
+                                           aria-selected="false">Lorem
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link"
+                                           id="nav_tabs_link_3"
+                                           data-toggle="tab"
+                                           href="#nav_tabs_content_3"
+                                           role="tab"
+                                           aria-controls="nav_tabs_content_3"
+                                           aria-selected="false">Lorem
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body tab-content">
+                                <div class="tab-pane fade show active"
+                                     id="nav_tabs_content_1"
+                                     role="tabpanel"
+                                     aria-labelledby="nav_tabs_link_1">
+                                    <h3>My Heading 3</h3>
+                                    <p>
+                                        <b>Lorem ipsum dolor phaedrum</b>
+                                        Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.
+                                        Duis meis quas vim ex, ius no oblique phaedrum pertinacia. Ornatus referrentur
+                                        nec cu, dicam dolore vivendum ne mea. Usu bonorum inermis efficiantur ad, nec at
+                                        detracto repudiandae, erat denique percipit at est.
+                                    </p>
+                                </div>
+                                <div class="tab-pane fade"
+                                     id="nav_tabs_content_2"
+                                     role="tabpanel"
+                                     aria-labelledby="nav_tabs_link_2">
+                                    <h3>My Heading 3</h3>
+                                    <p>
+                                        <b>Lorem ipsum dolor sit amet, eam et reque justo quidam, Duis meis quas vim
+                                            ex,
+                                        </b>
+                                        Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.
+                                        Duis meis quas vim ex, ius no oblique phaedrum pertinacia. Ornatus referrentur
+                                        nec cu, dicam dolore vivendum ne mea.
+                                    </p>
+                                </div>
+                                <div class="tab-pane fade"
+                                     id="nav_tabs_content_3"
+                                     role="tabpanel"
+                                     aria-labelledby="nav_tabs_link_3">
+                                    <h3>My Heading 3</h3>
+                                    <blockquote>
+                                        <p>Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.
+                                            Duis meis quas vim ex, ius no oblique phaedrum pertinacia.
+                                        </p>
+                                        <footer>— Lorem ipsum, dolor sit
+                                            <b>Lorem</b>
+                                        </footer>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+    <!--===================== Features Grid ==============================-->
+    <template id="t_features_grid_ept" name="Features Grid" inherit_id="website.s_features_grid">
+        <xpath expr="//div[hasclass('container')]" position="replace">
+            <div class="container">
+                <div class="row te_features_design">
+                    <div class="col-lg-6 s_col_no_bgcolor">
+                        <div class="row te_features_design">
+                            <div class="col-lg-12" data-name="Box">
+                                <h4>My Heading 4</h4>
+                                <h5 class="text-primary te_space_text">My Heading 5</h5>
+                            </div>
+                            <div class="col-lg-12 pt16 pb16" data-name="Box">
+                                <i class="fa fa-2x fa-font-awesome rounded-circle bg-primary s_features_grid_icon"/>
+                                <div class="te_s_features_grid_content">
+                                    <h5>My Heading 5</h5>
+                                    <p>Lorem ipsum dolor sit amet, eam et reque justo quidam,</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 pt16 pb16" data-name="Box">
+                                <i class="fa fa-2x fa-files-o rounded-circle bg-primary s_features_grid_icon"/>
+                                <div class="te_s_features_grid_content">
+                                    <h5>My Heading 5</h5>
+                                    <p>Lorem ipsum dolor sit amet, eam et reque justo quidam,</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 pt16 pb16" data-name="Box">
+                                <i class="fa fa-2x fa-trash rounded-circle bg-primary s_features_grid_icon"/>
+                                <div class="te_s_features_grid_content">
+                                    <h5>My Heading 5</h5>
+                                    <p>Lorem ipsum dolor sit amet, eam et reque justo quidam,</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 s_col_no_bgcolor">
+                        <div class="row">
+                            <div class="col-lg-12 te_features_s" data-name="Box">
+                                <h4>My Heading 4</h4>
+                                <h5 class="text-primary te_space_text">My Heading 5</h5>
+                            </div>
+                            <div class="col-lg-12 pt16 pb16" data-name="Box">
+                                <i class="fa fa-2x fa-magic rounded-circle bg-primary s_features_grid_icon"/>
+                                <div class="te_s_features_grid_content">
+                                    <h5>My Heading 5</h5>
+                                    <p>Lorem ipsum dolor sit amet, eam et reque justo quidam,</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 pt16 pb16" data-name="Box">
+                                <i class="fa fa-2x fa-eyedropper rounded-circle bg-primary s_features_grid_icon"/>
+                                <div class="te_s_features_grid_content">
+                                    <h5>My Heading 5</h5>
+                                    <p>Lorem ipsum dolor sit amet, eam et reque justo quidam,</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 pt16 pb16" data-name="Box">
+                                <i class="fa fa-2x fa-picture-o rounded-circle bg-primary s_features_grid_icon"/>
+                                <div class="te_s_features_grid_content">
+                                    <h5>My Heading 5</h5>
+                                    <p>Lorem ipsum dolor sit amet, eam et reque justo quidam,</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="t_comparisons_ept">
+                <div class="col-lg-4 s_col_no_bgcolor text-center"
+                     data-name="Box">
+                    <div class="card rounded-0">
+                        <h5 t-attf-class="card-header te_pricing_title rounded-0 border-bottom-0 #{is_class}"
+                            style="background-color: #ccc;">My Heading 5
+                        </h5>
+                        <div class="card-body text-center py-4 te_common_border_bottom">
+                            <p class="card-title te_heading_price">
+                                <sup class="te_price_currency">$</sup>
+                                <t t-esc="pricevalue"/>
+                            </p>
+                            <span class="te_cost_validity">/ Lorem</span>
+                        </div>
+                        <ul class="list-group list-group-flush px-5 py-4">
+                            <li class="list-unstyled li_text py-3">Lorem ipsum dolor sit amet, eam etreque</li>
+                            <li class="list-unstyled li_text py-3">bonorum inermis efficiantur</li>
+                            <li class="list-unstyled li_text py-3">Lorem phaedrum</li>
+                            <li class="list-unstyled li_text py-3">Lorem ipsum</li>
+                        </ul>
+                        <div>
+                            <a href="/contactus" class="btn btn-primary te_theme_button mb32">Know more</a>
+                        </div>
+                    </div>
+                </div>
+    </template>
+    <!--======================= Comparisons (Pricing - 3 Column) =======================-->
+    <template id="s_comparisons_ept" name="Comparisons"
+              inherit_id="website.s_comparisons">
+        <xpath expr="//section[hasclass('s_comparisons')]" position="replace">
+            <section class="s_comparisons pt32 pb32">
+                <div class="container">
+                    <div class="row">
+                        <t t-call="theme_clarico_vega.t_comparisons_ept">
+                            <t t-set="pricevalue" t-valuef="35"/>
+                        </t>
+                        <t t-call="theme_clarico_vega.t_comparisons_ept">
+                            <t t-set="is_class" t-valuef="bg-primary"/>
+                            <t t-set="pricevalue" t-valuef="65"/>
+                        </t>
+                        <t t-call="theme_clarico_vega.t_comparisons_ept">
+                            <t t-set="pricevalue" t-valuef="125"/>
+                        </t>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+
+    <template id="t_company_team_details_ept">
+        <t t-foreach="items" t-as="item">
+            <t t-if="item &gt; 0">
+                <div class="row s_nb_column_fixed">
+                    <div class="col-sm-3 col-6 pt16 pb16">
+                        <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <div class="col-lg-12 text-center">
+                                <div class="t_img_hover_1">
+                                    <img alt="Company team" src="/web/image/website.s_company_team_image_1"
+                                         class="img-fluid d-block mx-auto"/>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 text-center">
+                                <p class="te_employee_name mt16">Lorem ipsum</p>
+                                <p class="text-muted te_employee_job_title mt8">
+                                    Lorem ipsum dolor sit amet,
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-6 pt16 pb16">
+                        <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <div class="col-lg-12 text-center">
+                                <div class="t_img_hover_1">
+                                    <img alt="Company team" src="/web/image/website.s_company_team_image_2"
+                                         class="img-fluid d-block mx-auto"/>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 text-center">
+                                <p class="te_employee_name mt16">Lorem ipsum</p>
+                                <p class="text-muted te_employee_job_title mt8">
+                                    Lorem ipsum dolor sit amet,
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-6 pt16 pb16">
+                        <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <div class="col-lg-12 text-center">
+                                <div class="t_img_hover_1">
+                                    <img alt="Company team" src="/web/image/website.s_company_team_image_3"
+                                         class="img-fluid d-block mx-auto"/>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 text-center">
+                                <p class="te_employee_name mt16">Lorem ipsum</p>
+                                <p class="text-muted te_employee_job_title mt8">
+                                    Lorem ipsum dolor sit amet,
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-6 pt16 pb16">
+                        <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <div class="col-lg-12 text-center">
+                                <div class="t_img_hover_1">
+                                    <img alt="Company team" src="/web/image/website.s_company_team_image_4"
+                                         class="img-fluid d-block mx-auto"/>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 text-center">
+                                <p class="te_employee_name mt16">Lorem ipsum</p>
+                                <p class="text-muted te_employee_job_title mt8">
+                                    Lorem ipsum dolor sit amet,
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+            <t t-set="item" t-value="item-1"/>
+        </t>
+    </template>
+    <!--========================== Company Team =======================-->
+    <template id="s_company_team_ept" name="Company Team"
+              inherit_id="website.s_company_team">
+        <xpath expr="//section[hasclass('s_company_team')]" position="replace">
+            <section class="s_company_team pt32 pb32">
+                <div class="container">
+                    <h2 style="text-align: center;">My Heading 2</h2>
+                    <t t-call="theme_clarico_vega.t_company_team_details_ept">
+                         <t t-set="items" t-value="3"/>
+                    </t>
+                </div>
+            </section>
+        </xpath>
+    </template>
+
+    <!--====================== Call to Action =====================================-->
+    <template id="t_call_to_action_ept" name="Call to Action" inherit_id="website.s_call_to_action">
+        <xpath expr="//section[hasclass('s_call_to_action')]" position="replace">
+            <section class="s_call_to_action bg-200 pt48 pb24">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-9 pb24">
+                            <h3>
+                                <b>My</b>
+                                Heading 3
+                            </h3>
+                            <p class="lead">Lorem ipsum dolor sit amet, eam et reque justo quidam,</p>
+                        </div>
+                        <div class="col-lg-3 s_btn text-right pt8 pb24">
+                            <a href="/contactus" class="btn btn-primary btn-lg">
+                                <span>Know more</span>
+                                <span class="fa fa-1x fa-fw fa-arrow-circle-right ml-1"/>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+
+    <!--===================== References ========================-->
+    <template id="t_references_ept" name="References" inherit_id="website.s_references">
+        <xpath expr="//div[hasclass('col-lg-2')]" position="attributes">
+            <attribute name="class">col-lg-2 pt48 t_ref_text</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('t_ref_text')]" position="replace">
+            <div class="col-lg-2 pt48 t_ref_text">
+                <h4>My Heading 4</h4>
+            </div>
+        </xpath>
+    </template>
+    <!--================== Alert ==========================-->
+    <template id="t_alert_ept" name="Alert" inherit_id="website.s_alert">
+        <xpath expr="//div[hasclass('s_alert')]" position="replace">
+            <div class="s_alert s_alert_md alert-delta w-100 clearfix">
+                <span class="fa fa-2x fa-info-circle s_alert_icon"/>
+                <div class="s_alert_content">
+                    <p>Lorem ipsum dolor sit amet.<br/>Lorem ipsum dolor sit amet, eam et reque justo quidam, te est
+                        audire
+                    </p>
+                </div>
+            </div>
+        </xpath>
+    </template>
+    <!--================== Card ==========================-->
+    <template id="t_s_card_ept" name="Card" inherit_id="website.s_card">
+        <xpath expr="//div[hasclass('s_card')]" position="replace">
+            <div class="s_card card bg-white w-100">
+                <h4 class="card-header">My Heading 4</h4>
+                <div class="card-body">
+                    <p class="card-text">Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.
+                        Duis meis quas vim ex, ius no oblique phaedrum pertinacia. Ornatus referrentur nec cu, dicam
+                        dolore vivendum ne mea.
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <span class="fa fa-1x fa-clock-o mr8"/>
+                    <small>2 Lorem sit</small>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <!--=================== Quotes =====================-->
+    <template id="t_quotes_carousel_ept" name="Quotes" inherit_id="website.s_quotes_carousel">
+        <xpath expr="//div[@t-attf-id='myQuoteCarousel{{uniq}}']" position="replace">
+            <div id="myQuoteCarousel" class="s_quotes_carousel s_carousel_default carousel slide" data-interval="10000">
+                <!-- Indicators -->
+                <ol class="carousel-indicators">
+                    <li data-target="#myQuoteCarousel" data-slide-to="0" class="active" />
+                    <li data-target="#myQuoteCarousel" data-slide-to="1" />
+                    <li data-target="#myQuoteCarousel" data-slide-to="2" />
+                </ol>
+                <!-- Content -->
+                <div class="carousel-inner te_quotes_design">
+                    <!-- #01 -->
+                    <div class="carousel-item active bg-200 pt80 pb80" data-name="Slide">
+                        <div class="container">
+                            <div class="row content">
+                                <blockquote class="carousel-content col-lg-6 bg-white offset-lg-3">
+                                    <span class="fa fa-1x fa-quote-left rounded-0 bg-secondary s_quotes_carousel_icon"/>
+                                    <p>Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.
+                                        Duis meis quas vim ex, ius no oblique phaedrum
+                                    </p>
+                                    <footer>
+                                        <img class="img" src="/web/image/website.s_quotes_carousel_demo_image_3"
+                                             alt=""/>
+                                        <span>— Lorem ipsum , dolor sit
+                                            <b>Lorem</b>
+                                        </span>
+                                    </footer>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- #02 -->
+                    <div class="carousel-item oe_img_bg pt80 pb80"
+                         style="background-image: url('/web/image/website.s_quotes_carousel_demo_image_1'); background-position: 50% 50%;"
+                         data-name="Slide">
+                        <div class="container">
+                            <div class="row content">
+                                <blockquote class="col-lg-6 bg-white">
+                                    <p>Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.
+                                        Duis meis quas vim ex, ius no oblique
+                                    </p>
+                                    <footer>
+                                        <img class="img" src="/web/image/website.s_quotes_carousel_demo_image_4"
+                                             alt=""/>
+                                        <span>— Lorem ipsum , dolor sit
+                                            <b>Lorem</b>
+                                        </span>
+                                    </footer>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- #03 -->
+                    <div class="carousel-item oe_img_bg pt80 pb80"
+                         style="background-image: url('/web/image/website.s_quotes_carousel_demo_image_2'); background-position: 50% 50%;"
+                         data-name="Slide">
+                        <div class="container">
+                            <div class="row content">
+                                <blockquote class="col-lg-6 offset-lg-6 bg-white">
+                                    <p>Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.
+                                        Duis meis quas vim ex, ius no oblique
+                                    </p>
+                                    <footer class="blockquote-footer">
+                                        <img class="img" src="/web/image/website.s_quotes_carousel_demo_image_5"
+                                             alt=""/>
+                                        <span>— Lorem ipsum , dolor sit
+                                            <b>Lorem</b>
+                                        </span>
+                                    </footer>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Controls -->
+                <div class="carousel-control-prev" data-target="#myQuoteCarousel" data-slide="prev" role="img"
+                     aria-label="Previous" title="Previous">
+                    <span class="carousel-control-prev-icon"/>
+                    <span class="sr-only">Previous</span>
+                </div>
+                <div class="carousel-control-next" data-target="#myQuoteCarousel" data-slide="next" role="img"
+                     aria-label="Next" title="Next">
+                    <span class="carousel-control-next-icon"/>
+                    <span class="sr-only">Next</span>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="t_three_columns">
+        <t t-foreach="items" t-as="item">
+            <t t-if="item &gt; 0">
+                <div class="col-lg-4 col-md-4 s_col_no_bgcolor te_ts_img_hvr">
+                    <div class="te_3_column_center_heading card">
+                        <div class="te_img_hover_overflow te_3col_img" style="background-color:#e9e9e9;">
+                            <img class="img img-responsive te_feature_image"
+                                 src="/theme_clarico_vega/static/src/img/snippets/3_column/style_1/265_265.png"
+                                 alt="Clarico-3 Columans Style 1"/>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-title te_three_columns_heading">Lorem ipsum</p>
+                            <p class="card-text te_three_columns_para o_default_snippet_text">
+                                Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.
+                                Duis meis quas vim ex, ius no oblique. Ornatus
+                                <em class="o_default_snippet_text"/>
+                                cu.
+                            </p>
+                            <div class="s_btn text-left pb0 pt16 text-center" data-name="Button">
+                                <a href="#" class="btn btn-primary te_theme_button o_default_snippet_text">Know
+                                    more
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+            <t t-set="item" t-value="item-1"/>
+        </t>
+    </template>
+    <!--==================== 3 Columans Style 1 =============================-->
+    <template id="three_columns_style_1" name="Three Columns" inherit_id="website.s_three_columns">
+        <xpath expr="//section[hasclass('s_three_columns')]" position="replace">
+            <section class="s_three_columns pt32 pb32">
+                <div class="container">
+                    <div class="row d-flex align-items-stretch">
+                        <t t-call="theme_clarico_vega.t_three_columns">
+                            <t t-set="items" t-value="4"/>
+                        </t>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+
+
+    <template id="t_carousel_style_15">
+        <div t-attf-class="carousel-item oe_custom_bg oe_img_bg #{is_active}"
+             style="background-image: url('/theme_clarico_vega/static/src/img/snippets/slider_styles/style_7/1920_800.jpg');"
+             data-name="Slide">
+            <div class="container">
+                <div class="row content">
+                    <div class="carousel-content col-lg-5 col-md-8 te_t_slider_sm_content"
+                         style="animation: animatezoom 0.8s ease-in both;animation-delay: 1s;">
+                        <div class="s_title pb8" data-name="Title">
+                            <h2 class="carousel_heading te_t_slider_7_title">My Heading 2</h2>
+                        </div>
+                        <p class="carousel_content">
+                            Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur,
+                            adipisci velit abil mutoi sovali uomil mitum.
+                        </p>
+                        <div class="s_btn text-left pt16 pb16 mt32" data-name="Buttons">
+                            <a href="/contactus" class="btn btn-primary te_theme_button">Know more</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <!--====================== Carousel Slider ======================-->
+        <template id="carouse_slider" name="style 15" inherit_id="website.s_carousel">
+        <xpath expr="//div[hasclass('s_carousel')]" position="replace">
+            <div id="myCarousel" class="s_carousel s_carousel_default carousel slide te_arrow_small"
+                 data-interval="10000">
+                <!-- Indicators -->
+                <ol class="carousel-indicators">
+                    <li data-target="#myCarousel" data-slide-to="0" class="active"/>
+                    <li data-target="#myCarousel" data-slide-to="1"/>
+                </ol>
+                <!-- Content -->
+                <div class="carousel-inner te_arrow_small te_ts_style_7_inner">
+                    <!-- #01 -->
+                    <t t-call="theme_clarico_vega.t_carousel_style_15">
+                        <t t-set="is_active" t-valuef="active"/>
+                    </t>
+                    <t t-call="theme_clarico_vega.t_carousel_style_15"/>
+                    <!-- Controls -->
+                    <div class="carousel-control-prev" data-target="#myCarousel"
+                         data-slide="prev" role="img" aria-label="Previous" title="Previous">
+                        <span class="carousel-control-prev-icon"/>
+                        <span class="sr-only">Previous</span>
+                    </div>
+                    <div class="carousel-control-next" data-target="#myCarousel"
+                         data-slide="next" role="img" aria-label="Next" title="Next">
+                        <span class="carousel-control-next-icon"/>
+                        <span class="sr-only">Next</span>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+    <!--============== Banner =====================-->
+    <template id="s_banner_ept" inherit_id="website.s_banner">
+        <xpath expr="//section[hasclass('s_banner')]" position="replace">
+            <section class="s_banner parallax s_parallax_is_fixed pt96 pb96" data-scroll-background-ratio="1">
+                <span class="s_parallax_bg oe_img_bg oe_custom_bg"
+                      style="background-image: url('/theme_clarico_vega/static/src/img/snippets/structure/banner/1920_800.jpg'); background-position: 50% 0;"/>
+                <div class="container">
+                    <div class="row s_nb_column_fixed">
+                        <div class="col-lg-7 te_jumbotron_bg jumbotron rounded pt32 pb32" data-name="Box">
+                            <div class="row">
+                                <div class="col-lg-12 s_title s_col_no_bgcolor" data-name="Title">
+                                    <h1 class="s_title_thin">My Heading 1</h1>
+                                </div>
+                                <div class="col-lg-12 pt8 pb8 s_col_no_bgcolor" data-name="Text">
+                                    <p class="lead">Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire
+                                        persius. Duis meis quas vim ex, ius no oblique. Ornatus Lorem ipsum dolor sit
+                                        amet, eam et reque justo quidam, te est audire persius. Duis meis quas vim ex,
+                                        ius no oblique. Ornatus
+                                    </p>
+                                </div>
+                                <div class="col-lg-12 s_btn text-left pt16 pb16" data-name="Button">
+                                    <a href="#" class="btn btn-primary te_theme_button">know more</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+    <!--============== Cover =====================-->
+    <template id="s_cover_ept" inherit_id="website.s_cover">
+        <xpath expr="//section[hasclass('s_cover')]" position="replace">
+            <section class="s_cover parallax s_parallax_is_fixed bg-black-50 pt96 pb96"
+                     data-scroll-background-ratio="1">
+                <span class="s_parallax_bg oe_img_bg oe_custom_bg"
+                      style="background-image: url('/theme_clarico_vega/static/src/img/snippets/structure/banner/1920_800.jpg'); background-position: 50% 0;"/>
+                <div class="container">
+                    <div class="row s_nb_column_fixed">
+                        <div class="col-lg-12 s_title" data-name="Title">
+                            <h1 class="s_title_thin" style="text-align: center;">My Heading 1</h1>
+                        </div>
+                        <div class="col-lg-12 s_text pt16 pb16" data-name="Text">
+                            <p class="lead" style="text-align: center;">Lorem ipsum dolor sit amet, eam et reque justo
+                                quidam, te est audire persius. Duis meis quas vim ex, ius no oblique. Ornatus
+                                <br/>
+                                Lorem ipsum dolor sit amet, eam et reque justo quidam, te est audire persius.
+                            </p>
+                        </div>
+                        <div class="col-lg-12 s_btn text-center pt16 pb16" data-name="Buttons">
+                            <a href="#" class="btn btn-secondary te_theme_button">know more</a>
+                            <a href="#" class="btn btn-primary te_theme_button">know more</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+
+</odoo>

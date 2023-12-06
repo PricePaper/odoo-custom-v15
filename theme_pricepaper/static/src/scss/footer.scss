@@ -1,0 +1,222 @@
+.footer {
+    background-color: #000;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0 0 0 60px;
+
+    h5 {
+        font-size: 33px;
+    }
+
+    .nav-link {
+
+        color: #fff !important;
+        opacity: .83;
+
+        &:hover {
+            color: $primary;
+        }
+    }
+
+    .nav {
+        li {
+            color: rgba($color: #ffffff, $alpha: .50);
+            margin-bottom: 26px;
+            font-size: 20px;
+            font-weight: 300;
+            position: relative;
+            padding-left: 40px;
+
+            &::after {
+                content: "";
+                background-color: $primary !important;
+                width: 20px;
+                height: 20px;
+                position: absolute;
+                left: 0px;
+                top: 2px;
+                border-radius: 0px 100px 0px 0px;
+            }
+
+        }
+    }
+
+    .social-icons {
+        grid-gap: 25px;
+        position: relative;
+        z-index: 10;
+
+        .s-sprite {
+            background: url("../img/social-icons.svg");
+            height: 36px;
+            width: 46px;
+            display: inline-block;
+            background-size: cover;
+            background-repeat: no-repeat;
+
+            &.s-icon-1 {
+                background-position: 0 0;
+                width: 22px;
+            }
+
+            &.s-icon-2 {
+                background-position: -45px 0;
+                width: 44px;
+            }
+
+            &.s-icon-3 {
+                background-position: -122px 0;
+                width: 42px;
+            }
+
+            &.s-icon-4 {
+                background-position: -200px 0;
+            }
+
+            &.s-icon-5 {
+                background-position: -265px 0;
+                width: 38px;
+            }
+
+            // &.s-icon-6{
+            // 	background-position: -360px 0;
+            // }
+            // &.s-icon-7{
+            // 	background-position:-426px 0;
+            // }
+        }
+    }
+
+    .curvy-line {
+        background: url(../img/curvy-line-white.svg);
+        background-repeat: no-repeat;
+        content: "";
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 275px;
+        height: 220px;
+        z-index: 0;
+    }
+
+    .sector-1 {
+        position: absolute;
+        bottom: 105px;
+        right: 0%;
+        width: 77px;
+        height: 77px;
+        border-radius: 100% 0 0 0;
+        background: #947565;
+    }
+
+    .y-dots {
+        background: url(../img/footer-yellow-dots.svg);
+        position: absolute;
+        top: -12vw;
+        right: 32%;
+        max-width: 442px;
+        max-height: 337px;
+        z-index: 1;
+        width: 18vw;
+        height: 18vw;
+        background-size: contain;
+        background-repeat: no-repeat;
+        /* transform: rotate(180deg); */
+    }
+
+    .copyright {
+        color: rgba(255, 255, 255, 0.46);
+
+        @media (min-width:1700px) {
+            font-size: 23px;
+        }
+    }
+}
+
+.o_footer_copyright {
+    display: none !important;
+}
+
+.o_cc5,
+.o_footer {
+    background-color: #fff;
+    color: #FFFFFF;
+}
+
+@media (max-width: 1700px) {
+    .footer {
+        h5 {
+            font-size: 1.25rem;
+        }
+
+        .nav li {
+            font-size: 16px;
+
+            &:after {
+                width: 16px;
+                height: 16px;
+                left: 0px;
+                top: 2px;
+            }
+        }
+
+        .social-icons {
+            grid-gap: 14px;
+        }
+
+    }
+}
+
+@media (max-width: 1200px) {
+    .footer .social-icons .s-sprite {
+        height: 24px !important;
+        width: 24px !important;
+
+        &.s-icon-1 {
+            background-position: 0 0 !important;
+            width: 16px !important;
+        }
+
+        &.s-icon-2 {
+            background-position: -33px 0 !important;
+            width: 27px !important;
+        }
+
+        &.s-sprite.s-icon-3 {
+            background-position: -85px 0 !important;
+            width: 26px !important;
+        }
+
+        &.s-icon-4 {
+            background-position: -134px 0 !important;
+        }
+
+        &.s-icon-5 {
+            background-position: -178px 0 !important;
+            width: 24px !important;
+        }
+    }
+}
+@media (max-width: 767px) {
+    .footer {
+        text-align: center;
+
+        .nav li {
+            padding-left: 0;
+
+            &:after {
+                display: none;
+            }
+        }
+
+        .sector-1,
+        .curvy-line {
+            display: none;
+        }
+
+        .social-icons {
+            justify-content: center;
+        }
+    }
+}

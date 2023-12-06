@@ -1,0 +1,1267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Payment icons for footer  -->
+    <template id="display_payment_icons_footer">
+        <t t-set="icons"
+           t-value="request.env['payment.acquirer'].sudo().search([('state', 'in', ['enabled', 'test']), ('website_id','in',(False,website.id))]).mapped('payment_icon_ids')"></t>
+        <t t-if="icons" t-foreach="icons" t-as="icon">
+            <img t-attf-src="/web/image/payment.icon/#{icon.id}/image" t-attf-class="mt4" t-att-alt="icon.name"
+                 t-att-title="icon.name"/>
+        </t>
+    </template>
+    <!-- Common payment block   -->
+    <template id="payment_block_content_common">
+        <div t-attf-class="container te_end_ftr_container #{align_class}">
+            <div class="row align-items-center">
+                <div t-attf-class="te_footer_payment_img col-md-12 #{img_align_class}">
+                    <div class="oe_structure">
+                        <section class="te_payment_list">
+                            <t t-call="theme_clarico_vega.display_payment_icons_footer"/>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <!-- footer_map_opt-->
+    <template id="footer_map_opt">
+         <div class="mapouter">
+            <div class="gmap_canvas">
+                <iframe width="100%" height="100%" id="gmap_canvas"
+                        t-att-src="'https://maps.google.com/maps?q=%s %s %s %s %s %s %s' % (street or '', street2 or '', city or '', zip_code or '', state or '', country or '', '&amp;width=100%&amp;hl=en&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=&amp;output=embed')"
+                        frameborder="0" scrolling="no" marginheight="0"
+                        marginwidth="0"></iframe>
+            </div>
+            <style>
+                .mapouter{position:relative;text-align:right;height:240px;width:220px;}.gmap_canvas
+                {overflow:hidden;background:none!important;height:100%;width:100%;}
+            </style>
+        </div>
+    </template>
+    <!--=============================== Footer Style-1 =============================-->
+    <template id="customize_footer_style_1" inherit_id="website.layout" active="False">
+        <xpath expr="//div[@id='footer']" position="replace">
+            <div id="footer" class="oe_structure oe_structure_solo" t-ignore="true" t-if="not no_footer">
+                <section class="s_text_block pt32">
+                    <div class="container">
+                        <div class="row">
+                            <div class="te_footer_add_tel_email col-md-4 col-lg-3">
+                                <!-- Footer Map -->
+                                <t t-if="res_company.street" t-set="street" t-value="res_company.street2"/>
+                                <t t-if="res_company.street2" t-set="street2" t-value="res_company.street2"/>
+                                <t t-if="res_company.city" t-set="city" t-value="res_company.city"/>
+                                <t t-if="res_company.zip" t-set="zip_code" t-value="res_company.zip"/>
+                                <t t-if="res_company.state_id" t-set="state" t-value="res_company.state_id.name"/>
+                                <t t-if="res_company.country_id" t-set="country" t-value="res_company.country_id.name"/>
+                                <div class="te_footer_map">
+                                    <t t-call="theme_clarico_vega.footer_map_opt"/>
+                                </div>
+                                <!-- Company Address -->
+                                <ul class="te_footer_info_text">
+                                    <li t-if="res_company.phone">
+                                        <span class="te_footer_add_tel_email_text_ept">
+                                            <span class="fa fa-phone"></span>
+                                        </span>
+                                        <span class="d-inline-block">
+                                            <a t-att-href="'tel: %s' %res_company.phone">
+                                                <span t-field="res_company.phone"
+                                                      class="te_ftr_text_style d-inline-block pl-sm-2"/>
+                                            </a>
+                                        </span>
+                                    </li>
+                                    <li t-if="res_company.email">
+                                        <span class="te_footer_add_tel_email_text_ept">
+                                            <span class="fa fa-envelope"></span>
+                                        </span>
+                                        <a t-att-href="'mailto: %s' %res_company.email">
+                                            <span t-field="res_company.email"
+                                                  class="te_ftr_text_style d-inline-block pl-sm-2"/>
+                                        </a>
+                                    </li>
+                                </ul>
+                                <!-- Social Icon -->
+                                <t t-call="theme_clarico_vega.te_footer_social_icon"/>
+                            </div>
+                            <p></p>
+                            <!-- Newsletter Block  -->
+                            <section class="col-md-8 col-lg-6" t-field="website.footer_style_1_content_ept"/>
+                            <div class="col-lg-3 te_language">
+                                <t t-call="theme_clarico_vega.te_footer_news_letter"/>
+                                <!-- Payment Icon -->
+                                <section class="te_footer_text_img">
+                                    <section class="te_payment_list">
+                                        <h4 t-if="icons">Payment Methods</h4>
+                                        <t t-call="theme_clarico_vega.display_payment_icons_footer"/>
+                                    </section>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </xpath>
+    </template>
+    <!--=============================== Footer Style-2 =============================-->
+    <template id="customize_footer_style_2" inherit_id="website.layout" active="False">
+        <xpath expr="//div[@id='footer']" position="replace">
+            <div id="footer" class="oe_structure oe_structure_solo" t-ignore="true" t-if="not no_footer">
+                <section class="s_text_block te_ftr_container pt16 pb16">
+                    <div class="container">
+                        <div class="row">
+                            <!-- Company Info -->
+                            <div class="te_company_info_section">
+                                <!-- Company Address -->
+                                <div class="te_company_detail"
+                                     t-if="res_company.street or res_company.street2 or res_company.city or res_company.state_id or res_company.zip or res_company.country_id">
+                                    <span>
+                                        <span class="fa fa-map-marker te_ftr_info_icon ftr_icons_ept"></span>
+                                    </span>
+                                    <p class="te_ftr_add_ept">
+                                        <t t-call="theme_clarico_vega.te_footer_company_details"/>
+                                    </p>
+                                </div>
+                                <!-- Company Email -->
+                                <div class="te_company_detail" t-if="res_company.email">
+                                    <span class="ftr_add_tel_email_ept ftr_icons_ept">
+                                        <span class="fa fa-envelope te_ftr_info_icon"></span>
+                                    </span>
+                                    <span class="d-inline">
+                                        <a t-att-href="'mailto: %s' %res_company.email">
+                                            <p class="te_ftr_add_ept" t-field="res_company.email"/>
+                                        </a>
+                                    </span>
+                                </div>
+                                <!-- Company Number -->
+                                <div class="te_company_detail" t-if="res_company.phone">
+                                    <span class="ftr_add_tel_email_ept ftr_icons_ept">
+                                        <span class="fa fa-phone te_ftr_info_icon"></span>
+                                    </span>
+                                    <a t-att-href="'tel: %s' %res_company.phone">
+                                        <p class="te_ftr_add_ept" t-field="res_company.phone"/>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="te_footer_language_title_style_2 w-100"></div>
+                            <div class="te_footer_menu_social_icon">
+                                <!-- Website Logo -->
+                                <div class="col-lg-2 mx-auto">
+                                    <a href="/" class="te_footer_logo logo">
+                                        <img src="/website/static/src/img/website_logo.svg" class="img-fluid mx-auto"
+                                             aria-label="Logo of MyCompany" t-att-title="website.name" role="img"/>
+                                    </a>
+                                </div>
+                                <section t-field="website.website_footer_extra_links"/>
+                                <div class="te_f2_lang_social">
+                                    <!-- Social Icon -->
+                                    <t t-call="theme_clarico_vega.te_footer_social_icon"/>
+                                </div>
+                                <section class="te_newsletter_margin mt-3">
+                                    <p></p>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Payment Icon -->
+                    <div class="te_footer_copyright_text container">
+                        <div class="te_footer_payment_img">
+                            <div class="oe_structure">
+                                <section class="te_payment_list">
+                                    <t t-call="theme_clarico_vega.display_payment_icons_footer"/>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </xpath>
+    </template>
+    <!--=============================== Footer_style_3 =============================-->
+    <template id="customize_footer_style_3" inherit_id="website.layout" active="False">
+        <xpath expr="//div[@id='footer']" position="replace">
+            <div id="footer" class="oe_structure oe_structure_solo" t-ignore="true" t-if="not no_footer">
+                <section class="s_text_block">
+                    <div class="container">
+                        <div class="row">
+                            <div class="te_footer_logo_title_socialicon col-lg-4 col-md-12 py-4 px-4">
+                                <h5>
+                                    <span t-field="res_company.name"/>
+                                </h5>
+                                <!-- Footer Map -->
+                                <t t-if="res_company.street" t-set="street" t-value="res_company.street2"/>
+                                <t t-if="res_company.street2" t-set="street2" t-value="res_company.street2"/>
+                                <t t-if="res_company.city" t-set="city" t-value="res_company.city"/>
+                                <t t-if="res_company.zip" t-set="zip_code" t-value="res_company.zip"/>
+                                <t t-if="res_company.state_id" t-set="state" t-value="res_company.state_id.name"/>
+                                <t t-if="res_company.country_id" t-set="country" t-value="res_company.country_id.name"/>
+                                <div class="te_s3_map te_footer_map">
+                                   <t t-call="theme_clarico_vega.footer_map_opt"/>
+                                </div>
+                            </div>
+                            <!-- Static Menu-->
+                            <div class="col-lg-5 col-md-7 py-4 px-4 te_informations_s">
+                                <p></p>
+                                <section t-field="website.footer_style_3_content_ept"/>
+                            </div>
+                            <!-- Contact Info -->
+                            <div class="col-lg-3 col-md-5 py-4 px-4 te_contact_info_s">
+                                <section>
+                                    <div>
+                                        <h4 class="te_footer_menu_info">Contact Info</h4>
+                                    </div>
+                                </section>
+                                <div>
+                                    <ul class="te_footer_info_text">
+                                        <!-- Company Address -->
+                                        <li t-if="res_company.street or res_company.street2 or res_company.city or res_company.state_id or res_company.zip or res_company.country_id"
+                                            class="te_ftr_add_info">
+                                            <span class="te_footer_add_tel_email_text_ept">
+                                                <span class="fa fa-map-marker"></span>
+                                            </span>
+                                            <span class="te_ftr_text_style d-inline-block pl-sm-2">
+                                                <t t-call="theme_clarico_vega.te_footer_company_details"/>
+                                            </span>
+                                        </li>
+                                        <!-- Company Number -->
+                                        <li t-if="res_company.phone" class="te_ftr_add_info">
+                                            <span class="te_footer_add_tel_email_text_ept">
+                                                <span class="fa fa-phone"></span>
+                                            </span>
+                                            <a t-att-href="'tel: %s' %res_company.phone">
+                                                <span t-field="res_company.phone"
+                                                      class="te_ftr_text_style d-inline-block pl-sm-2"/>
+                                            </a>
+                                        </li>
+                                        <!-- Company Email -->
+                                        <li t-if="res_company.email" class="te_ftr_add_info">
+                                            <span class="te_footer_add_tel_email_text_ept">
+                                                <span class="fa fa-envelope"></span>
+                                            </span>
+                                            <span class="d-inline-block">
+                                                <a t-att-href="'mailto: %s' %res_company.email">
+                                                    <span t-field="res_company.email"
+                                                          class="te_ftr_text_style d-inline-block pl-sm-2"/>
+                                                </a>
+                                            </span>
+
+                                        </li>
+                                        <!-- Social Icon-->
+                                        <li class="te_ftr_add_info">
+                                            <t t-call="theme_clarico_vega.te_footer_social_icon"/>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- Payment Icon -->
+                                <div class="pb-4 te_end_ftr_container pt-2">
+                                    <div class="te_footer_payment_img col-md-12 px-sm-0">
+                                        <div class="oe_structure">
+                                            <section class="te_payment_list">
+                                                <t t-call="theme_clarico_vega.display_payment_icons_footer"/>
+                                            </section>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </xpath>
+    </template>
+    <!--=============================== Footer_Style-4 ===============================-->
+    <template id="customize_footer_style_4" inherit_id="website.layout" active="False">
+        <xpath expr="//div[@id='footer']" position="replace">
+            <div id="footer" class="oe_structure oe_structure_solo" t-ignore="true" t-if="not no_footer">
+                <section class="s_text_block pt32 pb32">
+                    <div class="container">
+                        <div class="footer_top_content footer-column-1 col-md-12 col-sm-12">
+                            <!-- Website Logo -->
+                            <div class="d-block">
+                                <a href="/" class="te_footer_logo logo">
+                                    <img src="/website/static/src/img/website_logo.svg" class="img-fluid mx-auto"
+                                         aria-label="Logo of MyCompany" t-att-title="website.name" role="img"/>
+                                </a>
+                            </div>
+                            <!-- Social Icon -->
+                            <t t-call="theme_clarico_vega.te_footer_social_icon"/>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg">
+                                <p></p>
+                                <section t-field="website.footer_style_4_content_ept"/>
+                            </div>
+                            <!-- about us Menu -->
+                            <div class="footer-column-2 te_footer-column-2 col-md-4 col-sm-6">
+                                <div class="footer_top_title_div">
+                                    <h5 class="footer-sub-title">About The Store</h5>
+                                    <span>
+                                        <span class="fa fa-angle-down"></span>
+                                    </span>
+                                </div>
+                                <!-- Company Address -->
+                                <ul class="te_footer_info_text te_footer_info_ept">
+                                    <li>
+                                        <span t-field="website.website_company_info"/>
+                                    </li>
+                                    <li t-if="res_company.email">
+                                        <span class="te_footer_add_tel_email_text_ept">
+                                            <span class="fa fa-map-marker"></span>
+                                        </span>
+                                        <span t-if="res_company.street or res_company.street2 or res_company.city or res_company.state_id or res_company.zip or res_company.country_id">
+                                            <span class="te_ftr_text_style pl-sm-2">
+                                                <t t-call="theme_clarico_vega.te_footer_company_details"/>
+                                            </span>
+                                        </span>
+                                    </li>
+                                    <!-- Company Email -->
+                                    <li t-if="res_company.email" class="te_ftr_add_info">
+                                        <span class="te_footer_add_tel_email_text_ept">
+                                            <span class="fa fa-envelope"></span>
+                                        </span>
+                                        <span class="d-inline-block">
+                                            <a t-att-href="'mailto: %s' %res_company.email">
+                                                <span t-field="res_company.email"
+                                                      class="te_ftr_text_style d-inline-block pl-sm-2"/>
+                                            </a>
+                                        </span>
+                                    </li>
+                                    <li t-if="res_company.phone">
+                                        <span class="te_footer_add_tel_email_text_ept">
+                                            <span class="fa fa-phone"></span>
+                                        </span>
+                                        <a t-att-href="'tel: %s' %res_company.phone">
+                                            <span t-field="res_company.phone"
+                                                  class="te_ftr_text_style d-inline-block pl-sm-2"/>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <!-- Payment Icon -->
+            <t t-call="theme_clarico_vega.payment_block_content_common">
+                <t t-set="align_class" t-valuef="py-3"/>
+                <t t-set="img_align_class" t-valuef="px-sm-0"/>
+            </t>
+        </xpath>
+    </template>
+    <!--=============================== Footer_style_5 =============================-->
+    <template id="customize_footer_style_5" inherit_id="website.layout" active="False">
+        <xpath expr="//div[@id='footer']" position="replace">
+            <div id="footer" class="oe_structure oe_structure_solo" t-ignore="true" t-if="not no_footer">
+                <section class="s_text_block pt32 pb8">
+                    <div class="container">
+                        <div class="row">
+                            <div class="te_footer_add_tel_email col-lg-4">
+                                <!-- Company Address -->
+                                <h3 class="te_block_title">Contact Information</h3>
+                                <ul class="te_footer_info_text">
+                                    <li t-if="res_company.street or res_company.street2 or res_company.city or res_company.state_id or res_company.zip or res_company.country_id">
+                                        <span class="te_footer_add_tel_email_text_ept">
+                                            <span class="fa fa-map-marker"></span>
+                                        </span>
+                                        <span class="te_ftr_text_style d-inline-block pl-sm-2">
+                                            <p class="te_title_span">Address</p>
+                                            <t t-call="theme_clarico_vega.te_footer_company_details"/>
+                                        </span>
+                                    </li>
+                                    <li t-if="res_company.phone">
+                                        <span class="te_footer_add_tel_email_text_ept">
+                                            <span class="fa fa-phone"></span>
+                                        </span>
+                                        <span class="te_ftr_text_style d-inline-block pl-sm-2">
+                                            <p class="te_title_span">Phone</p>
+                                            <a t-att-href="'tel: %s' %res_company.phone">
+                                                <span t-field="res_company.phone"/>
+                                            </a>
+                                        </span>
+                                    </li>
+                                    <li t-if="res_company.email">
+                                        <span class="te_footer_add_tel_email_text_ept">
+                                            <span class="fa fa-envelope"></span>
+                                        </span>
+                                        <span class="te_ftr_text_style d-inline-block pl-sm-2">
+                                            <p class="te_title_span">Email</p>
+                                            <a t-att-href="'mailto: %s' %res_company.email">
+                                                <span t-field="res_company.email"/>
+                                            </a>
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span class="te_footer_add_tel_email_text_ept">
+                                            <span class="fa fa-clock-o"></span>
+                                        </span>
+                                        <span class="te_ftr_text_style d-inline-block pl-sm-2">
+                                            <p class="te_title_span">Working Days/Hours</p>
+                                            <span>Mon - Sun / 9:00AM - 8:00PM</span>
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!-- static Menu -->
+                            <div class="col-lg-5 col-md-8">
+                                <p></p>
+                                <section t-field="website.footer_style_5_content_ept"/>
+                            </div>
+                            <!-- Newsletter Block  -->
+                            <div class="col-lg-3 col-md-4 te_language">
+                                <h3 class="te_block_title">Be the first to know</h3>
+                                <t t-call="theme_clarico_vega.te_footer_news_letter"/>
+                                <!--                                <div class="te_newsletter">-->
+                                <!--                                    <div class="d-inline-block te_newsletter_title pr-3">-->
+                                <!--                                        <h5>NEWSLETTER SIGNUP:</h5>-->
+                                <!--                                    </div>-->
+                                <!--                                    <div class="te_newsletter_content">-->
+                                <!--                                        <div class="d-inline-block">-->
+                                <!--                                            <div class="input-group js_subscribe" data-list-id="1" data-subscribe="off">-->
+                                <!--                                                <input type="email" name="email" class="js_subscribe_email form-control"-->
+                                <!--                                                       placeholder="your email..."/>-->
+                                <!--                                                <span class="input-group-append">-->
+                                <!--                                                    <a role="button" href="#"-->
+                                <!--                                                       class="btn btn-primary js_subscribe_btn o_default_snippet_text">-->
+                                <!--                                                        Subscribe-->
+                                <!--                                                    </a>-->
+                                <!--                                                    <a role="button" href="#"-->
+                                <!--                                                       class="btn btn-success js_subscribed_btn d-none o_default_snippet_text"-->
+                                <!--                                                       disabled="disabled">Thanks-->
+                                <!--                                                    </a>-->
+                                <!--                                                </span>-->
+                                <!--                                                <div class="alert alert-success d-none o_default_snippet_text"-->
+                                <!--                                                     role="status">Thanks for your subscription!-->
+                                <!--                                                </div>-->
+                                <!--                                            </div>-->
+                                <!--                                        </div>-->
+                                <!--                                    </div>-->
+                                <!--                                </div>-->
+                                <!-- Social Icon -->
+                                <t t-call="theme_clarico_vega.te_footer_social_icon"/>
+                                <section class="mt-3">
+                                    <p></p>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <!-- Payment Icon -->
+            <t t-call="theme_clarico_vega.payment_block_content_common"/>
+        </xpath>
+    </template>
+
+    <!--=============================== Footer_style_6 =============================-->
+    <template id="customize_footer_style_6" inherit_id="website.layout" active="False">
+        <xpath expr="//div[@id='footer']" position="replace">
+            <div id="footer" class="oe_structure oe_structure_solo" t-ignore="true" t-if="not no_footer">
+                <section class="s_text_block pt32">
+                    <div class="container">
+                        <div class="row">
+                            <div class="te_footer_add_tel_email col-lg-4 col-md-12">
+                                <!-- Footer Map -->
+                                <t t-if="res_company.street" t-set="street" t-value="res_company.street2"/>
+                                <t t-if="res_company.street2" t-set="street2" t-value="res_company.street2"/>
+                                <t t-if="res_company.city" t-set="city" t-value="res_company.city"/>
+                                <t t-if="res_company.zip" t-set="zip_code" t-value="res_company.zip"/>
+                                <t t-if="res_company.state_id" t-set="state" t-value="res_company.state_id.name"/>
+                                <t t-if="res_company.country_id" t-set="country" t-value="res_company.country_id.name"/>
+                                <div class="te_footer_map te_s6_map">
+                                    <t t-call="theme_clarico_vega.footer_map_opt"/>
+                                </div>
+                                <!-- Social Icon -->
+                                <t t-call="theme_clarico_vega.te_footer_social_icon"/>
+                            </div>
+                            <div class="col-lg-5 col-md-7 col-sm-12 te_footer_links">
+                                <p></p>
+                                <section t-field="website.footer_style_6_content_ept"/>
+                            </div>
+                            <div class="col-lg-3 col-md-5 te_contact_info">
+                                <div class="te_block_title">Contact Information</div>
+                                <ul class="te_footer_info_text">
+                                    <li t-if="res_company.street or res_company.street2 or res_company.city or res_company.state_id or res_company.zip or res_company.country_id">
+                                        <span class="te_footer_add_tel_email_text_ept">
+                                            <span class="fa fa-map-marker"></span>
+                                        </span>
+                                        <span class="te_ftr_text_style d-inline-block pl-sm-2">
+                                            <p class="te_title_span">Address</p>
+                                           <t t-call="theme_clarico_vega.te_footer_company_details"/>
+                                        </span>
+                                    </li>
+                                    <li t-if="res_company.phone">
+                                        <span class="te_footer_add_tel_email_text_ept">
+                                            <span class="fa fa-phone"></span>
+                                        </span>
+                                        <span class="te_ftr_text_style d-inline-block pl-sm-2">
+                                            <p class="te_title_span">Phone</p>
+                                            <a t-att-href="'tel: %s' %res_company.phone">
+                                                <span t-field="res_company.phone"/>
+                                            </a>
+                                        </span>
+                                    </li>
+                                    <li t-if="res_company.email">
+                                        <span class="te_footer_add_tel_email_text_ept">
+                                            <span class="fa fa-envelope"></span>
+                                        </span>
+                                        <span class="te_ftr_text_style d-inline-block pl-sm-2">
+                                            <p class="te_title_span">Email</p>
+                                            <a t-att-href="'mailto: %s' %res_company.email">
+                                                <span t-field="res_company.email"/>
+                                            </a>
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Payment Icon -->
+                <t t-call="theme_clarico_vega.payment_block_content_common">
+                    <t t-set="align_class" t-valuef="pb-3"/>
+                </t>
+            </div>
+        </xpath>
+    </template>
+    <!--=============================== Footer_style_7 =============================-->
+    <template id="customize_footer_style_7" inherit_id="website.layout" active="False">
+        <xpath expr="//div[@id='footer']" position="replace">
+            <div id="footer" class="oe_structure oe_structure_solo" t-ignore="true" t-if="not no_footer">
+                <section class="s_text_block pt32">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-4 col-md-12 te_footer_detail">
+                                <div class="te_footer_logo_title_socialicon py-4 px-4">
+                                    <!-- Company Logo -->
+                                    <a href="/" class="te_footer_logo logo">
+                                        <img src="/website/static/src/img/website_logo.svg" class="img-fluid mx-auto"
+                                             aria-label="Logo of MyCompany" t-att-title="website.name" role="img"/>
+                                    </a>
+                                    <!-- Demo Content -->
+                                    <div class="py-4">
+                                        <section>
+                                            <p class="te_company_content" t-field="website.website_company_info"/>
+                                        </section>
+                                    </div>
+                                    <div class="te_footer_add_tel_email">
+                                        <ul class="te_footer_info_text">
+                                            <li t-if="res_company.street or res_company.street2 or res_company.city or res_company.state_id or res_company.zip or res_company.country_id">
+                                                <span class="te_footer_add_tel_email_text_ept">
+                                                    <span class="fa fa-map-marker"></span>
+                                                </span>
+                                                <span class="te_ftr_text_style d-inline-block pl-sm-2">
+                                                    <t t-call="theme_clarico_vega.te_footer_company_details"/>
+                                                </span>
+                                            </li>
+                                            <li t-if="res_company.phone">
+                                                <span class="te_footer_add_tel_email_text_ept">
+                                                    <span class="fa fa-phone"></span>
+                                                </span>
+                                                <span class="te_ftr_text_style d-inline-block pl-sm-2">
+                                                    <a t-att-href="'tel: %s' %res_company.phone">
+                                                        <span t-field="res_company.phone"/>
+                                                    </a>
+                                                </span>
+                                            </li>
+                                            <li t-if="res_company.email">
+                                                <span class="te_footer_add_tel_email_text_ept">
+                                                    <span class="fa fa-envelope"></span>
+                                                </span>
+                                                <span class="te_ftr_text_style d-inline-block pl-sm-2">
+                                                    <a t-att-href="'mailto: %s' %res_company.email">
+                                                        <span t-field="res_company.email"/>
+                                                    </a>
+                                                </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!-- Social Icon -->
+                                    <t t-call="theme_clarico_vega.te_footer_social_icon"/>
+                                </div>
+                            </div>
+                            <div class="col-lg-8 col-md-12 py-4 px-4 te_informations_s">
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-7 offset-lg-1">
+                                        <p></p>
+                                        <section t-field="website.footer_style_7_content_ept"/>
+                                    </div>
+                                    <div class="col-lg-5 col-md-5 te_newsletter_main">
+                                        <h3 class="te_block_title">Be the first to know</h3>
+                                        <t t-call="theme_clarico_vega.te_footer_news_letter"/>
+                                        <!-- Payment Icon -->
+                                        <div class="te_footer_payment_img">
+                                            <div class="oe_structure">
+                                                <section class="te_payment_list">
+                                                    <t t-call="theme_clarico_vega.display_payment_icons_footer"/>
+                                                </section>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="footer_poweredby_text" inherit_id="website.brand_promotion">
+        <xpath expr="//div[hasclass('o_brand_promotion')]" position="replace"></xpath>
+    </template>
+    <template id="footer_snippet_style1" name="Style 1">
+        <div class="row s_rating">
+            <!-- static Menu -->
+            <div class="col-lg-4 col-md-4 col-6">
+                <ul class="te_footer_info_ept">
+                    <section>
+                        <li>
+                            <a href="#">Help</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Gift Cards</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Order Status</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Free Shipping</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Returns Exchanges</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">International</a>
+                        </li>
+                    </section>
+                </ul>
+            </div>
+            <!-- static Menu -->
+            <div class="col-lg-4 col-md-4 col-6">
+                <ul class="te_footer_info_ept">
+                    <section>
+                        <li>
+                            <a href="#">About Us</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Jobs</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Affiliates</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Meet The Maker</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Contact</a>
+                        </li>
+                    </section>
+                </ul>
+            </div>
+            <!-- static Menu -->
+            <div class="col-lg-4 col-md-4 col-6">
+                <ul class="te_footer_info_ept">
+                    <section>
+                        <li>
+                            <a href="#">Security</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Privacy</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Text Messaging</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Legal</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Supply Chain</a>
+                        </li>
+                    </section>
+                </ul>
+            </div>
+        </div>
+    </template>
+    <template id="footer_snippet_style3" name="Style 3">
+        <div class="s_rating row">
+            <!-- Static Menu-->
+            <div class="col-lg-12 col-md-12 py-4 px-4 te_informations_s">
+                <section>
+                    <div>
+                        <h4 class="te_footer_menu_info">Informations</h4>
+                    </div>
+                </section>
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-6">
+                        <ul class="te_footer_info_ept">
+                            <section>
+                                <li>
+                                    <a href="#">Help</a>
+                                </li>
+                            </section>
+
+
+                            <section>
+                                <li>
+                                    <a href="#">Gift Cards</a>
+                                </li>
+                            </section>
+
+                            <section>
+                                <li>
+                                    <a href="#">Order Status</a>
+                                </li>
+                            </section>
+                            <section>
+                                <li>
+                                    <a href="#">Free Shipping</a>
+                                </li>
+                            </section>
+                            <section>
+                                <li>
+                                    <a href="#">Returns Exchanges</a>
+                                </li>
+                            </section>
+                            <section>
+                                <li>
+                                    <a href="#">International</a>
+                                </li>
+                            </section>
+                        </ul>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-6">
+                        <ul class="te_footer_info_ept">
+
+                            <section>
+                                <li>
+                                    <a href="#">Security</a>
+                                </li>
+                            </section>
+                            <section>
+                                <li>
+                                    <a href="#">Privacy</a>
+                                </li>
+                            </section>
+                            <section>
+                                <li>
+                                    <a href="#">Text Messaging</a>
+                                </li>
+                            </section>
+                            <section>
+                                <li>
+                                    <a href="#">Legal</a>
+                                </li>
+                            </section>
+                            <section>
+                                <li>
+                                    <a href="#">Supply Chain</a>
+                                </li>
+                            </section>
+                            <section>
+                                <li>
+                                    <a href="#">Contact</a>
+                                </li>
+                            </section>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template id="footer_snippet_style4" name="Style 4">
+        <div class="s_rating row">
+            <div class="footer-column-2 col-md-3 col-sm-6">
+                <div class="footer_top_title_div">
+                    <h5 class="footer-sub-title">Our Stores</h5>
+                    <span>
+                        <span class="fa fa-angle-down"></span>
+                    </span>
+                </div>
+                <ul class="te_footer_info_ept">
+                    <section>
+                        <li>
+                            <a href="#">New York</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">London SF</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Cockfosters BP</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Los Angeles</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Chicago</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Las Vegas</a>
+                        </li>
+                    </section>
+                </ul>
+            </div>
+            <div class="footer-column-2 col-md-3 col-sm-6">
+                <div class="footer_top_title_div">
+                    <h5 class="footer-sub-title">Information</h5>
+                    <span>
+                        <span class="fa fa-angle-down"></span>
+                    </span>
+                </div>
+                <ul class="te_footer_info_ept">
+                    <section>
+                        <li>
+                            <a href="#">About Store</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">New Collection</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Woman Dress</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Contact Us</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Latest News</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Our Sitemap</a>
+                        </li>
+                    </section>
+                </ul>
+            </div>
+            <div class="footer-column-2 col-md-3 col-sm-6">
+                <div class="footer_top_title_div">
+                    <h5 class="footer-sub-title">Useful links</h5>
+                    <span>
+                        <span class="fa fa-angle-down"></span>
+                    </span>
+                </div>
+                <ul class="te_footer_info_ept">
+                    <section>
+                        <li>
+                            <a href="#">Privacy Policy</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Returns</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Terms &amp; Conditions</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Contact Us</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Latest News</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Our Sitemap</a>
+                        </li>
+                    </section>
+                </ul>
+            </div>
+            <div class="footer-column-2 col-md-3 col-sm-6">
+                <div class="footer_top_title_div">
+                    <h5 class="footer-sub-title">Footer Menu</h5>
+                    <span>
+                        <span class="fa fa-angle-down"></span>
+                    </span>
+                </div>
+                <ul class="te_footer_info_ept">
+                    <section>
+                        <li>
+                            <a href="#">Instagram profile</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">New Collection</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Woman Dress</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Contact Us</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Latest News</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Purchase Theme</a>
+                        </li>
+                    </section>
+                </ul>
+            </div>
+        </div>
+    </template>
+    <template id="footer_snippet_style5" name="Style 5">
+        <div class="s_rating row">
+            <div class="col-sm-6">
+                <div class="te_block_title">My Account</div>
+                <a class="te_collapse_icon collapsed" data-toggle="collapse" data-target="#my_account">
+                    <div class="te_block_title_col">My Account</div>
+                    <i class="fa fa-plus"></i>
+                </a>
+                <ul class="te_footer_info_ept collapse" id="my_account">
+                    <section>
+                        <li>
+                            <a href="#">About Us</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Contact Us</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">My Account</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Order history</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Advanced search</a>
+                        </li>
+                    </section>
+                </ul>
+            </div>
+            <div class="col-sm-6">
+                <div class="te_block_title">Main Features</div>
+                <a class="te_collapse_icon collapsed" data-toggle="collapse" data-target="#feature">
+                    <div class="te_block_title_col">Main Features</div>
+                    <i class="fa fa-plus"></i>
+                </a>
+                <ul class="te_footer_info_ept collapse" id="feature">
+                    <section>
+                        <li>
+                            <a href="#">Lorem ipsum sit</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Lorem ipsum dolor amet</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Lorem ipsum amet</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Lorem ipsum dolor</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Lorem ipsum sit</a>
+                        </li>
+                    </section>
+                </ul>
+            </div>
+        </div>
+    </template>
+    <template id="footer_snippet_style6" name="Style 6">
+        <div class="s_rating row">
+            <div class="col-sm-6 col-6 te_account_info">
+                <div class="te_block_title">My Account</div>
+                <ul class="te_footer_info_ept">
+                    <section>
+                        <li>
+                            <a href="#">Help</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Gift Cards</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Order Status</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Free Shipping</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Returns Exchanges</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">International</a>
+                        </li>
+                    </section>
+                </ul>
+            </div>
+            <div class="col-sm-6 col-6">
+                <div class="te_block_title">Main Features</div>
+                <ul class="te_footer_info_ept">
+                    <section>
+                        <li>
+                            <a href="#">About Us</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Jobs</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Affiliates</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Meet The Maker</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <a href="#">Contact</a>
+                        </li>
+                    </section>
+                </ul>
+            </div>
+        </div>
+    </template>
+    <template id="footer_snippet_style7" name="Style 7">
+        <div class="s_rating row">
+            <div class="col-md-6 col-6">
+                <h3 class="te_block_title">Useful link</h3>
+                <ul class="te_footer_info_ept">
+                    <section>
+                        <li>
+                            <i class="fa fa-long-arrow-right"></i>
+                            <a href="#">Help</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <i class="fa fa-long-arrow-right"></i>
+                            <a href="#">Gift Cards</a>
+                        </li>
+                    </section>
+
+                    <section>
+                        <li>
+                            <i class="fa fa-long-arrow-right"></i>
+                            <a href="#">Order Status</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <i class="fa fa-long-arrow-right"></i>
+                            <a href="#">Free Shipping</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <i class="fa fa-long-arrow-right"></i>
+                            <a href="#">Returns Exchanges</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <i class="fa fa-long-arrow-right"></i>
+                            <a href="#">International</a>
+                        </li>
+                    </section>
+                </ul>
+            </div>
+            <div class="col-md-6 col-6">
+                <h3 class="te_block_title">Take Action</h3>
+                <ul class="te_footer_info_ept">
+                    <section>
+                        <li>
+                            <i class="fa fa-long-arrow-right"></i>
+                            <a href="#">Security</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <i class="fa fa-long-arrow-right"></i>
+                            <a href="#">Privacy</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <i class="fa fa-long-arrow-right"></i>
+                            <a href="#">Text Messaging</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <i class="fa fa-long-arrow-right"></i>
+                            <a href="#">Legal</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <i class="fa fa-long-arrow-right"></i>
+                            <a href="#">Supply Chain</a>
+                        </li>
+                    </section>
+                    <section>
+                        <li>
+                            <i class="fa fa-long-arrow-right"></i>
+                            <a href="#">Contact</a>
+                        </li>
+                    </section>
+                </ul>
+            </div>
+        </div>
+    </template>
+
+    <template id="option_footer_scrolltop_ept" inherit_id="website.option_footer_scrolltop">
+        <xpath expr="//div[@id='o_footer_scrolltop_wrapper']" position="attributes">
+            <attribute name="class" remove="d-flex h-0" add="scrollup-div" separator=" "/>
+        </xpath>
+        <xpath expr="//a[@id='o_footer_scrolltop']" position="attributes">
+            <attribute name="class">scrollup-a h-100 w-100 d-inline-block</attribute>
+        </xpath>
+        <xpath expr="//a[@id='o_footer_scrolltop']//span[hasclass('fa')]" position="attributes">
+            <attribute name="class">fa fa-chevron-up scrollup-i text-center</attribute>
+        </xpath>
+    </template>
+
+    <template id="te_footer_social_icon" name="Footer social icon">
+        <t t-if="website.social_facebook or website.social_twitter or website.social_linkedin or website.social_youtube or website.social_github">
+            <section class="te_footer_social_icon">
+                <a t-if="website.social_facebook" t-att-href="website.social_facebook"
+                   class="btn btn-sm btn-link">
+                    <span class="fa fa-facebook-square"/>
+                </a>
+                <a t-if="website.social_twitter" t-att-href="website.social_twitter"
+                   class="btn btn-sm btn-link">
+                    <span class="fa fa-twitter"/>
+                </a>
+                <a t-if="website.social_linkedin" t-att-href="website.social_linkedin"
+                   class="btn btn-sm btn-link">
+                    <span class="fa fa-linkedin"/>
+                </a>
+                <a t-if="website.social_youtube" t-att-href="website.social_youtube"
+                   class="btn btn-sm btn-link">
+                    <span class="fa fa-youtube-play"/>
+                </a>
+                <a t-if="website.social_github" t-att-href="website.social_github"
+                   class="btn btn-sm btn-link">
+                    <span class="fa fa-github"/>
+                </a>
+                <a t-if="website.social_instagram" t-att-href="website.social_instagram"
+                   class="btn btn-sm btn-link">
+                    <span class="fa fa-instagram"/>
+                </a>
+            </section>
+        </t>
+    </template>
+
+    <template id="te_footer_news_letter" name="Footer news letter">
+        <section class="te_newsletter">
+            <div class="d-inline-block te_newsletter_title pr-3">
+                <h4>Newsletter Signup :</h4>
+            </div>
+            <div class="te_newsletter_content">
+                <div class="d-inline-block">
+                    <div class="input-group js_subscribe" data-list-id="1" data-subscribe="off">
+                        <input type="email" name="email" class="js_subscribe_email form-control"
+                               placeholder="your email..."/>
+                        <span class="input-group-append">
+                            <a role="button" href="#"
+                               class="btn btn-primary js_subscribe_btn o_default_snippet_text">
+                                Subscribe
+                            </a>
+                            <a role="button" href="#"
+                               class="btn btn-success js_subscribed_btn d-none o_default_snippet_text"
+                               disabled="disabled">Thanks
+                            </a>
+                        </span>
+                        <div class="alert alert-success d-none o_default_snippet_text"
+                             role="status">Thanks for your subscription!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="te_footer_company_details" name="Footer company details">
+        <span t-if="res_company.street" t-field="res_company.street"/>
+        <span t-if="res_company.street2" t-field="res_company.street2"/>
+        <span t-if="res_company.city" t-field="res_company.city"/>
+        <span t-if="res_company.state_id" t-field="res_company.state_id.name"/>
+        <span t-if="res_company.zip" t-field="res_company.zip"/>
+        <span t-if="res_company.country_id" t-field="res_company.country_id.name"/>
+    </template>
+</odoo>

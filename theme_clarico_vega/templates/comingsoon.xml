@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    <record id="coming_soon" model="ir.ui.view">
+        <field name="name">Coming Soon</field>
+        <field name="type">qweb</field>
+        <field name="key">theme_clarico_vega.coming_soon</field>
+        <field name="arch" type="xml">
+            <t name="Coming Soon" t-name="theme_clarico_vega.coming_soon">
+                <style type="text/css">
+                    body { margin: 0px; }
+                    @keyframes shake {
+                      0% { transform: rotate(5deg); }
+                      100% { transform: rotate(-5deg); }
+                    }
+                </style>
+              <div class="oe_structure">
+                <section class="oe_img_bg w-100" style="background-image: url('/theme_clarico_vega/static/src/img/snippets/coming_soon/coming_soon.jpg');height: 100vh;background-position: center;background-size: cover;background-repeat: no-repeat;">
+                  <div class="row m-0" style="align-items: center;height: 100%;display: flex;" >
+                      <section style="margin: 0px auto;text-align: center;max-width: 650px;position: relative;display: inline-block;">
+                            <div style="text-align: center;padding:15px;position:relative;">
+                                <img style="animation: shake 0.1s linear infinite;" src="/theme_clarico_vega/static/src/img/snippets/coming_soon/icon4.png" />
+                            </div>
+                            <div style="text-align: center;font-size: 3.5rem;font-weight: 600;font-style: italic;">Coming Soon</div>
+                            <div style="padding:20px;text-align:center;">
+                                <p style="font-size: 1.2rem;">WEBSITE IS ALMOST READY</p>
+                                <p>Our website is under construction. We'll be here soon with our new page</p>
+                            </div>
+                      </section>
+                    </div>
+                </section>
+              </div>
+            </t>
+        </field>
+    </record>
+    <record id="ecom_furniture_page_coming_soon" model="website.page">
+        <field name="website_published">True</field>
+        <field name="url">/coming_soon</field>
+        <field name="view_id" ref="theme_clarico_vega.coming_soon"/>
+    </record>
+</data>
+</odoo>

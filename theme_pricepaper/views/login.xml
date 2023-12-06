@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="login_layout" name="Login" inherit_id="website.login_layout">
+        <xpath expr="//div[hasclass('oe_website_login_container')]" position="replace">
+            <div class="oe_website_login_container container-fluid login ">
+                <!-- <div class='col-12 col-lg-7 img_div p-0'>
+                    <img class='img img-fluid' src='/theme_pricepaper/static/img/login_new.png'/>
+                </div>
+                <div class='col-12 col-lg-5 form_wrap'>
+                    <div class="">
+                        <h3 class="mt-4 mt-lg-0 display-6 fw-b">Welcome !</h3>
+                        <p>Enter to meet the paper people</p>
+                    </div>  
+                    <div>
+                        <t t-out="0"/>
+                    </div>
+                </div> -->
+
+
+
+
+                <div class="row bg-primary ">
+                    <div class="col-xl-7 col-12 d-flex align-items-end px-5 bg-primary login-left-column">
+                        <div class="h-100 align-content-between d-grid w-100 img-wrap-login">
+                            <!-- <img class="img-fluid mt-4 mt-md-5 logo" style="position:relative;z-index:-1 !important" src="/theme_pricepaper/static/src/img/logo.png" alt=""/> -->
+                            <img class="img-fluid login-img" src="/theme_pricepaper/static/src/img/login-img.webp" alt=""/>
+                        </div>
+                        <div class="login-bg"></div>
+                    </div>
+                    <div class="col-xl-5 col-12 align-items-center bg-white  d-flex login-right-column">
+                        <div class="form-wrap">
+                            <div class="">
+                                <h3 class="mt-4 mt-lg-0 display-6 fw-b">Welcome !</h3>
+                                <p>Enter to meet the paper people</p>
+                            </div>
+                            <t t-out="0"/>
+                        </div>
+                        <div class="b-dots-sq"></div>
+                        <div class="login-y-dots"></div>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+
+        </xpath>
+    </template>
+    <template id="login" name="Login" inherit_id="web.login">
+        <xpath expr="//div[hasclass('field-login')]/label" position="replace">
+            <label for="login">Email*</label>
+
+        </xpath>
+         <xpath expr="//div[hasclass('field-password')]/label" position="replace">
+            <label for="login">Password*</label>
+
+        </xpath>
+    </template>
+
+</odoo>

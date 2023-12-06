@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_home_menu_sheet" name="Portal layout : sheet" inherit_id="portal.portal_breadcrumbs" priority="30">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'order_sheet_locations'" t-attf-class="breadcrumb-item #{'active ' if not order_sheet else ''}">
+                <a t-if="order_sheet" t-attf-href="/my/order/sheet?{{ keep_query() }}">Delivery Location</a>
+                <t t-else="">Delivery Location</t>
+            </li>
+            <li t-if="order_sheet" class="breadcrumb-item active">
+                <t t-out="sheet.name or order_sheet"/>
+            </li>
+        </xpath>
+    </template>
+    <template id="portal_my_home_sheet" name="Show Order Sheet" inherit_id="portal.portal_my_home" customize_show="True" priority="30">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Order sheet</t>
+                <t t-set="url" t-value="'/my/order/sheet'"/>
+                <t t-set="placeholder_count" t-value="'sheet_count'"/>
+                </t>
+        </xpath>
+    </template>
+
+    <template id="portal_my_sheet_location" name="My Order Sheets">
+        <t t-call="portal.portal_layout">
+            <t t-if="not delivery_location">
+                <p>There are currently no Delivery Location assigned for your account.</p>
+            </t>
+            <t t-if="delivery_location" >
+                <div class='row'>
+                    <t t-foreach="delivery_location" t-as="location">
+                        <div class ='col-4 pt-2 pb-2'>
+                            <a t-attf-href='/my/order/sheeet/{{location.id}}'>
+                                <div class='card'>
+                                    <div class='card-body border'>
+                                        <div style='min-height: 100px;'>
+                                            <t t-if='location.type=="contact"' t-esc='location.name'/>
+                                            <t t-if="location.type=='contact'" t-esc="location" t-options="dict(widget='contact', fields=['address'], no_marker=True)"/>
+                                            <t t-else="" t-esc="location" t-options="dict(widget='contact', fields=['name', 'address'], no_marker=True)"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

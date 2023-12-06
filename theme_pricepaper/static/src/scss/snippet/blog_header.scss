@@ -1,0 +1,23 @@
+.paper-bag {
+    position: relative;
+    z-index: 1;
+    background: #fff;
+    border-radius: 0 0 83px 0;
+	h6{
+		font-size: 28px;
+		line-height: 1.8;
+	}
+	.sector-1 {
+		position: absolute;
+		top: -54px;
+		right: 0;
+		max-width: 125px;
+		max-height: 125px;
+		width: 12vw;
+		height: 12vw;
+		background-size: contain;
+		background-repeat: no-repeat;
+		background-color: #947565;
+		border-radius: 0 145px 0 0;
+	}
+}

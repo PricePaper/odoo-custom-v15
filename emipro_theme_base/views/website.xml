@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<odoo>
+    <record id="view_emipro_theme_base_website_form" model="ir.ui.view">
+        <field name="name">emipro_theme_base.website.form</field>
+        <field name="model">website</field>
+        <field name="inherit_id" ref="website.view_website_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Theme Clarico Vega">
+                    <group>
+                        <field name="enable_smart_search"/>
+                        <div class="text-muted mb-2 mt-n3">
+                            Enable it to activate search synonyms and search keywords reporting.
+                        </div>
+                        <field name="search_in_brands" attrs="{'invisible': [('enable_smart_search', '=', False)]}"/>
+                        <field name="search_in_attributes_and_values"
+                               attrs="{'invisible': [('enable_smart_search', '=', False)]}"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

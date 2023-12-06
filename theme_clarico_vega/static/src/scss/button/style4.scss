@@ -1,0 +1,41 @@
+/*====================== Button Style 4 =============================*/
+@if o-website-value('button-template') == 'button_style_4' {
+    .te_theme_button{
+        color: nth($f_color,5);
+        background-color:nth($f_color,27);
+        z-index: 1;
+        padding: 0.7rem 1.8rem;
+        background-image: -moz-linear-gradient(to right, nth($f_color,19) 0%, nth($f_color,19) 33.3333%, #303030 66.666667%, #303030 100%);
+        background-image: linear-gradient(to right, nth($f_color,19) 0%, nth($f_color,19) 33.3333%, #303030 66.666667%, #303030 100%);
+        background-image: -webkit-linear-gradient(to right, nth($f_color,19) 0%, nth($f_color,19) 33.3333%, #303030 66.666667%, #303030 100%);
+        background-image: -ms-linear-gradient(to right, nth($f_color,19) 0%, nth($f_color,19) 33.3333%, #303030 66.666667%, #303030 100%);
+        background-size: 300% auto;
+        @include transition(all,0.4s,null);
+        @include position(relative);
+        border-width: 0;
+
+        &.btn-secondary, &.btn-link
+        {
+            background-image: -moz-linear-gradient(to right, theme-color("secondary") 0%, theme-color("secondary") 33.3333%, #303030 66.666667%, #303030 100%);
+            background-image: linear-gradient(to right, theme-color("secondary") 0%, theme-color("secondary") 33.3333%, #303030 66.666667%, #303030 100%);
+            background-image: -webkit-linear-gradient(to right, theme-color("secondary") 0%, theme-color("secondary") 33.3333%, #303030 66.666667%, #303030 100%);
+            background-image: -ms-linear-gradient(to right, theme-color("secondary") 0%, theme-color("secondary") 33.3333%, #303030 66.666667%, #303030 100%);
+            color: nth($f_color,5) !important;
+        }
+        &.btn-danger
+        {
+            background-image: -moz-linear-gradient(to right, theme-color('danger') 0%, theme-color('danger') 33.3333%, #303030 66.666667%, #303030 100%);
+            background-image: linear-gradient(to right, theme-color('danger') 0%, theme-color('danger') 33.3333%, #303030 66.666667%, #303030 100%);
+            background-image: -webkit-linear-gradient(to right, theme-color('danger') 0%, theme-color('danger') 33.3333%, #303030 66.666667%, #303030 100%);
+            background-image: -ms-linear-gradient(to right, theme-color('danger') 0%, theme-color('danger') 33.3333%, #303030 66.666667%, #303030 100%);
+        }
+
+        @include media-breakpoint-down(xs) {
+            padding: 0.475rem 0.7rem;
+            font-size:nth($f_sizes,3);
+        }
+        &:hover {
+            background-position: right center;
+        }
+    }
+}

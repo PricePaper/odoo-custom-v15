@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="good_fit" name="Good Fit">
+        <section class="good-fit pt-4 pt-md-5">
+            <div class="container ppt-container">
+                <div class="row pt-4 pt-md-5">
+                    <div class="col text-center align-self-end">
+                        <img class="image-1 img-fluid" src="/theme_pricepaper/static/src/img/girl.webp" alt=""/>
+                    </div>
+                    <div class="col-lg-7 mb-4">
+                        <h3 class="display-6 fw-sb my-4" style="max-width:740px;">Doing business “Your way”</h3>
+                        <p class="mb-5" style="max-width:993px;">Tired of the endless routines of ordering products for your
+                        business? Yeah, we get it. The last thing anyone dreams of is spending quality life moments on a
+                        shopping spree for plates. Wouldn't you rather be plotting world domination, perfecting your
+                        shuffleboard skills, or even pondering the cosmic mysteries of your cat's fascination with laser
+                        pointers? We thought so. Enter Price Paper, the valiant saviors of your time and sanity. With us
+                        at the helm, you'll have more hours to expand your empire, coach mini Messi-wannabes in soccer,
+                        and nail that captain's pose on your imaginary yacht. Let's face it, life's too short for paper
+                        product shenanigans, and that's exactly where Price Paper marches in with a cape (figuratively
+                        speaking).</p>
+
+                        <h6 class="fs-28 mb-md-5 mb-3">We serve</h6>
+
+                        <div id="carouselServices">
+                            <div class="owl-carousel owl-theme we-serve">
+
+                                <div class="item active">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/bagel.svg" alt=""/>
+                                                <p>Bagel Stores</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/caterers.svg" alt=""/>
+                                                <p>Caterers</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/gourmet-specialty-food-markets.svg" alt=""/>
+                                                <p>Gourmet Specialty Food Markets</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/butchers.svg" alt=""/>
+                                                <p>Butchers</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/fast-casual-cafes.svg" alt=""/>
+                                                <p> Fast Casual Cafes </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+
+
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/delicatessens.svg" alt=""/>
+                                                <p>Delicatessens</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/eco-forward-cafes.svg" alt=""/>
+                                                <p>Eco-Forward Cafes</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/organic-eateries.svg" alt=""/>
+                                                <p>Organic Eateries
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/seafood-markets.svg" alt=""/>
+                                                <p>Seafood Markets</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/restaurants.svg" alt=""/>
+                                                <p> Restaurants
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/independent.svg" alt=""/>
+                                                <p> Independent Supermarkets
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/beach-clubs.svg" alt=""/>
+                                                <p>
+                                                    Beach Clubs
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/coffee-shops.svg" alt=""/>
+                                                <p>
+                                                         Coffee Shops
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/juice-bars.svg" alt=""/>
+                                                <p>
+                                                        Juice Bars
+
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/frozen-dessert-shops.svg" alt=""/>
+                                                <p> Frozen Dessert Shops
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/health-food-stores.svg" alt=""/>
+                                                <p>
+                                                      Health Food Stores
+
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/schools.svg" alt=""/>
+                                                <p>
+                                                                     Schools
+
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/veterinary-clinics.svg" alt=""/>
+                                                <p>
+                                                                      Veterinary Clinics
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/pizzeria.svg" alt=""/>
+                                                <p>
+                                                                Pizzerias
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/breweries.svg" alt=""/>
+                                                <p>
+                                                    Breweries 
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/bars.svg" alt=""/>
+                                                <p>
+                                                    Bars
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/Bodegas.svg" alt=""/>
+                                                <p>
+                                                      Bodegas
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/bakeries.svg" alt=""/>
+                                                <p>
+                                                    Bakeries
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/hospital.svg" alt=""/>
+                                                <p>
+                                                 Hospitals
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/fire-truck.svg" alt=""/>
+                                                <p>
+                                                    Fire Houses
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/bingo-halls.svg" alt=""/>
+                                                <p>
+                                                    Bingo Halls 
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="/theme_pricepaper/static/src/img/we-serve/houses-of-worship.svg" alt=""/>
+                                                <p> Houses of Worship </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="sector-1"></div>
+                <!-- <div class="sector-2"></div> -->
+
+                <div class="curvy-line"></div>
+                <div class="b-dots b-dots-2"></div>
+            </div>
+        </section>
+
+    </template>
+
+</odoo>

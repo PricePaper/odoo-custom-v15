@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="ajaxcart_popup_product" inherit_id="website_sale.product">
+        <xpath expr="//t[@t-call='website.layout']" position="inside">
+            <input type="hidden" id="ajax_cart_product_template" value="1"/>
+        </xpath>
+    </template>
+    <template id="ajaxcart_popup" inherit_id="web.frontend_layout">
+        <xpath expr="//div[@id='wrapwrap']/main" position="before">
+            <!-- ajax View Popup Model -->
+            <t t-call="theme_clarico_vega.ajaxcart_popup_ept"/>
+<!--            <t t-if="request.website.viewref('theme_clarico_vega.ajax_add_to_cart').active">-->
+                <input type="hidden" id="ajax_cart_template" value="1"/>
+<!--            </t>-->
+        </xpath>
+    </template>
+    <template id="ajaxcart_popup_ept">
+        <div class="oe_website_sale_ept">
+            <div class="modal fade" id="ajax_cart_model" tabindex='-1'>
+                <div class="modal-dialog modal-md modal-dialog-centered">
+                    <div class="modal-content ajax_cart_modal">
+                        <button type="button" class="cart_close" data-dismiss="modal"
+                                aria-label="Close" tabindex="-1">
+                        </button>
+                        <div class="modal-body"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template id="products_ajax_cart" inherit_id="web.frontend_layout">
+        <xpath expr="//div[@id='wrapwrap']/main" position="inside">
+            <div class="oe_website_sale_ept">
+                <div class="modal fade" id="ajax_cart_model_shop" tabindex='-1'>
+                    <div class="modal-dialog modal-md modal-dialog-centered">
+                        <div class="modal-content ajax_cart_modal">
+                            <button type="button" class="cart_close" data-dismiss="modal"
+                                    aria-label="Close" tabindex="-1">
+                            </button>
+                            <div class="modal-body">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+    <!-- Ajax view template block -->
+    <template id="ajax_cart_template" inherit_id="emipro_theme_base.ajax_cart_container" name="Ajax Cart Template">
+        <xpath expr="//div[hasclass('ajax_cart_content')]" position="attributes">
+            <attribute name="class">ajax_cart_content te_ajax_cart_content d-flex align-content-center flex-wrap</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('ajax_cart_content')]" position="inside">
+            <t t-set="combination" t-value="product._get_first_possible_combination()"/>
+            <t t-set="combination_info"
+               t-value="product._get_combination_info(combination, add_qty=add_qty or 1, pricelist=pricelist)"/>
+            <t t-set="product_variant" t-value="product.env['product.product'].browse(combination_info['product_id'])"/>
+            <section
+                    t-attf-class="container-fluid py-2 oe_website_sale #{'discount' if combination_info['has_discounted_price'] else ''}"
+                    id="product_detail">
+                <div class="row">
+                    <div class="col-auto img_section text-left">
+                        <div class="te_img_container border">
+                            <img t-if="product_variant" t-att-src="'/web/image/product.product/%s/image_128' % product_variant.id"  class="variant_image" alt="Product Image"/>
+                            <img t-else="" t-att-src="'/web/image/product.template/%s/image_128' % product.id"  class="variant_image" alt="Product Image"/>
+                        </div>
+                    </div>
+                    <div class="col text-left w-50 position-relative px-0 overflow-hidden">
+                        <div class="col-right-details">
+                            <h1 itemprop="name" t-field="product.name" class="te_product_name" t-att-title="product.name">Product Name</h1>
+                            <t t-call="website_sale.product_price"/>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-xl-12" id="product_details">
+                        <span itemprop="url" style="display:none;" t-esc="product.website_url"/>
+                        <form t-if="product._is_add_to_cart_possible()" action="/shop/cart/update" method="POST">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="js_product js_main_product">
+                                <t t-placeholder="select">
+                                    <input type="hidden" class="product_id" name="product_id"
+                                           t-att-value="product_variant.id"/>
+                                    <input type="hidden" class="product_template_id" name="product_template_id"
+                                           t-att-value="product.id"/>
+                                    <t t-if="combination" t-call="sale.variants">
+                                        <t t-set="ul_class" t-value="'flex-column'"/>
+                                        <t t-set="parent_combination" t-value="None"/>
+                                    </t>
+                                    <t t-else="">
+                                        <ul class="d-none js_add_cart_variants"
+                                            t-att-data-attribute_exclusions="{'exclusions: []'}"/>
+                                    </t>
+                                </t>
+                                <p t-if="True" class="css_not_available_msg alert alert-warning">This combination does
+                                    not exist.
+                                </p>
+                                <t t-set="qty_show"
+                                   t-value="request.website.viewref('website_sale.product_quantity').active"/>
+                                <t t-set="buy_now_show"
+                                   t-value="request.website.viewref('website_sale.product_buy_now').active"/>
+                                <t t-if="qty_show">
+                                    <div class="css_quantity input-group oe_website_spinner te_product_quantity"
+                                         contenteditable="false">
+                                        <div class="input-group-prepend">
+                                            <a t-attf-href="javascript:void(0)"
+                                               class="btn btn-secondary js_add_cart_json"
+                                               aria-label="Remove one"
+                                               title="Remove one">
+                                                <span class="fa fa-minus"/>
+                                            </a>
+                                        </div>
+                                        <input type="text" class="form-control quantity" data-min="1" name="add_qty"
+                                               value="1"/>
+                                        <div class="input-group-append">
+                                            <a t-attf-href="javascript:void(0)"
+                                               class="btn btn-secondary float_left js_add_cart_json"
+                                               aria-label="Add one" title="Add one">
+                                                <span class="fa fa-plus"/>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </t>
+                                <a role="button"
+                                   class="btn btn-primary btn-lg mt16 a-submit te_theme_button ajax-add-to-cart"
+                                   id="add_to_cart" t-att-product-id="product.id" href="">
+                                    <span class="fa fa-shopping-cart"/>
+                                    Add to Cart
+                                </a>
+                                <t t-if="buy_now_show">
+                                    <a role="button" id="buy_now"
+                                       class="btn btn-outline-primary btn-lg mt16 d-block d-sm-inline-block o_we_buy_now te_theme_button"
+                                       href="#">
+                                        <span class="fa fa-bolt"/>
+                                        Buy Now
+                                    </a>
+                                </t>
+                                <div class="availability_messages o_not_editable"/>
+                                <div id="product_option_block"/>
+                            </div>
+                        </form>
+                        <p t-elif="not product.active" class="alert alert-warning">This product is no longer
+                            available.
+                        </p>
+                        <p t-else="" class="alert alert-warning">This product has no valid combination.</p>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+
+    <!-- Ajax Success view template block -->
+    <template id="ajax_cart_success_template" inherit_id="emipro_theme_base.ajax_cart_success_container"
+              name="Ajax Cart Success Template">
+        <xpath expr="//div[hasclass('ajax_cart_success_content')]" position="attributes">
+            <attribute name="class">ajax_cart_success_content d-flex align-content-center flex-wrap</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('ajax_cart_success_content')]" position="inside">
+            <t t-set="combination" t-value="product._get_first_possible_combination()"/>
+            <t t-set="combination_info"
+               t-value="product._get_combination_info(combination, add_qty=add_qty or 1, pricelist=pricelist)"/>
+            <t t-set="website_sale_order" t-value="website.sale_get_order()"/>
+            <t t-set="cart_qty" t-value="website_sale_order.cart_quantity"/>
+            <section
+                    t-attf-class="container-fluid py-2 o_not_editable oe_website_sale #{'discount' if combination_info['has_discounted_price'] else ''}"
+                    id="product_detail">
+                <div class="row">
+                    <input type="hidden" class="cart_qty" t-att-value="cart_qty"/>
+                    <div class="product-name-container" id="product_details">
+                        <h1 itemprop="name" t-field="product.name" class="te_product_name">Product Name</h1>
+                    </div>
+                    <div class="shopping-line">
+                        <span>You added</span>
+                        <spant t-field="product.name" class="te_product_name">Product Name</spant>
+                        <span>to your</span>
+                        <a type='button' href='/shop/cart'><i class="fa fa-shopping-cart"/>shopping cart.</a>
+                    </div>
+                    <div class="product-image-container">
+                        <span class="new_span d-flex h-100 justify-content-center align-items-center">
+                            <img t-if="product_variant"
+                                 t-attf-src="/web/image/product.product/#{product_variant.id}/image_256"
+                                 class="img img-fluid"
+                                 alt="Product image"/>
+                            <img t-else="" t-attf-src="/web/image/product.template/#{product.id}/image_256"
+                                 class="img img-fluid"
+                                 alt="Product image"/>
+                        </span>
+                    </div>
+                    <div class="ajax-sucess-bottom">
+                        <div class="te_cart_btn">
+                            <a role="button"
+                               class="btn btn-secondary o_not_editable mb32 d-xl-inline-block ajax-sucess-continue te_theme_button">
+                                <span class="">Continue Shopping</span>
+                            </a>
+                            <a role="button"
+                               class="btn btn-primary float-right o_not_editable d-xl-inline-block ajax-sucess-checkout te_theme_button"
+                               href="/shop/checkout?express=1">
+                                <span class="">Process Checkout</span>
+                                <span class="fa fa-chevron-right"/>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+</odoo>

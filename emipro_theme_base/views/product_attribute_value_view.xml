@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- added Icon field in product.attribute form view -->
+    <record id="product_attribute_form_view_icon" model="ir.ui.view">
+        <field name="name">product.attribute.icon.form.inherit</field>
+        <field name="model">product.attribute</field>
+        <field name="inherit_id" ref="product.product_attribute_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='main_fields']" position="after">
+                <group>
+                    <group>
+                        <field name="is_swatches" attrs="{'invisible': [('display_type', '!=', 'color')]}"/>
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='value_ids']/tree/field[@name='name']" position="after">
+                <field name="icon" widget="image" class="oe_avatar" attrs="{'column_invisible': ['|', ('parent.display_type', '!=', 'color'),('parent.is_swatches', '=', False)]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_attribute_quick_filter" model="ir.ui.view">
+        <field name="name">product.attribute.quick.filter.form</field>
+        <field name="model">product.attribute</field>
+        <field name="inherit_id" ref="product.product_attribute_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='main_fields']" position="after">
+                <group>
+                    <group>
+                        <field name="is_quick_filter"/>
+                        <field name="website_ids" options="{'no_create': True}"
+                               widget="many2many_tags" attrs="{'invisible': [('is_quick_filter','=',False)]}"/>
+                        <field name="allow_search" attrs="{'invisible': [('display_type', '==', 'select')]}"/>
+                        <field name="icon_style" attrs="{'invisible': [('display_type', '!=', 'color')]}"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

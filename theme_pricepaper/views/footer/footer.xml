@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="main_footer" inherit_id="website.layout" name="Pricepaer Footer">
+        <xpath expr="//div[@id='footer']" position="replace">
+            <div id="footer" class="oe_structure oe_structure_solo footer" t-ignore="true" t-if="not no_footer">
+                <div class="container ppt-container">
+                    <footer class="pt-5">
+                        <div class="row">
+                            <div class="col-12  mb-3">
+                                <h5 class="">
+                                    <img class="image-2 mt-md-5 img-fluid" src="/theme_pricepaper/static/src/img/footer-logo.svg" alt=""/>
+                                </h5>
+                            </div>
+                            <div class="col-lg-3 col-md-4 mb-3">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item">
+                                        <a href="/" class="nav-link p-0 text-body-secondary">Home</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/aboutus" class="nav-link p-0 text-body-secondary">About</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/shop" class="nav-link p-0 text-body-secondary">Products</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 mb-3">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item">
+                                        <a href="/web/login" class="nav-link p-0 text-body-secondary">Login</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="" class="nav-link p-0 text-body-secondary">Return policy</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/contactus" class="nav-link p-0 text-body-secondary">Contact</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 mb-3">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item">
+                                        <a href="" class="nav-link p-0 text-body-secondary">Accessibility</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/blog" class="nav-link p-0 text-body-secondary">Blog</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="" class="nav-link p-0 text-body-secondary">Site map</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="col-lg-3 col-md-9 mb-3">
+                                <h5 class="">Follow us on</h5>
+                                <div class="d-flex flex-row flex-wrap w-100 mt-4 social-icons">
+                                    <a target="new" href="https://www.facebook.com/pricepaper">
+                                        <span class="s-sprite s-icon-1"></span>
+                                    </a>
+                                    <a target="new" href="https://www.instagram.com/pricepaper/">
+                                        <span class="s-sprite s-icon-2"></span>
+                                    </a>
+                                    <a target="new" href="https://www.youtube.com/@pricepaper">
+                                        <span class="s-sprite s-icon-3"></span>
+                                    </a>
+                                    <a target="new" href="https://www.alignable.com/freeport-ny/price-paper-twine-company-2">
+                                        <span class="s-sprite s-icon-4"></span>
+                                    </a>
+                                    <a target="new" href="https://www.linkedin.com/company/pricepaper">
+                                        <span class="s-sprite s-icon-5"></span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="curvy-line"></div>
+                        <div class="sector-1"></div>
+                        <div class="y-dots"></div>
+                        <div class="d-flex flex-column flex-sm-row justify-content-center py-4">
+                            <p class="copyright">Copyright 2023 Price Paper Company. A division of S.J. Price Inc. All Rights Reserved.</p>
+                        </div>
+                    </footer>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>
+

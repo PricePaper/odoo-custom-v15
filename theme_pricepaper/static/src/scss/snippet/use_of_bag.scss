@@ -1,0 +1,39 @@
+.use-of-bag {
+	position: relative;
+	.container{
+		position: unset !important;
+	}
+	z-index: 1;
+	.sector-1 {
+			position: absolute;
+			top: -10px;
+			right: 0;
+			max-width: 125px;
+			max-height: 125px;
+			width: 12vw;
+			height: 12vw;
+			background-color: #000;
+			border-radius: 0 0 0 145px;
+
+	}
+}
+.bg-black{
+	.btn-primary {
+		border: 3px solid $primary;
+		&:hover{
+			padding: 20px 54px;
+			border: 3px solid #fff;
+			border-radius: 0 38px 0 38px;
+			color: #fff;
+			@media (max-width: 1700px) {
+					font-size: 22px;
+					padding: 12px 30px;
+					border-radius: 0 25px 0 25px;
+					border-width: 2px;				
+			}
+			@media (max-width: 1200px){
+				font-size: 16px;
+			}
+		}
+	}
+}

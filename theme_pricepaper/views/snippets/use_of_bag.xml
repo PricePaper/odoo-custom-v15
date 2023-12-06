@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="use_of_bag" name="Use Of Bag">
+        <section class="use-of-bag">
+            <div class="container ppt-container pt-md-5">
+                <div class="row align-items-start pt-md-5 pt-4">
+                    <div class="col-md-6">
+                        <img class="img-fluid mb-4 mb-lg-0" width="652" src="/theme_pricepaper/static/src/img/man-with-paper-bag.webp" alt=""/>
+                    </div>
+                    <div class="col-lg-6 pb-5 pt-md-5 second-col">
+                        <h3 class="display-6 fw-sb mb-4 ps-5" style="max-width:958px;"> Which uses of bags are exempt?</h3>
+                        <ul class="list-style-1">
+                            <li>Provided by a restaurant, tavern, or similar food service establishment, as deﬁned in the state sanitary code, to carry out or deliver food
+                            </li>
+                            <li> Used solely to contain or wrap uncooked meat, ﬁsh, seafood, poultry, or other unwrapped food, ﬂower, or plant item
+                            </li>
+                            <li>  Used by a customer solely to package items from bulk containers, including fruits, vegetables, grains, candy, small hardware items (such as nuts, bolts, and screws), live ﬁsh, or live insects
+                            </li>
+                            <li>
+                            Used solely to contain food sliced or prepared to order;
+                            Sold as a trash bag                           
+                            </li>
+                            <li> Sold as a food storage bag, such as those in snack, sandwich, quart, and gallon sizes
+                            </li>
+                            <li> Provided by a pharmacy to carry prescription drugs</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="sector-1"></div>
+            </div>
+        </section>
+    </template>
+    <template id="black_bag" name="black_bag">
+        <section class="bg-black py-lg-5 py-4 paper exempt-bags">
+            <div class="container ppt-container py-lg-5 py-4">
+                <div class="row align-items-center py-xl-5">
+                    <div class="col-md-12 text-white">
+                        <p style="max-width: 1680px;">This is not the complete list of exempt bags. We've removed products that do not pertain to our customers or industry to improve clarity and readability. The complete list is available at the link below:</p>
+                        <br/>
+                        <p>
+                            <a target="_blank" href="https://www.dec.ny.gov/chemical/117781.html" class="d-inline-block text-white img-fluid mb-4">https://www.dec.ny.gov/chemical/117781.html</a>
+                        </p>
+                        <p>
+                            <a target="_blank" href="https://govt.westlaw.com/nycrr/Document/I379892abc22411dd80c2c6f42ff0193c?viewType=FullText&amp;originationContext=documenttoc&amp;transition Type=CategoryPageItem&amp;contextData=(sc.Default)" class="d-inline-block text-white img-fluid">https://govt.westlaw.com/nycrr/Document/I379892abc22411dd80c2c6f42ff0193c?viewType=FullText&amp;originationContext=documenttoc&amp;transition Type=CategoryPageItem&amp;contextData=(sc.Default)</a>
+
+                        </p>
+
+                    </div>
+                    <div class="col-md-12">
+                        <a href="" class="btn btn-outline-white mt-lg-5 my-4 text-white me-5 mr-4">Food service definition</a>
+                        <a href="" class="btn btn-primary mt-lg-5 my-4 text-white">Download the full list</a>
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="curvy-line"></div>
+        </section>
+
+    </template>
+
+</odoo>

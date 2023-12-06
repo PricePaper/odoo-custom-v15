@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-extend="website.s_searchbar.autocomplete">
+        <t t-jquery="t[t-elif='!results.length']" t-operation="attributes">
+            <attribute name="t-elif">!results.length and !categories.length</attribute>
+        </t>
+        <t t-jquery="a[t-foreach='results'] .media" t-operation="attributes">
+            <attribute name="t-attf-data-class">#{result['image_url'] ? '' : 'd-inline-block'}</attribute>
+        </t>
+        <t t-jquery=".o_search_result_item t[t-if*='extra_link'] t[t-else] > button" t-operation="replace">
+            <button class="btn btn-link btn-sm p-0" disabled="disabled" t-out="extra_link['extra_link_title']"/>
+        </t>
+        <t t-jquery=".o_search_result_item .media-body div[t-attf-class]" t-operation="replace">
+            <div t-attf-class="h6 font-weight-bold #{description ? '' : 'mb-1'}" t-out="result['name']"/>
+        </t>
+        <t t-jquery=".o_search_result_item img.o_image_64_contain" t-operation="attributes">
+            <attribute name="class">flex-shrink-0 o_image_40_cover</attribute>
+        </t>
+        <t t-jquery=".o_search_result_item > .flex-shrink-0 span.text-danger" t-operation="attributes">
+            <attribute name="class">text-danger text-nowrap te_prod</attribute>
+        </t>
+        <t t-jquery=".o_search_result_item > t[t-if]:first-child i" t-operation="replace"/>
+        <t t-jquery="a[t-foreach='results']" t-operation="before">
+            <div t-if="categories.length" class="categ_search">
+                <span t-if="categories.length" class="d-block pb-0 pl-2 pt-2 te_ce text-muted">Categories</span>
+                <a t-foreach="categories" t-as="category"
+                t-att-href="category['website_url']" class="dropdown-item p-2 text-wrap">
+                    <div class="media align-items-center o_search_result_item">
+                        <div class="media-body px-1">
+                            <div t-attf-class="h6 font-weight-bold #{description ? '' : 'mb-0'}" t-raw="category['name']"/>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </t>
+        <t t-jquery="t[t-if='hasMoreResults']" t-operation="replace">
+            <t t-if="quickLink and quickLink['status'] and quickLink['navigate_type'] == 'attr_value'">
+                <a t-att-href="quickLink['url']" type="submit" class="dropdown-item  text-primary search-all"><i class="fa fa-search ml-2 mr-2"/>View all products with<b class="mx-1" t-raw="quickLink['name']"/><span t-raw="quickLink['attribute_name']"/></a>
+            </t>
+            <t t-elif="quickLink and quickLink['status'] and quickLink['navigate_type'] == 'brand'">
+                <a t-att-href="quickLink['url']" type="submit" class="dropdown-item text-primary search-all"><i class="fa fa-search ml-2 mr-2"/>View all products with<b class="mx-1" t-raw="quickLink['name']"/>Brand</a>
+            </t>
+            <t t-elif="hasMoreResults">
+                <button type="submit" class="dropdown-item text-primary search-all"><i class="fa fa-search ml-2 mr-2"/>View all products</button>
+            </t>
+        </t>
+    </t>
+</templates>

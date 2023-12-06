@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--  Tree View for Synonym Group -->
+    <record id="view_synonym_group_tree" model="ir.ui.view">
+        <field name="name">Synonym Group Tree</field>
+        <field name="model">synonym.group</field>
+        <field name="arch" type="xml">
+            <tree string="Synonym Group">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="website_id"/>
+                <field name="create_date"/>
+                <field name="write_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <!--  Form View for Synonym Group -->
+    <record id="view_keyword_synonyms_form" model="ir.ui.view">
+        <field name="name">Synonym Group Form</field>
+        <field name="model">synonym.group</field>
+        <field name="arch" type="xml">
+            <form string="Synonym Group">
+                <sheet>
+                    <group>
+                        <h1>
+                            <field name="name" placeholder="Synonyms Group"/>
+                        </h1>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="website_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!--  Search View for Synonym Group -->
+    <record id="view_keyword_synonyms_search" model="ir.ui.view">
+        <field name="name">Synonym Group Search</field>
+        <field name="model">synonym.group</field>
+        <field name="arch" type="xml">
+            <search string="Synonym Group">
+                <field name="id"/>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <!--  Action for Synonym Group -->
+    <record id="action_synonym_group" model="ir.actions.act_window">
+        <field name="name">Search Synonyms Groups</field>
+        <field name="res_model">synonym.group</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_keyword_synonyms_search"/>
+        <field name="type">ir.actions.act_window</field>
+        <field name="help" type="html">
+            <div class="no_synonym_group">
+                <p>
+                    No Synonym Group Found !
+                </p>
+                <p>
+                    Add new synonym group for searching on website.
+                </p>
+            </div>
+        </field>
+    </record>
+
+    <!--  Menu for Search Synonyms -->
+    <menuitem id="menu_search_synonyms" name="Search Synonyms" parent="website.menu_website_global_configuration"
+              sequence="11" groups="sales_team.group_sale_manager"
+              action="action_synonym_group"/>
+
+</odoo>

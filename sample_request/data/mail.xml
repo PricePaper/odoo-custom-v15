@@ -1,0 +1,26 @@
+<odoo>
+    <data noupdate="1">
+        <record id="email_template_edi_sample_requst" model="mail.template">
+            <field name="name">Sample Request: Reject</field>
+            <field name="model_id" ref="sample_request.model_sample_request"/>
+            <field name="subject">Sample Request Rejected</field>
+            <field name="email_from">{{ user.email_formatted}}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Hello,
+                        <br/>
+                        <br/>
+                        Your Sample Request <strong t-out="object.name or ''"/>
+                        <br/>
+                        Have been rejected for the following reason:
+                        <span t-out='ctx.get("reason")'/>
+                    </p>
+                </div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

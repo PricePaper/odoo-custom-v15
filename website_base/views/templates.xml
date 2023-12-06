@@ -1,0 +1,40 @@
+<odoo>
+    <data>
+        <template id="products_price" inherit_id="website_sale.products_item" active="False" customize_show="True" name="Product Price Hide">
+            <xpath expr="//*[hasclass('product_price')]" position="attributes">
+                <attribute name ="class" add="d-none" separator=" "/>
+
+            </xpath>
+        </template>
+
+        <template id="product_inherit" inherit_id="website_sale.product">
+            <xpath expr="//div[hasclass('js_main_product')]/div[1]" position="replace">
+                <!-- <t t-call="website_base.new_product_price"/> -->
+
+                <div t-if='sale_uoms'>
+                    <div class="form-group">
+                        <label for="UomProduct">UOM</label>
+                        <select class="form-control" id="UomProduct">
+                            <t t-foreach='sale_uoms' t-as='uom'>
+                                <option t-att-value='uom.id'>
+                                    <t t-esc='uom.name'/>
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+
+                </div>
+                <div class='new_pice'>
+                    <h3>
+                        <span class="oe_prnewice" style="white-space: nowrap;" t-esc="new_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                    </h3>
+                </div>
+            </xpath>
+        </template>
+    </data>
+    <template id="pay_meth_link_inherit"  inherit_id="payment.pay_meth_link">
+        <xpath expr="//a[@href='/my/payment_method']" position="replace">
+             <a href="/my/payment/token">Manage payment methods</a>
+        </xpath>
+    </template>
+</odoo>

@@ -80,7 +80,7 @@ class AccountRegisterPayment(models.TransientModel):
             for vals in to_process:
                 write_off_vals = vals['create_vals'].pop('write_off_line_vals', False)
         payments = super()._init_payments(to_process, edit_mode)
-        if write_off_vals:
+        if write_off_vals and write_off_vals.get('amount', 0) > 0:
             destination_account_id = payments.partner_id and payments.partner_id.property_account_receivable_id or self.env['ir.property']._get(
                 'property_account_receivable_id', 'res.partner')
             if payments.partner_type == 'supplier':

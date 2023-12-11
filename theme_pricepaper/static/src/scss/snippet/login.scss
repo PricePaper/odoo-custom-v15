@@ -26,18 +26,29 @@
 
 
             }
-            @media  (max-width: 1200px) {
+
+            @media (max-width: 1200px) {
                 background-position: -56px -55px;
                 background-size: auto;
-            
+
             }
+
             @media(max-width:980px) and (min-width:801px) {
                 background-position: -14px -19px
             }
+
             @media(max-width:800px) and (min-width:730px) {
                 background-position: 10px -47px;
             }
 
+            @media(max-width:720px) {
+
+                background-position: -31px -11px;
+                background-size: 100% 105%;
+            }
+            @media (max-width: 576px) {
+                background-position: -27px 10px;
+            }
             .img-wrap-login {
                 display: flex;
                 align-items: end;
@@ -53,9 +64,7 @@
             }
 
 
-            @media (max-width: 576px) {
-                background-position: -55px 84px;
-            }
+           
         }
 
         .login-right-column {
@@ -68,8 +77,9 @@
                 max-width: 100%;
                 margin: auto;
                 padding: 50px;
-                h3{
-                    @media(max-width: 119px){
+
+                h3 {
+                    @media(max-width: 119px) {
                         font-size: 40px;
                     }
                 }
@@ -78,7 +88,8 @@
                     font-family: "Poppins";
                     font-size: 21px;
                     font-weight: unset !important;
-                    @media(max-width:500px){
+
+                    @media(max-width:500px) {
                         font-size: 16px;
                     }
                 }
@@ -105,7 +116,8 @@
                         background: #060606;
                         border-color: #060606;
                         color: #fff;
-                        @media(max-width:1025px){
+
+                        @media(max-width:1025px) {
                             font-size: 22px;
                         }
                     }
@@ -256,10 +268,10 @@
             height: auto !important;
         }
 
-        .login-left-column .login-img {
-            height: auto;
-            max-height: 40vh;
-        }
+        // .login-left-column .login-img {
+        //     height: auto;
+        //     max-height: 40vh;
+        // }
 
         .form-wrap {
             padding: 10px;

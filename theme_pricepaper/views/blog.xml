@@ -53,16 +53,12 @@
                             <div class="col-lg-7">
                                 <h3 class="display-5 fw-sb mb-4" t-field="blog_post.name" id="o_wblog_post_name" data-oe-expression="blog_post.name" t-att-data-blog-id="blog_post.id" placeholder="Title"/>
                                 <h6 class="fw-m h4 mb-4" t-field="blog_post.subtitle" id="o_wblog_post_subtitle" placeholder="Subtitle"/>
-
-
-                                <p class="mb-4" style="max-width:881px">
-                            Some of our customers are transitioning to paper bags regardless due to public opinion. This is a business choice; they are concerned that their customers will believe they are breaking the law or they are choosing what is perceived to be more environmentally friendly solution . However, it is not mandatory if your business falls into one of the above categories.
-                                </p>
-                                <h4 class="mt-5">Executive Summary :</h4>
-                                <p>A large portion of our customers are exempt from the ban and may continue to use plastic bags if they so choose.</p>
+                                <p class="mb-4" style="max-width:881px" t-field='blog_post.summary' id="o_wblog_post_summary" placeholder='Summary'/>
+                                <h4 class="mt-5" t-field="blog_post.subtitle2"/>
+                                <p t-field="blog_post.summary1"/>
                             </div>
-                            <div class="col-lg-5">
-                                <img class="img-fluid" width="642" height="773" src="/theme_pricepaper/static/src/img/paper-bags.webp" alt=""/>
+                            <div class="col-lg-5" t-field="blog_post.img_cover">
+                                <!-- <img class="img-fluid" width="642" height="773" src="/theme_pricepaper/static/src/img/paper-bags.webp" alt=""/> -->
                             </div>
 
                         </div>
@@ -77,7 +73,7 @@
         <xpath expr="//div[@t-if='len(blogs) > 1 or len(blog_post.tag_ids) > 0']" position="attributes">
 
             <attribute name="class" separator=" " add="d-none"/>
-            
+
         </xpath>
     </template>
 

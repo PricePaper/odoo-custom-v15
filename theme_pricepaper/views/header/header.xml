@@ -62,7 +62,7 @@
                                     <!--<a class="nav-link btn btn-black contact" href="/contactus">Contact</a>-->
                                 </div>
                             </li>
-                            <li class='nav-item'>
+                            <li class='nav-item ml-lg-3 ml-0'>
                                 <a class="nav-link btn btn-black contact" href="/contactus">Contact</a>
                             </li>
                         </t>
@@ -117,7 +117,7 @@
                             </li>
                         </ul>
                     </div>
-                    <a class="nav-link btn btn-black contact" href="/contactus">Contact</a>
+                    <a class="nav-link btn btn-black contact " href="/contactus">Contact</a>
 
                 </div>
             </li>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="portal_layout" name="Portal Layout" inherit_id="portal.portal_layout">
+        <xpath expr="//div[hasclass('o_portal')]" position="replace"/>
+
+
+        <xpath expr="//div[@id='wrap']//div[hasclass('container')]" position="before">
+            <div class="curvy-line"></div>
+            <div class="y-dots"/>
+        </xpath>
+        <xpath expr="//div[@id='wrap']//div[hasclass('container')]//t[@t-if='my_details']" position="before">
+
+            <div t-if="not no_breadcrumbs and not my_details and not breadcrumbs_searchbar" class="o_portal row position-relative mt-3" style="z-index:9999">
+                <div class="col-12 align-items-center bg-white no-gutters ">
+                    <div class="col-10">
+                        <t t-call="portal.portal_breadcrumbs"></t>
+                    </div>
+                    <div t-if="prev_record or next_record" class="col-2 flex-grow-0 text-center">
+                        <t t-call='portal.record_pager'/>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+        <xpath expr="//div[@id='wrap']//div[hasclass('container')]//t[@t-if='my_details']//div[hasclass('row')]/div[1]" position="attributes">
+            <attribute name="t-attf-class">col-12 col-md col-lg-7 </attribute>
+        </xpath>
+        <xpath expr="//div[@id='wrap']//div[hasclass('container')]//t[@t-if='my_details']//div[hasclass('row')]/div[@id='o_my_sidebar']" position="attributes">
+            <attribute name="class">pt-3 pt-lg-0 col-12 col-md-11 col-lg-4 col-xl-4 o_my_sidebar </attribute>
+        </xpath>
+        <xpath expr="//div[@id='wrap']//div[hasclass('container')]//t[@t-if='my_details']//div[hasclass('row')]/div[@id='o_my_sidebar']//div[hasclass('o_portal_my_details')]//a[@href='/my/account']" position="replace">
+            <a role="button" href="/my/account" class="btn btn-sm btn-link">
+                <i class="fa fa-pencil"/>
+            </a>
+        </xpath>
+
+        <xpath expr="//div[@id='wrap']//div[hasclass('container')]" position="attributes">
+            <attribute name="class" separator=" " add="container-fluid" remove="container" value=""></attribute>
+        </xpath>
+    </template>
+
+</odoo>

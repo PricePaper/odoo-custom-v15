@@ -23,17 +23,24 @@ class ReturnPicking(models.TransientModel):
         elif stock_move.picking_id.picking_type_id.code == 'incoming':
             price_unit = -stock_move.price_unit
 
+        # for move in stock_move.move_dest_ids:
+        #     if move.origin_returned_move_id and move.origin_returned_move_id != stock_move:
+        #         continue
+        #     if move.state in ('partially_available', 'assigned'):
+        #         quantity -= sum(move.move_line_ids.mapped('product_qty'))
+        #     elif move.state in ('done'):
+        #         quantity -= move.product_qty
         for move in stock_move.move_dest_ids:
             if move.origin_returned_move_id and move.origin_returned_move_id != stock_move:
                 continue
             if move.state in ('partially_available', 'assigned'):
-                quantity -= sum(move.move_line_ids.mapped('product_qty'))
+                quantity -= sum(move.move_line_ids.mapped('product_uom_qty'))
             elif move.state in ('done'):
-                quantity -= move.product_qty
-        quantity = float_round(stock_move.product_id.uom_id._compute_quantity(quantity,
-                                                              stock_move.product_uom,
-                                                              rounding_method='HALF-UP'),
-                                precision_rounding=stock_move.product_id.uom_id.rounding)
+                quantity -= move.product_uom_qty
+        # quantity = float_round(stock_move.product_id.uom_id._compute_quantity(quantity,
+        #                                                       stock_move.product_uom,
+        #                                                       rounding_method='HALF-UP'),
+        #                         precision_rounding=stock_move.product_id.uom_id.rounding)
 
         return {
             'product_id': stock_move.product_id.id,

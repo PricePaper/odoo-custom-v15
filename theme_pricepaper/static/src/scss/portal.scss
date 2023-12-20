@@ -67,13 +67,36 @@
                 padding: 11px 7px !important;
                 border-radius: 0 28px 0 27px !important;
                 outline: none !important;
+
+                @media(max-width:990px) {
+
+                    font-size: 10px !important;
+                    padding: 1px 7px !important;
+                    border-radius: 0 12px 0 12px !important;
+                    outline: none !important;
+
+
+
+
+                }
+            }
+
+            .o_portal_search_panel {
+                .btn {
+
+                    padding: 0.25rem 0.5rem !important;
+                    font-size: 0.75rem !important;
+                    border-radius: unset !important;
+                }
             }
         }
 
         &>.row:first-child {
             margin-top: 7.5rem !important;
 
+
             @media(max-width:990px) {
+                margin-top: 3rem !important;
                 justify-content: center !important;
             }
 
@@ -230,9 +253,12 @@
 }
 
 .o_portal_my_doc_table {
+
     a.btn {
         font-size: 10px !important;
         padding: 12px 31px !important;
         border-radius: 0 24px 0 24px !important;
     }
+
+
 }

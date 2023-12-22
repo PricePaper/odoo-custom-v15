@@ -14,5 +14,18 @@
             </div>
         </xpath>
     </template>
+    <template id="s_dynamic_snippet_template" inherit_id="website.s_dynamic_snippet_template">
+        <xpath expr="//div[hasclass('container')]" position="attributes">
+            <attribute name="class" separator=" " add="paper_container" remove="o_not_editable"></attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('container')]/div[hasclass('dynamic_snippet_template')]" position="before">
+            <div class='product_top text-white'>
+                <span>
+                Product Spotlight
+                </span>
+
+            </div>
+        </xpath>
+    </template>
 
 </odoo>

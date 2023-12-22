@@ -2,7 +2,36 @@ odoo.define('theme_pricepaper.common', function (require) {
     'use strict';
     var core = require('web.core');
     const publicWidget = require('web.public.widget');
+    const config = require('web.config');
+    const dynamic_snippt = require('website.s_dynamic_snippet')
     var ajax = require('web.ajax');
+    dynamic_snippt.include({
+        _getQWebRenderOptions: function () {
+            var numberOfElements = 5
+            if (config.device.isMobile) {
+                numberOfElements = this.$target[0].dataset.numberOfElementsSmallDevices
+            } else {
+                if (window.innerWidth <= 1024 && window.innerWidth > 950) {
+                    numberOfElements = 3
+                }
+                else if (window.innerWidth <= 950 && window.innerWidth > 760) {
+                    numberOfElements = 2
+                }
+                else {
+
+                    numberOfElements = this.$target[0].dataset.numberOfElements
+                }
+            }
+            return {
+                chunkSize: parseInt(
+                    numberOfElements
+                ),
+                data: this.data,
+                uniqueId: this.uniqueId
+            };
+        },
+
+    })
     publicWidget.registry.Crmform = publicWidget.Widget.extend({
         selector: '.home-contact-form',
         events: {
@@ -11,7 +40,7 @@ odoo.define('theme_pricepaper.common', function (require) {
         },
         _onFormSubmit: function (ev) {
             var curr = $(ev.currentTarget)
-            curr.prop('disabled',true)
+            curr.prop('disabled', true)
             ev.preventDefault()
             ev.stopPropagation();
             var $form = $(this.$target).find('form')
@@ -24,7 +53,7 @@ odoo.define('theme_pricepaper.common', function (require) {
                     $(this).get(0).reportValidity()
                     flag = true
 
-                    curr.prop('disabled',false)
+                    curr.prop('disabled', false)
                     return
                 }
                 else {
@@ -36,7 +65,7 @@ odoo.define('theme_pricepaper.common', function (require) {
                 if (!flag) {
                     console.log(data)
                     ajax.jsonRpc('/contact/crm/lead', 'call', data).then(function (result) {
-                        if (result.status){
+                        if (result.status) {
                             $form.replaceWith("<strong> Thanks for contacting us , Our team will get back to you shortly</strong>")
                         }
                     })

@@ -19,6 +19,22 @@
         </section>
 
     </template>
+    <template id="shop_banner" name="About Us Banner">
+        <section class="pt-md-5 shop-banner">
+            <div class="container h-100 ppt-container">
+                <div class="row h-100">
+                    <div class="col">
+                        <img class="image-1 img-fluid" src="/theme_pricepaper/static/src/img/CompositeLayer.png" alt=""/>
+                    </div>
+                    <div class="col-xl-7 col-lg-8">
+                        <h1 class="fw-b display-5 text-white ">Unwrap convenience : Explore our diverse range of parcel solutions</h1>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </template>
     <template id="pricepaer_way" name="Pricepaper Way">
         <section class="py-lg-5 py-3 price-paper-way">
             <div class="container py-lg-5 ppt-container">

@@ -4,9 +4,19 @@ from odoo import api, fields, models, _
 from odoo.tools import float_compare
 
 
+class SaleOrder(models.Model):
+    _inherit = 'sale.order'
+
+    def _get_estimated_weight(self):
+        self.ensure_one()
+        weight = 0.0
+        for order_line in self.order_line.filtered(lambda l: l.product_id.type in ['product', 'consu'] and not l.is_delivery and not l.display_type and l.product_uom_qty > 0):
+            weight += order_line.product_id.uom_id._compute_quantity(order_line.product_qty, order_line.product_id.ppt_uom_id) * order_line.product_id.weight
+        return weight
+
+
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
-
 
     def product_id_check_availability(self):
         if not self.product_id or not self.product_uom_qty or not self.product_uom or self.order_id.storage_contract:

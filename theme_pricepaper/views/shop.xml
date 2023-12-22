@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="products" name="Products" inherit_id="website_sale.products">
+        <xpath expr="//div[@id='wrap']//div[hasclass('oe_website_sale')]" position="attributes">
+            <attribute name="class" separator=" " add="container-fluid" remove="container" />
+        </xpath>
+        <xpath expr="//div[hasclass('products_header')]/t[@t-call='website_sale.pricelist_list']" position="after">
+            <div class='product_count'>
+                <span class='count'>
+                    <t t-out="search_count"/>
+                </span>
+                <span class='content'>Products are available </span>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>

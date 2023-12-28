@@ -30,6 +30,10 @@ section.shop-banner {
     width: auto;
     background-size: 300px;
     background-repeat: no-repeat;
+    img{
+        z-index: 9;
+        position: relative;
+    }
 
     &::after {
         background: url("../img/black-dots.webp");
@@ -312,7 +316,7 @@ section.shop-banner {
     .product_top {
         margin-bottom: 20px;
         color: #FFF;
-
+        z-index: 9;
         font-family: $font-family_1;
         font-size: 50px;
         font-style: normal;

@@ -14,6 +14,8 @@ class CustomerStatementWizard(models.TransientModel):
     def default_get(self, fields):
         result = super(CustomerStatementWizard, self).default_get(fields)
         result['date_from'] = self.env.user.company_id.last_statement_date
+        if self._context.get('active_model', False) == 'res.partner' and self._context.get('active_ids', False):
+            result['partner_ids'] = self.env['res.partner'].browse(self._context.get('active_ids'))
         return result
 
     def action_generate_statement(self):
@@ -32,6 +34,10 @@ class CustomerStatementWizard(models.TransientModel):
             ('date', '<=', self.date_to),
             ('state', '!=', 'cancel')
         ]
+
+        if self._context.get('active_model', False) == 'res.partner':
+            inv_domain.append(('partner_id', 'in', self.partner_ids.ids))
+            payment_domain.append(('partner_id', 'in', self.partner_ids.ids))
 
         invoices = self.env['account.move'].search(inv_domain)
         invoices_open_with_credit = invoices.filtered(

@@ -18,6 +18,11 @@
                                 <field name="date_from" placeholder="Start Date"/><span style="padding:30px;">&#8594;</span> <field name="date_to" placeholder="End Date"/>
                             </span>
                         </div>
+                        <group>
+                            <group>
+                                <field name="partner_ids" string="Partners" widget="many2many_tags" invisible="1"/>
+                            </group>
+                        </group>
                         <footer>
                               <button string="Generate Statement" type="object" name="action_generate_statement" class="btn-primary" />
                               <button string="Cancel" special="cancel" class="btn-secondary"/>
@@ -43,6 +48,7 @@
             <field name="res_model">customer.statement.wizard</field>
             <field name="view_mode">form</field>
             <field name="target">new</field>
+            <field name="binding_model_id" ref="base.model_res_partner" />
         </record>
 
 

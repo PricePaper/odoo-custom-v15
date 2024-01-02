@@ -278,3 +278,11 @@
         font-family: $font-family_1 !important;
     }
 }
+
+#generateModal{
+    .token_generate{
+        @media(max-width:760px){
+            width: auto !important;
+        }
+    }
+}

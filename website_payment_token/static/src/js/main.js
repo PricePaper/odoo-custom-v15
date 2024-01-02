@@ -28,21 +28,30 @@ odoo.define('website_paymet_token.token', function (require) {
             var flag = false
             if (!card_num) {
                 $("input[name=card_num]").addClass('is-invalid')
+                $("input[name=card_num]").get(0).setCustomValidity('Please Enter Correct Card Number');
+                $("input[name=card_num]").get(0).reportValidity()
                 flag = true
             }
             var expiry_month = $("#cardMonth").val()
             if (!expiry_month) {
                 $("#cardMonth").addClass('is-invalid')
+                $("input[name=card_num]").get(0).setCustomValidity('Please Enter Correct Month');
+                $("input[name=card_num]").get(0).reportValidity()
+                
                 flag = true
             }
             var expiry_year = $("#cardYear").val()
             if (!expiry_year) {
                 $("#cardYear").addClass('is-invalid')
+                $("cardYear").get(0).setCustomValidity('Please Enter Correct Year');
+                $("cardYear").get(0).reportValidity()
                 flag = true
             }
             var card_cvv = $("input[name='card_cvv']").val()
             if (!card_cvv) {
                 $("input[name=card_cvv]").addClass('is-invalid')
+                $("input[name=card_cvv]").get(0).setCustomValidity('Please Enter Correct Cvv');
+                $("input[name=card_cvv]").get(0).reportValidity()
                 flag = true
             }
             if (!flag) {

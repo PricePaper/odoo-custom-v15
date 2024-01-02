@@ -1031,3 +1031,84 @@ a {
     border-top-right-radius: 10PX;
     border-bottom-left-radius: 10PX;
 }
+
+.pagination {
+    justify-content: end !important;
+
+    .page-item {
+        &.active {
+            .page-link {
+                background-color: $primary
+            }
+        }
+
+        &:not(:nth-child(1)):not(:last-child):not(:nth-child(2)):not(:nth-last-child(2)) {
+            .page-link {
+
+                border-left: unset;
+                border-right: unset;
+                border-radius: unset;
+            }
+        }
+
+        &:nth-child(2) {
+            .page-link {
+
+                border-top-left-radius: 5px;
+                border-bottom-left-radius: 5px;
+                border-right: unset !important;
+            }
+        }
+
+        &:nth-last-child(2) {
+            .page-link {
+
+                border-top-right-radius: 5px;
+                border-bottom-right-radius: 5px;
+                border-left: unset !important;
+            }
+        }
+
+        &:nth-child(1) {
+
+            margin-right: 26px;
+            i{
+                margin-right: 4px;
+            }
+        }
+
+        &:last-child {
+            margin-left: 26px;
+            position: relative;
+            i{
+                margin-left: 4px;
+            }
+            
+        }
+
+        &:nth-child(1),
+        &:last-child {
+            background: transparent !important;
+
+            .page-link {
+                border-radius: 5px;
+                font-family: $font-family_1 !important;
+                color: black;   
+                display: flex;
+                align-items: center;
+
+                &:not(.disabled) {
+                    &:hover {
+
+                        color: white !important;
+
+                        background-color: $primary;
+                        border-color: $primary;
+                    }
+                }
+            }
+        }
+
+
+    }
+}

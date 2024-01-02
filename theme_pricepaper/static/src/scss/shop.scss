@@ -360,6 +360,24 @@ section.shop-banner {
         line-height: normal;
     }
 
+    &::before {
+        background: url("../img/yellow-dots.svg");
+        position: absolute;
+        top: -78px;
+        left: 6%;
+        max-width: 442px;
+        max-height: 337px;
+        z-index: 0;
+        width: 18vw;
+        height: 18vw;
+        background-size: contain;
+        background-repeat: no-repeat;
+
+        @media (max-width: 768px) {
+            display: none;
+        }
+    }
+
     .o_carousel_product_card {
         height: 400px;
         border-radius: 30px;

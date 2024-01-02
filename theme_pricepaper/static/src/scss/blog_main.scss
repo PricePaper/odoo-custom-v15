@@ -1,5 +1,21 @@
 #o_wblog_blog_top {
     .price-container {
+        &::after {
+            background: url("../img/black-dots.webp");
+            content: "";
+            position: absolute;
+            height: 438px;
+            width: 30vw;
+            top: 50px;
+            right: -24%;
+            opacity: .8;
+            background-size: contain;
+            background-repeat: no-repeat;
+    
+            @media (min-width: 1700px) {
+                right: -25%;
+            }
+        }
         background: #749551;
         padding: 60px;
         height: 600px;
@@ -24,14 +40,18 @@
             overflow: hidden;
             border-bottom-left-radius: 100px;
             z-index: 9;
+            margin-top: 20px;
+            
 
         }
 
         .y-dots {
-            background: url(../img/white-dots.svg);
+            background: url(../img/white-blog.png);
             position: absolute;
-            height: 438px;
+            height: 367.2px;
+            // height: 438px;
             width: 30vw;
+            // width: 437px;
             top: 5px;
             left: 17%;
             opacity: .8;
@@ -66,7 +86,23 @@
     // background: #749551;
 
     #o_wblog_index_content {
+        overflow: hidden;
         background: white;
+    }
+
+    .curvy-line {
+        background: url(../img/curvy-line1.svg);
+        position: absolute;
+        background-size: cover;
+        bottom: -100px;
+        left: 0;
+        z-index: 9999;
+        transform: rotate(-33deg) translate(-104px, -12px);
+        width: 436.5px;
+        height: 134.1px;
+        @media(max-width:1100px) {
+            display: none;
+        }
     }
 
     nav {
@@ -119,7 +155,8 @@
                         width: 100%;
                         left: 0px;
                         padding: 20px;
-                        .nav-link{
+
+                        .nav-link {
                             margin-bottom: 10px;
                         }
                     }
@@ -193,8 +230,39 @@
     .o_wblog_page_cards_bg {
         font-family: "Poppins" !important;
 
+        .y-dots {
+
+            background: url(../img/yellow-dots.svg);
+            position: absolute;
+
+            top: -85px;
+            left: 43%;
+            max-width: 425px;
+            height: 200px;
+            z-index: 9;
+            width: 278px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: top;
+
+            @media (max-width:1400px) {
+                left: 29%;
+
+            }
+
+            @media(max-width:1100px) {
+                display: none;
+            }
+        }
+
         #o_wblog_posts_loop {
             font-family: "Poppins" !important;
+            margin-top: 100px;
+
+            @media(max-width:1100px) {
+                margin-top: unset;
+
+            }
 
             .o_wblog_post {
                 font-family: "Poppins" !important;
@@ -202,6 +270,7 @@
                 height: 400.7px !important;
                 border-radius: 30px;
                 border-color: #749551;
+                z-index: 99;
 
                 .blog-date {
                     font-family: "Poppins";
@@ -233,4 +302,20 @@
         }
     }
 
+}
+
+.record_blog_list {
+    position: absolute;
+    font-family: "Poppins" !important;
+    bottom: 20px;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 9px;
+    left: 10px;
+    background-color: $primary;
+    color: white;
+
+    &:hover {
+        color: white !important;
+    }
 }

@@ -83,6 +83,7 @@
             <nav t-attf-class="navbar navbar-expand-sm navbar-light #{additionnal_classes}" t-if="len(blogs) > 1">
                 <div class="container-fluid blog_container">
                     <div class='d-flex w-100 justify-content-between align-items-center main_nav'>
+                        <div class='curvy-line'/>
                         <div>
                             <span class='blog_head'>Blogs</span>
                         </div>
@@ -91,19 +92,19 @@
                                 <span class="navbar-toggler-icon o_not_editable"></span>
                             </button>
                             <div id="blog_menu_collapse" class=" collapse navbar-collapse">
-                            <ul class="nav navbar-nav" >
-                                <!-- <li class="nav-item">
+                                <ul class="nav navbar-nav">
+                                    <!-- <li class="nav-item">
                                 <span class="nav-link disabled pl-0">Blogs:</span>
                             </li> -->
-                                <li class="nav-item">
-                                    <a href="/blog" t-attf-class="nav-link font-weight-bold #{(not blog) and 'active'}">All</a>
-                                </li>
-                                <li class="nav-item" t-foreach="blogs" t-as="nav_blog">
-                                    <a t-attf-href="/blog/#{slug(nav_blog)}" t-attf-class="nav-link #{(blog and nav_blog.id == blog.id) and 'active' or ''}">
-                                        <b t-field="nav_blog.name"/>
-                                    </a>
-                                </li>
-                            </ul>
+                                    <li class="nav-item">
+                                        <a href="/blog" t-attf-class="nav-link font-weight-bold #{(not blog) and 'active'}">All</a>
+                                    </li>
+                                    <li class="nav-item" t-foreach="blogs" t-as="nav_blog">
+                                        <a t-attf-href="/blog/#{slug(nav_blog)}" t-attf-class="nav-link #{(blog and nav_blog.id == blog.id) and 'active' or ''}">
+                                            <b t-field="nav_blog.name"/>
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                         <!-- 'Search Box' -->
@@ -125,6 +126,8 @@
     </template>
     <template id="posts_loop" name="Posts List" inherit_id="website_blog.posts_loop">
         <xpath expr="//div[@id='o_wblog_posts_loop']" position="replace">
+            <div class="y-dots"></div>
+            <!-- <div class="curvy-line"></div> -->
             <div id="o_wblog_posts_loop" t-att-class="'o_wblog_list_view' if opt_blog_list_view else ''">
 
                 <!-- Allow to filter post by published state. Visible only in edit-mode
@@ -244,7 +247,11 @@
                                 </t>
                                 <!-- Grid-View Design -->
                                 <t t-if="not opt_blog_list_view">
-                                    <t t-if="opt_posts_loop_show_cover" t-call="website_blog.post_cover_image"/>
+                                    <div class='position-relative'>
+
+                                        <t t-if="opt_posts_loop_show_cover" t-call="website_blog.post_cover_image"/>
+                                        <a t-attf-href="/blog/#{slug(blog_post.blog_id)}" class='record_blog_list' t-field="blog_post.blog_id"/>
+                                    </div>
                                     <span t-field="blog_post.post_date" class='blog-date' t-options='{"format": "d MMMM, yyyy"}'/>
                                     <div t-att-class="opt_blog_cards_design and 'card-body px-2 py-0 mb-2'">
                                         <t t-call="website_blog.post_heading"/>

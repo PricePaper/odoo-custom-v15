@@ -82,7 +82,7 @@
             <!-- <template id="blogs_nav" name="Blogs Bar Template"> -->
             <nav t-attf-class="navbar navbar-expand-sm navbar-light #{additionnal_classes}" t-if="len(blogs) > 1">
                 <div class="container-fluid blog_container">
-                    <div class='d-flex w-100 justify-content-between main_nav'>
+                    <div class='d-flex w-100 justify-content-between align-items-center main_nav'>
                         <div>
                             <span class='blog_head'>Blogs</span>
                         </div>

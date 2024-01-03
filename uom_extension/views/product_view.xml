@@ -32,7 +32,7 @@
             </field>
         </record>
 
-        <record model="ir.ui.view" id="product_form_view_procurement_button_inherit_uom_extension">
+        <!-- <record model="ir.ui.view" id="product_form_view_procurement_button_inherit_uom_extension">
             <field name="name">view.product.normal.form.inherit.uom.extension</field>
             <field name="model">product.product</field>
             <field name="inherit_id" ref="stock_available_unreserved.product_form_view_procurement_button"/>
@@ -46,7 +46,7 @@
               </xpath>
 
             </field>
-        </record>
+        </record> -->
 
         <record model="ir.ui.view" id="product_normal_form_view_inherit_purchase_inherit_uom_extension">
             <field name="name">view.product.normal.form.inherit.uom.extension</field>

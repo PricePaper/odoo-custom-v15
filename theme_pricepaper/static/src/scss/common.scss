@@ -1036,9 +1036,27 @@ a {
     justify-content: end !important;
 
     .page-item {
+        .page-link {
+            border-width: 2px;
+            border-color: black;
+            font-family: "Poppins";
+            font-size: 23px;
+            font-weight: normal;
+            line-height: 33px;
+            font-style: normal;
+            text-align: left;
+            letter-spacing: 2px;
+            color: #000;
+            min-width: 62px;
+            height: 57px;
+            text-align: center;
+
+        }
+
         &.active {
             .page-link {
-                background-color: $primary
+                background-color: $primary;
+                color:white
             }
         }
 
@@ -1047,7 +1065,7 @@ a {
 
                 border-left: unset;
                 border-right: unset;
-                border-radius: unset;
+                // border-radius: unset;
             }
         }
 
@@ -1072,7 +1090,8 @@ a {
         &:nth-child(1) {
 
             margin-right: 26px;
-            i{
+
+            i {
                 margin-right: 4px;
             }
         }
@@ -1080,10 +1099,11 @@ a {
         &:last-child {
             margin-left: 26px;
             position: relative;
-            i{
+
+            i {
                 margin-left: 4px;
             }
-            
+
         }
 
         &:nth-child(1),
@@ -1093,7 +1113,7 @@ a {
             .page-link {
                 border-radius: 5px;
                 font-family: $font-family_1 !important;
-                color: black;   
+                color: black;
                 display: flex;
                 align-items: center;
 

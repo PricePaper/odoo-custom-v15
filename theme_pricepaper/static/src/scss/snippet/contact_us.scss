@@ -6,6 +6,7 @@
 
     &.blog_contact {
         border-radius: 83px 0 0 83px;
+        margin-top: 20px;
 
         .b-dots-1 {
             background: url("../../img/black-dots.webp");
@@ -188,6 +189,11 @@
             right: -18px;
         }
     }
+    &.blog_contact{
+        .b-dots{
+            top: 122px;
+        }
+    }
 
 }
 
@@ -253,6 +259,18 @@
     }
 }
 
+@media(max-width:1024px){
+    .home-contact-us.blog_contact    {
+        .sector-1,.sector-2{
+            display: none;
+        }
+        padding-top: 40px !important;
+        .b-dots{
+            top: 72px;
+        }
+    }
+
+}
 @media (max-width:992px) {
     .home-contact-form {
         background: #fff;

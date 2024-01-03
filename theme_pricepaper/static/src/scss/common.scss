@@ -1094,6 +1094,9 @@ a {
             i {
                 margin-right: 4px;
             }
+            @media(max-width:450px){
+                display: none;
+            }
         }
 
         &:last-child {

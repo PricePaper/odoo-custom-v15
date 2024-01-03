@@ -6,7 +6,7 @@
 
     &.blog_contact {
         border-radius: 83px 0 0 83px;
-        margin-top: 20px;
+        // margin-top: 20px;
 
         .b-dots-1 {
             background: url("../../img/black-dots.webp");
@@ -26,7 +26,7 @@
                 right: -25%;
             }
 
-            @media(max-width:600px) {
+            @media(max-width:1024) {
                 display: none !important;
             }
         }

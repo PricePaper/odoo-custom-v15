@@ -134,7 +134,7 @@
                                 </div>
                                 <div class="col-12 ">
                                     <label for="exampleFormControlTextarea1" class="form-label ">
-                                        What type of business do youoperate?
+                                        What type of business do you operate?
                                     </label>
                                     <textarea class="form-control" name="comments" id="exampleFormControlTextarea1" rows="3"></textarea>
                                 </div>

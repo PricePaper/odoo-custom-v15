@@ -4,6 +4,49 @@
     position: relative;
     border-radius: 0 0 0 83px;
 
+    &.blog_contact {
+        border-radius: 83px 0 0 83px;
+
+        .b-dots-1 {
+            background: url("../../img/black-dots.webp");
+            content: "";
+            position: absolute;
+            height: 335px;
+            width: 16vw;
+            top: -341px;
+            left: -177px;
+            opacity: 0.8;
+            background-size: contain;
+            transform: rotate(180deg);
+            background-repeat: no-repeat;
+
+
+            @media (min-width: 1700px) {
+                right: -25%;
+            }
+
+            @media(max-width:600px) {
+                display: none !important;
+            }
+        }
+
+        .curvy-line {
+            background: url(../../img/curvy-line3.svg);
+            position: absolute;
+            background-size: cover;
+            top: -100px;
+            right: 0;
+            z-index: 9999;
+            transform: rotate(-33deg) translate(-104px, -12px);
+            width: 436.5px;
+            height: 134.1px;
+
+            @media(max-width:1100px) {
+                display: none;
+            }
+        }
+    }
+
     &::before {
         background: #f1f9ff;
         content: "";
@@ -86,7 +129,8 @@
         height: 148px;
         border-radius: 0 0 100% 0;
         background: #000;
-        @media(max-width:1200px){
+
+        @media(max-width:1200px) {
             top: -165px;
             left: 477px;
             width: 100px;
@@ -153,13 +197,16 @@
     border-radius: 0 62px 0 62px;
     position: relative;
     margin-top: 50px;
-    .row>*{
+
+    .row>* {
         margin-top: 1rem;
     }
+
     label.form-label {
         font-size: 16px;
         font-weight: unset !important;
-        @media(max-width:2000px){
+
+        @media(max-width:2000px) {
             font-size: 22px;
         }
     }
@@ -197,7 +244,7 @@
     }
 }
 
-@media(max-width:1200px){
+@media(max-width:1200px) {
     .home-contact-us.about-us .sector-2 {
         top: -165px;
         left: 477px;

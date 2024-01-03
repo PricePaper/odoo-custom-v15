@@ -11,11 +11,16 @@
             opacity: .8;
             background-size: contain;
             background-repeat: no-repeat;
-    
+
             @media (min-width: 1700px) {
                 right: -25%;
             }
+
+            @media(max-width:600px) {
+                display: none !important;
+            }
         }
+
         background: #749551;
         padding: 60px;
         height: 600px;
@@ -41,7 +46,7 @@
             border-bottom-left-radius: 100px;
             z-index: 9;
             margin-top: 20px;
-            
+
 
         }
 
@@ -57,6 +62,10 @@
             opacity: .8;
             background-size: contain;
             background-repeat: no-repeat;
+
+            @media(max-width:600px) {
+                display: none !important;
+            }
         }
 
         &::after {
@@ -90,16 +99,15 @@
         background: white;
     }
 
-    .curvy-line {
-        background: url(../img/curvy-line1.svg);
+    .curvy-line-1 {
+        background: url(../img/curvy-line3.svg);
         position: absolute;
         background-size: cover;
-        bottom: -100px;
-        left: 0;
+        top: -235px;
+        right: -69px;
         z-index: 9999;
-        transform: rotate(-33deg) translate(-104px, -12px);
-        width: 436.5px;
-        height: 134.1px;
+        width: 298.5px;
+        height: 250.1px;
         @media(max-width:1100px) {
             display: none;
         }
@@ -150,11 +158,12 @@
                     #blog_menu_collapse {
 
                         position: absolute;
-                        z-index: 9;
+                        z-index: 99999;
                         background: #635147;
                         width: 100%;
                         left: 0px;
                         padding: 20px;
+
 
                         .nav-link {
                             margin-bottom: 10px;
@@ -235,10 +244,10 @@
             background: url(../img/yellow-dots.svg);
             position: absolute;
 
-            top: -85px;
+            top: -70px;
             left: 43%;
             max-width: 425px;
-            height: 200px;
+            height: 269px;
             z-index: 9;
             width: 278px;
             background-size: cover;

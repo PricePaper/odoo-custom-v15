@@ -1,23 +1,26 @@
-
 @font-face {
     font-family: "Poppins";
     src: url("/theme_pricepaper/static/fonts/Poppins/Poppins-Regular.ttf") format("truetype");
 }
+
 @font-face {
     font-family: "Poppins";
     src: url("/theme_pricepaper/static/fonts/Poppins/Poppins-ExtraLight.ttf") format("truetype");
     font-weight: 200;
 }
+
 @font-face {
     font-family: "Poppins";
     src: url("/theme_pricepaper/static/fonts/Poppins/Poppins-Light.ttf") format("truetype");
     font-weight: 300;
 }
+
 @font-face {
     font-family: "Poppins";
     src: url("/theme_pricepaper/static/fonts/Poppins/Poppins-Regular.ttf") format("truetype");
     font-weight: 400;
 }
+
 @font-face {
     font-family: "Poppins";
     src: url("/theme_pricepaper/static/fonts/Poppins/Poppins-Medium.ttf") format("truetype");
@@ -29,16 +32,19 @@
     src: url("/theme_pricepaper/static/fonts/Poppins/Poppins-SemiBold.ttf") format("truetype");
     font-weight: 600;
 }
+
 @font-face {
     font-family: "Poppins";
     src: url("/theme_pricepaper/static/fonts/Poppins/Poppins-Bold.ttf") format("truetype");
     font-weight: 700;
 }
+
 @font-face {
     font-family: "Poppins";
     src: url("/theme_pricepaper/static/fonts/Poppins/Poppins-ExtraBold.ttf") format("truetype");
     font-weight: 800;
 }
+
 @font-face {
     font-family: "Poppins";
     src: url("/theme_pricepaper/static/fonts/Poppins/Poppins-Black.ttf") format("truetype");
@@ -51,13 +57,33 @@ $secondary: #83754D;
 $color_2: #000;
 $color_3: #fff;
 $font-family_1: 'Poppins', sans-serif;
-@media (min-width: 992px){
+@media (min-width: 992px) {
 
     .text-lg-end {
         text-align: right !important;
-      }
+    }
 }
-body,p,span,h2,h1,h3,h4,h5,h6,div,a,.btn,a.contact,.h1,.h2,.h3,.h3,.h4,.h5,.h6 {
+
+body,
+p,
+span,
+h2,
+h1,
+h3,
+h4,
+h5,
+h6,
+div,
+a,
+.btn,
+a.contact,
+.h1,
+.h2,
+.h3,
+.h3,
+.h4,
+.h5,
+.h6 {
     font-family: $font-family_1;
 }
 
@@ -93,11 +119,13 @@ $val in $font-weight {
         border-radius: #{$br}px;
     }
 }
+
 @media (min-width: 1200px) {
     .display-1 {
         font-size: 5rem !important;
     }
 }
+
 p {
     font-size: 22px;
     line-height: 48px;
@@ -440,32 +468,36 @@ a {
         }
     }
 
-    
 
-    
+
+
 
 
 
 
 
 }
+
 .team-header {
     margin-bottom: -200px;
 }
-.left-border-primary{
-	position: relative;
+
+.left-border-primary {
+    position: relative;
     padding-left: 30px;
-	&::before{
-		content: "";
-		background: #749551;
-		width: 4px;
-		height: 100%;
-		display: inline-block;
-		border-radius: 2px;
-		position: absolute;
-		left: 0;
-	}
+
+    &::before {
+        content: "";
+        background: #749551;
+        width: 4px;
+        height: 100%;
+        display: inline-block;
+        border-radius: 2px;
+        position: absolute;
+        left: 0;
+    }
 }
+
 @media (max-width: 1200px) {
     .btn {
         font-size: 16px;
@@ -573,9 +605,9 @@ a {
         height: 30px;
     }
 
- 
 
-    
+
+
 
     .meet-people {
         padding: 0 0;
@@ -589,7 +621,7 @@ a {
         }
     }
 
-    
+
 
     // .meet-people .carousel-indicators {
     //     bottom: 0px;
@@ -728,7 +760,7 @@ a {
         font-size: 18px;
     }
 
-    
+
 
 
 
@@ -905,7 +937,7 @@ a {
 
 
 
-    
+
 }
 
 @media (max-width:1200px) and (min-height:992px) {
@@ -991,4 +1023,115 @@ a {
     font-size: calc(1.625rem + 4.5vw);
 
     line-height: 1.2;
+}
+
+.o_portal_chatter_attachment_delete {
+    padding: UNSET !important;
+    font-size: 16PX;
+    border-top-right-radius: 10PX;
+    border-bottom-left-radius: 10PX;
+}
+
+.pagination {
+    justify-content: end !important;
+
+    .page-item {
+        .page-link {
+            border-width: 2px;
+            border-color: black;
+            font-family: "Poppins";
+            font-size: 23px;
+            font-weight: normal;
+            line-height: 33px;
+            font-style: normal;
+            text-align: left;
+            letter-spacing: 2px;
+            color: #000;
+            min-width: 62px;
+            height: 57px;
+            text-align: center;
+
+        }
+
+        &.active {
+            .page-link {
+                background-color: $primary;
+                color:white
+            }
+        }
+
+        &:not(:nth-child(1)):not(:last-child):not(:nth-child(2)):not(:nth-last-child(2)) {
+            .page-link {
+
+                border-left: unset;
+                border-right: unset;
+                // border-radius: unset;
+            }
+        }
+
+        &:nth-child(2) {
+            .page-link {
+
+                border-top-left-radius: 5px;
+                border-bottom-left-radius: 5px;
+                border-right: unset !important;
+            }
+        }
+
+        &:nth-last-child(2) {
+            .page-link {
+
+                border-top-right-radius: 5px;
+                border-bottom-right-radius: 5px;
+                border-left: unset !important;
+            }
+        }
+
+        &:nth-child(1) {
+
+            margin-right: 26px;
+
+            i {
+                margin-right: 4px;
+            }
+            @media(max-width:450px){
+                display: none;
+            }
+        }
+
+        &:last-child {
+            margin-left: 26px;
+            position: relative;
+
+            i {
+                margin-left: 4px;
+            }
+
+        }
+
+        &:nth-child(1),
+        &:last-child {
+            background: transparent !important;
+
+            .page-link {
+                border-radius: 5px;
+                font-family: $font-family_1 !important;
+                color: black;
+                display: flex;
+                align-items: center;
+
+                &:not(.disabled) {
+                    &:hover {
+
+                        color: white !important;
+
+                        background-color: $primary;
+                        border-color: $primary;
+                    }
+                }
+            }
+        }
+
+
+    }
 }

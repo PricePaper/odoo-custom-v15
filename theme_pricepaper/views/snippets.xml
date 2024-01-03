@@ -60,6 +60,26 @@
                 </t>
 
             </div>
+            <div class="o_panel_header">
+                <i class="fa fa-file"/>
+                Shop Snippet
+            </div>
+            <div class="o_panel_body">
+                <!-- Product Carousel -->
+                <t t-snippet="theme_pricepaper.shop_banner">
+                    <keywords>Top Snippet</keywords>
+                </t>
+            </div>
+            <div class="o_panel_header">
+                <i class="fa file"/>
+                Blog Snippet
+            </div>
+            <div class='o_panel_body'>
+                <t t-snippet="theme_pricepaper.contact_us_blog">
+                    <keywords>Contact Blog</keywords>
+                </t>
+            </div>
+
         </xpath>
     </template>
 </odoo>

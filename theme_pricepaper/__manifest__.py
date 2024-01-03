@@ -25,7 +25,9 @@
         'views/aboutus.xml',
         'views/snippets.xml',
         'views/blog.xml',
+        'views/portal.xml',
         'views/login.xml',
+        'views/shop.xml',
     ],
     'demo': [
         ''
@@ -41,6 +43,8 @@
             'theme_pricepaper/static/src/scss/banner.scss',
             'theme_pricepaper/static/src/scss/about_us.scss',
             'theme_pricepaper/static/src/scss/blog_main.scss',
+            'theme_pricepaper/static/src/scss/portal.scss',
+            'theme_pricepaper/static/src/scss/shop.scss',
             'theme_pricepaper/static/src/scss/snippet/*',
             'theme_pricepaper/static/src/js/main.js',
         ],
@@ -50,5 +54,3 @@
    
    
 }
-
-

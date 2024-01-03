@@ -1,0 +1,288 @@
+.o_portal_wrap {
+    background: white !important;
+    position: relative;
+    height: 100%;
+
+    .curvy-line {
+        background: url(/theme_pricepaper/static/src/scss/../img/curvy-line1.svg);
+        position: absolute;
+        background-size: cover;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        transform: rotate(-33deg) translate(-104px, -12px);
+        width: 436.5px;
+        height: 134.1px;
+
+        @media(max-width:1100px) {
+            display: none;
+        }
+
+    }
+
+    .y-dots {
+        background: url(../img/white-dots.png);
+        position: absolute;
+        top: -34px;
+        left: 18%;
+        max-width: 384px;
+        height: 117px;
+        z-index: 999999;
+        width: 278px;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: top;
+        @media (max-width:1400px) {
+            left: 29%;
+            
+        }
+
+        @media(max-width:1100px) {
+            display: none;
+        }
+    }
+
+    .container-fluid {
+        position: relative;
+
+        font-family: $font-family_1 !important;
+
+        @media (min-width:1100px) {
+            padding-left: 75px;
+            padding-right: 100px;
+        }
+        .oe_reset_password_form{
+            position: relative  !important;
+            z-index: 999999 !important;
+        }
+        // width: 100% !important;
+        // padding-right: 100px;
+        // padding-left: 75px;
+        // margin-right: auto;
+        // margin-left: auto;
+        // max-width: unset !important;
+        &>nav {
+            margin-top: 7.5rem !important;
+            z-index: 9999;
+            font-size: 15px;
+            padding: 11px 7px;
+            border-radius: 0 28px 0 27px;
+            outline: none;
+
+            button {
+                font-size: 15px !important;
+                padding: 11px 7px !important;
+                border-radius: 0 28px 0 27px !important;
+                outline: none !important;
+
+                @media(max-width:990px) {
+
+                    font-size: 10px !important;
+                    padding: 1px 7px !important;
+                    border-radius: 0 12px 0 12px !important;
+                    outline: none !important;
+
+
+
+
+                }
+            }
+
+            .o_portal_search_panel {
+                .btn {
+
+                    padding: 0.25rem 0.5rem !important;
+                    font-size: 0.75rem !important;
+                    border-radius: unset !important;
+                }
+            }
+        }
+
+        &>.row:first-child {
+            margin-top: 7.5rem !important;
+
+
+            @media(max-width:990px) {
+                margin-top: 3rem !important;
+                justify-content: center !important;
+            }
+
+            .o_portal_my_home {
+                h3 {
+                    font-size: 39px;
+                    font-weight: bold;
+                    line-height: 66px;
+                    font-style: normal;
+                    text-align: left;
+                    letter-spacing: 2px;
+                    color: #060606;
+                }
+
+                .o_portal_docs {
+                    a.list-group-item {
+                        border-color: #749551;
+                        border-width: 3px;
+                        border-style: solid;
+                        border-radius: 30px;
+                        height: 77px;
+                        margin-bottom: 24px;
+                        font-family: "Poppins";
+                        font-size: 17px;
+                        font-weight: normal;
+                        line-height: 40px;
+                        font-style: normal;
+                        text-align: left;
+                        letter-spacing: 2px;
+                        color: #060606;
+
+                        span {
+                            background: #000000 !important;
+                            color: white !important;
+                            min-width: 35px;
+                            height: 25px;
+                            justify-content: center;
+                            align-items: center;
+                            display: flex;
+                        }
+
+
+
+                    }
+                }
+            }
+
+            #o_my_sidebar {
+                .o_portal_my_details {
+                    padding-left: 25px;
+                    padding-right: 25px;
+                    padding-bottom: 150px;
+                    border-top-left-radius: 0px;
+                    border-top-right-radius: 62px;
+                    border-bottom-right-radius: 0px;
+                    border-bottom-left-radius: 62px;
+
+                    background: #f1f9ff;
+
+                    h4 {
+                        font-size: 39px;
+                        font-weight: bold;
+                        line-height: 66px;
+                        font-style: normal;
+                        text-align: left;
+                        letter-spacing: 2px;
+                        color: #060606;
+                        align-items: center;
+                        display: flex;
+                        justify-content: space-between;
+
+                    }
+
+                    a[href="/my/account"] {
+                        float: inline-end;
+                        border-color: #8b959c;
+                        border-width: 1px;
+                        border-style: solid;
+                        background: #ffffff;
+                        color: black;
+                        font-size: 17px;
+                        padding: 10px;
+                        border-radius: 50%;
+                        margin-right: 20px;
+                    }
+
+                    .manage_payment_method {
+                        a {
+
+                            font-family: "Poppins";
+                            font-weight: 500;
+                            line-height: 40px;
+                            font-style: normal;
+                            text-align: left;
+                            letter-spacing: 2px;
+                            color: #749551;
+                        }
+                    }
+                }
+
+                .o_portal_my_security {
+
+                    h4,
+                    hr {
+                        display: none !important;
+                    }
+
+                    a {
+                        border-color: #000000;
+                        border-width: 3px;
+                        border-style: solid;
+                        border-top-left-radius: 0px;
+                        border-top-right-radius: 38px;
+                        border-bottom-right-radius: 0px;
+                        border-bottom-left-radius: 38px;
+                        background: #ffffff;
+                        width: 100%;
+                        display: block;
+                        /* height: 51px; */
+                        padding-top: 15px;
+                        padding-bottom: 15px;
+                        font-family: "Poppins";
+                        font-size: 21px;
+                        font-weight: normal;
+
+                        font-style: normal;
+                        text-align: left;
+                        letter-spacing: -2px;
+                        color: #060606;
+                        text-align: center;
+
+                    }
+                }
+            }
+        }
+    }
+}
+
+.o_portal_sale_sidebar,
+.o_portal_invoice_sidebar {
+    a.btn {
+        font-size: 10px !important;
+        padding: 12px 31px !important;
+        border-radius: 0 24px 0 24px !important;
+    }
+
+    .o_download_pdf {
+        a {
+            font-size: 10px !important;
+            padding: 12px 31px !important;
+            border-radius: 0 24px 0 24px !important;
+        }
+    }
+}
+
+.o_portal_my_doc_table {
+
+    a.btn {
+        font-size: 10px !important;
+        padding: 12px 31px !important;
+        border-radius: 0 24px 0 24px !important;
+    }
+
+
+}
+#generateModal{
+    z-index: 9999;
+}
+#o_portal_navbar_content{
+    .navbar-text{
+        font-size: 14px !important;
+        font-family: $font-family_1 !important;
+    }
+}
+
+#generateModal{
+    .token_generate{
+        @media(max-width:760px){
+            width: auto !important;
+        }
+    }
+}

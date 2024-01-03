@@ -78,4 +78,80 @@
         </section>
     </template>
 
+
+    <template id="contact_us_blog" name="Contact Blog">
+        <section class="home-contact-us blog_contact  pt96">
+            <div class="ppt-container container">
+                <div class="row">
+                    <div class="col-lg-6 pe-xl-5 ">
+                        <h3 class="display-6 fw-sb mb-4 " style="max-width:740px;">Contact us</h3>
+                        <p class="mb-5 contact-p ">
+                            Hunting for service that's crazier than a squirrel in a coffee shop and a truck as bold as a banana? Drop your deets in this snappy form and let's roll toward first-rate paper goodies!
+                        </p>
+                        <div class="address">
+                            <p class="mb-0 ">
+                                Price paper company
+                                <br/>
+                                379 North main st. 
+                                <br/>
+                                Freeport, New York 11520
+                            </p>
+                        </div>
+                        <div class="numbers">
+                            <p class="mb-0 text-white ">
+                                1-844-YELLOW-T 
+                                <br/>
+                                516-378-7842 
+                                <br/>
+                                631-405-5025 
+                                <br/>
+                                Fax: 516-378-7995
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 ">
+                        <div class="home-contact-form">
+                            <form class="row g-3">
+                                <div class="col-md-6 ">
+                                    <label for="name" class="form-label ">Name</label>
+                                    <input type="text" name="name" class="form-control"/>
+                                </div>
+                                <div class="col-md-6 ">
+                                    <label for="cname" class="form-label ">Company name</label>
+                                    <input type="text" name="cname" class="form-control"/>
+                                </div>
+                                <div class="col-md-6 ">
+                                    <label for="email" class="form-label ">Email</label>
+                                    <input type="email" name="email" class="form-control" id="email"/>
+                                </div>
+                                <div class="col-md-6 ">
+                                    <label for="number" class="form-label ">Phone number</label>
+                                    <input type="text" name="number" class="form-control" id="number"/>
+                                </div>
+                                <div class="col-12 ">
+                                    <label for="inputAddress" class="form-label ">Address</label>
+                                    <input type="text" name="address" class="form-control" id="inputAddress" placeholder=""/>
+                                </div>
+                                <div class="col-12 ">
+                                    <label for="exampleFormControlTextarea1" class="form-label ">
+                                        What type of business do you operate?
+                                    </label>
+                                    <textarea class="form-control" name="comments" id="exampleFormControlTextarea1" rows="3"></textarea>
+                                </div>
+                                <div class="col-12 text-end text-right ">
+                                    <button type="submit" class="btn btn-black mr-auto ">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="sector-1" style="top: -66px;left: 427px;width: 50px;height: 53px;"></div>
+                <div class="sector-2" style="top: -145px;left: 477px;width: 80px;height: 80px;"></div>
+                <div class='b-dots-1'/>
+                <div class='curvy-line-1'/>
+            </div>
+            <div class="contact-footer"></div>
+            <div class="b-dots"></div>
+        </section>
+    </template>
 </odoo>

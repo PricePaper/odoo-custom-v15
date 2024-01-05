@@ -28,10 +28,12 @@ class StockMove(models.Model):
     @api.depends('quantity_done', 'product_uom_qty', 'reason_id')
     def _compute_reason_needed(self):
         for move in self:
-            if not move.reason_id and move.quantity_done < move.product_uom_qty:
-                move.is_reason_added = True
-            else:
-                move.is_reason_added = False
+            move.is_reason_added = False
+            if move.transit_picking_id.picking_type_code == 'outgoing':
+                if not move.reason_id and move.quantity_done < move.product_uom_qty:
+                    move.is_reason_added = True
+                else:
+                    move.is_reason_added = False
 
     def _prepare_move_line_vals(self, quantity=None, reserved_quant=None):
         res = super()._prepare_move_line_vals(quantity=quantity, reserved_quant=reserved_quant)

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="res_partner_inherit_portal_enhancements" model="ir.ui.view">
+            <field name="name">res.partner.portal.extension</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <notebook position="inside">
+                    <page string="Portal Users" attrs="{'invisible': [('is_company', '=', False)]}">
+                        <field name="portal_partner_ids" domain="[('portal_access_level', '!=', False)]">
+                            <tree editable="bottom" create="0">
+                                <field name="name"/>
+                                <field name="phone"/>
+                                <field name="email"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+
+<!--                    Portal user views-->
+        <record id="view_partner_tree_portal_enhancements" model="ir.ui.view">
+            <field name="name">res.partner.tree.portal.enhancements</field>
+            <field name="model">res.partner</field>
+            <field eval="100" name="priority"/>
+            <field name="arch" type="xml">
+                <tree string="Contacts" sample="1" multi_edit="1">
+                    <field name="display_name" string="Name"/>
+                    <field name="function" invisible="1"/>
+                    <field name="phone" class="o_force_ltr" optional="show"/>
+                    <field name="email" optional="show"/>
+                    <field name="city" optional="show"/>
+                    <field name="state_id" optional="hide" readonly="1"/>
+                    <field name="country_id" optional="show" readonly="1"/>
+                    <field name="vat" optional="hide" readonly="1"/>
+                    <field name="category_id" optional="hide" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                    <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                    <field name="is_company" invisible="1"/>
+                    <field name="parent_id" invisible="1" readonly="1"/>
+                    <field name="active" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record id="view_partner_form_portal_enhancements" model="ir.ui.view">
+            <field name="name">res.partner.form.portal.enhancements</field>
+            <field name="model">res.partner</field>
+            <field name="priority" eval="100"/>
+            <field name="arch" type="xml">
+                <form string="Partners">
+                <div class="alert alert-warning oe_edit_only" role="alert" attrs="{'invisible': [('same_vat_partner_id', '=', False)]}">
+                  A partner with the same <span><span class="o_vat_label">Tax ID</span></span> already exists (<field name="same_vat_partner_id"/>), are you sure to create a new one?
+                </div>
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <field name="avatar_128" invisible="1"/>
+                    <field name="image_1920" widget='image' class="oe_avatar" options='{"preview_image": "avatar_128"}'/>
+                    <div class="oe_title mb24">
+                        <field name="is_company" invisible="1"/>
+                        <field name="commercial_partner_id" invisible="1"/>
+                        <field name="active" invisible="1"/>
+                        <field name="country_code" invisible="1"/>
+                        <field name="customer" invisible="1"/>
+                        <h1>
+                            <field id="individual" class="text-break" name="name" default_focus="1" attrs="{'required' : [('type', '=', 'contact'), ('is_company', '=', False)], 'invisible': [('is_company','=', True)], 'readonly': [('is_company', '=', False)]}"/>
+                        </h1>
+                        <div class="oe_edit_only">
+                            <group attrs="{'invisible': [('is_company', '=', True)]}">
+                                <field
+                                    name="lastname"
+                                    attrs="{'required': [('firstname', '=', False),
+                                    ('is_company', '=', False),
+                                    ('type', '=', 'contact')]}"
+                                />
+                            <field
+                                name="firstname"
+                                attrs="{'required': [('lastname', '=', False),
+                                ('is_company', '=', False),
+                                ('type', '=', 'contact')]}"
+                             />
+                        </group>
+                    </div>
+                        <div class="o_row">
+                            <field name="parent_id" invisible="1"/>
+                        </div>
+                    </div>
+
+                    <group>
+                        <group>
+                            <span class="o_form_label o_td_label" name="address_name">
+                                <field name="type"  class="font-weight-bold" readonly="1"/>
+                            </span>
+                            <div class="o_address_format">
+                                <field name="street" placeholder="Street..." class="o_address_street"/>
+                                <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                <field name="city" placeholder="City" class="o_address_city"/>
+                                <field name="state_id" class="o_address_state" placeholder="State" options="{'no_open': True, 'no_quick_create': True}" context="{'country_id': country_id, 'default_country_id': country_id, 'zip': zip}"/>
+                                <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                <field name="country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'
+                                    attrs="{'readonly': [('type', '=', 'contact'),('parent_id', '!=', False)]}"/>
+                            </div>
+                            <field name="vat" placeholder="e.g. BE0477472701" attrs="{'readonly': [('parent_id','!=',False)]}"/>
+                        </group>
+                        <group>
+                            <field name="portal_access_level" attrs="{'invisible': [('is_company', '=', True)]}" required="1"/>
+                            <field name="function" placeholder="e.g. Sales Director"
+                                attrs="{'invisible': [('is_company','=', True)]}"/>
+                            <field name="phone" widget="phone"/>
+                            <field name="mobile" widget="phone"/>
+                            <field name="user_ids" invisible="1"/>
+                            <field name="email" widget="email" context="{'gravatar_image': True}" attrs="{'required': [('user_ids','!=', [])]}" required="1"/>
+                            <field name="website" string="Website" widget="url" placeholder="e.g. https://www.odoo.com"/>
+                            <field name="title" options='{"no_open": True}' placeholder="e.g. Mister"
+                                attrs="{'invisible': [('is_company', '=', True)]}"/>
+                            <field name="active_lang_count" invisible="1"/>
+                            <label for="lang" attrs="{'invisible': [('active_lang_count', '&lt;=', 1)]}"/>
+                            <div class="o_row" attrs="{'invisible': [('active_lang_count', '&lt;=', 1)]}">
+                                <field name="lang"/>
+                                <button
+                                    type="action"
+                                    name="%(base.res_lang_act_window)d"
+                                    class="btn-sm btn-link mb4 fa fa-globe"
+                                    aria-label="More languages"
+                                    groups="base.group_system"
+                                    title="More languages"
+                                />
+                            </div>
+                            <field name="category_id" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" placeholder="Tags..."/>
+                        </group>
+                    </group>
+                    <notebook colspan="4">
+                        <page string="Accessible Companies" attrs="{'invisible': [('is_company', '=', True)]}" autofocus="autofocus">
+                            <field name="portal_company_ids" widget="many2many">
+                                <tree editable="bottom" create="0">
+                                    <field name="name"/>
+                                    <field name="street"/>
+                                    <field name="city"/>
+                                    <field name="city_id" invisible="1"/>
+                                    <field name="type" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page name='internal_notes' string="Internal Notes">
+                            <field name="comment" placeholder="Internal note..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                </form>
+            </field>
+        </record>
+
+
+<!--                    portal actions-->
+        <record id="action_res_partner_portal_enhancements" model="ir.actions.act_window">
+            <field name="name">Portal Users</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('portal_access_level', '!=', False)]</field>
+            <field name="context">{'default_portal_access_level': 'manager', 'default_customer': True,
+                'default_company_type': 'person', 'default_type': 'person'}</field>
+        </record>
+
+
+        <record model="ir.actions.act_window.view" id="action_res_partner_portal_enhancements_tree">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_partner_tree_portal_enhancements"/>
+            <field name="act_window_id" ref="action_res_partner_portal_enhancements"/>
+        </record>
+
+        <record model="ir.actions.act_window.view" id="action_res_partner_portal_enhancements_form">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_partner_form_portal_enhancements"/>
+            <field name="act_window_id" ref="action_res_partner_portal_enhancements"/>
+        </record>
+
+<!--                    portal user menu-->
+        <menuitem id="menu_res_partner_portal_enhancements"
+                  name="Portal Users"
+                  action="action_res_partner_portal_enhancements"
+                  parent="sale.sale_order_menu"
+                  groups="sales_team.group_sale_manager"
+                  sequence="1000"
+        />
+
+    </data>
+</odoo>

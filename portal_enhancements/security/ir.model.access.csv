@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sale_order_portal_user,access.sale.order.portal.user,sale.model_sale_order,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+access_sale_order_line_portal_user,access.sale.order.line.portal.user,sale.model_sale_order_line,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+access_purchase_order_portal_user,access.purchase.order.portal.user,purchase.model_purchase_order,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+access_purchase_order_line_portal_user,access.purchase.order.line.portal.user,purchase.model_purchase_order_line,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+access_account_move_portal_user,access.account.move.portal.user,account.model_account_move,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+access_account_move_line_portal_user,access.account.move.line.portal.user,account.model_account_move_line,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+access_calendar_event_portal_user,access.calendar.event.portal.user,calendar.model_calendar_event,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+access_project_project_portal_user,access.project.project.portal.user,project.model_project_project,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+access_project_project_task_user,access.project.task.portal.user,project.model_project_task,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+access_website_ir_ui_view_publisher_portal_user,access.website.ir.ui.view.publisher.portal.user,website.model_ir_ui_view,portal_enhancements.group_portal_enhanced_record_access,1,0,0,0

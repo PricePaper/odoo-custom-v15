@@ -8,7 +8,7 @@
             width: 30vw;
             top: 50px;
             right: -24%;
-            opacity: .8;
+            opacity: 1;
             background-size: contain;
             background-repeat: no-repeat;
     
@@ -89,6 +89,11 @@
             }
         }
 
+    }
+}
+#oe_structure_blog_footer_main{
+    @media(max-width:1350px)and (min-width: 1024px){
+        margin-top: 70px;
     }
 }
 

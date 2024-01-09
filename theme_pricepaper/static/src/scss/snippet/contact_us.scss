@@ -53,7 +53,8 @@
         }
     }
 
-    &::before {
+    &::before:not(.blog_contact) {
+
         background: #f1f9ff;
         content: "";
         width: 100%;

@@ -1106,7 +1106,9 @@ a {
             i {
                 margin-left: 4px;
             }
-
+            @media(max-width:345px){
+                display: none;
+            }
         }
 
         &:nth-child(1),

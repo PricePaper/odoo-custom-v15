@@ -91,6 +91,11 @@
 
     }
 }
+#oe_structure_blog_footer_main{
+    @media(max-width:1350px)and (min-width: 1024px){
+        margin-top: 70px;
+    }
+}
 
 .js_blog.website_blog {
     overflow: hidden;

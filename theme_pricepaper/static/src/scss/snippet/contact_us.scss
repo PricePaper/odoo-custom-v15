@@ -25,6 +25,9 @@
             @media (min-width: 1700px) {
                 right: -25%;
             }
+            @media(max-width:1200px){
+                left: 100px;
+            }
 
             @media(max-width:1024) {
                 display: none !important;

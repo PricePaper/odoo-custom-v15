@@ -1034,6 +1034,9 @@ a {
 
 .pagination {
     justify-content: end !important;
+    @media(max-width:415px){
+        justify-content: center !important;
+    }
 
     .page-item {
         .page-link {
@@ -1106,7 +1109,7 @@ a {
             i {
                 margin-left: 4px;
             }
-            @media(max-width:400px){
+            @media(max-width:415px){
                 display: none;
             }
         }

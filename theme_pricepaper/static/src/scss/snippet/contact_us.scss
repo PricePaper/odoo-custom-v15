@@ -6,6 +6,7 @@
 
     &.blog_contact {
         border-radius: 83px 0 0 83px;
+        border-top-right-radius: 83px;
         // margin-top: 20px;
 
         .b-dots-1 {
@@ -46,7 +47,9 @@
             width: 327.5px;
             height: 201.1px;
 
-
+            @media(max-width:1200px){
+                right: -60px;
+            }
 
 
 

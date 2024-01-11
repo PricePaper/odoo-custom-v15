@@ -46,6 +46,9 @@ class CustomerStatementPdfReport(models.AbstractModel):
         for line in follow_up_info:
 
             if line.get('account_move', False):
+                if line['columns'][6]['name']:
+                    continue
+
                 aml_id = self.env['account.move.line'].browse(line['id'])
                 if line['columns'][2]['name']:
                     if aml_id.move_id.is_inbound() and today > datetime.strptime(line['columns'][2]['name'], "%m/%d/%Y").date() and not aml_id.reconciled and not aml_id.payment_id:

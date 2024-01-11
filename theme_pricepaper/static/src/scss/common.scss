@@ -1056,6 +1056,11 @@ a {
         justify-content: center !important;
     }
 
+    @media(max-width:415px){
+        justify-content: center !important;
+    }
+
+
     .page-item {
         .page-link {
             border-width: 2px;
@@ -1127,9 +1132,11 @@ a {
             i {
                 margin-left: 4px;
             }
+
             @media(max-width:415px){
                 display: none;
             }
+
         }
 
         &:nth-child(1),

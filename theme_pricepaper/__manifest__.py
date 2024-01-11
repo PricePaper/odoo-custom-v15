@@ -22,6 +22,7 @@
         'views/snippets/manufactures.xml',
         'views/snippets/contact_us.xml',
         'views/snippets/use_of_bag.xml',
+        'views/snippets/blog_snippets.xml',
         'views/aboutus.xml',
         'views/snippets.xml',
         'views/blog.xml',

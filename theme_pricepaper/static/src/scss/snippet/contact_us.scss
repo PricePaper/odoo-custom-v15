@@ -28,17 +28,15 @@
             @media (min-width: 1700px) {
                 right: -25%;
             }
-
             @media(max-width:1200px){
                 left: 100px;
             }
 
-            @media(max-width:1024px) {
 
+            @media(max-width:1024px) {
                 display: none !important;
             }
         }
-
 
         .curvy-line-1 {
             background: url(../../img/curvy-line3.svg);
@@ -55,7 +53,6 @@
             @media(max-width:1200px){
                 right: -60px;
             }
-
 
 
 
@@ -285,7 +282,6 @@
     }
 }
 
-
 @media(max-width:1024px) {
     .home-contact-us.blog_contact {
 
@@ -297,7 +293,6 @@
         padding-top: 40px !important;
 
         .b-dots {
-
             top: 72px;
         }
     }

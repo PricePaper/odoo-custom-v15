@@ -802,6 +802,16 @@ class StockPicking(models.Model):
                     vals = delivery_line._prepare_invoice_line()
                     inv.write({'invoice_line_ids': [(0, 0, vals)]})
 
+    def _create_backorder(self):
+        res = super()._create_backorder()
+        if self.is_create_back_order:
+            for picking in res:
+                for move in picking.move_lines:
+                    if move.location_id.is_transit_location:
+                        transit_lines = move.move_orig_ids.filtered(lambda rec: rec.state not in ('done', 'cancel'))
+                        if not transit_lines.transit_picking_id:                            
+                            transit_lines.write({'transit_picking_id': move.picking_id.id})
+        return res
 
         # if self.state not in ('done', 'in_transit') and 'make_to_order' in self.transit_move_lines.mapped('procure_method'):
         #     for move in self.transit_move_lines:

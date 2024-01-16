@@ -3,6 +3,12 @@
 	.container{
 		position: unset !important;
 	}
+	&.para-snip{
+		p{
+			font-size: 21px;
+			font-family: $font-family_1 !important;
+		}
+	}
 	z-index: 1;
 	.sector-1 {
 			position: absolute;

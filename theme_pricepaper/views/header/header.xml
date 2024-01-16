@@ -41,20 +41,23 @@
                                         <ul class="dropdown-menu dropdown-menu-end search-wrapper" aria-labelledby="navbarDropdown">
                                             <li >
                                                 <div class="search-input-container">
-                                                    <div class="inner-form">
-                                                        <div class="input-field first-wrap">
-                                                            <div class="svg-wrapper">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 24 24">
-                                                                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z">
-                                                                    </path>
-                                                                </svg>
+                                                    <form method="get" class="o_searchbar_form s_searchbar_input o_wsale_products_searchbar_form w-100 w-md-auto mr-auto mb-2" action="/website/search" data-snippet="s_searchbar_input">
+                                                        <div class="inner-form">
+                                                            <div class="input-field first-wrap">
+                                                                <div class="svg-wrapper">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 24 24">
+                                                                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z">
+                                                                        </path>
+                                                                    </svg>
+                                                                </div>
+                                                                <input id="search" name="search" type="text" placeholder="What are you looking for?" value="" data-search-type="products" data-limit="5" data-display-image="true" data-display-description="true" data-display-extra-link="true" data-display-detail="true" data-order-by="name asc" autocomplete="off"/>
+                                                                <input name="order" type="hidden" class="o_search_order_by" value="name asc"/>
                                                             </div>
-                                                            <input id="search" type="text" placeholder="What are you looking for?"/>
+                                                            <div class="input-field second-wrap">
+                                                                <button class="search-btn oe_search_button" type="button">SEARCH</button>
+                                                            </div>
                                                         </div>
-                                                        <div class="input-field second-wrap">
-                                                            <button class="search-btn" type="button">SEARCH</button>
-                                                        </div>
-                                                    </div>
+                                                    </form>
                                                 </div>
                                             </li>
                                         </ul>
@@ -71,7 +74,7 @@
                             <t t-set="_div_classes" t-valuef="my-auto ms-lg-2"/>
                         </t>
                     </div>
-                    
+
                     <t t-call="website.navbar_toggler">
                         <t t-set="_toggler_class" t-valuef="ms-auto"/>
                     </t>
@@ -80,13 +83,14 @@
         </xpath>
 
     </template>
-<template id="user_sign_in" name="User Sign In" inherit_id="portal.user_sign_in">
-    <xpath expr="//li" position="replace">
-         <li groups="base.group_public" t-attf-class="#{_item_class} o_no_autohide_item">
-                <a t-attf-href="/web/login" t-attf-class="#{_link_class}">Login<span t-if="request.session.profile_session" class="text-danger fa fa-circle"/></a>
+    <template id="user_sign_in" name="User Sign In" inherit_id="portal.user_sign_in">
+        <xpath expr="//li" position="replace">
+            <li groups="base.group_public" t-attf-class="#{_item_class} o_no_autohide_item">
+                <a t-attf-href="/web/login" t-attf-class="#{_link_class}">Login<span t-if="request.session.profile_session" class="text-danger fa fa-circle"/>
+                </a>
             </li>
-    </xpath>
-</template>
+        </xpath>
+    </template>
     <!-- Navbar Hamburger Options -->
     <template id="option_header_off_canvas_snippet" inherit_id="website.navbar_nav" customize_show='True' name="snippet header" active="False">
         <xpath expr="//ul[@id='top_menu']" position="inside">

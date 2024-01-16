@@ -5,6 +5,10 @@ odoo.define('theme_pricepaper.common', function (require) {
     const config = require('web.config');
     const dynamic_snippt = require('website.s_dynamic_snippet')
     var ajax = require('web.ajax');
+    function validateEmail($email) {
+        var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+        return emailReg.test( $email );
+      }
     dynamic_snippt.include({
         _getQWebRenderOptions: function () {
             var numberOfElements = 5
@@ -46,9 +50,10 @@ odoo.define('theme_pricepaper.common', function (require) {
             var $form = $(this.$target).find('form')
             var data = {}
             var flag = false
+            var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
             $form.find('input,textarea').each(function () {
                 if (!$(this).val()) {
-                    console.log('hello', $(this))
+
                     $(this).get(0).setCustomValidity('Please Enter Correct Information');
                     $(this).get(0).reportValidity()
                     flag = true
@@ -57,13 +62,22 @@ odoo.define('theme_pricepaper.common', function (require) {
                     return
                 }
                 else {
+                    if ($(this).attr('name')=='email' && !(validateEmail($(this).val()))){
+                        $(this).get(0).setCustomValidity('Please Enter Correct Email');
+                        $(this).get(0).reportValidity()
+                        flag = true
+    
+                        curr.prop('disabled', false)
+                        return
+
+                    }
 
                     data[$(this).attr('name')] = $(this).val()
                 }
 
             }).promise().done(function () {
                 if (!flag) {
-                    console.log(data)
+
                     ajax.jsonRpc('/contact/crm/lead', 'call', data).then(function (result) {
                         if (result.status) {
                             $form.replaceWith("<strong> Thanks for contacting us , Our team will get back to you shortly</strong>")

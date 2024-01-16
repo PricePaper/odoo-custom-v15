@@ -227,6 +227,7 @@ a {
 
 .list-style-1 {
     list-style: none;
+    list-style-type: none;
     padding-left: 50px;
 
     li {
@@ -234,16 +235,33 @@ a {
         font-size: 21px;
         position: relative;
         line-height: 2;
+        &:not(.oe-nested){
 
-        &:after {
-            content: "";
-            background-color: #749551;
-            width: 20px;
-            height: 20px;
-            position: absolute;
-            left: -40px;
-            top: 8px;
-            border-radius: 0px 100px 0px 0px;
+            &:after {
+                content: "";
+                background-color: #749551;
+                
+                width: 20px;
+                height: 20px;
+                position: absolute;
+                left: -40px;
+                top: 8px;
+                border-radius: 0px 100px 0px 0px;
+            }
+            &::marker{
+                display: none;
+            }
+        }
+        &.oe-nested{
+            ul{
+                list-style-type: none;
+                li{
+                    &:after {
+                        content: "";
+                        background-color: #635147;
+                    }
+                }
+            }
         }
 
         @media (max-width: 1700px) {
@@ -1034,6 +1052,9 @@ a {
 
 .pagination {
     justify-content: end !important;
+    @media(max-width:415px){
+        justify-content: center !important;
+    }
 
     @media(max-width:415px){
         justify-content: center !important;

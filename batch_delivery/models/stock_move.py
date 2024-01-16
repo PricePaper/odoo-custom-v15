@@ -179,8 +179,8 @@ class StockMove(models.Model):
         for move in self:
             # qty_available always shows the quanity in requested (UOM).
             to_qty = qty
-            if self.product_uom != self.product_id.uom_id:
-                qty = self.product_uom._compute_quantity(qty, self.product_id.uom_id)
+            # if self.product_uom != self.product_id.uom_id:
+            #     qty = self.product_uom._compute_quantity(qty, self.product_id.uom_id)
             reserved_qty = move.reserved_availability
             try:
                 move._do_unreserve()
@@ -442,7 +442,8 @@ class StockMove(models.Model):
                     if move.quantity_done == incoming_qty - outgoing_qty:
                         continue
                     remaining_qty = move.quantity_done - incoming_qty + outgoing_qty
-                    move.transit_confirm_adjustment(remaining_qty)
+                    if not move.picking_id.is_create_back_order:
+                        move.transit_confirm_adjustment(remaining_qty)
         res = super()._action_done(cancel_backorder)
         for move in self.filtered(lambda rec: rec.state == 'done'):
             move.update_invoice_line()

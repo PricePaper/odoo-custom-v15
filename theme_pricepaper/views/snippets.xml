@@ -60,12 +60,15 @@
                 <t t-snippet="theme_pricepaper.bullet_point_only" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/bluetts_only.png">
                     <keywords>Para</keywords>
                 </t>
-                <t t-snippet="theme_pricepaper.black_bag_back" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/black_back.png">
+
+                 <t t-snippet="theme_pricepaper.black_bag_back" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/black_back.png">
+
                     <keywords>Para</keywords>
                 </t>
             </div>
             <div class="o_panel_header">
                 <i class="fa fa-file"/>
+
                 Blog Building Snippets Green
             </div>
 
@@ -123,6 +126,7 @@
             </div>
             <div class="o_panel_header">
                 <i class="fa fa-file"/>
+
                 About Us Snippet
             </div>
             <div class="o_panel_body">

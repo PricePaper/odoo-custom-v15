@@ -303,6 +303,7 @@
                     <field name="is_return" invisible="1"/>
                     <field name="route_id" invisible="1"/>
                     <field name="is_invoiced" invisible="1"/>
+                    <field name="is_create_back_order" invisible="0"/>
                 </field>
                 <page name="operations" position="before">
                     <page name="transit_lines" string="Transit Lines"

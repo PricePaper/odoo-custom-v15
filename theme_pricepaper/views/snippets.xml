@@ -60,9 +60,66 @@
                 <t t-snippet="theme_pricepaper.bullet_point_only" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/bluetts_only.png">
                     <keywords>Para</keywords>
                 </t>
-                 <t t-snippet="theme_pricepaper.black_bag_back" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/black_back.png">
+                <t t-snippet="theme_pricepaper.black_bag_back" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/black_back.png">
                     <keywords>Para</keywords>
                 </t>
+            </div>
+            <div class="o_panel_header">
+                <i class="fa fa-file"/>
+                Blog Building Snippets Green
+            </div>
+
+            <div class="o_panel_body">
+                <t t-snippet="theme_pricepaper.green_bullet_point_left_image"  t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_green/bluett_green_left.png">
+                    <keywords>Bullets</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.green_bullet_point_right_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_green/bluett_green_right.png">
+                    <keywords>Bullets</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.green_para_point_left_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_green/para_green_right.png">
+                    <keywords>Para</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.green_para_point_right_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_green/para_green_right.png">
+                    <keywords>Para</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.green_bullet_point_only" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/bluett_green.png">
+                    <keywords>Para</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.green_black_bag_back" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_green/green_back.png">
+                    <keywords>Para</keywords>
+                </t>
+            </div>
+
+            
+
+
+            <div class="o_panel_header">
+                <i class="fa fa-file"/>
+                Blog Building Snippets Brown
+            </div>
+
+            <div class="o_panel_body">
+
+                <t t-snippet="theme_pricepaper.brown_bullet_point_left_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_brown/brown_bluet_left.png">
+                    <keywords>Bullets</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.brown_bullet_point_right_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_brown/brown_bluet_right.png">
+                    <keywords>Bullets</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.brown_para_point_left_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_brown/brown_para_left.png">
+                    <keywords>Para</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.brown_para_point_right_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_brown/brown_para.png">
+                    <keywords>Para</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.brown_bullet_point_only" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_brown/brown_bluet.png">
+                    <keywords>Para</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.brown_black_bag_back" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_brown/brown_back.png">
+                    <keywords>Para</keywords>
+                </t>
+
+
             </div>
             <div class="o_panel_header">
                 <i class="fa fa-file"/>

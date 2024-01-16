@@ -1016,6 +1016,13 @@ a {
 .exempt-bags {
     border-radius: 0 83px;
     position: relative;
+    &.green{
+		background: $primary !important;
+		color: white;
+	}
+	&.brown{
+		background: $secondary !important;
+	}
 
     .curvy-line {
         background: url(../img/curvy-line-green.webp);

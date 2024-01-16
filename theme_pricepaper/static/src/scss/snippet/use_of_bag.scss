@@ -1,5 +1,19 @@
 .use-of-bag {
 	position: relative;
+	&.green{
+		background: $primary;
+		color: white;
+		.list-style-1{
+			li{
+				&::after{
+					background: $secondary !important;
+				}
+			}
+		}
+	}
+	&.brown{
+		background: $secondary;
+	}
 	.container{
 		position: unset !important;
 	}

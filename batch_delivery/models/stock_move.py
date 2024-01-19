@@ -206,6 +206,7 @@ class StockMove(models.Model):
             elif move.product_uom_qty < qty:
                 raise UserError("Can't reserve more product than requested..!")
             else:
+                print(qty,'11111111111111111')
                 if qty != 0:
                     move._action_assign_reset_qty(to_qty)
                 msg = """<ul><li>
@@ -284,6 +285,7 @@ class StockMove(models.Model):
             missing_reserved_quantity = move.product_uom._compute_quantity(missing_reserved_uom_quantity,
                                                                            move.product_id.uom_id,
                                                                            rounding_method='HALF-UP')
+            print(move._should_bypass_reservation(), '2222222222222')
             if move._should_bypass_reservation():
                 # create the move line(s) but do not impact quants
                 if move.move_orig_ids:
@@ -351,6 +353,7 @@ class StockMove(models.Model):
                     # the reserved quantity on the quants, convert it here in
                     # `product_id.uom_id` (the UOM of the quants is the UOM of the product).
                     available_move_lines = _get_available_move_lines(move)
+                    print(available_move_lines, '333333333333333333333')
                     if not available_move_lines:
                         continue
                     for move_line in move.move_line_ids.filtered(lambda m: m.product_qty):
@@ -359,7 +362,9 @@ class StockMove(models.Model):
                             available_move_lines[(move_line.location_id, move_line.lot_id, move_line.result_package_id,
                                                   move_line.owner_id)] -= move_line.product_qty
                     for (location_id, lot_id, package_id, owner_id), quantity in available_move_lines.items():
-                        need = move.product_qty - sum(move.move_line_ids.mapped('product_qty'))
+                        # need = move.product_qty - sum(move.move_line_ids.mapped('product_qty'))
+                        need = move.product_uom._compute_quantity(qty, move.product_id.uom_id, rounding_method='HALF-UP')
+                        print(need,'444444444444444444',  move.product_qty , sum(move.move_line_ids.mapped('product_qty')))
                         # `quantity` is what is brought by chained done move lines. We double check
                         # here this quantity is available on the quants themselves. If not, this
                         # could be the result of an inventory adjustment that removed totally of

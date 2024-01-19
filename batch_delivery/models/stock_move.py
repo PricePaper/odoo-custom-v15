@@ -183,6 +183,9 @@ class StockMove(models.Model):
             #     qty = self.product_uom._compute_quantity(qty, self.product_id.uom_id)
             reserved_qty = move.reserved_availability
             try:
+                for ml in move.filtered(lambda rec: rec.procure_method == 'make_to_order').move_line_ids:
+                    if ml.qty_done:
+                        ml.qty_done = 0
                 move._do_unreserve()
             except UserError as e:
                 for ml in move.move_line_ids:
@@ -285,7 +288,6 @@ class StockMove(models.Model):
             missing_reserved_quantity = move.product_uom._compute_quantity(missing_reserved_uom_quantity,
                                                                            move.product_id.uom_id,
                                                                            rounding_method='HALF-UP')
-            print(move._should_bypass_reservation(), '2222222222222')
             if move._should_bypass_reservation():
                 # create the move line(s) but do not impact quants
                 if move.move_orig_ids:
@@ -353,7 +355,6 @@ class StockMove(models.Model):
                     # the reserved quantity on the quants, convert it here in
                     # `product_id.uom_id` (the UOM of the quants is the UOM of the product).
                     available_move_lines = _get_available_move_lines(move)
-                    print(available_move_lines, '333333333333333333333')
                     if not available_move_lines:
                         continue
                     for move_line in move.move_line_ids.filtered(lambda m: m.product_qty):
@@ -364,7 +365,6 @@ class StockMove(models.Model):
                     for (location_id, lot_id, package_id, owner_id), quantity in available_move_lines.items():
                         # need = move.product_qty - sum(move.move_line_ids.mapped('product_qty'))
                         need = move.product_uom._compute_quantity(qty, move.product_id.uom_id, rounding_method='HALF-UP')
-                        print(need,'444444444444444444',  move.product_qty , sum(move.move_line_ids.mapped('product_qty')))
                         # `quantity` is what is brought by chained done move lines. We double check
                         # here this quantity is available on the quants themselves. If not, this
                         # could be the result of an inventory adjustment that removed totally of
@@ -376,7 +376,7 @@ class StockMove(models.Model):
                                                                           strict=True)
                         if float_is_zero(available_quantity, precision_rounding=rounding):
                             continue
-                        taken_quantity = move._update_reserved_quantity(need, min(quantity, available_quantity),
+                        taken_quantity = move._update_reserved_quantity(need, min(need, available_quantity),
                                                                         location_id, lot_id, package_id, owner_id)
                         if float_is_zero(taken_quantity, precision_rounding=rounding):
                             continue

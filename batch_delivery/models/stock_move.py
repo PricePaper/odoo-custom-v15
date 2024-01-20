@@ -419,6 +419,8 @@ class StockMove(models.Model):
 
     def update_invoice_line(self):
         self.ensure_one()
+        if self.picking_id.backorder_id or self.transit_picking_id.backorder_id or self.picking_id.backorder_ids or self.transit_picking_id.backorder_ids:
+            return False
         invoice_lines = self.invoice_line_ids.filtered(lambda rec: rec.move_id.state == 'draft' and rec.product_id == self.product_id)
         invoice = invoice_lines.mapped('move_id') or self.sale_line_id.order_id.invoice_ids.filtered(lambda rec: rec.state == 'draft')
         if len(invoice_lines) > 1:
@@ -430,7 +432,7 @@ class StockMove(models.Model):
             invoice_lines.move_id.sudo().with_context(default_move_type='out_invoice').write(
                 {'invoice_line_ids': [[1, invoice_lines.id, {'quantity': quantity}]]})
 
-        elif invoice and not (self.picking_id.backorder_id or self.transit_picking_id.backorder_id):
+        elif invoice:
             if self.quantity_done != 0:
                 vals = self.sale_line_id._prepare_invoice_line()
                 invoice_lines = invoice.sudo().with_context(default_move_type='out_invoice').write({'invoice_line_ids': [[0, 0, vals]]})

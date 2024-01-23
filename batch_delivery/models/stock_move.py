@@ -36,38 +36,26 @@ class StockMove(models.Model):
                     move.is_reason_added = False
 
     def _prepare_move_line_vals(self, quantity=None, reserved_quant=None):
-        res = super()._prepare_move_line_vals(quantity=quantity, reserved_quant=reserved_quant)
-        if not res.get('product_uom_qty'):
-            return res
-        if res['product_uom_qty'] > self.product_uom_qty:
-            res['product_uom_qty'] = self.product_uom_qty
-        elif res['product_uom_qty'] < self.product_uom_qty:
-            #and math.ceil(res['product_uom_qty']) == self.product_uom_qty:
-            difference = self.product_uom_qty - res['product_uom_qty']
-            if difference < 0.008:
-                res['product_uom_qty'] = self.product_uom_qty
-        return res
-
-    def _prepare_move_line_vals_old(self, quantity=None, reserved_quant=None):
         self.ensure_one()
         vals = {
             'move_id': self.id,
             'product_id': self.product_id.id,
             'product_uom_id': self.product_uom.id,
             'location_id': self.location_id.id,
+            'location_dest_id': self.location_dest_id.id,
             'picking_id': self.picking_id.id,
             'company_id': self.company_id.id,
         }
         if quantity:
             rounding = self.env['decimal.precision'].precision_get('Product Unit of Measure')
             uom_quantity = self.product_id.uom_id._compute_quantity(quantity, self.product_uom, rounding_method='HALF-UP')
-            uom_quantity = float_round(uom_quantity, precision_digits=2)
+            uom_quantity = float_round(uom_quantity, precision_digits=rounding)
             uom_quantity_back_to_product_uom = self.product_uom._compute_quantity(uom_quantity, self.product_id.uom_id, rounding_method='HALF-UP')
             vals = dict(vals, product_uom_qty=uom_quantity)
-            # if float_compare(quantity, uom_quantity_back_to_product_uom, precision_digits=rounding) == 0:
-            #     vals = dict(vals, product_uom_qty=uom_quantity)
-            # else:
-            #     vals = dict(vals, product_uom_qty=quantity, product_uom_id=self.product_id.uom_id.id)
+        #     if float_compare(quantity, uom_quantity_back_to_product_uom, precision_digits=rounding) == 0:
+        #         vals = dict(vals, product_uom_qty=uom_quantity)
+        #     else:
+        #         vals = dict(vals, product_uom_qty=quantity, product_uom_id=self.product_id.uom_id.id)
         package = None
         if reserved_quant:
             package = reserved_quant.package_id
@@ -78,12 +66,15 @@ class StockMove(models.Model):
                 package_id=package.id or False,
                 owner_id =reserved_quant.owner_id.id or False,
             )
-        # apply putaway
-        location_dest_id = self.location_dest_id._get_putaway_strategy(self.product_id, quantity=quantity or 0, package=package, packaging=self.product_packaging_id).id
-        vals['location_dest_id'] = location_dest_id
+        if not vals.get('product_uom_qty'):
+            return vals
+        if vals['product_uom_qty'] > self.product_uom_qty:
+            vals['product_uom_qty'] = self.product_uom_qty
+        elif vals['product_uom_qty'] < self.product_uom_qty:
+            difference = self.product_uom_qty - vals['product_uom_qty']
+            if difference < 0.008:
+                vals['product_uom_qty'] = self.product_uom_qty
         return vals
-
-
 
     def get_quantity(self, field='quantity_done', alternative_feild='quantity_done'):
         qty = 0

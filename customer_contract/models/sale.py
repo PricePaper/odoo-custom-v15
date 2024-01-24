@@ -70,7 +70,7 @@ class SaleOrderLine(models.Model):
                     ('state', '=', 'confirmed')]}}
         if self.customer_contract_line_id:
             self.product_id = self.customer_contract_line_id.product_id
-            self.product_uom = self.customer_contract_line_id.product_id.uom_id
+            self.product_uom = self.customer_contract_line_id.product_id.ppt_uom_id
             self.price_unit = self.customer_contract_line_id.price
             self.product_uom_qty = self.customer_contract_line_id.min_qty or 1.0
         else:

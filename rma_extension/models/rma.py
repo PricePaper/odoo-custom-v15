@@ -1035,28 +1035,71 @@ class RmaSaleLines(models.Model):
                 raise UserError(('You can not remove Tax for this Partner.'))
 
 
+    def get_refund_qty(self):
+        if self.return_product_uom == self.product_uom:
+            return self.refund_qty
+        return self.return_product_uom._compute_quantity(self.refund_qty,
+                                                         self.product_uom,
+                                                         rounding_method='HALF-UP')
+
+    @api.depends('refund_qty', 'price_unit', 'discount', 'tax_id')
+    def _compute_amount(self):
+        """Compute the amounts of the SO line."""
+        for line in self:
+            refund_qty = line.get_refund_qty()
+            if line.refund_qty == 0:
+                refund_qty = 0
+            price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+            taxes = line.tax_id.compute_all(price, line.rma_id.currency_id,
+                                            refund_qty,
+                                            product=line.product_id,
+                                            partner=line.rma_id.partner_id)
+            line.update({
+                'price_tax': taxes['total_included'] - taxes['total_excluded'],
+                'refund_price': refund_qty * price
+            })
+
+    @api.constrains('refund_qty', 'delivered_quantity')
+    def _check_refund_quantity(self):
+        for line in self:
+            refund_qty = line.get_refund_qty()
+            if refund_qty <= 0:
+                raise ValidationError(('Return Quantity should be greater than \
+Zero'))
+            if line.order_quantity < refund_qty:
+                raise ValidationError(('Return Quantity should \
+not be greater than order quantity'))
+            if line.order_quantity < line.delivered_quantity:
+                raise ValidationError(('Delivered quantity should \
+not be greater than order quantity'))
+            if refund_qty > line.delivered_quantity:
+                raise ValidationError(('Return Quantity should not be greater \
+than delivered quantity'))
+
+
+
     @api.constrains('total_qty', 'refund_qty')
     def _check_rma_quantity(self):
         for line in self:
-            if line.refund_qty > line.delivered_quantity:
-                raise ValidationError(('Refund Quantity should not greater \
-                  than Delivered Quantity.'))
+            refund_qty = line.get_refund_qty()
+            if refund_qty > line.delivered_quantity:
+                raise ValidationError(('Refund Quantity should not greater than Delivered Quantity.'))
 
     @api.onchange('refund_qty', 'total_qty')
     def onchange_refund_price(self):
         for order in self:
-            if order.refund_qty > order.delivered_quantity:
-                raise ValidationError(('Refund Quantity should not be greater \
-                  than Delivered Quantity.'))
+            refund_qty = order.get_refund_qty()
+            if refund_qty > order.delivered_quantity:
+                raise ValidationError(('Refund Quantity should not be greater than Delivered Quantity.'))
             total_qty_amt = 0.0
             if order.total_price and order.total_qty:
                 total_qty_amt = (order.total_price /
-                                 order.total_qty) * float(order.refund_qty)
+                                 order.total_qty) * float(refund_qty)
                 order.refund_price = total_qty_amt
             else:
                 if order.product_id and order.product_id.id:
                     order.refund_price = order.product_id.lst_price * \
-                                         order.refund_qty
+                                         refund_qty
 
 
 class RmaPurchaseLines(models.Model):

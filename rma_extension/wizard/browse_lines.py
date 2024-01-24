@@ -179,7 +179,8 @@ class BrowseLinesSourceLine(models.TransientModel):
             line.price_subtotal = 0
             line.price_tax = 0
             line.refund_price = 0
-            refund_qty = line.refund_qty
+            # refund_qty = line.refund_qty
+            refund_qty = line.get_refund_qty()
             price = line.price_unit
 
             taxes = line.tax_id.compute_all(
@@ -247,22 +248,32 @@ class BrowseLinesSourceLine(models.TransientModel):
             if order.select and not order.product_id.active:
                 raise ValidationError(('This product is archived and can not be returned.'))
 
+    def get_refund_qty(self):
+        if self.return_product_uom == self.product_uom:
+            return self.refund_qty
+        return self.return_product_uom._compute_quantity(self.refund_qty,
+                                                         self.product_uom,
+                                                         rounding_method='HALF-UP')
+
     @api.onchange('refund_qty', 'total_qty')
     def onchange_refund_price(self):
         for order in self:
-            if order.refund_qty <= 0:
+            refund_qty = order.get_refund_qty()
+            if refund_qty <= 0:
                 raise ValidationError(('Refund Quantity should be greater than\
                   Zero'))
-            if order.refund_qty > order.delivered_quantity:
+            if refund_qty > order.delivered_quantity:
                 raise ValidationError(('Refund Quantity should not be greater \
                   than delivered quantity'))
             total_qty_amt = 0.0
             if order.total_price and order.total_qty:
                 total_qty_amt = (order.total_price /
-                                 order.total_qty) * float(order.refund_qty)
+                                 order.total_qty) * float(refund_qty)
                 order.refund_price = total_qty_amt
             else:
                 if order.product_id and order.product_id.id:
-                    order.refund_price = order.product_id.lst_price * order.refund_qty
+                    print(order.product_id.lst_price, refund_qty)
+                    order.refund_price = order.product_id.lst_price * refund_qty
+                    print(order.refund_price)
         else:
             return {}

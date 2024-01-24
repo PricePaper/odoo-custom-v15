@@ -26,6 +26,7 @@ class CustomerContract(models.Model):
     def action_expire(self):
         self.write({'state': 'expired'})
 
+
     def action_reset(self):
         self.write({'state': 'draft'})
 
@@ -48,8 +49,12 @@ class CustomerContractLine(models.Model):
     @api.depends('sale_line_ids.product_uom_qty', 'product_qty', 'sale_line_ids.order_id.state')
     def _compute_remaining_qty(self):
         for line in self:
-            line.sale_line_ids.filtered(lambda r: r.order_id.state in ('done', 'sale')).mapped('product_uom_qty')
-            line.remaining_qty = line.product_qty - sum(line.sale_line_ids.filtered(lambda r: r.order_id.state in ('done', 'sale')).mapped('product_uom_qty'))
+            r_qty = 0
+            for s_line in line.sale_line_ids.filtered(lambda r: r.order_id.state in ('done', 'sale')):
+                r_qty += s_line.product_uom._compute_quantity(s_line.product_uom_qty,
+                                                                 line.product_id.ppt_uom_id,
+                                                                 rounding_method='HALF-UP')
+            line.remaining_qty = line.product_qty - r_qty
 
     def name_get(self):
         result = []

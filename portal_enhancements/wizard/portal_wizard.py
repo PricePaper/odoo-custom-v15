@@ -10,7 +10,6 @@ class PortalWizardUser(models.TransientModel):
 
     _inherit = 'portal.wizard.user'
 
-
     def action_grant_access(self):
         """Grant the portal access to the partner.
         Inherited to add user to Enhanced Portal Group.

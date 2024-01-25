@@ -18,6 +18,7 @@ Granting enhanced access to portal users
         'security/portal_enhancements_security.xml',
         'security/ir.model.access.csv',
         'views/res_partner_views.xml',
+        'wizard/add_portal_contacts.xml'
     ],
     'installable': True,
     'auto_install': False,

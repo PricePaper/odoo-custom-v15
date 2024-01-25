@@ -1022,6 +1022,9 @@ a {
 	}
 	&.brown{
 		background: $secondary !important;
+
+        color: white;
+
 	}
 
     .curvy-line {
@@ -1042,6 +1045,11 @@ a {
 
 .ps-5 {
     padding-left: 3rem !important;
+
+    @media(max-width:1000px) {
+        padding-left: unset !important;
+
+    }
 }
 
 .display-1 {

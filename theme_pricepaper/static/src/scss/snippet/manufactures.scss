@@ -36,6 +36,15 @@
         width: 400px;
         height: 297px;
         z-index: 1;
+
+        @media(max-width:1180px) {
+            bottom: -58px;
+            right: -15px;
+            background-size: cover;
+            width: 298px;
+            height: 259px;
+
+        }
     }
 
     .image-2 {

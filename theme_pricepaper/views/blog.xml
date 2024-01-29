@@ -205,6 +205,7 @@
                                     <span t-field="blog_post.post_date" class='blog-date' t-options='{"format": "d MMMM, yyyy"}'/>
                                     <div t-att-class="opt_blog_cards_design and 'card-body px-2 py-0 mb-2'">
                                         <t t-call="website_blog.post_heading"/>
+                                        <span t-if="blog_post.subtitle" t-field='blog_post.subtitle'/>
                                         <div t-if="is_view_active('website_blog.opt_posts_loop_show_teaser')">
                                             <t t-call="website_blog.post_teaser"/>
                                         </div>

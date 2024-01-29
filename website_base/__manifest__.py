@@ -15,7 +15,7 @@
     'description': "For managing the Website in accordance with backend",
     'website': 'https://www.confianzit.com',
     'license': 'LGPL-3',
-    'depends': ['website_sale','theme_clarico_vega'],
+    'depends': ['website_sale','price_paper'],
     'data': [
         'security/ir.model.access.csv',
         'views/templates.xml',

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="product" name="Product" inherit_id="website_sale.product">
+        <xpath expr="//*[@id='product_detail']" position="attributes">
+            <attribute name="t-attf-class" separator=" " add="container-fluid price-container" remove="container" />
+        </xpath>
+        <xpath expr="//*[@id='product_detail']/div[hasclass('row')][1]" position="replace"/>
+        <xpath expr="//t[@t-call='website_sale.shop_product_carousel']/.." position="attributes">
+            <attribute name="class" separator=" " add="col-md-5 product_car" remove="col-md-6" />
+        </xpath>
+        <xpath expr="//t[@t-call='website_sale.shop_product_carousel']" position="replace">
+            <div class='product_carousel_wrap'>
+                <t t-call="website_sale.shop_product_carousel"/>
+            </div>
+
+        </xpath>
+        <xpath expr="//*[@id='product_details']//p[@t-field['product.description_sale']]" position="replace"/>
+
+
+    </template>
+
+    
+
+
+
+</odoo>

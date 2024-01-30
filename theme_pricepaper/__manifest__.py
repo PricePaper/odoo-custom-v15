@@ -29,6 +29,7 @@
         'views/portal.xml',
         'views/login.xml',
         'views/shop.xml',
+        'views/product_page.xml'
     ],
     'demo': [
         ''
@@ -39,6 +40,8 @@
             # "https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap",
             'theme_pricepaper/static/src/scss/common.scss',
             'theme_pricepaper/static/src/lib/owl_carosuell/*',
+            'theme_pricepaper/static/src/js/main.js',
+            'theme_pricepaper/static/src/scss/common.scss',
             'theme_pricepaper/static/src/scss/header.scss',
             'theme_pricepaper/static/src/scss/footer.scss',
             'theme_pricepaper/static/src/scss/banner.scss',
@@ -46,8 +49,8 @@
             'theme_pricepaper/static/src/scss/blog_main.scss',
             'theme_pricepaper/static/src/scss/portal.scss',
             'theme_pricepaper/static/src/scss/shop.scss',
+            'theme_pricepaper/static/src/scss/product_page.scss',
             'theme_pricepaper/static/src/scss/snippet/*',
-            'theme_pricepaper/static/src/js/main.js',
         ],
     },
     'auto_install': False,

@@ -19,6 +19,17 @@ class StockQuant(models.Model):
         'Difference', compute='_compute_inventory_diff_quantity_mod', store=True,
         help="Indicates the gap between the product's theoretical quantity and its counted quantity.",
         readonly=True, digits='Product Unit of Measure')
+    ppt_available_qty = fields.Float(
+        'Available Quantity',
+        help="On hand quantity which hasn't been reserved on a transfer, in the default unit of measure of the product",
+        compute='_compute_ppt_available_quantity', digits='Product Unit of Measure')
+
+    @api.depends('quantity', 'reserved_quantity')
+    def _compute_ppt_available_quantity(self):
+        for quant in self:
+            quant.ppt_available_qty = quant.product_uom_id._compute_quantity(quant.quantity - quant.reserved_quantity,
+                                                                           quant.product_uom_ref_id,
+                                                                           rounding_method='HALF-UP')
 
     @api.depends('quantity')
     def _compute_quantity_onhand(self):

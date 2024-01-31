@@ -516,9 +516,9 @@ class SaleOrder(models.Model):
         #             order.message_post(body='Cancel Reason : Auto cancel.\n'+msg)
         #             order.action_draft()
         #             order.action_confirm()
-
-        if not self._context.get('from_import') and self.state not in ('draft', 'sent'):
-            self.check_payment_term()
+        for order in self:
+            if not order._context.get('from_import') and order.state not in ('draft', 'sent'):
+                order.check_payment_term()
         if 'sales_person_ids' in vals and vals['sales_person_ids']:
             self.message_subscribe(partner_ids=vals['sales_person_ids'][0][-1])
         if 'carrier_id' in vals and vals['carrier_id']:

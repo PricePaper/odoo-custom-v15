@@ -32,6 +32,21 @@
             align-items: center !important;
             background-color: white;
             border-radius: 30px;
+            @media(max-width:1700px){
+                height: 650px;
+            }
+            @media (max-width:1200px) {
+                height: 600px;
+                
+            }
+            @media (max-width:1100px) {
+                height: 550px;
+                
+            }
+            @media (max-width:768px) {
+                height: unset;
+                
+            }
 
             #o-carousel-product {
                 // position: relative !important;

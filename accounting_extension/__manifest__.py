@@ -16,6 +16,7 @@ Customisation for PPT
     'images': [],
     'data': ['data/data.xml',
              'views/stock_picking_batch.xml',
+             'views/bank_statement.xml',
              'views/account_payment_view.xml',
              'views/account_invoice_view.xml',
              'views/res_partner_view.xml',

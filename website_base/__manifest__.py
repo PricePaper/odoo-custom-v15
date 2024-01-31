@@ -19,7 +19,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/templates.xml',
-        'views/theme_templates.xml'
+        # 'views/theme_templates.xml'
             
     ],
      'assets': {

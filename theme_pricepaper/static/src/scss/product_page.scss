@@ -1,10 +1,13 @@
 #product_detail {
     background-color: $primary;
     overflow: hidden !important;
+    position: relative;
+    padding-bottom: 9rem !important;
 
     #add_to_cart_wrap {
         display: none !important;
     }
+
 
     &::before {
         background: url("../img/black-dots.webp");
@@ -13,18 +16,41 @@
         height: 438px;
         width: 30vw;
         top: 50px;
-        right: -26%;
+        right: -25%;
         opacity: 1;
         background-size: contain;
         background-repeat: no-repeat;
+        @media(max-width:900px){
+            display: none;
+        }
+    }
+
+    &::after {
+        background: url(../img/white-dots.png);
+        position: absolute;
+        top: 2px;
+        left: 16%;
+        max-width: 384px;
+        height: 324px;
+        z-index: 3;
+        width: 26vw;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center bottom;
+        @media(max-width:900px){
+            display: none;
+        }
     }
 
     .product_car {
+        z-index: 9;
 
         display: flex;
         justify-content: center;
+        // position: relative;
 
         .product_carousel_wrap {
+            // position: relative;
             width: 640px;
             height: 700px;
             display: flex;
@@ -32,25 +58,29 @@
             align-items: center !important;
             background-color: white;
             border-radius: 30px;
-            @media(max-width:1700px){
+
+            @media(max-width:1700px) {
                 height: 650px;
             }
+
             @media (max-width:1200px) {
                 height: 600px;
-                
+
             }
+
             @media (max-width:1100px) {
                 height: 550px;
-                
+
             }
+
             @media (max-width:768px) {
                 height: unset;
-                
+
             }
 
             #o-carousel-product {
                 // position: relative !important;
-                max-width: 70%;
+                max-width: 80%;
 
                 .o_carousel_product_indicators {
                     display: none;
@@ -64,6 +94,10 @@
             color: white;
             font-size: 2.75rem !important;
             margin-top: 20px;
+            @media(max-width:450px){
+                font-size: 1.75rem !important;
+
+            }
         }
 
         .price_line {
@@ -115,8 +149,10 @@
             border-color: white;
             border: 2px solid white;
             border-radius: 12px;
-            .input-group-prepend,.input-group-append{
-                .btn{
+
+            .input-group-prepend,
+            .input-group-append {
+                .btn {
 
                     color: black;
                     background-color: white;
@@ -126,7 +162,8 @@
                     border: unset !important;
                 }
             }
-            input{
+
+            input {
                 height: 50px;
                 color: white;
                 border: unset !important;
@@ -134,7 +171,8 @@
             }
 
         }
-        .sku_product{
+
+        .sku_product {
             margin-top: 40px;
             color: white;
             font-size: 25px;
@@ -142,18 +180,22 @@
             padding-bottom: 20px;
             border-bottom: 2px solid $secondary;
         }
-        .desc_product{
+
+        .desc_product {
             margin-top: 30px;
             color: white;
-            .head{
+
+            .head {
 
                 margin-bottom: 15px;
             }
-            strong{
+
+            strong {
                 font-family: $font-family_1;
                 font-size: 23px;
             }
-            span{
+
+            span {
                 font-size: 17px;
                 line-height: 34px;
             }
@@ -163,4 +205,38 @@
     }
 
 
+}
+
+.dot-line {
+    position: relative;
+
+    .curvy-line {
+        background: url(../img/curvy-line1.svg);
+
+        position: absolute;
+        background-size: cover;
+        bottom: -100px;
+        left: 34px;
+        top: -116px;
+        z-index: 9999;
+        transform: rotate(-33deg) translate(-104px, -12px);
+        width: 373.5px;
+        height: 111.1px;
+    }
+    .yellow-dots{
+        background: url("../img/yellow-dots.svg");
+        position: absolute;
+        bottom: -78px;
+        left: -176px;
+        max-width: 442px;
+        max-height: 337px;
+        z-index: 2;
+        width: 18vw;
+        height: 18vw;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+    @media(max-width: 1000px){
+        display: none !important;
+    }
 }

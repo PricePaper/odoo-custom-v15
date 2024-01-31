@@ -6,6 +6,18 @@
 
             </xpath>
         </template>
+        <template id="captcha_check" name="Getting Captcha">
+        <div id ="captcha" class="imageContainer">
+            <div class="form-group">
+                <t t-set="recaptcha_public_key" t-value="request.env['ir.config_parameter'].sudo().get_param('recaptcha_public_key')"/>
+                <!-- specify your site  in data-sitekey attribute-->
+                <div id="place_captcha" class="g-recaptcha" t-att-data-sitekey="recaptcha_public_key" data-callback="verifyRecaptchaCallback" data-expired-callback="expiredRecaptchaCallback"></div>
+                <input class="form-control d-none" data-recaptcha="true"/>
+                <div class="help-block with-errors" id="err" style='color: red'></div>
+            </div>
+        </div>
+
+    </template>
 
         <template id="product_inherit" inherit_id="website_sale.product">
             <xpath expr="//div[hasclass('js_main_product')]/div[1]" position="replace">

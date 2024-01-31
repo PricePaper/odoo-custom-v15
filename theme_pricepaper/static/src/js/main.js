@@ -7,8 +7,8 @@ odoo.define('theme_pricepaper.common', function (require) {
     var ajax = require('web.ajax');
     function validateEmail($email) {
         var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-        return emailReg.test( $email );
-      }
+        return emailReg.test($email);
+    }
     dynamic_snippt.include({
         _getQWebRenderOptions: function () {
             var numberOfElements = 5
@@ -42,11 +42,35 @@ odoo.define('theme_pricepaper.common', function (require) {
             'click button[type=submit]': '_onFormSubmit',
 
         },
+        start: function () {
+            // var self = this
+            ajax.jsonRpc('/gen/captcha', 'call', {}).then(function (result) {
+                if (result.status) {
+                    console.log(result)
+                    $('.home-contact-form').find('button[type=submit]').parent().before(result.template)
+                    grecaptcha.ready(function () {
+                        grecaptcha.render("place_captcha", {
+                            sitekey: $('#place_captcha').attr('data-sitekey')
+                        });
+                    });
+
+                }
+            })
+            return this._super(...arguments);
+
+        },
         _onFormSubmit: function (ev) {
             var curr = $(ev.currentTarget)
             curr.prop('disabled', true)
             ev.preventDefault()
             ev.stopPropagation();
+            if (!$("#g-recaptcha-response").val()) {
+                $('.captcha_warning').remove()
+                $(ev.currentTarget).parent().before(`<div class='col-12 captcha_warning'><p style="font-size:13px" class='text-danger'>Please Enter Captcha</p></div>`);
+                curr.prop('disabled', false)
+                return
+            }
+            $('.captcha_warning').remove()
             var $form = $(this.$target).find('form')
             var data = {}
             var flag = false
@@ -57,16 +81,16 @@ odoo.define('theme_pricepaper.common', function (require) {
                     $(this).get(0).setCustomValidity('Please Enter Correct Information');
                     $(this).get(0).reportValidity()
                     flag = true
-
                     curr.prop('disabled', false)
                     return
                 }
                 else {
-                    if ($(this).attr('name')=='email' && !(validateEmail($(this).val()))){
+                    
+                    if ($(this).attr('name') == 'email' && !(validateEmail($(this).val()))) {
                         $(this).get(0).setCustomValidity('Please Enter Correct Email');
                         $(this).get(0).reportValidity()
                         flag = true
-    
+
                         curr.prop('disabled', false)
                         return
 

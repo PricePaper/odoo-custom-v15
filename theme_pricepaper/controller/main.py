@@ -20,6 +20,13 @@ from odoo.tools import sql
 
 
 class WebsiteBlog(http.Controller):
+    @http.route('/gen/captcha',type='json', auth="public", website=True,csrf=False)
+    def gen_captcha(self,**kw):
+        template = request.env['ir.ui.view']._render_template("website_base.captcha_check", {})
+        return{
+            'status':True,
+            'template':template
+        }
     @http.route('/contact/crm/lead',type='json', auth="public", website=True,csrf=False)
     def contact_crm(self,**kw):
         crm_vals = {

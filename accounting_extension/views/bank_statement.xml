@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_bank_statement_form_inherit_pp" model="ir.ui.view">
+        <field name="name">view.bank.statement</field>
+        <field name="model">account.bank.statement</field>
+        <field name="inherit_id" ref="account.view_bank_statement_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='date']" position="before">
+                <field name="statement_id" groups='base.group_erp_manager'
+                    attrs="{'readonly': [('state', '!=', 'open')]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

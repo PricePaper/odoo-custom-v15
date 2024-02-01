@@ -7,6 +7,7 @@
             </xpath>
         </template>
         <template id="captcha_check" name="Getting Captcha">
+
             <div id ="captcha" class="imageContainer">
                 <div class="form-group">
                     <t t-set="recaptcha_public_key" t-value="request.env['ir.config_parameter'].sudo().get_param('recaptcha_public_key')"/>
@@ -19,6 +20,7 @@
 
         </template>
 
+
         <template id="product_inherit" inherit_id="website_sale.product">
             <xpath expr="//div[hasclass('js_main_product')]/div[1]" position="replace">
                 <!-- <t t-call="website_base.new_product_price"/> -->
@@ -30,6 +32,7 @@
                         </h3>
                     </div>
                     <div class="h4 mt-3 d-flex justify-content-end" contenteditable="false">
+
                         <t t-set="_exclude_share_links" t-value="['whatsapp', 'linkedin']"/>
                         <t t-set="_no_title" t-value="True"/>
                         <t t-set="_classes" t-valuef="text-lg-right"/>
@@ -55,6 +58,7 @@
                                 <i t-attf-class="fa fa-envelope #{not _link_classes and 'rounded shadow-sm'}"/>
                             </a>
                         </div>
+
                     </div>
                 </div>
                 <div t-if='sale_uoms and not request.website.is_public_user()'>
@@ -82,6 +86,7 @@
 
     </template>
     <template id="product_quantity_internal" inherit_id="website_sale.product" customize_show="True" name="Show Intneral">
+
         <xpath expr="//div[@id='add_to_cart_wrap']" position="before">
             <div class="sku_product">
                 <span>SKU: <t t-out='product.default_code or "Not Applicable"'/>
@@ -103,6 +108,7 @@
 
             </div>
         </xpath>
+
     </template>
     <template id="pay_meth_link_inherit" inherit_id="payment.pay_meth_link">
         <xpath expr="//a[@href='/my/payment_method']" position="replace">

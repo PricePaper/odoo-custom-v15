@@ -21,8 +21,10 @@
         background-size: contain;
         background-repeat: no-repeat;
 
+
         @media(max-width:700px) {
             display: none !important;
+
         }
     }
 
@@ -39,6 +41,7 @@
         background-repeat: no-repeat;
         background-position: center bottom;
 
+
         @media (max-width:1024px) {
             top: -81px;
             left: 12%;
@@ -51,6 +54,7 @@
         }
 
         @media(max-width:700px) {
+
             display: none;
         }
     }
@@ -108,7 +112,9 @@
             font-size: 2.75rem !important;
             margin-top: 20px;
 
+
             @media(max-width:450px) {
+
                 font-size: 1.75rem !important;
 
             }
@@ -237,6 +243,7 @@
         width: 373.5px;
         height: 111.1px;
 
+
         @media (max-width:800px) {
             width: 259.5px;
             height: 73.1px;
@@ -249,6 +256,7 @@
         position: absolute;
         bottom: -78px;
         left: -10vw;
+
         max-width: 442px;
         max-height: 337px;
         z-index: 2;
@@ -258,7 +266,9 @@
         background-repeat: no-repeat;
     }
 
+
     @media(max-width: 700px) {
+
         display: none !important;
     }
 }

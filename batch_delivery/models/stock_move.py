@@ -200,7 +200,6 @@ class StockMove(models.Model):
             elif move.product_uom_qty < qty:
                 raise UserError("Can't reserve more product than requested..!")
             else:
-                print(qty,'11111111111111111')
                 if qty != 0:
                     move._action_assign_reset_qty(to_qty)
                 msg = """<ul><li>
@@ -480,8 +479,33 @@ class StockMove(models.Model):
         }
         new_move = self.create(move_vals)
         new_move.with_context(is_transit=True)._action_confirm()
-        new_move.write({'quantity_done': abs(remaining_qty)})
+        new_move.with_context(transit_adjustment=True).write({'quantity_done': abs(remaining_qty)})
         new_move.with_context(is_transit=True)._action_done()
+
+    def _quantity_done_set(self):
+        quantity_done = self[0].quantity_done  # any call to create will invalidate `move.quantity_done`
+        for move in self:
+            move_lines = move._get_move_lines()
+            if not move_lines:
+                if quantity_done:
+                    # do not impact reservation here
+                    if self._context.get('transit_adjustment'):
+                        move_line_vals = move._prepare_move_line_vals()
+                        move_line_vals.update({'qty_done': quantity_done})
+                        if move.move_dest_ids.move_line_ids.lot_id:
+                            move_line_vals.update({
+                                'lot_id': move.move_dest_ids.move_line_ids.lot_id.id,
+                                'lot_name': move.move_dest_ids.move_line_ids.lot_id.name,
+                            })
+                        move_line = self.env['stock.move.line'].create(move_line_vals)
+                    else:
+                        move_line = self.env['stock.move.line'].create(dict(move._prepare_move_line_vals(), qty_done=quantity_done))
+                    move.write({'move_line_ids': [(4, move_line.id)]})
+                    move_line._apply_putaway_strategy()
+            elif len(move_lines) == 1:
+                move_lines[0].qty_done = quantity_done
+            else:
+                move._multi_line_quantity_done_set(quantity_done)
 
 
     def _transit_return(self):

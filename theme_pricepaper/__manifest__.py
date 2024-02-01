@@ -53,6 +53,9 @@
             'theme_pricepaper/static/src/scss/product_page.scss',
             'theme_pricepaper/static/src/scss/snippet/*',
         ],
+        'website.assets_editor': [
+            'theme_pricepaper/static/src/js/editor.js',
+        ],
     },
     'auto_install': False,
     'application': False,

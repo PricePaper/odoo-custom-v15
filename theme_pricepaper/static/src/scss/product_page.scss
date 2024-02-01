@@ -20,8 +20,11 @@
         opacity: 1;
         background-size: contain;
         background-repeat: no-repeat;
-        @media(max-width:900px){
-            display: none;
+
+
+        @media(max-width:700px) {
+            display: none !important;
+
         }
     }
 
@@ -37,7 +40,21 @@
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center bottom;
-        @media(max-width:900px){
+
+
+        @media (max-width:1024px) {
+            top: -81px;
+            left: 12%;
+
+        }
+
+        @media (max-width:800px) {
+            top: -133px;
+
+        }
+
+        @media(max-width:700px) {
+
             display: none;
         }
     }
@@ -94,7 +111,10 @@
             color: white;
             font-size: 2.75rem !important;
             margin-top: 20px;
-            @media(max-width:450px){
+
+
+            @media(max-width:450px) {
+
                 font-size: 1.75rem !important;
 
             }
@@ -222,12 +242,21 @@
         transform: rotate(-33deg) translate(-104px, -12px);
         width: 373.5px;
         height: 111.1px;
+
+
+        @media (max-width:800px) {
+            width: 259.5px;
+            height: 73.1px;
+
+        }
     }
-    .yellow-dots{
+
+    .yellow-dots {
         background: url("../img/yellow-dots.svg");
         position: absolute;
         bottom: -78px;
-        left: -176px;
+        left: -10vw;
+
         max-width: 442px;
         max-height: 337px;
         z-index: 2;
@@ -236,7 +265,10 @@
         background-size: contain;
         background-repeat: no-repeat;
     }
-    @media(max-width: 1000px){
+
+
+    @media(max-width: 700px) {
+
         display: none !important;
     }
 }

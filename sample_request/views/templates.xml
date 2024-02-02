@@ -3,75 +3,121 @@
 
         <template id="sample_request_product" inherit_id="website_sale.product" priority="25">
             <xpath expr="//div[@id='product_details']//a[@id='add_to_cart']" position="after">
-                <a class='btn btn-secondary sample_request text-white mt16'>
-                    <i class="fa mr-1 fa-solid fa-bolt"></i>
+                <t t-set="allow_guest" t-value="request.env['ir.config_parameter'].sudo().get_param('sample_request.allow_guest')"/>
+                <t t-set="allow_sample" t-value="request.env['ir.config_parameter'].sudo().get_param('sample_request.allow_sample')"/>
+                <a t-if="(request.website.is_public_user() and allow_guest) or allow_sample" class='btn btn-secondary sample_request text-white mt16'>
+                    
                     Request Sample 
                 </a>
                 <div class='sample_erorr d-none'/>
             </xpath>
         </template>
+        <template id="sample_header" name="template_name">
+            <div class='container-fluid sample_header'>
+                <div class='wrapper'>
+                    <div class='main_div'>
+                        <div class='head'>
+                            <t t-if='main_page=="review_order"'>
+                                <span class='active'>Review Sample</span>
+                            </t>
+                            <t t-else="">
+                                <a href='/sample/request'>Review Order</a>
+                            </t>
+                        </div>
+                        <span class='dashed'/>
 
+                    </div>
+                    <div class='main_div'>
+                        <div class='head'>
+                            <t t-if='main_page=="address"'>
+                                <span class='active'>Address</span>
+                            </t>
+                            <t t-else="">
+                                
+                                Address
+                            </t>
+                        </div>
+                        <span class='dashed'/>
+                    </div>
+                    <div class='main_div'>
+                        <div class='head'>
+                                Confirm Request
+                        </div>
+                        <span class='dashed'/>
+
+                    </div>
+
+                </div>
+                <div class='white-dots'/>
+                <div class='black-dots'/>
+                <div class='curvy-line'/>
+            </div>
+
+        </template>
         <template id ='request_cart' name='Sample Request Cart'>
             <t t-call='website.layout'>
-                <div class='container sample_request_cart mt32 mt64'>
-                    <h2> Sample Request</h2>
+                <t t-call='sample_request.sample_header'>
+                    <t t-set='main_page' t-value='"review_order"'/>
+                </t>
+                <div class='container sample_request_cart mt32 mb64'>
+                    <h4 class='mb-0'> Sample Request</h4>
                     <div t-if="sample.request_lines">
 
-                    <div class='row'>
-                        <div class='col'>
-                            <div class="float-right te_clear_cart">
-                                <i class="fa fa-trash-o mr-2"></i>Clear Cart
-                            </div>
-                        </div>
-                    </div>
-                    <div class='row'>
-                        <div class='col'>
-                            <table class="mb16 table table-striped table-sm mt32 mb32">
-                                <thead>
-                                    <tr>
-                                        <th> Product </th>
-                                        <!-- <th>Notes</th> -->
 
-                                        <th/>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <t t-foreach="sample.request_lines" t-as="line">
-                                        <tr >
-                                            <td align="left" t-if="line.product_id.product_tmpl_id" class='td-img'>
+                        <div class='row'>
+                            <div class='col'>
+                                <table class="mb16 table table-striped table-sm mt32 mb32 sample_order_table">
+                                    <thead>
+                                        <tr>
+                                            <th> Product </th>
+                                            <!-- <th>Notes</th> -->
 
-                                                <span t-field="line.product_id.image_128" t-options="{'widget': 'image', 'qweb_img_responsive': False, 'class': 'rounded o_image_64_max'}" />
-                                                <t t-call="website_sale.cart_line_product_link">
-                                                    <strong t-field="line.product_id.display_name" />
-                                                </t>
-                                            </td>
-                                            <!-- <td>
+                                            <th/>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="sample.request_lines" t-as="line">
+                                            <tr >
+                                                <td align="left" t-if="line.product_id.product_tmpl_id" class='td-img'>
+
+                                                    <span t-field="line.product_id.image_128" t-options="{'widget': 'image', 'qweb_img_responsive': False, 'class': 'rounded o_image_64_max'}" />
+                                                    <t t-call="website_sale.cart_line_product_link">
+                                                        <strong t-field="line.product_id.display_name" />
+                                                    </t>
+                                                </td>
+                                                <!-- <td>
                                                 <input type='text' name='note_line' t-att-data-line='line.id' t-att-value='line.note'/>
                                             </td> -->
 
-                                            <td>
-                                                <a class='delete-sample h3 text-danger' t-att-data-id = 'line.id'>
-                                                    <i class='fa fa-trash'/>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    </t>
-                                </tbody>
-                            </table>
+                                                <td>
+                                                    <a class='delete-sample h3 text-danger' t-att-data-id = 'line.id'>
+                                                        <i class='fa fa-trash'/>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                    <div class='row'>
-                        <div class='col'>
-                            <div class="float-right">
-                                <a href='/sample/address' class='btn btn-primary process_request'>
+                        <div class='row'>
+                            <div class='col button_sample'>
+                                <div class='float-left'>
+                                    <a href='/shop' class='btn btn-black'>
+                                    Browse Products
+                                    </a>
+                                </div>
+                                <div class="float-right">
+                                    <a t-attf-href='/sample/address#{"/edit" if request.website.is_public_user() else "" }' class='btn btn-primary process_request'>
                                     Process Request
-                                </a>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    </div>
                     <div t-else="">
-                       <strong> Currently you have not requested any samples, Feel free to browse our <a href="/shop">shop</a> </strong>
+                        <strong> Currently you have not requested any samples, Feel free to browse our <a href="/shop">shop</a>
+                        </strong>
                     </div>
                 </div>
             </t>
@@ -82,7 +128,10 @@
             <t t-call="website.layout">
                 <t t-set="additional_title">Sample - Checkout</t>
                 <t t-set="no_footer" t-value="1"/>
-                <div id="wrap">
+                <div id="wrap" class='sample_checkout'>
+                 <t t-call='sample_request.sample_header'>
+                        <t t-set='main_page' t-value='"address"'/>
+                    </t>
                     <div class="container oe_website_sale py-2">
                         <t t-set="same_shipping" t-value="bool(request_id.partner_shipping_id==request_id.partner_id)" />
                         <div class="row">
@@ -155,6 +204,9 @@
         <template id='sample_request' name='Sample'>
 
             <t t-call='website.layout'>
+             <t t-call='sample_request.sample_header'>
+                        <t t-set='main_page' t-value='"confirm"'/>
+                    </t>
                 <div class='container mt32 mt64'>
                     <h2> Sample Request Submitted</h2>
                     <div class='row'>
@@ -166,7 +218,7 @@
                     </div>
                     <div class='row'>
                         <div class='col'>
-                            <table class="mb16 table table-striped table-sm mt32 mb32">
+                            <table class="mb16 table table-striped table-sm mt32 mb32 sample_order_table">
                                 <thead>
                                     <tr>
                                         <th> Product </th>
@@ -204,7 +256,11 @@
         <template id="sample_address" name="Address Management">
             <t t-set="no_footer" t-value="1"/>
             <t t-call="website.layout">
-                <div id="wrap">
+
+                <div id="wrap" class='sample_address'>
+                    <t t-call='sample_request.sample_header'>
+                        <t t-set='main_page' t-value='"address"'/>
+                    </t>
                     <div class="container oe_website_sale py-2">
 
                         <div class="row">
@@ -214,7 +270,7 @@
                                     <t t-if="mode == ('new', 'billing')">
                                         <h2 class="o_page_header mt8">Your Address
                                             <small> or </small>
-                                            <a role="button" href='/web/login?redirect=/shop/checkout' class='btn btn-primary' style="margin-top: -11px">Log In</a>
+                                            <a role="button" href='/web/login?redirect=/shop/checkout' class='btn btn-primary login_button' style="margin-top: -11px">Log In</a>
                                         </h2>
                                     </t>
                                     <t t-if="mode == ('edit', 'billing')">
@@ -309,7 +365,7 @@
                                     <input type="hidden" name="partner_id" t-att-value="partner_id or '0'" />
                                     <input type="hidden" name="callback" t-att-value="callback" />
                                     <input type="hidden" name="field_required" t-att-value="'phone,name'" />
-                                    <div class="d-flex justify-content-between">
+                                    <div class="d-flex justify-content-between button_sample_address">
                                         <a role="button" href="/sample/address" class="btn btn-secondary mb32">
                                             <i class="fa fa-chevron-left"/>
                                             <span>Back</span>
@@ -335,10 +391,14 @@
             <t t-set="sample_quantity" t-value="len(sample.request_lines) if sample else 0"/>
             <t t-set="show_cart" t-value="true"/>
             <li t-attf-class="#{_item_class} divider d-none"/>
-            <li t-attf-class="o_wsale_my_cart align-self-md-start #{not show_cart and 'd-none'} #{_item_class}">
+            <li t-attf-class=" #{not show_cart and 'd-none'} #{_item_class}">
                 <a href="/sample/request" t-attf-class="#{_link_class}">
-                    <svg style="height:23px;width:23px" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 480 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M477.7 186.1L309.5 18.3c-3.1-3.1-8.2-3.1-11.3 0l-34 33.9c-3.1 3.1-3.1 8.2 0 11.3l11.2 11.1L33 316.5c-38.8 38.7-45.1 102-9.4 143.5 20.6 24 49.5 36 78.4 35.9 26.4 0 52.8-10 72.9-30.1l246.3-245.7 11.2 11.1c3.1 3.1 8.2 3.1 11.3 0l34-33.9c3.1-3 3.1-8.1 0-11.2zM318 256H161l148-147.7 78.5 78.3L318 256z"/></svg>
-                    <span t-if="_text">My Cart</span>
+                    <svg width="38" height="32" viewBox="0 0 38 32" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M34.9307 9.34978H29.6827L24.4924 0.319517C24.3196 0.0123214 23.9228 -0.090077 23.6156 0.0827203C23.3084 0.255518 23.206 0.652311 23.3788 0.959507L28.2044 9.34978H8.91506L13.7406 0.959507C13.9198 0.652311 13.811 0.261918 13.5038 0.0827203C13.1966 -0.090077 12.8062 0.0123214 12.627 0.319517L7.43668 9.34978H2.18877C0.979185 9.34978 0 10.329 0 11.5385V13.7849C0 14.9881 0.979185 15.9737 2.18877 15.9737H2.76476L4.47993 29.1063C4.51193 30.7062 6.1695 31.999 8.19827 31.999H28.9211C30.9563 31.999 32.6075 30.7062 32.6395 29.1063L34.3547 15.9673H34.9307C36.1338 15.9673 37.1194 14.9881 37.1194 13.7785V11.5321C37.1194 10.329 36.1402 9.34978 34.9307 9.34978ZM31.3659 28.9783C31.3595 29.0103 31.3595 29.0359 31.3595 29.0615C31.3595 29.9575 30.2395 30.719 28.9211 30.719H8.19827C6.87989 30.719 5.75991 29.9639 5.75991 29.0615C5.75991 29.0359 5.75991 29.0039 5.75351 28.9783L4.05754 15.9737H33.0619L31.3659 28.9783ZM35.8394 13.7849C35.8394 14.2841 35.4298 14.6937 34.9307 14.6937H2.18877C1.68957 14.6937 1.27998 14.2841 1.27998 13.7849V11.5385C1.27998 11.0393 1.68957 10.6298 2.18877 10.6298H34.9371C35.4362 10.6298 35.8458 11.0393 35.8458 11.5385V13.7849H35.8394Z" fill="white"/>
+                    </svg>
+
+                    <span t-if="_text">My Cart                                                                                                              </span>
                     <sup class="my_cart_quantity badge badge-primary" t-esc="sample_quantity" t-att-data-order-id="request.session.get('sale_order_id', '')"/>
                 </a>
             </li>
@@ -349,11 +409,11 @@
 
     <record id="te_header_cart_wishlist_link_inherit" model="ir.ui.view">
         <field name="name">te_header_cart_wishlist_link</field>
-        <field name="inherit_id" search="[('key', '=', 'theme_clarico_vega.te_header_cart_wishlist_link')]"/>
+        <field name="inherit_id" search="[('key', '=', 'theme_pricepaper.template_header_default_pricepaper')]"/>
         <field name="type">qweb</field>
-        <field name="key">test_theme_extended.te_header_cart_wishlist_link</field>
+        <field name="key">test_theme_extended.template_header_default_pricepaper</field>
         <field name="arch" type="xml">
-            <xpath expr="//t[@t-call='website_sale.header_cart_link']" position="before">
+            <xpath expr="//t[@t-call='portal.user_dropdown']" position="after">
                 <t t-call="sample_request.header_sample_link">
                     <t t-set="search_icon_disabled" t-value="1"/>
                     <t t-set="_icon" t-value="True"/>

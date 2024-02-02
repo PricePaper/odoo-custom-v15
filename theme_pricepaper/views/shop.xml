@@ -25,7 +25,12 @@
                 </span>
 
             </div>
+            <div class='scroll_div'>
+                <button class='left_scrol'><i class='fa fa-chevron-right'/></button>
+            </div>
         </xpath>
+        <!-- <xpath expr="//div[hasclass('container')]/div[hasclass('dynamic_snippet_template')]" position="inside">
+        </xpath> -->
     </template>
 
 </odoo>

@@ -84,6 +84,10 @@
             <attribute name="t-if"> not request.website.is_public_user() </attribute>
         </xpath>
 
+        <xpath expr="//div[@id='add_to_cart_wrap']//*[@id='add_to_cart']" position="attributes">
+            <attribute name="t-if"> not request.website.is_public_user() </attribute>
+        </xpath>
+
     </template>
     <template id="product_quantity_internal" inherit_id="website_sale.product" customize_show="True" name="Show Intneral">
 

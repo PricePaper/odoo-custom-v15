@@ -51,6 +51,7 @@
             'theme_pricepaper/static/src/scss/portal.scss',
             'theme_pricepaper/static/src/scss/shop.scss',
             'theme_pricepaper/static/src/scss/product_page.scss',
+            'theme_pricepaper/static/src/scss/sample.scss',
             'theme_pricepaper/static/src/scss/snippet/*',
 
         ],
@@ -64,3 +65,4 @@
    
    
 }
+

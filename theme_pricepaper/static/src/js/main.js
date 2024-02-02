@@ -28,7 +28,7 @@ odoo.define('theme_pricepaper.common', function (require) {
             }
             return {
                 chunkSize: parseInt(
-                    numberOfElements
+                    16
                 ),
                 data: this.data,
                 uniqueId: this.uniqueId
@@ -85,7 +85,7 @@ odoo.define('theme_pricepaper.common', function (require) {
                     return
                 }
                 else {
-                    
+
                     if ($(this).attr('name') == 'email' && !(validateEmail($(this).val()))) {
                         $(this).get(0).setCustomValidity('Please Enter Correct Email');
                         $(this).get(0).reportValidity()
@@ -112,6 +112,45 @@ odoo.define('theme_pricepaper.common', function (require) {
         }
     })
     $(document).ready(function () {
+        $(document).on('click', '.scroll_div .left_scrol', function (ev) {
+            var main_row = $(ev.currentTarget).parents('.paper_container').find('.carousel-item .row')
+            var newScrollLeft = main_row.scrollLeft();
+            // var divWidth = main_row.outerWidth();
+            // var $width = main_row.outerWidth()
+            // var $scrollWidth = main_row[0].scrollWidth;
+            // var $scrollLeft = main_row.scrollLeft();
+
+            var newScrollLeft = main_row.scrollLeft(),
+                width = main_row.width(),
+                scrollWidth = main_row.get(0).scrollWidth;
+            var offset = 8;
+            console.log(scrollWidth,newScrollLeft,width,offset)
+            if (scrollWidth - newScrollLeft - width <= offset) {
+                var left = 0
+            }
+
+
+
+
+
+            // console.log(newScrollLeft, divWidth)
+            // if (newScrollLeft >= divWidth) {
+            //     var left = 0
+            // }
+            else {
+                // main_row.find('.col-0')[0].width
+
+                var left = main_row.scrollLeft() + main_row.find('.col-0').first().width() + 80
+            }
+            main_row.animate({
+                scrollLeft: left
+            }, 400);
+
+
+
+
+            // main_row.scrollLeft(main_row.scrollLeft()+460)
+        })
         // let items = document.querySelectorAll('.carousel .carousel-item')
 
         // items.forEach((el) => {

@@ -14,6 +14,7 @@ odoo.define('sample_request.product', function (require) {
             'click .process_request': '_processRequest'
         },
         _processRequest: function (ev) {
+            var href = $(ev.currentTarget).attr('href')
             ev.preventDefault()
             ev.stopPropagation();
             var $self = this
@@ -37,7 +38,7 @@ odoo.define('sample_request.product', function (require) {
                     });
                 }
             }).promise().done(function () {
-                window.location = "/sample/address"
+                window.location = href
             })
 
         }

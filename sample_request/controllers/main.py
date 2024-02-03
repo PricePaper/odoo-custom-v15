@@ -68,9 +68,27 @@ class WebsiteSale(main.WebsiteSale):
     def sample_confirm(self):
         request_id = request.website.get_sample_oder()
         redirection = self.checkout_request_redirection(request_id)
+        crm_vals = {}
         if redirection:
             return redirection
-        crm_vals ={
+        if request.env.user._is_public():
+            crm_vals.update(
+                name = 'Public sample request.',
+                sample_request_id = request_id.id,
+                street = request_id.street,
+                street2 = request_id.street2,
+                zip = request_id.zip,
+                state_id = request_id.state_id.id,
+                country_id = request_id.country_id.id,
+                email_from = request_id.email,
+                phone = request_id.phone,
+                contact_name = request_id.customer_name,
+                type = 'lead'
+                
+            )
+            request.session['sample_request_id'] = False
+        else:
+            crm_vals ={
             'name':f'{request_id.partner_id.name} sample request.',
             'partner_id':request_id.partner_id.id,
             'sample_request_id':request_id.id
@@ -102,11 +120,24 @@ class WebsiteSale(main.WebsiteSale):
         mode = (False, False)
         can_edit_vat = False
         values, errors = {}, {}
-
+        if request.env.user._is_public():
+            # values = sample_request.read()[0]
+            values.update(
+                street = sample_request.street,
+                street2 = sample_request.street2,
+                city = sample_request.city,
+                state_id = sample_request.state_id,
+                country_id = sample_request.country_id,
+                email = sample_request.email,
+                phone = sample_request.phone,
+                zip = sample_request.zip,
+                name = sample_request.customer_name,
+            )
+            # print(values)
         partner_id = int(kw.get('partner_id', -1))
 
         # IF PUBLIC ORDER
-        if sample_request.partner_id.id == request.website.user_id.sudo().partner_id.id:
+        if request.env.user._is_public():
             mode = ('new', 'billing')
             can_edit_vat = True
         # IF ORDER LINKED TO A PARTNER
@@ -141,31 +172,34 @@ class WebsiteSale(main.WebsiteSale):
                 errors['error_message'] = error_msg
                 values = kw
             else:
-                partner_id = self._checkout_form_save(mode, post, kw)
-                # We need to validate _checkout_form_save return, because when partner_id not in shippings
-                # it returns Forbidden() instead the partner_id
-                if isinstance(partner_id, Forbidden):
-                    return partner_id
-                if mode[1] == 'billing':
-                    sample_request.partner_id = partner_id
-                    # sample_request.with_context(not_self_saleperson=True).onchange_partner_id()
-                    # # This is the *only* thing that the front end user will see/edit anyway when choosing billing address
-                    # sample_request.partner_invoice_id = partner_id
-                    # if not kw.get('use_same'):
-                    #     kw['callback'] = kw.get('callback') or \
-                    #         (not sample_request.only_services and (mode[0] == 'edit' and '/shop/checkout' or '/shop/address'))
-                    # # We need to update the pricelist(by the one selected by the customer), because onchange_partner reset it
-                    # We only need to update the pricelist when it is not redirected to /confirm_order
-                    # if kw.get('callback', '') != '/shop/confirm_order':
-                    #     request.website.sale_get_order(update_pricelist=True)
-                elif mode[1] == 'shipping':
-                    sample_request.partner_shipping_id = partner_id
+                if not request.env.user._is_public():
+                    partner_id = self._checkout_form_save(mode, post, kw)
+                    if isinstance(partner_id, Forbidden):
+                        return partner_id
+                    if mode[1] == 'billing':
+                        sample_request.partner_id = partner_id
+                    elif mode[1] == 'shipping':
+                        sample_request.partner_shipping_id = partner_id
+                    if not errors:
+                        return request.redirect('/sample/address')
+                else:
+                    del post['company_id']
+                    del post['team_id']
+                    del post['lang']
+                    del post['user_id']
+                    post['customer_name'] = post['name']
+                    del post['name']
+                    sample_request.write(post)
+                    
+                    if not errors:
+                        return request.redirect('/sample/confirm_order')
+
 
                 # TDE FIXME: don't ever do this
                 # -> TDE: you are the guy that did what we should never do in commit e6f038a
                 # sample_request.message_partner_ids = [(4, partner_id), (3, request.website.partner_id.id)]
-                if not errors:
-                    return request.redirect('/sample/address')
+                # if not errors:
+                #     return request.redirect('/sample/confirm_order')
 
         render_values = {
             'sample_request': sample_request,

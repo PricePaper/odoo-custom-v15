@@ -329,3 +329,6 @@ class PaymentTransaction(models.Model):
     def send_receipt_mail(self):
         mail_template1 = self.env.ref('authorize_extension.email_credit_card_fee_receipt')
         mail_template1.send_mail(self.payment_id.id, force_send=True)
+
+    def check_error(self):
+        return self.sudo().env.ref('authorize_extension.action_check_transaction_error').read()[0]

@@ -4,3 +4,4 @@ generate_payment_token_admin,generate.payment.token,model_generate_payment_token
 add_invoice_transaction_user,add.invoice.transaction,model_add_invoice_transaction,account.group_account_invoice,1,1,1,1
 reauth_invoice_token_user,reauth.invoice.token,model_reauth_invoice_token,account.group_account_invoice,1,1,1,1
 access_batch_warning_wizard,access_batch_warning_wizard,model_batch_warning_wizard,base.group_user,1,1,1,1
+access_correct_transaction_error,access_correct_transaction_error,model_correct_transaction_error,base.group_user,1,1,1,1

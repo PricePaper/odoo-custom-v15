@@ -15,6 +15,7 @@
         'wizard/batch_warning.xml',
         'wizard/generate_payment_token_view.xml',
         'wizard/add_transaction_to_invoice.xml',
+        'wizard/correct_transaction_error.xml',
         'wizard/reauth_invoice_token.xml',
         'views/invoice_report.xml',
         'views/stock_picking.xml',

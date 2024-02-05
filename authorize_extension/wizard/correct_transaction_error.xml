@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="add_transaction_wizard_view_form">
+            <field name="name">acorrect.transaction.error</field>
+            <field name="model">correct.transaction.error</field>
+            <field name="arch" type="xml">
+                <form string="Check and Correct Transaction error">
+                    <group>
+                        <group>
+                            <field name="acquirer_reference" required='1'/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="check_transaction_error" string="Check Error" type="object" class='oe_highlight'/>
+                        <button string="Cancel" special="cancel" class="oe_link"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_check_transaction_error" model="ir.actions.act_window">
+            <field name="name">Check Transaction Error</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">correct.transaction.error</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

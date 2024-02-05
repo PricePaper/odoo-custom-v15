@@ -245,7 +245,7 @@
 
                     <div class="container position-relative h-100 d-flex flex-column justify-content-around">
                         <div t-attf-class="o_wblog_post_title #{'js_tweet' if opt_blog_post_select_to_tweet else ''} #{'js_comment' if opt_blog_post_select_to_comment else ''}">
-                            <div t-if="not date and not tag and not blog" class="h4 px-2 d-inline-block rounded-sm latest_btn btn ">Latest</div>
+                            <div t-if="not date and not tag and not blog" class="h4 px-2 d-inline-block rounded-sm  "><a class='text-white latest_btn btn' t-attf-href="/blog/#{slug(first_post.blog_id)}/#{slug(first_post)}" >Latest</a></div>
                             <a t-if="not blog and first_post" t-attf-href="/blog/#{slug(first_post.blog_id)}/#{slug(first_post)}" t-att-title="first_post.name" class="text-white text-decoration-none">
                                 <div t-field="first_post.name" id="o_wblog_post_name" t-att-data-blog-id="first_post.id" placeholder="Blog Post Title"/>
                                 <div t-field="first_post.subtitle" id="o_wblog_post_subtitle" placeholder="Subtitle"/>

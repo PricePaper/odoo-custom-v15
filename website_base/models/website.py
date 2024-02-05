@@ -20,7 +20,10 @@ class Website(models.Model):
         :returns: browse record for the current sales order
         """
         self.ensure_one()
-        partner = self.env.user.partner_id.parent_id if self.env.user.partner_id.parent_id else self.env.user.partner_id
+        cur_com = request.session.get('current_website_company',False)
+
+        partner = self.env['res.partner'].browse([int(cur_com)]) if cur_com else self.env.user.partner_id
+        
         sale_order_id = request.session.get('sale_order_id')
         check_fpos = False
         if not sale_order_id and not self.env.user._is_public():

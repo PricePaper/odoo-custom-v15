@@ -11,6 +11,42 @@ _logger = logging.getLogger(__name__)
 
 class WebsiteSale(WebsiteSale):
 
+    def checkout_values(self, **kw):
+        order = request.website.sale_get_order(force_create=True)
+        shippings = []
+        if order.partner_id != request.website.user_id.sudo().partner_id:
+            Partner = order.partner_id.with_context(show_address=1).sudo()
+            shippings = Partner.search([
+                ("id", "child_of", order.partner_id.commercial_partner_id.ids),
+                '|', ("type", "in", ["delivery", "other"]), ("id", "=", order.partner_id.commercial_partner_id.id)
+            ], order='id desc')
+
+            curr_comapny = request.session['current_website_company']
+            partner_com = request.env['res.partner'].sudo().browse(curr_comapny)
+            access = request.env.user.partner_id.portal_contact_ids.mapped('partner_id')
+            # main_ship = partner_com.child_ids
+            desired_shipping = shippings.filtered(lambda c: c.id in access.ids or c.id == partner_com.id)
+            shippings = desired_shipping
+            # print(shippings2)
+            print(shippings)
+            if shippings:
+                if kw.get('partner_id') or 'use_billing' in kw:
+                    if 'use_billing' in kw:
+                        partner_id = order.partner_id.id
+                    else:
+                        partner_id = int(kw.get('partner_id'))
+                    if partner_id in shippings.mapped('id'):
+                        order.partner_shipping_id = partner_id
+
+        values = {
+            'order': order,
+            'shippings': shippings,
+            'only_services': order and order.only_services or False
+        }
+        return values
+
+
+
     @http.route('/get/uom/price',type='json', auth='public', website=True)
     def get_uom_price(self,uom_id,product_id):
         product = request.env['product.product'].browse([int(product_id)])

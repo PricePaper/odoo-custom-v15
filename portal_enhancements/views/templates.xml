@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="portal_my_company" name="Comopany Switch">
+        <t t-call="website.layout">
+            <div class='oe_structure' id='company_switch_structure'/>
+            <div id='wrap' class='switch_company_wrap'>
+
+                <div class='container'>
+                    <h4 class='pt32'>Switch Comopany</h4>
+                    <div class='main_div'>
+                        <div class='seconday_div'>
+
+                            <span>Please Select Desired Comapny</span>
+                            <select class="form-select form-select-lg mb-3" name='company_switch' aria-label=".form-select-lg example">
+                                <t t-foreach="company_ids" t-as="com">
+                                    <option t-att-value='com.id'>
+                                        <t t-out='com.name'/>
+                                    </option>
+                                </t>
+                            </select>
+                            <button class='btn btn-primary switch_company'>Switch Company</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+
+
+    </template>
+
+</odoo>

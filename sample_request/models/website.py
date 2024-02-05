@@ -30,7 +30,7 @@ class Website(models.Model):
             sample_request = sample_request.sudo().browse([int(sample_request_id)])
         if force_create and not sample_request:
             sr_data = {
-                'partner_id':partner.id,
+                'partner_id':partner.id if not self.env.user._is_public() else False,
                 'state':'draft'
             }
             sample_request = sample_request.sudo().create(sr_data)

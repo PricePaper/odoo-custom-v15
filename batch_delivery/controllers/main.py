@@ -2,6 +2,23 @@ from odoo import http
 from odoo.http import request
 from odoo.tools.json import scriptsafe
 from odoo.addons.website_google_map.controllers.main import GoogleMap
+from odoo.addons.website_customer.controllers.main import WebsiteCustomer
+from werkzeug.exceptions import NotFound, Forbidden
+
+class WebsiteCustomer(WebsiteCustomer):
+    @http.route([
+        '/customers',
+        '/customers/page/<int:page>',
+        '/customers/country/<model("res.country"):country>',
+        '/customers/country/<model("res.country"):country>/page/<int:page>',
+        '/customers/industry/<model("res.partner.industry"):industry>',
+        '/customers/industry/<model("res.partner.industry"):industry>/page/<int:page>',
+        '/customers/industry/<model("res.partner.industry"):industry>/country/<model("res.country"):country>',
+        '/customers/industry/<model("res.partner.industry"):industry>/country/<model("res.country"):country>/page/<int:page>',
+    ], type='http', auth="public", website=True, sitemap=False)
+    def customers(self, country=None, industry=None, page=0, **post):
+        raise NotFound()
+      
 
 class GoogleMap(GoogleMap):
     '''

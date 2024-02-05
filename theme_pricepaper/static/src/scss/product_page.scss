@@ -5,9 +5,20 @@
     padding-bottom: 9rem !important;
 
     #add_to_cart_wrap {
-        display: none !important;
+        display: block !important;
+        text-align: right;
+        .sample_request{
+            background: transparent !important;
+            border-color: white !important;
+            color: white !important;
+            border-width: 2px;
+            font-size: 20px;
+            padding: 15px 25px;
+        }
     }
-
+        #product_option_block{
+            display: none !important;
+        }
 
     &::before {
         background: url("../img/black-dots.webp");

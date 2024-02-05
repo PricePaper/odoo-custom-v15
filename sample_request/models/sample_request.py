@@ -31,6 +31,16 @@ class SampleRequest(models.Model):
     lead_id = fields.Many2one('crm.lead',string='crm.lead')
     sales_person_ids = fields.Many2many('res.partner', string='Associated Sales Persons',store=True,compute='partner_id_change')
     parital_approved = fields.Boolean(default=False,string='Partial Approved',compute='_cal_partial_approve')
+    street = fields.Char(string='Street')
+    street2 = fields.Char(string='Street2')
+    city = fields.Char(string='City')
+    state_id = fields.Many2one('res.country.state')
+    country_id = fields.Many2one('res.country')
+    email = fields.Char(string='email')
+    phone = fields.Char(string='Phone')
+    zip = fields.Char(string='Zip')
+    customer_name = fields.Char(string="Customer Name")
+
 
     @api.depends('request_lines')
     def _cal_partial_approve(self):
@@ -76,6 +86,8 @@ class SampleRequest(models.Model):
     def approve_request(self):
         if not self.carrier_id:
             raise UserError('Select the delivery method before approval')
+        if not self.partner_id:
+            raise UserError('Select the Customer before proceeding further')
         route = self.sample_route
         uom = self.env['ir.config_parameter'].sudo().get_param('sample_request.sample_uom')
         route = int(route) if route else False

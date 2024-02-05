@@ -286,3 +286,29 @@
         }
     }
 }
+.switch_company_wrap{
+    .main_div{
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        .seconday_div{
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 32px;
+            padding-top: 32px;
+            max-width: 500px;
+            justify-content: center;
+            align-items: center;
+            span{
+                font-family: $font-family_1;
+                font-size: 22px;
+                margin-bottom: 15px;
+            }
+            button{
+                font-size: 20px !important;
+                max-width: 80%;
+                padding: 15px 26px;
+            }
+        }
+    }
+}

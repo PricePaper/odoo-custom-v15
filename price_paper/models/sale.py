@@ -517,7 +517,7 @@ class SaleOrder(models.Model):
         #             order.action_draft()
         #             order.action_confirm()
         for order in self:
-            if not order._context.get('from_import') and order.state not in ('draft', 'sent'):
+            if not order._context.get('from_import') and order.state not in ('draft', 'sent', 'cancel'):
                 order.check_payment_term()
         if 'sales_person_ids' in vals and vals['sales_person_ids']:
             self.message_subscribe(partner_ids=vals['sales_person_ids'][0][-1])

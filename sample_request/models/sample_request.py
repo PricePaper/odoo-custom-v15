@@ -40,7 +40,9 @@ class SampleRequest(models.Model):
     phone = fields.Char(string='Phone')
     zip = fields.Char(string='Zip')
     customer_name = fields.Char(string="Customer Name")
+
     company_name = fields.Char(string="Company Name")
+
 
 
     @api.depends('request_lines')

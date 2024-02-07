@@ -13,6 +13,7 @@
                 </xpath> -->
                 <xpath expr="//button[@name='action_capture']" position="after">
                     <button name="check_pending_status" string="Check Status" type="object" class='oe_highlight' states='pending'/>
+                    <button name="check_error" string="Check Error" type="object" class='oe_highlight' states='error'/>
                 </xpath>
                 <xpath expr="//form/sheet" position="after">
                     <div class="oe_chatter">

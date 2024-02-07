@@ -403,7 +403,9 @@
                     </svg>
 
                     <span t-if="_text">My Cart                                                                                                              </span>
+
                     <sup class="badge badge-primary" t-esc="sample_quantity" t-att-data-order-id="request.session.get('sale_order_id', '')"/>
+
                 </a>
             </li>
         </t>

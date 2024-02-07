@@ -298,6 +298,10 @@
                                             <label class="col-form-label" for="name">Name</label>
                                             <input type="text" name="name" t-attf-class="form-control #{error.get('name') and 'is-invalid' or ''}" t-att-value="'name' in checkout and checkout['name']" />
                                         </div>
+                                         <div t-attf-class="form-group #{error.get('name') and 'o_has_error' or ''} col-lg-12 div_contact_name">
+                                            <label class="col-form-label" for="name">Company Name</label>
+                                            <input type="text" name="company_name" t-attf-class="form-control #{error.get('company_name') and 'is-invalid' or ''}" t-att-value="'company_name' in checkout and checkout['company_name']" />
+                                        </div>
                                         <div class="w-100"/>
                                         <div t-attf-class="form-group #{error.get('email') and 'o_has_error' or ''} col-lg-6" id="div_email">
                                             <label t-attf-class="col-form-label #{mode[1] == 'shipping' and 'label-optional' or ''}" for="email">Email</label>
@@ -399,7 +403,9 @@
                     </svg>
 
                     <span t-if="_text">My Cart                                                                                                              </span>
-                    <sup class="my_cart_quantity badge badge-primary" t-esc="sample_quantity" t-att-data-order-id="request.session.get('sale_order_id', '')"/>
+
+                    <sup class="badge badge-primary" t-esc="sample_quantity" t-att-data-order-id="request.session.get('sale_order_id', '')"/>
+
                 </a>
             </li>
         </t>

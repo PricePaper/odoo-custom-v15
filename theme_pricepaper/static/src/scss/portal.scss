@@ -116,6 +116,15 @@
                     text-align: left;
                     letter-spacing: 2px;
                     color: #060606;
+                    @media(max-width:500px){
+                        font-size: 30px;
+                    }
+                    .company_name{
+                        font-size: 20px;
+                        @media(max-width:500px){
+                            font-size: 15px;
+                        }
+                    }
                 }
 
                 .o_portal_docs {
@@ -287,6 +296,13 @@
     }
 }
 .switch_company_wrap{
+
+    select{
+        width: 100%;
+        height: 40px;
+        padding: 10px;
+    }
+
     .main_div{
         padding: 10px;
         display: flex;

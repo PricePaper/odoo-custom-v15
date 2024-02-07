@@ -41,6 +41,9 @@ class SampleRequest(models.Model):
     zip = fields.Char(string='Zip')
     customer_name = fields.Char(string="Customer Name")
 
+    company_name = fields.Char(string="Company Name")
+
+
 
     @api.depends('request_lines')
     def _cal_partial_approve(self):

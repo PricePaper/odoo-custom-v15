@@ -18,8 +18,16 @@ Granting enhanced access to portal users
         'security/portal_enhancements_security.xml',
         'security/ir.model.access.csv',
         'views/res_partner_views.xml',
-        'wizard/add_portal_contacts.xml'
+        'wizard/add_portal_contacts.xml',
+        'views/templates.xml'
     ],
+     'assets': {
+        'web.assets_frontend': [
+            'portal_enhancements/static/src/js/main.js',
+            
+            
+        ]
+    },
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',

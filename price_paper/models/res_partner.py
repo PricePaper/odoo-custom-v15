@@ -3,6 +3,7 @@ import json
 from lxml import etree
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError, UserError
+import re
 
 
 class ResPartner(models.Model):
@@ -196,7 +197,8 @@ class ResPartner(models.Model):
 
         if vals.get('is_company', False):
             if not vals.get('customer_code', False):
-                prefix = vals.get('name').replace(" ", "")[0:3].upper()
+                name = re.sub("[^a-zA-Z0-9]+", "", vals.get('name', ''))
+                prefix = name[0:3].upper()
                 customer_codes = self.env['res.partner'].sudo().search(
                     ['|', ('active', '=', True), ('active', '=', False), ('customer_code', 'ilike', prefix)]).mapped('customer_code')
                 count = len(customer_codes)

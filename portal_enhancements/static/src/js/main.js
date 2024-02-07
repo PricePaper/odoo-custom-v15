@@ -3,7 +3,7 @@ odoo.define('portal_enhancements.common', function (require) {
     var core = require('web.core');
     const publicWidget = require('web.public.widget');
     var ajax = require('web.ajax');
-    
+
     publicWidget.registry.CompanySwithch = publicWidget.Widget.extend({
         selector: '.switch_company_wrap',
         events: {
@@ -15,7 +15,13 @@ odoo.define('portal_enhancements.common', function (require) {
             console.log('hello')
             ajax.jsonRpc('/set/company', 'call', { 'company_id': selected_company }).then(function (result) {
                 if (result.status) {
-                    location.replace("/my")
+                    if (result.url) {
+                        location.replace(result.url)
+                    }
+                    else {
+
+                        location.replace("/my")
+                    }
                 }
             })
         }

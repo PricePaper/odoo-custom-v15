@@ -11,13 +11,13 @@
                                 <strong t-field="company.partner_id.name"/>
                             </div>
                             <div><span t-if="company.partner_id.street"><t t-esc="company.partner_id.street"/></span> <span t-if="company.partner_id.street2">, <t t-esc="company.partner_id.street2"/></span></div>
-                            <div><span t-if="company.partner_id.city"><t t-esc="company.partner_id.city"/>,</span><span t-if="company.partner_id.state_id"><t t-esc="company.partner_id.state_id.name"/>,</span><span t-if="company.partner_id.zip"><t t-esc="company.partner_id.zip"/></span></div>
-                            <div style="color:grey;font-style: italic; display:none;" t-field="company.report_header" name="moto"/>
+                            <div><span t-if="company.partner_id.city"><t t-esc="company.partner_id.city"/>, </span><span t-if="company.partner_id.state_id"><t t-esc="company.partner_id.state_id.name"/>,</span><span t-if="company.partner_id.zip"><t t-esc="company.partner_id.zip"/></span></div>
+                            <div style="color:grey;font-style: italic;" t-field="company.report_header" name="moto"/>
                         </div>
                     </td>
                     <td align="right" style="vertical-align:top;">
                          <div class="text-left" style="display:inline-block; width:7cm; font-size:15px;">
-                              <span>Invoice Number:</span><span t-esc="o.name" style="padding-left:2px; font-weight: bold; "/><br/>
+                              <span>Invoice Number:</span><span t-esc="o.name" style="padding-left:2px; font-weight: bold; font-size:18px;"/><br/>
                               <span>Date:</span><span t-field="o.invoice_date" style="padding-left:2px; font-weight: bold; "/><br/>
                               <span t-if="o.partner_id.customer_code">Partner Code:</span><span t-field="o.partner_id.customer_code" style="padding-left:2px; font-weight: bold; " t-if="o.partner_id.customer_code"/><br/>
                               <span t-if="o.ref">Customer Ref:</span><span t-esc="o.ref[:15]" style="padding-left:2px; font-weight: bold; " t-if="o.ref"/>
@@ -62,7 +62,7 @@
                 </div>
             </div>
             <div class="page">
-                <h2 style="font-size:20px; font-weight:bold;">
+                <!-- <h2 style="font-size:20px; font-weight:bold;">
                     <span t-if="o.move_type == 'out_invoice' and o.state == 'posted'">Posted Invoice</span>
                     <span t-if="o.move_type == 'out_invoice' and o.state == 'draft' and not o.partner_id.bill_with_goods">Delivery Receipt</span>
                     <span t-if="o.move_type == 'out_invoice' and o.state == 'draft' and o.partner_id.bill_with_goods">Invoice</span>
@@ -71,16 +71,17 @@
                     <span t-if="o.move_type == 'in_refund'">Vendor Credit Note</span>
                     <span t-if="o.move_type == 'in_invoice'">Vendor Bill</span>
                     <span t-if="o.name != '/'" t-field="o.name"/>
-                </h2>
+                </h2> -->
                 <div style="border:1px solid #7a7a7a; width:100%; padding:10px; font-size:14px; display:flex; flex-wrap: wrap; ">
-                    <div  style="display:inline-block; width:19%; "  t-if="o.sales_person_ids">
-                        <span>Salespersons:</span>
-                        <p class="m-0" style="font-weight:bold;" t-esc="','.join([str(s.firstname)+' '+ str(s.lastname)  for s in o.sales_person_ids])"/>
+                    <div  style="display:inline-block; width:19%;" >
+                        <span>Invoice Number:</span>
+                        <p class="m-0" style="font-weight:bold;" t-if="o.name != '/'" t-field="o.name"/>
                     </div>
                     <div  style="display:inline-block; width:19%; "  t-if="o.invoice_origin" name="origin">
                         <span>Source:</span>
                         <p class="m-0"  style="font-weight:bold;" t-field="o.invoice_origin"/>
                     </div>
+                    <t t-set="SO" t-value="o.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')"/>
                     <div  style="display:inline-block; width:19%; "   t-if="SO and SO.client_order_ref" name="origin">
                         <span>Customer Reference:</span>
                         <p class="m-0"  style="font-weight:bold;"  t-field="SO.client_order_ref"/>
@@ -96,6 +97,10 @@
                        <t t-set="duedate" t-value="max(line for line in pterm_list)"/>
                        <p class="m-0"  style="font-weight:bold;" t-esc="duedate[0]"/>
                     </div>
+                    <div  style="display:inline-block; width:19%; "  t-if="o.sales_person_ids">
+                        <span>Salespersons:</span>
+                        <p class="m-0" style="font-weight:bold;" t-esc="','.join([str(s.firstname)+' '+ str(s.lastname)  for s in o.sales_person_ids])"/>
+                    </div>
                     <div  style="display:inline-block; width:19%; "  t-if="o.partner_shipping_id.phone" name="description">
                        <span>Contact Phone:</span>
                        <p class="m-0"  style="font-weight:bold;" t-field="o.partner_shipping_id.phone"/>
@@ -104,9 +109,8 @@
                        <span>Resale Number:</span>
                        <p class="m-0"  style="font-weight:bold;" t-field="o.partner_id.vat"/>
                     </div>
-                    <t t-set="SO" t-value="o.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')"/>
-                    <t t-set="driver" t-value="o.picking_ids and o.picking_ids.mapped('batch_id') and o.picking_ids.mapped('batch_id')[-1].truck_driver_id or ''"/>
 
+                    <t t-set="driver" t-value="o.picking_ids and o.picking_ids.mapped('batch_id') and o.picking_ids.mapped('batch_id')[-1].truck_driver_id or ''"/>
                     <div style="display:inline-block; width:19%; "  t-if="SO and SO.carrier_id" name="description">
                         <span>Shipping Method:</span>
                         <p class="m-0"  style="font-weight:bold;" t-field="SO.carrier_id"/>
@@ -141,7 +145,7 @@
                                 <span groups="account.group_show_line_subtotals_tax_excluded"  >Amount</span>
                                 <span groups="account.group_show_line_subtotals_tax_included"  >Total Price</span>
                             </th>
-                            <th t-attf-class="text-left {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}"  style="background-color:#ececec;padding:8px 12px; border:1px solid #7a7a7a;" t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)"><span></span></th>
+                            <th t-attf-class="text-left {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}"  style="background-color:#ececec;padding:8px 12px; border:1px solid #7a7a7a;" t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)"><span>Tax</span></th>
                         </tr>
                     </thead>
                     <tbody class="invoice_tbody" style="font-size:14px;">

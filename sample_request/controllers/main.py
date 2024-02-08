@@ -83,7 +83,10 @@ class WebsiteSale(main.WebsiteSale):
                 email_from = request_id.email,
                 phone = request_id.phone,
                 contact_name = request_id.customer_name,
-                type = 'lead'
+
+                type = 'lead',
+                partner_name = request_id.company_name
+
                 
             )
             request.session['sample_request_id'] = False

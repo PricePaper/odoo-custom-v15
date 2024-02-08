@@ -6,10 +6,11 @@
         <field name="inherit_id" ref="crm.view_crm_lead2opportunity_partner"/>
         <field name="arch" type="xml">
             <xpath expr="//group[@name='action']" position="after">
-                <group name="sample_group" string="Sample Request" attrs="{'invisible':[('action','=','nothing')]}">
+                <field name="sample_request_id" invisible='1' />
+                <group name="sample_group" string="Sample Request" attrs="{'invisible':['|',('sample_request_id','!=',False),('action','=','nothing')]}">
                     <group>
-                        <field name="create_sample" attrs="{'invisible':[('action','=','nothing')]}"/>
-                        <field name="sample_product_ids" widget='many2many_tags' attrs="{'invisible':[('create_sample','=',False)]}" />
+                        <field name="create_sample" attrs="{'invisible':['|',('sample_request_id','!=',False),('action','=','nothing')]}"/>
+                        <field name="sample_product_ids" widget='many2many_tags' attrs="{'invisible':['|',('sample_request_id','!=',False),('create_sample','=',False)]}" />
                     </group>
                 </group>
             </xpath>

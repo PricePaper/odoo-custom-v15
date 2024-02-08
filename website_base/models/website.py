@@ -10,7 +10,9 @@ from odoo.osv import expression
 from odoo.addons.http_routing.models.ir_http import url_for
 class Website(models.Model):
     _inherit = 'website'
-    def sale_get_order(self, force_create=False, code=None, update_pricelist=False, force_pricelist=False):
+    def sale_get_order(self, force_create=False, code=None, update_pricelist=False, force_pricelist=False,website=False):
+        if not website:
+            website = request.website
         """ Return the current sales order after mofications specified by params.
         :param bool force_create: Create sales order if not already existing
         :param str code: Code to force a pricelist (promo code)
@@ -20,7 +22,10 @@ class Website(models.Model):
         :returns: browse record for the current sales order
         """
         self.ensure_one()
-        partner = self.env.user.partner_id.parent_id if self.env.user.partner_id.parent_id else self.env.user.partner_id
+        cur_com = request.session.get('current_website_company',False)
+
+        partner = self.env['res.partner'].browse([int(cur_com)]) if cur_com else self.env.user.partner_id
+        
         sale_order_id = request.session.get('sale_order_id')
         check_fpos = False
         if not sale_order_id and not self.env.user._is_public():
@@ -32,7 +37,7 @@ class Website(models.Model):
                 check_fpos = True
 
         # Test validity of the sale_order_id
-        sale_order = self.env['sale.order'].with_company(request.website.company_id.id).sudo().browse(sale_order_id).exists() if sale_order_id else None
+        sale_order = self.env['sale.order'].with_company(website.company_id.id).sudo().browse(sale_order_id).exists() if sale_order_id else None
         if sale_order:
             partner = sale_order.partner_id
 
@@ -67,16 +72,16 @@ class Website(models.Model):
             # TODO cache partner_id session
             pricelist = self.env['product.pricelist'].browse(pricelist_id).sudo()
             so_data = self._prepare_sale_order_values(partner, pricelist)
-            sale_order = self.env['sale.order'].with_company(request.website.company_id.id).with_user(SUPERUSER_ID).create(so_data)
+            sale_order = self.env['sale.order'].with_company(website.company_id.id).with_user(SUPERUSER_ID).create(so_data)
 
             # set fiscal position
-            if request.website.partner_id.id != partner.id:
+            if website.partner_id.id != partner.id:
                 sale_order.onchange_partner_shipping_id()
             else: # For public user, fiscal position based on geolocation
                 country_code = request.session['geoip'].get('country_code')
                 if country_code:
                     country_id = request.env['res.country'].search([('code', '=', country_code)], limit=1).id
-                    sale_order.fiscal_position_id = request.env['account.fiscal.position'].sudo().with_company(request.website.company_id.id)._get_fpos_by_region(country_id)
+                    sale_order.fiscal_position_id = request.env['account.fiscal.position'].sudo().with_company(website.company_id.id)._get_fpos_by_region(country_id)
                 else:
                     # if no geolocation, use the public user fp
                     sale_order.onchange_partner_shipping_id()
@@ -94,7 +99,7 @@ class Website(models.Model):
         pricelist_id = pricelist_id or partner.property_product_pricelist.id
 
         # check for change of partner_id ie after signup
-        if sale_order.partner_id.id != partner.id and request.website.partner_id.id != partner.id:
+        if sale_order.partner_id.id != partner.id and website.partner_id.id != partner.id:
             flag_pricelist = False
             if pricelist_id != sale_order.pricelist_id.id:
                 flag_pricelist = True

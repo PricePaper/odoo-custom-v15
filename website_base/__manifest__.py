@@ -19,15 +19,9 @@
     'data': [
         'security/ir.model.access.csv',
         'views/templates.xml',
-        # 'views/theme_templates.xml'
-            
     ],
      'assets': {
         'web.assets_frontend': [
-            # not needed cross button in discount we can use the default unreconcile method
-            # keeping this for reference
-            # '/accounting_extension/static/src/js/account_payment_field.js',
-            
             '/website_base/static/src/lib/sweetalert2/sweet.js',
             '/website_base/static/src/js/main.js'
         ],

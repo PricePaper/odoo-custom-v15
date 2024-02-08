@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="portal_my_company" name="Comopany Switch">
+        <t t-call="website.layout">
+            <div class='oe_structure' id='company_switch_structure'/>
+            <div id='wrap' class='switch_company_wrap'>
+
+                <div class='container'>
+                    <h4 class='pt32'>Switch Comopany</h4>
+                    <div class='main_div'>
+                        <div class='seconday_div'>
+
+                            <span>Please Select Desired Comapny</span>
+                            <select class="form-select form-select-lg mb-3" name='company_switch' aria-label=".form-select-lg example">
+                                <t t-foreach="company_ids" t-as="com">
+                                    <option t-att-selected='com.id==curr_comapny' t-att-value='com.id'>
+                                        <t t-out='com.name'/>
+                                    </option>
+                                </t>
+                            </select>
+                            <button class='btn btn-primary switch_company'>Switch Company</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='oe_structure' id='company_switch_structure1'/>
+        </t>
+
+
+    </template>
+    <template id="multiple_cart" name="Multiple Cart">
+        <t t-call="website.layout">
+            <div class='wrap'>
+                <div class='container pb64 pt64'>
+                    <h2>
+                            Delivery Address
+                    </h2>
+                    <div class='row'>
+                        <t t-foreach='sale_order_ids' t-as='order'>
+                            <div class='col-4 mb32'>
+                                <div class='card h-100'>
+                                    <div class='card-header'>
+                                        <t t-esc='order.partner_shipping_id.name'/>
+                                    </div>
+                                    <div class='card-body'>
+                                        <table class='w-100'>
+                                            <tr>
+                                                <th>
+                                                Delivery Address:
+                                                </th>
+                                                <td class='text-end'>
+                                                    <t t-esc="order.partner_shipping_id" t-options="dict(widget='contact', fields=['address'], no_marker=True)"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>
+                                                        Total Amount:
+                                                </th>
+                                                <td class='text-end'>
+                                                    <t t-esc='order.amount_total' t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class='card-footer'>
+                                        <a class='btn btn-primary w-100' t-attf-href='/set/cart/order/#{order.id}'>Select Cart</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

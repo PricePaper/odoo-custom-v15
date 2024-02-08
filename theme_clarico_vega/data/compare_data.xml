@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="website_sale_comparison.product_attributes_body" model="ir.ui.view">
+            <field name="priority">17</field>
+        </record>
+        <record id="website_sale.product_comment" model="ir.ui.view">
+            <field name="priority">16</field>
+        </record>
+        <!--<record id="website_sale.recently_viewed_products_product" model="ir.ui.view">-->
+        <!--<field name="priority">15</field>-->
+        <!--</record>-->
+    </data>
+</odoo>

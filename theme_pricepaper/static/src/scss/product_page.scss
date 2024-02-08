@@ -1,0 +1,285 @@
+#product_detail {
+    background-color: $primary;
+    overflow: hidden !important;
+    position: relative;
+    padding-bottom: 9rem !important;
+
+    #add_to_cart_wrap {
+        display: block !important;
+        text-align: right;
+        .sample_request{
+            background: transparent !important;
+            border-color: white !important;
+            color: white !important;
+            border-width: 2px;
+            font-size: 20px;
+            padding: 15px 25px;
+        }
+    }
+        #product_option_block{
+            display: none !important;
+        }
+
+    &::before {
+        background: url("../img/black-dots.webp");
+        content: "";
+        position: absolute;
+        height: 438px;
+        width: 30vw;
+        top: 50px;
+        right: -25%;
+        opacity: 1;
+        background-size: contain;
+        background-repeat: no-repeat;
+
+
+        @media(max-width:700px) {
+            display: none !important;
+
+        }
+    }
+
+    &::after {
+        background: url(../img/white-dots.png);
+        position: absolute;
+        top: 2px;
+        left: 16%;
+        max-width: 384px;
+        height: 324px;
+        z-index: 3;
+        width: 26vw;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center bottom;
+
+
+        @media (max-width:1024px) {
+            top: -81px;
+            left: 12%;
+
+        }
+
+        @media (max-width:800px) {
+            top: -133px;
+
+        }
+
+        @media(max-width:700px) {
+
+            display: none;
+        }
+    }
+
+    .product_car {
+        z-index: 9;
+
+        display: flex;
+        justify-content: center;
+        // position: relative;
+
+        .product_carousel_wrap {
+            // position: relative;
+            width: 640px;
+            height: 700px;
+            display: flex;
+            justify-content: center;
+            align-items: center !important;
+            background-color: white;
+            border-radius: 30px;
+
+            @media(max-width:1700px) {
+                height: 650px;
+            }
+
+            @media (max-width:1200px) {
+                height: 600px;
+
+            }
+
+            @media (max-width:1100px) {
+                height: 550px;
+
+            }
+
+            @media (max-width:768px) {
+                height: unset;
+
+            }
+
+            #o-carousel-product {
+                // position: relative !important;
+                max-width: 80%;
+
+                .o_carousel_product_indicators {
+                    display: none;
+                }
+            }
+        }
+    }
+
+    #product_details {
+        h1 {
+            color: white;
+            font-size: 2.75rem !important;
+            margin-top: 20px;
+
+
+            @media(max-width:450px) {
+
+                font-size: 1.75rem !important;
+
+            }
+        }
+
+        .price_line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            .new_pice {
+                h3 {
+                    margin-bottom: unset !important;
+                    color: white;
+
+                }
+            }
+
+            .s_share {
+                display: flex;
+
+                a {
+                    background: white;
+                    height: 50px;
+                    width: 50px;
+                    border-radius: 50%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+            }
+        }
+
+        label[for='UomProduct'] {
+            display: none !important;
+        }
+
+        #UomProduct {
+            margin-top: 20px;
+            border-color: white;
+            background: transparent;
+            border-width: 2px;
+            height: 56px;
+            border-radius: 13px;
+            color: white;
+        }
+
+        .css_quantity {
+
+            // width: 100% !important;
+            height: 50px;
+            border-color: white;
+            border: 2px solid white;
+            border-radius: 12px;
+
+            .input-group-prepend,
+            .input-group-append {
+                .btn {
+
+                    color: black;
+                    background-color: white;
+                    border-color: white;
+                    border-radius: 10px;
+                    width: 40px;
+                    border: unset !important;
+                }
+            }
+
+            input {
+                height: 50px;
+                color: white;
+                border: unset !important;
+                background: transparent;
+            }
+
+        }
+
+        .sku_product {
+            margin-top: 40px;
+            color: white;
+            font-size: 25px;
+            font-family: $font-family_1 !important;
+            padding-bottom: 20px;
+            border-bottom: 2px solid $secondary;
+        }
+
+        .desc_product {
+            margin-top: 30px;
+            color: white;
+
+            .head {
+
+                margin-bottom: 15px;
+            }
+
+            strong {
+                font-family: $font-family_1;
+                font-size: 23px;
+            }
+
+            span {
+                font-size: 17px;
+                line-height: 34px;
+            }
+        }
+
+
+    }
+
+
+}
+
+.dot-line {
+    position: relative;
+
+    .curvy-line {
+        background: url(../img/curvy-line1.svg);
+
+        position: absolute;
+        background-size: cover;
+        bottom: -100px;
+        left: 34px;
+        top: -116px;
+        z-index: 9999;
+        transform: rotate(-33deg) translate(-104px, -12px);
+        width: 373.5px;
+        height: 111.1px;
+
+
+        @media (max-width:800px) {
+            width: 259.5px;
+            height: 73.1px;
+
+        }
+    }
+
+    .yellow-dots {
+        background: url("../img/yellow-dots.svg");
+        position: absolute;
+        bottom: -78px;
+        left: -10vw;
+
+        max-width: 442px;
+        max-height: 337px;
+        z-index: 2;
+        width: 18vw;
+        height: 18vw;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+
+    @media(max-width: 700px) {
+
+        display: none !important;
+    }
+}

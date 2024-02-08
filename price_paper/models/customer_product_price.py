@@ -133,8 +133,8 @@ class CustomerProductPrice(models.Model):
     @api.onchange('product_id')
     def onchange_product_id(self):
         if self.product_id:
-            self.product_uom = self.product_id.uom_id and self.product_id.uom_id
-            uom_price = self.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == self.product_id.uom_id)
+            self.product_uom = self.product_id.ppt_uom_id
+            uom_price = self.product_id.uom_standard_prices.filtered(lambda r: r.uom_id == self.product_id.ppt_uom_id)
             if uom_price:
                 product_price = uom_price[0].price
                 self.price = product_price

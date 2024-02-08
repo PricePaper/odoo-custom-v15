@@ -1,0 +1,287 @@
+/***********************************************
+				Snippet
+			----------------
+			01. Category_carousel Slider
+
+			Product
+			----------------
+			02. Product page offer timer
+
+************************************************/
+/*============================= 01. Category Slider ====================*/
+.category_slider_template_1 {
+    .owl-stage {
+        display: flex;
+        .te_category_item {
+            background:nth($f_color,18);
+            height: 100%;
+            a {
+                text-decoration: none;
+                .te_category_img {
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    img {
+                        width: auto;
+                        height: auto;
+                        margin: 0 auto;
+                        @include transition(all,.4s)
+                    }
+                }
+                .te_category_name {
+                    margin-top: 6px;
+                    display: block;
+                    width: 100%;
+                    text-align: center;
+                    padding: 8px;
+                    background: #d8d8d8bf;
+                    position: absolute;
+                    bottom: 0;
+                }
+            }
+        }
+    }
+    .owl-nav button.owl-prev {
+        @include position(absolute,50%,null,null,0);
+        transform: translateY(-50%);
+        i {
+            font-size:nth($f_sizes,12);
+        }
+    }
+    .owl-nav button.owl-next {
+        @extend button.owl-prev;
+        right:0;
+        left:unset;
+    }
+}
+.category_slider_template_2 {
+    .owl-stage {
+        display: flex;
+        .te_category_item {
+            height: 100%;
+            &:hover {
+                .te_category_name {
+                    opacity: 1;
+                    &:before, &:after {
+                        opacity: 1;
+                        transform: scale(1);
+                    }
+                }
+                .te_category_img {
+                    img {
+                        @include transform(scale3d(0.9,0.9,0.9));
+                    }
+                }
+            }
+            a {
+                display: inline-block;
+                width: 100%;
+                padding: 10px;
+                height: 100%;
+                .te_category_name {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: 500;
+                    background: rgba(0,0,0,0.4);
+                    color: #fff;
+                    @include transition(all,.4s)
+                    opacity: 0;
+                    padding: 10px;
+                    &:before, &:after {
+                        @include position(absolute,10px,10px,10px,10px);
+                        content: '';
+                        transition: opacity 0.35s,transform 0.35s;
+                        opacity: 0;
+                        z-index: 0;
+                    }
+                    &:before {
+                        border-top: 2px solid nth($f_color,5);
+                        border-bottom: 2px solid nth($f_color,5);
+                        @include transform(scale(0, 1));
+                    }
+                    &:after {
+                        border-right: 2px solid nth($f_color,5);
+                        border-left: 2px solid nth($f_color,5);
+                        @include transform(scale(1, 0));
+                    }
+                    @include media-breakpoint-down(lg) {
+                        opacity: 1;
+                        background: rgba(0,0,0,0.2);
+                        &:before, &:after {
+                            opacity: 1;
+                            transform: scale(1);
+                        }
+                    }
+                }
+                .te_category_img {
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    img {
+                        width: auto;
+                        max-height: 170px;
+                        @include object-fit(scale-down);
+                        margin: 0 auto;
+                        @include transform(scale3d(1,1,1));
+                        @include transition(all,.4s);
+                    }
+                }
+            }
+        }
+    }
+    .owl-nav button.owl-prev {
+        @include position(absolute,50%,null,null,0);
+        transform: translateY(-50%);
+        i {
+            font-size:nth($f_sizes,12);
+        }
+    }
+    .owl-nav button.owl-next {
+        @extend button.owl-prev;
+        right:0;
+        left:unset;
+    }
+}
+.category_slider_template_3 {
+    .owl-stage {
+        display: flex;
+        .owl-item {
+            margin: 8px 0;
+        }
+        .te_category_item {
+            border: 1px solid #eee;
+            height: 100%;
+            @include transition(all,.4s);
+            margin-left: 2px;
+            &:hover {
+                box-shadow: 0 1px 10px #ddd;
+            }
+            a {
+                text-decoration: none;
+                .te_category_img {
+                    height: 150px;
+                    display: flex;
+                    align-items: center;
+                    padding: 6px;
+                    img {
+                        width: auto;
+                        height: 100%;
+                        margin: 0 auto;
+                    }
+                }
+                .te_category_name {
+                    font-weight: 500;
+                    margin-top: 6px;
+                    display: inline-block;
+                    width: 100%;
+                    background: #eee;
+                    padding: 6px;
+                }
+            }
+
+        }
+    }
+    .owl-nav button.owl-prev {
+        @include position(absolute,50%,null,null,0);
+        @include transform(translateY(-50%));
+        i {
+            font-size:nth($f_sizes,12);
+        }
+    }
+    .owl-nav button.owl-next {
+        @extend button.owl-prev;
+        right:0;
+        left:unset;
+    }
+}
+/*================= 02. Product page offer timer ===============*/
+.rounded_digit_product
+{
+	margin-right: 0px;
+	width: 50px;
+	vertical-align: middle;
+	display: inline-block;
+	@include box-shadow(0px 0px 10px 0 rgba(50, 50, 93, 0.2))
+	border: 1px solid #eaeaea;
+	border-radius: 6px;
+	.te_days_hr_min_sec
+	{
+		font-size: 18px;
+		padding: 2px 4px 0px;
+		line-height: normal;
+        font-weight: 500;
+	}
+	#time_lbl
+	{
+		font-size:0.75rem;
+		color: nth($f_color, 19);
+		padding: 0px 5px 4px;
+	}
+}
+.te_offer_timer_prod
+{
+	display: none;
+	margin-bottom: 0;
+	font-size: 1rem;
+    padding:0;
+    line-height: normal;
+    margin: 0 auto;
+}
+.digit_separator {
+    display: inline-block;
+    font-size: 20px;
+    font-family: inherit;
+    font-weight: 500;
+}
+.product_offer_timer {
+	padding: 6px 0px 6px;
+	display: inline-block;
+    margin-top: 0;
+	>span:last-child
+	{
+		.rounded_digit_product
+		{
+			margin-right:0px;
+		}
+	}
+}
+.te_time_main_div {
+	@include position(relative);
+}
+#product_details .js_product .te_product_quantity {
+    width: auto;
+    margin-right: 8px;
+    margin-top: 12px;
+    @include media-breakpoint-up(md)
+    {
+       display: inline-flex;
+    }
+}
+.quick_view_content, .ajax_cart_content{
+    #product_details .js_product .te_product_quantity{
+        width: initial;
+        @include media-breakpoint-up(md){
+            display: flex;
+            margin-top: 16px !important;
+            margin-bottom: 2px !important;
+        }
+    }
+}
+div.quick_view_content #product_detail #add_to_cart{
+    margin: 12px 4px 15px 0px !important;
+}
+.ajax_cart_content #product_details .js_product .te_product_quantity{
+    @include media-breakpoint-up(md){
+        margin-top: 15px !important;
+        margin-bottom: 15px !important;
+    }
+}
+.oe_share_icon span {
+	line-height: 38px;
+}

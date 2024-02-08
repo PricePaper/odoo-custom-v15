@@ -1,0 +1,236 @@
+<odoo>
+
+    <template id="blank_details" inherit_id="portal.portal_layout">
+        <xpath expr="//t[@t-if='my_details']/div[hasclass('row')]" position="attributes">
+            <attribute name="class">row max_width_1000 mx-auto justify-content-between mt-4</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('row')]/div[@t-attf-class='col-12 col-md col-lg-6']" position="attributes">
+            <attribute name="t-attf-class">col-lg-12 col-xl-12 p-0</attribute>
+        </xpath>
+        <xpath expr="//div[@id='o_my_sidebar']" position="attributes">
+            <attribute name="class">col-lg-12 col-md-12 o_my_sidebar p-0</attribute>
+        </xpath>
+        <xpath expr="//div[@id='o_my_sidebar']/div[hasclass('o_portal_my_details')]/h4/a[hasclass('btn-link')]"
+               position="replace">
+            <a role="button" href="/my/account" class="btn btn-sm btn-link pull-right mt8">
+                <p class="text-black">Edit</p>
+            </a>
+        </xpath>
+        <xpath expr="//div[@id='o_my_sidebar']/div[hasclass('o_portal_my_details')]/hr" position="replace">
+            <attribute></attribute>
+        </xpath>
+
+        <xpath expr="//div[hasclass('o_portal_my_details')]/div" position="replace">
+            <address>
+                <t t-if="user_id.partner_id.name">
+                    <div class="w-100 d-inline-block py-3 border-bottom">
+                        <b>
+                            <p>Name :</p>
+                        </b>
+                        <div>
+                            <span class="fa fa-user"/>
+                            <span class="d-block pl-4" t-field="user_id.partner_id.name"/>
+                        </div>
+                    </div>
+                </t>
+                <t t-if="user_id.partner_id.city or user_id.partner_id.street2 or user_id.partner_id.state_id or user_id.partner_id.country_id or user_id.partner_id.zip">
+                    <div class="w-100 d-inline-block py-3 border-bottom">
+                        <b>
+                            <p>Address :</p>
+                        </b>
+                        <div>
+                            <span class="fa fa-map-marker"/>
+                            <span class="d-block pl-4">
+                                <span t-field="user_id.partner_id.street"/>
+                                <br/>
+                                <span t-field="user_id.partner_id.city"/>
+                                <span class="pl-1" t-field="user_id.partner_id.zip"/>
+                                <br/>
+                                <span t-field="user_id.partner_id.state_id"/>
+                                <br/>
+                                <span t-field="user_id.partner_id.country_id"/>
+                            </span>
+                        </div>
+                    </div>
+                </t>
+                <t t-if="user_id.partner_id.phone">
+                    <div class="w-100 d-inline-block py-3 border-bottom">
+                        <b>
+                            <p>Phone :</p>
+                        </b>
+                        <div>
+                            <span class="fa fa-phone"/>
+                            <span class="d-block pl-4" t-field="user_id.partner_id.phone"/>
+                        </div>
+                    </div>
+                </t>
+                <t t-if="user_id.partner_id.email">
+                    <div class="w-100 d-inline-block py-3">
+                        <b>
+                            <p>Email :</p>
+                        </b>
+                        <div>
+                            <span class="fa fa-envelope"/>
+                            <span class="d-block pl-4" t-field="user_id.partner_id.email"/>
+                        </div>
+                    </div>
+                </t>
+            </address>
+        </xpath>
+        <xpath expr="//div[hasclass('o_portal')]/div[hasclass('row')]" position="attributes">
+            <attribute name="class">row align-items-center bg-white no-gutters rounded-top mb16</attribute>
+        </xpath>
+    </template>
+
+    <!--========================== To add unique id to portal listview, change the heading ===============================-->
+    <template id="portal_home_gridview" inherit_id="portal.portal_my_home">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="attributes">
+            <attribute name="id">portal_grid</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('o_portal_my_home')]/h3" position="replace">
+            <h3 class="page-header">My Dashboard</h3>
+        </xpath>
+    </template>
+
+    <!--===================== To changes style in portal entries, heading , numbers ===================================-->
+    <template id="portal_docs_custom_entry" inherit_id="portal.portal_docs_entry">
+        <xpath expr="//t[@t-esc='title']" position="replace">
+            <p class="text-black m-0">
+                <t t-esc="title"/>
+            </p>
+        </xpath>
+        <xpath expr="//span[@t-esc='count']" position="attributes">
+            <attribute name="class">text-black bg-transparent</attribute>
+        </xpath>
+    </template>
+
+    <!--=========================== To change breadcrumb style(navbar) ==================================-->
+    <template id="portal_searchbar_custom" inherit_id="portal.portal_searchbar">
+        <xpath expr="//nav" position="attributes">
+            <attribute name="t-attf-class">d-flex navbar-expand-lg py-2 o_portal_navbar mt-4</attribute>
+        </xpath>
+        <xpath expr="//form[hasclass('o_portal_search_panel')]//span[hasclass('input-group-append')]//span"
+               position="replace">
+            <span class="fa fa-search"></span>
+        </xpath>
+    </template>
+
+    <!--========================= To remove border class from table ======================-->
+    <template id="portal_table_custom" inherit_id="portal.portal_table">
+        <xpath expr="//div[1]" position="attributes">
+            <attribute name="t-attf-class">table-responsive border-top-0 #{classes if classes else ''}</attribute>
+        </xpath>
+    </template>
+
+    <!--============================== To change date formate and remove order time ===================================-->
+    <template id="portal_my_orders_custom_date_formate" inherit_id="sale.portal_my_orders">
+        <xpath expr="//t[@t-foreach='orders']/tr/td[2]" position="replace">
+            <td class="text-center">
+                <span t-field="order.date_order" t-options='{"format": "MMMM dd,yyyy"}'/>
+            </td>
+        </xpath>
+        <xpath expr="//t[@t-if='orders']/thead/tr/th[2]" position="attributes">
+            <attribute name="class">text-center</attribute>
+        </xpath>
+    </template>
+    <!--============================== To add reorder column in my orders page ===================================-->
+    <template id="portal_my_orders_reorder" inherit_id="sale.portal_my_orders">
+        <xpath expr="//th[3]" position="after">
+            <t t-if="request.env['website'].sudo().get_current_website().allow_reorder">
+                <th class="text-center text_reorder">Reorder</th>
+            </t>
+        </xpath>
+        <xpath expr="//td[3]" position="after">
+            <t t-if="request.env['website'].sudo().get_current_website().allow_reorder">
+                <td class="text-center">
+                    <a class="btn btn-primary btn_reorder te_theme_button" t-att-data-id="'%s' % order.id">Reorder</a>
+                </td>
+            </t>
+        </xpath>
+    </template>
+
+    <!--========================== To add reorder button in portal layout(sale order page) ===============================-->
+    <template id="sale_order_portal_content_reorder" inherit_id="sale.sale_order_portal_content">
+        <xpath expr="//div[@id='introduction']//h2" position="inside">
+            <t t-if="request.env['website'].sudo().get_current_website().allow_reorder">
+                <a class="btn btn-primary btn_reorder te_theme_button" t-att-data-id="'%s' % sale_order.id" style="float:right;" >Reorder</a>
+            </t>
+        </xpath>
+    </template>
+    <!--================================= To Remove Powered By Odoo Div From Sale Order Page ==================================-->
+    <template id="portal_record_sidebar_custom" inherit_id="portal.portal_record_sidebar">
+        <xpath expr="//div[@id='sidebar_content']/div[last()]" position="replace">
+            <div></div>
+        </xpath>
+    </template>
+
+    <!--========================= To remove container class from portal layout(sale order page) =====================================-->
+    <template id="portal_sidebar_custom" inherit_id="portal.portal_sidebar">
+        <xpath expr="//body[@data-spy='scroll']/div[1]" position="attributes">
+            <attribute name="class">o_portal_sidebar</attribute>
+        </xpath>
+    </template>
+
+    <!--========================== To change tags and font style in portal layout(sale order page) ===============================-->
+    <template id="sale_order_portal_content_custom" inherit_id="sale.sale_order_portal_content">
+        <xpath expr="//section[@id='details']//tbody[hasclass('sale_tbody')]/t[@t-as='line']//t[@t-if='not line.display_type']//td[@id='product_name']//span"
+               position="replace">
+            <p t-field="line.name" class="te_so_product_name" />
+        </xpath>
+
+        <xpath expr="//section[@id='details']//table[@id='sales_order_table']" position="attributes">
+            <attribute name="class">table</attribute>
+        </xpath>
+    </template>
+    <template id="portal_breadcrumbs_custom" inherit_id="portal.portal_breadcrumbs">
+        <xpath expr="//ol" position="attributes">
+            <attribute name="class">o_portal_submenu breadcrumb mb-0 py-2 flex-grow-1</attribute>
+        </xpath>
+    </template>
+
+    <template id="portal_my_details_custom" inherit_id="portal.portal_my_details">
+		<xpath expr="//form" position="before">
+			<span class="mb16 d-block text-danger">* are required fields</span>
+		</xpath>
+		<xpath expr="//div[hasclass('o_portal_details')]//div[hasclass('row')]/div[2]" position="attributes">
+			<attribute name="t-attf-class">form-group #{error.get('name') and 'o_has_error' or ''} col-xl-12</attribute>
+		</xpath>
+		<xpath expr="//div[hasclass('o_portal_details')]//div[hasclass('row')]/div[9]" position="attributes">
+			<attribute name="t-attf-class">form-group #{error.get('street') and 'o_has_error' or ''} col-xl-12</attribute>
+		</xpath>
+        <xpath expr="//div[hasclass('o_portal_details')]/div/div/button" position="attributes">
+            <attribute name="class">btn btn-primary float-right mb32 te_theme_button</attribute>
+        </xpath>
+        <!-- To remove label-optional class from the zip code field. @Author : Angel Patel-->
+        <xpath expr="//div[hasclass('o_portal_details')]//div[hasclass('row')]/div[11]/label" position="attributes">
+			<attribute name="class">col-form-label</attribute>
+		</xpath>
+	</template>
+
+    <!--========================== To add class for add heading of Quotation table in mobile view (Quotations Page) ===============================-->
+    <template id="portal_my_quotations_ept" inherit_id="sale.portal_my_quotations">
+        <xpath expr="//t[@t-foreach='quotations']" position="replace">
+            <t t-foreach="quotations" t-as="quotation">
+                <tr>
+                    <td class="te_quotation"><a t-att-href="quotation.get_portal_url()"><t t-esc="quotation.name"/></a></td>
+                    <td class="text-right te_quotation_date"><span t-field="quotation.date_order"/></td>
+                    <td t-attf-class="text-right te_quotation_valid #{'' if quotation.validity_date else 'disable'}"><span t-field="quotation.validity_date"/></td>
+                    <td t-attf-class="text-center te_quotation_cancel_expired #{'' if quotation.state == 'cancel' or quotation.is_expired else 'disable'}">
+                        <span t-if="quotation.state == 'cancel'" class=""><i class="fa fa-fw fa-remove"/> Cancelled</span>
+                        <span t-if="quotation.is_expired" class=""><i class="fa fa-fw fa-clock-o"/> Expired</span>
+                    </td>
+                    <td class="text-right te_quotation_total">
+                        <span t-field="quotation.amount_total"/>
+                    </td>
+                </tr>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="portal_my_security_ept" inherit_id="portal.portal_my_security">
+        <xpath expr="//button[@type='submit']" position="attributes">
+            <attribute name="class">btn btn-danger te_theme_button</attribute>
+        </xpath>
+    </template>
+
+</odoo>

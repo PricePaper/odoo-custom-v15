@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-extend="website.theme_customize_modal_option">
+        <t t-jquery=".o_theme_customize_color_previews div:first-child" t-operation="replace">
+           <div>
+                <h6>Theme colors</h6>
+               <t t-foreach="{'primary': _t('Primary'), 'secondary': _t('Secondary'), 'success': _t('Success'), 'danger': _t('Danger'), 'warning': _t('Warning'),'info': _t('Info')}"
+                  t-as="color">
+                    <t t-call="website.theme_customize_color_palette_button">
+                        <t t-set="color_type" t-value="'theme'"/>
+                    </t>
+                </t>
+            </div>
+        </t>
+        <t t-jquery=".o_theme_customize_color_previews div:last-child" t-operation="replace">
+        </t>
+        <t t-jquery="#o_link_dialog_url_input" t-operation="after">
+            <small class="form-text text-muted">Hint: Type '/' to search an existing page and '#' to link to an anchor.</small>
+        </t>
+     </t>
+    <t t-extend="wysiwyg.widgets.link">
+        <t t-jquery="#o_link_dialog_button_opts_collapse" t-operation="before">
+            <!--  Add checkbox option for choose dynamic menu  -->
+            <div t-attf-class="form-group row dynamic_menu_option #{widget.isButton ? 'd-none' : ''}">
+                <label class="control-label col-md-3" for="is_dynamic_menu">Is Dynamic Menu</label>
+                <div class="col-sm-2">
+                    <label class="o_switch" for="is_dynamic_menu">
+                        <input type="checkbox" name="is_dynamic_menu" id="is_dynamic_menu"
+                               t-att-checked="widget.data.is_dynamic_menu ? 'checked' : undefined"/>
+                        <span/>
+                    </label>
+                </div>
+            </div>
+            <!--  Add text and color type input option for menu label text  -->
+            <div t-attf-class="form-group row dynamic_menu_label_text #{widget.isButton ? 'd-none' : ''}">
+                <label class="col-form-label col-md-3" for="label_menu_label_text">Menu Label Text</label>
+                <div class="col-md-9 menu_label_text_div">
+                    <input type="text" name="menu_label_text" class="form-control" id="menu_label_text"
+                           required="required"
+                           t-att-value="widget.data.menu_label_text ? widget.data.menu_label_text : '' "/>
+                    <input type="color" name="menu_label_text_color" id="menu_label_text_color"
+                           t-att-value="widget.data.menu_label_text_color ? widget.data.menu_label_text_color : '' "/>
+                </div>
+            </div>
+
+            <!--  Add menu highlight  -->
+            <div class="form-group row highlight_menu_option">
+                <label class="control-label col-md-3" for="is_highlight_menu">Is Highlight Menu</label>
+                <div class="col-sm-2">
+                    <label class="o_switch" for="is_highlight_menu">
+                        <input type="checkbox" name="is_highlight_menu" id="is_highlight_menu"
+                               t-att-checked="widget.data.is_highlight_menu ? 'checked' : undefined"/>
+                        <span/>
+                    </label>
+                </div>
+            </div>
+        </t>
+     </t>
+
+    <!--    Add highlight icon in edit menu dialog box  -->
+    <t t-extend="website.contentMenu.dialog.submenu">
+        <t t-jquery="i.fa-home" t-operation="after">
+            <span t-if="submenu.fields['is_highlight_menu']" class="badge te_highlight_menu ml-2"
+                  title="Click to define as special Menu" style="cursor: pointer;">
+                <span class="fa fa-paint-brush"/>
+            </span>
+        </t>
+    </t>
+</templates>

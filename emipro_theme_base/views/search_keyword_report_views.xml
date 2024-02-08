@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--  Tree View for Search Keywords Report -->
+    <record id="view_search_keyword_report_tree" model="ir.ui.view">
+        <field name="name">Search Keyword Report Tree</field>
+        <field name="model">search.keyword.report</field>
+        <field name="arch" type="xml">
+            <tree string="Search Keyword Report" create="false" edit="false">
+                <field name="search_term"/>
+                <field name="user_id"/>
+                <field name="create_date"/>
+                <field name="no_of_products_in_result"/>
+            </tree>
+        </field>
+    </record>
+
+    <!--  Search view for Search Keywords Report -->
+    <record id="view_search_keyword_report_search" model="ir.ui.view">
+        <field name="name">Search Keyword Report</field>
+        <field name="model">search.keyword.report</field>
+        <field name="arch" type="xml">
+            <search string="Search Keyword">
+                <field name="search_term"/>
+                <filter name="filter_today" string="Searched Today"
+                        domain="[('create_date', '>=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Last 30 Days" name="filter_last_30_days"
+                        domain="[('create_date','&gt;=', (context_today() - relativedelta(days=30)).strftime('%%Y-%%m-%%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_user" string="User" domain="[]" context="{'group_by':'user_id'}"/>
+                    <filter name="group_by_search_term" string="Search Keyword" domain="[]" context="{'group_by':'search_term'}"/>
+                    <filter name="group_by_date" string="Date" domain="[]" context="{'group_by':'create_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!--  Action for Search Keywords Report -->
+    <record id="action_search_keyword_report" model="ir.actions.act_window">
+        <field name="name">Search Keyword Report</field>
+        <field name="res_model">search.keyword.report</field>
+        <field name="view_mode">tree,graph</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="search_view_id" ref="view_search_keyword_report_search"/>
+        <field name="context">{"search_default_filter_last_30_days":1, "search_default_group_by_search_term":1}</field>
+        <field name="help" type="html">
+            <div class="no_search_keywords">
+                <p>
+                    No search keyword found.
+                </p>
+                <div>
+                    <span>There are few possibility you are seeing this message:</span>
+                    <p>1)  There are no keyword searched on website.</p>
+                    <p>2)  There are no keyword searched on website according to applied filter.</p>
+                    <p>3)  All searched keyword records are removed.</p>
+                </div><br/>
+                <p>
+                    Go to website and search something, you'll have new record here!
+                </p>
+            </div>
+        </field>
+    </record>
+
+    <!--  Menu for Search Keywords Report-->
+    <menuitem id="menu_search_keyword_report" name="Search Keyword Report" parent="website_sale.menu_reporting"
+              action="action_search_keyword_report" sequence="21" groups="sales_team.group_sale_manager"/>
+
+</odoo>

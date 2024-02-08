@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+sample_request_public,public_sample_request,model_sample_request,base.group_public,1,1,1,1
+sample_request_line_public,public_sample_request_line,model_sample_request_line,base.group_public,1,1,1,1
+sample_request_public,public_sample_request,model_sample_request,base.group_portal,1,1,1,1
+sample_request_line_public,public_sample_request_line,model_sample_request_line,base.group_portal,1,1,1,1
+
+sample_request_user,user_sample_request,model_sample_request,sample_request.group_user,1,1,1,0
+sample_request_line_user,user_sample_request_line,model_sample_request_line,sample_request.group_user,1,1,1,0
+
+sample_request_manager,manager_sample_request,model_sample_request,sample_request.group_manager,1,1,1,1
+sample_request_line_manager,manager_sample_request_line,model_sample_request_line,sample_request.group_manager,1,1,1,1
+
+sample_request_manager_reason,manager_reason_sample_request,model_reject_reason,sample_request.group_manager,1,1,1,1
+

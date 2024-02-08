@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="portal_layout" name="Portal Layout" inherit_id="portal.portal_layout">
+        <xpath expr="//div[hasclass('o_portal')]" position="replace"/>
+
+
+        <xpath expr="//div[@id='wrap']//div[hasclass('container')]" position="before">
+            <div class="curvy-line"></div>
+            <div class="y-dots"/>
+        </xpath>
+        <xpath expr="//div[@id='wrap']//div[hasclass('container')]//t[@t-if='my_details']" position="before">
+
+            <div t-if="not no_breadcrumbs and not my_details and not breadcrumbs_searchbar" class="o_portal row position-relative mt-3" style="z-index:9999">
+                <div class="col-12 align-items-center bg-white no-gutters ">
+                    <div class="col-10">
+                        <t t-call="portal.portal_breadcrumbs"></t>
+                    </div>
+                    <div t-if="prev_record or next_record" class="col-2 flex-grow-0 text-center">
+                        <t t-call='portal.record_pager'/>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+        <xpath expr="//div[@id='wrap']//div[hasclass('container')]//t[@t-if='my_details']//div[hasclass('row')]/div[1]" position="attributes">
+            <attribute name="t-attf-class">col-12 col-md col-lg-7 </attribute>
+        </xpath>
+        <xpath expr="//div[@id='wrap']//div[hasclass('container')]//t[@t-if='my_details']//div[hasclass('row')]/div[@id='o_my_sidebar']" position="attributes">
+            <attribute name="class">pt-3 pt-lg-0 col-12 col-md-11 col-lg-4 col-xl-4 o_my_sidebar </attribute>
+        </xpath>
+        <xpath expr="//div[@id='wrap']//div[hasclass('container')]//t[@t-if='my_details']//div[hasclass('row')]/div[@id='o_my_sidebar']//div[hasclass('o_portal_my_details')]//a[@href='/my/account']" position="replace">
+            <a role="button" href="/my/account" class="btn btn-sm btn-link">
+                <i class="fa fa-pencil"/>
+            </a>
+        </xpath>
+        <xpath expr="//div[hasclass('o_portal_my_security')]" position="inside">
+          <a href="/my/website/company" class='mt-3'><i class="fa fa-pencil mx-1"/>Switch Company</a>
+            
+        </xpath>
+
+        <xpath expr="//div[@id='wrap']//div[hasclass('container')]" position="attributes">
+            <attribute name="class" separator=" " add="container-fluid" remove="container" value=""></attribute>
+        </xpath>
+    </template>
+    <template id="pager" name="Pager" inherit_id="portal.pager">
+        <xpath expr="//ul" position="replace">
+
+            <ul t-if="pager['page_count'] > 1" t-attf-class="#{ classname or '' } pagination m-0 #{_classes}" t-att-style="style or None">
+                <li t-attf-class="page-item #{'disabled' if pager['page']['num'] == 1 else ''}">
+                    <a t-att-href=" pager['page_previous']['url'] if pager['page']['num'] != 1 else None" t-attf-class="page-link #{extraLinkClass}"><i class="fa fa-arrow-left"/>Prev</a>
+                </li>
+                <t t-foreach="pager['pages']" t-as="page">
+                    <li t-attf-class="page-item #{'active' if page['num'] == pager['page']['num'] else ''}">
+                        <a t-att-href="page['url']" t-attf-class="page-link #{extraLinkClass}" t-out="page['num']"/>
+                    </li>
+                </t>
+                <li t-attf-class="page-item #{'disabled' if pager['page']['num'] == pager['page_count'] else ''}">
+                    <a t-att-href="pager['page_next']['url'] if pager['page']['num'] != pager['page_count'] else None" t-attf-class="page-link #{extraLinkClass}">Next <i class="fa fa-arrow-right"/></a>
+                </li>
+            </ul>
+        </xpath>
+    </template>
+
+    <template id="portal_my_home" name="My Portal" inherit_id="portal.portal_my_home">
+        <xpath expr="//h3" position="replace">
+            <t t-set='main_company' t-value="request.session['current_website_company']"/>
+            <h3>Documents <span class='company_name'>(<t t-out='request.env["res.partner"].sudo().browse([int(main_company)]).name'/>)</span></h3>
+        </xpath>
+    </template>
+
+
+</odoo>

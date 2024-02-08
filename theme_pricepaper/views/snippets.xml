@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--===============All Snippet List================== -->
+    <template id="theme_pricepaper_snippets" inherit_id="website.snippets">
+        <xpath expr="//div[@id='snippet_structure']/div[hasclass('o_panel_header')]" position="before">
+            <!--=== Dynamic Snippets ==== -->
+            <div class="o_panel_header">
+                <i class="fa fa-file"/>
+                Pricepaper Snippets
+            </div>
+            <div class="o_panel_body">
+                <!-- Product Carousel -->
+                <t t-snippet="theme_pricepaper.banner_home">
+                    <keywords>Top Snippet</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.banner_home_video">
+                    <keywords>Video Banner</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.good_fit">
+                    <keywords>Good Fit</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.your_product">
+                    <keywords>Your Product</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.price_paper">
+                    <keywords>Paper People</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.manufactures">
+                    <keywords>Manufactures</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.contact_us">
+                    <keywords>Contact Us</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.use_of_bag">
+                    <keywords>Contact Us</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.black_bag">
+                    <keywords>Contact Us</keywords>
+                </t>
+
+            </div>
+            <div class="o_panel_header">
+                <i class="fa fa-file"/>
+                Blog Building Snippets
+            </div>
+            <div class="o_panel_body">
+
+                <t t-snippet="theme_pricepaper.bullet_point_left_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/left_image_bluetts.png">
+                    <keywords>Bullets</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.bullet_point_right_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/right_image_bluetts.png">
+                    <keywords>Bullets</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.para_point_left_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/para_left_image.png">
+                    <keywords>Para</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.para_point_right_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/para_right_image.png">
+                    <keywords>Para</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.bullet_point_only" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/bluetts_only.png">
+                    <keywords>Para</keywords>
+                </t>
+
+                 <t t-snippet="theme_pricepaper.black_bag_back" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/black_back.png">
+
+                    <keywords>Para</keywords>
+                </t>
+            </div>
+            <div class="o_panel_header">
+                <i class="fa fa-file"/>
+
+                Blog Building Snippets Green
+            </div>
+
+            <div class="o_panel_body">
+                <t t-snippet="theme_pricepaper.green_bullet_point_left_image"  t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_green/bluett_green_left.png">
+                    <keywords>Bullets</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.green_bullet_point_right_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_green/bluett_green_right.png">
+                    <keywords>Bullets</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.green_para_point_left_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_green/para_green_right.png">
+                    <keywords>Para</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.green_para_point_right_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_green/para_green_right.png">
+                    <keywords>Para</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.green_bullet_point_only" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/bluett_green.png">
+                    <keywords>Para</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.green_black_bag_back" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_green/green_back.png">
+                    <keywords>Para</keywords>
+                </t>
+            </div>
+
+            
+
+
+            <div class="o_panel_header">
+                <i class="fa fa-file"/>
+                Blog Building Snippets Brown
+            </div>
+
+            <div class="o_panel_body">
+
+                <t t-snippet="theme_pricepaper.brown_bullet_point_left_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_brown/brown_bluet_left.png">
+                    <keywords>Bullets</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.brown_bullet_point_right_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_brown/brown_bluet_right.png">
+                    <keywords>Bullets</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.brown_para_point_left_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_brown/brown_para_left.png">
+                    <keywords>Para</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.brown_para_point_right_image" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_brown/brown_para.png">
+                    <keywords>Para</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.brown_bullet_point_only" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_brown/brown_bluet.png">
+                    <keywords>Para</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.brown_black_bag_back" t-thumbnail="/theme_pricepaper/static/img/blog_snippet/blog_brown/brown_back.png">
+                    <keywords>Para</keywords>
+                </t>
+
+
+            </div>
+            <div class="o_panel_header">
+                <i class="fa fa-file"/>
+
+                About Us Snippet
+            </div>
+            <div class="o_panel_body">
+                <!-- Product Carousel -->
+                <t t-snippet="theme_pricepaper.about_banner">
+                    <keywords>Top Snippet</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.pricepaer_way">
+                    <keywords>Way</keywords>
+                </t>
+
+                <t t-snippet="theme_pricepaper.who_pricepaper">
+                    <keywords>Who</keywords>
+                </t>
+                <t t-snippet="theme_pricepaper.meet_people">
+                    <keywords>Meet</keywords>
+                </t>
+
+            </div>
+            <div class="o_panel_header">
+                <i class="fa fa-file"/>
+                Shop Snippet
+            </div>
+            <div class="o_panel_body">
+                <!-- Product Carousel -->
+                <t t-snippet="theme_pricepaper.shop_banner">
+                    <keywords>Top Snippet</keywords>
+                </t>
+            </div>
+            <div class="o_panel_header">
+                <i class="fa file"/>
+                Blog Snippet
+            </div>
+            <div class='o_panel_body'>
+                <t t-snippet="theme_pricepaper.contact_us_blog">
+                    <keywords>Contact Blog</keywords>
+                </t>
+
+            </div>
+
+        </xpath>
+    </template>
+</odoo>

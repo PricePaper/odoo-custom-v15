@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Brand Category Configuration Template -->
+    <template id="brand_category_configure_template">
+        <div class="modal fade w-100 o_technical_modal" id="product_configure_model">
+            <div class="modal-dialog modal-xl modal-dialog-centered" contenteditable="false">
+                <div class="modal-content product_configure_model" contenteditable="false">
+                    <div class="modal-body p-0 pb-0" contenteditable="false">
+                        <div class="slider-configure h-100 pb-0">
+                            <div class="configure-header">
+                                <div class="setting-icon">
+                                    <i class="fa fa-cog"/>
+                                </div>
+                                <div class="header-content">
+                                    <t t-if="name == 'category-slider'">
+                                        <h5>Category Builder</h5>
+                                    </t>
+                                    <t t-else="">
+                                        <h5>Brand Builder</h5>
+                                    </t>
+                                </div>
+                                <button type="button" class="product_configure_model_close" data-dismiss="modal"
+                                        aria-label="Close" tabindex="-1">
+                                </button>
+                            </div>
+                            <div t-if="not styles" class="configure-sub-header">
+                                <span>No Styles available</span>
+                            </div>
+                            <div class="configure-sub-header" t-if="styles">
+                                <span>
+                                    <div class="configure-selection js-configuration-selection active">
+                                        <span class="icon product-selection"/>
+                                        <t t-if="name == 'category-slider'">
+                                            <span class="title">Category Selection</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="title">Brand Selection</span>
+                                        </t>
+                                    </div>
+                                    <div t-attf-class="configure-selection js-layout-selection #{'' if items else ' disabled'}">
+                                        <span class="icon layout-selection"/>
+                                        <span class="title">Layout Selection</span>
+                                    </div>
+                                </span>
+                                <span class="float-right">
+                                    <t t-set="theme_name" t-value="request.website.theme_id.name"/>
+                                    <t t-if="theme_name == 'theme_clarico'">
+                                        <t t-if="name == 'category-slider'">
+                                            <t t-set="user_guide"
+                                               t-value="'https://www.emiprotechnologies.com/docs/v14/theme-clarico#topic1787'"/>
+                                            <t t-set="video"
+                                               t-value="'https://www.youtube.com/watch?v=DWmFQhMfYwg&amp;list=PLZGehiXauylbZduKt8OESRyUeVUeYmQqR'"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-set="user_guide"
+                                               t-value="'https://www.emiprotechnologies.com/docs/v14/theme-clarico#topic1785'"/>
+                                            <t t-set="video"
+                                               t-value="'https://www.youtube.com/watch?v=DWmFQhMfYwg&amp;list=PLZGehiXauylbZduKt8OESRyUeVUeYmQqR'"/>
+                                        </t>
+                                    </t>
+                                    <t t-elif="theme_name == 'theme_clarico_vega'">
+                                        <t t-if="name == 'category-slider'">
+                                            <t t-set="user_guide"
+                                               t-value="'https://www.emiprotechnologies.com/docs/v15/theme-clarico-vega#topic2425'"/>
+                                            <t t-set="video"
+                                               t-value="'https://www.youtube.com/watch?v=DWmFQhMfYwg&amp;list=PLZGehiXauylbZduKt8OESRyUeVUeYmQqR'"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-set="user_guide"
+                                               t-value="'https://www.emiprotechnologies.com/docs/v14/theme-clarico-vega#topic2424'"/>
+                                            <t t-set="video"
+                                               t-value="'https://www.youtube.com/watch?v=DWmFQhMfYwg&amp;list=PLZGehiXauylbZduKt8OESRyUeVUeYmQqR'"/>
+                                        </t>
+                                    </t>
+                                    <a t-attf-href="#{user_guide}" target="_blank"
+                                       class="text-decoration-none user_guide">
+                                        <div class="configure-selection">
+                                            <span class="fa fa-file-text mr-1"/>
+                                            <span class="title">User Guide</span>
+                                        </div>
+                                    </a>
+                                    <div class="configure-selection">
+                                        <span class="fa fa-play-circle mr-1"/>
+                                        <span class="title">Videos</span>
+                                    </div>
+                                    <div class="configure-selection js-save-config btn-save d-none">
+                                        <span class="title">Save</span>
+                                    </div>
+                                    <div t-attf-class="configure-selection js-next-btn btn-save #{'' if items else ' disabled'}">
+                                        <span class="title">Next</span>
+                                    </div>
+                                </span>
+                            </div>
+                            <div class="container-fluid product_slider_configure_template category_brand_option"
+                                 t-if="styles">
+                                <div class="row product-configure">
+                                    <div class="col product-configure-section mb-3">
+                                        <t t-call="emipro_theme_base.slider_brand_category_list"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <t t-if="styles" t-call="emipro_theme_base.slider_builder_ui_configure_template"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Slider Brand Category List-->
+    <template id="slider_brand_category_list">
+        <t t-if="items">
+            <div class="preview-title title-main my-4">
+                <span class="fa fa-pencil-square-o mr-1"/>
+                <t t-if="name == 'category-slider'">
+                    <label class="title-main my-2">Select Category</label>
+                </t>
+                <t t-else="">
+                    <label class="title-main my-2">Select Brand</label>
+                </t>
+                <span class="sub-title">
+                    <t t-esc="'(Maximum %s items will be shown in slider)' % limit"/>
+                </span>
+            </div>
+            <input name="loaded_items" type="hidden" t-att-value="loaded_items"/>
+            <input name="items_count" type="hidden" t-att-value="items_count"/>
+            <div class="container-fluid">
+                <div class="row item_data">
+                    <t t-call="emipro_theme_base.list_items"/>
+                </div>
+            </div>
+            <div class="text-center">
+                <button t-attf-class="js_load_more_button btn btn-primary #{' d-none' if not items_count or loaded_items &gt;= items_count  else ''}"
+                        t-att-loaded_items="loaded_items" t-att-items_count="items_count">
+                    Load More
+                </button>
+            </div>
+        </t>
+        <div t-else="">
+            <t t-call="emipro_theme_base.items_not_found"/>
+        </div>
+    </template>
+
+    <template id="list_items">
+        <t t-foreach="items" t-as="item">
+            <div class="col-2 mb-3 text-center">
+                <div class="category_brand_selection js_item_data" t-att-item-id="item.id">
+                    <t t-if="name == 'category-slider'">
+                        <span t-field="item.image_1920" class="mx-auto text-center category_brand_image"
+                              t-options='{"widget": "image"}'/>
+                    </t>
+                    <t t-else="">
+                        <span t-field="item.logo" class="mx-auto text-center category_brand_image"
+                              t-options='{"widget": "image"}'/>
+                    </t>
+                    <div class="name" t-esc="item.name"/>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="items_not_found" name="Items Not Found">
+        <div class="container product_notfound text-center">
+            <div class="align-self-center justify-content-center">
+                <img class="img img-fluid" src="/emipro_theme_base/static/src/img/product_slider/product-not-found.jpg"
+                     alt="404" loading="lazy"/>
+                <span class="error_msg my-3 d-inline-block col-12">No Item(s) Found</span>
+            </div>
+        </div>
+    </template>
+
+</odoo>

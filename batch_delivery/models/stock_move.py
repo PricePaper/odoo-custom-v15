@@ -28,44 +28,34 @@ class StockMove(models.Model):
     @api.depends('quantity_done', 'product_uom_qty', 'reason_id')
     def _compute_reason_needed(self):
         for move in self:
-            if not move.reason_id and move.quantity_done < move.product_uom_qty:
-                move.is_reason_added = True
-            else:
-                move.is_reason_added = False
+            move.is_reason_added = False
+            if move.transit_picking_id.picking_type_code == 'outgoing':
+                if not move.reason_id and move.quantity_done < move.product_uom_qty:
+                    move.is_reason_added = True
+                else:
+                    move.is_reason_added = False
 
     def _prepare_move_line_vals(self, quantity=None, reserved_quant=None):
-        res = super()._prepare_move_line_vals(quantity=quantity, reserved_quant=reserved_quant)
-        if not res.get('product_uom_qty'):
-            return res
-        if res['product_uom_qty'] > self.product_uom_qty:
-            res['product_uom_qty'] = self.product_uom_qty
-        elif res['product_uom_qty'] < self.product_uom_qty:
-            #and math.ceil(res['product_uom_qty']) == self.product_uom_qty:
-            difference = self.product_uom_qty - res['product_uom_qty']
-            if difference < 0.008:
-                res['product_uom_qty'] = self.product_uom_qty
-        return res
-
-    def _prepare_move_line_vals_old(self, quantity=None, reserved_quant=None):
         self.ensure_one()
         vals = {
             'move_id': self.id,
             'product_id': self.product_id.id,
             'product_uom_id': self.product_uom.id,
             'location_id': self.location_id.id,
+            'location_dest_id': self.location_dest_id.id,
             'picking_id': self.picking_id.id,
             'company_id': self.company_id.id,
         }
         if quantity:
             rounding = self.env['decimal.precision'].precision_get('Product Unit of Measure')
             uom_quantity = self.product_id.uom_id._compute_quantity(quantity, self.product_uom, rounding_method='HALF-UP')
-            uom_quantity = float_round(uom_quantity, precision_digits=2)
+            uom_quantity = float_round(uom_quantity, precision_digits=rounding)
             uom_quantity_back_to_product_uom = self.product_uom._compute_quantity(uom_quantity, self.product_id.uom_id, rounding_method='HALF-UP')
             vals = dict(vals, product_uom_qty=uom_quantity)
-            # if float_compare(quantity, uom_quantity_back_to_product_uom, precision_digits=rounding) == 0:
-            #     vals = dict(vals, product_uom_qty=uom_quantity)
-            # else:
-            #     vals = dict(vals, product_uom_qty=quantity, product_uom_id=self.product_id.uom_id.id)
+        #     if float_compare(quantity, uom_quantity_back_to_product_uom, precision_digits=rounding) == 0:
+        #         vals = dict(vals, product_uom_qty=uom_quantity)
+        #     else:
+        #         vals = dict(vals, product_uom_qty=quantity, product_uom_id=self.product_id.uom_id.id)
         package = None
         if reserved_quant:
             package = reserved_quant.package_id
@@ -76,12 +66,15 @@ class StockMove(models.Model):
                 package_id=package.id or False,
                 owner_id =reserved_quant.owner_id.id or False,
             )
-        # apply putaway
-        location_dest_id = self.location_dest_id._get_putaway_strategy(self.product_id, quantity=quantity or 0, package=package, packaging=self.product_packaging_id).id
-        vals['location_dest_id'] = location_dest_id
+        if not vals.get('product_uom_qty'):
+            return vals
+        if vals['product_uom_qty'] > self.product_uom_qty:
+            vals['product_uom_qty'] = self.product_uom_qty
+        elif vals['product_uom_qty'] < self.product_uom_qty:
+            difference = self.product_uom_qty - vals['product_uom_qty']
+            if difference < 0.008:
+                vals['product_uom_qty'] = self.product_uom_qty
         return vals
-
-
 
     def get_quantity(self, field='quantity_done', alternative_feild='quantity_done'):
         qty = 0
@@ -105,7 +98,7 @@ class StockMove(models.Model):
         for line in self:
             line.invoice_line_ids = []
             aml_ids = self.env['account.move.line'].search([('stock_move_id', '=', line.id)]).ids
-            if not aml_ids and line.sale_line_id and not line.rma_id:
+            if not aml_ids and line.sale_line_id and not line.rma_id and not (line.picking_id.backorder_id or line.transit_picking_id.backorder_id):
                 aml_ids = line.sale_line_id.mapped('invoice_lines').ids
             if aml_ids:
                 line.invoice_line_ids = [[6, 0, aml_ids]]
@@ -177,10 +170,13 @@ class StockMove(models.Model):
         for move in self:
             # qty_available always shows the quanity in requested (UOM).
             to_qty = qty
-            if self.product_uom != self.product_id.uom_id:
-                qty = self.product_uom._compute_quantity(qty, self.product_id.uom_id)
+            # if self.product_uom != self.product_id.uom_id:
+            #     qty = self.product_uom._compute_quantity(qty, self.product_id.uom_id)
             reserved_qty = move.reserved_availability
             try:
+                for ml in move.filtered(lambda rec: rec.procure_method == 'make_to_order').move_line_ids:
+                    if ml.qty_done:
+                        ml.qty_done = 0
                 move._do_unreserve()
             except UserError as e:
                 for ml in move.move_line_ids:
@@ -357,7 +353,8 @@ class StockMove(models.Model):
                             available_move_lines[(move_line.location_id, move_line.lot_id, move_line.result_package_id,
                                                   move_line.owner_id)] -= move_line.product_qty
                     for (location_id, lot_id, package_id, owner_id), quantity in available_move_lines.items():
-                        need = move.product_qty - sum(move.move_line_ids.mapped('product_qty'))
+                        # need = move.product_qty - sum(move.move_line_ids.mapped('product_qty'))
+                        need = move.product_uom._compute_quantity(qty, move.product_id.uom_id, rounding_method='HALF-UP')
                         # `quantity` is what is brought by chained done move lines. We double check
                         # here this quantity is available on the quants themselves. If not, this
                         # could be the result of an inventory adjustment that removed totally of
@@ -369,7 +366,7 @@ class StockMove(models.Model):
                                                                           strict=True)
                         if float_is_zero(available_quantity, precision_rounding=rounding):
                             continue
-                        taken_quantity = move._update_reserved_quantity(need, min(quantity, available_quantity),
+                        taken_quantity = move._update_reserved_quantity(need, min(need, available_quantity),
                                                                         location_id, lot_id, package_id, owner_id)
                         if float_is_zero(taken_quantity, precision_rounding=rounding):
                             continue
@@ -412,6 +409,8 @@ class StockMove(models.Model):
 
     def update_invoice_line(self):
         self.ensure_one()
+        if self.picking_id.backorder_id or self.transit_picking_id.backorder_id or self.picking_id.backorder_ids or self.transit_picking_id.backorder_ids:
+            return False
         invoice_lines = self.invoice_line_ids.filtered(lambda rec: rec.move_id.state == 'draft' and rec.product_id == self.product_id)
         invoice = invoice_lines.mapped('move_id') or self.sale_line_id.order_id.invoice_ids.filtered(lambda rec: rec.state == 'draft')
         if len(invoice_lines) > 1:
@@ -440,7 +439,8 @@ class StockMove(models.Model):
                     if move.quantity_done == incoming_qty - outgoing_qty:
                         continue
                     remaining_qty = move.quantity_done - incoming_qty + outgoing_qty
-                    move.transit_confirm_adjustment(remaining_qty)
+                    if not move.picking_id.is_create_back_order:
+                        move.transit_confirm_adjustment(remaining_qty)
         res = super()._action_done(cancel_backorder)
         for move in self.filtered(lambda rec: rec.state == 'done'):
             move.update_invoice_line()
@@ -479,8 +479,33 @@ class StockMove(models.Model):
         }
         new_move = self.create(move_vals)
         new_move.with_context(is_transit=True)._action_confirm()
-        new_move.write({'quantity_done': abs(remaining_qty)})
+        new_move.with_context(transit_adjustment=True).write({'quantity_done': abs(remaining_qty)})
         new_move.with_context(is_transit=True)._action_done()
+
+    def _quantity_done_set(self):
+        quantity_done = self[0].quantity_done  # any call to create will invalidate `move.quantity_done`
+        for move in self:
+            move_lines = move._get_move_lines()
+            if not move_lines:
+                if quantity_done:
+                    # do not impact reservation here
+                    if self._context.get('transit_adjustment'):
+                        move_line_vals = move._prepare_move_line_vals()
+                        move_line_vals.update({'qty_done': quantity_done})
+                        if move.move_dest_ids.move_line_ids.lot_id:
+                            move_line_vals.update({
+                                'lot_id': move.move_dest_ids.move_line_ids.lot_id.id,
+                                'lot_name': move.move_dest_ids.move_line_ids.lot_id.name,
+                            })
+                        move_line = self.env['stock.move.line'].create(move_line_vals)
+                    else:
+                        move_line = self.env['stock.move.line'].create(dict(move._prepare_move_line_vals(), qty_done=quantity_done))
+                    move.write({'move_line_ids': [(4, move_line.id)]})
+                    move_line._apply_putaway_strategy()
+            elif len(move_lines) == 1:
+                move_lines[0].qty_done = quantity_done
+            else:
+                move._multi_line_quantity_done_set(quantity_done)
 
 
     def _transit_return(self):

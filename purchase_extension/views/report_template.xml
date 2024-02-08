@@ -30,5 +30,14 @@
 
         </record>
 
+        <record model="ir.actions.report" id="purchase.action_report_purchase_order">
+            <field name="print_report_name">
+              (object.state in ('draft', 'sent', 'in_progress') and 'Price Paper RFQ_%s' % (object.name) or
+              'Price Paper %s' % (object.name))</field>
+        </record>
+        <record model="ir.actions.report" id="purchase.report_purchase_quotation">
+            <field name="print_report_name">'Price Paper RFQ_%s' % (object.name)</field>
+        </record>
+
     </data>
 </odoo>

@@ -1,0 +1,145 @@
+<odoo>
+    <data>
+        <record id="group_portal_enhanced_record_access" model="res.groups">
+            <field name="name">Enhanced Portal Access</field>
+        </record>
+
+ <record id="partner_model_rule" model="ir.rule">
+            <field name="name">Portal Partner Enhanced</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="domain_force">['|', ('id', 'in', user.partner_id.portal_contact_ids.mapped('partner_id').ids), ('id', 'in', user.partner_id.portal_company_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('portal_enhancements.group_portal_enhanced_record_access'))]"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="0"/>
+        </record>
+
+
+<!--                            Sale Order Portal Rules-->
+        <record id="sale_order_rule_portal_enhanced" model="ir.rule">
+            <field name="name">Portal Personal Quotations/Sales Orders/Enhanced</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="domain_force">['|', ('partner_shipping_id.id', 'in', user.partner_id.portal_contact_ids.mapped('partner_id').ids), ('partner_id.id', 'in', user.partner_id.portal_company_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('portal_enhancements.group_portal_enhanced_record_access'))]"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="0"/>
+        </record>
+        <record id="sale_order_line_rule_portal_enhanced" model="ir.rule">
+            <field name="name">Portal Personal Quotations/Sales Order Lines/Enhanced</field>
+            <field name="model_id" ref="sale.model_sale_order_line"/>
+            <field name="domain_force">['|', ('order_id.partner_shipping_id.id', 'in', user.partner_id.portal_contact_ids.mapped('partner_id').ids), ('order_id.partner_id.id', 'in', user.partner_id.portal_company_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('portal_enhancements.group_portal_enhanced_record_access'))]"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="0"/>
+        </record>
+
+<!--                    Purchase Portal Rules-->
+        <record id="portal_purchase_order_user_rule_enhanced" model="ir.rule">
+            <field name="name">Portal Purchase Orders/Enhanced</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="domain_force">[('partner_id.id', 'in', user.partner_id.portal_company_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('portal_enhancements.group_portal_enhanced_record_access'))]"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="0"/>
+        </record>
+        <record id="portal_purchase_order_line_rule_enhanced" model="ir.rule">
+            <field name="name">Portal Purchase Order Lines/Enhanced</field>
+            <field name="model_id" ref="purchase.model_purchase_order_line"/>
+            <field name="domain_force">[('order_id.partner_id.id', 'in', user.partner_id.portal_company_ids.ids)]
+            </field>
+            <field name="groups" eval="[(4, ref('portal_enhancements.group_portal_enhanced_record_access'))]"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="0"/>
+        </record>
+
+<!--                    Account Portal Rules-->
+        <record id="account_invoice_rule_portal_enhanced" model="ir.rule">
+            <field name="name">Portal Personal Account Invoices/Enhanced</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="domain_force">[('partner_id.id','in',user.partner_id.portal_company_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('portal_enhancements.group_portal_enhanced_record_access'))]"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="0"/>
+        </record>
+        <record id="account_invoice_line_rule_portal_enhanced" model="ir.rule">
+            <field name="name">Portal Invoice Lines/Enhanced</field>
+            <field name="model_id" ref="account.model_account_move_line"/>
+            <field name="domain_force">[('move_id.partner_id.id','in',user.partner_id.portal_company_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('portal_enhancements.group_portal_enhanced_record_access'))]"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="0"/>
+        </record>
+
+        <!-- CRM Lead Portal Rules -->
+        <record id="assigned_lead_portal_rule_1_enhanced" model="ir.rule">
+            <field name="name">Portal Graded Partner: read and write assigned leads/Enhanced</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="domain_force">[('partner_assigned_id.id','in',user.partner_id.portal_company_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('portal_enhancements.group_portal_enhanced_record_access'))]"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="0"/>
+        </record>
+
+<!--                    Calendar Portal Rules-->
+        <record id="calendar_event_rule_portal_enhanced" model="ir.rule">
+            <field name="name">Own events/Enhanced</field>
+            <field ref="calendar.model_calendar_event" name="model_id"/>
+            <field name="domain_force">[('partner_ids', 'in', user.partner_id.portal_company_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('portal_enhancements.group_portal_enhanced_record_access'))]"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="0"/>
+        </record>
+
+<!--                    Project Portal Rules-->
+        <record id="project_project_rule_portal_enhanced" model="ir.rule">
+            <field name="name">Project: portal users: portal and following/Enhanced</field>
+            <field name="model_id" ref="project.model_project_project"/>
+            <field name="domain_force">[('partner_id.id','in',user.partner_id.portal_company_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('portal_enhancements.group_portal_enhanced_record_access'))]"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="0"/>
+        </record>
+        <record id="project_task_rule_portal_enhanced" model="ir.rule">
+            <field name="name">Project/Task: portal users/Enhanced</field>
+            <field name="model_id" ref="project.model_project_task"/>
+            <field name="domain_force">[('project_id.partner_id.id', 'in', user.partner_id.portal_company_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('portal_enhancements.group_portal_enhanced_record_access'))]"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="0"/>
+        </record>
+
+                    <!-- Helpdesk Portal Rules-->
+        <record id="helpdesk_portal_ticket_rule_enhanced" model="ir.rule">
+            <field name="name">Tickets: portal users/Enhanced</field>
+            <field name="model_id" ref="helpdesk.model_helpdesk_ticket"/>
+            <field name="domain_force">[('partner_id.id','in',user.partner_id.portal_company_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('portal_enhancements.group_portal_enhanced_record_access'))]"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="0"/>
+        </record>
+
+    </data>
+</odoo>

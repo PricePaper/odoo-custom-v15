@@ -60,7 +60,8 @@ class StockPicking(models.Model):
             so = self.env['sale.order']
             for line in self.move_lines.filtered(lambda rec: rec.state == 'done'):
                 if line.is_storage_contract and line.purchase_line_id:
-                    line.sale_line_id.qty_delivered += line.quantity_done
+                    # line.sale_line_id.qty_delivered += line.quantity_done
+                    line.sale_line_id._compute_qty_delivered()
                     so |= line.sale_line_id.order_id
             if so:
                 so.action_received()

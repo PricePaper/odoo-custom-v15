@@ -1,0 +1,190 @@
+<odoo>
+    <data>
+        <template id="portal_my_home_token" name="Show Payment Token" inherit_id="portal.portal_my_home" customize_show="True" priority="30">
+            <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title">Payment Token</t>
+                    <t t-set="url" t-value="'/my/payment/token'"/>
+                </t>
+            </xpath>
+        </template>
+
+        <template id="portal_my_home_menu_token" name="Portal layout : Request" inherit_id="portal.portal_breadcrumbs" priority="30">
+            <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+                <li t-if="page_name == 'payment_token'" t-attf-class="breadcrumb-item #{'active ' if not token else ''}">
+                    <a t-if="token" t-attf-href="/my/address/book?{{ keep_query() }}">Address Book</a>
+                    <t t-else="">Payment Token</t>
+                </li>
+            </xpath>
+        </template>
+
+
+        <template id="partner_token" name="My Payment Token">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+                <t t-call="portal.portal_searchbar">
+                    <t t-set="title">Payment Token</t>
+                </t>
+                <div class='payment_token_portal'>
+
+                    <div class="modal" id="generateModal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Payment Token</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <i class='fa fa-close'/>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class='row'>
+                                        <div class='col-12'>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" name ="delivery_address" value="" id="deliveryaddress"/>
+                                                <label class="form-check-label" for="deliveryaddress">
+                                            Is for delivery address?
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-3 form-check-inline">
+                                                <input class="form-check-input" type="checkbox" name ="default_token" value="" id="default Token"/>
+                                                <label class="form-check-label" for="default Token">
+                                            Is default Token?
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-12">
+                                            <label for="billing">Billing Address</label>
+                                            <select id="billing" class="form-control">
+                                                <t t-foreach='billing' t-as='bill'>
+                                                    <option t-att-value='bill.id'>
+                                                        <t t-esc='bill.name'/>
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        <div class="form-group delivey_select col-12 d-none">
+                                            <label for="delivery">Delivery Address</label>
+                                            <select id="delivery" class="form-control">
+                                                <t t-foreach='shipping  ' t-as='bill'>
+                                                    <option t-att-value='bill.id'>
+                                                        <t t-esc='bill.name'/>
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+
+
+                                        <div class="form-group col-12">
+                                            <label for="cardNumber">Card Number</label>
+                                            <input type="text" class="form-control" name ="card_num" id="cardNumber" aria-describedby="emailHelp" placeholder="Enter Card Number"/>
+
+                                        </div>
+
+                                        <div class="form-group col-12 col-lg-6">
+                                            <label for="cardMonth">Expiry Month</label>
+
+                                            <select class="form-control" name ="card_month" id="cardMonth" aria-label="Default select example">
+                                                <option value="01">January</option>
+                                                <option value="02">February</option>
+                                                <option value="03">March</option>
+                                                <option value="04">April</option>
+                                                <option value="05">May</option>
+                                                <option value="06">June</option>
+                                                <option value="07">July</option>
+                                                <option value="08">August</option>
+                                                <option value="09">September</option>
+                                                <option value="10">October</option>
+                                                <option value="11">November</option>
+                                                <option value="12">December</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group col-12 col-lg-6">
+                                            <label for="cardYear">Expiry year</label>
+                                            <select class="form-control" name ="card_year" id="cardYear" aria-label="Default select example">
+                                                <t t-foreach='exp_year' t-as='year'>
+                                                    <option t-att-value='year[0]'>
+                                                        <t t-out='year[1]'/>
+                                                    </option>
+                                                </t>
+                                            </select>
+
+
+                                            <!-- exp_year -->
+                                            <!-- <input type="text" class="form-control" name ="card_year" id="cardYear" aria-describedby="emailHelp" placeholder=" Expiry Year"/> -->
+                                        </div>
+
+                                        <div class="form-group col-12 col-lg-6">
+                                            <label for="cardCVV">CVV</label>
+                                            <input type="password" class="form-control" name ="card_cvv" id="cardCVV" aria-describedby="emailHelp" placeholder="CVV"/>
+                                        </div>
+
+                                        <!-- <div class="form-group col-12 col-lg-6">
+                                            <label for="profileId">Profile Id</label>
+                                            <input type="text" class="form-control" name ="profile_id" id="profileId" aria-describedby="emailHelp" placeholder=" Profile Id"/>
+                                        </div> -->
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary token_generate">Generate Token</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#generateModal">
+                            <i class='fa fa-plus mr-2'/>
+                        Add Payment Token 
+                        </button>
+                    </div>
+                    <div>
+                        <h2>
+                        Payment Token 
+                        </h2>
+                        <div class='row'>
+                            <t t-foreach="token_ids" t-as='token'>
+                                <div class='col-12 col-lg-4 '>
+                                    <div class="card h-100">
+                                        <div class='card-body'>
+                                            <span class='text-secondary' style="font-size:12px">Name</span> :     
+                                            <t t-esc='token.name'/>
+                                            <br/>
+
+                                            <span class='text-secondary' style="font-size:12px">Delivery Address</span> :     
+                                            <t t-esc='token.shipping_id.name if token.shipping_id else "NA"'/>
+                                            <br/>
+
+                                            <span class='text-secondary' style="font-size:12px">Billing Address</span> :    
+                                            <t t-esc='token.address_id.name'/>
+                                            <br/>
+
+                                            <span class='text-secondary' style="font-size:12px">Default Token</span> :    
+                                            <t t-esc='token.is_default'/>
+                                            <br/>
+
+                                            <!-- <span class='text-secondary' style="font-size:12px">Profile Id</span> :    
+                                            <t t-esc='token.authorize_profile'/>
+                                            <br/>
+
+                                            <span class='text-secondary' style="font-size:12px">Payment Profile</span> :   
+                                            <t t-esc='token.acquirer_ref'/>
+                                            <br/> -->
+
+                                            <span class='text-secondary' style="font-size:12px">Payment Type</span> :                                            <t t-esc='"Credit Card" if token.authorize_payment_method_type=="credit_card" else "Bank" '/>
+                                            <br/>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+    </data>
+</odoo>

@@ -96,6 +96,14 @@ class ProductProduct(models.Model):
     sales_total_count = fields.Float(compute='_compute_sales_total_count', string='Sold')
     purchased_product_qty_mod = fields.Float(compute='_compute_purchased_product_qty_mod', string='Purchased')
 
+    @api.depends("stock_move_ids.product_qty", "stock_move_ids.state")
+    def _compute_qty_available_not_reserved(self):
+        res = self._compute_product_available_not_res_dict()
+        for prod in self:
+            qty = res[prod.id]["qty_available_not_res"]
+            prod.qty_available_not_res = prod.uom_id._compute_quantity(qty, prod.ppt_uom_id, rounding_method='HALF-UP')
+        return res
+
     def name_get(self):
         if not self._context.get('show_uom_name', False):
             return super(ProductProduct, self).name_get()

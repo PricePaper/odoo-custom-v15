@@ -19,6 +19,34 @@ class StockQuant(models.Model):
         'Difference', compute='_compute_inventory_diff_quantity_mod', store=True,
         help="Indicates the gap between the product's theoretical quantity and its counted quantity.",
         readonly=True, digits='Product Unit of Measure')
+    ppt_available_qty = fields.Float(
+        'Available Quantity',
+        help="On hand quantity which hasn't been reserved on a transfer, in the default unit of measure of the product",
+        compute='_compute_ppt_available_quantity', digits='Product Unit of Measure')
+    lot_uom_id = fields.Many2one('uom.uom', 'Lot UOM', readonly=True, compute='_compute_lot_uom')
+    lot_qty = fields.Float('Lot UOM Qty',
+                                   readonly=True, digits='Product Unit of Measure', compute='_compute_lot_uom'
+                                   )
+
+    def _compute_lot_uom(self):
+        for quant in self:
+            purchase = quant.lot_id.purchase_order_ids
+            if purchase:
+                uom = purchase.order_line.filtered(lambda r: r.product_id == quant.product_id and r.qty_received > 0).product_uom
+                if uom:
+                    quant.lot_uom_id = uom[0].id
+                    quant.lot_qty = quant.product_uom_id._compute_quantity(quant.quantity - quant.reserved_quantity,
+                                                                                   uom, rounding_method='HALF-UP')
+                    continue
+            quant.lot_uom_id = False
+            quant.lot_qty = 0.0
+
+    @api.depends('quantity', 'reserved_quantity')
+    def _compute_ppt_available_quantity(self):
+        for quant in self:
+            quant.ppt_available_qty = quant.product_uom_id._compute_quantity(quant.quantity - quant.reserved_quantity,
+                                                                           quant.product_uom_ref_id,
+                                                                           rounding_method='HALF-UP')
 
     @api.depends('quantity')
     def _compute_quantity_onhand(self):

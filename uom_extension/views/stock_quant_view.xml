@@ -9,6 +9,9 @@
                 <xpath expr="//field[@name='product_uom_id']" position="after">
                     <field name="quantity_onhand" string="Qty on Hand" />
                     <field name="product_uom_ref_id" string="UoM" />
+                    <field name="lot_uom_id" />
+                    <field name="lot_qty" />
+
                 </xpath>
                 <xpath expr="//field[@name='inventory_diff_quantity']" position="after">
                     <field name="inventory_quantity_mod" />

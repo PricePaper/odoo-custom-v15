@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="product_labels_template" name="Product Label" inherit_id="batch_delivery.product_labels_template">
+        <xpath expr="//div[@t-field='line[0].picking_id.scheduled_date']" position="before">
+            <div t-if="line[0].sale_line_id and line[0].sale_line_id.order_id.is_sample_order" style="float:left;">Sample</div>
+        </xpath>
+    </template>
+
+    <template id="report_picking_batch123" inherit_id="batch_delivery.report_picking_batch123">
+    <xpath expr="//div[hasclass('header')]//div[hasclass('row')]" position="attributes">
+        <attribute name="t-if"> not(ob.sale_id and ob.sale_id.is_sample_order)</attribute>
+    </xpath>
+        <xpath expr="//div[hasclass('header')]//div[hasclass('row')]" position="before">
+            <div class="row col-12" style="font-weight: bolder; padding-bottom:10px;">
+                <t t-if='ob.sale_id and ob.sale_id.is_sample_order'>
+                    <div class="col-8" style="text-align:left;">
+                        <span>
+                            Sample Order
+                        </span>
+                        <br/>
+                        <span>Ordered By : <t t-out='ob.sale_id.partner_id.name'/>
+                        </span>
+                        <br/>
+                        <span>
+                                Address :
+                        </span>
+                        <br/>
+                        <span t-field="ob.sale_id.partner_shipping_id.name"/>
+                        <br/>
+                        <span t-field="ob.sale_id.partner_shipping_id.street"/>
+                        <span t-field="ob.sale_id.partner_shipping_id.street2"/>
+                        <br/>
+                        <span t-field="ob.sale_id.partner_shipping_id.city"/>
+                        <span t-field="ob.sale_id.partner_shipping_id.state_id"/>
+                        <span t-field="ob.sale_id.partner_shipping_id.zip"/>
+                        <br/>
+                        <span t-if="ob.sale_id.partner_shipping_id.phone">
+                            <i class="fa fa-phone"/>
+                        </span>
+                        <span t-field="ob.purchase_id.pickup_address_id.phone" style="padding-left:4px;"/>
+                    </div>
+
+                </t>
+            </div>
+
+        </xpath>
+    </template>
+
+</odoo>

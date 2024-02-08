@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="template_header_default_pricepaper" inherit_id="website.layout" name="Template Header Default" active="False">
+        <xpath expr="//header//nav" position="replace">
+            <t t-call="website.navbar">
+                <t t-set="_navbar_classes" t-valuef="shadow-sm"/>
+                <div id="top_menu_container" class="container-fluid justify-content-between">
+                    <!-- Brand -->
+                    <t t-call="website.placeholder_header_brand">
+                        <t t-set="_link_class" t-valuef="me-4"/>
+                    </t>
+                    <!-- Navbar Collapse -->
+                    <div id="top_menu_collapse" class="collapse navbar-collapse order-last order-lg-0">
+                        <t t-call="website.navbar_nav">
+                            <t t-set="_nav_class" t-valuef="flex-grow-1"/>
+                            <!-- Menu -->
+                            <t t-foreach="website.menu_id.child_id" t-as="submenu">
+                                <t t-call="website.submenu">
+                                    <t t-set="item_class" t-valuef="nav-item"/>
+                                    <t t-set="link_class" t-valuef="nav-link"/>
+                                </t>
+                            </t>
+                            <!-- Sign In -->
+                            <t t-call="portal.placeholder_user_sign_in">
+                                <t t-set="_item_class" t-valuef="nav-item dropdown "/>
+                                <t t-set="_link_class" t-valuef="nav-link fw-bold"/>
+                            </t>
+                            <!-- User Dropdown -->
+                            <t t-call="portal.user_dropdown">
+                                <t t-set="_user_name" t-value="true"/>
+                                <t t-set="_item_class" t-valuef="nav-item dropdown"/>
+                                <t t-set="_link_class" t-valuef="nav-link fw-bold text-center"/>
+                            </t>
+                            <li class="mb-2 mb-lg-0 nav-item">
+                                <div class="search_bar_contact d-flex align-items-center nav-link">
+                                    <div class="dropdown">
+                                        <a class="nav-link btn btn-white btn-search" data-toggle="dropdown" aria-expanded="false">
+                                            <img src="/theme_pricepaper/static/img/search-icon.svg" alt="" loading="lazy" style=""/>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-end search-wrapper" aria-labelledby="navbarDropdown">
+                                            <li >
+                                                <div class="search-input-container">
+                                                    <form method="get" class="o_searchbar_form s_searchbar_input o_wsale_products_searchbar_form w-100 w-md-auto mr-auto mb-2" action="/website/search" data-snippet="s_searchbar_input">
+                                                        <div class="inner-form">
+                                                            <div class="input-field first-wrap">
+                                                                <div class="svg-wrapper">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 24 24">
+                                                                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z">
+                                                                        </path>
+                                                                    </svg>
+                                                                </div>
+                                                                <input id="search" name="search" type="text" placeholder="What are you looking for?" value="" data-search-type="products" data-limit="5" data-display-image="true" data-display-description="true" data-display-extra-link="true" data-display-detail="true" data-order-by="name asc" autocomplete="off"/>
+                                                                <input name="order" type="hidden" class="o_search_order_by" value="name asc"/>
+                                                            </div>
+                                                            <div class="input-field second-wrap">
+                                                                <button class="search-btn oe_search_button" type="button">SEARCH</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!--<a class="nav-link btn btn-black contact" href="/contactus">Contact</a>-->
+                                </div>
+                            </li>
+                            <li class='nav-item ml-lg-3 ml-0'>
+                                <a class="nav-link btn btn-black contact" href="/contactus">Contact</a>
+                            </li>
+                        </t>
+                        <!-- Language Selector -->
+                        <t t-call="website.placeholder_header_language_selector">
+                            <t t-set="_div_classes" t-valuef="my-auto ms-lg-2"/>
+                        </t>
+                    </div>
+
+                    <t t-call="website.navbar_toggler">
+                        <t t-set="_toggler_class" t-valuef="ms-auto"/>
+                    </t>
+                </div>
+            </t>
+        </xpath>
+
+    </template>
+    <template id="user_sign_in" name="User Sign In" inherit_id="portal.user_sign_in">
+        <xpath expr="//li" position="replace">
+            <li groups="base.group_public" t-attf-class="#{_item_class} o_no_autohide_item">
+                <a t-attf-href="/web/login" t-attf-class="#{_link_class}">Login<span t-if="request.session.profile_session" class="text-danger fa fa-circle"/>
+                </a>
+            </li>
+        </xpath>
+    </template>
+    <!-- Navbar Hamburger Options -->
+    <template id="option_header_off_canvas_snippet" inherit_id="website.navbar_nav" customize_show='True' name="snippet header" active="False">
+        <xpath expr="//ul[@id='top_menu']" position="inside">
+            <li>
+                <div class='search_bar_contact d-flex align-items-center'>
+                    <div class='dropdown'>
+                        <a class="nav-link btn btn-white btn-search" data-toggle="dropdown" aria-expanded="false">
+                            <img src="/theme_pricepaper/static/img/search-icon.svg" alt=""/>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end  search-wrapper" aria-labelledby="navbarDropdown">
+                            <li>
+                                <div class="search-input-container">
+                                    <div class="inner-form">
+                                        <div class="input-field first-wrap">
+                                            <div class="svg-wrapper">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z">
+                                                    </path>
+                                                </svg>
+                                            </div>
+                                            <input id="search" type="text" placeholder="What are you looking for?"/>
+                                        </div>
+                                        <div class="input-field second-wrap">
+                                            <button class="search-btn" type="button">SEARCH</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <a class="nav-link btn btn-black contact " href="/contactus">Contact</a>
+
+                </div>
+            </li>
+        </xpath>
+
+    </template>
+
+
+    <template id="theme__paper_header_cart_link" name="Header Cart Link">
+        <t t-set="website_sale_order" t-value="website.sale_get_order()" />
+        <t t-set="show_cart" t-value="not request.env.user._is_public()"/>
+        <li t-attf-class="#{_item_class} divider d-none"/>
+        <!-- Make sure the cart and related menus are not folded (see autohideMenu) -->
+        <li t-attf-class="o_wsale_my_cart  #{not show_cart and 'd-none'} #{_item_class}">
+            <a href="/shop/cart" t-attf-class="#{_link_class}">
+                <svg width="41" height="33" viewBox="0 0 41 33" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0.75 14.8102C0.75 15.9623 1.68755 16.8999 2.83966 16.8999H3.74293L6.72941 30.6655C6.9157 31.4875 7.65713 32.0845 8.49324 32.0845H32.9949C33.8298 32.0845 34.5719 31.4875 34.76 30.6612L37.7452 16.8999H38.6417C39.7908 16.8999 40.7259 15.9623 40.7259 14.8102C40.7259 13.6575 39.7908 12.7199 38.6417 12.7199H33.0822C24.3372 -3.0189 27.245 2.28153 26.6596 1.15947C26.0954 0.140732 24.795 -0.206686 23.8131 0.346114C22.8033 0.90893 22.4399 2.18187 22.9997 3.1895C23.1197 3.40543 28.082 12.3356 28.2955 12.7199H13.1859C18.5556 3.05701 18.4811 3.19134 18.4811 3.19134C19.0411 2.18371 18.6766 0.907413 17.6708 0.347341C16.6886 -0.204036 15.3914 0.135564 14.8243 1.15579C14.8243 1.15579 14.8225 1.15948 14.8194 1.16501L14.8188 1.16624C9.64767 10.4742 8.93901 11.7499 8.4001 12.7199H2.83966C1.68755 12.7199 0.75 13.6575 0.75 14.8102ZM33.8378 30.4565C33.748 30.8524 33.3933 31.1402 32.9949 31.1402H8.49323C8.09424 31.1402 7.74012 30.8531 7.65159 30.4608L4.70922 16.8999H36.7789L33.8378 30.4565ZM39.7816 14.8102C39.7816 15.4416 39.2701 15.9556 38.6417 15.9556C32.7622 15.9556 13.1737 15.9556 2.83966 15.9556C2.20827 15.9556 1.69431 15.4416 1.69431 14.8102C1.69431 14.1782 2.20827 13.6642 2.83966 13.6642C8.42738 13.6642 33.0423 13.6642 38.6417 13.6642C39.2701 13.6642 39.7816 14.1782 39.7816 14.8102ZM23.826 2.7321C23.5203 2.18388 23.7143 1.48144 24.2748 1.16993C24.7875 0.88159 25.5284 1.08263 25.8265 1.60458C25.8284 1.60827 25.8302 1.61134 25.8321 1.61442C25.8339 1.61873 25.8364 1.62303 25.8388 1.62733C25.9261 1.7841 26.8698 3.48276 32.0021 12.7199H29.3757C25.6187 5.95848 23.8623 2.80072 23.826 2.7321ZM15.6487 1.61688C15.942 1.08632 16.6871 0.876062 17.2091 1.17116C17.7624 1.47917 17.9628 2.17818 17.6572 2.73087C12.2097 12.5326 15.4292 6.73991 12.1057 12.7199H9.47997C17.9235 -2.47791 15.0031 2.72375 15.6487 1.61688Z" fill="white"/>
+                    <path d="M11.513 28.8506C11.77 28.8051 11.9409 28.5604 11.8954 28.3035L10.163 18.5357C10.1175 18.2787 9.86725 18.1078 9.6158 18.1533C9.35882 18.1988 9.18791 18.4435 9.23341 18.7005L10.9659 28.4682C11.0111 28.7231 11.2548 28.8965 11.513 28.8506Z" fill="white"/>
+                    <path d="M16.129 28.8561C16.3884 28.8333 16.5802 28.604 16.5575 28.3439L15.6912 18.5762C15.6679 18.3162 15.4299 18.1225 15.1791 18.1477C14.9197 18.1705 14.7279 18.3998 14.7506 18.6598L15.6168 28.4276C15.6393 28.6834 15.8652 28.879 16.129 28.8561Z" fill="white"/>
+                    <path d="M21.2156 28.3859V18.6182C21.2156 18.3575 21.0041 18.146 20.7434 18.146C20.4827 18.146 20.2712 18.3575 20.2712 18.6182V28.3859C20.2712 29.0104 21.2156 29.0108 21.2156 28.3859Z" fill="white"/>
+                    <path d="M25.3581 28.8561C25.622 28.879 25.8478 28.6832 25.8702 28.4276L26.7358 18.6598C26.7586 18.3998 26.5667 18.1705 26.3073 18.1477C26.0491 18.1225 25.8179 18.3162 25.7952 18.5762L24.9296 28.344C24.9068 28.604 25.0986 28.8333 25.3581 28.8561Z" fill="white"/>
+                    <path d="M29.9737 28.851C30.2324 28.897 30.4757 28.7231 30.5209 28.4686C31.982 19.1283 32.7496 18.3094 31.8703 18.1537C30.9794 17.9951 31.4096 19.1585 29.5913 28.3038C29.5458 28.5608 29.7167 28.8055 29.9737 28.851Z" fill="white"/>
+                </svg>
+
+                <span t-if="_text">My Cart</span>
+                <sup class="my_cart_quantity badge badge-primary" t-esc="website_sale_order and website_sale_order.cart_quantity or '0'" t-att-data-order-id="website_sale_order and website_sale_order.id or ''"/>
+            </a>
+        </li>
+    </template>
+    <record id="te_header_cart_cart_link_inherit" model="ir.ui.view">
+        <field name="name">te_header_cart_cart_link</field>
+        <field name="inherit_id" search="[('key', '=', 'theme_pricepaper.template_header_default_pricepaper')]"/>
+        <field name="type">qweb</field>
+        <field name="key">theme_pricepaper.template_header_default_pricepaper_cart</field>
+        <field name="arch" type="xml">
+            <xpath expr="//t[@t-call='portal.user_dropdown']" position="after">
+                <t t-call="theme_pricepaper.theme__paper_header_cart_link">
+                    <t t-set="search_icon_disabled" t-value="1"/>
+                    <t t-set="_icon" t-value="True"/>
+                    <t t-set="_item_class" t-value="'nav-item te_cart_icon_head'"/>
+                    <t t-set="_link_class" t-value="'nav-link'"/>
+                </t>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

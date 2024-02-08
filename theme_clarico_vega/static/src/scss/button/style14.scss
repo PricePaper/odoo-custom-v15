@@ -1,0 +1,64 @@
+/*======================== Button Style 14 =========================*/
+@if o-website-value('button-template') == 'button_style_14' {
+    .te_theme_button
+    {
+        @include position(relative);
+        background:nth($f_color,19);
+        color:nth($f_color,5);
+        transform: translate3d(0px, 0%, 0px);
+        transition-delay: 0.6s;
+        overflow: hidden;
+
+        &.btn-secondary, &.btn-link
+        {
+            background:theme-color('secondary') !important;
+            color:nth($f_color,5) !important;
+            &:after {
+                background:theme-color('secondary') !important;
+            }
+        }
+        &.btn-danger
+        {
+            background: theme-color('danger');
+            &:after {
+                background:theme-color('danger') !important;
+            }
+        }
+
+        &:before, &:after {
+            content: '';
+            @include position(absolute);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: all 0.6s ease;
+            z-index:-1;
+        }
+        &:before {
+            background:nth($f_color,3);
+            border-radius: 50% 50% 0 0;
+            transform: translateY(100%) scaleY(0.5);
+        }
+        &:after {
+            background:nth($f_color,19);
+            border-radius: 0;
+            transform: translateY(0) scaleY(1);
+        }
+        &:hover {
+            background:nth($f_color,3);
+            color: nth($f_color,5);
+            transition: background 0.2s linear;
+            transition-delay: 0.6s;
+
+            &:before {
+                border-radius: 0;
+                transform: translateY(0) scaleY(1);
+            }
+            &:after {
+                border-radius: 0 0 50% 50%;
+                transform: translateY(-100%) scaleY(0.5);
+            }
+        }
+    }
+}

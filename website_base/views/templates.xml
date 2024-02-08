@@ -1,0 +1,122 @@
+<odoo>
+    <data>
+        <template id="products_price" inherit_id="website_sale.products_item" active="False" customize_show="True" name="Product Price Hide">
+            <xpath expr="//*[hasclass('product_price')]" position="attributes">
+                <attribute name ="class" add="d-none" separator=" "/>
+
+            </xpath>
+        </template>
+        <template id="captcha_check" name="Getting Captcha">
+
+            <div id ="captcha" class="imageContainer">
+                <div class="form-group">
+                    <t t-set="recaptcha_public_key" t-value="request.env['ir.config_parameter'].sudo().get_param('recaptcha_public_key')"/>
+                    <!-- specify your site  in data-sitekey attribute-->
+                    <div id="place_captcha" class="g-recaptcha" t-att-data-sitekey="recaptcha_public_key" data-callback="verifyRecaptchaCallback" data-expired-callback="expiredRecaptchaCallback"></div>
+                    <input class="form-control d-none" data-recaptcha="true"/>
+                    <div class="help-block with-errors" id="err" style='color: red'></div>
+                </div>
+            </div>
+
+        </template>
+
+
+        <template id="product_inherit" inherit_id="website_sale.product">
+            <xpath expr="//div[hasclass('js_main_product')]/div[1]" position="replace">
+                <!-- <t t-call="website_base.new_product_price"/> -->
+                <div class='price_line'>
+
+                    <div class='new_pice'>
+                        <h3 t-if='not request.website.is_public_user()'>
+                            <span class="oe_prnewice" style="white-space: nowrap;" t-esc="new_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                        </h3>
+                    </div>
+                    <div class="h4 mt-3 d-flex justify-content-end" contenteditable="false">
+
+                        <t t-set="_exclude_share_links" t-value="['whatsapp', 'linkedin']"/>
+                        <t t-set="_no_title" t-value="True"/>
+                        <t t-set="_classes" t-valuef="text-lg-right"/>
+                        <t t-set="_link_classes" t-valuef="mx-1 my-0"/>
+                        <div t-attf-class="s_share text-left #{_classes}">
+                            <h4 t-if="not _no_title" class="s_share_title d-none">Share</h4>
+                            <a t-if="not _exclude_share_links or not 'facebook' in _exclude_share_links" href="https://www.facebook.com/sharer/sharer.php?u={url}" t-attf-class="s_share_facebook #{_link_classes}" target="_blank">
+                                <i t-attf-class="fa fa-facebook #{not _link_classes and 'rounded shadow-sm'}"/>
+                            </a>
+                            <a t-if="not _exclude_share_links or not 'twitter' in _exclude_share_links" href="https://twitter.com/intent/tweet?text={title}&amp;url={url}" t-attf-class="s_share_twitter #{_link_classes}" target="_blank">
+                                <img src="/website_base/static/src/icons_social/x-twitter.svg" height="25" width='25' alt='Twitter'/>
+                            </a>
+                            <a t-if="not _exclude_share_links or not 'linkedin' in _exclude_share_links" href="https://www.linkedin.com/sharing/share-offsite/?url={url}" t-attf-class="s_share_linkedin #{_link_classes}" target="_blank">
+                                <i t-attf-class="fa fa-linkedin #{not _link_classes and 'rounded shadow-sm'}"/>
+                            </a>
+                            <a t-if="not _exclude_share_links or not 'whatsapp' in _exclude_share_links" href="https://wa.me/?text={title}" t-attf-class="s_share_whatsapp #{_link_classes}" target="_blank">
+                                <i t-attf-class="fa fa-whatsapp #{not _link_classes and 'rounded shadow-sm'}"/>
+                            </a>
+                            <a t-if="not _exclude_share_links or not 'pinterest' in _exclude_share_links" href="https://pinterest.com/pin/create/button/?url={url}&amp;media={media}&amp;description={title}" t-attf-class="s_share_pinterest #{_link_classes}" target="_blank">
+                                <i t-attf-class="fa fa-pinterest #{not _link_classes and 'rounded shadow-sm'}"/>
+                            </a>
+                            <a t-if="not _exclude_share_links or not 'email' in _exclude_share_links" href="mailto:?body={url}&amp;subject={title}" t-attf-class="s_share_email #{_link_classes}">
+                                <i t-attf-class="fa fa-envelope #{not _link_classes and 'rounded shadow-sm'}"/>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+                <div t-if='sale_uoms and not request.website.is_public_user()'>
+                    <div class="form-group">
+                        <label for="UomProduct">UOM</label>
+                        <select class="form-control" id="UomProduct">
+                            <t t-foreach='sale_uoms' t-as='uom'>
+                                <option t-att-value='uom.id'>
+                                    <t t-esc='uom.name'/>
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+
+                </div>
+
+            </xpath>
+        </template>
+    </data>
+    <template id="product_quantity_inh" inherit_id="website_sale.product_quantity" name="Select Quantity Args">
+
+        <xpath expr="//div[hasclass('css_quantity')]" position="attributes">
+            <attribute name="t-if"> not request.website.is_public_user() </attribute>
+        </xpath>
+
+        <xpath expr="//div[@id='add_to_cart_wrap']//*[@id='add_to_cart']" position="attributes">
+            <attribute name="t-if"> not request.website.is_public_user() </attribute>
+        </xpath>
+
+    </template>
+    <template id="product_quantity_internal" inherit_id="website_sale.product" customize_show="True" name="Show Intneral">
+
+        <xpath expr="//div[@id='add_to_cart_wrap']" position="before">
+            <div class="sku_product">
+                <span>SKU: <t t-out='product.default_code or "Not Applicable"'/>
+                </span>
+
+            </div>
+        </xpath>
+    </template>
+    <template id="product_quantity_description" inherit_id="website_sale.product" customize_show="True" name="Show Description">
+        <xpath expr="//div[@id='add_to_cart_wrap']" position="after">
+            <div class="desc_product" t-if='product.description_sale'>
+                <div class='head'>
+                    <strong>Description</strong>
+                </div>
+                <div>
+                    <span t-field="product.description_sale"/>
+                </div>
+
+
+            </div>
+        </xpath>
+
+    </template>
+    <template id="pay_meth_link_inherit" inherit_id="payment.pay_meth_link">
+        <xpath expr="//a[@href='/my/payment_method']" position="replace">
+            <a href="/my/payment/token">Manage payment methods</a>
+        </xpath>
+    </template>
+</odoo>

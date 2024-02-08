@@ -1,0 +1,6 @@
+<svg height="25" width="25" viewBox="0 0 100 100">
+	<rect fill="#2b68ff" height="50" width="50" x="25" y="25"></rect>
+	<rect fill="none" height="100" width="100" stroke="#2b68ff" stroke-width="30">
+        <animate attributeName="stroke-opacity" begin="0s" dur="1.5s" values="1; 0" calcMode="spline" keyTimes="0; 1" repeatCount="indefinite" keySplines="0.3, 0.61, 0.355, 1"></animate>
+	</rect>
+</svg>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_add_portal_contacts_form" model="ir.ui.view">
+            <field name="name">add.portal.contacts</field>
+            <field name="model">add.portal.contacts</field>
+            <field name="priority" eval="100"/>
+            <field name="arch" type="xml">
+                <form>
+                <group>
+                        <field name="company_id"/>
+                </group>
+                    <div class="mb-3 text-muted">
+                        Choose which contacts should be accessible by the portal user in the list below.
+                        Click "Add a line" to add more contacts and "X" to remove.<br/>
+                        Click "ADD/UPDATE" button to save changes.
+                    </div>
+                    <field name="portal_wizard_contact_ids" widget="many2many" domain="[('parent_id.id','=',company_id), ('type','=','delivery')]">
+                                <tree editable="bottom" create="0"
+                                    decoration-info="company_type == 'company'"
+                                    decoration-success="company_type == 'person'">
+                                    <field name="name"/>
+                                     <field name="phone"/>
+                                    <field name="street"/>
+                                    <field name="city"/>
+                                    <field name="company_type"/>
+                                    <field name="city_id" invisible="1"/>
+                                    <field name="type" invisible="1"/>
+                                </tree>
+                            </field>
+                    <footer>
+                        <button string="Add/UPDATE" class="btn-primary" name="action_add_contacts_to_portal_user" confirm="The portal user will gain access to Sale Orders associated with the specified contacts for delivery addresses. If no contacts are selected, access will be granted to Sale Orders where the parent company serves as the customer. Would you like to confirm?" type="object"/>
+                        <button string="Close" class="btn btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

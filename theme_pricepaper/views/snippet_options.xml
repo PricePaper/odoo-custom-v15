@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ================ Added new custom Header in customize option ================ -->
+    <template id="header_custom_options" inherit_id="website.snippet_options">
+        <xpath expr="//we-select[@data-variable='header-template']/we-button[last()]" position="after">
+            <we-button title="Header Style 1" data-name="header_style_1_opt" data-customize-website-views="theme_pricepaper.template_header_default_pricepaper" data-customize-website-variable="'header_style_1_pricepaper'" data-img="/theme_pricepaper/static/img/header_img.png" />
+        </xpath>
+        <xpath expr="//we-select[@data-variable='footer-template']" position="inside">
+            <we-button title="Pricepaer Footer" data-customize-website-views="theme_pricepaper.main_footer" data-customize-website-variable="'paper_footer'" data-img="/theme_pricepaper/static/img/footer.png" />
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="category_carousel_body" inherit_id="emipro_theme_base.theme_category_carousel">
+        <xpath expr="//div[hasclass('oe_theme_category_carousel_container')]" position="inside">
+            <t t-if="object">
+                <div id="myCarousel_category">
+                    <div class="container">
+                        <t t-foreach="object" t-as="category">
+                            <t t-if="category">
+                                <div class="c_pc_image mb16">
+                                    <span itemprop="image"/>
+                                    <div class="c_sub_pc_image">
+                                        <a t-att-href="'/shop/category/%s' %slug(category)">
+                                            <span itemprop="image"
+                                                  t-attf-content="{{request.httprequest.url_root}}web/image/product.category/{{category.id}}/image/"
+                                                  t-field="category.image_128"
+                                                  t-options="{'widget': 'image'}"
+                                                  t-att-alt="category.name"/>
+                                        </a>
+                                    </div>
+                                    <div class="ctn_name">
+                                        <a t-field="category.name" class="categ_name"
+                                           t-att-href="'/shop/category/%s' %slug(category)"/>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>

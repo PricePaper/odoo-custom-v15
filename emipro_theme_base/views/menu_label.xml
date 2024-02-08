@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="menu_label_form_view" model="ir.ui.view">
+        <field name="name">menu.label.form</field>
+        <field name="model">menu.label</field>
+        <field name="arch" type="xml">
+            <form string="Product Slider">
+                <sheet>
+                    <group>
+                        <div class="row">
+                        <div class="col-12">
+                            <tr>
+                                <td class="align-middle mr-2">
+                                    <label class="font-weight-bold" for="name" string="Name"/>
+                                </td>
+                                <td class="align-middle">
+                                    <field name="name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle mr-2">
+                                    <label class="font-weight-bold" for="label_background_color"
+                                           string="Background Color"/>
+                                </td>
+                                <td class="align-middle">
+                                    <field class="text-right" name="label_background_color"
+                                           widget="color"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle mr-2">
+                                    <label class="font-weight-bold" for="label_text_color"
+                                           string="Text Color"/>
+                                </td>
+                                <td class="align-middle">
+                                    <field class="text-right" name="label_text_color"
+                                           widget="color"/>
+                                </td>
+                            </tr>
+                        </div>
+                    </div>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="menu_label_tree_view" model="ir.ui.view">
+        <field name="name">menu.label.tree.view</field>
+        <field name="model">menu.label</field>
+        <field name="arch" type="xml">
+            <tree string="Menu Label">
+                <field name="name"/>
+                <field name="label_background_color" widget="color"/>
+                <field name="label_text_color" widget="color"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_menu_label" model="ir.actions.act_window">
+        <field name="name">Menu Labels</field>
+        <field name="res_model">menu.label</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+            name="Menu Labels"
+            id="menu_labels"
+            action="action_menu_label"
+            parent="website_sale.menu_product_settings" sequence="12"/>
+</odoo>

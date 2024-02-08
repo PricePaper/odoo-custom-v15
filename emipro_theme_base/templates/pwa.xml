@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="service_worker" name="PWA service worker">
+    'use strict';
+    const CACHE_NAME = '<t t-esc="pwa_cache_name"/>';
+    var urlsToCache = [
+        '/',
+        '/pwa/offline',
+        '/emipro_theme_base/static/src/img/offline_app.png',
+        '/emipro_theme_base/static/src/img/pwa_offline.jpg',
+    ];
+
+    // Service worker installation event, prefetch some data
+    // during installation of service worker
+    self.addEventListener('install', function(event) {
+      event.waitUntil(
+        caches.open(CACHE_NAME)
+          .then(function(cache) {
+            return cache.addAll(urlsToCache);
+          })
+      );
+    });
+    self.addEventListener('activate', function(evt) {
+       evt.waitUntil(
+           caches.keys().then(function(keyList) {
+               return Promise.all(keyList.map(function(key) {
+                   if (key !== CACHE_NAME) {
+                       return caches.delete(key);
+                   }
+               }));
+           })
+       );
+      self.clients.claim();
+    });
+    // override request fetch event so that we can manipulate it and respond data from cache
+    self.addEventListener('fetch', function(event) {
+
+        // check if request is made by chrome extensions or web page
+        // if request is made for web page url must contains http.
+        if (!(event.request.url.indexOf('http') === 0)) return; // skip the request. if request is not made with http protocol
+
+        event.respondWith(
+            fetch(event.request) // Request from network
+            .then(function(response) {
+                // Check if we received a valid response
+                if(!response || response.status !== 200 || response.type !== 'basic') {
+                  return response;
+                }
+                var requestMethod = event.request.method
+                if(!requestMethod || requestMethod != 'POST'){
+                    var responseToCache = response.clone();
+                    caches.open(CACHE_NAME)
+                    .then(function(cache) {
+                        cache.put(event.request, responseToCache);
+                    });
+                }
+                return response;
+            })
+            .catch(function(err) {
+                return caches.open(CACHE_NAME) // Search request from cache
+                .then(function(cache) {
+                    return cache.match(event.request)
+                    .then(function(response) {
+                        if(response){
+                            return response
+                        }
+                        return cache.match('/pwa/offline') || Promise.resolve()
+                    })
+                });
+            })
+        );
+    });
+    </template>
+
+    <template id="pwa_ios_popup" inherit_id="web.frontend_layout">
+        <xpath expr="//div[@id='wrapwrap']/main" position="inside">
+            <div class="ios-prompt">
+                <input type="hidden" class="is_pwa" name="is_pwa"
+                   t-att-value="website.is_pwa"/>
+                <span style="color: rgb(187, 187, 187); float: right;" />
+                <img t-attf-src="/web/image/website/#{request.env['website'].sudo().get_current_website().id}/app_image_512/50x50" style="float: left; height: 50px; width: auto; margin-right: 1rem;" />
+                <p>To install this Web App in your iPhone/iPad press <img src="/emipro_theme_base/static/src/img/icon.png" style="display: inline-block; height: 20px;" /> and then Add to Home Screen.</p>
+            </div>
+            <div class="ept_is_offline" style="display:none;">
+                <img src="/emipro_theme_base/static/src/img/offline_app.png" alt="App offline"/>
+            </div>
+            <style>
+              .ios-prompt {
+                background-color: #fff;
+                border: 1px solid #eee;
+                box-shadow: 0 1px 10px #ccc;
+                display: none;
+                padding: 0.8rem 1rem 0 0.5rem;
+                text-decoration: none;
+                font-size: 14px;
+                color: #555;
+                position: fixed;
+                bottom: 0;
+                margin: 0 auto 1rem;
+                z-index: 999;
+              }
+              .ept_is_offline {
+                position: fixed;
+                bottom: 1rem;
+                left: 1rem;
+                height: 65px;
+                width: 65px;
+                z-index: 9999;
+              }
+              .ept_is_offline img {
+                width: 100%;
+              }
+            </style>
+        </xpath>
+    </template>
+
+    <template id="manifest" name="PWA manifest">
+    {
+        "name": "<t t-esc="pwa_name"/>",
+        "short_name": "<t t-esc="pwa_short_name"/>",
+        "icons": [{
+            "sizes": "48x48",
+            "src": "<t t-esc="app_image_48"/>",
+            "type": "image/png"
+        }, {
+            "sizes": "72x72",
+            "src": "<t t-esc="app_image_72"/>",
+            "type": "image/png"
+        }, {
+            "sizes": "96x96",
+            "src": "<t t-esc="app_image_96"/>",
+            "type": "image/png"
+        }, {
+            "sizes": "144x144",
+            "src": "<t t-esc="app_image_144"/>",
+            "type": "image/png"
+        }, {
+            "sizes": "152x152",
+            "src": "<t t-esc="app_image_152"/>",
+            "type": "image/png"
+        }, {
+            "sizes": "168x168",
+            "src": "<t t-esc="app_image_168"/>",
+            "type": "image/png"
+        }, {
+            "sizes": "192x192",
+            "src": "<t t-esc="app_image_192"/>",
+            "type": "image/png"
+        }, {
+            "sizes": "256x256",
+            "src": "<t t-esc="app_image_256"/>",
+            "type": "image/png"
+        }, {
+            "sizes": "384x384",
+            "src": "<t t-esc="app_image_384"/>",
+            "type": "image/png"
+        }, {
+            "sizes": "512x512",
+            "src": "<t t-esc="app_image_512"/>",
+            "type": "image/png"
+        }],
+        "start_url": "<t t-esc="pwa_start_url" />",
+        "display": "standalone",
+        "background_color": "<t t-esc="background_color"/>",
+        "theme_color": "<t t-esc="theme_color"/>"
+}
+</template>
+</odoo>
+

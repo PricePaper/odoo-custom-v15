@@ -59,6 +59,8 @@ class StockPicking(models.Model):
     transit_move_lines = fields.One2many('stock.move', 'transit_picking_id', string="Stock Moves", copy=False)
     show_reset = fields.Boolean('Show reset button',  compute="_compute_show_reset")
     is_transit_confirmed = fields.Boolean(string='Transit Confirmed', copy=False)
+    is_create_back_order = fields.Boolean(string='Create Back Order', copy=False)
+
 
     def action_transit_adjustment(self, cancel_backorder=False):
 
@@ -291,7 +293,7 @@ class StockPicking(models.Model):
         code = self.mapped('picking_type_code')
         if isinstance(code, list) and len(code) > 0:
             code = code[0]
-        if code != 'incoming':
+        if code != 'incoming' and not self.is_create_back_order:
             res = super()._action_generate_backorder_wizard(show_transfers)
             res.update({
                 'views': [(view.id, 'form')],
@@ -350,8 +352,12 @@ class StockPicking(models.Model):
                         line.quantity_done = line.reserved_availability
                 if not any(picking.transit_move_lines.mapped('quantity_done')):
                     raise UserError("You cannot transit if no quantities are  done.\nTo force the transit, switch in edit mode and encode the done quantities.")
-                picking.transit_move_lines.filtered(lambda rec: rec.quantity_done > 0).with_context(is_transit=True)._action_done(cancel_backorder=True)
-                picking.transit_move_lines.filtered(lambda rec: rec.quantity_done == 0)._action_cancel()
+                cancel_backorder = True
+                if picking.is_create_back_order:
+                    cancel_backorder = False
+                picking.transit_move_lines.filtered(lambda rec: rec.quantity_done > 0).with_context(is_transit=True)._action_done(cancel_backorder=cancel_backorder)
+                if not picking.is_create_back_order:
+                    picking.transit_move_lines.filtered(lambda rec: rec.quantity_done == 0)._action_cancel()
                 for move in picking.transit_move_lines.filtered(lambda rec: rec.state =='done'):
                     move.move_dest_ids.write({'quantity_done': move.product_uom_qty})
                 picking.write({
@@ -418,7 +424,7 @@ class StockPicking(models.Model):
             invoice = False
             if picking.sale_id.invoice_status == 'to invoice':
                 # picking.sale_id.adjust_delivery_line()
-                invoice = picking.sale_id._create_invoices(final=True)
+                invoice = picking.sale_id.with_context({'picking_id': picking})._create_invoices(final=True)
                 picking.is_invoiced = True
             if invoice:
                 if picking.batch_id:
@@ -628,10 +634,14 @@ class StockPicking(models.Model):
 
     def make_picking_done(self):
         for picking in self:
-            self.env['stock.backorder.confirmation'].with_context(button_validate_picking_ids=picking.id).create({
+            backorder = self.env['stock.backorder.confirmation'].with_context(button_validate_picking_ids=picking.id).create({
                 'pick_ids': [(4, p.id) for p in picking],
                 'backorder_confirmation_line_ids': [(0, 0, {'to_backorder': True, 'picking_id': p.id}) for p in picking]
-            }).process_cancel_backorder()
+            })
+            if picking.is_create_back_order:
+                backorder.process()
+            else:
+                backorder.process_cancel_backorder()
 
     def _get_overprocessed_stock_moves(self):
         self.ensure_one()
@@ -792,6 +802,17 @@ class StockPicking(models.Model):
                     vals = delivery_line._prepare_invoice_line()
                     inv.write({'invoice_line_ids': [(0, 0, vals)]})
 
+    def _create_backorder(self):
+        res = super()._create_backorder()
+        if self.is_create_back_order:
+            for picking in res:
+                for move in picking.move_lines:
+                    if move.location_id.is_transit_location:
+                        transit_lines = move.move_orig_ids.filtered(lambda rec: rec.state not in ('done', 'cancel'))
+                        if not transit_lines.transit_picking_id:
+                            transit_lines.write({'transit_picking_id': move.picking_id.id, 'move_dest_ids': [(6, 0, move.ids)]})
+                            transit_lines._action_assign()
+        return res
 
         # if self.state not in ('done', 'in_transit') and 'make_to_order' in self.transit_move_lines.mapped('procure_method'):
         #     for move in self.transit_move_lines:

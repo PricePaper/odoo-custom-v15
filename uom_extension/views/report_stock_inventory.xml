@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_inventory_uom" inherit_id="stock.report_inventory">
+        <xpath expr="//table/tbody/t/tr[2]/td[5]" position="replace">
+          <td class="text-right"><span t-field="line.ppt_available_qty"/> <span t-field="line.product_uom_ref_id" groups="uom.group_uom"/></td>
+
+        </xpath>
+        <xpath expr="//table/tbody/t/tr[2]/td[6]" position="replace">
+          <td class="text-right"><span t-field="line.quantity_onhand"/> <span t-field="line.product_uom_ref_id" groups="uom.group_uom"/></td>
+
+        </xpath>
+        <xpath expr="//table/tbody/t/tr[2]/td[7]" position="replace">
+          <td class="text-right">
+              <!-- If 0, then leave blank so users have space to write a number -->
+              <t t-if="line.inventory_quantity_mod == 0"><span></span></t>
+              <t t-else=""><span t-field="line.inventory_quantity_mod"/></t>
+              <span t-field="line.product_uom_ref_id" groups="uom.group_uom"/>
+          </td>
+        </xpath>
+    </template>
+</odoo>

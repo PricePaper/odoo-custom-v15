@@ -1,0 +1,36 @@
+/*============================ Button Style 7 ===============================*/
+@if o-website-value('button-template') == 'button_style_7' {
+    .te_theme_button {
+        color: nth($f_color,05);
+        display: inline-block;
+        @include position(relative)
+        @include transition(all,0.3s,null)
+        overflow: hidden;
+        z-index: 1;
+        background-image: linear-gradient(75deg, $theme-color-dark, nth($f_color,19), nth($f_color,19), $theme-color-dark);
+        box-shadow: 0 6px 15px 0 $theme-color-light;
+        background-size: 300% 100%;
+        border-width: 0px;
+        padding: 0.7rem 1.8rem;
+
+        &.btn-secondary, &.btn-link
+        {
+            background-image: linear-gradient(75deg, darken(theme-color('secondary'), 15%), theme-color("secondary"), theme-color("secondary"), darken(theme-color('secondary'), 15%));
+            box-shadow: 0 6px 15px 0 (theme-color('secondary'));
+        }
+        &.btn-danger
+        {
+            background-image: linear-gradient(75deg, darken(theme-color('danger'), 15%), theme-color('danger'), theme-color('danger'), darken(theme-color('danger'), 15%));
+        }
+
+        @include media-breakpoint-down(xs) {
+            padding: 0.475rem 0.7rem;
+            font-size:nth($f_sizes,3);
+        }
+        &:hover {
+            background-position: 100% 0;
+            transition: all .4s ease-in-out;
+            box-shadow: 0 6px 15px 0 lighten(theme-color('secondary'), 25%);
+        }
+    }
+}

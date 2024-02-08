@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 class ProductTemplate(models.TransientModel):
     _name = 'product.location.change'
@@ -30,6 +31,8 @@ class ProductTemplate(models.TransientModel):
         for rec in self:
             stock_moves = rec.product_id.stock_move_ids.filtered(lambda r: r.state not in ('done', 'cancel') and r.location_id == rec.source_location_id
                 and r.transit_picking_id and r.transit_picking_id.state != 'cancel')
+            if stock_moves.filtered(lambda r: r.procure_method == 'make_to_order'):
+                raise ValidationError(_("Location Can not be done since there is an active move with make to order as supply method."))
             reserve_qty_dict = {}
             for move in stock_moves:
                 if move.reserved_availability > 0:

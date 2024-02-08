@@ -185,6 +185,12 @@ class AccountMove(models.Model):
             move_info = pick.move_lines.filtered(lambda m: m.quantity_done < m.product_uom_qty)
             if move_info.ids:
                 pick.make_picking_done()
+                if pick.backorder_ids:
+                    transit_move = pick.backorder_ids.move_ids_without_package.mapped('move_orig_ids').filtered(lambda rec: not rec.transit_picking_id and rec.state not in ('cancel', 'done'))
+                    picking_id = transit_move.mapped('move_dest_ids').mapped('picking_id').filtered(lambda rec: rec.state not in ('cancel', 'done', 'in_transit', 'transit_confirmed'))
+                    if len(picking_id) > 1:
+                        picking_id = picking_id[0]
+                    transit_move.write({'transit_picking_id': picking_id.id})
             else:
                 pick.button_validate()
         stock_picking.make_picking_done()

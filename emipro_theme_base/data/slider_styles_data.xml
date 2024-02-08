@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="slider_styles_one" model="slider.styles">
+            <field name="display_name">Slider Style 1</field>
+            <field name="style_template_key">clarico_slider_styles_one_template</field>
+            <field name="slider_type">product</field>
+            <field name="slider_style">slider</field>
+        </record>
+
+        <record id="slider_styles_two" model="slider.styles">
+            <field name="display_name">Slider Style 2</field>
+            <field name="style_template_key">clarico_slider_styles_two_template</field>
+            <field name="slider_type">product</field>
+            <field name="slider_style">slider</field>
+        </record>
+
+        <record id="slider_styles_four" model="slider.styles">
+            <field name="display_name">Slider Style 3</field>
+            <field name="style_template_key">clarico_slider_styles_four_template</field>
+            <field name="slider_type">product</field>
+            <field name="slider_style">slider</field>
+        </record>
+
+        <record id="slider_styles_five" model="slider.styles">
+            <field name="display_name">Slider Style 4</field>
+            <field name="style_template_key">clarico_slider_styles_five_template</field>
+            <field name="slider_type">product</field>
+            <field name="slider_style">slider</field>
+        </record>
+
+        <record id="slider_styles_six" model="slider.styles">
+            <field name="display_name">Slider Style 5</field>
+            <field name="style_template_key">clarico_slider_styles_six_template</field>
+            <field name="slider_type">product</field>
+            <field name="slider_style">slider</field>
+        </record>
+
+        <record id="slider_styles_seven" model="slider.styles">
+            <field name="display_name">Grid Style</field>
+            <field name="style_template_key">clarico_slider_styles_seven_template</field>
+            <field name="slider_type">product</field>
+            <field name="slider_style">slider</field>
+        </record>
+
+        <record id="slider_styles_three" model="slider.styles">
+            <field name="display_name">List Style</field>
+            <field name="style_template_key">clarico_slider_styles_three_template</field>
+            <field name="slider_type">product</field>
+            <field name="slider_style">slider</field>
+        </record>
+
+        <record id="banner_slider_style" model="slider.styles">
+            <field name="display_name">Slider With Banner</field>
+            <field name="style_template_key">clarico_banner_slider_styles_template</field>
+            <field name="slider_type">product</field>
+            <field name="slider_style">custom</field>
+        </record>
+
+        <record id="multi_style_right" model="slider.styles">
+            <field name="display_name">Multi Style Right Slider</field>
+            <field name="style_template_key">clarico_slider_styles_eight_template</field>
+            <field name="slider_type">product</field>
+            <field name="slider_style">custom</field>
+        </record>
+
+        <!--   Category Style -->
+        <record id="category_styles_one" model="slider.styles">
+            <field name="display_name">Style 1</field>
+            <field name="style_template_key">category_slider_template_1</field>
+            <field name="slider_type">category</field>
+            <field name="slider_style">slider</field>
+        </record>
+
+        <record id="category_styles_two" model="slider.styles">
+            <field name="display_name">Style 2</field>
+            <field name="style_template_key">category_slider_template_2</field>
+            <field name="slider_type">category</field>
+            <field name="slider_style">slider</field>
+        </record>
+
+        <record id="category_styles_three" model="slider.styles">
+            <field name="display_name">Style 3</field>
+            <field name="style_template_key">category_slider_template_3</field>
+            <field name="slider_type">category</field>
+            <field name="slider_style">slider</field>
+        </record>
+
+        <!--   Brand Style -->
+        <record id="brand_styles_one" model="slider.styles">
+            <field name="display_name">Style 1</field>
+            <field name="style_template_key">brand_slider_template_1</field>
+            <field name="slider_type">brand</field>
+            <field name="slider_style">slider</field>
+        </record>
+
+        <record id="brand_styles_two" model="slider.styles">
+            <field name="display_name">Style 2</field>
+            <field name="style_template_key">brand_slider_template_2</field>
+            <field name="slider_type">brand</field>
+            <field name="slider_style">slider</field>
+        </record>
+
+        <record id="brand_styles_three" model="slider.styles">
+            <field name="display_name">Style 3</field>
+            <field name="style_template_key">brand_slider_template_3</field>
+            <field name="slider_type">brand</field>
+            <field name="slider_style">slider</field>
+        </record>
+
+    </data>
+
+    <data noupdate="1">
+        <record id="cron_update_product_document_ept" model="ir.cron" forcecreate="True">
+            <field name="name">Attachment Configurator: Configure Product Document to set as Public</field>
+            <field name="model_id" ref="model_ir_attachment"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_product_document_process()</field>
+            <field name="active" eval="True"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">2</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">1</field>
+        </record>
+    </data>
+</odoo>

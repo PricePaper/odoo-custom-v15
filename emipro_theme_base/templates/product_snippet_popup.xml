@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- =============================== Slider product configuration section =======================-->
+    <template id="product_configure_template">
+        <div class="modal fade w-100 o_technical_modal" id="product_configure_model" data-backdrop="false"
+             data-focus="false">
+            <div class="modal-dialog modal-xl modal-dialog-centered" contenteditable="false">
+                <div class="modal-content product_configure_model" contenteditable="false">
+                    <div class="modal-body p-0 pb-0" contenteditable="false">
+                        <div class="slider-configure h-100 pb-0">
+                            <div class="configure-header">
+                                <div class="setting-icon">
+                                    <i class="fa fa-cog"/>
+                                </div>
+                                <div class="header-content">
+                                    <t t-if="name == 'product-multi-tab'">
+                                        <span class="title">Multi Tab Builder</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="title">Product Builder</span>
+                                    </t>
+                                    <p>Show your desired products in the suitable layout just in a few clicks!</p>
+                                </div>
+                                <button type="button" class="product_configure_model_close" data-dismiss="modal"
+                                        aria-label="Close" tabindex="-1">
+                                </button>
+                            </div>
+                            <t t-if="styles">
+                                <div class="configure-sub-header">
+                                    <span>
+                                        <div class="configure-selection js-configuration-selection active">
+                                            <span class="icon product-selection"/>
+                                            <span class="title">Product Selection</span>
+                                        </div>
+                                        <div class="configure-selection js-layout-selection">
+                                            <span class="icon layout-selection"/>
+                                            <span class="title">Layout Selection</span>
+                                        </div>
+                                    </span>
+                                    <t t-set="theme_name" t-value="request.website.theme_id.name"/>
+                                    <span class="float-right">
+                                        <t t-if="theme_name == 'theme_clarico'">
+                                            <t t-set="user_guide"
+                                               t-value="'https://www.emiprotechnologies.com/docs/v14/theme-clarico#topic1940'"/>
+                                            <t t-set="video"
+                                               t-value="'https://www.youtube.com/watch?v=DWmFQhMfYwg&amp;list=PLZGehiXauylbZduKt8OESRyUeVUeYmQqR'"/>
+                                        </t>
+                                        <t t-elif="theme_name == 'theme_clarico_vega'">
+                                            <t t-if="name == 'product-multi-tab'">
+                                                <t t-set="user_guide"
+                                                   t-value="'https://docs.emiprotechnologies.com/theme-clarico-vega/v15/multi-tab-snippet-builder.html'"/>
+                                                <t t-set="video"
+                                                   t-value="'https://youtu.be/xVfZuDKXnB4'"/>
+                                            </t>
+                                            <t t-else="">
+                                                <t t-set="user_guide"
+                                                   t-value="'https://docs.emiprotechnologies.com/theme-clarico-vega/v15/product-snippet-builder.html'"/>
+                                                <t t-set="video"
+                                                   t-value="'https://youtu.be/xVfZuDKXnB4'"/>
+                                            </t>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-set="user_guide" t-value="'#'"/>
+                                            <t t-set="video" t-value="'#'"/>
+                                        </t>
+                                        <a t-attf-href="#{user_guide}" target="_blank"
+                                           class="text-decoration-none user_guide">
+                                            <div class="configure-selection">
+                                                <span class="fa fa-file-text mr-1"/>
+                                                <span class="title">User Guide</span>
+                                            </div>
+                                        </a>
+                                        <a t-attf-href="#{video}" target="_blank"
+                                           class="text-decoration-none user_guide">
+                                            <div class="configure-selection">
+                                                <span class="fa fa-play-circle mr-1"/>
+                                                <span class="title">Videos</span>
+                                            </div>
+                                        </a>
+                                        <div class="configure-selection js-save-config btn-save d-none">
+                                            <span class="title">Save</span>
+                                        </div>
+                                        <div class="configure-selection js-next-btn btn-save">
+                                            <span class="title">Next</span>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div class="container-fluid product_slider_configure_template category_brand_option">
+                                    <div class="row product-multi-tab" t-if="name == 'product-multi-tab'">
+                                        <div class="col-3 preview-title title-main my-4">
+                                            <i class="fa fa-hand-o-right mr-1"/>
+                                            <span>Configure Tabs</span>
+                                            <div class="sub-title">(Maximum 4 tabs will be allowed)</div>
+                                        </div>
+                                        <div class="col-9">
+                                            <t t-call="emipro_theme_base.tab_builder_configure"/>
+                                        </div>
+                                    </div>
+                                    <div class="row product-configure">
+                                        <t t-call="emipro_theme_base.product_prod_configure_template"/>
+                                        <div class="col-9 product-configure-section o_not_editable"
+                                             contenteditable="false"/>
+                                    </div>
+                                </div>
+                                <t t-call="emipro_theme_base.slider_builder_ui_configure_template"/>
+                            </t>
+                            <t t-else="">
+                                <div class="configure-sub-header">
+                                    <span>No Styles available
+                                    </span>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Layout configuration template -->
+    <template id="slider_builder_ui_configure_template">
+        <div class="container-fluid product_ui_configure_template" style="display:none;">
+            <div class="row layout-configure">
+                <div class="col-3 p-0">
+                    <div class="ui-configuration">
+                        <div class="title-main">
+                            UI/UX Configuration
+                        </div>
+                        <div class="configure-sub d-none" t-if="name not in ['category-slider','brand-slider']">
+                            <div class="sub-title">
+                                View Type
+                            </div>
+                            <div class="ui-configure clearfix">
+                                <span t-attf-class="fa fa-list js_slider_type #{'' if available_slider_style and 'slider' in available_slider_style else ' disabled'}"
+                                      title="Slider" data-slider_type="slider"/>
+                                <span t-attf-class="fa fa-list-ul js_slider_type #{'' if available_slider_style and 'list' in available_slider_style else ' disabled'}"
+                                      title="List" data-slider_type="list"/>
+                                <span t-attf-class="fa fa-th-large js_slider_type #{'' if available_slider_style and 'grid' in available_slider_style else ' disabled'}"
+                                      title="Grid" data-slider_type="grid"/>
+                            </div>
+                        </div>
+                        <div class="configure-sub" t-if="name == 'product-multi-tab'">
+                            <div class="sub-title">
+                                Select Tab Style
+                            </div>
+                            <div class="ui-configure dropdown_div clearfix ui-settings">
+                                <div class="dropdown tab-dropdown">
+                                    <button type="button" class="dropdown-toggle tab-style-ui tab-dropdown-button"
+                                            data-toggle="dropdown">Style 1
+                                    </button>
+                                    <div class="dropdown-menu tab-dropdown-menu tab_style_option">
+                                        <a class="dropdown-item tab-dropdown-item" data-tab-style="1" href="#"
+                                           data-class="style1">Style 1
+                                        </a>
+                                        <a class="dropdown-item tab-dropdown-item" data-tab-style="2" href="#"
+                                           data-class="style2">Style 2
+                                        </a>
+                                        <a class="dropdown-item tab-dropdown-item" data-tab-style="3" href="#"
+                                           data-class="style3">Style 3
+                                        </a>
+                                        <a class="dropdown-item tab-dropdown-item" data-tab-style="4" href="#"
+                                           data-class="style4">Style 4
+                                        </a>
+                                        <a class="dropdown-item tab-dropdown-item" data-tab-style="5" href="#"
+                                           data-class="style5">Style 5
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="configure-sub" t-if="'data-style' not in exclude">
+                            <div class="sub-title">
+                                Select Slider Style
+                            </div>
+                            <div class="ui-configure dropdown_div clearfix ui-settings">
+                                <div class="dropdown slider-dropdown">
+                                    <button type="button" class="dropdown-toggle slider-style-ui slider-dropdown-button"
+                                            data-toggle="dropdown">
+                                        <t t-if="styles" t-esc="styles[0].display_name"/>
+                                    </button>
+                                    <div class="dropdown-menu slider-dropdown-menu slider_style_option">
+                                        <t t-foreach="styles" t-as="style">
+                                            <a t-if="style.style_template_key"
+                                               class="dropdown-item slider-dropdown-item"
+                                               t-att-data-style="style.id" t-att-data-slider_type="style.slider_style"
+                                               href="#">
+                                                <t t-esc="style.display_name"/>
+                                            </a>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="configure-sub" t-if="name not in ['category-slider','brand-slider']">
+                            <div class="sub-title">
+                                Options
+                            </div>
+                            <div class="ui-configure slider-ui-icon clearfix">
+                                <span class="fa fa-shopping-cart product-config-icon active" title="Shopping Cart"
+                                      data-value="shopping_cart"/>
+                                <span class="fa fa-heart product-config-icon active" title="Wishlist"
+                                      data-value="wishlist"/>
+                                <span class="fa fa-eye product-config-icon active" title="Quick View"
+                                      data-value="quick_view"/>
+                                <span class="fa fa-tag product-config-icon active" title="Sale Label"
+                                      data-value="sale_label"/>
+                                <t t-set="is_review_rating_enabled"
+                                   t-value="request.website.viewref('website_sale.product_comment').active"/>
+                                <span t-if="is_review_rating_enabled" class="fa fa-star product-config-icon active"
+                                      title="Ratings"
+                                      data-value="ratings"/>
+                            </div>
+                        </div>
+
+                        <div class="configure-sub" t-if="name == 'brand-slider'">
+                            <div class="ui-configure clearfix mt-3">
+                                <label class="form-switch">
+                                    <input type="checkbox" class='product_count form-check-input' name="product_count"/>
+                                    <span class="slider round"/>
+                                </label>
+                                <span class="ml-1 sub-title">Display Product Count</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-configuration js-conf-bottom">
+                        <div class="title-main">
+                            <t t-if="name == 'category-slider'">
+                                Category Configuration
+                            </t>
+                            <t t-elif="name == 'brand-slider'">
+                                Brand Configuration
+                            </t>
+                            <t t-else="">
+                                Product Configuration
+                            </t>
+                        </div>
+                        <div class="configure-sub slider_limit_option" t-if="'data-limit' not in exclude">
+                            <div class="sub-title">
+                                Limit
+                            </div>
+                            <div class="ui-configure clearfix">
+                                <input type="number" class='limit' name="limit" min="4" max="20" value="10"/>
+                            </div>
+                        </div>
+                        <div class="configure-sub div_sort_by" t-if="name != 'product-multi-tab'">
+                            <div class="sub-title">
+                                Sort Options
+                            </div>
+                            <div class="ui-configure clearfix ui-settings dropdown_div">
+                                <div class="dropdown slider-dropdown">
+                                    <button type="button" class="dropdown-toggle slider-sort-by slider-dropdown-button"
+                                            data-toggle="dropdown">
+                                        Sort By
+                                    </button>
+                                    <div class="dropdown-menu slider_sort_option slider-dropdown-menu">
+                                        <a class="dropdown-item" data-sort_by="list_price desc" href="#"
+                                           t-if="name not in ['category-slider','brand-slider']">High to Low
+                                        </a>
+                                        <a class="dropdown-item" data-sort_by="list_price asc" href="#"
+                                           t-if="name not in ['category-slider','brand-slider']">Low to High
+                                        </a>
+                                        <a class="dropdown-item slider-dropdown-item" data-sort_by="name asc" href="#">A
+                                            to Z
+                                        </a>
+                                        <a class="dropdown-item slider-dropdown-item" data-sort_by="name desc" href="#">
+                                            Z to A
+                                        </a>
+                                        <a class="dropdown-item slider-dropdown-item" data-sort_by="sequence" href="#"
+                                           t-if="name in ['category-slider','brand-slider']">Sequence
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-9 product-configure-ui-section">
+                    <div>
+                        <div class="preview-title title-main my-4 pb-2">
+                            <span class="fa fa-eye mr-2"/>
+                            <span>Preview</span>
+                            <span class="sub-title">(Hover on preview section for check hover effect)</span>
+                        </div>
+                        <div t-if="name == 'product-multi-tab'" class="product-configure-tab-preview mb-2 py-2"/>
+                        <div class="product-configure-section-preview mb-2"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Popup right penal section  -->
+    <template id="product_prod_configure_template">
+        <div class="col-3 p-0 prod_configure_section">
+            <div class="slider-type product-config-content clearfix"
+                 data-value="new-arrival">
+                <span class="icon new-arrival"/>
+                <span class="title">New Arrival</span>
+            </div>
+            <div class="slider-type product-config-content clearfix"
+                 data-value="best-seller">
+                <span class="icon best-seller"/>
+                <span class="title">Best Seller</span>
+            </div>
+            <div class="slider-type product-config-content clearfix"
+                 data-value="product-discount">
+                <span class="icon product-discount"/>
+                <span class="title">Product Discount</span>
+            </div>
+            <div class="slider-type product-config-content clearfix"
+                 data-value="product-category-discount" data-template="product_categories_configure_template">
+                <span class="icon category-discount"/>
+                <span class="title">Product Categories Discount</span>
+            </div>
+            <div class="slider-type product-config-content clearfix"
+                 data-value="custom-domain" data-template="custom_domain_configure_template">
+                <span class="icon custom-domain"/>
+                <span class="title">Custom filters</span>
+            </div>
+            <div class="slider-type product-config-content clearfix"
+                 data-value="manual-configuration" data-template="manual_product_configure_template">
+                <span class="icon manual-configuration"/>
+                <span class="title">Custom Product Selection</span>
+            </div>
+        </div>
+    </template>
+
+    <!-- List The Products -->
+    <template id="product_display_prod_template">
+        <t t-if="error">
+            <t t-call="emipro_theme_base.items_not_found"/>
+        </t>
+        <t t-if="not error">
+            <t t-if="name == 'product-category-discount'"
+               t-call="emipro_theme_base.product_categories_configure_template"/>
+            <t t-if="name == 'custom-domain'" t-call="emipro_theme_base.custom_domain_configure_template"/>
+            <t t-if="name == 'manual-configuration'" t-call="emipro_theme_base.manual_product_configure_template"/>
+            <t t-if="products and name not in ['manual-configuration','product-category-discount']">
+                <div class="preview-title title-main my-4 pb-2">
+                    <span class="fa fa-th-large mr-1"/>
+                    <span>Products</span>
+                    <span class="sub-title">
+                        <t t-esc="'(Maximum %s products will be shown in slider)' % limit"/>
+                    </span>
+                </div>
+                <div class="row">
+                    <t t-foreach="products" t-as="product">
+                        <!--<t t-esc="product"/>-->
+                        <div class="col-6">
+                            <div class="align-items-center product-main media"
+                                 t-att-data-item_id="product.id" t-att-value='product.id'>
+                                <img t-attf-src="/web/image/product.template/#{product['id']}/image_128"
+                                     class="align-self-start o_image_64_contain mr-3"/>
+                                <div class="media-body">
+                                    <h6 class="product-name mb-0" t-esc="product['name']"/>
+                                    <t t-set="product_variant_id"
+                                       t-value="product._get_first_possible_variant_id()"
+                                       t-if="product"/>
+                                    <div class="product-code" t-if="product.product_variant_id.default_code"
+                                         t-esc="product.product_variant_id.default_code"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!--  Manual Product  Selection -->
+    <template id="manual_product_configure_template">
+        <div class="product-box js_item_box" name="product_ids">
+            <div class="preview-title title-main my-4 pb-2">
+                <span class="fa fa-th-large mr-1"/>
+                <span>Products</span>
+                <span class="sub-title">
+                    <t t-esc="'(Maximum %s products allow in slider)' % limit"/>
+                </span>
+            </div>
+            <div class="new-product js_new_item dropdown my-3">
+                <div class="o_not_editable" data-focus="false" contenteditable="true">
+                    <input class="form-control input-product js_input_item" type="text"
+                           placeholder="Search product with name... "/>
+                </div>
+                <div id="js_item"/>
+            </div>
+        </div>
+    </template>
+
+    <!-- Display the suggested Products -->
+    <template id="suggested_products">
+        <t t-if="products">
+            <t t-foreach="products" t-as="product">
+                <div class="dropdown-item input-item-link media align-items-center o_search_product_item product-main"
+                     t-att-data-item_id="product.id">
+                    <div class="draggable-icon">
+                        <span class="fa fa-ellipsis-v fa-1"/>
+                        <span class="fa fa-ellipsis-v fa-1"/>
+                    </div>
+                    <img t-attf-src="/web/image/product.template/#{product['id']}/image_128"
+                         class="align-self-start o_image_64_contain mr-3"/>
+                    <div class="media-body">
+                        <h6 class="product-name mb-0" t-esc="product['name']"/>
+                        <t t-set="product_variant_id"
+                           t-value="product._get_first_possible_variant_id()"
+                           t-if="product"/>
+                        <div class="product-code" t-if="product.product_variant_id.default_code"
+                             t-esc="product.product_variant_id.default_code"/>
+                        <a class="product-close text-danger">
+                            <i class="fa fa-trash-o mr4"/>
+                            <span>Remove</span>
+                        </a>
+                    </div>
+                </div>
+            </t>
+        </t>
+        <t t-else="">
+            <div class="dropdown-item">
+                <h6>No Any Item(s) Found</h6>
+            </div>
+        </t>
+    </template>
+
+    <!-- Editable section in manual product slider -->
+    <template id="edit_product_template">
+        <t t-if="products">
+            <t t-foreach="products" t-as="product">
+                <li class="js_items products align-items-center product-main media"
+                    t-att-data-item_id="product.id" t-att-value='product.id'>
+                    <div class="draggable-icon">
+                        <span class="fa fa-ellipsis-v fa-1"/>
+                        <span class="fa fa-ellipsis-v fa-1"/>
+                    </div>
+                    <img t-attf-src="/web/image/product.template/#{product['id']}/image_128"
+                         class="align-self-start o_image_64_contain mr-3"/>
+                    <div class="media-body">
+                        <h6 class="product-name mb-0" t-esc="product['name']"/>
+                        <t t-set="product_variant_id"
+                           t-value="product._get_first_possible_variant_id()"
+                           t-if="product"/>
+                        <div class="product-code" t-if="product.product_variant_id.default_code"
+                             t-esc="product.product_variant_id.default_code"/>
+                        <a class="product-close text-danger">
+                            <i class="fa fa-trash-o mr4"/>
+                            <span>Remove</span>
+                        </a>
+                    </div>
+                </li>
+            </t>
+        </t>
+    </template>
+
+    <!-- custom domain template -->
+    <template id="custom_domain_configure_template">
+        <div class="custom-domain pb-3">
+            <div class="custom-domain-line dropdown_div" t-if="filters">
+                <div class="preview-title title-main my-4 pb-2">
+                    <span class="fa fa-th-large mr-1"/>
+                    <span>Slider Filter</span>
+                    <span class="sub-title">
+                        <t t-esc="'(Maximum %s products allow in slider)' % limit"/>
+                    </span>
+                </div>
+                <div class="dropdown slider-dropdown">
+                    <button type="button" class="dropdown-toggle slider-dropdown-button slider-filter-ui"
+                            data-toggle="dropdown">
+                        <t t-esc="filters[0].display_name"/>
+                    </button>
+                    <div class="dropdown-menu slider-dropdown-menu slider_filter_option">
+                        <t t-foreach="filters" t-as="fil">
+                            <a class="dropdown-item slider-dropdown-item" t-att-data-filter="fil.id" href="#">
+                                <t t-esc="fil.display_name"/>
+                            </a>
+                        </t>
+                    </div>
+                </div>
+            </div>
+            <div t-if="not filters">
+                <t t-call="emipro_theme_base.items_not_found"/>
+            </div>
+        </div>
+    </template>
+
+    <!-- product_categories template -->
+    <template id="product_categories_configure_template">
+        <div class="category-discount">
+            <t t-set="categories"
+               t-value="request.env['product.public.category'].sudo().search([('website_id','in',[False,website.id]),('parent_id','=',False)])"/>
+            <div t-if="categories">
+                <div class="preview-title title-main my-4 pb-2">
+                    <span class="fa fa-th-large mr-1"/>
+                    <span>eCommerce Categories</span>
+                    <span class="sub-title">
+                        <t t-esc="'(Maximum %s products allow in slider)' % limit"/>
+                    </span>
+                </div>
+                <select multiple="multiple"
+                        class="form-control slider_category_list">
+                    <t t-foreach="categories" t-as="categ">
+                        <t t-call="emipro_theme_base.product_configure_categories_template"/>
+                    </t>
+                </select>
+                <div class="clearfix mt-3">
+                    <label class="form-switch">
+                        <input type='checkbox' class="discount_categ" name="discount_policy"/>
+                        <span class="slider round"/>
+                    </label>
+                    <span class="ml-1 sub-title">Allow Only Discounted Products</span>
+                </div>
+            </div>
+            <div t-else="">
+                <t t-call="emipro_theme_base.items_not_found"/>
+            </div>
+        </div>
+    </template>
+
+    <!-- Product Category Listing for Category discount -->
+    <template id="product_configure_categories_template">
+        <t t-set="categ_count" t-value="len(website.get_product_categs_path(categ.id).get('categ_name_set'))"/>
+        <option t-att-class="'category_option categ_lavel_%s' % categ_count" t-att-value="categ.id">
+            <t t-esc="categ.name"/>
+        </option>
+        <t t-foreach="categ.child_id" t-as="categ">
+            <t t-call="emipro_theme_base.product_configure_categories_template"/>
+        </t>
+    </template>
+
+    <template id="product_configure" inherit_id="website.layout">
+        <xpath expr="//div[@id='wrapwrap']" position="inside">
+            <div role="dialog" id="product_configure_model_main" class="o_not_editable o_technical_modal"
+                 contenteditable="false"/>
+        </xpath>
+    </template>
+
+    <template id="tab_builder_configure">
+        <div class="new-product js_new_tab dropdown my-4 pt-1" contenteditable="false">
+            <span class="js-prev-tab fa fa-angle-left mr-1 disabled"/>
+            <div class="o_not_editable js_div_tab d-inline-block" data-focus="false" contenteditable="true">
+                <input class="form-control input-product js_input_tab" type="text" data-tab="1"
+                       placeholder="Search product with name... "/>
+            </div>
+            <span class="js-next-tab fa fa-angle-right ml-1"/>
+            <div class="tab-conf-btn">
+                <span class="js_add_tab fa fa-plus"/>
+                <span class="js_remove_tab fa fa-minus"/>
+            </div>
+        </div>
+    </template>
+</odoo>

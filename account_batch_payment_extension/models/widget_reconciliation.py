@@ -13,7 +13,7 @@ class AccountReconciliation(models.AbstractModel):
             aml_rec = self.env['account.move.line']
             batch_name = {}
             st_line = self.env['account.bank.statement.line'].browse(st_line_id)
-            for batch in self.env['account.batch.payment'].search([('state', '!=', 'reconciled')], order='id asc'):
+            for batch in self.env['account.batch.payment'].search([('state', 'not in', ('reconciled', 'cancel'))], order='id asc'):
                 if abs(batch.amount) == abs(st_line.amount):
                     lines = batch.payment_ids.mapped('move_id').mapped('line_ids').filtered(
                         lambda rec: rec.account_id.internal_type not in (

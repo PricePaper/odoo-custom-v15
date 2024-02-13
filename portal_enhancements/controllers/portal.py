@@ -1,11 +1,32 @@
 # -*- coding: utf-8 -*-
 
-from odoo.addons.portal.controllers import portal
+from odoo.addons.portal.controllers import 
+from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo import http, _
 from odoo.http import request
 
 
+
+class WebsiteSale(WebsiteSale):
+    @http.route(['/shop/<model("product.template"):product>'], type='http', auth="public", website=True, sitemap=True)
+    def product(self, product, category='', search='', **kwargs):
+        curr_comapny = request.session.get('current_website_company')
+        if not curr_comapny and not request.env.user._is_public():
+            return request.redirect('/my/website/company')
+        else:
+            return super(WebsiteSale,self).product(product, category=category, search=search, **kwargs)
 class CustomerPortal(portal.CustomerPortal):
+
+    def _prepare_portal_layout_values(self):
+        values = super(CustomerPortal, self)._prepare_portal_layout_values()
+        partner_id = request.env.user.partner_id
+        sale_access = partner_id._check_portal_model_access('sale.order')
+      
+        values['sale_access'] = sale_access 
+
+        return values
+
+
     @http.route()
     def home(self, **kw):
         if not request.session.get('current_website_company'):

@@ -10,7 +10,8 @@ Portal Enhancements
 Granting enhanced access to portal users
     """,
     'author': 'Confianz Global',
-    'depends': ['base', 'sale', 'purchase', 'account', 'price_paper', 'calendar', 'partner_firstname', 'portal', 'website'],
+    'depends': ['base', 'sale', 'purchase', 'account', 'price_paper', 'calendar', 'partner_firstname', 'portal',
+                'website', 'contacts', 'helpdesk'],
     'sequence': 1700,
     'demo': [
     ],
@@ -19,7 +20,8 @@ Granting enhanced access to portal users
         'security/ir.model.access.csv',
         'views/res_partner_views.xml',
         'wizard/add_portal_contacts.xml',
-        'views/templates.xml'
+        'views/templates.xml',
+        'wizard/add_portal_companies.xml'
     ],
      'assets': {
         'web.assets_frontend': [

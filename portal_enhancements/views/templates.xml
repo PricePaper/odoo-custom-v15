@@ -29,6 +29,20 @@
 
 
     </template>
+
+
+    <!-- <template id="portal_my_home_sale_inherit" name="Show Invoices &amp; Bills" inherit_id="sale.portal_my_home_sale" customize_show="True" priority="40">
+        <xpath expr="//t[@t-call='portal.portal_docs_entry'][1]" position="replace">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Invoices &amp; Bills</t>
+                <t t-set="url" t-value="'/my/invoices'"/>
+                <t t-set="placeholder_count" t-value="'invoice_count'"/>
+            </t>
+        </xpath>
+    </template> -->
+
+
+
     <template id="multiple_cart" name="Multiple Cart">
         <t t-call="website.layout">
             <div class='wrap'>

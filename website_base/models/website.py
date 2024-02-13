@@ -10,6 +10,8 @@ from odoo.osv import expression
 from odoo.addons.http_routing.models.ir_http import url_for
 class Website(models.Model):
     _inherit = 'website'
+
+    
     def sale_get_order(self, force_create=False, code=None, update_pricelist=False, force_pricelist=False,website=False):
         if not website:
             website = request.website

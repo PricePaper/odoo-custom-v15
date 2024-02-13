@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from odoo.addons.portal.controllers import 
+
 from odoo.addons.website_sale.controllers.main import WebsiteSale
+
+from odoo.addons.portal.controllers import portal
+
 from odoo import http, _
 from odoo.http import request
 
@@ -16,6 +19,14 @@ class WebsiteSale(WebsiteSale):
         else:
             return super(WebsiteSale,self).product(product, category=category, search=search, **kwargs)
 class CustomerPortal(portal.CustomerPortal):
+    @http.route()
+    def home(self, **kw):
+        if not request.session.get('current_website_company'):
+            return request.redirect('/my/website/company')
+        else:
+            return super(CustomerPortal,self).home(**kw)
+       
+
 
     def _prepare_portal_layout_values(self):
         values = super(CustomerPortal, self)._prepare_portal_layout_values()

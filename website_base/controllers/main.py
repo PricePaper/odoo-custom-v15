@@ -103,6 +103,13 @@ class WebsiteSale(WebsiteSale):
         product_price = float_round(product_price, precision_digits=2)
         return msg, product_price, price_from
 
+    @http.route(['/shop/<model("product.template"):product>'], type='http', auth="public", website=True, sitemap=True)
+    def product(self, product, category='', search='', **kwargs):
+        curr_comapny = request.session.get('current_website_company')
+        if not curr_comapny and not request.env.user._is_public():
+            return request.redirect('/my/website/company')
+        else:
+            return super(WebsiteSale,self).product(product, category=category, search=search, **kwargs)
 
 
     def _prepare_product_values(self, product, category, search, **kwargs):

@@ -747,6 +747,7 @@ class StockPicking(models.Model):
         return action
 
     def action_reset_picking(self):
+
         return {
             'name': _('Reset Picking'),
             'view_mode': 'form',
@@ -775,11 +776,12 @@ class StockPicking(models.Model):
             }
             invoices = self.invoice_ids.filtered(lambda r: r.state in ('draft'))
             del_invoice = self.env['account.move']
-            for invoice in invoices:
-                for line in invoice.invoice_line_ids:
-                    if True in line.mapped('sale_line_ids').mapped('is_delivery'):
-                        del_invoice |= invoice
-                        line.unlink()
+            # for invoice in invoices:
+            #     for line in invoice.invoice_line_ids:
+            #         if True in line.mapped('sale_line_ids').mapped('is_delivery'):
+            #             del_invoice |= invoice
+            #             print(line, 'lllllllllll')
+            #             line.unlink()
 
             #cancel the existing DO
             self.with_context(from_reset_picking=True).action_cancel()
@@ -797,11 +799,11 @@ class StockPicking(models.Model):
                     })
                     new_move._action_assign()
             self.sale_id.write({'state': previous_state})
-            for inv in del_invoice:
-                delivery_line = self.sale_id.order_line.filtered(lambda r: r.is_delivery)
-                for line in delivery_line:
-                    vals = delivery_line._prepare_invoice_line()
-                    inv.write({'invoice_line_ids': [(0, 0, vals)]})
+            # for inv in del_invoice:
+            #     delivery_line = self.sale_id.order_line.filtered(lambda r: r.is_delivery)
+            #     for line in delivery_line:
+            #         vals = delivery_line._prepare_invoice_line()
+            #         inv.write({'invoice_line_ids': [(0, 0, vals)]})
 
     def _create_backorder(self):
         res = super()._create_backorder()

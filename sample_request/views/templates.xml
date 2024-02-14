@@ -116,7 +116,7 @@
                         </div>
                     </div>
                     <div t-else="">
-                        <strong> Currently you have not requested any samples, Feel free to browse our <a href="/shop">shop</a>
+                        <strong> Currently you have not requested any samples, Feel free to browse our <a href="/shop">Products</a>
                         </strong>
                     </div>
                 </div>
@@ -370,7 +370,7 @@
                                     <input type="hidden" name="callback" t-att-value="callback" />
                                     <input type="hidden" name="field_required" t-att-value="'phone,name'" />
                                     <div class="d-flex justify-content-between button_sample_address">
-                                        <a role="button" href="/sample/address" class="btn btn-secondary mb32">
+                                        <a role="button" t-att-href="'/sample/address' if not request.website.is_public_user() else '/sample/request'" class="btn btn-secondary mb32">
                                             <i class="fa fa-chevron-left"/>
                                             <span>Back</span>
                                         </a>

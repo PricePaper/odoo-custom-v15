@@ -11,4 +11,10 @@ access_project_project_task_user,access.project.task.portal.user,project.model_p
 access_website_ir_ui_view_publisher_portal_user,access.website.ir.ui.view.publisher.portal.user,website.model_ir_ui_view,portal_enhancements.group_portal_enhanced_record_access,1,0,0,0
 access_add_portal_contacts_user,access.add.portal.contacts.user,portal_enhancements.model_add_portal_contacts,base.group_user,1,1,1,1
 access_portal_contacts_user,access.portal.contacts.user,portal_enhancements.model_portal_contacts,base.group_user,1,1,1,1
+
+access_add_portal_companies_user,access.add.portal.companies.user,portal_enhancements.model_add_portal_companies,base.group_user,1,1,1,1
+access_portal_model_access_portal_user,access.portal.model.access.portal_user,portal_enhancements.model_portal_model_access,portal_enhancements.group_portal_enhanced_record_access,1,0,0,0
+access_portal_model_access,access.portal.model.access.user,portal_enhancements.model_portal_model_access,base.group_user,1,1,1,0
+
 acess_portal_res_partner,potel.access.res.parnet,model_res_partner,base.group_portal,1,1,1,1
+

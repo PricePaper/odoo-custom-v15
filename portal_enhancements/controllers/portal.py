@@ -1,11 +1,80 @@
 # -*- coding: utf-8 -*-
 
+
+from odoo.addons.website_sale.controllers.main import WebsiteSale
+
 from odoo.addons.portal.controllers import portal
+
 from odoo import http, _
 from odoo.http import request
 
 
+
+class WebsiteSale(WebsiteSale):
+    @http.route(['/shop/<model("product.template"):product>'], type='http', auth="public", website=True, sitemap=True)
+    def product(self, product, category='', search='', **kwargs):
+        curr_comapny = request.session.get('current_website_company')
+        if not curr_comapny and not request.env.user._is_public():
+            return request.redirect('/my/website/company')
+        else:
+            return super(WebsiteSale,self).product(product, category=category, search=search, **kwargs)
+
+    def checkout_values(self, **kw):
+        order = request.website.sale_get_order(force_create=True)
+        shippings = []
+        if order.partner_id != request.website.user_id.sudo().partner_id:
+            Partner = order.partner_id.with_context(show_address=1).sudo()
+            shippings = Partner.search([
+                ("id", "child_of", order.partner_id.commercial_partner_id.ids),
+                '|', ("type", "in", ["delivery", "other"]), ("id", "=", order.partner_id.commercial_partner_id.id)
+            ], order='id desc')
+
+            curr_comapny = request.session['current_website_company']
+            partner_com = request.env['res.partner'].sudo().browse(curr_comapny)
+            access = request.env.user.partner_id.portal_contact_ids.mapped('partner_id')
+            # main_ship = partner_com.child_ids
+            desired_shipping = shippings.filtered(lambda c: c.id in access.ids or c.id == partner_com.id)
+            shippings = desired_shipping
+            # print(shippings2)
+            print(shippings)
+            if shippings:
+                if kw.get('partner_id') or 'use_billing' in kw:
+                    if 'use_billing' in kw:
+                        partner_id = order.partner_id.id
+                    else:
+                        partner_id = int(kw.get('partner_id'))
+                    if partner_id in shippings.mapped('id'):
+                        order.partner_shipping_id = partner_id
+
+        values = {
+            'order': order,
+            'shippings': shippings,
+            'only_services': order and order.only_services or False
+        }
+        return values
+
+
+
 class CustomerPortal(portal.CustomerPortal):
+    @http.route()
+    def home(self, **kw):
+        if not request.session.get('current_website_company'):
+            return request.redirect('/my/website/company')
+        else:
+            return super(CustomerPortal,self).home(**kw)
+       
+
+
+    def _prepare_portal_layout_values(self):
+        values = super(CustomerPortal, self)._prepare_portal_layout_values()
+        partner_id = request.env.user.partner_id
+        sale_access = partner_id._check_portal_model_access('sale.order')
+      
+        values['sale_access'] = sale_access 
+
+        return values
+
+
     @http.route()
     def home(self, **kw):
         if not request.session.get('current_website_company'):

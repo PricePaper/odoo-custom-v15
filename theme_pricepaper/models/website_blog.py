@@ -1,7 +1,25 @@
 from odoo import fields,api,models
 from odoo.addons.website.tools import text_from_html
 from odoo.tools.translate import html_translate
+from odoo.http import request
 import re
+
+
+class Website(models.Model):
+    _inherit='website'
+
+    @api.model
+    def pager(self, url, total, page=1, step=30, scope=5, url_args=None):
+        is_mobile = bool(re.match(
+            r'^.*(Android|iPhone).*',
+            request.httprequest.headers.get('User-Agent', request.httprequest.headers.get('user-agent', ''))))
+        if is_mobile:
+            scope = 3
+       
+       
+       
+        
+        return super(Website,self).pager(url, total, page=page, step=step, scope=scope, url_args=url_args)
 class BlogPost(models.Model):
     _inherit = 'blog.post'
 

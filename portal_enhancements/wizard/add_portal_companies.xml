@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_add_portal_companies_form" model="ir.ui.view">
+            <field name="name">add.portal.companies.form</field>
+            <field name="model">add.portal.companies</field>
+            <field name="priority" eval="100"/>
+            <field name="arch" type="xml">
+                <form>
+                <group>
+                        <field name="parent_id" string="Related Administrator"/>
+                </group>
+<!--                    <div class="mb-3 text-muted">-->
+<!--                        Choose which contacts should be accessible by the portal user in the list below.-->
+<!--                        Click "Add a line" to add more contacts and "X" to remove.<br/>-->
+<!--                        Click "ADD/UPDATE" button to save changes.-->
+<!--                    </div>-->
+                    <field name="portal_wizard_company_ids" widget="many2many" domain="[('id','in',context.get('related_companies', None))]">
+                                <tree editable="bottom" create="0"
+                                    decoration-info="company_type == 'company'"
+                                    decoration-success="company_type == 'person'">
+                                    <field name="name"/>
+                                     <field name="phone"/>
+                                    <field name="street"/>
+                                    <field name="city"/>
+                                    <field name="company_type"/>
+                                    <field name="city_id" invisible="1"/>
+                                    <field name="type" invisible="1"/>
+                                </tree>
+                            </field>
+                    <footer>
+                        <button string="Add/UPDATE" class="btn-primary" name="action_add_companies_to_portal_user" type="object"/>
+                        <button string="Close" class="btn btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

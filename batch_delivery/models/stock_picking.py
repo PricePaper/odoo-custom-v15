@@ -799,6 +799,9 @@ class StockPicking(models.Model):
                     })
                     new_move._action_assign()
             self.sale_id.write({'state': previous_state})
+            for picking in self.sale_id.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done')):
+                if picking.carrier_id != self.sale_id.carrier_id:
+                    picking.carrier_id = self.sale_id.carrier_id.id
             # for inv in del_invoice:
             #     delivery_line = self.sale_id.order_line.filtered(lambda r: r.is_delivery)
             #     for line in delivery_line:

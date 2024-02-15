@@ -2,4 +2,4 @@
 
 from . import portal_wizard
 from . import add_portal_contacts
-
+from . import add_portal_companies

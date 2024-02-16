@@ -124,7 +124,7 @@ odoo.define('theme_pricepaper.common', function (require) {
                 width = main_row.width(),
                 scrollWidth = main_row.get(0).scrollWidth;
             var offset = 8;
-            console.log(scrollWidth,newScrollLeft,width,offset)
+                
             if (scrollWidth - newScrollLeft - width <= offset) {
                 var left = 0
             }
@@ -133,18 +133,23 @@ odoo.define('theme_pricepaper.common', function (require) {
 
 
 
-            // console.log(newScrollLeft, divWidth)
-            // if (newScrollLeft >= divWidth) {
-            //     var left = 0
-            // }
-            else {
-                // main_row.find('.col-0')[0].width
 
-                var left = main_row.scrollLeft() + main_row.find('.col-0').first().width() + 80
+
+            else {
+
+
+                var left = main_row.scrollLeft() + main_row.find('.col-0').first().width() + parseInt(main_row.find('.col-0').first().css('padding-right').replace('px',''))
             }
+            var $self = $(ev.currentTarget)
+            $self.prop('disabled',true)
             main_row.animate({
                 scrollLeft: left
-            }, 400);
+            }, {
+                duration:400,
+                complete:function(){
+                    $self.prop('disabled',false)
+                }
+            });
 
 
 

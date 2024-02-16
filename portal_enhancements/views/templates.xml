@@ -77,4 +77,94 @@
         </t>
     </template>
 
+    <template id="portal_my_home_sale" name="Show Quotations / Sales Orders" inherit_id="sale.portal_my_home_sale">
+        <xpath expr="//t[@t-value=&quot;'/my/quotes'&quot;]/.." position="attributes">
+            <attribute name="t-if" separator=" " add="sale_access" />
+
+        </xpath>
+        <xpath expr="//t[@t-value=&quot;'/my/orders'&quot;]/.." position="attributes">
+            <attribute name="t-if" separator=" " add="sale_access" />
+
+        </xpath>
+    </template>
+
+    <template id="portal_my_home_invoice" name="Show Invoices &amp; Bills" inherit_id="account.portal_my_home_invoice">
+        <xpath expr="//t[@t-value=&quot;'/my/invoices'&quot;]/.." position="attributes">
+            <attribute name="t-if" separator=" " add="invoice_access" />
+        </xpath>
+    </template>
+
+
+    <template id="portal_my_home_purchase" name="Show Requests for Quotation / Purchase Orders" inherit_id="purchase.portal_my_home_purchase">
+        <xpath expr="//t[@t-value=&quot;'/my/rfq'&quot;]/.." position="attributes">
+            <attribute name="t-if" separator=" " add="purchase_access" />
+
+        </xpath>
+        <xpath expr="//t[@t-value=&quot;'/my/purchase'&quot;]/.." position="attributes">
+            <attribute name="t-if" separator=" " add="purchase_access" />
+
+        </xpath>
+    </template>
+
+
+    <template id="portal_my_home_lead" name="Show Leads / Opps" inherit_id="website_crm_partner_assign.portal_my_home_lead">
+        <xpath expr="//t[@t-value=&quot;'/my/leads'&quot;]/.." position="attributes">
+            <attribute name="t-if" separator=" " add="lead_access" />
+
+        </xpath>
+        <xpath expr="//t[@t-value=&quot;'/my/opportunities'&quot;]/.." position="attributes">
+            <attribute name="t-if" separator=" " add="lead_access" />
+
+        </xpath>
+    </template>
+
+
+    <template id="portal_my_home_appointment" name="Show Appointments" inherit_id="appointment.portal_my_home_appointment">
+        <xpath expr="//t[@t-value=&quot;'/my/appointments'&quot;]/.." position="attributes">
+            <attribute name="t-if" separator=" " add="calendar_access" />
+
+        </xpath>
+    </template>
+     <template id="portal_my_home_timesheet" name="Show Timesheets" inherit_id="hr_timesheet.portal_my_home_timesheet">
+        <xpath expr="//t[@t-value=&quot;'/my/timesheets'&quot;]/.." position="attributes">
+            <attribute name="t-if" separator=" " add="timesheet_access" />
+
+        </xpath>
+    </template>
+
+
+    <template id="portal_my_home_helpdesk_ticket" name="Show Appointments" inherit_id="helpdesk.portal_my_home_helpdesk_ticket">
+        <xpath expr="//t[@t-value=&quot;'/my/tickets'&quot;]/.." position="attributes">
+            <attribute name="t-if" separator=" " add="helpdesk_access" />
+
+        </xpath>
+    </template>
+
+    <template id="portal_my_home_sign" name="Show Signatures" inherit_id="sign.portal_my_home_sign">
+        <xpath expr="//t[@t-value=&quot;'/my/signatures'&quot;]/.." position="attributes">
+            <attribute name="t-if" separator=" " add="sign_access" />
+
+        </xpath>
+    </template>
+
+     <template id="portal_my_home" name="Show Projects / Tasks" inherit_id="project.portal_my_home">
+         <xpath expr="//t[@t-value=&quot;'/my/projects'&quot;]/.." position="attributes">
+            <attribute name="t-if" separator=" " add="project_access" />
+
+        </xpath>
+        <xpath expr="//t[@t-value=&quot;'/my/tasks'&quot;]/.." position="attributes">
+            <attribute name="t-if" separator=" " add="project_access" />
+
+        </xpath>
+    </template>
+
+
+
+
+
+
+
+
+
+
 </odoo>

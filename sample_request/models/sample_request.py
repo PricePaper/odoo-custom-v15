@@ -91,33 +91,35 @@ class SampleRequest(models.Model):
             raise UserError('Select the delivery method before approval')
         if not self.partner_id:
             raise UserError('Select the Customer before proceeding further')
-        route = self.sample_route
-        uom = self.env['ir.config_parameter'].sudo().get_param('sample_request.sample_uom')
-        route = int(route) if route else False
-        uom = int(uom) if uom else False
+        # route = self.sample_route
+        # uom = self.env['ir.config_parameter'].sudo().get_param('sample_request.sample_uom')
+        # route = int(route) if route else False
+        # uom = int(uom) if uom else False
         request_lines = self.request_lines.filtered(lambda line: not line.is_reject)
-        if request_lines:
+        # if request_lines:
 
-            sale_id = self.env['sale.order'].sudo().create({
-                'partner_id':self.partner_id.id,
-                'invoice_address_id':self.partner_id.id,
-                'is_sample_order':True,
-                'carrier_id':self.carrier_id.id,
-                'partner_shipping_id':self.partner_shipping_id.id if self.partner_shipping_id else self.partner_id.id,
-                'order_line':[(0,0,{
-                    'product_id':res.product_id.id,
-                    'price_unit':0.0,
-                    'lst_price':0.0,
-                    'route_id':res.sample_route.id if res.sample_route else route,
-                    'product_uom':uom,
-                    'sales_person_ids':[(6,0,self.partner_id.sales_person_ids.ids)],
-                    }) 
-                    for res in request_lines]
-            })
-        else:
+        #     sale_id = self.env['sale.order'].sudo().create({
+        #         'partner_id':self.partner_id.id,
+        #         'invoice_address_id':self.partner_id.id,
+        #         'is_sample_order':True,
+        #         'carrier_id':self.carrier_id.id,
+        #         'partner_shipping_id':self.partner_shipping_id.id if self.partner_shipping_id else self.partner_id.id,
+        #         'order_line':[(0,0,{
+        #             'product_id':res.product_id.id,
+        #             'price_unit':0.0,
+        #             'lst_price':0.0,
+        #             'route_id':res.sample_route.id if res.sample_route else route,
+        #             'product_uom':uom,
+        #             'sales_person_ids':[(6,0,self.partner_id.sales_person_ids.ids)],
+        #             }) 
+        #             for res in request_lines]
+        #     })
+        # else:
+        #     raise UserError('No Request lines for creating sample order')
+        # self.sale_id = sale_id
+        # sale_id.action_confirm()
+        if not request_lines:
             raise UserError('No Request lines for creating sample order')
-        self.sale_id = sale_id
-        sale_id.action_confirm()
         self.state='approve'
         return True
 
@@ -182,11 +184,11 @@ class SampleRequestLine(models.Model):
     sample_route = fields.Many2one('stock.location.route', string='Sample Route')
     note = fields.Char(string='Notes')
 
-    @api.onchange('product_id')
-    def product_route(self):
-        for rec in self:
-            if not rec.sample_route:
-                rec.sample_route = rec.request_id.sample_route.id
+    # @api.onchange('product_id')
+    # def product_route(self):
+    #     for rec in self:
+    #         if not rec.sample_route:
+    #             rec.sample_route = rec.request_id.sample_route.id
     
     def _get_parent_route(self):
         for res in self:

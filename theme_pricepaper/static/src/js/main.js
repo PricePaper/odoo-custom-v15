@@ -112,6 +112,9 @@ odoo.define('theme_pricepaper.common', function (require) {
         }
     })
     $(document).ready(function () {
+        setInterval(function(){
+            $('.scroll_div .left_scrol').click()
+        },3000)
         $(document).on('click', '.scroll_div .left_scrol', function (ev) {
             var main_row = $(ev.currentTarget).parents('.paper_container').find('.carousel-item .row')
             var newScrollLeft = main_row.scrollLeft();

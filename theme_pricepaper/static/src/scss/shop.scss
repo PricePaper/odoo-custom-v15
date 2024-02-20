@@ -89,6 +89,15 @@ section.shop-banner {
     }
 }
 
+#products_grid_before{
+    .products_categories{
+        button[data-target='#wsale_products_categories_collapse']{
+            font-size: 22px;
+            font-weight: bolder;
+            border-color: $primary;
+        }
+    }
+}
 .o_wsale_products_main_row {
     #products_grid {
         @media (min-width:1101px) {

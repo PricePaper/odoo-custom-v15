@@ -14,7 +14,7 @@ _logger = logging.getLogger(__name__)
 
 
 
-        
+
 class SampleRequest(models.Model):
     _name = "sample.request"
     _descriptin='Model for requesting the samples'
@@ -62,17 +62,17 @@ class SampleRequest(models.Model):
                 rec.sales_person_ids = rec.partner_id.sales_person_ids.filtered(lambda r: r.active)
             else:
                 rec.sales_person_ids = False
-    
+
     @api.onchange('partner_id')
     def partner_id_ch(self):
         if self.partner_id:
             if self.lead_id and self.lead_id.partner_id.id !=self.partner_id.id:
-                self.lead_id = False 
+                self.lead_id = False
             return {'domain':{'lead_id':[('partner_id','=',self.partner_id.id)]}}
         else:
             self.lead_id = False
             return {'domain':{'lead_id':[]}}
-        
+
     @api.onchange('lead_id')
     def lead_change_change(self):
         if self.lead_id:
@@ -85,7 +85,7 @@ class SampleRequest(models.Model):
             self.partner_id = False
             return {'domain':{'partner_id':[]}}
 
-    
+
     def approve_request(self):
         if not self.carrier_id:
             raise UserError('Select the delivery method before approval')
@@ -111,7 +111,7 @@ class SampleRequest(models.Model):
         #             'route_id':res.sample_route.id if res.sample_route else route,
         #             'product_uom':uom,
         #             'sales_person_ids':[(6,0,self.partner_id.sales_person_ids.ids)],
-        #             }) 
+        #             })
         #             for res in request_lines]
         #     })
         # else:
@@ -154,25 +154,32 @@ class SampleRequest(models.Model):
         allow_sample = self.env['ir.config_parameter'].sudo().get_param('sample_request.allow_sample')
         if not allow_sample:
             return {'error':'Sample requests have been  blocked.'}
-        
+
         limit = self.env['ir.config_parameter'].sudo().get_param('sample_request.max_sample')
         months = self.env['ir.config_parameter'].sudo().get_param('sample_request.request_months') or  0
         requests = self.search_count([('partner_id','=',self.partner_id.id),('state','=','approve'),('create_date','>=',str(datetime.now() - relativedelta(months=int(months))))])
         if requests >= int(limit):
             return {'error':'You have reached the sample request limit.'}
-        
+
         allow_repeat = self.env['ir.config_parameter'].sudo().get_param('sample_request.allow_repeat')
 
         if not allow_repeat:
             sample_requests = self.search([('partner_id','=',self.partner_id.id),('state','=','approve')]).request_lines.filtered(lambda line:line.product_id.id==int(product_id))
             if sample_requests:
                 return {'error':'You have already requested sample for this product, repeat orders are not allowed.'}
-             
+
 
         sample_requests = self.request_lines.filtered(lambda line:line.product_id.id==int(product_id))
         if not sample_requests:
             self.request_lines=[(0,0,{'product_id':int(product_id)})]
         return {}
+
+    def print_picking_operation(self):
+        return self.env.ref('sample_request.sample_request_picking_report').report_action(self, config=False)
+
+
+    def print_product_label(self):
+        return self.env.ref('sample_request.sample_request_product_label_report').report_action(self, config=False)
 
 
 class SampleRequestLine(models.Model):
@@ -189,7 +196,7 @@ class SampleRequestLine(models.Model):
     #     for rec in self:
     #         if not rec.sample_route:
     #             rec.sample_route = rec.request_id.sample_route.id
-    
+
     def _get_parent_route(self):
         for res in self:
             print(res.request_id.sample_route)

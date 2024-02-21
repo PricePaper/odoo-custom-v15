@@ -21,6 +21,10 @@
                         <button name='approve_request' class='btn-primary' type='object' string='Approve Request' attrs="{'invisible':[('state','!=','request')]}" groups='sample_request.group_manager'/>
                         <button name='reject_request' groups='sample_request.group_manager' type='object' string='Reject Request' attrs="{'invisible':[('state','!=','request')]}"/>
                         <button name='sent_approval' type='object' string='Send For Approval' attrs="{'invisible':[('state','!=','draft')]}"/>
+                        <button name="print_picking_operation" type="object" string="Print Picking"
+                                attrs="{'invisible': [('state', '!=', 'approve')]}"/>
+                        <button name="print_product_label" type="object" string="Print Labels"
+                                attrs="{'invisible': [('state', '!=', 'approve')]}"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,request,approve"/>
                     </header>
                     <sheet>

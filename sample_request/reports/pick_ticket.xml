@@ -1,49 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="product_labels_template" name="Product Label" inherit_id="batch_delivery.product_labels_template">
-        <xpath expr="//div[@t-field='line[0].picking_id.scheduled_date']" position="before">
-            <div t-if="line[0].sale_line_id and line[0].sale_line_id.order_id.is_sample_order" style="float:left;">Sample</div>
-        </xpath>
-    </template>
-
-    <template id="report_picking_batch123" inherit_id="batch_delivery.report_picking_batch123">
-    <xpath expr="//div[hasclass('header')]//div[hasclass('row')]" position="attributes">
-        <attribute name="t-if"> not(ob.sale_id and ob.sale_id.is_sample_order)</attribute>
-    </xpath>
-        <xpath expr="//div[hasclass('header')]//div[hasclass('row')]" position="before">
-            <div class="row col-12" style="font-weight: bolder; padding-bottom:10px;">
-                <t t-if='ob.sale_id and ob.sale_id.is_sample_order'>
-                    <div class="col-8" style="text-align:left;">
-                        <span>
-                            Sample Order
-                        </span>
-                        <br/>
-                        <span>Ordered By : <t t-out='ob.sale_id.partner_id.name'/>
-                        </span>
-                        <br/>
-                        <span>
-                                Address :
-                        </span>
-                        <br/>
-                        <span t-field="ob.sale_id.partner_shipping_id.name"/>
-                        <br/>
-                        <span t-field="ob.sale_id.partner_shipping_id.street"/>
-                        <span t-field="ob.sale_id.partner_shipping_id.street2"/>
-                        <br/>
-                        <span t-field="ob.sale_id.partner_shipping_id.city"/>
-                        <span t-field="ob.sale_id.partner_shipping_id.state_id"/>
-                        <span t-field="ob.sale_id.partner_shipping_id.zip"/>
-                        <br/>
-                        <span t-if="ob.sale_id.partner_shipping_id.phone">
-                            <i class="fa fa-phone"/>
-                        </span>
-                        <span t-field="ob.purchase_id.pickup_address_id.phone" style="padding-left:4px;"/>
-                    </div>
-
+    <template id="report_sample_request_picking">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="ob">
+                <t t-set="partner" t-value="ob.partner_id"/>
+                <t t-if="ob.partner_shipping_id">
+                    <t t-set="partner" t-value="ob.partner_shipping_id"/>
                 </t>
-            </div>
+                <div class="header">
+                  <div class="row col-12" style="font-weight: bolder; padding-bottom:10px;">
+                      <div class="col-8" style="text-align:left;">
+                          <span>
+                              Sample Order
+                          </span>
+                          <br/>
+                          <span>Ordered By : <t t-out='ob.partner_id.name'/>
+                          </span>
+                          <br/>
+                          <span>Address :</span><span t-field="partner.name"/>
+                          <br/>
+                          <span t-field="partner.street"/>
+                          <span t-field="partner.street2"/>
+                          <br/>
+                          <span t-field="partner.city"/>
+                          <span t-field="partner.state_id"/>
+                          <span t-field="partner.zip"/>
+                          <br/>
+                          <span t-if="partner.phone">
+                              <i class="fa fa-phone"/>
+                          </span>
+                      </div>
+                      <div class="col-4 text-right">
+                          <span t-esc="ob.name"/>
+                      </div>
+                  </div>
+                </div>
+                <div class="article" t-att-data-oe-model="ob and ob._name" t-att-data-oe-id="ob and ob.id" t-att-data-oe-lang="ob and ob.env.context.get('lang')">
+                    <div class="page">
+                        <p style="page-break-after: always;"/>
+                        <style>
+                                        .o_main_table td {
+                                            padding: 0.75rem;
+                                            vertical-align: top;
+                                            border-top: 1px solid black;
+                                        }
+                        </style>
+                        <br/>
+                        <table class="table table-sm o_main_table" >
+                            <tbody>
+                                <t t-set="index" t-value="1"/>
+                                <t t-foreach="ob.request_lines.filtered(lambda r: not r.is_reject) " t-as="move" >
+                                  <t t-set="r_qty" t-value="1"/>
 
-        </xpath>
+                                  <tr style="font-family: Roboto, Odoo Unicode Support Noto, sans-serif;font-size: 18px;" t-if="r_qty > 0">
+                                    <td>
+                                        <span t-esc="index"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="move.product_id.default_code"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="move.product_id.name"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="move.product_id.description_pickingout"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="move.product_id.uom_id"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="r_qty"/>
+                                    </td>
+                                    <td style="border-left: 1px solid black;border-right: 1px solid black;padding-right: 30px">
+                                    </td>
+                                    <td>
+                                        <span t-esc="move.product_id.property_stock_location.display_name.split('/')[-1]"/>
+                                    </td>
+                                    <t t-if="move">
+                                        <t t-set="index" t-value="index + 1"/>
+                                    </t>
+                                </tr>
+                              </t>
+                            </tbody>
+                        </table>
+
+                         <div class="footer o_standard_footer">
+                            <div class="text-center" style="border-top: 1px solid black;">
+                                Partner: <span t-esc="partner.customer_code" style="padding-left: 10px;padding-right: 10px"/>
+                                Page: <span class="page"/> / <span class="topage"/>
+                            </div>
+                         </div>
+                        <p style="page-break-after: always;"/>
+                    </div>
+                </div>
+            </t>
+        </t>
     </template>
 
 </odoo>

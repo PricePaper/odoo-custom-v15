@@ -32,6 +32,12 @@
         <!-- <xpath expr="//div[hasclass('container')]/div[hasclass('dynamic_snippet_template')]" position="inside">
         </xpath> -->
     </template>
+    <template id="products_item" name="Products item" inherit_id="website_sale.products_item">
+        <xpath expr="//div[hasclass('product_price')]" position="attributes">
+            <attribute name="t-if" separator=" " add="not request.env.user._is_public()" />
+            
+        </xpath>
+    </template>
 
 
     <template id="cart" name="Shopping Cart" inherit_id="website_sale.cart">

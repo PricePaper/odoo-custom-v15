@@ -102,6 +102,7 @@
                             <field name="yearly_seasonality"/>
                             <field name="weekly_seasonality"/>
                             <field name="daily_seasonality"/>
+                            <field name="quarterly_seasonality"/>
                             <field name="seasonality_prior_scale"/>
                             <field name="holidays_prior_scale"/>
                             <field name="changepoint_prior_scale"/>

@@ -48,6 +48,10 @@ class FbprophetConfig(models.Model):
                                   help='width of the uncertainty intervals provided for the forecast. If mcmc_samples=0, this will be only the uncertainty in the trend using the MAP estimate of the extrapolated generative model. If mcmc.samples>0, this will be integrated over all model parameters, which will include uncertainty in seasonality.')
     uncertainty_samples = fields.Integer(default='1000', string='Uncertainty Samples',
                                          help='Number of simulated draws used to estimate uncertainty intervals.')
+    quarterly_seasonality = fields.Selection([
+        ('1', 'True'),
+        ('0', 'False')], string="Quarterly Seasonality", help="Fit quarterly seasonality.", default='0')
+
 
     @api.constrains('dataframe_cap', 'growth')
     def change_dataframe_cap(self):

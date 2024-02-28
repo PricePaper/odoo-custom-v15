@@ -1,4 +1,7 @@
 #o_wblog_blog_top {
+    overflow: hidden;
+
+    // position: relative;
     .price-container {
         &::after {
             background: url("../img/black-dots.webp");
@@ -11,15 +14,16 @@
             opacity: 1;
             background-size: contain;
             background-repeat: no-repeat;
-    
+
             @media (min-width: 1700px) {
                 right: -25%;
             }
 
-            @media(max-width:1024px){
+            @media(max-width:1024px) {
                 display: none !important;
             }
         }
+
         background: #749551;
         padding: 60px;
         padding-left: 70px;
@@ -47,10 +51,11 @@
             border-bottom-left-radius: 100px;
             z-index: 9;
             margin-top: 20px;
-            @media(max-width: 1024px){
+
+            @media(max-width: 1024px) {
                 margin-top: unset;
             }
-            
+
 
         }
 
@@ -66,39 +71,27 @@
             opacity: .8;
             background-size: contain;
             background-repeat: no-repeat;
-            @media(max-width:1024px){
+
+            @media(max-width:1024px) {
                 display: none !important;
             }
         }
 
-        &::after {
-            // background: url("../img/black-dots.webp");
-
-            content: "";
-            position: absolute;
-            height: 438px;
-            width: 30vw;
-            top: 60px;
-            right: -24%;
-            opacity: .8;
-            background-size: contain;
-            background-repeat: no-repeat;
-
-            @media (min-width: 1700px) {
-                right: -25%;
-            }
-        }
+        
 
     }
+
+
 }
-#oe_structure_blog_footer_main{
-    @media(max-width:1350px)and (min-width: 1024px){
+
+#oe_structure_blog_footer_main {
+    @media(max-width:1350px)and (min-width: 1024px) {
         margin-top: 70px;
     }
 }
 
 .js_blog.website_blog {
-    overflow: hidden;
+    // overflow: hidden;
     font-family: "Poppins" !important;
     // background: #749551;
 
@@ -118,6 +111,7 @@
         transform: rotate(-33deg) translate(-104px, -12px);
         width: 436.5px;
         height: 134.1px;
+
         @media(max-width:1100px) {
             display: none;
         }
@@ -127,7 +121,8 @@
         &::after {
 
             content: "";
-            width: 100%;
+            width: 94%;
+            right: 0;
             height: 101px;
             position: absolute;
             top: 0;

@@ -98,3 +98,8 @@ class StockPicking(models.Model):
                                            'location_dest_id': product.property_stock_location.id,
                                            'product_uom_qty': qty
                                            })
+    def _action_done(self):
+        res = super()._action_done()
+        for line in self.move_line_ids.filtered(lambda r: r.state == 'done'):
+            line.product_onhand_qty = line.product_id.quantity_available + line.product_id.transit_qty
+        return res

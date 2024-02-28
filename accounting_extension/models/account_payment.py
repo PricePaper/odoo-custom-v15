@@ -156,8 +156,8 @@ class AccountPayment(models.Model):
     def _get_valid_liquidity_accounts(self):
         result = super()._get_valid_liquidity_accounts()
         if self.journal_id.old_outstanding_receipt_id:
-            return result + (self.journal_id.old_outstanding_receipt_id,)
-        return  result
+            return result | self.journal_id.old_outstanding_receipt_id
+        return result
 
     def warapper_compute_reconciliation_status(self):
         for pay in self:

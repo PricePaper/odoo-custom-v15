@@ -42,9 +42,9 @@ class CostChangePercentage(models.TransientModel):
                 self.env['product.forecast'].create({
                     'product_id': product.id,
                     'date': ele[0],
-                    'quantity': ele[1],  # quantity,
-                    'quantity_min': ele[2],  # min_quantity,
-                    'quantity_max': ele[3],  # max_quantity,
+                    'quantity': ele[1] if ele[1] > 0 else 0,  # quantity,
+                    'quantity_min': ele[2] if ele[2] > 0 else 0,  # min_quantity,
+                    'quantity_max': ele[3] if ele[3] > 0 else 0,  # max_quantity,
                 })
 
         graph_id = self.env.ref('stock_orderpoint_enhancements.view_order_product_forecast_graph').id

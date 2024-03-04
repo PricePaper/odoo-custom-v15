@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="portal_my_company" name="Comopany Switch">
+    <template id="portal_my_company" name="company Switch">
         <t t-call="website.layout">
             <div class='oe_structure' id='company_switch_structure'/>
             <div id='wrap' class='switch_company_wrap'>
 
                 <div class='container'>
-                    <h4 class='pt32'>Switch Comopany</h4>
+                    <h4 class='pt32'>Switch company</h4>
                     <div class='main_div'>
                         <div class='seconday_div'>
 

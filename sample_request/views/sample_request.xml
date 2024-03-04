@@ -21,6 +21,10 @@
                         <button name='approve_request' class='btn-primary' type='object' string='Approve Request' attrs="{'invisible':[('state','!=','request')]}" groups='sample_request.group_manager'/>
                         <button name='reject_request' groups='sample_request.group_manager' type='object' string='Reject Request' attrs="{'invisible':[('state','!=','request')]}"/>
                         <button name='sent_approval' type='object' string='Send For Approval' attrs="{'invisible':[('state','!=','draft')]}"/>
+                        <button name="print_picking_operation" type="object" string="Print Picking"
+                                attrs="{'invisible': [('state', '!=', 'approve')]}"/>
+                        <button name="print_product_label" type="object" string="Print Labels"
+                                attrs="{'invisible': [('state', '!=', 'approve')]}"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,request,approve"/>
                     </header>
                     <sheet>
@@ -32,13 +36,13 @@
                         <group>
                             <group>
                                 <field name='lead_id' string='Lead/Opportunity' required="1"/>
-                                <field name="sample_route"/>
+                                <!-- <field name="sample_route"/> -->
                                 <field name='carrier_id'/>
                             </group>
                             <group>
                                 <field name='partner_id'  widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}" domain="[('type','=','contact'),('parent_id','=',False),('customer','=',True)]"/>
                                 <field name='partner_shipping_id'  domain="['|',('id','=',partner_id),('parent_id','=',partner_id)]" string='Delivery Address'/>
-                                <field name='sale_id' readonly='1' attrs="{'inivisible':[('state','=','draft')]}"/>
+                                <!-- <field name='sale_id' readonly='1' attrs="{'inivisible':[('state','=','draft')]}"/> -->
                             </group>
                         </group>
                         <notebook>
@@ -46,7 +50,7 @@
                                 <field name='request_lines' attrs="{'readonly':[('state','in',['reject','approve'])]}">
                                     <tree editable='bottom'>
                                         <field name='product_id' attrs="{'readonly':['|',('is_reject','=',True),('parent.state','in',['reject','approve'])]}"/>
-                                        <field name='sample_route' attrs="{'readonly':['|',('is_reject','=',True),('parent.state','in',['reject','approve'])]}"/>
+                                        <!-- <field name='sample_route' attrs="{'readonly':['|',('is_reject','=',True),('parent.state','in',['reject','approve'])]}"/> -->
                                         <field name="note" attrs="{'readonly':['|',('is_reject','=',True),('parent.state','in',['reject','approve'])]}"/>
                                         <field name="is_reject" readonly="1"></field>
                                         <button attrs="{'invisible':['|',('is_reject','=',True),('parent.state','in',['reject','approve'])]}" string="Reject" name="action_reject" type="object" class="oe_highlight"/>

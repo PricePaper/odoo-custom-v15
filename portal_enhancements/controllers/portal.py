@@ -69,8 +69,30 @@ class CustomerPortal(portal.CustomerPortal):
         values = super(CustomerPortal, self)._prepare_portal_layout_values()
         partner_id = request.env.user.partner_id
         sale_access = partner_id._check_portal_model_access('sale.order')
+        invoice_access = partner_id._check_portal_model_access('account.move')
+        purchase_access = partner_id._check_portal_model_access('purchase.order')
+        lead_access = partner_id._check_portal_model_access('crm.lead')
+        calendar_access = partner_id._check_portal_model_access('calendar.event')
+        ticket_access = partner_id._check_portal_model_access('helpdesk.ticket')
+        project_access = partner_id._check_portal_model_access('project.project')
+        sign_access = partner_id._check_portal_model_access('sign.request.item')
+        timesheet_access = partner_id._check_portal_model_access('account.analytic.line')
+
+        
+        values.update(
+            sale_access=sale_access,
+            invoice_access=invoice_access,
+            purchase_access=purchase_access,
+            lead_access=lead_access,
+            calendar_access = calendar_access,
+            ticket_access = ticket_access,
+            project_access= project_access,
+            sign_access = sign_access
+        )
+
+        
       
-        values['sale_access'] = sale_access 
+
 
         return values
 
@@ -153,7 +175,7 @@ class CustomerPortal(portal.CustomerPortal):
     @http.route(['/select/cart'],type='http',auth='user',website=True,csrf=False)
     def delivery_cart(self,**kw):
         curr_comapny = request.session.get('current_website_company')
-        orders = request.env['sale.order'].search([('partner_id','=',int(curr_comapny)),('state','=','draft')])
+        orders = request.env['sale.order'].sudo().search([('partner_id','=',int(curr_comapny)),('state','=','draft')])
         if not orders:
             return request.redirect('/shop')
         else:
@@ -177,3 +199,4 @@ class CustomerPortal(portal.CustomerPortal):
         curr_comapny = request.session.get('current_website_company')
 
         return request.render("portal_enhancements.portal_my_company", {'company_ids': portal_companies,'curr_comapny':curr_comapny})
+

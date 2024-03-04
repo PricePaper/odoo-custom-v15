@@ -18,7 +18,7 @@ class SaleOrder(models.Model):
 
 
     is_sample_order = fields.Boolean(string='Sample Order',default=False)
-    
+
     def check_payment_term(self):
         """
         Can only proceed with order if payment term is set
@@ -55,7 +55,7 @@ class SaleOrderLine(models.Model):
     @api.depends('order_id.delivery_cost', 'product_id', 'company_id', 'currency_id', 'product_uom')
     def _compute_purchase_price(self):
         for line in self:
-            if line.product_id and not line.order_id.is_sample_order :
+            if line.product_id and not line.order_id.is_sample_order and not line.storage_contract_line_id:
                 if line.is_delivery:
                     if line.order_id.carrier_id.delivery_type not in ['fixed', 'base_on_rule']:
                         line.purchase_price = line.working_cost
@@ -87,4 +87,3 @@ class SaleOrderLine(models.Model):
         for line in self:
             if line.order_id.is_sample_order:
                 line.profit_margin = 0.0
-  

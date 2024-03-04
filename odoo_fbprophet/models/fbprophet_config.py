@@ -99,7 +99,7 @@ class ChangepointDates(models.Model):
         """
         for date in self:
             date_order = date.date
-            date_today = date.today()
+            date_today = fields.Date.today()
             if date_order > date_today:
                 raise ValidationError(_('Changepoint date should be prior to today.'))
 

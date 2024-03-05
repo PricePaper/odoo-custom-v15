@@ -297,7 +297,7 @@
                             <div class="form-check">
                                 <input class="form-check-input model_access" type="checkbox" t-att-value="company.model_id.id" t-att-id="'flexCheckDefault'+str(company.id)"/>
                                 <label class="form-check-label" t-att-for="'flexCheckDefault'+str(company.id)">
-                                    <t t-out='company.name'/>
+                                    <t t-out='company.name if company.name !="Journal Entry" else "Invoices"'/>
                                 </label>
                             </div>
                         </t>

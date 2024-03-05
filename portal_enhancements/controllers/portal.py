@@ -158,6 +158,20 @@ class CustomerPortal(portal.CustomerPortal):
             page=page, sortby=sortby, filterby=filterby, search=search, search_in=search_in, groupby=groupby, **kwargs)
         return request.render("portal_enhancements.portal_my_managers", values)
 
+    @http.route(['/my/manager/edit/<int:partner_id>'],type='http',auth='user',website=True)        
+    def edit_manager(self,partner_id):
+        partner_id = request.env["res.partner"].browse([int(partner_id)])
+        partner_id_main = request.env.user.partner_id
+        manage_managers = True if partner_id_main.portal_access_level == 'user' else False
+        if not manage_managers:
+            raise Forbidden()
+        allowed_compaines = partner_id_main.portal_company_ids
+        partner_allowed = partner_id.portal_company_ids.ids
+        partner_portal_model_access = partner_id.portal_model_access.mapped("model_id").ids
+        values = {'allowed_compaines': allowed_compaines,'manage_access': partner_id_main.portal_model_access, 'page_name': 'my_managers_edit','partner_id':partner_id,'partner_allowed':partner_allowed,'partner_portal_model_access':partner_portal_model_access}
+        return request.render('portal_enhancements.edit_manager', values)
+
+
     @http.route(['/my/manager/new'], type='http', auth="user", website=True)
     def create_new_manager(self):
         partner_id = request.env.user.partner_id
@@ -308,35 +322,52 @@ class CustomerPortal(portal.CustomerPortal):
 
         return request.render("portal_enhancements.portal_my_company", {'company_ids': portal_companies, 'curr_comapny': curr_comapny})
 
+
+
+
     @http.route('/my/manager/create', type='json', auth='user', website=True)
-    def create_manager(self, name, email, phone, note, model_access, comany_access):
-        partner_id = request.env.user.partner_id
-        child_partner_id = request.env['res.partner'].sudo().create({
-            'parent_id': partner_id.id,
-            'name': name,
-            'email': email,
-            'phone': phone,
-            'comment': note,
-            'portal_access_level': 'manager',
-            'portal_company_ids': [(6, 0, list(map(int, comany_access)))],
-            'portal_model_access': [(0, 0, {'model_id': int(rec), 'is_model_accessible': True}) for rec in model_access]
-        })
-        print(child_partner_id)
+    def create_manager(self, name, email, phone, note, model_access, comany_access,partner_id = False):
+        if not partner_id:
+            partner_id = request.env.user.partner_id
 
-        helpdesk_vals = {
-            'name':f'New Manager: "{name}" Approval',
-            'partner_id':partner_id.id
-        }
-        Website = request.env['website']
-        curr_web = Website.get_current_website()
-        team_id = curr_web.helpdesk_team_website.id
-        if team_id:
-            helpdesk_vals['team_id'] = team_id.id
-        ticket_id = request.env['helpdesk.ticket'].sudo().create(helpdesk_vals)
-      
-        acttion = request.env.ref('portal_enhancements.action_res_partner_portal_enhancements')
+            child_partner_id = request.env['res.partner'].sudo().create({
+                'parent_id': partner_id.id,
+                'name': name,
+                'email': email,
+                'phone': phone,
+                'comment': note,
+                'portal_access_level': 'manager',
+                'portal_company_ids': [(6, 0, list(map(int, comany_access)))],
+                'portal_model_access': [(0, 0, {'model_id': int(rec), 'is_model_accessible': True}) for rec in model_access]
+            })
+            print(child_partner_id)
 
-        ticket_id.message_post(body=("New Manager Have been created kindly approve and grant Access") + " <a href='/web#id=%s&action=%s&model=res.partner&view_type=form' data-oe-model=res.partner>%s</a>" % (child_partner_id.id,acttion.id,child_partner_id.name))
+            helpdesk_vals = {
+                'name':f'New Manager: "{name}" Approval',
+                'partner_id':partner_id.id
+            }
+            Website = request.env['website']
+            curr_web = Website.get_current_website()
+            team_id = curr_web.helpdesk_team_website.id
+            if team_id:
+                helpdesk_vals['team_id'] = team_id.id
+            ticket_id = request.env['helpdesk.ticket'].sudo().create(helpdesk_vals)
+        
+            acttion = request.env.ref('portal_enhancements.action_res_partner_portal_enhancements')
+
+            ticket_id.message_post(body=("New Manager Have been created kindly approve and grant Access") + " <a href='/web#id=%s&action=%s&model=res.partner&view_type=form' data-oe-model=res.partner>%s</a>" % (child_partner_id.id,acttion.id,child_partner_id.name))
+        else:
+            partner = request.env['res.partner'].sudo().browse([int(partner_id)])
+            partner.portal_model_access.unlink()
+            partner.write({
+                'name': name,
+                'email': email,
+                'phone': phone,
+                'comment': note,
+                'portal_access_level': 'manager',
+                'portal_company_ids': [(6, 0, list(map(int, comany_access)))],
+                'portal_model_access': [(0, 0, {'model_id': int(rec), 'is_model_accessible': True}) for rec in model_access]
+            })
         return {
-            'status':True
-        }
+                'status':True
+            }

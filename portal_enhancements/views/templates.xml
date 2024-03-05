@@ -245,6 +245,74 @@
         </t>
 
     </template>
+    <template id="edit_manager" name="Edit Manager">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Edit Manager</t>
+            </t>
+            <h3>
+                <t t-out='partner_id.name'/>
+            </h3>
+            <div class='container new_manager mt64'>
+            <input name='partner_id' type='hidden' t-att-value='partner_id.id'/>
+                <div class='row'>
+                    <div class='col-12 col-md-6'>
+                        <div class="form-floating mb-3">
+                            <label for="contactName">Name</label>
+                            <input type='text' t-att-value='partner_id.name' class="form-control" id='contactName' name='contactName'/>
+                        </div>
+                    </div>
+                    <div class='col-12 col-md-6'>
+                        <div class="form-floating mb-3">
+                            <label for="contactEmail">Email</label>
+                            <input type='Email' class="form-control" t-att-value='partner_id.email' readonly='1' id='contactEmail' name='contactEmail'/>
+                        </div>
+                    </div>
+                    <div class='col-12 col-md-6'>
+                        <div class="form-floating mb-3">
+                            <label for="contactPhone">Phone</label>
+                            <input type='Phone' class="form-control" t-att-value='partner_id.phone' id='contactPhone' name='contactPhone'/>
+                        </div>
+                    </div>
+                    <div class='col-12 col-md-6'>
+                        <div class="form-floating mb-3">
+                            <label for="contactNote">Note</label>
+                            <input type='Note' class="form-control" t-att-value='partner_id.comment' id='contactNote' name='contactNote'/>
+                        </div>
+                    </div>
+                    <div class='col col-6'>
+                        <h4>Select Companies to Allow</h4>
+                        <t t-foreach='allowed_compaines' t-as='company'>
+                            <div class="form-check">
+                                <input class="form-check-input allowed_company" t-att-checked='company.id in partner_allowed' type="checkbox" t-att-value="company.id" t-att-id="'flexCheckDefault'+str(company.id)"/>
+                                <label class="form-check-label" t-att-for="'flexCheckDefault'+str(company.id)">
+                                    <t t-out='company.name'/>
+                                </label>
+                            </div>
+                        </t>
+                    </div>
+
+                    <div class='col col-6'>
+                        <h4>Manage Access</h4>
+                        <t t-foreach='manage_access' t-as='company'>
+                            <div class="form-check">
+                                <input class="form-check-input model_access" type="checkbox" t-att-checked='company.model_id.id in partner_portal_model_access' t-att-value="company.model_id.id" t-att-id="'flexCheckDefault'+str(company.id)"/>
+                                <label class="form-check-label" t-att-for="'flexCheckDefault'+str(company.id)">
+                                    <t t-out='company.name if company.name !="Journal Entry" else "Invoices"'/>
+                                </label>
+                            </div>
+                        </t>
+                    </div>
+                    <div class='col-12'>
+                        <button class='btn float-right btn-primary new_manager'>Submit</button>
+                    </div>
+
+                </div>
+            </div>
+        </t>
+
+    </template>
 
     <template id="new_manager" name="New Manager">
         <t t-call="portal.portal_layout">

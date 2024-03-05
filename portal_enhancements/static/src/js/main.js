@@ -16,6 +16,7 @@ odoo.define('portal_enhancements.common', function (require) {
         },
         _createNewManager: function (ev) {
             var name = $("#contactName").val()
+            var partner_id = $("input[name='partner_id'").val()
             var email = $("#contactEmail").val()
             var phone = $("#contactPhone").val()
             var note = $("#contactNote").val()
@@ -47,7 +48,8 @@ odoo.define('portal_enhancements.common', function (require) {
                             phone: phone,
                             note: note,
                             model_access: model_access,
-                            comany_access: comany_access
+                            comany_access: comany_access,
+                            partner_id:partner_id
 
                         }).then(function (data) {
                             

@@ -20,7 +20,7 @@ Granting enhanced access to portal users
         'security/ir.model.access.csv',
         'views/res_partner_views.xml',
         'wizard/add_portal_contacts.xml',
-
+        'views/res_config.xml',
         'views/templates.xml',
         'wizard/add_portal_companies.xml'
 

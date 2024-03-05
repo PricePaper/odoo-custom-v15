@@ -173,16 +173,21 @@
         </xpath>
     </template>
 
-    <template id="portal_my_home_manager" name="Show Managers" customize_show="True" inherit_id="portal.portal_my_home" priority="20">
+    <!-- <template id="portal_my_home_manager" name="Show Managers" customize_show="True" inherit_id="portal.portal_my_home" priority="20">
         <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
             <t t-call="portal.portal_docs_entry" t-if='manage_managers'>
-                <t t-set="title">Manage Managers</t>
+                <t t-set="title">Manage Users</t>
                 <t t-set="url" t-value="'/my/managers'"/>
                 <t t-set="placeholder_count" t-value="'manager_count'"/>
             </t>
         </xpath>
-    </template>
+    </template> -->
+    <template id="user_dropdown" inherit_id="portal.user_dropdown">
+        <xpath expr="//*[@id='o_logout']" position="before">
+            <a t-attf-href="/my/website/company" role="menuitem" id="o_switch" class="dropdown-item">Switch Company</a>
 
+        </xpath>
+    </template>
 
     <template id="portal_my_managers" name="My Managers">
         <t t-call="portal.portal_layout">

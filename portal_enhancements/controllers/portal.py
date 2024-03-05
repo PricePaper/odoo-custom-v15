@@ -327,6 +327,11 @@ class CustomerPortal(portal.CustomerPortal):
             'name':f'New Manager: "{name}" Approval',
             'partner_id':partner_id.id
         }
+        Website = request.env['website']
+        curr_web = Website.get_current_website()
+        team_id = curr_web.helpdesk_team_website.id
+        if team_id:
+            helpdesk_vals['team_id'] = team_id.id
         ticket_id = request.env['helpdesk.ticket'].sudo().create(helpdesk_vals)
       
         acttion = request.env.ref('portal_enhancements.action_res_partner_portal_enhancements')

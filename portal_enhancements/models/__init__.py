@@ -9,3 +9,4 @@ from . import purchase_order
 from . import project_project
 from . import calendar_event
 from . import helpdesk_ticket
+from . import res_config

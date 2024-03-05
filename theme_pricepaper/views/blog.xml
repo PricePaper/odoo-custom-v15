@@ -6,7 +6,7 @@
             <div class="">
                 <section class="pt-md-5 py-3 paper-bag" style="background: #759453;">
                     <div class="container ppt-container py-5">
-                        <div class='row'>
+                        <div class='row bread_blog'>
                             <ul aria-label="breadcrumb" t-attf-class="breadcrumb flex-nowrap py-0 pr-2 pl-2  px-0 css_editable_mode_hidden #{additionnal_classes or ''}">
                                 <li t-if="len(blogs) &gt; 1" class="breadcrumb-item">
                                     <a href="/blog">All Blogs</a>

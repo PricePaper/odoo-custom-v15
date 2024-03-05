@@ -89,15 +89,24 @@ section.shop-banner {
     }
 }
 
-#products_grid_before{
-    .products_categories{
-        button[data-target='#wsale_products_categories_collapse']{
+#products_grid_before {
+    .products_categories {
+        button[data-target='#wsale_products_categories_collapse'] {
             font-size: 22px;
             font-weight: bolder;
             border-color: $primary;
         }
     }
+
+    #o_shop_collapse_category {
+        label.custom-control-label {
+            @media(max-width:1100px) {
+                font-size: 15px;
+            }
+        }
+    }
 }
+
 .o_wsale_products_main_row {
     #products_grid {
         @media (min-width:1101px) {
@@ -356,16 +365,20 @@ section.shop-banner {
         position: absolute;
         z-index: 9;
         right: 80px;
+
         @media (max-width:1200px) {
             right: 50px;
-            
+
         }
+
         @media(max-width:1000px) {
             right: 10px;
         }
+
         @media(max-width:450px) {
             right: 10px;
         }
+
         .left_scrol {
             background: $primary;
             border-color: $primary;
@@ -487,6 +500,7 @@ section.shop-banner {
                     .o_carousel_product_card_body {
                         height: 50%;
                         overflow: hidden;
+
                         .mt-2 {
                             display: none !important;
                         }
@@ -502,7 +516,8 @@ section.shop-banner {
                                 font-style: normal;
                                 font-weight: 400;
                                 letter-spacing: 0.046px;
-                                @media(max-width:1200px){
+
+                                @media(max-width:1200px) {
                                     font-size: 14px;
                                 }
                             }
@@ -926,7 +941,8 @@ section.shop-banner {
             border-bottom-left-radius: 62px;
 
             background: #f1f9ff;
-            .card-body{
+
+            .card-body {
                 background: transparent !important;
             }
         }

@@ -26,22 +26,32 @@ class AccountInvoice(models.Model):
 
         payment_limit_days = self.env['ir.config_parameter'].sudo().get_param('purge_old_open_credits.purge_old_payment_day_limit')
         pay_domain_date = datetime.today() - timedelta(days=int(payment_limit_days))
+        accounts = self.env['account.account'].search([]).filtered(lambda r: r.user_type_id.type in ('receivable', 'payable'))
 
-        payments = self.search([
-            ('state', '=', 'posted'),
-            ('move_type', '=', 'entry'),
-            ('payment_id','!=', False),
-            ('payment_id.payment_type', '=', 'inbound'),
-            ('amount_residual', '!=', 0),
-            ('date', '<', pay_domain_date.strftime('%Y-%m-%d'))
-        ]).sudo()
+
+        domain = [
+            ('date', '<', pay_domain_date.strftime('%Y-%m-%d')),
+            ('account_id', 'in', accounts.ids),
+            ('parent_state', '=', 'posted'),
+            ('reconciled', '=', False),
+            '|', ('amount_residual', '!=', 0.0), ('amount_residual_currency', '!=', 0.0), ('balance', '<', 0.0)
+        ]
+        move_lines = self.env['account.move.line'].search(domain)
+        # payment = move_lines.move_id.filtered(lambda r: r.move_type == 'entry' and r.payment_id != False and r.payment_id.payment_type == 'inbound')
+        for line in move_lines:
+            if line.move_id.move_type == 'entry' and line.move_id.payment_id != False and line.move_id.payment_id.payment_type == 'inbound':
+                print(line.move_id.name, line.amount_residual)
+                line.move_id.create_purge_writeoff(line.amount_residual)
+                break
+
+
         for invoice in credit_notes:
             invoice.create_purge_writeoff()
-        for payment in payments:
-            payment.create_purge_writeoff()
+        # for payment in payments:
+        #     payment.create_purge_writeoff()
         return True
 
-    def create_purge_writeoff(self):
+    def create_purge_writeoff(self, wrt_amt=0):
         """
         Writeoff the balance amount and reconcile the credit note
         """
@@ -62,8 +72,10 @@ class AccountInvoice(models.Model):
         if not wrtf_account:
             raise UserError(_('Please set a Write off account for credit Purge.'))
 
-        wrtf_amount = self.amount_residual
 
+        wrtf_amount = self.amount_residual
+        if wrt_amt:
+            wrtf_amount = abs(wrt_amt)
         amobj = self.env['account.move'].create({
             'company_id': self.company_id.id,
             'date': fields.Date.today(),

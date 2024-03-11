@@ -180,6 +180,21 @@ class ResPartner(models.Model):
             action['res_id'] = opportunity.id
             return action
 
+    def action_archive(self):
+
+        accounts = self.env['account.account'].search([]).filtered(lambda r: r.user_type_id.type in ('receivable', 'payable'))
+        domain = [
+            ('account_id', 'in', accounts.ids),
+            ('parent_state', '=', 'posted'),
+            ('reconciled', '=', False),
+            '|', ('amount_residual', '!=', 0.0), ('amount_residual_currency', '!=', 0.0),
+        ]
+        moves = self.env['account.move.line'].search(domain).filtered(lambda r: r.move_id.partner_id.id in self.ids)
+        if moves:
+            raise UserError('Selected partner has AR balance.')
+        else:
+            return super().action_archive()
+
 
 
 

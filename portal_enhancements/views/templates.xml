@@ -11,7 +11,7 @@
                     <div class='main_div'>
                         <div class='seconday_div'>
 
-                            <span>Please Select Desired Comapny</span>
+                            <span>Please Select Desired Company</span>
                             <select class="form-select form-select-lg mb-3" name='company_switch' aria-label=".form-select-lg example">
                                 <t t-foreach="company_ids" t-as="com">
                                     <option t-att-selected='com.id==curr_comapny' t-att-value='com.id'>
@@ -40,7 +40,7 @@
                     </h2>
                     <div class='row'>
                         <t t-foreach='sale_order_ids' t-as='order'>
-                            <div class='col-4 mb32'>
+                            <div class='col-md-4 col-12 mb32'>
                                 <div class='card h-100'>
                                     <div class='card-header'>
                                         <t t-esc='order.partner_shipping_id.name'/>
@@ -185,6 +185,7 @@
     <template id="user_dropdown" inherit_id="portal.user_dropdown">
         <xpath expr="//*[@id='o_logout']" position="before">
             <a t-attf-href="/my/website/company" role="menuitem" id="o_switch" class="dropdown-item">Switch Company</a>
+            <div id="o_logout_divider" class="dropdown-divider"></div>
 
         </xpath>
     </template>
@@ -281,7 +282,7 @@
                             <input type='Note' class="form-control" t-att-value='partner_id.comment' id='contactNote' name='contactNote'/>
                         </div>
                     </div>
-                    <div class='col col-6'>
+                    <div class='col-12 col-md-6'>
                         <h4>Select Companies to Allow</h4>
                         <t t-foreach='allowed_compaines' t-as='company'>
                             <div class="form-check">
@@ -293,7 +294,7 @@
                         </t>
                     </div>
 
-                    <div class='col col-6'>
+                    <div class='col-12 col-md-6 mt-md-0 mt-4'>
                         <h4>Manage Access</h4>
                         <t t-foreach='manage_access' t-as='company'>
                             <div class="form-check">

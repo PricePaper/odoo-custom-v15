@@ -96,13 +96,15 @@ class WebsiteSale(main.WebsiteSale):
 
     @http.route(['/sheet/browse/set'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
     def order_history_table(self, offset):
-        user = request.env.user
-        sheet_id = request.env['website.order.sheet'].sudo().search([('user_id','=',user.partner_id.id)],limit=1)
+        print(offset)
+        # user = request.env.user
+        # sheet_id = request.env['website.order.sheet'].sudo().search([('user_id','=',user.partner_id.id)],limit=1)
 
-
+        cur_com = request.session.get('current_website_company',False)
+        partner = request.env['res.partner'].browse([int(cur_com)]) if cur_com else self.env.user.partner_id
         # products = self.order_line.mapped('product_id').ids
         sales_history = request.env['sale.history'].sudo().search(
-            ['|', ('active', '=', False), ('active', '=', True), ('partner_id', '=', user.partner_id.id),
+            ['|', ('active', '=', False), ('active', '=', True), ('partner_id', '=', partner.id),
               ('product_id', '!=', False),('product_id.categ_id.is_storage_contract','=',False)],limit=15,offset=int(offset))
         # addons product filtering
         addons_products = sales_history.mapped('product_id').filtered(lambda rec: rec.need_sub_product).mapped('product_addons_list')

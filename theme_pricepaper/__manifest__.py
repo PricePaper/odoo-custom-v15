@@ -48,6 +48,7 @@
             'theme_pricepaper/static/src/scss/banner.scss',
             'theme_pricepaper/static/src/scss/about_us.scss',
             'theme_pricepaper/static/src/scss/blog_main.scss',
+            'theme_pricepaper/static/src/scss/order_sheet.scss',
             'theme_pricepaper/static/src/scss/portal.scss',
             'theme_pricepaper/static/src/scss/shop.scss',
             'theme_pricepaper/static/src/scss/product_page.scss',

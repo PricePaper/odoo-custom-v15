@@ -110,7 +110,8 @@ odoo.define('theme_pricepaper.common', function (require) {
             var data = {}
             var flag = false
             var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-            $form.find('input,textarea').each(function () {
+            $form.find('input:not(.d-none),textarea:not(#g-recaptcha-response)').each(function () {
+
                 if (!$(this).val()) {
 
                     $(this).get(0).setCustomValidity('Please Enter Correct Information');

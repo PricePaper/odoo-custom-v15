@@ -348,7 +348,7 @@
                             <input type='Note' class="form-control" id='contactNote' name='contactNote'/>
                         </div>
                     </div>
-                    <div class='col col-6'>
+                    <div class='col-12 col-md-6'>
                         <h4>Select Companies to Allow</h4>
                         <t t-foreach='allowed_compaines' t-as='company'>
                             <div class="form-check">
@@ -360,7 +360,7 @@
                         </t>
                     </div>
 
-                    <div class='col col-6'>
+                    <div class='col-12 col-md-6 mt-md-0 mt-4 mb-4'>
                         <h4>Manage Access</h4>
                         <t t-foreach='manage_access' t-as='company'>
                             <div class="form-check">

@@ -12,7 +12,9 @@ class PortalRequest(CustomerPortal):
 
 
     def _get_request_domain(self):
-        return [('partner_id', '=', request.env.user.partner_id.id),('state','!=','draft')]
+        cur_com = request.session.get('current_website_company',False)
+        partner = self.env['res.partner'].browse([int(cur_com)]) if cur_com else self.env.user.partner_id
+        return [('partner_id', '=', partner.id),('state','!=','draft')]
 
 
     def _prepare_home_portal_values(self, counters):

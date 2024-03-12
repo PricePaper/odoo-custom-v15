@@ -29,4 +29,6 @@ odoo.define('portal_enhancements.common', function (require) {
     })
 
 
+
 })
+

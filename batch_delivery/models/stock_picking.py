@@ -66,10 +66,11 @@ class StockPicking(models.Model):
 
         if 'outgoing' == self.picking_type_id.code:
             for move in self.move_ids_without_package:
-                if move.move_orig_ids and move.location_id.is_transit_location:
-                    incoming_qty = sum(move.move_orig_ids.filtered(lambda rec: rec.state == 'done' and
+                move_orig_ids = move.move_orig_ids.filtered(lambda r:r.transit_picking_id == move.picking_id)
+                if move_orig_ids and move.location_id.is_transit_location:
+                    incoming_qty = sum(move_orig_ids.filtered(lambda rec: rec.state == 'done' and
                         not rec.location_id.is_transit_location).mapped('quantity_done'))
-                    outgoing_qty = sum(move.move_orig_ids.filtered(lambda rec: rec.state == 'done' and
+                    outgoing_qty = sum(move_orig_ids.filtered(lambda rec: rec.state == 'done' and
                         rec.location_id.is_transit_location).mapped('quantity_done'))
                     if move.quantity_done != incoming_qty - outgoing_qty:
                         move.transit_confirm_adjustment(move.quantity_done - incoming_qty + outgoing_qty)
@@ -746,6 +747,7 @@ class StockPicking(models.Model):
         return action
 
     def action_reset_picking(self):
+
         return {
             'name': _('Reset Picking'),
             'view_mode': 'form',
@@ -774,11 +776,12 @@ class StockPicking(models.Model):
             }
             invoices = self.invoice_ids.filtered(lambda r: r.state in ('draft'))
             del_invoice = self.env['account.move']
-            for invoice in invoices:
-                for line in invoice.invoice_line_ids:
-                    if True in line.mapped('sale_line_ids').mapped('is_delivery'):
-                        del_invoice |= invoice
-                        line.unlink()
+            # for invoice in invoices:
+            #     for line in invoice.invoice_line_ids:
+            #         if True in line.mapped('sale_line_ids').mapped('is_delivery'):
+            #             del_invoice |= invoice
+            #             print(line, 'lllllllllll')
+            #             line.unlink()
 
             #cancel the existing DO
             self.with_context(from_reset_picking=True).action_cancel()
@@ -796,11 +799,14 @@ class StockPicking(models.Model):
                     })
                     new_move._action_assign()
             self.sale_id.write({'state': previous_state})
-            for inv in del_invoice:
-                delivery_line = self.sale_id.order_line.filtered(lambda r: r.is_delivery)
-                for line in delivery_line:
-                    vals = delivery_line._prepare_invoice_line()
-                    inv.write({'invoice_line_ids': [(0, 0, vals)]})
+            for picking in self.sale_id.picking_ids.filtered(lambda r: r.state not in ('cancel', 'done')):
+                if picking.carrier_id != self.sale_id.carrier_id:
+                    picking.carrier_id = self.sale_id.carrier_id.id
+            # for inv in del_invoice:
+            #     delivery_line = self.sale_id.order_line.filtered(lambda r: r.is_delivery)
+            #     for line in delivery_line:
+            #         vals = delivery_line._prepare_invoice_line()
+            #         inv.write({'invoice_line_ids': [(0, 0, vals)]})
 
     def _create_backorder(self):
         res = super()._create_backorder()

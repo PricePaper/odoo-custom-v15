@@ -2,8 +2,8 @@
 <odoo>
     <data>
 
-        <record model="ir.ui.view" id="add_transaction_wizard_view_form">
-            <field name="name">acorrect.transaction.error</field>
+        <record model="ir.ui.view" id="correct_transaction_error_wizard_view_form">
+            <field name="name">correct.transaction.error</field>
             <field name="model">correct.transaction.error</field>
             <field name="arch" type="xml">
                 <form string="Check and Correct Transaction error">

@@ -32,5 +32,43 @@
         <!-- <xpath expr="//div[hasclass('container')]/div[hasclass('dynamic_snippet_template')]" position="inside">
         </xpath> -->
     </template>
+    <template id="products_item" name="Products item" inherit_id="website_sale.products_item">
+        <xpath expr="//div[hasclass('product_price')]" position="attributes">
+            <attribute name="t-if" separator=" " add="not request.env.user._is_public()" />
+            
+        </xpath>
+    </template>
+
+
+    <template id="cart" name="Shopping Cart" inherit_id="website_sale.cart">
+        <xpath expr="//div[@id='wrap']" position="attributes">
+            <attribute name="class" separator=" " add="paper_cart" />
+        </xpath>
+        <xpath expr="//t[@t-call='website_sale.wizard_checkout']/.." position="attributes">
+            <attribute name="class" separator=" " add="progress_cart" />
+        </xpath>
+        <xpath expr="//t[@t-call='website_sale.wizard_checkout']/.." position="inside">
+            <div class='white-dots'/>
+        </xpath>
+        <xpath expr="//div[@id='wrap']//div[hasclass('container')]" position="attributes">
+            <attribute name="class" separator=" " add="container-fluid" remove="container" />
+        </xpath>
+    </template>
+
+
+    <template id="cart" name="Shopping Cart" inherit_id="website_sale.cart">
+        <xpath expr="//div[@id='wrap']" position="attributes">
+            <attribute name="class" separator=" " add="paper_cart" />
+        </xpath>
+        <xpath expr="//t[@t-call='website_sale.wizard_checkout']/.." position="attributes">
+            <attribute name="class" separator=" " add="progress_cart" />
+        </xpath>
+        <xpath expr="//t[@t-call='website_sale.wizard_checkout']/.." position="inside">
+            <div class='white-dots'/>
+        </xpath>
+        <xpath expr="//div[@id='wrap']//div[hasclass('container')]" position="attributes">
+            <attribute name="class" separator=" " add="container-fluid" remove="container" />
+        </xpath>
+    </template>
 
 </odoo>

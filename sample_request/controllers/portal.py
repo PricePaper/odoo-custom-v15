@@ -40,7 +40,7 @@ class PortalRequest(CustomerPortal):
         order = searchbar_sortings[sortby]['order']
 
         searchbar_filters = {
-            'all': {'label': _('All'), 'domain': []},
+            'all': {'label': _('All Requests'), 'domain': []},
             'Approved': {'label': _('Approved Requests'), 'domain': [('state', '=', "approve")]},
             'Rejected': {'label': _('Rejected Requests'), 'domain': [('state', '=',"reject" )]},
         }

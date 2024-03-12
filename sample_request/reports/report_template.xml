@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+      <record id="paperformat_sample_picking_ticket" model="report.paperformat">
+          <field name="name">Sample Request Picking Ticket</field>
+          <field name="default" eval="False"/>
+          <field name="format">Letter</field>
+          <field name="page_height">0</field>
+          <field name="page_width">0</field>
+          <field name="orientation">Portrait</field>
+          <field name="margin_top">30</field>
+          <field name="margin_bottom">0</field>
+          <field name="margin_left">10</field>
+          <field name="margin_right">10</field>
+          <field name="header_line" eval="False"/>
+          <field name="header_spacing">25</field>
+          <field name="dpi">90</field>
+      </record>
+
+      <record id="print_sample_product_label_paperformat" model="report.paperformat">
+          <field name="name">Sample Product label Report Paper Format</field>
+          <field name="format">custom</field>
+          <field name="page_height">51</field>
+          <field name="page_width">102</field>
+          <field name="orientation">Portrait</field>
+          <field name="margin_top">0</field>
+          <field name="margin_bottom">0</field>
+          <field name="margin_left">5</field>
+          <field name="margin_right">0</field>
+          <field name="header_line" eval="False"/>
+          <field name="header_spacing">0</field>
+          <field name="dpi">90</field>
+      </record>
+
+
+         <record id="sample_request_product_label_report" model="ir.actions.report">
+            <field name="name">Sample Request Product Labels</field>
+            <field name="model">sample.request</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">sample_request.report_sample_product_label</field>
+            <field name="report_file">sample_request.report_sample_product_label</field>
+            <field name="paperformat_id" ref="sample_request.print_sample_product_label_paperformat"/>
+            <field name="print_report_name">'Product labels - %s' % (object.name or '')</field>
+        </record>
+
+        <record id="sample_request_picking_report" model="ir.actions.report">
+            <field name="name">Sample Request Pick Ticket</field>
+            <field name="model">sample.request</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">sample_request.report_sample_request_picking</field>
+            <field name="report_file">sample_request.report_sample_request_picking</field>
+            <field name="print_report_name">'Pick - %s - %s' % (object.partner_id and object.partner_id.name or '',object.name)</field>
+            <field name="paperformat_id" ref="sample_request.paperformat_sample_picking_ticket"/>
+        </record>
+    </data>
+</odoo>

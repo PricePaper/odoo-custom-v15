@@ -89,7 +89,7 @@
                         </thead>
                         <tbody class="sale_tbody">
                             <t t-set="line_count" t-value="0"/>
-                            <t t-foreach="doc.request_lines" t-as="line">
+                            <t t-foreach="doc.request_lines.filtered(lambda r: not r.is_reject)" t-as="line">
                                 <tr>
                                     <t t-set="line_count" t-value="line_count + 1"/>
                                     <td style="border:1px solid #7a7a7a;padding:8px 12px;" name="account_invoice_line_name" ><span t-esc="line_count"/></td>

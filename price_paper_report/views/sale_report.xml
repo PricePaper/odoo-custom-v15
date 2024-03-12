@@ -128,7 +128,7 @@
             <table class="table table-sm o_main_table" style="margin-top:12px; border:1px solid #7a7a7a; font-size:14px; border-collapse: collapse; width:100%;">
             <!-- In case we want to repeat the header, remove "display: table-row-group" -->
             <thead style="display: table-row-group">
-            <tr>
+            <!-- <tr>
             <th name="th_description" class="text-left" style="background-color:#ececec; border:1px solid #7a7a7a; padding:8px 12px;">Description</th>
             <th name="th_quantity" class="text-right" style="background-color:#ececec; border:1px solid #7a7a7a; padding:8px 12px;">Quantity</th>
             <th name="th_priceunit" class="text-right" style="background-color:#ececec; border:1px solid #7a7a7a; padding:8px 12px;">Unit Price</th>
@@ -141,11 +141,25 @@
             <span groups="account.group_show_line_subtotals_tax_included">Total Price</span>
             </th>
             <th name="th_taxes" class="text-right" style="background-color:#ececec; border:1px solid #7a7a7a; padding:8px 12px;"></th>
+            </tr> -->
+            <tr>
+                <t t-set="colspan" t-value="6"/>
+                <th class="text-left" style="background-color:#ececec; border:1px solid #7a7a7a; padding:8px 12px;"><span>Ln#</span></th>
+                <th class="text-left" style="background-color:#ececec;border:1px solid #7a7a7a;padding:8px 12px;"><span>Product</span></th>
+                <th class="text-right" style="background-color:#ececec;border:1px solid #7a7a7a; width:10px;padding:8px 12px;"><span>Qty</span></th>
+                <th class="text-left" style="background-color:#ececec; border:1px solid #7a7a7a;padding:8px 12px;"><span>Unit</span></th>
+                <th class="text-left" style="background-color:#ececec; border:1px solid #7a7a7a;padding:8px 12px;"><span>Description</span></th>
+                <th class="text-right" style="background-color:#ececec; border:1px solid #7a7a7a;padding:8px 12px;" t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)">
+                    <span groups="account.group_show_line_subtotals_tax_excluded"  >Amount</span>
+                    <span groups="account.group_show_line_subtotals_tax_included"  >Total Price</span>
+                </th>
+                <th t-attf-class="text-left {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}"  style="background-color:#ececec;padding:8px 12px; border:1px solid #7a7a7a;" t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)"><span>Tax</span></th>
             </tr>
             </thead>
             <tbody class="sale_tbody">
 
             <t t-set="current_subtotal" t-value="0"/>
+            <t t-set="line_count" t-value="0"/>
 
             <t t-foreach="doc.order_line" t-as="line">
 
@@ -154,38 +168,31 @@
 
             <tr t-att-class="'bg-200 font-weight-bold o_line_section' if line.display_type == 'line_section' else 'font-italic o_line_note' if line.display_type == 'line_note' else ''">
             <t t-if="not line.display_type">
-            <td name="td_name"  style="border:1px solid #7a7a7a;padding:8px 12px;" >
-                <span t-field="line.name"/>
-                <t t-if="line.note and line.note != line.name">
-                    <br/>
-                    <span style="border:1px solid #7a7a7a;padding:8px 12px;" t-field="line.note"/>
-                </t>
-            </td>
-            <td name="td_quantity"  style="border:1px solid #7a7a7a;padding:8px 12px;"  class="text-right">
-              <span t-field="line.product_uom_qty"/>
-              <span t-field="line.product_uom"/>
-            </td>
-            <td name="td_priceunit" class="text-right"  style="border:1px solid #7a7a7a;padding:8px 12px;" >
-              <span t-field="line.price_unit"/>
-            </td>
-            <td t-if="display_discount" class="text-right" groups="product.group_discount_per_so_line"  style="border:1px solid #7a7a7a;padding:8px 12px;" >
-              <span t-field="line.discount"/>
-            </td>
-            <td name="td_subtotal" class="text-right o_price_total"  style="border:1px solid #7a7a7a;padding:8px 12px;" >
-              <t t-set="total_price" t-value="line.price_total"/>
-              <t t-set="price_subtotal" t-value="line.price_subtotal"/>
-               <span t-field="doc.currency_id.symbol"/>
-               <span><t t-esc="total_price" groups="account.group_show_line_subtotals_tax_excluded"/></span>
-               <span><t t-esc="price_subtotal" groups="account.group_show_line_subtotals_tax_included"/></span>
-               <!--<span t-field="line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>-->
-               <!--<span t-field="line.price_total" groups="account.group_show_line_subtotals_tax_included"/>-->
-            </td>
-            <td name="td_taxes" class="text-right"  style="border:1px solid #7a7a7a;padding:8px 12px;" >
-               <t t-set="tax_description" t-value="', '.join(map(lambda x: (x.description or x.name), line.tax_id))"/>
-                  <t t-if="tax_description">
-                      <span>(T)</span>
-                </t>
-            </td>
+                <t t-set="line_count" t-value="line_count + 1"/>
+                <td style="border:1px solid #7a7a7a;padding:8px 12px;" name="account_invoice_line_name" ><span t-esc="line_count"/></td>
+                <td style="border:1px solid #7a7a7a;padding:8px 12px;" name="account_invoice_line_name"><span t-field="line.product_id.default_code"/></td>
+                <td style="border:1px solid #7a7a7a;padding:8px 12px;" class="text-right"><span t-field="line.product_uom_qty"/></td>
+                <td style="border:1px solid #7a7a7a;padding:8px 12px;" class="text-left"><span t-field="line.product_uom" groups="uom.group_uom"/></td>
+                <td name="td_name"  style="border:1px solid #7a7a7a;padding:8px 12px;" >
+                    <span t-field="line.name"/>
+                    <t t-if="line.note and line.note != line.name">
+                        <br/>
+                        <span style="border:1px solid #7a7a7a;padding:8px 12px;" t-field="line.note"/>
+                    </t>
+                </td>
+                <td name="td_subtotal" class="text-right o_price_total"  style="border:1px solid #7a7a7a;padding:8px 12px;" >
+                  <t t-set="total_price" t-value="line.price_total"/>
+                  <t t-set="price_subtotal" t-value="line.price_subtotal"/>
+                   <span t-field="doc.currency_id.symbol"/>
+                   <span><t t-esc="total_price" groups="account.group_show_line_subtotals_tax_excluded"/></span>
+                   <span><t t-esc="price_subtotal" groups="account.group_show_line_subtotals_tax_included"/></span>
+                </td>
+                <td name="td_taxes" class="text-right"  style="border:1px solid #7a7a7a;padding:8px 12px;" >
+                   <t t-set="tax_description" t-value="', '.join(map(lambda x: (x.description or x.name), line.tax_id))"/>
+                      <t t-if="tax_description">
+                          <span>(T)</span>
+                    </t>
+                </td>
             </t>
             <t t-if="line.display_type == 'line_section'">
             <td name="td_section_line" colspan="99"  style="border:1px solid #7a7a7a;padding:8px 12px;" >
@@ -215,14 +222,16 @@
             <div t-field="doc.sale_default_message"/>
 
             <div class="clearfix" name="so_total_summary">
-                <div id="total" class="row" name="total"  style="padding-left:0;">
-                    <div t-attf-class="#{'col-4' if report_type != 'html' else 'col-sm-7 col-md-5'} ml-auto">
+                <div id="total" name="total"  class="row mt-2 mb-2">
+                    <div class="col-6" style="padding-right:0">
+                    </div>
+                    <div class="col-6" style="padding-left:0">
                         <table class="table table-sm" style="page-break-inside: avoid;width::100%; border:1px solid #7a7a7a;border-collapse: collapse; " align="right">
                         <!-- Tax totals -->
                             <t t-set="tax_totals" t-value="json.loads(doc.tax_totals_json)"/>
                             <!-- <t t-call="account.document_tax_totals"/> -->
                             <t t-foreach="tax_totals['subtotals']" t-as="subtotal">
-                                <tr class="border-black o_subtotal" style="width: 300px;">
+                                <tr class="border-black o_subtotal" >
                                     <td style="border:1px solid #7a7a7a;padding:8px 12px;"><span t-esc="subtotal['name']"/></td>
                                     <td class="text-right"  align="right" style="border:1px solid #7a7a7a; font-weight:bold;padding:8px 12px;">
                                         <span t-att-class="oe_subtotal_footer_separator" t-esc="subtotal['formatted_amount']. replace('\xa0', ' ')"/>
@@ -320,17 +329,15 @@
             </div>
 
             <div class="oe_structure"/>
-
-            <p t-field="doc.note"/>
-                <p t-if="not is_html_empty(doc.payment_term_id.note)">
-                <span t-field="doc.payment_term_id.note"/>
-            </p>
-            <p id="fiscal_position_remark" t-if="doc.fiscal_position_id and not is_html_empty(doc.fiscal_position_id.sudo().note)">
-                <strong>Fiscal Position Remark:</strong>
-                <span t-field="doc.fiscal_position_id.sudo().note"/>
-            </p>
-
         </div>
+        <p t-field="doc.note"/>
+            <p t-if="not is_html_empty(doc.payment_term_id.note)">
+            <span t-field="doc.payment_term_id.note"/>
+        </p>
+        <p id="fiscal_position_remark" t-if="doc.fiscal_position_id and not is_html_empty(doc.fiscal_position_id.sudo().note)">
+            <strong>Fiscal Position Remark:</strong>
+            <span t-field="doc.fiscal_position_id.sudo().note"/>
+        </p>
         <div class="footer o_standard_footer">
 
             <div class="text-center">

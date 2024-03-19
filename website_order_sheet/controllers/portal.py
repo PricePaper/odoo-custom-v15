@@ -53,10 +53,11 @@ class PortalRequest(CustomerPortal):
     def order_sheet(self,partner_id):
         values = self._prepare_portal_layout_values()
         sheet_id = request.env['website.order.sheet'].sudo().search([('partner_id','=',partner_id)],limit=1)
-        
+        partner = request.env['res.partner'].sudo().browse([partner_id])
+        main_partner = partner.parent_id.id or partner_id
         # products = self.order_line.mapped('product_id').ids
         sales_history = request.env['sale.history'].sudo().search(
-            ['|', ('active', '=', False), ('active', '=', True), ('partner_id', '=', partner_id),
+            ['|', ('active', '=', False), ('active', '=', True), ('partner_id', '=', main_partner),
               ('product_id', '!=', False),('product_id.categ_id.is_storage_contract','=',False)],limit=15,offset=0)
         # addons product filtering
         addons_products = sales_history.mapped('product_id').filtered(lambda rec: rec.need_sub_product).mapped('product_addons_list')

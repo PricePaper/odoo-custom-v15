@@ -11,7 +11,15 @@ _logger = logging.getLogger(__name__)
 
 class WebsiteSale(WebsiteSale):
 
-    
+    def _get_shop_payment_values(self, order, **kwargs):
+        res = super(WebsiteSale,self)._get_shop_payment_values(order,**kwargs)
+        curr_comapny = request.session.get('current_website_company')
+        partner_com = request.env['res.partner'].sudo().browse(curr_comapny)
+        res.update(
+            tokens = partner_com.payment_token_ids
+        )
+        return res
+        
 
 
 

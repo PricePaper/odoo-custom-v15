@@ -769,6 +769,10 @@ section.shop-banner {
             padding-left: 25px;
             padding-right: 25px;
             padding-bottom: 150px;
+            @media(max-width:800px){
+                padding-bottom: 20px;
+                margin-bottom: 50px;
+            }
             border-top-left-radius: 0px;
             border-top-right-radius: 62px;
             border-bottom-right-radius: 0px;

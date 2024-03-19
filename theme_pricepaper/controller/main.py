@@ -50,7 +50,8 @@ class WebsiteBlog(http.Controller):
             'email_from':kw.get('email'),
             'phone':kw.get('phone'),
             'street':kw.get('address'),
-            'description':kw.get('comments')
+            'description':kw.get('comments'),
+            'type' :'lead'
         }
         crm_id = request.env['crm.lead'].sudo().create(crm_vals)
         if crm_id:

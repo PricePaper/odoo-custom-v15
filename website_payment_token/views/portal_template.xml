@@ -3,7 +3,7 @@
         <template id="portal_my_home_token" name="Show Payment Token" inherit_id="portal.portal_my_home" customize_show="True" priority="30">
             <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
                 <t t-call="portal.portal_docs_entry">
-                    <t t-set="title">Payment Token</t>
+                    <t t-set="title">Credit Cards</t>
                     <t t-set="url" t-value="'/my/payment/token'"/>
                 </t>
             </xpath>

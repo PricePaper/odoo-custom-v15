@@ -158,7 +158,7 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
             prodct_li.each(function () {
                 var product_id = $(this).attr('data-id')
                 var uom = $(this).find('.uom_select').val()
-                
+
                 var quantity = parseInt($(this).find('.js_quantity').val())
                 if (quantity != 0) {
 
@@ -212,7 +212,15 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
                     // pattern: '[0-9]{3}-[0-9]{3}-[0-9]{4}',
                     required: true
                 },
-                showCancelButton: true
+                showCancelButton: true,
+                customClass: {
+                    validationMessage: 'my-validation-message',
+                },
+                preConfirm: (value) => {
+                    if (!value) {
+                        Swal.showValidationMessage('<i class="fa fa-info-circle"></i> Section name is required')
+                    }
+                }
             }).then((result) => {
                 if (result.value) {
                     var partner_id = $("input[name='partner_id']").val()

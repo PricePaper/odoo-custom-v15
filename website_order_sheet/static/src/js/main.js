@@ -216,11 +216,12 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
                 customClass: {
                     validationMessage: 'my-validation-message',
                 },
-                preConfirm: (value) => {
+                inputValidator: (value) => {
                     if (!value) {
-                        Swal.showValidationMessage('<i class="fa fa-info-circle"></i> Section name is required')
+                        return "You need to write something!";
                     }
-                }
+                },
+
             }).then((result) => {
                 if (result.value) {
                     var partner_id = $("input[name='partner_id']").val()
@@ -260,6 +261,12 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
                     // pattern: '[0-9]{3}-[0-9]{3}-[0-9]{4}',
                     required: true
                 },
+                inputValidator: (value) => {
+                    if (!value) {
+                        return "You need to write something!";
+                    }
+                },
+
                 showCancelButton: true
             }).then((result) => {
                 if (result.value) {

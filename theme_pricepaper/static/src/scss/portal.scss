@@ -14,6 +14,13 @@
         width: 436.5px;
         height: 134.1px;
 
+        @media (max-width:1200px) {
+            left: -24px;
+            width: 403.5px;
+            height: 122.1px;
+
+        }
+
         @media(max-width:1100px) {
             display: none;
         }
@@ -32,9 +39,10 @@
         background-size: cover;
         background-repeat: no-repeat;
         background-position: top;
+
         @media (max-width:1400px) {
             left: 29%;
-            
+
         }
 
         @media(max-width:1100px) {
@@ -51,10 +59,12 @@
             padding-left: 75px;
             padding-right: 100px;
         }
-        .oe_reset_password_form{
-            position: relative  !important;
+
+        .oe_reset_password_form {
+            position: relative !important;
             z-index: 999999 !important;
         }
+
         // width: 100% !important;
         // padding-right: 100px;
         // padding-left: 75px;
@@ -116,12 +126,15 @@
                     text-align: left;
                     letter-spacing: 2px;
                     color: #060606;
-                    @media(max-width:500px){
+
+                    @media(max-width:500px) {
                         font-size: 30px;
                     }
-                    .company_name{
+
+                    .company_name {
                         font-size: 20px;
-                        @media(max-width:500px){
+
+                        @media(max-width:500px) {
                             font-size: 15px;
                         }
                     }
@@ -278,36 +291,40 @@
 
 
 }
-#generateModal{
+
+#generateModal {
     z-index: 9999;
 }
-#o_portal_navbar_content{
-    .navbar-text{
+
+#o_portal_navbar_content {
+    .navbar-text {
         font-size: 14px !important;
         font-family: $font-family_1 !important;
     }
 }
 
-#generateModal{
-    .token_generate{
-        @media(max-width:760px){
+#generateModal {
+    .token_generate {
+        @media(max-width:760px) {
             width: auto !important;
         }
     }
 }
-.switch_company_wrap{
 
-    select{
+.switch_company_wrap {
+
+    select {
         width: 98%;
         // height: 40px;
         padding: 10px;
     }
 
-    .main_div{
+    .main_div {
         padding: 10px;
         display: flex;
         justify-content: center;
-        .seconday_div{
+
+        .seconday_div {
             display: flex;
             flex-direction: column;
             padding-bottom: 32px;
@@ -315,12 +332,14 @@
             max-width: 500px;
             justify-content: center;
             align-items: center;
-            span{
+
+            span {
                 font-family: $font-family_1;
                 font-size: 22px;
                 margin-bottom: 15px;
             }
-            button{
+
+            button {
                 font-size: 20px !important;
                 max-width: 80%;
                 padding: 15px 26px;

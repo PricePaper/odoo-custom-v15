@@ -37,12 +37,10 @@ class AccountInvoice(models.Model):
             '|', ('amount_residual', '!=', 0.0), ('amount_residual_currency', '!=', 0.0), ('balance', '<', 0.0)
         ]
         move_lines = self.env['account.move.line'].search(domain)
-        # payment = move_lines.move_id.filtered(lambda r: r.move_type == 'entry' and r.payment_id != False and r.payment_id.payment_type == 'inbound')
         for line in move_lines:
             if line.move_id.move_type == 'entry' and line.move_id.payment_id != False and line.move_id.payment_id.payment_type == 'inbound':
-                print(line.move_id.name, line.amount_residual)
                 line.move_id.create_purge_writeoff(line.amount_residual)
-                break
+
 
 
         for invoice in credit_notes:

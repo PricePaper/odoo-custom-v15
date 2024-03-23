@@ -21,10 +21,8 @@
                         <button name='approve_request' class='btn-primary' type='object' string='Approve Request' attrs="{'invisible':[('state','!=','request')]}" groups='sample_request.group_manager'/>
                         <button name='reject_request' groups='sample_request.group_manager' type='object' string='Reject Request' attrs="{'invisible':[('state','!=','request')]}"/>
                         <button name='sent_approval' type='object' string='Send For Approval' attrs="{'invisible':[('state','!=','draft')]}"/>
-                        <button name="print_picking_operation" type="object" string="Print Picking"
-                                attrs="{'invisible': [('state', '!=', 'approve')]}"/>
-                        <button name="print_product_label" type="object" string="Print Labels"
-                                attrs="{'invisible': [('state', '!=', 'approve')]}"/>
+                        <button name="print_picking_operation" type="object" string="Print Picking" attrs="{'invisible': [('state', '!=', 'approve')]}"/>
+                        <button name="print_product_label" type="object" string="Print Labels" attrs="{'invisible': [('state', '!=', 'approve')]}"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,request,approve"/>
                     </header>
                     <sheet>
@@ -40,8 +38,8 @@
                                 <field name='carrier_id'/>
                             </group>
                             <group>
-                                <field name='partner_id'  widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}" domain="[('type','=','contact'),('parent_id','=',False),('customer','=',True)]"/>
-                                <field name='partner_shipping_id'  domain="['|',('id','=',partner_id),('parent_id','=',partner_id)]" string='Delivery Address'/>
+                                <field name='partner_id' widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}" domain="[('type','=','contact'),('parent_id','=',False),('customer','=',True)]"/>
+                                <field name='partner_shipping_id' domain="['|',('id','=',partner_id),('parent_id','=',partner_id)]" string='Delivery Address'/>
                                 <!-- <field name='sale_id' readonly='1' attrs="{'inivisible':[('state','=','draft')]}"/> -->
                             </group>
                         </group>
@@ -88,12 +86,7 @@
         <menuitem id="sample_request_draft" name="Sample Requests" sequence="30" parent='sample_request_root' action='sample_request.action_sample_request'/>
         <menuitem id="sample_request_approve" name="Approved Requests" sequence="30" parent='sample_request_root' action='sample_request.action_sample_request_approve'/>
         <menuitem id="sample_request_reject" name="Rejected Requests" sequence="30" parent='sample_request_root' action='sample_request.action_sample_request_reject'/>
-        <menuitem
-        id="crm_sample_root"
-        name="Sample Requests"
-        parent="crm.crm_menu_root"
-        groups='sample_request.group_manager,sample_request.group_user'
-        sequence="99"/>
+        <menuitem id="crm_sample_root" name="Sample Requests" parent="crm.crm_menu_root" groups='sample_request.group_manager,sample_request.group_user' sequence="3"/>
         <menuitem id="crm_sample_request_draft" name="Sample Requests" sequence="30" parent='crm_sample_root' action='sample_request.action_sample_request'/>
         <menuitem id="crm_sample_request_approve" name="Approved Requests" sequence="30" parent='crm_sample_root' action='sample_request.action_sample_request_approve'/>
         <menuitem id="crm_sample_request_reject" name="Rejected Requests" sequence="30" parent='crm_sample_root' action='sample_request.action_sample_request_reject'/>

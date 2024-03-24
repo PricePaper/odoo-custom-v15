@@ -29,7 +29,8 @@
         'views/portal.xml',
         'views/login.xml',
         'views/shop.xml',
-        'views/product_page.xml'
+        'views/product_page.xml',
+        'views/payment_page.xml',
     ],
     'demo': [
         ''
@@ -53,6 +54,7 @@
             'theme_pricepaper/static/src/scss/shop.scss',
             'theme_pricepaper/static/src/scss/product_page.scss',
             'theme_pricepaper/static/src/scss/sample.scss',
+            'theme_pricepaper/static/src/scss/ecom/*',
             'theme_pricepaper/static/src/scss/snippet/*',
 
         ],
@@ -66,4 +68,5 @@
    
    
 }
+
 

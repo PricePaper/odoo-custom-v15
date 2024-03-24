@@ -7,7 +7,10 @@ odoo.define('portal_enhancements.common', function (require) {
     $.blockUI.defaults.css["background-color"] = '';
     $.blockUI.defaults.overlayCSS["opacity"] = '0.9';
 
-
+    function validateEmail($email) {
+        var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+        return emailReg.test($email);
+    }
 
     publicWidget.registry.NewManager = publicWidget.Widget.extend({
         selector: '.new_manager',
@@ -22,10 +25,15 @@ odoo.define('portal_enhancements.common', function (require) {
             var note = $("#contactNote").val()
             if (!name) {
                 $("#contactName").addClass('invalid')
+                $("#contactName").get(0).setCustomValidity('Please Enter Name');
+                $("#contactName").get(0).reportValidity()
             }
-            else if (!email) {
+            else if (!email || !validateEmail(email) ) {
                 $("#contactEmail").addClass('invalid')
+                $("#contactEmail").get(0).setCustomValidity('Please Enter Correct Email');
+                $("#contactEmail").get(0).reportValidity()
             }
+
             else {
                 var model_access = []
                 var comany_access = []

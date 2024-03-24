@@ -2,7 +2,9 @@
     background: white !important;
     position: relative;
     height: 100%;
-
+.o_portal_pager{
+    margin-top: 20px;
+}
     .curvy-line {
         background: url(/theme_pricepaper/static/src/scss/../img/curvy-line1.svg);
         position: absolute;
@@ -34,7 +36,7 @@
         left: 18%;
         max-width: 384px;
         height: 117px;
-        z-index: 999999;
+        z-index: 99;
         width: 278px;
         background-size: cover;
         background-repeat: no-repeat;
@@ -78,6 +80,11 @@
             padding: 11px 7px;
             border-radius: 0 28px 0 27px;
             outline: none;
+
+            .dropdown-menu {
+                left: auto !important;
+                right: 0 !important;
+            }
 
             button {
                 font-size: 15px !important;

@@ -48,7 +48,7 @@
                                     <div class='card-body'>
                                         <table class='w-100'>
                                             <tr>
-                                                <th>
+                                                <th style='vertical-align: text-top;'>
                                                 Delivery Address:
                                                 </th>
                                                 <td class='text-end'>
@@ -256,7 +256,7 @@
                 <t t-out='partner_id.name'/>
             </h3>
             <div class='container new_manager mt64'>
-            <input name='partner_id' type='hidden' t-att-value='partner_id.id'/>
+                <input name='partner_id' type='hidden' t-att-value='partner_id.id'/>
                 <div class='row'>
                     <div class='col-12 col-md-6'>
                         <div class="form-floating mb-3">
@@ -273,7 +273,7 @@
                     <div class='col-12 col-md-6'>
                         <div class="form-floating mb-3">
                             <label for="contactPhone">Phone</label>
-                            <input type='Phone' class="form-control" t-att-value='partner_id.phone' id='contactPhone' name='contactPhone'/>
+                            <input type='number' class="form-control" t-att-value='partner_id.phone' id='contactPhone' name='contactPhone'/>
                         </div>
                     </div>
                     <div class='col-12 col-md-6'>

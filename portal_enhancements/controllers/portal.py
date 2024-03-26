@@ -318,6 +318,8 @@ class CustomerPortal(portal.CustomerPortal):
     def portal_company_switch(self):
         partner = request.env.user.partner_id
         portal_companies = partner.portal_company_ids
+        if request.env.user.has_group('base.group_user'):
+            portal_companies = request.env['res.partner'].sudo().search([('is_company','=',True)])
         curr_comapny = request.session.get('current_website_company')
 
         return request.render("portal_enhancements.portal_my_company", {'company_ids': portal_companies, 'curr_comapny': curr_comapny})

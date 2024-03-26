@@ -84,6 +84,9 @@
             .dropdown-menu {
                 left: auto !important;
                 right: 0 !important;
+                @media(max-width:768px){
+                    right: auto !important;
+                }
             }
 
             button {

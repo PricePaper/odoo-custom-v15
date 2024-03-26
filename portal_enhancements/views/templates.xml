@@ -339,7 +339,7 @@
                     <div class='col-12 col-md-6'>
                         <div class="form-floating mb-3">
                             <label for="contactPhone">Phone</label>
-                            <input type='Phone' class="form-control" id='contactPhone' name='contactPhone'/>
+                            <input type='number' class="form-control" id='contactPhone' name='contactPhone'/>
                         </div>
                     </div>
                     <div class='col-12 col-md-6'>

@@ -53,6 +53,7 @@
                     #order_delivery,#order_total_untaxed,#order_total_taxes,#order_total {
                         td.text-xl-right {
                             text-align: right !important;
+                            padding-right: 0.3rem;
                         }
                     }
                 }

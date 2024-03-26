@@ -9,7 +9,7 @@
                         </h2>
                         <div class='row'>
                             <t t-foreach='sale_order_ids' t-as='order'>
-                                <div class='col-4 mb32'>
+                                <div class='col-md-6 col-lg-4 col-12 mb32'>
                                     <div class='card h-100'>
                                         <div class='card-header'>
                                             <t t-esc='order.partner_shipping_id.name'/>

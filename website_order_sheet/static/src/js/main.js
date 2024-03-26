@@ -41,8 +41,9 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
             'click .add_prod': '_addProd',
 
         },
-        setprod: function () {
+        setprod: function (add_prod = false) {
             var offset = $(this.$target).find('.next_set').attr('data-offset')
+            var $self = this
             offset = parseInt(offset, 10) - 1
             var section_key = window.localStorage.getItem("sectionKey");
             var key = 'section-' + section_key + '-' + offset
@@ -51,7 +52,19 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
                 selec_prod.push($(this).attr('data-id'))
             }).promise().done(function () {
                 window.localStorage.setItem(key, JSON.stringify(selec_prod));
+
             })
+        },
+        removeProd:function(){
+            var section_key = window.localStorage.getItem("sectionKey");
+            var key = 'section-' + section_key + '-'
+            for (var i = 0; i < window.localStorage.length; i++) {
+                // console.log('hh')
+                // console.log(window.localStorage.key(i))
+                if (window.localStorage.key(i).startsWith(key)) {
+                    window.localStorage.removeItem(window.localStorage.key(i));
+                }
+            }
         },
         getprod: function (offset = false, all = false) {
             // console.log(all)
@@ -72,13 +85,15 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
                     }
                 }
                 var main_ids = []
-                // Iterate over arr and remove the items by key
-                for (var i = 0; i < arr.length; i++) {
-                    var arr_2 = JSON.parse(window.localStorage.getItem(arr[i]))
-                    console.log("ma", arr_2)
-                    Array.prototype.push.apply(main_ids, arr_2)
-                    // console.log('rrrrr',arr)
-                    // window.localStorage.removeItem(arr[i]);
+                if (arr.length) {
+
+                    for (var i = 0; i < arr.length; i++) {
+                        var arr_2 = JSON.parse(window.localStorage.getItem(arr[i]))
+                        console.log("ma", arr_2)
+                        Array.prototype.push.apply(main_ids, arr_2)
+                        // console.log('rrrrr',arr)
+                        // window.localStorage.removeItem(arr[i]);
+                    }
                 }
 
                 return main_ids
@@ -97,17 +112,43 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
         _addProd: function (ev) {
             var section_key = window.localStorage.getItem("sectionKey");
             var prod_ids = this.getprod(false, true)
-            this._rpc({
-                route: '/sheet/add/prod',
-                params: {
-                    section_key: section_key,
-                    prod_ids: prod_ids
-                }
-            }).then(function (res) {
-                console.log($(document).find('li[data-id=' + section_key + ']'))
-                $('#browseHistory').modal('hide')
-                $(document).find('li[data-id=' + section_key + ']').after(res.prod_li)
-            })
+            var $self = this
+            console.log('hello1', prod_ids)
+            if (prod_ids.length != 0) {
+                console.log('ge')
+                this._rpc({
+                    route: '/sheet/add/prod',
+                    params: {
+                        section_key: section_key,
+                        prod_ids: prod_ids
+                    }
+                }).then(function (res) {
+                    $self.removeProd()
+                    window.location.reload()
+                    
+
+                })
+            }
+            else {
+                
+                var selec_prod =[]
+                $('input.prod_selec:checked').each(function () {
+                    selec_prod.push($(this).attr('data-id'))
+                }).promise().done(function () {
+                    console.log('hello')
+                    console.log(selec_prod)
+                    $self._rpc({
+                        route: '/sheet/add/prod',
+                        params: {
+                            section_key: section_key,
+                            prod_ids: selec_prod
+                        }
+                    }).then(function (res) {
+                        window.location.reload()
+                    })
+
+                })
+            }
         },
         _getSet: function (ev) {
             this.setprod()

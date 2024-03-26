@@ -276,6 +276,8 @@ class CustomerPortal(portal.CustomerPortal):
     def set_company(self, company_id):
         partner = request.env.user.partner_id
         portal_companies = partner.portal_company_ids
+        if request.env.user.has_group('base.group_user'):
+            portal_companies = request.env['res.partner'].sudo().search([('is_company','=',True)])
         if (company_id and int(company_id) in portal_companies.ids):
             request.session['current_website_company'] = int(company_id)
             orders = request.env['sale.order'].search_count(

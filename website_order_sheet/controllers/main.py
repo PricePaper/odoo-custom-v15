@@ -75,22 +75,26 @@ class WebsiteSale(main.WebsiteSale):
     @http.route(['/sheet/add/prod'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
     def order_history_table_add(self, section_key,prod_ids):
         sheet_line = request.env['order.sheet.lines'].sudo().browse([int(section_key)])
-        old_prod = sheet_line.product_ids.ids
+
+        old_prod = sheet_line.line_product_ids.mapped('product_id').ids
         prod_ids = list(map(int,prod_ids))
-        prod_ids.extend(old_prod)
-        sheet_line.product_ids = [(6,0,prod_ids)]
+        prod_to_add = list(set(prod_ids) - set(old_prod))
+       
+        # old_prod.extend(prod_to_add)
+        # sheet_line.product_ids = [(6,0,old_prod)]
         # sheet_line = request.env['order.sheet.lines'].sudo().browse([int(section_key)])
         # old_prod = sheet_line.product_ids.ids
-        prod_ids = list(map(int,prod_ids))
+        # prod_ids = list(set(map(int,prod_ids)))
         # prod_ids.extend(old_prod)
         # sheet_line.product_ids = [(6,0,prod_ids)]
-        product_ids = request.env['product.product'].sudo().browse(prod_ids)
-        value={}
-        value['prod_li'] = request.env['ir.ui.view']._render_template("website_order_sheet.prod_li", {
-            'product_ids':product_ids,'line_id':int(section_key)
-        })
-        return value
-        # return True
+        product_ids = request.env['product.product'].sudo().browse(prod_to_add)
+        sheet_line.write({'line_product_ids':[(0,0,{'product_id':prod.id})for prod in product_ids]})
+        # value={}
+        # value['prod_li'] = request.env['ir.ui.view']._render_template("website_order_sheet.prod_li", {
+        #     'product_ids':product_ids,'line_id':int(section_key)
+        # })
+        # return value
+        return True
 
 
 

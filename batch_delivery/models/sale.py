@@ -174,6 +174,8 @@ class SaleOrderLine(models.Model):
         """
         Override to add a context value to identify in transit
         """
+        if self._context.get('add_sc_line'):
+            return True
         self.update_move_quantity(previous_product_uom_qty)
         self = self.with_context(from_sale=True)
         res =  super(SaleOrderLine, self)._action_launch_stock_rule(previous_product_uom_qty)

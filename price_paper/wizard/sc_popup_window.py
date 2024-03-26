@@ -45,7 +45,7 @@ class StorageContractPopUpWindow(models.TransientModel):
             'product_uom_qty': self.order_qty,
             'order_id': self._context.get('active_id')
         })
-        line.product_id_change()
+        line.with_context(add_sc_line=True).product_id_change()
         line.product_uom_change()
 
 

@@ -15,20 +15,18 @@ class AccountInvoice(models.Model):
         """
         Cron method to identify old open credit notes and writeoff the amount
         """
-        limit_days = self.env.user.company_id and self.env.user.company_id.purge_old_open_credit_limit or 120
-        domain_date = datetime.today() - timedelta(days=limit_days)
+        credit_limit_days = self.env['ir.config_parameter'].sudo().get_param('purge_old_open_credits.purge_old_credit_day_limit')
+        credit_domain_date = datetime.today() - timedelta(days=int(credit_limit_days))
         credit_notes = self.search([
             ('state', '=', 'posted'),
             ('move_type', '=', 'out_refund'),
             ('payment_state','in',('not_paid','in_payment','partial')),
-            ('invoice_date', '<', domain_date.strftime('%Y-%m-%d')),
+            ('invoice_date', '<', credit_domain_date.strftime('%Y-%m-%d')),
         ]).sudo()
 
         payment_limit_days = self.env['ir.config_parameter'].sudo().get_param('purge_old_open_credits.purge_old_payment_day_limit')
         pay_domain_date = datetime.today() - timedelta(days=int(payment_limit_days))
         accounts = self.env['account.account'].search([]).filtered(lambda r: r.user_type_id.type in ('receivable', 'payable'))
-
-
         domain = [
             ('date', '<', pay_domain_date.strftime('%Y-%m-%d')),
             ('account_id', 'in', accounts.ids),
@@ -41,12 +39,8 @@ class AccountInvoice(models.Model):
             if line.move_id.move_type == 'entry' and line.move_id.payment_id != False and line.move_id.payment_id.payment_type == 'inbound':
                 line.move_id.create_purge_writeoff(line.amount_residual)
 
-
-
         for invoice in credit_notes:
             invoice.create_purge_writeoff()
-        # for payment in payments:
-        #     payment.create_purge_writeoff()
         return True
 
     def create_purge_writeoff(self, wrt_amt=0):

@@ -11,7 +11,7 @@
         </xpath>
         <xpath expr="//div[@id='wrap']//div[hasclass('container')]//t[@t-if='my_details']" position="before">
 
-            <div t-if="not no_breadcrumbs and not my_details and not breadcrumbs_searchbar" class="o_portal row position-relative mt-3" style="z-index:9999">
+            <div t-if="not no_breadcrumbs and not my_details and not breadcrumbs_searchbar" class="o_portal row position-relative mt-3" style="z-index:99">
                 <div class="col-12 align-items-center bg-white no-gutters ">
                     <div class="col-10">
                         <t t-call="portal.portal_breadcrumbs"></t>

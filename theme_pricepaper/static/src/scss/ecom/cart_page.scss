@@ -1,9 +1,10 @@
-form[name='coupon_code']{
-    .a-submit{
+form[name='coupon_code'] {
+    .a-submit {
         display: flex;
         align-items: center;
     }
 }
+
 .paper_cart {
     .container-fluid {
         padding-top: unset !important;
@@ -37,6 +38,7 @@ form[name='coupon_code']{
                 .wizard {
                     width: 100%;
                     font-family: $font-family_1;
+
                     .progress-wizard {
 
                         .progress-wizard-step {
@@ -117,20 +119,24 @@ form[name='coupon_code']{
                     margin-top: 8px;
                     margin-bottom: 10px;
                     display: flex;
-                    a{
-                        span{
+
+                    a {
+                        span {
                             margin-right: 5px;
-                            img{
+
+                            img {
                                 height: 50px;
                                 width: auto;
                                 object-fit: cover;
                             }
                         }
+
                         display: flex;
                         font-size: 12px;
                         justify-content: space-between;
                     }
-                    .js_delete_product{
+
+                    .js_delete_product {
                         right: 2px;
                         top: -15px;
                     }
@@ -140,36 +146,39 @@ form[name='coupon_code']{
                     display: flex;
                     justify-content: flex-end;
                     align-items: center;
-                    .td-price{
+
+                    .td-price {
                         margin-right: 10px;
                     }
 
                     .td-qty {
                         margin-right: 10px;
-                        .css_quantity{
+
+                        .css_quantity {
 
                             .input-group-prepend,
                             .input-group-append,
                             .js_quantity {
                                 height: 30px;
                                 border: unset !important;
-                                .btn{
-    
+
+                                .btn {
+
                                     padding: 0.3em !important;
                                 }
                             }
-    
+
                             .input-group-prepend,
                             .input-group-append {
                                 .btn {
-    
+
                                     border-radius: 8px;
                                     background-color: black;
                                     color: white;
                                 }
-    
-    
-    
+
+
+
                             }
                         }
                     }
@@ -190,9 +199,10 @@ form[name='coupon_code']{
 
 
         // &#o_cart_summary {
-            @media(max-width:600px) {
-                padding-top: 20px;
-            }
+        @media(max-width:600px) {
+            padding-top: 20px;
+        }
+
         // }
 
     }
@@ -221,7 +231,8 @@ form[name='coupon_code']{
                     font-weight: 400 !important;
                     font-size: 20px;
                 }
-                @media(max-width:500px){
+
+                @media(max-width:500px) {
                     display: none;
                 }
             }
@@ -346,7 +357,7 @@ form[name='coupon_code']{
             h4 {
                 display: block !important;
 
-                @media(max-width:600px) {
+                @media(max-width:800px) {
                     text-align: center !important;
                 }
 

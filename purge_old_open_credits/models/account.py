@@ -4,6 +4,9 @@ from datetime import datetime, timedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class AccountInvoice(models.Model):
@@ -20,7 +23,7 @@ class AccountInvoice(models.Model):
         credit_notes = self.search([
             ('state', '=', 'posted'),
             ('move_type', '=', 'out_refund'),
-            ('payment_state','in',('not_paid','in_payment','partial')),
+            ('payment_state','in',('not_paid', 'partial')),
             ('invoice_date', '<', credit_domain_date.strftime('%Y-%m-%d')),
         ]).sudo()
 
@@ -95,5 +98,11 @@ class AccountInvoice(models.Model):
         rcv_lines = self.line_ids.filtered(lambda r: r.account_id.user_type_id.type == 'receivable')
         rcv_wrtf = amobj.line_ids.filtered(lambda r: r.account_id.user_type_id.type == 'receivable')
         (rcv_lines + rcv_wrtf).reconcile()
+        msg = ''
+        if wrt_amt:
+            msg += 'Purge Cron: Payment:' + self.name + ' purged.' + str(wrt_amt)
+        else:
+            msg += 'Purge Cron: Credit note:' + self.name + ' purged.' + str(wrtf_amount)
+        _logger.info(msg)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

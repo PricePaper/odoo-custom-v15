@@ -717,7 +717,7 @@ class SaleOrder(models.Model):
         search_products = sales_history.mapped('product_id').ids
         context = {
             'default_sale_history_ids': [(6, 0, sales_history.ids)],
-            'products': search_products
+            # 'products': search_products
         }
 
         return {

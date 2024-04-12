@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="ppt_custom_invoice_template">
-        <div class="header" t-att-style="report_header_style" >
+      <div class="header" t-att-style="report_header_style">
             <table style="width:100%; margin-top:10px;">
                 <tr>
                     <td>
                         <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" class="float-left" alt="Logo" style="max-height: 3cm; max-width: 5.8cm;"/>
-                        <div class="float-left company_address" style="padding-left:18px;  font-size:15px;">
+                        <div class="float-left company_address" style="padding-left:18px;  font-size:18px;">
                             <div>
                                 <strong t-field="company.partner_id.name"/>
                             </div>
@@ -16,7 +16,7 @@
                         </div>
                     </td>
                     <td align="right" style="vertical-align:top;">
-                         <div class="text-left" style="display:inline-block; width:7cm; font-size:15px;">
+                         <div class="text-left" style="display:inline-block; width:7.5cm; font-size:18px;">
                               <span>Invoice Number:</span><span t-esc="o.name" style="padding-left:2px; font-weight: bold; font-size:18px;"/><br/>
                               <span>Date:</span><span t-field="o.invoice_date" style="padding-left:2px; font-weight: bold; "/><br/>
                               <span t-if="o.partner_id.customer_code">Partner Code:</span><span t-field="o.partner_id.customer_code" style="padding-left:2px; font-weight: bold; " t-if="o.partner_id.customer_code"/><br/>
@@ -25,7 +25,7 @@
                     </td>
                 </tr>
             </table>
-            <div t-if="company.logo or company.report_header" class="row zero_min_height" style="margin-top:15px;">
+            <div t-if="company.logo or company.report_header" class="row zero_min_height" >
                 <div class="col-12">
                     <div style="border-bottom: 2px solid black; "/>
                 </div>
@@ -37,7 +37,7 @@
                 <div class="col-12">
                     <table style="width:100%; font-size:15px; ">
                         <tr>
-                            <td>
+                            <td style="vertical-align:top;width:45%;">
                                 <span><b>Customer Address:</b></span><br/>
                                 <div><span t-if="o.partner_id.customer_code">[<t t-esc="o.partner_id.customer_code"/>]</span><t t-esc="o.partner_id.name"/></div>
                                 <div><span t-if="o.partner_shipping_id.corp_name"><t t-esc="o.partner_shipping_id.corp_name"/></span></div>
@@ -45,7 +45,13 @@
                                 <div><span t-if="o.partner_id.street2"><t t-esc="o.partner_id.street2"/></span></div>
                                 <div><span t-if="o.partner_id.city"><t t-esc="o.partner_id.city"/>, </span><span t-if="o.partner_id.state_id"><t t-esc="o.partner_id.state_id.code"/>, </span><span t-if="o.partner_id.zip"><t t-esc="o.partner_id.zip"/></span></div>
                             </td>
-                            <td align="right" style="vertical-align:top;">
+                            <td style="width:10%;vertical-align:centre">
+                                <t t-if="o.partner_id != o.partner_shipping_id">
+                                    <br/>
+                                    <img class="img" src="/batch_delivery/static/src/img/arrow.jpg" />
+                                </t>
+                            </td>
+                            <td align="right" style="vertical-align:top;width:45%;">
                                 <div class="text-left" style="display:inline-block;  width:7cm ">
                                      <t t-if="o.partner_id != o.partner_shipping_id">
                                         <span><b>Delivery Address:</b></span><br/>
@@ -62,67 +68,69 @@
                 </div>
             </div>
             <div class="page">
-                <!-- <h2 style="font-size:20px; font-weight:bold;">
-                    <span t-if="o.move_type == 'out_invoice' and o.state == 'posted'">Posted Invoice</span>
-                    <span t-if="o.move_type == 'out_invoice' and o.state == 'draft' and not o.partner_id.bill_with_goods">Delivery Receipt</span>
-                    <span t-if="o.move_type == 'out_invoice' and o.state == 'draft' and o.partner_id.bill_with_goods">Invoice</span>
-                    <span t-if="o.move_type == 'out_invoice' and o.state == 'cancel'">Cancelled Invoice</span>
-                    <span t-if="o.move_type == 'out_refund'">Credit Note</span>
-                    <span t-if="o.move_type == 'in_refund'">Vendor Credit Note</span>
-                    <span t-if="o.move_type == 'in_invoice'">Vendor Bill</span>
-                    <span t-if="o.name != '/'" t-field="o.name"/>
-                </h2> -->
-                <div style="border:1px solid #7a7a7a; width:100%; padding:10px; font-size:14px; display:flex; flex-wrap: wrap; ">
-                    <div  style="display:inline-block; width:19%;" >
-                        <span>Invoice Number:</span>
-                        <p class="m-0" style="font-weight:bold;" t-if="o.name != '/'" t-field="o.name"/>
-                    </div>
-                    <div  style="display:inline-block; width:19%; "  t-if="o.invoice_origin" name="origin">
-                        <span>Source:</span>
-                        <p class="m-0"  style="font-weight:bold;" t-field="o.invoice_origin"/>
-                    </div>
-                    <t t-set="SO" t-value="o.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')"/>
-                    <div  style="display:inline-block; width:19%; "   t-if="SO and SO.client_order_ref" name="origin">
-                        <span>Customer Reference:</span>
-                        <p class="m-0"  style="font-weight:bold;"  t-field="SO.client_order_ref"/>
-                    </div>
-                    <div  style="display:inline-block; width:19%; "  name="payment_term" t-if="o.invoice_payment_term_id">
-                         <span>Payment Terms:</span>
-                         <p class="m-0"  style="font-weight:bold;" t-field="o.invoice_payment_term_id.note"/>
-                    </div>
-
-                    <div style="display:inline-block; width:19%; "  t-if="o.move_type == 'out_invoice'" name="due_date">
-                       <t t-set="pterm_list" t-value="o.invoice_payment_term_id.with_context(currency_id=o.company_id.currency_id.id).compute(value=1, date_ref=date_invoice)"/>
-                       <span>Due Date:</span>
-                       <t t-set="duedate" t-value="max(line for line in pterm_list)"/>
-                       <p class="m-0"  style="font-weight:bold;" t-esc="duedate[0]"/>
-                    </div>
-                    <div  style="display:inline-block; width:19%; "  t-if="o.sales_person_ids">
-                        <span>Salespersons:</span>
-                        <p class="m-0" style="font-weight:bold;" t-esc="','.join([str(s.firstname)+' '+ str(s.lastname)  for s in o.sales_person_ids])"/>
-                    </div>
-                    <div  style="display:inline-block; width:19%; "  t-if="o.partner_shipping_id.phone" name="description">
-                       <span>Contact Phone:</span>
-                       <p class="m-0"  style="font-weight:bold;" t-field="o.partner_shipping_id.phone"/>
-                    </div>
-                    <div  style="display:inline-block; width:19%; "  t-if="o.partner_id.vat" name="description">
-                       <span>Resale Number:</span>
-                       <p class="m-0"  style="font-weight:bold;" t-field="o.partner_id.vat"/>
-                    </div>
-
-                    <t t-set="driver" t-value="o.picking_ids and o.picking_ids.mapped('batch_id') and o.picking_ids.mapped('batch_id')[-1].truck_driver_id or ''"/>
-                    <div style="display:inline-block; width:19%; "  t-if="SO and SO.carrier_id" name="description">
-                        <span>Shipping Method:</span>
-                        <p class="m-0"  style="font-weight:bold;" t-field="SO.carrier_id"/>
-                    </div>
-                    <div  style="display:inline-block; width:19%; "  t-if="driver" name="description">
-                        <span>Driver:</span>
-                        <p class="m-0"  style="font-weight:bold;" t-esc="driver.firstname +' '+ (driver.lastname and driver.lastname[0] or '')" />
-                    </div>
-                </div>
-
+                <table style="font-size:13px;width:100%; border:1px solid #7a7a7a: padding-bottom:3px" >
+                    <tr style="padding-left:3px: padding-bottom:3px">
+                        <td style="padding-left:10px">
+                            Invoice Number:
+                        </td>
+                        <td t-if="o.invoice_origin" name="origin">
+                            Source:
+                        </td>
+                        <td  t-if="SO and SO.client_order_ref" name="origin">
+                            Customer Reference:
+                        </td>
+                        <td name="payment_term"   t-if="o.invoice_payment_term_id">
+                            Payment Terms:
+                        </td>
+                        <td  t-if="o.move_type == 'out_invoice'" name="due_date">
+                            <t t-set="pterm_list"
+                            t-value="o.invoice_payment_term_id.with_context(currency_id=o.company_id.currency_id.id).compute(value=1, date_ref=date_invoice)"/>
+                            Due Date:
+                        </td>
+                        <td  t-if="o.partner_id.vat" name="description">
+                            Resale Number:
+                        </td>
+                        <t t-set="SO" t-value="o.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')"/>
+                        <t t-set="driver" t-value="o.picking_ids and o.picking_ids.mapped('batch_id') and o.picking_ids.mapped('batch_id')[-1].truck_driver_id or ''"/>
+                        <td  t-if="SO and SO.carrier_id" name="description">
+                            Shipping Method:
+                        </td>
+                        <td  t-if="driver" name="description">
+                            Driver:
+                        </td>
+                    </tr>
+                    <tr style="padding-left:3px: padding-bottom:3px">
+                        <td style="vertical-align: top;padding-left:10px">
+                            <p class="m-0" t-if="o.name != '/'" t-field="o.name"/>
+                        </td>
+                        <td t-if="o.invoice_origin" name="origin" >
+                            <p class="m-0" t-field="o.invoice_origin"/>
+                        </td>
+                        <td  t-if="SO and SO.client_order_ref" name="origin">
+                            <p class="m-0" t-field="SO.client_order_ref"/>
+                        </td>
+                        <td name="payment_term"   t-if="o.invoice_payment_term_id" style="vertical-align: top;">
+                            <p class="m-0" t-field="o.invoice_payment_term_id.note"/>
+                        </td>
+                        <td  t-if="o.move_type == 'out_invoice'" name="due_date" style="vertical-align: top;">
+                        <t t-set="duedate" t-value="max(line for line in pterm_list)"/>
+                            <p class="m-0" t-esc="duedate[0]"/>
+                        </td>
+                        <td  t-if="o.partner_id.vat" name="description" style="vertical-align: top;">
+                            <p class="m-0" t-field="o.partner_id.vat"/>
+                        </td>
+                        <t t-set="SO" t-value="o.invoice_line_ids.mapped('sale_line_ids').mapped('order_id')"/>
+                        <t t-set="driver" t-value="o.picking_ids and o.picking_ids.mapped('batch_id') and o.picking_ids.mapped('batch_id')[-1].truck_driver_id or ''"/>
+                        <td  t-if="SO and SO.carrier_id" name="description" style="vertical-align: top;">
+                            <p class="m-0" t-field="SO.carrier_id"/>
+                        </td>
+                        <td  t-if="driver" name="description" style="vertical-align: top;">
+                            <p class="m-0" t-esc="driver.firstname +' '+ (driver.lastname and driver.lastname[0] or '')" />
+                        </td>
+                    </tr>
+                </table>
                 <t t-if="o.partner_shipping_id.delivery_notes">
-                    <div style="border:1px solid #7a7a7a; width:100%; padding:10px;  font-size:14px; margin-top:12px">
+                    <div style="border:1px solid #7a7a7a; width:100%; padding:10px;  font-size:14px; margin-top:2px">
                         <t t-set="delivery_notes" t-value="o.partner_shipping_id.delivery_notes.replace('\n', ' ')"/>
                         <strong class="mr16">Delivery Notes: </strong>
                         <span t-esc="delivery_notes">
@@ -132,20 +140,20 @@
 
                 <t t-set="display_discount" t-value="any([l.discount for l in o.invoice_line_ids])"/>
 
-                <table class="table table-sm o_main_table" name="invoice_line_table" style="margin-top:12px; border:1px solid #7a7a7a; font-size:14px;">
+                <table class="table table-sm o_main_table" name="invoice_line_table" style="margin-top:5px; border:1px solid #7a7a7a; font-size:14px;">
                     <thead>
                         <tr>
                             <t t-set="colspan" t-value="6"/>
-                            <th class="text-left" style="background-color:#ececec; border:1px solid #7a7a7a; padding:8px 12px;"><span>Ln#</span></th>
-                            <th class="text-left" style="background-color:#ececec;border:1px solid #7a7a7a;padding:8px 12px;"><span>Product</span></th>
-                            <th class="text-right" style="background-color:#ececec;border:1px solid #7a7a7a; width:10px;padding:8px 12px;"><span>Qty</span></th>
-                            <th class="text-left" style="background-color:#ececec; border:1px solid #7a7a7a;padding:8px 12px;"><span>Unit</span></th>
-                            <th class="text-left" style="background-color:#ececec; border:1px solid #7a7a7a;padding:8px 12px;"><span>Description</span></th>
-                            <th class="text-right" style="background-color:#ececec; border:1px solid #7a7a7a;padding:8px 12px;" t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)">
-                                <span groups="account.group_show_line_subtotals_tax_excluded"  >Amount</span>
-                                <span groups="account.group_show_line_subtotals_tax_included"  >Total Price</span>
+                            <th class="text-left" style="background-color:#ececec; border:1px solid #7a7a7a; padding:3px 3px;"><span>Ln#</span></th>
+                            <th class="text-left" style="background-color:#ececec;border:1px solid #7a7a7a;padding:3px 3px;"><span>Product</span></th>
+                            <th class="text-right" style="background-color:#ececec;border:1px solid #7a7a7a; width:20px;padding:3px 3px;"><span>Qty</span></th>
+                            <th class="text-left" style="background-color:#ececec; border:1px solid #7a7a7a;padding:3px 3px;"><span>Unit</span></th>
+                            <th class="text-left" style="background-color:#ececec; border:1px solid #7a7a7a;padding:3px 32px;"><span>Description</span></th>
+                            <th class="text-right" style="background-color:#ececec; border:1px solid #7a7a7a;padding:3px 32px;" t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)">
+                                <span groups="account.group_show_line_subtotals_tax_excluded">Amount</span>
+                                <span groups="account.group_show_line_subtotals_tax_included">Total Price</span>
                             </th>
-                            <th t-attf-class="text-left {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}"  style="background-color:#ececec;padding:8px 12px; border:1px solid #7a7a7a;" t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)"><span>Tax</span></th>
+                            <th t-attf-class="text-left {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}" style="background-color:#ececec;padding:3px 3px; border:1px solid #7a7a7a;" t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)"><span>Tax</span></th>
                         </tr>
                     </thead>
                     <tbody class="invoice_tbody" style="font-size:14px;">
@@ -159,22 +167,22 @@
                             <tr t-att-class="'bg-200 font-weight-bold o_line_section' if line.display_type == 'line_section' else 'font-italic o_line_note' if line.display_type == 'line_note' else ''">
                                 <t t-if="not line.display_type" name="account_invoice_line_accountable">
                                     <t t-set="line_count" t-value="line_count + 1"/>
-                                    <td style="border:1px solid #7a7a7a;padding:8px 12px;" name="account_invoice_line_name" ><span t-esc="line_count"/></td>
-                                    <td style="border:1px solid #7a7a7a;padding:8px 12px;" name="account_invoice_line_name"><span t-field="line.product_id.default_code"/></td>
-                                    <td style="border:1px solid #7a7a7a;padding:8px 12px;" class="text-right"><span t-field="line.quantity"/></td>
-                                    <td style="border:1px solid #7a7a7a;padding:8px 12px;" class="text-left"><span t-field="line.product_uom_id" groups="uom.group_uom"/></td>
-                                    <td style="border:1px solid #7a7a7a;padding:8px 12px;" name="account_invoice_line_name">
+                                    <td style="border:1px solid #7a7a7a;padding:3px 3px;" name="account_invoice_line_name"><span t-esc="line_count"/></td>
+                                    <td style="border:1px solid #7a7a7a;padding:3px 3px;" name="account_invoice_line_name"><span t-field="line.product_id.default_code"/></td>
+                                    <td style="border:1px solid #7a7a7a;padding:3px 3px;" class="text-right"><span t-field="line.quantity"/></td>
+                                    <td style="border:1px solid #7a7a7a;padding:3px 3px;" class="text-left"><span t-field="line.product_uom_id" groups="uom.group_uom"/></td>
+                                    <td style="border:1px solid #7a7a7a;padding:3px 3px;" name="account_invoice_line_name">
                                         <span t-field="line.product_id.name"/>
                                         <t t-if="line.sale_line_ids and line.sale_line_ids.note and line.sale_line_ids.note != line.sale_line_ids.name">
                                             <br/>
                                             <span t-field="line.sale_line_ids.note"/>
                                         </t>
                                     </td>
-                                    <td style="border:1px solid #7a7a7a;padding:8px 12px;" class="text-right o_price_total" t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)">
+                                    <td style="border:1px solid #7a7a7a;padding:3px 3px;" class="text-right o_price_total" t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)">
                                         <span t-field="line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
                                         <span t-field="line.price_total" groups="account.group_show_line_subtotals_tax_included"/>
                                     </td>
-                                    <td style="border:1px solid #7a7a7a;padding:8px 12px;" t-attf-class="text-left {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}" t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)">
+                                    <td style="border:1px solid #7a7a7a;padding:3px 3px;" t-attf-class="text-left {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}" t-if="not batch_quicksale or (batch_quicksale and o.partner_id.bill_with_goods)">
                                         <t t-set="tax_description" t-value="', '.join(map(lambda x: (x.description or x.name), line.tax_ids))"/>
                                         <t t-if="tax_description">
                                             <span>(T)</span>
@@ -182,18 +190,18 @@
                                     </td>
                                 </t>
                                 <t t-if="line.display_type == 'line_section'">
-                                    <td  style="border:1px solid #7a7a7a;padding:8px 12px;" colspan="99"><span t-field="line.name"/></td>
+                                    <td style="border:1px solid #7a7a7a;padding:3px 3px;" colspan="99"><span t-field="line.name"/></td>
                                     <t t-set="current_section" t-value="line"/>
                                     <t t-set="current_subtotal" t-value="0"/>
                                 </t>
                                 <t t-if="line.display_type == 'line_note'">
-                                    <td  style="border:1px solid #7a7a7a;padding:8px 12px;" colspan="99"><span t-field="line.name"/></td>
+                                    <td style="border:1px solid #7a7a7a;padding:3px 3px;" colspan="99"><span t-field="line.name"/></td>
                                 </t>
                             </tr>
 
                             <t t-if="o.partner_id.bill_with_goods and current_section and (line_last or o.invoice_line_ids[line_index+1].display_type == 'line_section')">
                                 <tr class="is-subtotal text-right">
-                                    <td  style="border:1px solid #7a7a7a;padding:8px 12px;" colspan="99">
+                                    <td style="border:1px solid #7a7a7a;padding:3px 3px;" colspan="99">
                                         <strong class="mr16">Subtotal</strong>
                                         <span t-esc="current_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
                                     </td>
@@ -204,15 +212,15 @@
                 </table>
                 <t t-set="SL" t-value="o.mapped('invoice_line_ids').mapped('sale_line_ids.order_id').mapped('order_line').filtered(lambda r: not r.is_delivery and r.product_id.detailed_type != 'service' and r.product_uom_qty != r.qty_delivered)"/>
                 <t t-if="SL">
-                    <div style="font-weight: bolder; margin-top:50px;">Product ordered but not
+                    <div style="font-weight: bolder; margin-top:10px;">Product ordered but not
                         delivered</div>
                     <table class="table table-sm o_main_table">
                         <thead>
                             <tr>
                                 <t t-set="colspan" t-value="6"/>
-                                <th class="text-left" style="background-color:#ececec; border:1px solid #7a7a7a; padding:8px 12px;"><span>Ln#</span></th>
-                                <th class="text-left" style="background-color:#ececec; border:1px solid #7a7a7a; padding:8px 12px;"><span>Description</span></th>
-                                <th class="text-right" style="background-color:#ececec; border:1px solid #7a7a7a; padding:8px 12px;"><span>Unavailable Quantity</span></th>
+                                <th class="text-left" style="background-color:#ececec; border:1px solid #7a7a7a; padding:3px 3px;"><span>Ln#</span></th>
+                                <th class="text-left" style="background-color:#ececec; border:1px solid #7a7a7a; padding:3px 3px;"><span>Description</span></th>
+                                <th class="text-right" style="background-color:#ececec; border:1px solid #7a7a7a; padding:3px 3px;"><span>Unavailable Quantity</span></th>
                             </tr>
                         </thead>
                         <tbody class="invoice_tbody" style="font-size:16px;">
@@ -220,15 +228,15 @@
                             <t t-foreach="SL" t-as="line">
                                 <t t-set="line_count" t-value="line_count + 1"/>
                                 <tr>
-                                    <td name="account_invoice_line_name" style="border:1px solid #7a7a7a; padding:8px 12px;"><span t-esc="line_count"/></td>
-                                    <td name="account_invoice_line_name" style="border:1px solid #7a7a7a; padding:8px 12px;">
+                                    <td name="account_invoice_line_name" style="border:1px solid #7a7a7a; padding:3px 3px;"><span t-esc="line_count"/></td>
+                                    <td name="account_invoice_line_name" style="border:1px solid #7a7a7a; padding:3px 3px;">
                                       <span t-field="line.product_id.name"/>
                                       <t t-if="line.note and line.note != line.name">
                                         <br/>
                                         <span t-field="line.note"/>
                                       </t>
                                     </td>
-                                    <td class="text-right"  style="border:1px solid #7a7a7a; padding:8px 12px;">
+                                    <td class="text-right" style="border:1px solid #7a7a7a; padding:3px 3px;">
                                         <span t-esc="line.product_uom_qty - line.qty_delivered"/>
                                         <span t-field="line.product_uom" groups="uom.group_uom"/>
                                     </td>
@@ -246,7 +254,7 @@
                             <table class="table table-sm" style="page-break-inside: avoid; border:1px solid #7a7a7a;">
                                 <t t-if="not print_with_payments">
                                     <tr>
-                                        <td align="right" style="border:1px solid #7a7a7a; padding:8px 12px; " >
+                                        <td align="right" style="border:1px solid #7a7a7a; padding:8px 12px; ">
                                             <span>Total Units:</span>
                                             <strong t-esc="'{0:.02f}'.format(sum([l.quantity for l in o.invoice_line_ids.filtered(lambda r: r.product_id.type != 'service')]))"/>
                                             <br/>
@@ -321,7 +329,7 @@
                             correctly.</strong><br/>
                     </p>
                 </div>
-                <span   t-if="not is_html_empty(o.narration)"  t-field="o.narration"></span>
+                <span t-if="not is_html_empty(o.narration)" t-field="o.narration"/>
             </div>
         </div>
 
@@ -329,25 +337,25 @@
 
             <div class="text-center">
                 <div t-if="iv == 1" style="font-size:14px;">Customer Copy</div>
-                <table  class="table table-sm" style="font-size:14px; margin-bottom:6px;">
+                <table class="table table-sm" style="font-size:14px; margin-bottom:6px;">
                     <tr>
 
                         <td t-if="company.phone" style="border:0;">
                             <i class="fa fa-phone" role="img" aria-label="Phone" title="Phone"/>
                             <span t-field="company.phone"/>
                         </td>
-                        <td t-if="company.email" style="border:0;" ><i class="fa fa-at" role="img" aria-label="Email" title="Email"/>
+                        <td t-if="company.email" style="border:0;"><i class="fa fa-at" role="img" aria-label="Email" title="Email"/>
                             <span t-field="company.email"/>
                         </td>
-                        <td t-if="company.website" style="border:0;" ><i class="fa fa-globe" role="img" aria-label="Website" title="Website"/>
+                        <td t-if="company.website" style="border:0;"><i class="fa fa-globe" role="img" aria-label="Website" title="Website"/>
                             <span t-field="company.website"/>
                         </td>
-                        <td t-if="company.vat" style="border:0;" ><i class="fa fa-building-o" role="img" aria-label="Fiscal number"/>
+                        <td t-if="company.vat" style="border:0;"><i class="fa fa-building-o" role="img" aria-label="Fiscal number"/>
                             <t t-esc="(company.country_id.vat_label or 'Tax ID').replace(' ','\N{NO-BREAK SPACE}')"/> : <span t-esc="company.vat.replace(' ','\N{NO-BREAK SPACE}')"/></td>
                     </tr>
                 </table>
                 <div style="border-bottom: 2px solid black; margin-bottom:5px; "/>
-                <div style="overflow-wrap: break-word;hyphens: auto;font-size:14px;padding-bottom:10px; text-align:justify;">
+                <div style="overflow-wrap: break-word;hyphens: auto;font-size:9px;padding-bottom:10px; text-align:justify;">
                     All products are sold "as-is" without any warranty, either expressed or implied, of
                     merchantability or fitness for a particular purpose.
                     Any delivery shortages must be written on the delivery receipt or invoice and signed by a PPT

@@ -27,7 +27,7 @@ class ResPartner(models.Model):
             product_price = 0.0
             price_from = False
             msg = ''
-            uom_price = {}
+            uom_price = []
             standard_prices = {}
             for price_rec in prices_all:
 
@@ -36,14 +36,15 @@ class ResPartner(models.Model):
 
                 
                 product_price = price_rec.price
-                uom_price[price_rec.product_uom.id] = float_round(product_price,precision_digits=2)
+                price_dict  ={'uom':price_rec.product_uom.id,'price':float_round(product_price,precision_digits=2)}
+                uom_price.append(price_dict)
                 
             
             if product_id :
                 
                 uom_price_main = product_id.uom_standard_prices
                 if uom_price_main:
-                    standard_prices = {r.uom_id.id:float_round(r.price,precision_digits=2) for r in  uom_price_main}
+                    standard_prices = [{'uom':r.uom_id.id,'price':float_round(r.price,precision_digits=2)} for r in  uom_price_main]
 
                 msg = "Unit Price for this product is not found in any pricelists, fetching the unit price as product standard price."
 

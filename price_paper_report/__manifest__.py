@@ -23,6 +23,7 @@ Custom module implemented for Price Paper Reports.
 
     'data': [
         'views/sale_report.xml',
+        'views/purchase_report.xml',
     ],
 
 

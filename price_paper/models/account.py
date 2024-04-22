@@ -96,10 +96,10 @@ class AccountMove(models.Model):
                     # Retrieve accounts needed to generate the COGS.
                     accounts = line.product_id.product_tmpl_id.get_product_accounts(fiscal_pos=move.fiscal_position_id)
                     debit_interim_account = accounts['sc_liability_out']
-
-
                     credit_expense_account = accounts['expense'] or move.journal_id.default_account_id
-                    if sc_state == 'storage_contract':
+
+
+                    if sc_state != 'storage_contract':
                         # if it is storage order reverse the move lines
                         debit_interim_account = accounts['stock_output']
                         credit_expense_account = accounts['sc_liability_out']

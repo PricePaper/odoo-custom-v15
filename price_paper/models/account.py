@@ -99,7 +99,7 @@ class AccountMove(models.Model):
                     credit_expense_account = accounts['expense'] or move.journal_id.default_account_id
 
 
-                    if sc_state != 'storage_contract':
+                    if sc_state == 'storage_contract':
                         # if it is storage order reverse the move lines
                         debit_interim_account = accounts['stock_output']
                         credit_expense_account = accounts['sc_liability_out']

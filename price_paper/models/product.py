@@ -379,6 +379,19 @@ class ProductProduct(models.Model):
                 continue
             product.sales_count = float_round(r.get(product.id, 0), precision_rounding=product.uom_id.rounding) + sum(product.superseded.old_product.mapped('sales_count'))
         return r
+    
+    @api.onchange('lst_price')
+    def _set_product_lst_price(self):
+        """To resolve the audit log code issue, I overrode the method.
+        The superclass method calls "write()" instead of update, but the new object lacks an ID to write, causing the audit log methods to fail."""
+        for product in self:
+            if self._context.get('uom'):
+                value = self.env['uom.uom'].browse(self._context['uom'])._compute_price(product.lst_price, product.uom_id)
+            else:
+                value = product.lst_price
+            value -= product.price_extra
+            product.update({'list_price': value})
+
 
 
 class ProductUom(models.Model):

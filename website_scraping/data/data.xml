@@ -17,8 +17,7 @@
         <record id="website_scraping_cofig_1" model="website.scraping.cofig">
             <field name="name">Restaurant Depot</field>
             <field name="competitor">rdepot</field>
-            <field name="home_page_url">
-                https://member.restaurantdepot.com/sso/sso/index/?redirect_uri=https://www.restaurantdepot.com/home-logged-in</field>
+            <!-- <field name="home_page_url">https://member.restaurantdepot.com/sso/sso/index/?redirect_uri=https://www.restaurantdepot.com/home-logged-in</field> -->
         </record>
 
         <record id="website_scraping_cofig_2" model="website.scraping.cofig">

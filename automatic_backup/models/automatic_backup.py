@@ -202,14 +202,14 @@ class Cron(models.Model):
     def create(self, vals):
         if 'dropbox_authorize_url_rel' in vals:
             vals['dropbox_authorize_url'] = vals['dropbox_authorize_url_rel']
-        if 'backup_type' in vals:
+        if vals.get('backup_type', False):
             vals['name'] = 'Backup ' + vals['backup_type'] + ' ' + vals['backup_destination']
             vals['numbercall'] = -1
             vals['state'] = 'code'
             vals['code'] = ''
             vals['model_id'] = self.env['ir.model'].search([('model', '=', 'ir.cron')]).id
         output = super(Cron, self).create(vals)
-        if 'backup_type' in vals:
+        if vals.get('backup_type', False):
             output.code = 'env[\'ir.cron\'].database_backup_cron_action(' + str(output.id) + ')'
         return output
 
@@ -238,7 +238,8 @@ class Cron(models.Model):
     @api.constrains('backup_type', 'backup_destination')
     def create_name(self):
         for rec in self:
-            rec.name = 'Backup ' + rec.backup_type + ' ' + rec.backup_destination
+            if rec.backup_type:
+                rec.name = 'Backup ' + rec.backup_type + ' ' + rec.backup_destination
 
     @api.onchange('backup_destination')
     def onchange_backup_destination(self):
@@ -606,6 +607,7 @@ class Cron(models.Model):
     @api.model
     def database_backup_cron_action(self, *args):
         backup_rule = False
+        print(w)
         try:
             if len(args) != 1 or isinstance(args[0], int) is False:
                 raise exceptions.ValidationError(_('Wrong method parameters'))

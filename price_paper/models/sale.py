@@ -1301,11 +1301,19 @@ class SaleOrderLine(models.Model):
     def write(self, vals):
         if vals.get('price_unit'):
             for line in self:
+                if line.order_id.hold_state == 'credit_hold' and line.product_id.type != 'service':
+                    if line.working_cost > line.price_unit > vals.get('price_unit'):
+                        line.order_id.is_low_price = True
+                        line.order_id.release_price_hold = False
+                    if line.price_unit >= line.working_cost > vals.get('price_unit'):
+                        line.order_id.is_low_price = True
+                        line.order_id.release_price_hold = False
                 if line.order_id.state == 'sale' and not self.env.user.has_group('sales_team.group_sale_manager') and line.product_id.type != 'service':
                     if line.working_cost > line.price_unit > vals.get('price_unit'):
                         raise ValidationError('You are not allowed to reduce price below product cost. Contact your sales Manager.')
                     if line.price_unit >= line.working_cost > vals.get('price_unit'):
                         raise ValidationError('You are not allowed to reduce price below product cost. Contact your sales Manager.')
+
         res = super().write(vals)
         if vals.get('price_unit') or vals.get('tax_id'):
             for line in self:
@@ -1348,6 +1356,12 @@ class SaleOrderLine(models.Model):
     @api.model
     def create(self, vals):
         line = super(SaleOrderLine, self).create(vals)
+
+        if line.order_id and line.order_id.hold_state == 'credit_hold':
+            if line.price_unit < line.working_cost and not line.rebate_contract_id:
+                line.order_id.is_low_price = True
+                line.order_id.release_price_hold = False
+
         if line.state == 'sale' and line.move_ids:
             msg = "Extra line with %s " % line.product_id.display_name
             line.move_ids.mapped('picking_id').filtered(lambda rec: rec.state != 'cancel').message_post(body=msg)

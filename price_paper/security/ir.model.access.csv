@@ -31,7 +31,4 @@ access_add_purchase_history_so,access_add_purchase_history_so,model_add_purchase
 access_sale_history_lines_wizard,access_sale_history_lines_wizard,model_sale_history_lines_wizard,base.group_user,1,1,1,1
 access_release_sale_order,access_release_sale_order,model_release_sale_order,base.group_user,1,1,1,1
 access_release_price_hold_sale_order,access_release_price_hold_sale_order,model_release_price_hold_sale_order,base.group_user,1,1,1,1
-
-
-
-
+access_sale_hold_tag,access_sale_hold_tag,model_sale_hold_tag,base.group_user,1,1,1,1

@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="portal_my_company" name="company Switch">
+        <t t-call="website.layout">
+            <div class='oe_structure' id='company_switch_structure'/>
+            <div id='wrap' class='switch_company_wrap'>
+
+                <div class='container'>
+                    <t t-if='error_msg'>
+                        <h3 class='text-danger pt32' t-out='error_msg'/>
+                    </t>
+                    <h4 class='pt32'>Switch company</h4>
+                    <div class='main_div'>
+                        <div class='seconday_div'>
+
+                            <span>Please Select Desired Company</span>
+                            <select class="form-select form-select-lg mb-3" name='company_switch' aria-label=".form-select-lg example">
+                                <t t-foreach="company_ids" t-as="com">
+                                    <option t-att-selected='com.id==curr_comapny' t-att-value='com.id'>
+                                        <t t-out='com.name'/>
+                                    </option>
+                                </t>
+                            </select>
+                            <button class='btn btn-primary switch_company'>Switch Company</button>
+                        </div>
+                    </div>
+                    <div class='d-flex flex-column'>
+                        <t t-if='main_company'>
+                            <!-- <h3>Verification Process</h3> -->
+                            <t t-if='main_company.is_verified'>
+                                <h5 class='mt16 mb16'> Business Registration Completed, Here is W-9 forms, We are looking forward to do business with you.</h5>
+                                <div class='completed progress_verification'>
+
+                                    <div class='step active'>
+                                        <div class='icon'>
+                                            <i class='fa fa-check active'/>
+                                            <!-- <div class='divider active'/> -->
+                                        </div>
+                                        <span>Basic Information</span>
+                                    </div>
+                                    <div class='step active'>
+                                        <div class='icon'>
+                                            <i class='fa fa-check active'/>
+                                            <!-- <div class='divider active'/> -->
+                                        </div>
+                                        <span>Business Registration</span>
+                                    </div>
+                                    <div class='step active'>
+                                        <div class='icon'>
+                                            <i class='fa fa-check active'/>
+                                            <!-- <div class='divider'/> -->
+                                        </div>
+                                        <span>Payment Methods</span>
+                                    </div>
+
+
+
+
+                                </div>
+                            </t>
+                            <t t-else=''>
+                                <t t-if='main_company.basic_verification_submit'>
+                                    <t t-if ='not (main_company.businesss_registration_information )'>
+                                        <h5 class='mt16 mb16'>Basic Information Completed, proceed with next step of Business Registration.</h5>
+                                        <div class='completed progress_verification'>
+
+                                            <div class='step active'>
+
+                                                <div class='icon'>
+                                                    <i class='fa fa-check active'/>
+                                                    <!-- <div class='divider active'/> -->
+                                                </div>
+                                                <span>Basic Information
+                                                </span>
+
+                                            </div>
+                                            <div class='step'>
+                                                <a class='sale_prompt_popup'>
+                                                    <div class='icon'>
+                                                        <i class='fa' >2</i>
+                                                        <!-- <div class='divider'/> -->
+                                                    </div>
+                                                    <span>Business Registration:<em class='text-primary'> Begin</em>
+                                                    </span>
+                                                </a>
+                                            </div>
+                                            <div class='step'>
+                                                <div class='icon'>
+                                                    <i class='fa'>3</i>
+                                                    <!-- <div class='divider'/> -->
+                                                </div>
+                                                <span>Payment Methods</span>
+                                            </div>
+
+
+
+
+                                        </div>
+                                    </t>
+                                    <t t-else=''>
+                                        <t t-if='not main_company.business_verification_status in ["submit","approved"]'>
+                                            <h5 class='mt16 mb16'>Business Registration completed, Kindly add your payment method.</h5>
+                                            <div class='completed progress_verification'>
+
+                                                <div class='step active'>
+
+                                                    <div class='icon'>
+                                                        <i class='fa fa-check active'/>
+
+                                                    </div>
+                                                    <span>Basic Information
+                                                    </span>
+
+                                                </div>
+                                                <div class='step active'>
+
+                                                    <div class='icon'>
+                                                        <i class='fa fa-check active'/>
+
+                                                    </div>
+                                                    <span>Business Registration
+                                                    </span>
+
+                                                </div>
+                                                <div class='step'>
+                                                    <a class='payment_prompt_popup'>
+                                                        <div class='icon'>
+                                                            <i class='fa'>3</i>
+
+                                                        </div>
+                                                        <span>Payment Methods:<em class='text-primary'> Begin</em>
+                                                        </span>
+                                                    </a>
+                                                </div>
+
+
+
+
+                                            </div>
+                                        </t>
+                                    </t>
+                                </t>
+                                <t t-else=''>
+                                    <h5 class='mt16 mb16'>Complete the Business Registration to unlock the odering process. </h5>
+                                    <div class='completed progress_verification'>
+
+                                        <div class='step'>
+                                            <a href='/web/signup_submit'>
+                                                <div class='icon'>
+                                                    <i class='fa active'>1</i>
+                                                    <!-- <div class='divider active'/> -->
+                                                </div>
+                                                <span>Basic Information:<em class='text-primary'> Begin</em>
+                                                </span>
+                                            </a>
+                                        </div>
+                                        <div class='step'>
+                                            <div class='icon'>
+                                                <i class='fa' >2</i>
+                                                <!-- <div class='divider'/> -->
+                                            </div>
+                                            <span>Business Registration</span>
+                                        </div>
+                                        <div class='step'>
+                                            <div class='icon'>
+                                                <i class='fa'>3</i>
+                                                <!-- <div class='divider'/> -->
+                                            </div>
+                                            <span>Payment Methods</span>
+                                        </div>
+
+
+
+
+                                    </div>
+                                </t>
+
+
+                            </t>
+
+
+                        </t>
+
+                    </div>
+                </div>
+            </div>
+            <t t-call='theme_pricepaper.contact_us_blog'/>
+            <t t-call='portal_enhancements.sale_prompt'/>
+            <t t-call='portal_enhancements.payment_prompt'/>
+            <div class='oe_structure' id='company_switch_structure1'/>
+        </t>
+
+
+    </template>
+    <template id="payment_prompt" name="Payment Prompt">
+        <div class='modal modal-fade payment_prompt' tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Payment Method</h5>
+                        <button type="button" class="btn close fa fa-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h4>How do you plan to pay for your orders?</h4>
+                        <div class="form-check">
+                            <input class="form-check-input" value='paid_delivery' type="radio" name="flexRadioDefault" id="flexRadioDefault1"/>
+                            <label class="form-check-label" for="flexRadioDefault1">
+                                Paid at time of delivery (cash or check)
+
+                            </label>
+                        </div>
+                        <br/>
+                        <div class="form-check">
+                            <input class="form-check-input" value='ach_debit' type="radio" name="flexRadioDefault" id="flexRadioDefault2" />
+                            <label class="form-check-label" for="flexRadioDefault2">
+                                Automatic ACH debit after delivery
+                            </label>
+                        </div>
+                        <br/>
+                        <div class="form-check">
+                            <input class="form-check-input" value='credit_card' type="radio" name="flexRadioDefault" id="flexRadioDefault2" />
+                            <label class="form-check-label" for="flexRadioDefault2">
+                               Credit card (3% upcharge)
+                            </label>
+                        </div>
+                        <br/>
+                        <div class="form-check">
+                            <input class="form-check-input" value='apply_credit' type="radio" name="flexRadioDefault" id="flexRadioDefault2" />
+                            <label class="form-check-label" for="flexRadioDefault2">
+                               Apply for credit (takes 3-5 business days for credit check and approval)
+                            </label>
+                        </div>
+
+
+
+
+
+                        <div class='mt16 error_div d-none'>
+                            <span class='error_mg text-danger'/>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn close btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary save_changes">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </template>
+
+
+    <template id='sale_prompt'>
+        <div class="modal modal-fade sale_prompt" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Business Registration</h5>
+                        <button type="button" class="btn close fa fa-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Select the option that best suits you.</p>
+                        <div class="form-check">
+                            <input class="form-check-input" value='resale' type="radio" name="flexRadioDefault" id="flexRadioDefault1"/>
+                            <label class="form-check-label" for="flexRadioDefault1">
+                                Are you a reseller with a valid resale certificate (most common)?
+
+                            </label>
+                        </div>
+                        <br/>
+                        <div class="form-check">
+                            <input class="form-check-input" value='tax_exempt' type="radio" name="flexRadioDefault" id="flexRadioDefault2" />
+                            <label class="form-check-label" for="flexRadioDefault2">
+                                -or- Are you tax exempt with a valid tax exempt certificate ST-119.1(non-profits etc)
+                            </label>
+                        </div>
+                        <br/>
+                        <div class="form-check">
+                            <input class="form-check-input" value='none' type="radio" name="flexRadioDefault" id="flexRadioDefault2" />
+                            <label class="form-check-label" for="flexRadioDefault2">
+                               -or- None of the above, you pay sales tax on all purchases
+                            </label>
+                        </div>
+
+
+                        <div class='mt16 exempt_file d-none'>
+                            <label class="form-label" for ='exempt_certificate'>Upload Tax Exempt Certificate</label>
+                            <input style='height:unset;border-radius:unset;margin-bottom:unset;' class="form-control" type='file' name='exempt_certificate'/>
+                        </div>
+                        <div class='mt16 error_div d-none'>
+                            <span class='error_mg text-danger'/>
+                        </div>
+                        <!-- <div class="mb-3">
+                            <label for="formFile" class="form-label">Default file input example</label>
+                            <input class="form-control" type="file" id="formFile"/>
+                            </div> -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn close btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary save_changes">Save changes</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </template>
+
+    <template id="signup_with_info_template_business" name="Partner Onboarding">
+        <t t-call='website.layout'>
+            <div class="jumbotron text-center bg-primary">
+                <h1 style="color: black; font-weight: bold;">Business INFORMATION</h1>
+                <p style="color: black;">Enter all the below information to complete onboarding</p>
+            </div>
+            <div class="container" style="margin-top: 20px;">
+                <form action="/web/business/registration" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type='hidden' name='partner_id' t-att-value='partner.id'/>
+                    <input type="hidden" name="submitted" value="1" />
+                    <div class="row o_portal_details">
+                        <div class="col-lg-12">
+                            <div class="row">
+
+
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label for="resale_tax">Resale or Tax Exempt:</label>
+                                    <div/>
+                                    <select required="True" name="resale_tax" class="form-control">
+                                        <option value="resale">Resale</option>
+                                        <option value="tax_exempt">Tax Exempt</option>
+                                        <option value='none'>None of Above</option>
+                                    </select>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="redirect" t-att-value="redirect"/>
+                        <input type="hidden" name="token" t-att-value="token"/>
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn btn-primary btn-submit">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </t>
+    </template>
+
+
+
+    <template id="signup_with_info_template" name="Partner Onboarding">
+        <t t-call='website.layout'>
+            <div class="jumbotron text-center bg-primary">
+                <h1 style="color: black; font-weight: bold;">ADDITIONAL INFORMATION</h1>
+                <p style="color: black;">Enter all the below information to complete onboarding</p>
+            </div>
+            <div class="container business_information mb64" style="margin-top: 20px;">
+                <form action="/web/signup_submit" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type='hidden' name='partner_id' t-att-value='partner.id'/>
+                    <input type="hidden" name="submitted" value="1" />
+                    <div class="row o_portal_details">
+                        <div class="col-lg-12">
+                            <div class="row">
+
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label for="company_name">Business Name:</label>
+                                    <div/>
+                                    <input type="text" class="form-control" t-att-value='partner.company_name' name="company_name" required="True"/>
+                                </div>
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label for="name">Doing Business as (DBA):</label>
+                                    <div/>
+                                    <input type="text" t-att-value='partner.name' class="form-control" name="name"/>
+                                </div>
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label for="street">Address:</label>
+                                    <div/>
+                                    <input type="text" class="form-control" t-att-value='partner.street' name="street" required="True"/>
+                                </div>
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label for="city">City:</label>
+                                    <div/>
+                                    <input type="text" class="form-control" t-att-value='partner.city' name="city" required="True"/>
+                                </div>
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label for="zip">Zip Code:</label>
+                                    <div/>
+                                    <input type="text" class="form-control" t-att-value='partner.zip' name="zip" required="True"/>
+                                </div>
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label for="country_id">Country:</label>
+                                    <div/>
+                                    <select name="country_id" required="True" class="form-control">
+                                        <option value="">Country...</option>
+                                        <t t-foreach="countries or []" t-as="country">
+                                            <option t-att-selected='country.id == partner.country_id.id' t-att-value="country.id">
+                                                <t t-esc="country.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label for="state_id">State:</label>
+                                    <div/>
+                                    <select name="state_id" class="form-control">
+                                        <option value="">select...</option>
+                                        <t t-foreach="states or []" t-as="state">
+                                            <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' style="display:none;" t-att-data-country_id="state.country_id.id">
+                                                <t t-esc="state.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label for="phone">Business Telephone:</label>
+                                    <div/>
+                                    <div/>
+                                    <input type="text" t-att-value='partner.phone' class="form-control" name="phone" required="True"/>
+                                </div>
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label for="fax_number">Fax Number:</label>
+                                    <div/>
+                                    <input type="text" t-att-value='partner.fax_number' class="form-control" name="fax_number"/>
+                                </div>
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label for="email">Business Email:</label>
+                                    <div/>
+                                    <input type="email" t-att-value='partner.email' class="form-control" name="email" required="True"/>
+                                </div>
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label for="vat">Federal EIN:</label>
+                                    <div/>
+                                    <input type="text" t-att-value='partner.vat' class="form-control" name="vat" required="True"/>
+                                </div>
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label for="year_established">Year Established:</label>
+                                    <div/>
+                                    <input type="number" class="form-control" name="year_established" t-att-value='partner.year_established' required="True"/>
+                                </div>
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label for="established_state">Established in State:</label>
+                                    <div/>
+                                    <select name="established_state" required='True' class="form-control">
+                                        <option value="">Select...</option>
+                                        <t t-foreach="states" t-as="state">
+                                            <option t-att-selected='state.id == partner.established_state.id' t-att-value="state.id">
+                                                <t t-esc="state.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+
+                                <div t-attf-class="form-group col-xl-12">
+                                    <label for="typeofbusiness">Type of Business:</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" t-att-checked='partner.typeofbusiness == "corporation"' type="radio" name="typeofbusiness" required="True" id="corporation" value="corporation"/>
+                                            <label class="form-check-label" for="corporation">Corporation</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" t-att-checked='partner.typeofbusiness == "partnership"' type="radio" name="typeofbusiness" required="True" id="partnership" value="partnership"/>
+                                            <label class="form-check-label" for="partnership">Partnership</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" t-att-checked='partner.typeofbusiness == "sole_proprietor"' type="radio" name="typeofbusiness" required="True" id="sole_proprietor" value="sole_proprietor"/>
+                                            <label class="form-check-label" for="sole_proprietor">Sole Proprietor
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" t-att-checked='partner.typeofbusiness == "llc"' type="radio" name="typeofbusiness" required="True" id="llc" value="llc"/>
+                                            <label class="form-check-label" for="llc">LLC</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="redirect" t-att-value="redirect"/>
+                        <input type="hidden" name="token" t-att-value="token"/>
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn btn-primary btn-submit">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <t t-call='theme_pricepaper.contact_us_blog'/>
+            <t t-call='portal_enhancements.sale_prompt'/>
+
+        </t>
+
+    </template>
+
+</odoo>

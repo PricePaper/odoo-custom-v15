@@ -1,34 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="portal_my_company" name="company Switch">
-        <t t-call="website.layout">
-            <div class='oe_structure' id='company_switch_structure'/>
-            <div id='wrap' class='switch_company_wrap'>
+    <template id="on_doc_sign" name="Document Sign" inherit_id="sign._doc_sign">
+        <xpath expr="//a[hasclass('o_sign_download_log_button')]" position="after">
+            <a role="button" t-if="sign_request.state == 'signed'" t-attf-href="/my/website/company?document_sign=1" class="btn btn-secondary o_sign_download_log_button">Continue Onboarding</a>
 
-                <div class='container'>
-                    <h4 class='pt32'>Switch company</h4>
-                    <div class='main_div'>
-                        <div class='seconday_div'>
-
-                            <span>Please Select Desired Company</span>
-                            <select class="form-select form-select-lg mb-3" name='company_switch' aria-label=".form-select-lg example">
-                                <t t-foreach="company_ids" t-as="com">
-                                    <option t-att-selected='com.id==curr_comapny' t-att-value='com.id'>
-                                        <t t-out='com.name'/>
-                                    </option>
-                                </t>
-                            </select>
-                            <button class='btn btn-primary switch_company'>Switch Company</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class='oe_structure' id='company_switch_structure1'/>
-        </t>
-
-
+        </xpath>
     </template>
+
 
 
     <template id="multiple_cart" name="Multiple Cart">
@@ -125,6 +104,7 @@
 
         </xpath>
     </template>
+
     <template id="portal_my_home_timesheet" name="Show Timesheets" inherit_id="hr_timesheet.portal_my_home_timesheet">
         <xpath expr="//t[@t-value=&quot;'/my/timesheets'&quot;]/.." position="attributes">
             <attribute name="t-if" separator=" " add="timesheet_access" />
@@ -380,7 +360,6 @@
         </t>
 
     </template>
-
 
 
 

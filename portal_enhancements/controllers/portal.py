@@ -6,12 +6,25 @@ from werkzeug.exceptions import Forbidden, NotFound
 from odoo.addons.portal.controllers import portal
 from odoo.osv.expression import AND, OR
 from odoo.addons.portal.controllers.portal import pager as portal_pager
-
 from odoo import http, _
 from odoo.http import request
 
 
 class WebsiteSale(WebsiteSale):
+    @http.route()
+    def shop_payment(self, **post):
+        curr_comapny = request.session.get('current_website_company')
+        if not curr_comapny and not request.env.user._is_public():
+            return request.redirect('/my/website/company')
+        else:
+            partner_com = request.env['res.partner'].sudo().browse(
+                curr_comapny)
+            if not partner_com.is_verified:
+                return request.redirect('/my/website/company?error=Business registration is not completed')
+            else:
+                return super(WebsiteSale, self).shop_payment(**post)
+
+
     @http.route(['/shop/<model("product.template"):product>'], type='http', auth="public", website=True, sitemap=True)
     def product(self, product, category='', search='', **kwargs):
         curr_comapny = request.session.get('current_website_company')
@@ -275,6 +288,7 @@ class CustomerPortal(portal.CustomerPortal):
     @http.route('/set/company', type='json', auth='user', websiste=True)
     def set_company(self, company_id):
         partner = request.env.user.partner_id
+        main_com = request.env['res.partner'].sudo().browse([(int(company_id))])
         portal_companies = partner.portal_company_ids
         if request.env.user.has_group('base.group_user'):
             portal_companies = request.env['res.partner'].sudo().search([('is_company','=',True)])
@@ -288,8 +302,10 @@ class CustomerPortal(portal.CustomerPortal):
 
             if order.partner_id.id != int(company_id):
                 website.sale_reset()
-            if orders:
+            if orders and main_com.is_verified :
                 return {'status': True, 'url': '/select/cart'}
+            elif not main_com.is_verified:
+                return {'status': True, 'url': '/my/website/company'}
             return {'status': True}
         else:
             request.session['current_website_company'] = None
@@ -317,14 +333,19 @@ class CustomerPortal(portal.CustomerPortal):
         return request.redirect('/shop/cart')
 
     @http.route(['/my/website/company'], type='http', auth="user", website=True)
-    def portal_company_switch(self):
+    def portal_company_switch(self,**kwargs):
         partner = request.env.user.partner_id
         portal_companies = partner.portal_company_ids
         if request.env.user.has_group('base.group_user'):
             portal_companies = request.env['res.partner'].sudo().search([('is_company','=',True)])
         curr_comapny = request.session.get('current_website_company')
+        main_company = False
+        if curr_comapny:
+            main_company = request.env['res.partner'].sudo().browse([int(curr_comapny)])
+            if kwargs.get('document_sign'):
+                main_company.business_verification_status='submit'
 
-        return request.render("portal_enhancements.portal_my_company", {'company_ids': portal_companies, 'curr_comapny': curr_comapny})
+        return request.render("portal_enhancements.portal_my_company", {'company_ids': portal_companies, 'curr_comapny': curr_comapny,'main_company':main_company,'error_msg':kwargs.get('error')})
 
 
 
@@ -375,3 +396,119 @@ class CustomerPortal(portal.CustomerPortal):
         return {
                 'status':True
             }
+
+    @http.route('/web/business/registration',type='http',auth='user',website=True)
+    def user_business_registration(self,**kw):
+        curr_comapny = request.session.get('current_website_company')
+        if not curr_comapny:
+            return request.redirect('/my/website/company')
+        partner = request.env['res.partner'].sudo().browse([int(curr_comapny)])
+        if 'submitted' in kw and request.httprequest.method == "POST":
+            partner.write({'resale_taxexempt': kw.get('resale_tax'),})
+            partner.basic_verification_submit = True
+            if kw.get('resale_tax','test') == 'resale':
+                default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.resale_document_id_sign')
+                default_template = request.env['sign.template'].sudo().browse([int(default_template_id)])
+                sign_request = request.env['sign.request'].with_user(default_template.create_uid).create({
+                    'template_id': default_template.id,
+                    'reference': "%(template_name)s-%(user_name)s" % {'template_name': default_template.attachment_id.name,'user_name':partner.name},
+                    'favorited_ids': [(4, default_template.create_uid.id)],
+                })
+                request_item = http.request.env['sign.request.item'].sudo().create({'sign_request_id': sign_request.id,'partner_id':partner.id, 'role_id': default_template.sign_item_ids.mapped('responsible_id').id})
+                sign_request.action_sent_without_mail()
+                return request.redirect('/sign/document/%(request_id)s/%(access_token)s' % {'request_id': sign_request.id, 'access_token': request_item.access_token})
+        else:
+            
+            
+            return request.render("portal_enhancements.signup_with_info_template_business", {'partner':partner})
+
+
+    @http.route('/business/registration',type='json',auth='user',website=True)
+    def business_update(self,partner_id,data):
+        partner = request.env['res.partner'].sudo().browse([int(partner_id)])
+        data['basic_verification_submit'] = True
+        partner.write(data)
+        return {'status':True}
+    
+    @http.route('/update/business/tax',type='json',auth='user',website=True)
+    def business_tax_registration(self,**kwargs):
+        curr_comapny = request.session.get('current_website_company')
+        url = False
+        partner = request.env['res.partner'].sudo().browse([int(curr_comapny)])
+        partner.resale_taxexempt = kwargs.get('tax_exempt')
+        if kwargs.get('tax_exempt') =='tax_exempt':
+            docment = kwargs.get('document_data')
+            partner.businesss_registration_information = True
+            document_data = {
+                'datas':docment.get('attachment_id'),
+                'name':docment.get('file_name'),
+                'partner_id':partner.id,
+                'folder_id':1
+            }
+            document_id = request.env['documents.document'].sudo().create(document_data)
+            partner.tax_exempt_certifcate_id = document_id.id
+        elif kwargs.get('tax_exempt') =='none':
+            default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.cod_payment_terms')
+            partner.property_payment_term_id = int(default_template_id)
+            partner.businesss_registration_information = True
+        else:
+            default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.resale_document_id_sign')
+            default_template = request.env['sign.template'].sudo().browse([int(default_template_id)])
+            sign_request = request.env['sign.request'].with_user(default_template.create_uid).create({
+                'template_id': default_template.id,
+                'reference': "%(template_name)s-%(user_name)s" % {'template_name': default_template.attachment_id.name,'user_name':partner.name},
+                'favorited_ids': [(4, default_template.create_uid.id)],
+            })
+            request_item = http.request.env['sign.request.item'].sudo().create({'sign_request_id': sign_request.id,'partner_id':partner.id, 'role_id': default_template.sign_item_ids.mapped('responsible_id').id})
+            sign_request.action_sent_without_mail()
+            url = '/sign/document/%(request_id)s/%(access_token)s' % {'request_id': sign_request.id, 'access_token': request_item.access_token}
+
+        
+        return {'status':True,'url':url}
+    
+    @http.route('/web/signup_submit', type='http', auth='user', website=True)
+    def user_details_submit(self, **kw):
+        curr_comapny = request.session.get('current_website_company')
+        if not curr_comapny:
+            return request.redirect('/my/website/company')
+        partner = request.env['res.partner'].sudo().browse([int(curr_comapny)])
+        if 'submitted' in kw and request.httprequest.method == "POST":
+            partner.write({
+                
+                'company_name': kw.get('company_name'),
+                'name': kw.get('dba'),
+                'fax_number': kw.get('fax_number'),
+                'email': kw.get('business_email'),
+                'vat': kw.get('federal_ein'),
+                'year_established': kw.get('year_established'),
+                'established_state': int(kw.get('established_state')),
+                'phone': kw.get('business_telephone'),
+                'street': kw.get('street'),
+                'city': kw.get('city'),
+                'zip': kw.get('zipcode'),
+                'country_id': int(kw.get('country_id')),
+                'typeofbusiness': kw.get('type_business'),
+                'state_id': int(kw.get('state_id')) if kw.get('state_id') else False ,
+            })
+            if kw.get('resale_tax','test') == 'resale':
+                # return request.redirect('/sign/a467a417-ed0f-44a8-9f00-8e565d20ba4d')
+                default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.resale_document_id_sign')
+                
+                default_template = request.env['sign.template'].sudo().browse([int(default_template_id)])
+                
+                
+                sign_request = request.env['sign.request'].with_user(default_template.create_uid).create({
+                    'template_id': default_template.id,
+                    'reference': "%(template_name)s-%(user_name)s" % {'template_name': default_template.attachment_id.name,'user_name':partner.name},
+                    'favorited_ids': [(4, default_template.create_uid.id)],
+                })
+                request_item = http.request.env['sign.request.item'].sudo().create({'sign_request_id': sign_request.id,'partner_id':partner.id, 'role_id': default_template.sign_item_ids.mapped('responsible_id').id})
+                sign_request.action_sent_without_mail()
+                return request.redirect('/sign/document/%(request_id)s/%(access_token)s' % {'request_id': sign_request.id, 'access_token': request_item.access_token})
+            else:
+                
+                return request.redirect('/web/business/registration')
+        else:
+            
+            states = request.env['res.country.state'].sudo().search([])
+            return request.render("portal_enhancements.signup_with_info_template", {'partner':partner,'states':states,'countries':request.env['res.country'].sudo().search([])})

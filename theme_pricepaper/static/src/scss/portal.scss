@@ -327,6 +327,68 @@
 }
 
 .switch_company_wrap {
+    .progress_verification {
+        margin-bottom: 64px;
+        border: 2px solid $primary;
+        padding: 10px;
+        border-radius: 27px;
+        display: flex;
+        width: 100%;
+        .step {
+            width: 33%;
+            border-top: 3px solid #ccc;
+            margin-top: 15px;
+            // margin-botom: 15px;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            &.active{
+                border-color: $primary !important;
+            }
+            a{
+                display: flex;
+                justify-content: center;
+                span{
+                    margin-top: 30px;
+                }
+            }
+            span{
+                margin-top: 30px;
+            }
+            .icon {
+                display: flex;
+                align-items: center;
+                position: absolute;
+                top: -38%;
+    
+                .fa {
+                    font-size: 18px;
+                    padding: 10px;
+                    background: white;
+                    border: 2px solid gray;
+                    border-radius: 50%;
+                    margin-right: 4px;
+                    margin-left: 4px;
+                    &.active{
+                        background-color: $primary !important;
+                        color: white;
+                        border-color: $primary !important;
+                    }
+                }
+               
+    
+                // .divider {
+                //     height: 3px;
+                //     width: -webkit-fill-available;
+                //     &.active{
+                //         background-color: $primary;
+                //     }
+                //     background: gray;
+                // }
+            }
+
+        }
+    }
 
     select {
         width: 98%;

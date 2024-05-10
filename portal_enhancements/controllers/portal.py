@@ -429,6 +429,51 @@ class CustomerPortal(portal.CustomerPortal):
         data['basic_verification_submit'] = True
         partner.write(data)
         return {'status':True}
+
+
+    @http.route('/update/business/payment',type='json',auth='user',website=True)
+    def update_business_payment(self,**kwargs):
+        curr_comapny = request.session.get('current_website_company')
+        url = False
+        partner = request.env['res.partner'].sudo().browse([int(curr_comapny)])
+        payment_value = kwargs.get('payment_value')
+        if payment_value =='paid_delivery':
+            default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.cod_payment_terms')
+            if default_template_id:
+                partner.property_payment_term_id = int(default_template_id)
+            partner.business_verification_status = 'submit'
+        elif payment_value =='ach_debit':
+            default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.ach_debit_form')
+            default_template = request.env['sign.template'].sudo().browse([int(default_template_id)])
+            sign_request = request.env['sign.request'].with_user(default_template.create_uid).create({
+                'template_id': default_template.id,
+                'reference': "%(template_name)s-%(user_name)s" % {'template_name': default_template.attachment_id.name,'user_name':partner.name},
+                'favorited_ids': [(4, default_template.create_uid.id)],
+            })
+            request_item = http.request.env['sign.request.item'].sudo().create({'sign_request_id': sign_request.id,'partner_id':partner.id, 'role_id': default_template.sign_item_ids.mapped('responsible_id').id})
+            sign_request.action_sent_without_mail()
+            url = '/sign/document/%(request_id)s/%(access_token)s' % {'request_id': sign_request.id, 'access_token': request_item.access_token}
+
+        elif payment_value =='apply_credit':
+            default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.credit_application')
+            default_template = request.env['sign.template'].sudo().browse([int(default_template_id)])
+            sign_request = request.env['sign.request'].with_user(default_template.create_uid).create({
+                'template_id': default_template.id,
+                'reference': "%(template_name)s-%(user_name)s" % {'template_name': default_template.attachment_id.name,'user_name':partner.name},
+                'favorited_ids': [(4, default_template.create_uid.id)],
+            })
+            request_item = http.request.env['sign.request.item'].sudo().create({'sign_request_id': sign_request.id,'partner_id':partner.id, 'role_id': default_template.sign_item_ids.mapped('responsible_id').id})
+            sign_request.action_sent_without_mail()
+            url = '/sign/document/%(request_id)s/%(access_token)s' % {'request_id': sign_request.id, 'access_token': request_item.access_token}
+        else:
+            partner.business_verification_status = 'submit'
+            url = '/my/payment/token'
+
+        return {
+            'status':True,'url':url
+        }
+
+
     
     @http.route('/update/business/tax',type='json',auth='user',website=True)
     def business_tax_registration(self,**kwargs):
@@ -448,8 +493,8 @@ class CustomerPortal(portal.CustomerPortal):
             document_id = request.env['documents.document'].sudo().create(document_data)
             partner.tax_exempt_certifcate_id = document_id.id
         elif kwargs.get('tax_exempt') =='none':
-            default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.cod_payment_terms')
-            partner.property_payment_term_id = int(default_template_id)
+            # default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.cod_payment_terms')
+            # partner.property_payment_term_id = int(default_template_id)
             partner.businesss_registration_information = True
         else:
             default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.resale_document_id_sign')

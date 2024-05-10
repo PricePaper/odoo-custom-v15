@@ -175,6 +175,26 @@ odoo.define('portal_enhancements.common', function (require) {
                 $('.error_div').removeClass('d-none')
                 $('.error_div').find('.error_mg').text('Kindly Select the payment option.')
             }
+            else{
+                data = {
+                    'payment_value':payment_value
+                }
+                $self._rpc({
+                    route: "/update/business/payment",
+                    params: data
+
+                }).then(function (result) {
+                    if (result.status) {
+                        if (result.url) {
+                            location.replace(result.url)
+                        }
+                        else {
+                            location.replace("/my/website/company")
+                        }
+                    }
+
+                });
+            }
             // if (tax_value == 'tax_exempt') {
             //     var file = $('input[name="exempt_certificate"]').prop('files')[0];
             //     if (!file) {

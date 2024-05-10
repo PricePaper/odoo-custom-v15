@@ -141,6 +141,9 @@
                     <field name="release_price_hold" invisible="1"/>
                     <field name="ready_to_release" invisible="1"/>
                 </xpath>
+                <xpath expr="//field[@name='date_order']" position="after">
+                    <field name="hold_tag_ids" widget="many2many_tags"/>
+                </xpath>
 
                 <xpath expr="//field[@name='pricelist_id']" position="attributes">
                     <attribute name="invisible">1</attribute>

@@ -29,7 +29,12 @@ class StockMove(models.Model):
     def _compute_reason_needed(self):
         for move in self:
             move.is_reason_added = False
-            if move.transit_picking_id.picking_type_code == 'outgoing':
+            if move.transit_picking_id and move.transit_picking_id.picking_type_code == 'outgoing':
+                if not move.reason_id and move.quantity_done < move.product_uom_qty:
+                    move.is_reason_added = True
+                else:
+                    move.is_reason_added = False
+            if move.picking_id and move.picking_id.picking_type_code == 'outgoing' and not move.picking_id.is_return:
                 if not move.reason_id and move.quantity_done < move.product_uom_qty:
                     move.is_reason_added = True
                 else:

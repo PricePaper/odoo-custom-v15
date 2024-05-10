@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
+    <!-- <data noupdate="1">
         <record id="purchase.email_template_edi_purchase" model="mail.template">
             <field name="name">Purchase Order: Send RFQ</field>
             <field name="model_id" ref="purchase.model_purchase_order"/>
@@ -29,9 +29,56 @@
             </div>
             </field>
             <field name="report_template" ref="purchase.report_purchase_quotation"/>
-            <field name="report_name">RFQ_{{ (object.name or '').replace('/','_') }}</field>
+            <field name="report_name">(object.state in ('draft', 'sent', 'in_progress') and 'Price Paper RFQ_%s' % (object.name[3:]) or
+            'Price Paper %s' % (object.name))</field>
             <field name="lang">{{ object.partner_id.lang }}</field>
             <field name="auto_delete" eval="True"/>
         </record>
-    </data>
+    </data> -->
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('module', '=', 'purchase'), ('name', '=', 'email_template_edi_purchase')]"/>
+        </function>
+        <value eval="{'noupdate': False}"/>
+    </function>
+    <record id="purchase.email_template_edi_purchase" model="mail.template">
+      <field name="report_name">Price Paper {{ (' RFQ_' + object.name[3:]) if object.state in ('draft', 'sent', 'in_progress') else (object.name).replace('/','_')}}</field>
+    </record>
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('module', '=', 'purchase'), ('name', '=', 'email_template_edi_purchase')]"/>
+        </function>
+        <value eval="{'noupdate': True}"/>
+    </function>
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('module', '=', 'purchase'), ('name', '=', 'email_template_edi_purchase_done')]"/>
+        </function>
+        <value eval="{'noupdate': False}"/>
+    </function>
+    <record id="purchase.email_template_edi_purchase_done" model="mail.template">
+      <field name="report_name">Price Paper {{ (' RFQ_' + object.name[3:]) if object.state in ('draft', 'sent', 'in_progress') else (object.name).replace('/','_')}}</field>
+    </record>
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('module', '=', 'purchase'), ('name', '=', 'email_template_edi_purchase_done')]"/>
+        </function>
+        <value eval="{'noupdate': True}"/>
+    </function>
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('module', '=', 'purchase'), ('name', '=', 'email_template_edi_purchase_reminder')]"/>
+        </function>
+        <value eval="{'noupdate': False}"/>
+    </function>
+    <record id="purchase.email_template_edi_purchase_reminder" model="mail.template">
+      <field name="report_name">Price Paper {{ (' RFQ_' + object.name[3:]) if object.state in ('draft', 'sent', 'in_progress') else (object.name).replace('/','_')}}</field>
+    </record>
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('module', '=', 'purchase'), ('name', '=', 'email_template_edi_purchase_reminder')]"/>
+        </function>
+        <value eval="{'noupdate': True}"/>
+    </function>
+
 </odoo>

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from . import res_company
 from . import account
+from . import sale_hold_tag
 from . import cost_change
 from . import customer_pricelist
 from . import customer_product_price

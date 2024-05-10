@@ -30,6 +30,12 @@
                         <div class="content-group mt16">
                             <field name="credit_purge_account" class="text-center oe_inline"/>
                         </div>
+                        <div class="text-muted">
+                            Credit Active Days.
+                        </div>
+                        <div class="content-group mt16">
+                            <field name="purge_old_credit_day_limit" class="text-center oe_inline"/>
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-6 o_setting_box" id="payment_purge">

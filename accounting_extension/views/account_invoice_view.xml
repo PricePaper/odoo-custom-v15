@@ -114,6 +114,27 @@
                 </xpath>
             </field>
         </record>
+        <record id="view_out_invoice_tree_inherit_ppt" model="ir.ui.view">
+            <field name="name">invoice.tree.inherit.ppt</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_out_invoice_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='invoice_partner_display_name']" position="after">
+                    <field name="partner_id" invisible="context.get('billing_act', True)" groups="base.group_user" string="Customer" />
+                </xpath>
+            </field>
+        </record>
+        <record id="invoice_supplier_tree_inherit_ppt_partner" model="ir.ui.view">
+            <field name="name">account.invoice.supplier.tree.ppt</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_in_invoice_bill_tree"/>
+            <field name="arch" type="xml">
+              <xpath expr="//field[@name='invoice_partner_display_name']" position="after">
+                  <field name="partner_id" invisible="context.get('billing_act', True)" groups="base.group_user" string="Vendor" />
+              </xpath>
+
+            </field>
+        </record>
         <record id="action_customer_type_invoices" model="ir.actions.act_window">
             <field name="name">Billing Activities</field>
             <field name="res_model">account.move</field>
@@ -121,7 +142,7 @@
             <field name="view_id" ref="account.view_out_invoice_tree"/>
             <field name="search_view_id" ref="account.view_account_invoice_filter"/>
             <field name="domain">[('move_type', 'in', ('out_invoice', 'out_refund'))]</field>
-            <field name="context">{'create': 0}</field>
+            <field name="context">{'create': 0, 'billing_act': 0}</field>
             <field name="help" type="html">
               <p class="o_view_nocontent_smiling_face">
                 Create a customer invoice
@@ -137,7 +158,7 @@
             <field name="view_id" ref="account.view_in_invoice_bill_tree"/>
             <field name="search_view_id" ref="account.view_account_invoice_filter"/>
             <field name="domain">[('move_type', 'in', ('in_invoice', 'in_refund'))]</field>
-            <field name="context">{'create': 0}</field>
+            <field name="context">{'create': 0, 'billing_act': 0}</field>
             <field name="help" type="html">
               <p class="o_view_nocontent_smiling_face">
                 Create a customer invoice
@@ -150,13 +171,13 @@
                   name="Billing Activities"
                   id="menu_action_customer_type_invoices"
                   parent="account.menu_finance_receivables"
-                  groups="account.group_account_user"
+                  groups="account.group_account_invoice"
                   sequence="3"/>
         <menuitem action="action_vendor_type_invoices"
                   name="Billing Activities"
                   id="menu_action_vendor_type_invoices"
                   parent="account.menu_finance_payables"
-                  groups="account.group_account_user"
+                  groups="account.group_account_invoice"
                   sequence="3"/>
     </data>
 </odoo>

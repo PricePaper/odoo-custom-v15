@@ -9,14 +9,31 @@ class DeliveryCarrier(models.Model):
     mobile_app_availability = fields.Boolean("Show in mobile app")
 
     @api.model
-    def wrapper_fetch_shipping_methods(self):
+    def wrapper_fetch_shipping_methods(self, partner_id=None):
+        """
+        Fetches shipping methods based on the boolean mobile_app_availability,and partner_id.
+        default key added to identify default shipping method for the partner
+        @param partner_id: res.partner id
+        @return: list of dictionary with shipping methods
+        """
         result = []
+        if partner_id and not isinstance(partner_id, int):
+            return result
 
         shipping_methods = self.search(
             [('mobile_app_availability', '=', True), ('delivery_type', 'in', ['fixed', 'base_on_rule'])])
 
+        default_delivery_method = self
+        if partner_id:
+            # if partner_id is valid and default_deliver_carrier_id present add to fetched shipping_methods
+            partner = self.env['res.partner'].browse(partner_id)
+            default_delivery_method = partner and partner.property_delivery_carrier_id
+            shipping_methods |= default_delivery_method
+
         if shipping_methods:
             for method in shipping_methods:
+                # default: True key passed to identify the delivery method belongs to the partner
+                is_default_delivery_method = (method == default_delivery_method)
 
                 destination_availability = {
                     'countries': method.country_ids.mapped('name'),
@@ -27,7 +44,8 @@ class DeliveryCarrier(models.Model):
                     result.append({'name': method.name,
                                    'delivery_type': method.delivery_type,
                                    'price': method.fixed_price,
-                                   'destination_availability': destination_availability
+                                   'destination_availability': destination_availability,
+                                   'default': is_default_delivery_method
                                    })
                 else:
                     rule_list = []
@@ -53,7 +71,8 @@ class DeliveryCarrier(models.Model):
                         'name': method.name,
                         'delivery_type': method.delivery_type,
                         'price_rule': rule_list,
-                        'destination_availability': destination_availability
+                        'destination_availability': destination_availability,
+                        'default': is_default_delivery_method
                     })
 
         return result

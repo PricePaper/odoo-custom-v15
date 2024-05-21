@@ -77,6 +77,7 @@ class PaymentTokenize(models.TransientModel):
             'authorize_profile': self.profile_id,
             'authorize_payment_method_type': self.acquirer_id.authorize_payment_method_type,
             'verified': True,
+            'card_type': token.get('paymentProfile', {}).get('payment', {}).get('creditCard', {}).get('cardType'), 
             'shipping_id': self.shipping_id.id,
             'address_id': self.address_id.id,
             'is_default': self.is_default

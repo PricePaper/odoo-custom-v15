@@ -51,7 +51,9 @@
     font-weight: 900;
 }
 
-
+#wrapwrap{
+    overflow-x: hidden;
+}
 $primary: #749551;
 $secondary: #83754D;
 $color_2: #000;
@@ -404,12 +406,12 @@ a {
         font-size: 16px;
     }
 
-    input.form-control {
+    input.form-control,select.form-control {
         border-radius: 10px;
         height: 60px;
         margin-bottom: 10px;
     }
-
+    
 
 
     .meet-people .carousel-item img {

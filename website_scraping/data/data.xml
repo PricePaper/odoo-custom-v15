@@ -17,8 +17,7 @@
         <record id="website_scraping_cofig_1" model="website.scraping.cofig">
             <field name="name">Restaurant Depot</field>
             <field name="competitor">rdepot</field>
-            <field name="home_page_url">
-                https://member.restaurantdepot.com/sso/sso/index/?redirect_uri=https://www.restaurantdepot.com/home-logged-in</field>
+            <!-- <field name="home_page_url">https://member.restaurantdepot.com/sso/sso/index/?redirect_uri=https://www.restaurantdepot.com/home-logged-in</field> -->
         </record>
 
         <record id="website_scraping_cofig_2" model="website.scraping.cofig">
@@ -35,12 +34,20 @@
             <field name="sequence" eval="1"/>
         </record>
 
+        <record id="restaurant_depot_5" model="product.pricelist">
+            <field name="name">Restaurant Depot + 5%</field>
+            <field name="type">competitor</field>
+            <field name="competitor_id" eval="ref('website_scraping_cofig_1')"/>
+            <field name="competietor_margin">5</field>
+            <field name="sequence" eval="2"/>
+        </record>
+
         <record id="restaurant_depot_10" model="product.pricelist">
             <field name="name">Restaurant Depot + 10%</field>
             <field name="type">competitor</field>
             <field name="competitor_id" eval="ref('website_scraping_cofig_1')"/>
             <field name="competietor_margin">10</field>
-            <field name="sequence" eval="2"/>
+            <field name="sequence" eval="3"/>
         </record>
 
         <record id="restaurant_depot_20" model="product.pricelist">
@@ -48,7 +55,7 @@
             <field name="type">competitor</field>
             <field name="competitor_id" eval="ref('website_scraping_cofig_1')"/>
             <field name="competietor_margin">20</field>
-            <field name="sequence" eval="3"/>
+            <field name="sequence" eval="4"/>
         </record>
 
         <record id="restaurant_depot_30" model="product.pricelist">
@@ -56,7 +63,7 @@
             <field name="type">competitor</field>
             <field name="competitor_id" eval="ref('website_scraping_cofig_1')"/>
             <field name="competietor_margin">30</field>
-            <field name="sequence" eval="4"/>
+            <field name="sequence" eval="5"/>
         </record>
 
         <record id="webstaurant_store_default" model="product.pricelist">
@@ -64,7 +71,15 @@
             <field name="type">competitor</field>
             <field name="competitor_id" eval="ref('website_scraping_cofig_2')"/>
             <field name="competietor_margin">0</field>
-            <field name="sequence" eval="5"/>
+            <field name="sequence" eval="6"/>
+        </record>
+
+        <record id="webstaurant_store_5" model="product.pricelist">
+            <field name="name">Webstaurant Store + 5%</field>
+            <field name="type">competitor</field>
+            <field name="competitor_id" eval="ref('website_scraping_cofig_2')"/>
+            <field name="competietor_margin">5</field>
+            <field name="sequence" eval="7"/>
         </record>
 
         <record id="webstaurant_store_10" model="product.pricelist">
@@ -72,7 +87,7 @@
             <field name="type">competitor</field>
             <field name="competitor_id" eval="ref('website_scraping_cofig_2')"/>
             <field name="competietor_margin">10</field>
-            <field name="sequence" eval="6"/>
+            <field name="sequence" eval="8"/>
         </record>
 
         <record id="webstaurant_store_20" model="product.pricelist">
@@ -80,7 +95,7 @@
             <field name="type">competitor</field>
             <field name="competitor_id" eval="ref('website_scraping_cofig_2')"/>
             <field name="competietor_margin">20</field>
-            <field name="sequence" eval="7"/>
+            <field name="sequence" eval="9"/>
         </record>
 
         <record id="webstaurant_store_30" model="product.pricelist">
@@ -88,7 +103,7 @@
             <field name="type">competitor</field>
             <field name="competitor_id" eval="ref('website_scraping_cofig_2')"/>
             <field name="competietor_margin">30</field>
-            <field name="sequence" eval="8"/>
+            <field name="sequence" eval="10"/>
         </record>
 
     </data>

@@ -12,7 +12,9 @@ class PortalRequest(CustomerPortal):
 
 
     def _get_request_domain(self):
-        return [('partner_id', '=', request.env.user.partner_id.id),('state','!=','draft')]
+        cur_com = request.session.get('current_website_company',False)
+        partner = request.env['res.partner'].browse([int(cur_com)]) if cur_com else request.env.user.partner_id
+        return [('partner_id', '=', partner.id),('state','!=','draft')]
 
 
     def _prepare_home_portal_values(self, counters):
@@ -40,7 +42,7 @@ class PortalRequest(CustomerPortal):
         order = searchbar_sortings[sortby]['order']
 
         searchbar_filters = {
-            'all': {'label': _('All'), 'domain': []},
+            'all': {'label': _('All Requests'), 'domain': []},
             'Approved': {'label': _('Approved Requests'), 'domain': [('state', '=', "approve")]},
             'Rejected': {'label': _('Rejected Requests'), 'domain': [('state', '=',"reject" )]},
         }

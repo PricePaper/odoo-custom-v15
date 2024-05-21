@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="account_payment_term_inherit_ppt_mobile_apis_form" model="ir.ui.view">
+        <field name="name">account.payment.term.inherit.ppt.mobile.apis.form</field>
+        <field name="model">account.payment.term</field>
+        <field name="inherit_id" ref="authorize_extension.account_payment_term_inherit_form"/>
+        <field name="arch" type="xml">
+            <field name="is_pre_payment" position="after">
+                    <field name="payment_method"  widget="selection" string="Payment Methods"/>
+                </field>
+        </field>
+    </record>
+</odoo>

@@ -34,6 +34,41 @@ odoo.define('theme_pricepaper.common', function (require) {
                 uniqueId: this.uniqueId
             };
         },
+        _render: function () {
+            this._super.apply(this, arguments);
+            $('.paper_container').find('.carousel-item .row').addClass('owl-carousel')
+            $('.paper_container').find('.carousel-item .row').find('.col-0').addClass('item')
+            $('.paper_container .carousel-item .row').owlCarousel({
+                loop: true,
+                margin: 20,
+                nav: false,
+                dots: false,
+                autoplay: true,
+    
+                responsive: {
+                    0: {
+                        items: 1
+                    },
+                    450: {
+                        items: 1
+                    },
+                    600: {
+                        items: 2
+                    },
+                    1000: {
+                        items: 3
+                    },
+                    1200: {
+                        items: 4
+                    },
+                    1700: {
+                        items: 5
+                    }
+    
+                }
+            })
+    
+        }
 
     })
     publicWidget.registry.Crmform = publicWidget.Widget.extend({
@@ -75,7 +110,8 @@ odoo.define('theme_pricepaper.common', function (require) {
             var data = {}
             var flag = false
             var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-            $form.find('input,textarea').each(function () {
+            $form.find('input:not(.d-none),textarea:not(#g-recaptcha-response)').each(function () {
+
                 if (!$(this).val()) {
 
                     $(this).get(0).setCustomValidity('Please Enter Correct Information');
@@ -112,74 +148,25 @@ odoo.define('theme_pricepaper.common', function (require) {
         }
     })
     $(document).ready(function () {
-        setInterval(function(){
-            $('.scroll_div .left_scrol').click()
-        },3000)
+
+
+
+
         $(document).on('click', '.scroll_div .left_scrol', function (ev) {
+
+
+
             var main_row = $(ev.currentTarget).parents('.paper_container').find('.carousel-item .row')
-            var newScrollLeft = main_row.scrollLeft();
-            // var divWidth = main_row.outerWidth();
-            // var $width = main_row.outerWidth()
-            // var $scrollWidth = main_row[0].scrollWidth;
-            // var $scrollLeft = main_row.scrollLeft();
-
-            var newScrollLeft = main_row.scrollLeft(),
-                width = main_row.width(),
-                scrollWidth = main_row.get(0).scrollWidth;
-            var offset = 8;
-                
-            if (scrollWidth - newScrollLeft - width <= offset) {
-                var left = 0
-            }
-
-
-
-
-
-
-
-            else {
-
-
-                var left = main_row.scrollLeft() + main_row.find('.col-0').first().width() + parseInt(main_row.find('.col-0').first().css('padding-right').replace('px',''))
-            }
-            var $self = $(ev.currentTarget)
-            $self.prop('disabled',true)
-            main_row.animate({
-                scrollLeft: left
-            }, {
-                duration:400,
-                complete:function(){
-                    $self.prop('disabled',false)
-                }
-            });
-
-
-
-
-            // main_row.scrollLeft(main_row.scrollLeft()+460)
+            main_row.find('.owl-next').click()
+           
         })
-        // let items = document.querySelectorAll('.carousel .carousel-item')
 
-        // items.forEach((el) => {
-        //     const minPerSlide = 4
-        //     let next = el.nextElementSibling
-        //     for (var i = 1; i < minPerSlide; i++) {
-        //         if (!next) {
-        //             // wrap carousel by using first child
-        //             next = items[0]
-        //         }
-        //         let cloneChild = next.cloneNode(true)
-        //         el.appendChild(cloneChild.children[0])
-        //         next = next.nextElementSibling
-        //     }
-        // })
         if ($('#wrapwrap').hasClass('odoo-editor-editable')) {
-            $('.owl-carousel').addClass('d-flex')
+            $('.we-serve').addClass('d-flex')
         }
         else {
 
-            $('.owl-carousel').owlCarousel({
+            $('.we-serve').owlCarousel({
                 loop: true,
                 margin: 10,
                 nav: true,

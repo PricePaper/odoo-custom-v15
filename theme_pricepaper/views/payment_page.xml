@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="payment" name="Payment" inherit_id="website_sale.payment">
+        <xpath expr="//div[@id='wrap']" position="attributes">
+            <attribute name="class" separator=" " add="price_payment_cart" />
+        </xpath>
+         <xpath expr="//div[hasclass('container')]" position="attributes">
+            <attribute name="class" separator=" " add="container-fluid" remove='container' />
+        </xpath>
+        <xpath expr="//t[@t-call='website_sale.wizard_checkout']/.." position="attributes">
+            <attribute name="class" separator=" " add="progress_cart" />
+        </xpath>
+        <xpath expr="//t[@t-call='website_sale.wizard_checkout']/.." position="inside">
+            <div class='white-dots'/>
+        </xpath>
+    </template>
+
+</odoo>

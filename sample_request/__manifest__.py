@@ -22,7 +22,7 @@ of products and admin have rights to approve to reject them
         'wizard/reject_reason.xml',
         'wizard/crm_lead_to_opportunity_views.xml',
 
-        # 'views/res_config.xml',
+        'views/res_config.xml',
         'views/crm_views.xml',
         'views/templates.xml',
         'views/sample_request.xml',

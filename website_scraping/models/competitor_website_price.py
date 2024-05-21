@@ -56,12 +56,14 @@ class CompetitorItems(models.Model):
                 [('type', '=', 'competitor'), ('competitor_id', '=', rec.product_sku_ref_id.web_config.id)])
 
             for pricelist in pricelists:
-                lines = pricelist.customer_product_price_ids.filtered(lambda p: p.product_id.id == rec.product_id.id)
+                lines = pricelist.customer_product_price_ids.filtered(lambda p: p.product_id.id == rec.product_id.id and p.product_uom == rec.product_id.ppt_uom_id)
+                lines_to_remove = pricelist.customer_product_price_ids.filtered(lambda p: p.product_id.id == rec.product_id.id and p.product_uom != rec.product_id.ppt_uom_id)
+                if lines_to_remove:
+                    lines_to_remove.unlink()
                 price = rec.price + (rec.price * pricelist.competietor_margin / 100)
                 for line in lines:
-                    if line.price != price or line.product_uom != rec.product_id.ppt_uom_id:
+                    if line.price != price:
                         line.write({'price': price,
-                                    'product_uom': rec.product_id.ppt_uom_id.id,
                                     })
                 if not lines:
                     self.env['customer.product.price'].create({'pricelist_id': pricelist.id,

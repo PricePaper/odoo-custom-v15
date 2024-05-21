@@ -16,5 +16,5 @@ class RejectReason(models.TransientModel):
 		request_id.state = 'reject'
 		template_id = self.env.ref('sample_request.email_template_edi_sample_requst',raise_if_not_found=False)
 		if template_id:
-			template_id.with_context(reason=self.reason).send_mail(request_id.id,force_send=False,raise_exception=False)
+			template_id.with_context(reason=self.message).send_mail(request_id.id,force_send=False,raise_exception=False)
 		return {'type': 'ir.actions.act_window_close'}

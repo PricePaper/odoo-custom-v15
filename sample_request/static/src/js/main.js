@@ -11,7 +11,35 @@ odoo.define('sample_request.product', function (require) {
     publicWidget.registry.SampleCart = publicWidget.Widget.extend({
         selector: '.sample_request_cart',
         events: {
-            'click .process_request': '_processRequest'
+            'click .process_request': '_processRequest',
+            'click .delete-sample': '_deleteSample'
+        },
+        _deleteSample: function (ev) {
+            var line_id = $(ev.currentTarget).attr('data-id')
+            ev.preventDefault()
+            ev.stopPropagation();
+            var $self = this
+            var msg = ("We are processing your request, please wait ...");
+            $.blockUI({
+                'message': '<h2 class="text-white"><img src="/web/static/img/spin.png" class="fa-pulse"/>' +
+                    '    <br />' + msg +
+                    '</h2>'
+            });
+
+            $self._rpc({
+                route: '/sample/request/unlink',
+                params: {
+                    line_id: line_id,
+                }
+            }).then(function (res) {
+
+
+
+                window.location.reload();
+
+
+            });
+
         },
         _processRequest: function (ev) {
             var href = $(ev.currentTarget).attr('href')

@@ -6,6 +6,19 @@
             <div class="">
                 <section class="pt-md-5 py-3 paper-bag" style="background: #759453;">
                     <div class="container ppt-container py-5">
+                        <div class='row bread_blog'>
+                            <ul aria-label="breadcrumb" t-attf-class="breadcrumb flex-nowrap py-0 pr-2 pl-2  px-0 css_editable_mode_hidden #{additionnal_classes or ''}">
+                                <li t-if="len(blogs) &gt; 1" class="breadcrumb-item">
+                                    <a href="/blog">All Blogs</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a t-attf-href="#{blog_url(tag=None, date_begin=None, date_end=None)}" t-esc="blog.name"/>
+                                </li>
+                                <li class="breadcrumb-item text-truncate active">
+                                    <span t-esc="blog_post.name"/>
+                                </li>
+                            </ul>
+                        </div>
                         <div class="row text-white">
                             <div class="col-lg-7">
                                 <h3 class="display-5 fw-sb mb-4" t-field="blog_post.name" id="o_wblog_post_name" data-oe-expression="blog_post.name" t-att-data-blog-id="blog_post.id" placeholder="Title"/>

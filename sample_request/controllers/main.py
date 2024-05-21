@@ -3,24 +3,19 @@ from odoo import fields, http, SUPERUSER_ID, tools, _
 from odoo.fields import Command
 from odoo.http import request
 from werkzeug.exceptions import Forbidden, NotFound
-import logging 
+import logging
 _logger = logging.getLogger(__name__)
+
 
 class WebsiteSale(main.WebsiteSale):
 
-    
-
-
-
-
-    def checkout_request_redirection(self,request_id):
+    def checkout_request_redirection(self, request_id):
         if not request_id or request_id.state != 'draft':
             request.session['sample_request_id'] = None
             return request.redirect('/shop')
 
         if request_id and not request_id.request_lines:
             return request.redirect('/sample/request')
-
 
     def checkout_values_request(self, **kw):
         request_id = request.website.get_sample_oder(force_create=1)
@@ -29,28 +24,33 @@ class WebsiteSale(main.WebsiteSale):
             Partner = request_id.partner_id.with_context(show_address=1).sudo()
             shippings = Partner.search([
                 ("id", "child_of", request_id.partner_id.commercial_partner_id.ids),
-                '|', ("type", "in", ["delivery", "other"]), ("id", "=", request_id.partner_id.commercial_partner_id.id)
+                '|', ("type", "in", ["delivery", "other"]), ("id",
+                                                             "=", request_id.partner_id.commercial_partner_id.id)
             ], order='id desc')
-            
 
         values = {
             'request_id': request_id,
             'shippings': shippings,
         }
         return values
-            
+
+    @http.route(['/sample/request/unlink'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
+    def sample_request(self, line_id, **kw):
+        line = request.env['sample.request.line'].sudo().browse([int(line_id)])
+        line.unlink()
+
+        return True
 
     @http.route(['/sample/request/update'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
-    def sample_request(self, product_id, **kw):
+    def sample_request_unlink(self, product_id, **kw):
         sample_request = request.website.get_sample_oder(force_create=1)
         result = sample_request._update_sample_order(product_id=product_id)
         return result
 
-
     @http.route(['/sample/request'], type='http', auth="public", website=True, csrf=False)
     def sample_request_cart(self):
         sample_order = request.website.get_sample_oder(force_create=False)
-        return request.render('sample_request.request_cart',{'sample':sample_order})
+        return request.render('sample_request.request_cart', {'sample': sample_order})
 
     @http.route(['/sample/address'], type='http', auth="public", website=True, csrf=False)
     def sample_address(self):
@@ -73,46 +73,46 @@ class WebsiteSale(main.WebsiteSale):
             return redirection
         if request.env.user._is_public():
             crm_vals.update(
-                name = 'Public sample request.',
-                sample_request_id = request_id.id,
-                street = request_id.street,
-                street2 = request_id.street2,
-                zip = request_id.zip,
-                state_id = request_id.state_id.id,
-                country_id = request_id.country_id.id,
-                email_from = request_id.email,
-                phone = request_id.phone,
-                contact_name = request_id.customer_name,
+                name='Public sample request.',
+                sample_request_id=request_id.id,
+                street=request_id.street,
+                street2=request_id.street2,
+                zip=request_id.zip,
+                state_id=request_id.state_id.id,
+                country_id=request_id.country_id.id,
+                email_from=request_id.email,
+                phone=request_id.phone,
+                contact_name=request_id.customer_name,
 
-                type = 'lead',
-                partner_name = request_id.company_name
+                type='lead',
+                partner_name=request_id.company_name
 
-                
+
             )
             request.session['sample_request_id'] = False
         else:
-            crm_vals ={
-            'name':f'{request_id.partner_id.name} sample request.',
-            'partner_id':request_id.partner_id.id,
-            'sample_request_id':request_id.id
-        }
-        crm =  request.env['crm.lead'].sudo().create(crm_vals)
+            crm_vals = {
+                'name': f'{request_id.partner_id.name} sample request.',
+                'partner_id': request_id.partner_id.id,
+                'sample_request_id': request_id.id
+            }
+        crm = request.env['crm.lead'].sudo().create(crm_vals)
         request_id.lead_id = crm.id
-        request_id.state='request'
+        request_id.state = 'request'
 
-        return request.render("sample_request.sample_request", {'request_id':request_id})
-
+        return request.render("sample_request.sample_request", {'request_id': request_id})
 
     @http.route()
     def product(self, product, category='', search='', **kwargs):
-        res = super(WebsiteSale, self).product(product=product, category=category, search=search, **kwargs)
+        res = super(WebsiteSale, self).product(product=product,
+                                               category=category, search=search, **kwargs)
         res.qcontext['sample_access'] = True
         return res
 
-
     @http.route(['/sample/address/edit'], type='http', methods=['GET', 'POST'], auth="public", website=True, sitemap=False)
     def sample_ddress(self, **kw):
-        Partner = request.env['res.partner'].with_context(show_address=1).sudo()
+        Partner = request.env['res.partner'].with_context(
+            show_address=1).sudo()
         sample_request = request.website.get_sample_oder(force_create=1)
 
         redirection = self.checkout_request_redirection(sample_request)
@@ -126,15 +126,15 @@ class WebsiteSale(main.WebsiteSale):
         if request.env.user._is_public():
             # values = sample_request.read()[0]
             values.update(
-                street = sample_request.street,
-                street2 = sample_request.street2,
-                city = sample_request.city,
-                state_id = sample_request.state_id,
-                country_id = sample_request.country_id,
-                email = sample_request.email,
-                phone = sample_request.phone,
-                zip = sample_request.zip,
-                name = sample_request.customer_name,
+                street=sample_request.street,
+                street2=sample_request.street2,
+                city=sample_request.city,
+                state_id=sample_request.state_id,
+                country_id=sample_request.country_id,
+                email=sample_request.email,
+                phone=sample_request.phone,
+                zip=sample_request.zip,
+                name=sample_request.customer_name,
             )
             # print(values)
         partner_id = int(kw.get('partner_id', -1))
@@ -150,7 +150,8 @@ class WebsiteSale(main.WebsiteSale):
                     mode = ('edit', 'billing')
                     can_edit_vat = sample_request.partner_id.can_edit_vat()
                 else:
-                    shippings = Partner.search([('id', 'child_of', sample_request.partner_id.commercial_partner_id.ids)])
+                    shippings = Partner.search(
+                        [('id', 'child_of', sample_request.partner_id.commercial_partner_id.ids)])
                     if sample_request.partner_id.commercial_partner_id.id == partner_id:
                         mode = ('new', 'shipping')
                         partner_id = -1
@@ -162,14 +163,16 @@ class WebsiteSale(main.WebsiteSale):
                     values = Partner.browse(partner_id)
             elif partner_id == -1:
                 mode = ('new', 'shipping')
-            else: # no mode - refresh without post?
+            else:  # no mode - refresh without post?
                 return request.redirect('/sample/address')
 
         # IF POSTED
         if 'submitted' in kw and request.httprequest.method == "POST":
             pre_values = self.values_preprocess(sample_request, mode, kw)
-            errors, error_msg = self.checkout_form_validate(mode, kw, pre_values)
-            post, errors, error_msg = self.values_postprocess(sample_request, mode, pre_values, errors, error_msg)
+            errors, error_msg = self.checkout_form_validate(
+                mode, kw, pre_values)
+            post, errors, error_msg = self.values_postprocess(
+                sample_request, mode, pre_values, errors, error_msg)
 
             if errors:
                 errors['error_message'] = error_msg
@@ -193,10 +196,9 @@ class WebsiteSale(main.WebsiteSale):
                     post['customer_name'] = post['name']
                     del post['name']
                     sample_request.write(post)
-                    
+
                     if not errors:
                         return request.redirect('/sample/confirm_order')
-
 
                 # TDE FIXME: don't ever do this
                 # -> TDE: you are the guy that did what we should never do in commit e6f038a
@@ -206,7 +208,7 @@ class WebsiteSale(main.WebsiteSale):
 
         render_values = {
             'sample_request': sample_request,
-            'website_sale_order':sample_request,
+            'website_sale_order': sample_request,
             'partner_id': partner_id,
             'mode': mode,
             'checkout': values,
@@ -215,11 +217,6 @@ class WebsiteSale(main.WebsiteSale):
             'callback': kw.get('callback'),
             # 'only_services': order and order.only_services,
         }
-        render_values.update(self._get_country_related_render_values(kw, render_values))
+        render_values.update(
+            self._get_country_related_render_values(kw, render_values))
         return request.render("sample_request.sample_address", render_values)
-
-
-
-
-
-

@@ -29,7 +29,12 @@ class StockMove(models.Model):
     def _compute_reason_needed(self):
         for move in self:
             move.is_reason_added = False
-            if move.transit_picking_id.picking_type_code == 'outgoing':
+            if move.transit_picking_id and move.transit_picking_id.picking_type_code == 'outgoing':
+                if not move.reason_id and move.quantity_done < move.product_uom_qty:
+                    move.is_reason_added = True
+                else:
+                    move.is_reason_added = False
+            if move.picking_id and move.picking_id.picking_type_code == 'outgoing' and not move.picking_id.is_return:
                 if not move.reason_id and move.quantity_done < move.product_uom_qty:
                     move.is_reason_added = True
                 else:
@@ -488,14 +493,18 @@ class StockMove(models.Model):
             move_lines = move._get_move_lines()
             if not move_lines:
                 if quantity_done:
+
                     # do not impact reservation here
-                    if self._context.get('transit_adjustment'):
+                    if self._context.get('transit_adjustment') or self._context.get('move_dest_ids'):
                         move_line_vals = move._prepare_move_line_vals()
                         move_line_vals.update({'qty_done': quantity_done})
-                        if move.move_dest_ids.move_line_ids.lot_id:
+                        move_dest_ids = move.move_dest_ids
+                        if not move_dest_ids:
+                            move_dest_ids = self._context.get('move_dest_ids')
+                        if move_dest_ids.move_line_ids.lot_id:
                             move_line_vals.update({
-                                'lot_id': move.move_dest_ids.move_line_ids.lot_id.id,
-                                'lot_name': move.move_dest_ids.move_line_ids.lot_id.name,
+                                'lot_id': move_dest_ids.move_line_ids.lot_id.id,
+                                'lot_name': move_dest_ids.move_line_ids.lot_id.name,
                             })
                         move_line = self.env['stock.move.line'].create(move_line_vals)
                     else:
@@ -533,11 +542,11 @@ class StockMove(models.Model):
                     'description_picking': move.description_picking,
                     'priority': move.priority,
                     'transit_picking_id': move.transit_picking_id.id,
-                    'picking_id': False
+                    'picking_id': False,
                 }
                 new_move = self.create(move_vals)
                 new_move.with_context(is_transit=True)._action_confirm()
-                new_move.write({'quantity_done': move.product_uom_qty})
+                new_move.with_context(move_dest_ids=move.move_dest_ids).write({'quantity_done': move.product_uom_qty})
                 new_move.with_context(is_transit=True)._action_done()
         return True
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

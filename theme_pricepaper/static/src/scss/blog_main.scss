@@ -83,6 +83,14 @@
 
 
 }
+.bread_blog{
+    li{
+        @media (max-width:500px) {
+            font-size: 12px;
+            
+        }
+    }
+}
 
 #oe_structure_blog_footer_main {
     @media(max-width:1350px)and (min-width: 1024px) {

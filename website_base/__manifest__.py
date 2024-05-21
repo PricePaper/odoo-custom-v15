@@ -19,6 +19,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/templates.xml',
+        'views/delivery_view.xml'
     ],
      'assets': {
         'web.assets_frontend': [

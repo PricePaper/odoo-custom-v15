@@ -14,27 +14,13 @@
                             <div class="col-lg-3 col-md-4 mb-3">
                                 <ul class="nav flex-column">
                                     <li class="nav-item">
-                                        <a href="/" class="nav-link p-0 text-body-secondary">Home</a>
+                                        <a target="new" href="/" class="nav-link p-0 text-body-secondary">Home</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="/aboutus" class="nav-link p-0 text-body-secondary">About</a>
+                                        <a target="new" href="/aboutus" class="nav-link p-0 text-body-secondary">About</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="/shop" class="nav-link p-0 text-body-secondary">Products</a>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div class="col-lg-3 col-md-4 mb-3">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item">
-                                        <a href="/web/login" class="nav-link p-0 text-body-secondary">Login</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="" class="nav-link p-0 text-body-secondary">Return policy</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="/contactus" class="nav-link p-0 text-body-secondary">Contact</a>
+                                        <a target="new" href="/shop" class="nav-link p-0 text-body-secondary">Products</a>
                                     </li>
                                 </ul>
                             </div>
@@ -42,13 +28,27 @@
                             <div class="col-lg-3 col-md-4 mb-3">
                                 <ul class="nav flex-column">
                                     <li class="nav-item">
-                                        <a href="" class="nav-link p-0 text-body-secondary">Accessibility</a>
+                                        <a target="new" href="/web/login" class="nav-link p-0 text-body-secondary">Login</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="/blog" class="nav-link p-0 text-body-secondary">Blog</a>
+                                        <a target="new" href="" class="nav-link p-0 text-body-secondary">Return policy</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="" class="nav-link p-0 text-body-secondary">Site map</a>
+                                        <a target="new" href="/contactus" class="nav-link p-0 text-body-secondary">Contact</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="col-lg-3 col-md-4 mb-3">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item">
+                                        <a target="new" href="" class="nav-link p-0 text-body-secondary">Accessibility</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a target="new" href="/blog" class="nav-link p-0 text-body-secondary">Blog</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a target="new" href="" class="nav-link p-0 text-body-secondary">Site map</a>
                                     </li>
                                 </ul>
                             </div>

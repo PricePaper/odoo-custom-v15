@@ -44,6 +44,14 @@ class ProcessReturnedCheck(models.Model):
                 pay.write({'old_invoice_ids': [(6, 0, pay.reconciled_invoice_ids.ids)]})
                 pay.move_id.mapped('line_ids').filtered(lambda r: r.account_id.internal_type in ('payable', 'receivable')).remove_move_reconcile()
 
+            if not self.bank_stmt_line_id.partner_id:
+                partner = False
+                if self.partner_ids:
+                    partner = self.partner_ids
+                else:
+                    partner = payment.mapped('partner_id')
+                if partner:
+                    self.bank_stmt_line_id.line_ids.write({'partner_id': partner[0].id})
             reconcile_lines = (payment.mapped('line_ids') | self.bank_stmt_line_id.line_ids)
             reconcile_lines = reconcile_lines.filtered(lambda r: not r.reconciled and r.account_id.internal_type in ('payable', 'receivable'))
             reconcile_lines.reconcile()

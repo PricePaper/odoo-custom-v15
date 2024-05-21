@@ -89,5 +89,17 @@
             <field name="company_id" eval="False"/>
         </record>
 
+        <record id="sale_hold_tag_cr" model="sale.hold.tag">
+            <field name="name">Credit Hold</field>
+            <field name="code">Credit</field>
+        </record>
+        <record id="sale_hold_tag_pr" model="sale.hold.tag">
+            <field name="name">Price Hold</field>
+            <field name="code">Price</field>
+        </record>
+        <record id="sale_hold_tag_pay" model="sale.hold.tag">
+            <field name="name">Payment Hold</field>
+            <field name="code">Payment</field>
+        </record>
     </data>
 </odoo>

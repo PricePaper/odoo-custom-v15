@@ -41,11 +41,16 @@ class PortalRequest(CustomerPortal):
 
     @http.route(['/my/payment/token'], type='http', auth="user", website=True)
     def portal_my_token(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, **kw):
+        curr_comapny = request.session.get('current_website_company')
+        if not curr_comapny and not request.env.user._is_public():
+            return request.redirect('/my/website/company')
+        partner_com = request.env['res.partner'].sudo().browse(
+                curr_comapny)
         values = self._prepare_portal_layout_values()
-        partner_id = request.env.user.partner_id
-        payment_token_ids = partner_id.payment_token_ids
-        billing_addresses = partner_id.child_ids
-        shipping_addresses = partner_id.child_ids.filtered(lambda x: x.type=="delivery")
+        
+        payment_token_ids = partner_com.payment_token_ids
+        billing_addresses = partner_com
+        shipping_addresses = partner_com.child_ids.filtered(lambda x: x.type=="delivery")
         values.update(token_ids = payment_token_ids,page_name='payment_token',exp_year = [(str(num), str(num)) for num in range(datetime.now().year, datetime.now().year + 7)],billing=billing_addresses,shipping=shipping_addresses)
         return request.render("website_payment_token.partner_token", values)
     

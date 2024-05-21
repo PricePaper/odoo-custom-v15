@@ -45,6 +45,11 @@ class Partner(models.Model):
                         {'name': 'ACH-Debit', 'availability': False, 'payment_acquirer': 'ach-debit', 'default': False}
                     ]
 
+                else:
+                    payment_terms['payment_methods'] = [
+                        {'name': 'Credit Card', 'availability': True, 'payment_acquirer': 'authorize', 'default': False},
+                        {'name': 'COD', 'availability': True, 'payment_acquirer': 'cod', 'default': False},
+                    ]
                 result.append(payment_terms)
 
             return result

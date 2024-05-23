@@ -141,6 +141,9 @@
                     <field name="release_price_hold" invisible="1"/>
                     <field name="ready_to_release" invisible="1"/>
                 </xpath>
+                <xpath expr="//field[@name='date_order']" position="after">
+                    <field name="hold_tag_ids" widget="many2many_tags" readonly='1' force_save="1"/>
+                </xpath>
 
                 <xpath expr="//field[@name='pricelist_id']" position="attributes">
                     <attribute name="invisible">1</attribute>
@@ -343,6 +346,22 @@
             </field>
         </record>
 
+        <record id="action_orders_hold_tag" model="ir.actions.act_window">
+            <field name="name">Orders On Hold</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('hold_tag_ids', '!=', False)]</field>
+            <field name="view_id" ref="price_paper.sale_order_tree_inherit_price" />
+            <field name="search_view_id" ref="sale_order_view_search_credit_exceeded"/>
+            <field name="context">{"search_default_price_hold_tag": 1, "search_default_credit_hold_tag": 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No Holded Sale Order Found.
+                </p>
+            </field>
+        </record>
+
         <record id="inherit_sale_order_purchase_form" model="ir.ui.view">
             <field name="name">inherited.sale.order.form.view</field>
             <field name="model">sale.order</field>
@@ -407,7 +426,7 @@
             <field name="mode">primary</field>
             <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
             <field name="arch" type="xml">
-                <xpath expr="//filter[@name='draft']" position="after">
+                <xpath expr="//filter[@name='draft']" position="before">
                     <separator/>
                     <filter string="Credit Exceeded" name="credit_exceeded" domain="[('is_creditexceed','=', True)]"/>
                     <filter string="Low Price" name="credit_exceeded" domain="[('is_low_price','=', True)]"/>
@@ -415,6 +434,13 @@
                             domain="[('ready_to_release','=', False), ('is_creditexceed','=', True)]"/>
                     <filter string="Price Low Hold" name="release_price_hold"
                             domain="[('release_price_hold','=', False), ('is_low_price','=', True)]"/>
+                    <separator/>
+                    <filter string="Price Hold Tag" name="price_hold_tag"
+                            domain="[('hold_tag_ids.code','=', 'Price')]"/>
+                    <filter string="Credit Hold Tag" name="credit_hold_tag"
+                            domain="[('hold_tag_ids.code','=', 'Credit')]"/>
+                    <separator/>
+
                 </xpath>
                 <xpath expr="//filter[@name='draft']" position="replace">
                     <filter string="Drafts" name="draft" domain="[('state','in',('draft', 'sent'))]"/>

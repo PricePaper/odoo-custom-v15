@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="portal_access_view_form" model="ir.ui.view">
+        <field name="name">portal.access.view.form</field>
+        <field name="model">portal.access</field>
+        <field name="arch" type="xml">
+            <form string="Portal Access">
+                <sheet>
+                    <group string='Assign/Create Portal User'>
+                        <field name="create_new_user"/>
+                        <field name="portal_user" attrs='{"invisible":[("create_new_user","=",True)]}' />
+                    </group>
+                    <group name="create_portal_group" attrs='{"invisible":[("create_new_user","!=",True)]}' string="Create Portal User Details">
+                        <field name='contact_name' attrs='{"invisible":[("create_new_user","!=",True)]}'/>
+                        <field name='contact_email' attrs='{"invisible":[("create_new_user","!=",True)]}'/>
+                    </group>
+                    <footer>
+                        <button string="Update Portal" name="validate_portal_access" type="object" class="oe_highlight" data-hotkey="q"/>
+                        <button string="Cancel" class="btn btn-secondary" special="cancel" data-hotkey="z"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -9,6 +9,53 @@ class CrmLEad(models.Model):
     _inherit='crm.lead'
     portal_user = fields.Many2one('res.partner',string='Portal User')
     parent_company = fields.Many2one('res.partner',related='partner_id.parent_id')
+    crm_hide_stages = fields.Many2many('crm.stage',related='company_id.crm_hide_stages')
+
+
+    hide_acess = fields.Boolean(compute='_check_portal',store=True)
+
+    @api.depends('stage_id','crm_hide_stages')
+    def _check_portal(self):
+        for rec in self:
+            
+            if rec.stage_id.id in rec.crm_hide_stages.ids:
+                rec.hide_acess = True
+            else:
+                rec.hide_acess = False
+
+
+    
+
+    def action_view_portal_view(self):
+        action = self.env['ir.actions.actions']._for_xml_id(
+            'portal_enhancements.action_res_partner_portal_enhancements')
+        action['domain'] = [('id', '=', self.portal_user.id), ('portal_access_level', '!=', False)]
+        
+        return action
+
+
+    def open_create_portal(self):
+        if not self.partner_id:
+            raise UserError('No Customer is assigned to give portal access')
+        
+        partner = self.env['res.partner'].sudo().search([('email','=',self.email_from),('portal_access_level', '!=', False)],limit=1)
+        contact_name = self.contact_name if self.contact_name else  self.partner_id.name,
+        return {
+            'name': 'Portal Access',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'portal.access',
+            'target':'new',
+            'context':{
+                'default_portal_user':partner.id,
+                'default_contact_name':contact_name,
+                'default_contact_email':self.email_from
+            }
+            # 'res_id': self.id,
+        }
+        
+
 
 class Lead2OpportunityPartner(models.TransientModel):
     _inherit = 'crm.lead2opportunity.partner'
@@ -24,7 +71,7 @@ class Lead2OpportunityPartner(models.TransientModel):
             for rec in active_oppr:
                 oppr = self.env['crm.lead'].browse([rec])
                 partner = self.env['res.partner'].sudo().search([('email','=',oppr.email_from),('portal_access_level', '!=', False)],limit=1)
-                print(oppr,partner,vals)
+                
                 if partner:
                     vals['portal_user'] = partner.id
                     break

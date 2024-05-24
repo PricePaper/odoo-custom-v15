@@ -18,3 +18,4 @@ access_portal_model_access,access.portal.model.access.user,portal_enhancements.m
 
 acess_portal_res_partner,potel.access.res.parnet,model_res_partner,base.group_portal,1,1,1,1
 
+access_portal_access_wizard,public_wizard_access_portal,model_portal_access,,1,1,1,1

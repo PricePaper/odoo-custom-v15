@@ -5,6 +5,10 @@ class Website(models.Model):
     _inherit='website'
     helpdesk_team_website = fields.Many2one('helpdesk.team')
 
+class Company(models.Model):
+    _inherit='res.company'
+
+    crm_hide_stages = fields.Many2many('crm.stage')
 
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
@@ -15,3 +19,5 @@ class ResConfigSettings(models.TransientModel):
     credit_application = fields.Many2one('sign.template',string="Credit Application Template",config_parameter='portal_enhancements.credit_application')
     cod_payment_terms = fields.Many2one('account.payment.term',string='Cod Payment Terms for New customer',config_parameter='portal_enhancements.cod_payment_terms')
     helpdesk_team_onbaording = fields.Many2one('helpdesk.team',string='Helpdesk Team to handle Onboarding',config_parameter='portal_enhancements.helpdesk_team_onbaording')
+    document_folder_id = fields.Many2one('documents.folder',string='Workspace to Store tax exempt certificates',config_parameter='portal_enhancements.document_folder_id')
+    crm_hide_stages = fields.Many2many('crm.stage',string='Crm Stages from where we need to hide portal access button ',related='company_id.crm_hide_stages',readonly=False)

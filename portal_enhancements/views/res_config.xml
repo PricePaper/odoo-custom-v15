@@ -87,13 +87,30 @@
                                 </div>
                             </div>
                         </div>
-
-                        
+                        <div class="col-12 col-md-6 o_setting_box" id="use_ach_form">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <h6>Document Workspace  </h6>
+                                <field name="document_folder_id"/>
+                                <div class="text-muted">
+                                Select the Document Folder to catergorise the tax exempt certificates.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 o_setting_box" id="use_ach_form">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <h6>Crm Stages  </h6>
+                                <field name="crm_hide_stages" widget='many2many_tags'/>
+                                <div class="text-muted">
+                                Crm Stages from which portal acess button needs to be hidden
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
                 </div>
-                <!-- <xpath expr="//div[@id='use_sign_terms']" position="after">
-                </xpath> -->
             </field>
         </record>
     </data>

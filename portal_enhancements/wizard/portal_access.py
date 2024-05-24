@@ -37,6 +37,7 @@ class PortalAccess(models.TransientModel):
             oppr.portal_user = self.portal_user.id
         if self.create_new_user:
             partner_id = main_company.copy()
+            partner_id.portal_model_access.sudo().unlink()
             partner_id.write({
                 'portal_access_level': 'user',
                 'is_company': False,

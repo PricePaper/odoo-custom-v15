@@ -8,6 +8,7 @@
         <field name="arch" type="xml">
             <field name="amount" position="after">
                 <field name="mobile_app_availability"/>
+                <field name="is_store_pickup"/>
             </field>
         </field>
     </record>

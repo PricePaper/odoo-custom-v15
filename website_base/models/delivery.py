@@ -6,7 +6,8 @@ from odoo import api, models, fields
 class DeliveryCarrier(models.Model):
     _inherit = 'delivery.carrier'
 
-    mobile_app_availability = fields.Boolean("Show in mobile app")
+    mobile_app_availability = fields.Boolean("Show in Mobile App")
+    is_store_pickup = fields.Boolean("Enable Store Pickup")
 
     @api.model
     def wrapper_fetch_shipping_methods(self, partner_id=None):
@@ -43,8 +44,10 @@ class DeliveryCarrier(models.Model):
                 if method.delivery_type == 'fixed':
                     result.append({'name': method.name,
                                    'delivery_type': method.delivery_type,
+                                   'delivery_carrier_id': method.id,
                                    'price': method.fixed_price,
                                    'destination_availability': destination_availability,
+                                   'is_store_pickup': method.is_store_pickup,
                                    'default': is_default_delivery_method
                                    })
                 else:
@@ -69,10 +72,61 @@ class DeliveryCarrier(models.Model):
 
                     result.append({
                         'name': method.name,
+                        'delivery_carrier_id': method.id,
                         'delivery_type': method.delivery_type,
                         'price_rule': rule_list,
                         'destination_availability': destination_availability,
+                        'is_store_pickup': method.is_store_pickup,
                         'default': is_default_delivery_method
                     })
 
         return result
+
+    # @api.model
+    # def wrapper_add_update_shipping_cost(self, kwargs=None):
+    #     if kwargs is None:
+    #         kwargs = {}
+    #
+    #     order_id = kwargs.get('order_id', False)
+    #     carrier_id = kwargs.get('carrier_id', False)
+    #
+    #     result = []
+    #     result_dict = {'success': False, 'delivery_message': False, 'delivery_price': 0, 'display_price': 0,
+    #                    'error': False}
+    #
+    #     if not isinstance(order_id, int) or not isinstance(carrier_id, int):
+    #         result_dict['error'] = 'Invalid order_id or carrier_id'
+    #         result.append(result_dict)
+    #         return result
+    #
+    #     order_id = self.env['sale.order'].browse(order_id)
+    #     carrier_id = self.env['delivery.carrier'].browse(carrier_id)
+    #
+    #     if not order_id.exists() or not carrier_id.exists():
+    #         result_dict['error'] = 'Order or Carrier does not exist'
+    #         result.append(result_dict)
+    #         return result
+    #
+    #     if carrier_id.delivery_type in ('fixed', 'base_on_rule'):
+    #         vals = carrier_id.rate_shipment(order_id)
+    #         if vals.get('success'):
+    #             result_dict.update({
+    #                 'success': True,
+    #                 'delivery_message': vals.get('warning_message', False),
+    #                 'delivery_price': vals['price'],
+    #                 'display_price': vals['carrier_price'],
+    #                 'error': False
+    #             })
+    #             order_id.set_delivery_line(carrier_id, vals['price'])
+    #             order_id.write({
+    #                 'recompute_delivery_price': False,
+    #                 'delivery_message': vals.get('warning_message', False),
+    #             })
+    #         else:
+    #             result_dict.update({
+    #                 'error': vals.get('error_message', vals['error_message'])
+    #             })
+    #         result.append(result_dict)
+    #     return result
+
+

@@ -165,4 +165,31 @@ class ResPartner(models.Model):
 
         return result
 
+    def action_grant_portal_access(self):
+        """
+        Handles api call from mobile app.
+        Grants portal access to the partner
+        @return: result
+        """
+        self.ensure_one()
+        result = []
+        result_dict = {'success': True, 'error': False}
+        wizard = self.env['portal.wizard'].create({})
+
+        portal_wizard_id = self.env['portal.wizard.user'].create({
+                                                                'wizard_id': wizard.id,
+                                                                'partner_id': self.id,
+                                                                'email': self.email})
+        try:
+            portal_wizard_id.action_grant_access()
+        except Exception as e:
+            result_dict['success'] = False
+            result_dict['error'] = str(e)
+
+        result.append(result_dict)
+
+        return result
+
+
+
 

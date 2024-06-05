@@ -32,6 +32,11 @@ class ResPartner(models.Model):
     business_verification_status = fields.Selection([('submit','Submitted'),('approved','approved'),('reject','Rejected')])
     tax_exempt_certifcate_id = fields.Many2one('documents.document',string='Tax Exempt Certificate Id')
 
+    portal_parent_ids = fields.Many2many('res.users', 'portal_user_partner_rel',
+                                             'portal_child_partner_id', 'portal_parent_user_id',
+                                             string="Portal Parent User")
+
+
     def write(self, vals):
         current_company_ids = self.portal_company_ids
 

@@ -24,6 +24,7 @@ Granting enhanced access to portal users
         'views/templates.xml',
         'views/website_onboarding.xml',
         'views/crm_lead.xml',
+        'views/res_user_views.xml',
         'wizard/portal_access_view.xml',
         'wizard/add_portal_companies.xml',
         'wizard/crm_lead_to_opportunity_views.xml'

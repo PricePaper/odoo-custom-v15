@@ -3,3 +3,5 @@ access_uom_uom_portal,portal.uom.uom.access,uom.model_uom_uom,base.group_portal,
 access_uom_uom_public,public.uom.uom.access,uom.model_uom_uom,base.group_public,1,0,0,0
 access_product_standard_price_portal,portal.portal.standard.price,price_paper.model_product_standard_price,base.group_portal,1,0,0,0
 access_product_standard_price_public,public.public.standard.price,price_paper.model_product_standard_price,base.group_public,1,0,0,0
+access_partner_product_name_portal,partner.product.name.portal,model_partner_product_name,base.group_portal,1,1,1,1
+access_partner_product_name_user,partner.product.name.user,model_partner_product_name,base.group_user,1,1,1,1

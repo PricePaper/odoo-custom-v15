@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_normal_form_view_inherit_website_base" model="ir.ui.view">
+            <field name="name">product.product.form.inherit.website_base</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+
+                <notebook position="inside">
+                    <page string="Customized Product Names">
+                        <field name="partner_product_names" readonly="1">
+                            <tree editable="bottom">
+                                <field name="name"/>
+                                <field name="partner_id"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+</odoo>

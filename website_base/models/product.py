@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 from odoo import api, models, fields
 
 
@@ -13,12 +14,11 @@ class PartnerProductName(models.Model):
     _name = 'partner.product.name'
     _description = 'Partner custom product name'
 
-    _sql_constraints = [('partner_id', 'unique(partner_id)', 'Each partner can only have one record.')]
+    _sql_constraints = [('partner_id', 'unique(partner_id, product_id)', 'Each partner can only have one record.')]
 
     name = fields.Char('Product Name')
     partner_id = fields.Many2one('res.partner', string="Partner")
     product_id = fields.Many2one('product.product', string="Product")
-
 
 
 

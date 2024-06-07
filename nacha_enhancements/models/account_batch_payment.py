@@ -2,9 +2,25 @@
 from odoo import fields, models, _
 from odoo.exceptions import ValidationError
 
+import math
+
 
 class AccountBatchPayment(models.Model):
     _inherit = "account.batch.payment"
+
+    def _validate_bank_for_nacha(self, payment):
+        bank = False
+        if self.batch_type == 'outbound':
+            bank = payment.partner_bank_id
+        if self.batch_type == 'inbound':
+            banks = payment.partner_id.bank_ids\
+                    .filtered(lambda x: x.company_id.id in (False, payment.company_id.id))
+            if banks:
+                bank = banks[0]
+        if not bank:
+            raise ValidationError(_("Please set an bank account for %s.") % (payment.partner_id.display_name))
+        if not bank.aba_routing:
+            raise ValidationError(_("Please set an ABA routing number on the %s bank account for %s.") % (bank.display_name, payment.partner_id.display_name))
 
     def _validate_journal_for_nacha(self):
         super(AccountBatchPayment, self)._validate_journal_for_nacha()
@@ -80,6 +96,8 @@ class AccountBatchPayment(models.Model):
         if self.batch_type == 'outbound':
             entry.append("22")  # Transaction Code (credits only)
         if self.batch_type == 'inbound':
+            bank = payment.partner_id.bank_ids\
+                    .filtered(lambda x: x.company_id.id in (False, payment.company_id.id))[0]
             entry.append("27")  # Transaction Code (Debits only)
         entry.append("{:8.8}".format(bank.aba_routing[:-1]))  # RDFI Routing Transit Number
         entry.append("{:1.1}".format(bank.aba_routing[-1]))  # Check Digit
@@ -108,6 +126,8 @@ class AccountBatchPayment(models.Model):
         if self.batch_type == 'outbound':
             control.append("220")  # Service Class Code (credits only)
         if self.batch_type == 'inbound':
+            bank = payment.partner_id.bank_ids\
+                    .filtered(lambda x: x.company_id.id in (False, payment.company_id.id))[0]
             control.append("225")  # Service Class Code (Debits only)
         control.append("{:06d}".format(1))  # Entry/Addenda Count
         control.append("{:010d}".format(self._calculate_aba_hash(bank.aba_routing)))  # Entry Hash
@@ -118,5 +138,29 @@ class AccountBatchPayment(models.Model):
         control.append("{:6.6}".format(""))  # Reserved (leave blank)
         control.append("{:8.8}".format(self.journal_id.nacha_origination_dfi_identification))  # Originating DFI Identification
         control.append("{:07d}".format(batch_nr))  # Batch Number
+
+        return "".join(control)
+
+
+    def _generate_nacha_file_control_record(self, payments):
+        control = []
+        control.append("9")  # Record Type Code
+        control.append("{:06d}".format(len(payments)))  # Batch Count
+
+        # Records / Blocking Factor (always 10).
+        # We ceil because we'll pad the file with 999's until a multiple of 10.
+        block_count = math.ceil(self._get_nr_of_records(payments) / self._get_blocking_factor())
+        control.append("{:06d}".format(block_count))
+
+        control.append("{:08d}".format(len(payments)))  # Entry/ Addenda Count
+
+        hashes = sum(self._calculate_aba_hash(payment.partner_id.bank_ids\
+                .filtered(lambda x: x.company_id.id in (False, payment.company_id.id))[0].aba_routing) for payment in payments)
+        hashes = str(hashes)[-10:] # take the rightmost 10 characters
+        control.append("{:0>10}".format(hashes))  # Entry Hash
+
+        control.append("{:012d}".format(0))  # Total Debit Entry Dollar Amount in File
+        control.append("{:012d}".format(sum(round(payment.amount * 100) for payment in payments)))  # Total Credit Entry Dollar Amount in File
+        control.append("{:39.39}".format(""))  # Blank
 
         return "".join(control)

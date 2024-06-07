@@ -11,3 +11,4 @@ from . import calendar_event
 from . import helpdesk_ticket
 from . import res_config
 from . import sign
+from . import res_users

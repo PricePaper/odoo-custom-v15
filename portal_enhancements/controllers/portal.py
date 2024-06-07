@@ -195,7 +195,7 @@ class CustomerPortal(portal.CustomerPortal):
         allowed_compaines = partner_id.portal_company_ids
 
         values = {'allowed_compaines': allowed_compaines,
-                  'manage_access': partner_id.portal_model_access, 'page_name': 'my_managers_new'}
+                  'manage_access': partner_id.portal_model_access.filtered(lambda x:x.is_model_accessible), 'page_name': 'my_managers_new'}
         return request.render('portal_enhancements.new_manager', values)
 
     def _prepare_portal_layout_values(self):
@@ -344,7 +344,6 @@ class CustomerPortal(portal.CustomerPortal):
             main_company = request.env['res.partner'].sudo().browse([int(curr_comapny)])
             if kwargs.get('document_sign'):
                 main_company.business_verification_status='submit'
-
         return request.render("portal_enhancements.portal_my_company", {'company_ids': portal_companies, 'curr_comapny': curr_comapny,'main_company':main_company,'error_msg':kwargs.get('error')})
 
 
@@ -414,7 +413,7 @@ class CustomerPortal(portal.CustomerPortal):
                     'reference': "%(template_name)s-%(user_name)s" % {'template_name': default_template.attachment_id.name,'user_name':partner.name},
                     'favorited_ids': [(4, default_template.create_uid.id)],
                 })
-                request_item = http.request.env['sign.request.item'].sudo().create({'sign_request_id': sign_request.id,'partner_id':partner.id, 'role_id': default_template.sign_item_ids.mapped('responsible_id').id})
+                request_item = http.request.env['sign.request.item'].sudo().create({'is_business_registration':True,'sign_request_id': sign_request.id,'partner_id':partner.id, 'role_id': default_template.sign_item_ids.mapped('responsible_id').id})
                 sign_request.action_sent_without_mail()
                 return request.redirect('/sign/document/%(request_id)s/%(access_token)s' % {'request_id': sign_request.id, 'access_token': request_item.access_token})
         else:
@@ -438,11 +437,13 @@ class CustomerPortal(portal.CustomerPortal):
         partner = request.env['res.partner'].sudo().browse([int(curr_comapny)])
         payment_value = kwargs.get('payment_value')
         if payment_value =='paid_delivery':
+            partner.payment_value = payment_value
             default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.cod_payment_terms')
             if default_template_id:
                 partner.property_payment_term_id = int(default_template_id)
             partner.business_verification_status = 'submit'
         elif payment_value =='ach_debit':
+            partner.payment_value = payment_value
             default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.ach_debit_form')
             default_template = request.env['sign.template'].sudo().browse([int(default_template_id)])
             sign_request = request.env['sign.request'].with_user(default_template.create_uid).create({
@@ -455,6 +456,7 @@ class CustomerPortal(portal.CustomerPortal):
             url = '/sign/document/%(request_id)s/%(access_token)s' % {'request_id': sign_request.id, 'access_token': request_item.access_token}
 
         elif payment_value =='apply_credit':
+            partner.payment_value = payment_value
             default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.credit_application')
             default_template = request.env['sign.template'].sudo().browse([int(default_template_id)])
             sign_request = request.env['sign.request'].with_user(default_template.create_uid).create({
@@ -462,7 +464,7 @@ class CustomerPortal(portal.CustomerPortal):
                 'reference': "%(template_name)s-%(user_name)s" % {'template_name': default_template.attachment_id.name,'user_name':partner.name},
                 'favorited_ids': [(4, default_template.create_uid.id)],
             })
-            request_item = http.request.env['sign.request.item'].sudo().create({'sign_request_id': sign_request.id,'partner_id':partner.id, 'role_id': default_template.sign_item_ids.mapped('responsible_id').id})
+            request_item = http.request.env['sign.request.item'].sudo().create({'is_credit_application':True,'sign_request_id': sign_request.id,'partner_id':partner.id, 'role_id': default_template.sign_item_ids.mapped('responsible_id').id})
             sign_request.action_sent_without_mail()
             url = '/sign/document/%(request_id)s/%(access_token)s' % {'request_id': sign_request.id, 'access_token': request_item.access_token}
         else:
@@ -504,7 +506,7 @@ class CustomerPortal(portal.CustomerPortal):
                 'reference': "%(template_name)s-%(user_name)s" % {'template_name': default_template.attachment_id.name,'user_name':partner.name},
                 'favorited_ids': [(4, default_template.create_uid.id)],
             })
-            request_item = http.request.env['sign.request.item'].sudo().create({'sign_request_id': sign_request.id,'partner_id':partner.id, 'role_id': default_template.sign_item_ids.mapped('responsible_id').id})
+            request_item = http.request.env['sign.request.item'].sudo().create({'is_business_registration':True,'sign_request_id': sign_request.id,'partner_id':partner.id, 'role_id': default_template.sign_item_ids.mapped('responsible_id').id})
             sign_request.action_sent_without_mail()
             url = '/sign/document/%(request_id)s/%(access_token)s' % {'request_id': sign_request.id, 'access_token': request_item.access_token}
 
@@ -555,5 +557,6 @@ class CustomerPortal(portal.CustomerPortal):
                 return request.redirect('/web/business/registration')
         else:
             
-            states = request.env['res.country.state'].sudo().search([])
+            
+            states = request.env['res.country'].sudo().search([('code','=','US')],limit=1).state_ids
             return request.render("portal_enhancements.signup_with_info_template", {'partner':partner,'states':states,'countries':request.env['res.country'].sudo().search([])})

@@ -2,25 +2,41 @@
 <odoo>
     <data>
 
-     <record id="res_partner_view_form" model="ir.ui.view">
-        <field name="name">res.partner.form.sign.inherit</field>
-        <field name="model">res.partner</field>
-        <field name="inherit_id" ref="base.view_partner_form"/>
-        <field name="groups_id" eval="[(4, ref('sign.group_sign_user'))]"/>
-        <field name="arch" type="xml">
-            <div name="button_box" position="inside">
-                <button name="open_signatures" type="object" class="oe_stat_button" icon="fa-pencil"
-                    attrs="{'invisible': [ ('signature_count', '=', 0)]}">
-                    <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_value"><field name="signature_count"/></span>
-                        <span class="o_stat_text">Signature Requested</span>
-                    </div>
-                </button>
-            </div>
-        </field>
-    </record>
+        <record id="res_partner_view_form" model="ir.ui.view">
+            <field name="name">res.partner.form.sign.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="groups_id" eval="[(4, ref('sign.group_sign_user'))]"/>
+            <field name="arch" type="xml">
+                <div name="button_box" position="inside">
+                    <button name="open_signatures" type="object" class="oe_stat_button" icon="fa-pencil" attrs="{'invisible': [ ('signature_count', '=', 0)]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="signature_count"/>
+                            </span>
+                            <span class="o_stat_text">Signature Requested</span>
+                        </div>
+                    </button>
+                </div>
+            </field>
+        </record>
 
+        <record id="view_partner_pricepaper_vat_form_inherit_price_paper" model="ir.ui.view">
+            <field name="name">res.partner.view.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="price_paper.view_partner_pricepaper_vat_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet" position="before">
+                    <header>
+                        <field name="business_verification_status" invisible='1' />
+                        <field name="is_verified"  invisible='1' />
+                        <button class='btn-primary' name='verify_signatures' type='object' string='Verify Document' attrs="{'invisible': [('business_verification_status', '!=', 'submit')]}"/>
 
+                    </header>
+
+                </xpath>
+            </field>
+        </record>
 
         <record id="res_partner_inherit_portal_enhancements" model="ir.ui.view">
             <field name="name">res.partner.portal.extension</field>
@@ -134,6 +150,7 @@
                         </group>
                         <group>
                             <field name="portal_access_level" attrs="{'invisible': [('is_company', '=', True)]}" required="1"/>
+                            <field name="can_create_orders" attrs="{'invisible': [('is_company', '=', True)]}" />
                             <field name="has_portal_access" invisible="1"/>
                             <field name="function" placeholder="e.g. Sales Director" attrs="{'invisible': [('is_company','=', True)]}"/>
                             <field name="phone" widget="phone"/>

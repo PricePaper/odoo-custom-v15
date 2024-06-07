@@ -31,11 +31,61 @@ class ResPartner(models.Model):
     businesss_registration_information = fields.Boolean(string='Basic Resgistration',default=False)
     business_verification_status = fields.Selection([('submit','Submitted'),('approved','approved'),('reject','Rejected')])
     tax_exempt_certifcate_id = fields.Many2one('documents.document',string='Tax Exempt Certificate Id')
+    payment_value = fields.Selection([
+        ('ach_debit','Ach Debit'),
+        ('paid_delivery','Pay On Delivery'),
+        ('apply_credit','Apply Credit'),
+        ('credit_card','Credit Card'),
+        ],default='credit_card')
+
+    can_create_orders = fields.Boolean('Can create orders from website?',default=False)
 
     portal_parent_ids = fields.Many2many('res.users', 'portal_user_partner_rel',
                                              'portal_child_partner_id', 'portal_parent_user_id',
                                              string="Portal Parent User")
 
+
+
+    def verify_signatures(self):
+        partner = self
+        print('partner.resale_taxexempt')
+        # 'context':{
+            #     'default_portal_user':partner.id,
+            #     'default_contact_name':contact_name,
+            #     'default_contact_email':self.email_from
+            # }
+            # 'res_id': self.id,
+        payment_value = 'Paid at time of delivery (cash or check)'
+        if partner.payment_value =='ach_debit':
+            payment_value  ='Automatic ACH debit after delivery'
+        if partner.payment_value=='credit_card':
+            payment_value = 'Credit card (3% upcharge)'
+        if partner.payment_value=='apply_credit':
+            payment_value='Applied For credit'
+
+        business_type = 'Reseller with a valid resale certificate'
+        if partner.resale_taxexempt =='tax_exempt':
+            business_type = 'Tax exempt with a valid tax exempt certificate'
+        elif partner.resale_taxexempt =='None':
+            business_type ='Sales tax on all purchases'
+        else:
+            business_type = 'Reseller with a valid resale certificate'
+        return {
+            'name': 'Portal Approval',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'portal.approval',
+            'target':'new',
+            'context':{
+                'default_business_registration_type':business_type,
+                'default_business_resale_sign_document':35,
+                'default_payment_type':payment_value
+                # 'default_contact_name':contact_name,
+                # 'default_contact_email':self.email_from
+            }
+            
+        }
 
     def write(self, vals):
         current_company_ids = self.portal_company_ids
@@ -189,7 +239,3 @@ class ResPartner(models.Model):
         result.append(result_dict)
 
         return result
-
-
-
-

@@ -18,6 +18,7 @@ Granting enhanced access to portal users
     'data': [
         'security/portal_enhancements_security.xml',
         'security/ir.model.access.csv',
+        'data/mail_template.xml',
         'views/res_partner_views.xml',
         'wizard/add_portal_contacts.xml',
         'views/res_config.xml',
@@ -27,7 +28,8 @@ Granting enhanced access to portal users
         'views/res_user_views.xml',
         'wizard/portal_access_view.xml',
         'wizard/add_portal_companies.xml',
-        'wizard/crm_lead_to_opportunity_views.xml'
+        'wizard/crm_lead_to_opportunity_views.xml',
+        'wizard/portal_approval.xml'
 
     ],
      'assets': {

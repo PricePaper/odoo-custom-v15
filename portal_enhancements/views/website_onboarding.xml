@@ -99,7 +99,8 @@
                                         </div>
                                     </t>
                                     <t t-else=''>
-                                        <t t-if='not main_company.business_verification_status in ["submit","approved"]'>
+
+                                        <t t-if='not main_company.business_verification_status or not main_company.business_verification_status in ["submit","approved"]'>
                                             <h5 class='mt16 mb16'>Business Registration completed, Kindly add your payment method.</h5>
                                             <div class='completed progress_verification'>
 
@@ -132,6 +133,46 @@
                                                         <span>Payment Methods:<em class='text-primary'> Begin</em>
                                                         </span>
                                                     </a>
+                                                </div>
+
+
+
+
+                                            </div>
+                                        </t>
+                                        <t t-elif='main_company.business_verification_status in ["submit"]'>
+                                            <h5 class='mt16 mb16'>All information have been comppleted and is currently under review.</h5>
+                                            <div class='completed progress_verification'>
+
+                                                <div class='step active'>
+
+                                                    <div class='icon'>
+                                                        <i class='fa fa-check active'/>
+
+                                                    </div>
+                                                    <span>Basic Information
+                                                    </span>
+
+                                                </div>
+                                                <div class='step active'>
+
+                                                    <div class='icon'>
+                                                        <i class='fa fa-check active'/>
+
+                                                    </div>
+                                                    <span>Business Registration
+                                                    </span>
+
+                                                </div>
+                                                <div class='step active'>
+
+                                                    <div class='icon'>
+                                                        <i class='fa fa-check active'/>
+
+                                                    </div>
+                                                    <span>Payment Methods
+                                                    </span>
+
                                                 </div>
 
 

@@ -102,6 +102,28 @@
                             <div class="o_setting_left_pane">
                             </div>
                             <div class="o_setting_right_pane">
+                                <h6>Approval Email Template  </h6>
+                                <field name="approval_email_template"/>
+                                <div class="text-muted">
+                                Select Email template to be used for notifying user of approval.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 o_setting_box" id="use_ach_form">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <h6>Rejection Email Template  </h6>
+                                <field name="reject_email_template"/>
+                                <div class="text-muted">
+                                Select Email template to be used for notifying user of rejection.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 o_setting_box" id="use_ach_form">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
                                 <h6>Crm Stages  </h6>
                                 <field name="crm_hide_stages" widget='many2many_tags'/>
                                 <div class="text-muted">

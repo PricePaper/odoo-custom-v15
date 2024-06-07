@@ -34,6 +34,9 @@ class WebsiteSale(WebsiteSale):
 
 
 class WebsiteBlog(http.Controller):
+
+   
+
     @http.route('/gen/captcha',type='json', auth="public", website=True,csrf=False)
     def gen_captcha(self,**kw):
         template = request.env['ir.ui.view']._render_template("website_base.captcha_check", {})

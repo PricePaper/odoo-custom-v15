@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="portal_approval_view_form" model="ir.ui.view">
+        <field name="name">portal.approval.view.form</field>
+        <field name="model">portal.approval</field>
+        <field name="arch" type="xml">
+            <form string="Portal Approval">
+                <sheet>
+                    <group name="busniess_information" string='Business Information'>
+                        <group>
+                            <field name="business_registration_type" readonly='1'/>
+                        </group>
+                        <group >
+                            <field name="business_resale_sign_document" readonly='1' attrs='{"invisible":[("business_resale_sign_document","=",False)]}' />
+                            <field name="tax_exempt_certifcate_id" readonly='1' attrs='{"invisible":[("tax_exempt_certifcate_id","=",False)]}' />
+                        </group>
+
+                    </group>
+                    <group name="Payment Information" string="Payment Information">
+                        <group >
+
+                            <field name='payment_type' readonly='1' />
+                            <field name='payment_credit_application' readonly='1' attrs='{"invisible":[("payment_credit_application","=",False)]}'/>
+                        </group>
+                    </group>
+
+                    <group string="Verification">
+                        <group>
+                            <field name='business_approval'/>
+                        </group>
+                        <group>
+                            <field name='payment_approval'/>
+
+
+                        </group>
+
+                    </group>
+                    <group name="name" string="Rejection Reason" attrs='{"invisible":[("business_approval","=",True),("payment_approval","=",True)]}'>
+
+                        <field name='rejection_reason'/>
+                    </group>
+                    <footer>
+                        <button string="Update Portal" name="validate_portal_access" type="object" class="oe_highlight" data-hotkey="q"/>
+                        <button string="Cancel" class="btn btn-secondary" special="cancel" data-hotkey="z"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

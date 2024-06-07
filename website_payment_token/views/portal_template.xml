@@ -19,12 +19,12 @@
         </template>
 
 
-        <template id="partner_token" name="My Payment Token">
+        <template id="partner_token" name="My Credit Card">
             <t t-call="portal.portal_layout">
                 <t t-set="breadcrumbs_searchbar" t-value="True"/>
 
                 <t t-call="portal.portal_searchbar">
-                    <t t-set="title">Payment Token</t>
+                    <t t-set="title">Credit Card</t>
                 </t>
                 <div class='payment_token_portal'>
 

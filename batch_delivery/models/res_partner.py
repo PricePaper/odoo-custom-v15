@@ -22,7 +22,7 @@ class ResPartner(models.Model):
     @api.constrains('delivery_notes')
     def _check_your_field(self):
         for rec in self:
-            if len(rec.delivery_notes) > 200:
+            if rec.delivery_notes and len(rec.delivery_notes) > 200:
                 rec.delivery_notes = rec.delivery_notes[0:200]
 
     def _get_unreconciled_aml_domain(self):

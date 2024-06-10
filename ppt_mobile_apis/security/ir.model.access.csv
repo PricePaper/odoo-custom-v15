@@ -1,1 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_push_token_user,push.token.user,model_push_token,base.group_user,1,1,1,1
+access_push_notification_user,push.notification.user,model_push_notification,base.group_user,1,1,1,1

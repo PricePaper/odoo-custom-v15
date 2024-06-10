@@ -9,6 +9,7 @@ class PushToken(models.Model):
     _description = 'Mobile App push notification tokens'
 
     partner_id = fields.Many2one('res.partner', string="Partner", required=True)
+    user_id = fields.Many2one('res.users', string="Related User", required=True)
     device_token = fields.Char(string="Token")
 
 

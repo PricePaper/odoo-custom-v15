@@ -131,8 +131,12 @@ class AccountBatchPayment(models.Model):
             control.append("225")  # Service Class Code (Debits only)
         control.append("{:06d}".format(1))  # Entry/Addenda Count
         control.append("{:010d}".format(self._calculate_aba_hash(bank.aba_routing)))  # Entry Hash
-        control.append("{:012d}".format(0))  # Total Debit Entry Dollar Amount in Batch
-        control.append("{:012d}".format(round(payment.amount * 100)))  # Total Credit Entry Dollar Amount in Batch
+        if self.batch_type == 'outbound':
+            control.append("{:012d}".format(0))  # Total Debit Entry Dollar Amount in Batch
+            control.append("{:012d}".format(round(payment.amount * 100)))  # Total Credit Entry Dollar Amount in Batch
+        if self.batch_type == 'inbound':
+            control.append("{:012d}".format(round(payment.amount * 100)))  # Total Debit Entry Dollar Amount in Batch
+            control.append("{:012d}".format(0))  # Total Credit Entry Dollar Amount in Batch
         control.append("{:0>10.10}".format(self.journal_id.nacha_company_identification))  # Company Identification
         control.append("{:19.19}".format(""))  # Message Authentication Code (leave blank)
         control.append("{:6.6}".format(""))  # Reserved (leave blank)
@@ -154,13 +158,21 @@ class AccountBatchPayment(models.Model):
 
         control.append("{:08d}".format(len(payments)))  # Entry/ Addenda Count
 
-        hashes = sum(self._calculate_aba_hash(payment.partner_id.bank_ids\
-                .filtered(lambda x: x.company_id.id in (False, payment.company_id.id))[0].aba_routing) for payment in payments)
+        if self.batch_type == 'outbound':
+            hashes = sum(self._calculate_aba_hash(payment.partner_bank_id.aba_routing) for payment in payments)
+        if self.batch_type == 'inbound':
+            hashes = sum(self._calculate_aba_hash(payment.partner_id.bank_ids\
+                    .filtered(lambda x: x.company_id.id in (False, payment.company_id.id))[0].aba_routing) for payment in payments)
         hashes = str(hashes)[-10:] # take the rightmost 10 characters
         control.append("{:0>10}".format(hashes))  # Entry Hash
 
-        control.append("{:012d}".format(0))  # Total Debit Entry Dollar Amount in File
-        control.append("{:012d}".format(sum(round(payment.amount * 100) for payment in payments)))  # Total Credit Entry Dollar Amount in File
+        if self.batch_type == 'outbound':
+            control.append("{:012d}".format(0))  # Total Debit Entry Dollar Amount in File
+            control.append("{:012d}".format(sum(round(payment.amount * 100) for payment in payments)))  # Total Credit Entry Dollar Amount in File
+        if self.batch_type == 'inbound':
+            control.append("{:012d}".format(sum(round(payment.amount * 100) for payment in payments)))  # Total Debit Entry Dollar Amount in Batch
+            control.append("{:012d}".format(0))  # Total Credit Entry Dollar Amount in Batch
+
         control.append("{:39.39}".format(""))  # Blank
 
         return "".join(control)

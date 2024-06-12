@@ -12,8 +12,6 @@ class SignRequestItem(models.Model):
 
 
     def action_completed(self):
-        import pdb
-        pdb.set_trace()
         for rec in self:
             if rec.is_business_registration:
                 rec.partner_id.businesss_registration_information = True

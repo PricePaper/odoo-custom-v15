@@ -343,7 +343,7 @@ class CustomerPortal(portal.CustomerPortal):
         if curr_comapny:
             main_company = request.env['res.partner'].sudo().browse([int(curr_comapny)])
             if kwargs.get('document_sign'):
-                main_company.business_verification_status='submit'
+                main_company.businesss_registration_information=True
         return request.render("portal_enhancements.portal_my_company", {'company_ids': portal_companies, 'curr_comapny': curr_comapny,'main_company':main_company,'error_msg':kwargs.get('error')})
 
 

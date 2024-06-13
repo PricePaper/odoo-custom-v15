@@ -3,6 +3,7 @@ from odoo import fields, http, SUPERUSER_ID, tools, _
 from odoo.fields import Command
 from odoo.http import request
 from werkzeug.exceptions import Forbidden, NotFound
+from odoo.addons.phone_validation.tools import phone_validation
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -177,7 +178,46 @@ class WebsiteSale(main.WebsiteSale):
             if errors:
                 errors['error_message'] = error_msg
                 values = kw
+
             else:
+
+                if post.get('country_id'):
+                    main_country = request.env['res.country'].browse(int(post.get('country_id')))
+                    country = main_country
+                    correct = False
+                    try:
+
+                        test= phone_validation.phone_format(
+                        post.get('phone'),
+                        country.code if country else None,
+                        country.phone_code if country else None,
+                        force_format='INTERNATIONAL',
+                        raise_exception=True
+                        )
+                    except Exception as e:
+                        errors={
+                            'phone':'erorr'
+                        }
+                        error_msg =['Phone Number is not correct']
+                        errors['error_message'] = error_msg
+                        print(errors)
+                        values = kw
+                        render_values = {
+                            'sample_request': sample_request,
+                            'website_sale_order': sample_request,
+                            'partner_id': partner_id,
+                            'mode': mode,
+                            'checkout': values,
+                            'can_edit_vat': can_edit_vat,
+                            'error': errors,
+                            'callback': kw.get('callback'),
+                            # 'only_services': order and order.only_services,
+                        }
+                        
+                        render_values.update(
+                            self._get_country_related_render_values(kw, render_values))
+                        return request.render("sample_request.sample_address", render_values)
+                    
                 if not request.env.user._is_public():
                     partner_id = self._checkout_form_save(mode, post, kw)
                     if isinstance(partner_id, Forbidden):

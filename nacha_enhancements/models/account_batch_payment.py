@@ -3,6 +3,7 @@ from odoo import fields, models, _
 from odoo.exceptions import ValidationError
 
 import math
+import base64
 
 
 class AccountBatchPayment(models.Model):
@@ -106,8 +107,10 @@ class AccountBatchPayment(models.Model):
 
         formatted_individual_id_num = ''.join(char.upper() if char.isalpha() else char if char.isnumeric() else '' for char in payment.partner_id.vat)
         entry.append("{:15.15}".format(formatted_individual_id_num))  # Individual Identification Number
-
-        formatted_individual_name = ''.join(char.upper() if char.isalpha() else ' ' for char in payment.partner_id.name)
+        partner_name = payment.partner_id.name
+        if payment.partner_id.customer_code:
+            partner_name = payment.partner_id.customer_code + payment.partner_id.name
+        formatted_individual_name = ''.join(char.upper() if char.isalnum() else ' ' for char in partner_name)
         entry.append("{:22.22}".format(formatted_individual_name))  # Individual Name
 
         entry.append("  ")  # Discretionary Data Field
@@ -176,3 +179,15 @@ class AccountBatchPayment(models.Model):
         control.append("{:39.39}".format(""))  # Blank
 
         return "".join(control)
+
+    def _generate_export_file(self):
+        if self.payment_method_code == "nacha":
+            self._validate_journal_for_nacha()
+            data = self._generate_nacha_file()
+            date = fields.Datetime.today().strftime("%m-%d-%Y")  # US date format
+            return {
+                "file": base64.encodebytes(data.encode()),
+                "filename": "NACHA-%s-%s-%s.txt" % (self.journal_id.code, date, self.id),
+            }
+        else:
+            return super(AccountBatchPayment, self)._generate_export_file()

@@ -14,7 +14,7 @@ class PaymentAcquirer(models.Model):
     _inherit = 'payment.acquirer'
 
     @api.model
-    def wrapper_fetch_acquirer(self, acquirer_id):
+    def wrapper_fetch_payment_acquirer(self, acquirer_id):
 
         result = []
         message = {'success': False,

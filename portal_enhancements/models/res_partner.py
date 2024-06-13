@@ -30,6 +30,7 @@ class ResPartner(models.Model):
     basic_verification_submit = fields.Boolean(string='Basic Verification',default=False)
     businesss_registration_information = fields.Boolean(string='Basic Resgistration',default=False)
     business_verification_status = fields.Selection([('submit','Submitted'),('approved','approved'),('reject','Rejected')])
+    rejection_reason = fields.Char('Rejection Reason')
     tax_exempt_certifcate_id = fields.Many2one('documents.document',string='Tax Exempt Certificate Id')
     payment_value = fields.Selection([
         ('ach_debit','Ach Debit'),
@@ -45,6 +46,20 @@ class ResPartner(models.Model):
                                              string="Portal Parent User")
 
 
+    def create_helpdesk_ticket_approval(self):
+        team_id = self.env['ir.config_parameter'].sudo().get_param('portal_enhancements.helpdesk_team_onbaording')
+        
+        helpdesk_vals = {
+                'name':f'New Customer: "{self.name}" Approval',
+                'partner_id':self.id
+            }
+        if team_id:
+                helpdesk_vals['team_id'] = int(team_id)
+        ticket_id = self.env['helpdesk.ticket'].sudo().create(helpdesk_vals)
+        acttion = self.env.ref('price_paper.res_partner_pricepaper_vat_edit_permission_action')
+        ticket_id.message_post(body=("New Customer have completed the onboarding process kindly check and take appropriate actions") + " <a href='/web#id=%s&action=%s&model=res.partner&view_type=form' data-oe-model=res.partner>%s</a>" % (self.id,acttion.id,self.name))
+
+        return True
 
     def verify_signatures(self):
         partner = self

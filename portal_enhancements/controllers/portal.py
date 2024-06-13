@@ -442,6 +442,7 @@ class CustomerPortal(portal.CustomerPortal):
             if default_template_id:
                 partner.property_payment_term_id = int(default_template_id)
             partner.business_verification_status = 'submit'
+            partner.create_helpdesk_ticket_approval()
         elif payment_value =='ach_debit':
             partner.payment_value = payment_value
             default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.ach_debit_form')
@@ -469,6 +470,7 @@ class CustomerPortal(portal.CustomerPortal):
             url = '/sign/document/%(request_id)s/%(access_token)s' % {'request_id': sign_request.id, 'access_token': request_item.access_token}
         else:
             partner.business_verification_status = 'submit'
+            partner.create_helpdesk_ticket_approval()
             url = '/my/payment/token'
 
         return {

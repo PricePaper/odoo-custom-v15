@@ -141,7 +141,7 @@
                                             </div>
                                         </t>
                                         <t t-elif='main_company.business_verification_status in ["submit"]'>
-                                            <h5 class='mt16 mb16'>All information have been comppleted and is currently under review.</h5>
+                                            <h5 class='mt16 mb16'>All information have been completed and is currently under review.</h5>
                                             <div class='completed progress_verification'>
 
                                                 <div class='step active'>

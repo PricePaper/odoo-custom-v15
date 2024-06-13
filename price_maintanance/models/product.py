@@ -49,7 +49,7 @@ class ProductProduct(models.Model):
             last_purchase_price = ''
             last_po = False
             line = self.env['purchase.order.line'].search(
-                [('state', 'in', ('done', 'purchase')), ('product_id', '=', product.id)], order='date_order desc',
+                [('state', 'in', ('done', 'purchase', 'received')), ('product_id', '=', product.id)], order='date_planned desc',
                 limit=1)
             if line:
                 last_purchase_price = '%s %s %s' % (line.price_unit, line.product_uom.name, line.date_order)

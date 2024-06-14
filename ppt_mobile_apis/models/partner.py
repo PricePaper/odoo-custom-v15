@@ -94,7 +94,7 @@ class Partner(models.Model):
             result.append(message)
             return result
 
-        customer_profile_id = partner.payment_profile_ids and partner.payment_profile_ids[0].authorize_profile or ''
+        customer_profile_id = partner.payment_token_ids and partner.payment_token_ids[0].authorize_profile or ''
         if customer_profile_id:
             message['success'] = True
             message['customerProfileId'] = customer_profile_id
@@ -104,8 +104,6 @@ class Partner(models.Model):
         authorize_api = AuthorizeAPICustom(acquirer)
 
         profile_response = authorize_api.create_customer_profile(partner)
-
-        print("prof", profile_response)
 
         if profile_response.get('customerProfileId', False):
             message['success'] = True
@@ -185,7 +183,7 @@ class Partner(models.Model):
         payment_profile = authorize_api.create_payment_profile(customer_profile_id, partner, opaqueData, address_id)
 
         if not payment_profile.get('paymentProfile', {}).get('customerPaymentProfileId'):
-            message['error'] = "Token creation error\n{err_code}\n{err_msg}".format(**payment_profile)
+            message['error'] = "Token creation error {err_code} {err_msg}".format(**payment_profile)
             result.append(message)
             return message
 

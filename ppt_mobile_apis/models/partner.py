@@ -94,7 +94,7 @@ class Partner(models.Model):
             result.append(message)
             return result
 
-        customer_profile_id = partner.payment_token_ids and partner.payment_token_ids[0].authorize_profile or ''
+        customer_profile_id = partner.payment_profile_ids and partner.payment_profile_ids[0].authorize_profile or ''
         if customer_profile_id:
             message['success'] = True
             message['customerProfileId'] = customer_profile_id
@@ -125,6 +125,98 @@ class Partner(models.Model):
             message['error'] = "Profile creation error\n{err_code}\n{err_msg}".format(**profile_response)
         result.append(message)
         return result
+
+    @api.model
+    def create_authorize_customer_payment_profile(self, acquirer_id=None, partner_id=None, address_id=False, opaqueData=False, is_default=False):
+        """
+        Checks for customer profile, creates new if not found,
+        Creates new payment profile with encrypted card data,
+        returns new payment.token
+
+        @param is_default:
+        @param opaqueData:
+        @param acquirer_id:
+        @param partner_id:
+        @param address_id:
+        @return: payment.token
+        """
+
+        result = []
+
+        message = {'success': False,
+                   'payment_token': False,
+                   'error': False}
+
+        if not all(isinstance(i, int) for i in [partner_id, acquirer_id]):
+            message['error'] = "partner_id and acquirer_id  must be integers"
+            result.append(message)
+            return result
+        if address_id:
+            address_id = self.browse(address_id)
+            if not address_id.exists():
+                message['error'] = "Billing Address does not exists"
+                result.append(message)
+                return result
+
+        if not opaqueData:
+            message['error'] = "opequedata missing"
+            result.append(message)
+            return result
+
+        acquirer = self.env['payment.acquirer'].browse(acquirer_id).filtered(lambda rec: rec.provider == 'authorize')
+        partner = self.browse(partner_id)
+
+        if not acquirer.exists() or not partner.exists():
+            message['error'] = "Partner or Acquirer does not exists"
+            result.append(message)
+            return result
+
+        customer_profile = self.create_authorize_customer_profile( acquirer_id=acquirer_id, partner_id=partner_id)
+
+        if customer_profile[0].get('success', False):
+            customer_profile_id = customer_profile[0].get('customerProfileId')
+        else:
+            message['error'] = customer_profile[0]['error']
+            result.append(message)
+            return message
+
+        authorize_api = AuthorizeAPICustom(acquirer)
+
+        payment_profile = authorize_api.create_payment_profile(customer_profile_id, partner, opaqueData, address_id)
+
+        if not payment_profile.get('paymentProfile', {}).get('customerPaymentProfileId'):
+            message['error'] = "Token creation error\n{err_code}\n{err_msg}".format(**payment_profile)
+            result.append(message)
+            return message
+
+        payment_token = self.env['payment.token'].create({
+                                    'acquirer_id': acquirer_id.id,
+                                    'name': "%s - %s - %s" % (self.partner_id.name,
+                                                              payment_profile.get('paymentProfile', {}).get('payment', {}).get('creditCard', {}).get(
+                                                                  'cardType'),
+                                                              payment_profile.get('paymentProfile', {}).get('payment', {}).get('creditCard', {}).get(
+                                                                  'cardNumber').replace('X', '')),
+                                    'partner_id': partner_id,
+                                    'acquirer_ref': payment_profile.get('paymentProfile', {}).get('customerPaymentProfileId'),
+                                    'authorize_profile': customer_profile_id,
+                                    'authorize_payment_method_type': acquirer_id.authorize_payment_method_type,
+                                    'verified': True,
+                                    'card_type': payment_profile.get('paymentProfile', {}).get('payment', {}).get('creditCard', {}).get('cardType'),
+                                    'address_id': address_id or partner_id,
+                                    'is_default': is_default
+                                })
+
+        if payment_token:
+            message['token'] = payment_token
+            message['success'] = True
+        result.append(message)
+        return result
+
+
+
+
+
+
 
 
 

@@ -27,7 +27,7 @@ class PortalApproval(models.TransientModel):
                 template_id = self.env['ir.config_parameter'].sudo().get_param('portal_enhancements.approval_email_template')
                 template = self.env['mail.template'].sudo().browse(int(template_id))
                 
-                template.send_main(oppr.id, force_send=True)
+                template.send_mail(oppr.id, force_send=True)
                 
         else:
             active_oppr = self.env.context.get('active_ids', [])
@@ -41,6 +41,6 @@ class PortalApproval(models.TransientModel):
                 oppr.rejection_reason = self.rejection_reason
                 template_id = self.env['ir.config_parameter'].sudo().get_param('portal_enhancements.reject_email_template')
                 template = self.env['mail.template'].sudo().browse(int(template_id))
-                template.send_main(oppr.id, force_send=True)
+                template.send_mail(oppr.id, force_send=True)
 
             return {'type': 'ir.actions.act_window_close'}

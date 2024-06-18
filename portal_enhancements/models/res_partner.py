@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api, _
+from odoo import fields, models, api, _,SUPERUSER_ID
 from odoo.exceptions import UserError, Warning
 
 
@@ -55,7 +55,7 @@ class ResPartner(models.Model):
             }
         if team_id:
                 helpdesk_vals['team_id'] = int(team_id)
-        ticket_id = self.env['helpdesk.ticket'].sudo().create(helpdesk_vals)
+        ticket_id = self.env['helpdesk.ticket'].with_user(SUPERUSER_ID).create(helpdesk_vals)
         acttion = self.env.ref('price_paper.res_partner_pricepaper_vat_edit_permission_action')
         ticket_id.message_post(body=("New Customer have completed the onboarding process kindly check and take appropriate actions") + " <a href='/web#id=%s&action=%s&model=res.partner&view_type=form' data-oe-model=res.partner>%s</a>" % (self.id,acttion.id,self.name))
 

@@ -62,6 +62,7 @@
                             <t t-else=''>
                                 <t t-if='main_company.basic_verification_submit'>
                                     <t t-if ='not (main_company.businesss_registration_information )'>
+                                        <h6 class='text-danger mb-2'>Rejection Reason : <t t-out='main_company.rejection_reason'/></h6>
                                         <h5 class='mt16 mb16'>Basic Information Completed, proceed with next step of Business Registration.</h5>
                                         <div class='completed progress_verification'>
 

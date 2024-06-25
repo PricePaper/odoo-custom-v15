@@ -44,7 +44,7 @@ class ResPartner(models.Model):
     portal_parent_ids = fields.Many2many('res.users', 'portal_user_partner_rel',
                                              'portal_child_partner_id', 'portal_parent_user_id',
                                              string="Portal Parent User")
-
+    sign_request_business = fields.Many2one('sign.request')
 
     def create_helpdesk_ticket_approval(self):
         team_id = self.env['ir.config_parameter'].sudo().get_param('portal_enhancements.helpdesk_team_onbaording')
@@ -94,7 +94,7 @@ class ResPartner(models.Model):
             'target':'new',
             'context':{
                 'default_business_registration_type':business_type,
-                'default_business_resale_sign_document':35,
+                'default_business_resale_sign_document':self.sign_request_business.id,
                 'default_payment_type':payment_value
                 # 'default_contact_name':contact_name,
                 # 'default_contact_email':self.email_from

@@ -15,6 +15,7 @@ class SignRequestItem(models.Model):
         for rec in self:
             if rec.is_business_registration:
                 rec.partner_id.businesss_registration_information = True
+                rec.partner_id.sign_request_business = rec.sign_request_id.id
             if rec.is_credit_application:
                 rec.partner_id.business_verification_status = 'submit'
                 rec.partner_id.create_helpdesk_ticket_approval()

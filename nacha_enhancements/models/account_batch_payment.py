@@ -78,7 +78,12 @@ class AccountBatchPayment(models.Model):
         batch.append("{:0>10.10}".format(self.journal_id.nacha_company_identification))  # Company Identification
         batch.append("CCD")  # Standard Entry Class Code
 
-        formatted_reference = ''.join(char.upper() if char.isalpha() else char if char.isnumeric() else '' for char in payment.ref)
+        reference = payment.ref
+        if self.batch_type == 'inbound':
+            if reference[:4] == 'INV/':
+                reference = reference[4:]
+
+        formatted_reference = ''.join(char.upper() if char.isalpha() else char if char.isnumeric() else '' for char in reference)
         batch.append("{:10.10}".format(formatted_reference))  # Company Entry Description
 
         batch.append("{:6.6}".format(payment.date.strftime("%y%m%d")))  # Company Descriptive Date

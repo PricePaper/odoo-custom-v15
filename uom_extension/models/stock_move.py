@@ -70,8 +70,9 @@ class StockMove(models.Model):
                              precision_rounding=move.product_id.ppt_uom_id.rounding or move.product_id.uom_id.rounding):
                 continue
             context.update({'move': move})
-            svl_vals = move.product_id.with_context(context)._prepare_out_svl_vals(forced_quantity or valued_quantity, move.company_id)
-            svl_vals.update(move._prepare_common_svl_vals())
+
+            svl_vals = move.product_id.with_context(context).sudo()._prepare_out_svl_vals(forced_quantity or valued_quantity, move.company_id)
+            svl_vals.update(move.sudo()._prepare_common_svl_vals())
             if forced_quantity:
                 svl_vals[
                     'description'] = 'Correction of %s (modification of past move)' % move.picking_id.name or move.name

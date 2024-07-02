@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 
-from odoo import models, fields, api, _
+from odoo import models, fields, api, _, SUPERUSER_ID
 from odoo.tools.float_utils import float_round, float_is_zero
 from odoo.exceptions import UserError
 
@@ -48,7 +48,7 @@ class StockMove(models.Model):
                 svl_vals[
                     'description'] = 'Correction of %s (modification of past move)' % move.picking_id.name or move.name
             svl_vals_list.append(svl_vals)
-        return self.env['stock.valuation.layer'].sudo().create(svl_vals_list)
+        return self.env['stock.valuation.layer'].sudo(SUPERUSER_ID).create(svl_vals_list)
 
     def _create_out_svl(self, forced_quantity=None):
         """Create a `stock.valuation.layer` from `self`.
@@ -71,14 +71,14 @@ class StockMove(models.Model):
                 continue
             context.update({'move': move})
 
-            svl_vals = move.product_id.with_context(context).sudo()._prepare_out_svl_vals(forced_quantity or valued_quantity, move.company_id)
-            svl_vals.update(move.sudo()._prepare_common_svl_vals())
+            svl_vals = move.product_id.with_context(context).sudo(SUPERUSER_ID)._prepare_out_svl_vals(forced_quantity or valued_quantity, move.company_id)
+            svl_vals.update(move.sudo(SUPERUSER_ID)._prepare_common_svl_vals())
             if forced_quantity:
                 svl_vals[
                     'description'] = 'Correction of %s (modification of past move)' % move.picking_id.name or move.name
             svl_vals['description'] += svl_vals.pop('rounding_adjustment', '')
             svl_vals_list.append(svl_vals)
-        return self.env['stock.valuation.layer'].sudo().create(svl_vals_list)
+        return self.env['stock.valuation.layer'].sudo(SUPERUSER_ID).create(svl_vals_list)
 
     def _create_dropshipped_svl(self, forced_quantity=None):
         """Create a `stock.valuation.layer` from `self`.

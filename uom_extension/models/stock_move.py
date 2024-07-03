@@ -60,7 +60,7 @@ class StockMove(models.Model):
         svl_vals_list = []
         context = dict(self._context)
         for move in self:
-            move = move.with_company(move.company_id)
+            move = move.sudo().with_company(move.company_id)
             valued_move_lines = move._get_out_move_lines()
             valued_quantity = 0
             for valued_move_line in valued_move_lines:
@@ -71,8 +71,9 @@ class StockMove(models.Model):
                 continue
             context.update({'move': move})
 
-            svl_vals = move.product_id.with_context(context).sudo()._prepare_out_svl_vals(forced_quantity or valued_quantity, move.company_id)
-            svl_vals.update(move.sudo()._prepare_common_svl_vals())
+
+            svl_vals = move.product_id.with_context(context)._prepare_out_svl_vals(forced_quantity or valued_quantity, move.company_id)
+            svl_vals.update(move._prepare_common_svl_vals())
             if forced_quantity:
                 svl_vals[
                     'description'] = 'Correction of %s (modification of past move)' % move.picking_id.name or move.name

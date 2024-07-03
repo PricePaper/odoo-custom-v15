@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 
-from odoo import models, fields, api, _
+from odoo import models, fields, api, _, SUPERUSER_ID
 from odoo.tools.float_utils import float_round, float_is_zero
 from odoo.exceptions import UserError
 
@@ -71,9 +71,9 @@ class StockMove(models.Model):
                 continue
             context.update({'move': move})
 
-
             svl_vals = move.product_id.with_context(context)._prepare_out_svl_vals(forced_quantity or valued_quantity, move.company_id)
             svl_vals.update(move._prepare_common_svl_vals())
+
             if forced_quantity:
                 svl_vals[
                     'description'] = 'Correction of %s (modification of past move)' % move.picking_id.name or move.name

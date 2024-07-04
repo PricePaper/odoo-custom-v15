@@ -607,7 +607,6 @@ class Cron(models.Model):
     @api.model
     def database_backup_cron_action(self, *args):
         backup_rule = False
-        print(w)
         try:
             if len(args) != 1 or isinstance(args[0], int) is False:
                 raise exceptions.ValidationError(_('Wrong method parameters'))

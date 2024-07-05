@@ -3,6 +3,17 @@
 from odoo import api, models, fields
 
 
+
+class PaymentMove(models.Model):
+    _inherit = 'account.move'
+
+    def get_invoice_paid_date(self):
+        paid_date = []
+        for move in self:
+            paid_date.append({'invoice': move.id, 'paid_date': move.sudo().paid_date})
+        return paid_date
+
+
 class PaymentTerm(models.Model):
     _inherit = 'account.payment.term'
 
@@ -43,5 +54,3 @@ class PaymentAcquirer(models.Model):
     #
     #     result.append(message)
     #     return result
-
-

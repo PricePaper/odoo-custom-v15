@@ -1,0 +1,84 @@
+.payment_prompt,
+.sale_prompt {
+
+    input,
+    label {
+        cursor: pointer !important;
+    }
+}
+
+.sale_prompt {
+    @media(max-width: 500px) {
+        button.btn-primary.save_changes {
+
+            width: 300px !important;
+        }
+    }
+}
+
+.progress_verification_mobile {
+    flex-direction: column;
+    margin-left: 20px;
+
+    .step {
+        a {
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        span {
+            margin-left: 27px;
+        }
+
+        position: relative;
+
+        .icon {
+            position: absolute;
+            left: -24px;
+            display: flex;
+            align-items: center;
+
+            .fa {
+                font-size: 18px;
+                height: 40px;
+                width: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: white;
+                border: 2px solid gray;
+                border-radius: 50%;
+                margin-right: 4px;
+                margin-left: 4px;
+
+                &.active {
+                    background-color: $primary !important;
+                    color: white;
+                    border-color: $primary !important;
+                }
+            }
+        }
+
+        height: 100px;
+        align-items: center;
+        display: flex;
+        border-left: 1px solid;
+    }
+}
+
+.o_sign_thank_you_dialog {
+    footer {
+        @media(max-width:500px) {
+            button.btn.btn-primary {
+                width: 300px !important;
+                margin-bottom: 10px;
+            }
+
+            button.btn.btn-secondary {
+                width: 300px !important;
+                margin-left: unset;
+            }
+        }
+    }
+}

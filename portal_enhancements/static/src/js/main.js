@@ -150,7 +150,7 @@ odoo.define('portal_enhancements.common', function (require) {
                     }
                     else {
 
-                        location.replace("/my")
+                        location.reload();
                     }
                 }
             })

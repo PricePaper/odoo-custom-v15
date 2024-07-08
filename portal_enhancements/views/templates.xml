@@ -6,8 +6,19 @@
             <a role="button" t-if="sign_request.state == 'signed'" t-attf-href="/my/website/company?document_sign=1" class="btn btn-secondary o_sign_download_log_button">Continue Onboarding</a>
 
         </xpath>
-    </template>
 
+    </template>
+    <template id="on_doc_sign_inherit" name="Document Sign" inherit_id='sign.doc_sign'>
+        <xpath expr="//div[hasclass('o_sign_document')]//div[hasclass('container-fluid')]" position="attributes">
+            <attribute name='class' add='flex-row pt16 pb16' separator=" "/>
+        </xpath>
+        <xpath expr="//div[hasclass('o_sign_document')]//div[hasclass('justify-content-between')]" position="before">
+            <div class='d-md-none d-block'>
+                <a role="button" t-if="sign_request.state == 'signed'" t-attf-href="/my/website/company?document_sign=1" class="btn btn-secondary o_sign_download_log_button" style="    font-size: 9px;
+    padding: 5px;">Continue Onboarding</a>
+            </div>
+        </xpath>
+    </template>
 
 
     <template id="multiple_cart" name="Multiple Cart">

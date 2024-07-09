@@ -150,7 +150,7 @@ odoo.define('portal_enhancements.common', function (require) {
                     }
                     else {
 
-                        location.replace("/my")
+                        location.reload();
                     }
                 }
             })
@@ -245,7 +245,7 @@ odoo.define('portal_enhancements.common', function (require) {
             // }
         },
         _CloseModel: function (ev) {
-            $('.sale_prompt').modal('hide')
+            $('.payment_prompt').modal('hide')
         }
 
     });

@@ -30,7 +30,35 @@
                             <!-- <h3>Verification Process</h3> -->
                             <t t-if='main_company.is_verified'>
                                 <h5 class='mt16 mb16'> Business Registration Completed, Here is W-9 forms, We are looking forward to do business with you.</h5>
-                                <div class='completed progress_verification'>
+                                <div class='completed progress_verification d-md-flex d-none '>
+
+                                    <div class='step active'>
+                                        <div class='icon'>
+                                            <i class='fa fa-check active'/>
+                                            <!-- <div class='divider active'/> -->
+                                        </div>
+                                        <span>Basic Information</span>
+                                    </div>
+                                    <div class='step active'>
+                                        <div class='icon'>
+                                            <i class='fa fa-check active'/>
+                                            <!-- <div class='divider active'/> -->
+                                        </div>
+                                        <span>Business Registration</span>
+                                    </div>
+                                    <div class='step active'>
+                                        <div class='icon'>
+                                            <i class='fa fa-check active'/>
+                                            <!-- <div class='divider'/> -->
+                                        </div>
+                                        <span>Payment Methods</span>
+                                    </div>
+
+
+
+
+                                </div>
+                                <div class='completed progress_verification_mobile d-md-none d-flex '>
 
                                     <div class='step active'>
                                         <div class='icon'>
@@ -64,7 +92,41 @@
                                     <t t-if ='not (main_company.businesss_registration_information )'>
                                         <h6 class='text-danger mb-2'>Rejection Reason : <t t-out='main_company.rejection_reason'/></h6>
                                         <h5 class='mt16 mb16'>Basic Information Completed, proceed with next step of Business Registration.</h5>
-                                        <div class='completed progress_verification'>
+                                        <div class='completed progress_verification d-md-flex d-none'>
+
+                                            <div class='step active'>
+
+                                                <div class='icon'>
+                                                    <i class='fa fa-check active'/>
+                                                    <!-- <div class='divider active'/> -->
+                                                </div>
+                                                <span>Basic Information
+                                                </span>
+
+                                            </div>
+                                            <div class='step'>
+                                                <a class='sale_prompt_popup'>
+                                                    <div class='icon'>
+                                                        <i class='fa' >2</i>
+                                                        <!-- <div class='divider'/> -->
+                                                    </div>
+                                                    <span>Business Registration:<em class='text-primary'> Begin</em>
+                                                    </span>
+                                                </a>
+                                            </div>
+                                            <div class='step'>
+                                                <div class='icon'>
+                                                    <i class='fa'>3</i>
+                                                    <!-- <div class='divider'/> -->
+                                                </div>
+                                                <span>Payment Methods</span>
+                                            </div>
+
+
+
+
+                                        </div>
+                                        <div class='completed progress_verification_mobile d-md-none d-flex'>
 
                                             <div class='step active'>
 
@@ -103,7 +165,44 @@
 
                                         <t t-if='not main_company.business_verification_status or not main_company.business_verification_status in ["submit","approved"]'>
                                             <h5 class='mt16 mb16'>Business Registration completed, Kindly add your payment method.</h5>
-                                            <div class='completed progress_verification'>
+                                            <div class='completed progress_verification d-md-flex d-none'>
+
+                                                <div class='step active'>
+
+                                                    <div class='icon'>
+                                                        <i class='fa fa-check active'/>
+
+                                                    </div>
+                                                    <span>Basic Information
+                                                    </span>
+
+                                                </div>
+                                                <div class='step active'>
+
+                                                    <div class='icon'>
+                                                        <i class='fa fa-check active'/>
+
+                                                    </div>
+                                                    <span>Business Registration
+                                                    </span>
+
+                                                </div>
+                                                <div class='step'>
+                                                    <a class='payment_prompt_popup'>
+                                                        <div class='icon'>
+                                                            <i class='fa'>3</i>
+
+                                                        </div>
+                                                        <span>Payment Methods:<em class='text-primary'> Begin</em>
+                                                        </span>
+                                                    </a>
+                                                </div>
+
+
+
+
+                                            </div>
+                                            <div class='completed progress_verification_mobile d-md-none d-flex'>
 
                                                 <div class='step active'>
 
@@ -143,7 +242,44 @@
                                         </t>
                                         <t t-elif='main_company.business_verification_status in ["submit"]'>
                                             <h5 class='mt16 mb16'>All information have been completed and is currently under review.</h5>
-                                            <div class='completed progress_verification'>
+                                            <div class='completed progress_verification d-md-flex d-none'>
+
+                                                <div class='step active'>
+
+                                                    <div class='icon'>
+                                                        <i class='fa fa-check active'/>
+
+                                                    </div>
+                                                    <span>Basic Information
+                                                    </span>
+
+                                                </div>
+                                                <div class='step active'>
+
+                                                    <div class='icon'>
+                                                        <i class='fa fa-check active'/>
+
+                                                    </div>
+                                                    <span>Business Registration
+                                                    </span>
+
+                                                </div>
+                                                <div class='step active'>
+
+                                                    <div class='icon'>
+                                                        <i class='fa fa-check active'/>
+
+                                                    </div>
+                                                    <span>Payment Methods
+                                                    </span>
+
+                                                </div>
+
+
+
+
+                                            </div>
+                                            <div class='completed progress_verification_mobile d-md-none d-flex'>
 
                                                 <div class='step active'>
 
@@ -185,7 +321,38 @@
                                 </t>
                                 <t t-else=''>
                                     <h5 class='mt16 mb16'>Complete the Business Registration to unlock the odering process. </h5>
-                                    <div class='completed progress_verification'>
+                                    <div class='completed progress_verification d-md-flex d-none'>
+
+                                        <div class='step'>
+                                            <a href='/web/signup_submit'>
+                                                <div class='icon'>
+                                                    <i class='fa active'>1</i>
+                                                    <!-- <div class='divider active'/> -->
+                                                </div>
+                                                <span>Basic Information:<em class='text-primary'> Begin</em>
+                                                </span>
+                                            </a>
+                                        </div>
+                                        <div class='step'>
+                                            <div class='icon'>
+                                                <i class='fa' >2</i>
+                                                <!-- <div class='divider'/> -->
+                                            </div>
+                                            <span>Business Registration</span>
+                                        </div>
+                                        <div class='step'>
+                                            <div class='icon'>
+                                                <i class='fa'>3</i>
+                                                <!-- <div class='divider'/> -->
+                                            </div>
+                                            <span>Payment Methods</span>
+                                        </div>
+
+
+
+
+                                    </div>
+                                    <div class='completed progress_verification_mobile d-md-none d-flex'>
 
                                         <div class='step'>
                                             <a href='/web/signup_submit'>

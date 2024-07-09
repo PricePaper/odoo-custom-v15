@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, models, fields
+from datetime import datetime, date
+from dateutil.relativedelta import relativedelta
 
 from ...authorize_extension.authorize_request_custom import AuthorizeAPICustom
 import re
@@ -211,12 +213,53 @@ class Partner(models.Model):
         return result
 
 
-
-
-
-
-
-
-
-
-
+    def get_partner_delivery_date(self):
+        partner_deliver_date = []
+        for partner in self:
+            shipping_date = date.today() + relativedelta(days=1)
+            day_list = []
+            if partner.change_delivery_days:
+                if partner.delivery_day_mon:
+                    day_list.append(0)
+                if partner.delivery_day_tue:
+                    day_list.append(1)
+                if partner.delivery_day_wed:
+                    day_list.append(2)
+                if partner.delivery_day_thu:
+                    day_list.append(3)
+                if partner.delivery_day_fri:
+                    day_list.append(4)
+                if partner.delivery_day_sat:
+                    day_list.append(5)
+                if partner.delivery_day_sun:
+                    day_list.append(6)
+            else:
+                if partner.zip_delivery_id:
+                    if partner.zip_delivery_day_mon:
+                        day_list.append(0)
+                    if partner.zip_delivery_day_tue:
+                        day_list.append(1)
+                    if partner.zip_delivery_day_wed:
+                        day_list.append(2)
+                    if partner.zip_delivery_day_thu:
+                        day_list.append(3)
+                    if partner.zip_delivery_day_fri:
+                        day_list.append(4)
+                    if partner.zip_delivery_day_sat:
+                        day_list.append(5)
+                    if partner.zip_delivery_day_sun:
+                        day_list.append(6)
+            weekday = date.today().weekday()
+            day_diff = 0
+            if day_list:
+                if any(weekday < i for i in day_list):
+                    for i in day_list:
+                        if weekday < i:
+                            day_diff = i - weekday
+                            break
+                else:
+                    day_diff = (6 - weekday) + day_list[0] + 1
+                shipping_date = date.today() + relativedelta(days=day_diff)
+            shipping_date = shipping_date.strftime("%Y-%m-%d")
+            partner_deliver_date.append({'partner': partner.id, 'deliver_by': shipping_date})
+        return partner_deliver_date

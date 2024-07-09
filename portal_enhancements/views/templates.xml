@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    
     <template id="on_doc_sign" name="Document Sign" inherit_id="sign._doc_sign">
         <xpath expr="//a[hasclass('o_sign_download_log_button')]" position="after">
             <a role="button" t-if="sign_request.state == 'signed'" t-attf-href="/my/website/company?document_sign=1" class="btn btn-secondary o_sign_download_log_button">Continue Onboarding</a>

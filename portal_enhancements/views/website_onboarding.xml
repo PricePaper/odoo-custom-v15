@@ -90,7 +90,8 @@
                             <t t-else=''>
                                 <t t-if='main_company.basic_verification_submit'>
                                     <t t-if ='not (main_company.businesss_registration_information )'>
-                                        <h6 class='text-danger mb-2'>Rejection Reason : <t t-out='main_company.rejection_reason'/></h6>
+                                        <h6 class='text-danger mb-2'>Rejection Reason : <t t-out='main_company.rejection_reason'/>
+                                        </h6>
                                         <h5 class='mt16 mb16'>Basic Information Completed, proceed with next step of Business Registration.</h5>
                                         <div class='completed progress_verification d-md-flex d-none'>
 
@@ -553,6 +554,319 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </t>
+    </template>
+
+    <template id='portal_credit_application'>
+        <t t-call='website.layout'>
+            <div class="jumbotron text-center bg-primary">
+                <h1 style="color: black; font-weight: bold;">Credit Application</h1>
+                <p style="color: black;">Enter all the below information to complete onboarding</p>
+            </div>
+            <div class="container credit_application mb64" style="margin-top: 20px;">
+                <input type='hidden' name='partner_id' t-att-value='partner.id'/>
+                <div class='row main_info_data'>
+                    <div t-attf-class="form-group col-xl-6">
+                        <label for="company">Company:</label>
+
+                        <input type="text" class="form-control" t-att-value='partner.company_name' name="company" required="True"/>
+                    </div>
+                    <div t-attf-class="form-group col-xl-6">
+                        <label for="phone">Phone:</label>
+
+                        <input type="text" t-att-value='partner.phone' class="form-control" name="phone"/>
+                    </div>
+
+
+                    <div class='form-group col-xl-4'>
+                        <label for='email'>Email:</label>
+                        <input type="email" t-att-value='partner.email' class="form-control" name="email"/>
+                    </div>
+
+                    <div class='form-group col-xl-4'>
+                        <label for='mobile'>Cell:</label>
+                        <input type="mobile" t-att-value='partner.mobile' class="form-control" name="mobile"/>
+                    </div>
+
+                    <div class='form-group col-xl-4'>
+                        <label for='fax'>Fax:</label>
+                        <input type="fax" t-att-value='partner.fax_number' class="form-control" name="fax"/>
+                    </div>
+
+                    <div class='form-group col-xl-12'>
+                        <label for='address'>Address:</label>
+                        <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
+                    </div>
+
+                    <div class='form-group col-xl-4'>
+                        <label for='city'>city:</label>
+                        <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
+                    </div>
+
+                    <div class='form-group col-xl-4'>
+                        <label for='state'>State:</label>
+                        <input type="state" t-att-value='partner.state_id' class="form-control" name="state"/>
+                    </div>
+
+                    <div class='form-group col-xl-4'>
+                        <label for='zip'>Zip:</label>
+                        <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
+                    </div>
+
+
+                </div>
+
+                <div class='row officers_list'>
+                    <div class='col-12 d-flex justify-content-between'>
+                        <h6>List of name(s) and title(s) of corporate officers, partners or owners:</h6>
+                        <a class='btn btn-link add_officers' style='font-size:16px; padding:0'>
+                            <i class='fa fa-plus pr16'/>
+                            Add line
+                        </a>
+                    </div>
+                    <div class='col-12 officer_row'>
+                        <div class='main_row row'>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label for="name">Name:</label>
+
+                                <input type="text" class="form-control" name="name" required="True"/>
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label for="title">Title:</label>
+
+                                <input type="text" class="form-control" name="title"/>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class='row main_info_data'>
+                    <div t-attf-class="form-group col-xl-12">
+                        <label for="typeofbusiness">Type of Business:</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" t-att-checked='partner.typeofbusiness == "corporation"' type="radio" name="typeofbusiness" required="True" id="corporation" value="corporation"/>
+                                <label class="form-check-label" for="corporation">Corporation</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" t-att-checked='partner.typeofbusiness == "partnership"' type="radio" name="typeofbusiness" required="True" id="partnership" value="partnership"/>
+                                <label class="form-check-label" for="partnership">Partnership</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" t-att-checked='partner.typeofbusiness == "sole_proprietor"' type="radio" name="typeofbusiness" required="True" id="sole_proprietor" value="sole_proprietor"/>
+                                <label class="form-check-label" for="sole_proprietor">Sole Proprietor
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" t-att-checked='partner.typeofbusiness == "llc"' type="radio" name="typeofbusiness" required="True" id="llc" value="llc"/>
+                                <label class="form-check-label" for="llc">LLC</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div t-attf-class="form-group col-xl-6">
+                        <label for="annual_sales_volume">Annual Sales Volume:</label>
+
+                        <input type="text" class="form-control" name="annual_sales_volume" required="True"/>
+                    </div>
+                    <div t-attf-class="form-group col-xl-6">
+                        <label for="account_payable_contact">Account Payable Contact</label>
+
+                        <input type="text" class="form-control" name="account_payable_contact"/>
+                    </div>
+
+
+                    <div class='form-group col-xl-4'>
+                        <label for='year_established'>Year Established:</label>
+                        <input type="number" class="form-control" name="year_established"/>
+                    </div>
+
+                    <div class='form-group col-xl-4'>
+                        <label for='no_emp'>No. Of Employees</label>
+                        <input type="number" class="form-control" name="no_emp"/>
+                    </div>
+
+                    <div class='form-group col-xl-4'>
+                        <label for='time_present_location'>Time at present location</label>
+                        <input type="text" class="form-control" name="time_present_location"/>
+                    </div>
+
+                    <div t-attf-class="form-group col-xl-12">
+                        <label for="location">location:</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="location" required="True" id="own" value="own"/>
+                                <label class="form-check-label" for="own">Owned</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="location" required="True" id="leased" value="leased"/>
+                                <label class="form-check-label" for="leased">Leased</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="location" required="True" id="monthly" value="monthly"/>
+                                <label class="form-check-label" for="monthly">Monthly
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="location" required="True" id="other" value="other"/>
+                                <label class="form-check-label" for="other">Other</label>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+
+                <div class='row bank_list'>
+                    <div class='col-12 d-flex justify-content-between'>
+                        <h6>List of Bank Accounts:</h6>
+                        <a class='btn btn-link add_Bank' style='font-size:16px; padding:0'>
+                            <i class='fa fa-plus pr16'/>
+                            Add line
+                        </a>
+                    </div>
+                    <div class='col-12 bank_row'>
+                        <div class='main_row row'>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label for="name">Bank:</label>
+
+                                <input type="text" class="form-control" name="name" required="True"/>
+                            </div>
+                            <div t-attf-class="form-group col-xl-6">
+                                <label for="Acc.#">Acc.#:</label>
+
+                                <input type="text" class="form-control" name="acc"/>
+                            </div>
+
+                            <div class='form-group col-xl-3'>
+                                <label for='address'>Address:</label>
+                                <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
+                            </div>
+
+                            <div class='form-group col-xl-3'>
+                                <label for='city'>city:</label>
+                                <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
+                            </div>
+
+                            <div class='form-group col-xl-3'>
+                                <label for='state'>State:</label>
+                                <input type="state" t-att-value='partner.state_id' class="form-control" name="state"/>
+                            </div>
+
+                            <div class='form-group col-xl-3'>
+                                <label for='zip'>Zip:</label>
+                                <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
+                            </div>
+
+                            <div class='form-group col-xl-4'>
+                                <label for='officer_name'>Officer Familiar with A/c </label>
+                                <input type="officer_name"  class="form-control" name="officer_name"/>
+                            </div>
+                            <div class='form-group col-xl-4'>
+                                <label for='office_phone'>Phone:</label>
+                                <input type="office_phone"  class="form-control" name="office_phone"/>
+                            </div>
+                            <div class='form-group col-xl-4'>
+                                <label for='offier_fax'>Fax:</label>
+                                <input type="offier_fax"  class="form-control" name="offier_fax"/>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class='row trade_list'>
+                    <div class='col-12 d-flex justify-content-between'>
+                        <h6>Trade References::</h6>
+                        <a class='btn btn-link add_trade' style='font-size:16px; padding:0'>
+                            <i class='fa fa-plus pr16'/>
+                            Add line
+                        </a>
+                    </div>
+                    <div class='col-12 trade_row'>
+                        <div class='main_row row'>
+                            <div t-attf-class="form-group col-xl-4">
+                                <label for="name">Name:</label>
+
+                                <input type="text" class="form-control" name="name" required="True"/>
+                            </div>
+                            <div t-attf-class="form-group col-xl-4">
+                                <label for="phone">Phone:</label>
+
+                                <input type="text" class="form-control" name="phone"/>
+                            </div>
+
+                            <div t-attf-class="form-group col-xl-4">
+                                <label for="fax">fax:</label>
+
+                                <input type="text" class="form-control" name="fax"/>
+                            </div>
+
+
+
+                            <div class='form-group col-xl-3'>
+                                <label for='address'>Address:</label>
+                                <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
+                            </div>
+
+                            <div class='form-group col-xl-3'>
+                                <label for='city'>city:</label>
+                                <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
+                            </div>
+
+                            <div class='form-group col-xl-3'>
+                                <label for='state'>State:</label>
+                                <input type="state" t-att-value='partner.state_id' class="form-control" name="state"/>
+                            </div>
+
+                            <div class='form-group col-xl-3'>
+                                <label for='zip'>Zip:</label>
+                                <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class='row terms'>
+                    <div class='col-12'>
+                        I authorize our bank(s) to furnish financial information required by Price Paper &amp; Twine Company in connection with this application for credit.
+                        <br/>
+                        <br/>
+                        We certify that the above statements are true and authorize Price Paper &amp; Twine Company to investigate the information above for the purposes of obtaining merchandise on
+                        credit. If the application is a corporation, limited liability company or limited partnership in consideration of granting credit to the applicant, the undersigned individually and
+                        not as an officer/director/member of applicant absolutely, unconditionally and personally guarantees and promises to pay Price Paper &amp; Twine Company all indebtedness
+                        owned by applicant whenever created or owned and waive all defenses available to a guarantor and further waives all notices, demands any presentments. This guaranty will
+                        remain effective until all obligations of applicant are paid in full and all credit relations between Price Paper &amp; Twine Company and the applicant have terminated. I will pay a
+                        reasonable attorney fee, collection fee and any other reasonable cost incurred in the collection of said account.
+                        <br/>
+                        <br/>
+                        Terms: Credit terms are stated on the invoice under “terms.” Invoices not paid according to terms will be subject to a 2% finance charge per month (21% per annum).
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                <div class='row'>
+                    <div class='col-12'>
+                        <h5>Kindly Review and sign</h5>
+                    </div>
+                </div>
+                <br/>
+                <div class="o_portal_signature_form_new" t-att-data-call-url="call_url" t-att-data-default-name="partner.name" t-att-data-mode="mode" t-att-data-send-label="send_label" t-att-data-signature-ratio="signature_ratio" t-att-data-signature-type="signature_type" t-att-data-font-color="font_color" />
+
             </div>
         </t>
     </template>

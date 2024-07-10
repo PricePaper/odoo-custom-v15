@@ -11,6 +11,44 @@ from odoo.http import request
 
 
 class WebsiteSale(WebsiteSale):
+
+    @http.route('/my/credit/submit',type='json',auth='user',website=True,sitemap=False)
+    def submit_credit(self,data):
+        
+        
+        bank_data = data.get('bank_data')
+        trade_data = data.get('trade_data')
+        officer_data = data.get('officer_data')
+        del data['bank_data']
+        del data['trade_data']
+        del data['officer_data']
+
+        data['corporate_partner_ids']=[(0,0,res)for res in officer_data]
+        data['partner_credit_bank_ids']=[(0,0,res)for res in bank_data]
+        data['trade_reference_ids'] = [(0,0,res)for res in trade_data]
+
+        credit_application = request.env['partner.credit'].sudo().create(data)
+        curr_comapny = request.session.get('current_website_company')
+
+        partner = request.env['res.partner'].sudo().browse([int(curr_comapny)])
+        partner.partner_credit = credit_application.id
+        partner.business_verification_status = 'submit'
+        partner.create_helpdesk_ticket_approval()
+        return True
+
+    @http.route('/partner/credit/application',type='http',auth='user',website=True,sitemap=False)
+    def partner_credit_application(self,**kw):
+        curr_comapny = request.session.get('current_website_company')
+        if not curr_comapny:
+            return request.redirect('/my/website/company')
+        partner = request.env['res.partner'].sudo().browse([int(curr_comapny)])
+
+        values={'partner':partner}
+
+        return request.render("portal_enhancements.portal_credit_application", values)
+
+
+
     @http.route()
     def shop_payment(self, **post):
         curr_comapny = request.session.get('current_website_company')
@@ -458,16 +496,16 @@ class CustomerPortal(portal.CustomerPortal):
 
         elif payment_value =='apply_credit':
             partner.payment_value = payment_value
-            default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.credit_application')
-            default_template = request.env['sign.template'].sudo().browse([int(default_template_id)])
-            sign_request = request.env['sign.request'].with_user(default_template.create_uid).create({
-                'template_id': default_template.id,
-                'reference': "%(template_name)s-%(user_name)s" % {'template_name': default_template.attachment_id.name,'user_name':partner.name},
-                'favorited_ids': [(4, default_template.create_uid.id)],
-            })
-            request_item = http.request.env['sign.request.item'].sudo().create({'is_credit_application':True,'sign_request_id': sign_request.id,'partner_id':partner.id, 'role_id': default_template.sign_item_ids.mapped('responsible_id').id})
-            sign_request.action_sent_without_mail()
-            url = '/sign/document/%(request_id)s/%(access_token)s' % {'request_id': sign_request.id, 'access_token': request_item.access_token}
+            # default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.credit_application')
+            # default_template = request.env['sign.template'].sudo().browse([int(default_template_id)])
+            # sign_request = request.env['sign.request'].with_user(default_template.create_uid).create({
+            #     'template_id': default_template.id,
+            #     'reference': "%(template_name)s-%(user_name)s" % {'template_name': default_template.attachment_id.name,'user_name':partner.name},
+            #     'favorited_ids': [(4, default_template.create_uid.id)],
+            # })
+            # request_item = http.request.env['sign.request.item'].sudo().create({'is_credit_application':True,'sign_request_id': sign_request.id,'partner_id':partner.id, 'role_id': default_template.sign_item_ids.mapped('responsible_id').id})
+            # sign_request.action_sent_without_mail()
+            url = '/partner/credit/application'
         else:
             partner.business_verification_status = 'submit'
             partner.create_helpdesk_ticket_approval()

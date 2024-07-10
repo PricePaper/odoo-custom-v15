@@ -22,3 +22,11 @@ access_portal_access_wizard,public_wizard_access_portal,model_portal_access,,1,1
 access_portal_approval_wizard,public_wizard_approval_portal,model_portal_approval,,1,1,1,1
 
 access_sale_history_portal_user,access_sale_history_portal_user,price_paper.model_sale_history,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+
+acess_public_partner_credit,public_partner_credit,model_partner_credit,,1,1,1,1
+
+acess_public_trade_reference,public_trade_reference,model_trade_reference,,1,1,1,1
+
+acess_public_corporate_partner,public_corporate_partner,model_corporate_partner,,1,1,1,1
+
+acess_public_partner_credit_bank,public_partner_credit_bank,model_partner_credit_bank,,1,1,1,1

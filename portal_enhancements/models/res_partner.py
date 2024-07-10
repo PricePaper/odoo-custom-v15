@@ -46,6 +46,8 @@ class ResPartner(models.Model):
                                              string="Portal Parent User")
     sign_request_business = fields.Many2one('sign.request')
 
+    partner_credit = fields.Many2one('partner.credit')
+
     def create_helpdesk_ticket_approval(self):
         team_id = self.env['ir.config_parameter'].sudo().get_param('portal_enhancements.helpdesk_team_onbaording')
         

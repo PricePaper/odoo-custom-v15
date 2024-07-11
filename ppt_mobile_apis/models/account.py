@@ -7,11 +7,14 @@ from odoo import api, models, fields
 class PaymentMove(models.Model):
     _inherit = 'account.move'
 
-    def get_invoice_paid_date(self):
-        paid_date = []
-        for move in self:
-            paid_date.append({'invoice': move.id, 'paid_date': move.sudo().paid_date})
-        return paid_date
+    portal_paid_date = fields.Date(string='Paid date for Portal user', compute='_compute_portal_paid_date')
+
+    def _compute_portal_paid_date(self):
+        for rec in self:
+            paid_date = False
+            if rec.move_type in ('out_invoice', 'out_refund') and rec.payment_state in ('in_payment', 'paid'):
+                paid_date = rec.sudo().paid_date
+            rec.portal_paid_date = paid_date
 
 
 class PaymentTerm(models.Model):

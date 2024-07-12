@@ -30,3 +30,9 @@ acess_public_trade_reference,public_trade_reference,model_trade_reference,,1,1,1
 acess_public_corporate_partner,public_corporate_partner,model_corporate_partner,,1,1,1,1
 
 acess_public_partner_credit_bank,public_partner_credit_bank,model_partner_credit_bank,,1,1,1,1
+
+access_ir.sequence_portal_user,access.ir.sequence.portal.user,base.model_ir_sequence,portal_enhancements.group_portal_enhanced_record_access,1,0,0,0
+access_ir.sequence.date_range_portal_user,access.ir.sequence.date_range.portal.user,base.model_ir_sequence_date_range,portal_enhancements.group_portal_enhanced_record_access,1,0,0,0
+
+access_crm_team_range_portal_user,access.crm_team.portal.user,sales_team.model_crm_team,portal_enhancements.group_portal_enhanced_record_access,1,0,0,0
+access_crm_team_member_range_portal_user,access.crm_team_member.portal.user,sales_team.model_crm_team_member,portal_enhancements.group_portal_enhanced_record_access,1,0,0,0

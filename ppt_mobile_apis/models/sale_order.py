@@ -13,7 +13,7 @@ class SaleOrder(models.Model):
         message = {'success': False,
                    'error': False}
 
-        res = self.action_confirm()
+        res = self.sudo().action_confirm()
 
         if isinstance(res, dict):
             message['error'] = res.get('context', {}).get('default_warning_message', 'No warning message provided')
@@ -22,5 +22,3 @@ class SaleOrder(models.Model):
 
         result.append(message)
         return result
-
-

@@ -19,11 +19,13 @@
     'data': [
         'security/ir.model.access.csv',
         'views/account_views.xml',
+        'views/mobile_banner.xml',
     ],
     'demo': [],
     'installable': True,
     'application': True,
     'auto_install': False,
 }
+
 
 

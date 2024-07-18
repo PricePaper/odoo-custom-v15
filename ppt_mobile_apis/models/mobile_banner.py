@@ -12,6 +12,8 @@ class MobileBanner(models.Model):
     url = fields.Char(string='Url',required=True)
     complete_url = fields.Char('complete_url',compute='_get_url',store=True)
 
+    
+    @api.depends('url')
     def _get_url(self):
         for rec in self:
             # self.env['ir.config_parameter'].sudo().get_param('web.base.url')

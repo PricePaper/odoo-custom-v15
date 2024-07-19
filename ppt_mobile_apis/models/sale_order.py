@@ -22,3 +22,11 @@ class SaleOrder(models.Model):
 
         result.append(message)
         return result
+
+
+    def get_authorize_client_key(self):
+        acquirer = self.sudo().env['payment.acquirer'].search([('provider', '=', 'authorize')])
+        if acquirer:
+            return [{'login': acquirer.authorize_login, 'client': acquirer.authorize_client_key}]
+        else:
+            return False

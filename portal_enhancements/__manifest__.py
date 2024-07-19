@@ -20,6 +20,7 @@ Granting enhanced access to portal users
         'security/ir.model.access.csv',
         'data/mail_template.xml',
         'views/res_partner_views.xml',
+        'views/portal_model_access_config.xml',
         'wizard/add_portal_contacts.xml',
         'views/res_config.xml',
         'views/templates.xml',
@@ -36,8 +37,8 @@ Granting enhanced access to portal users
         'web.assets_frontend': [
             'portal_enhancements/static/src/js/main.js',
             'portal_enhancements/static/src/scss/main.scss',
-            
-            
+
+
         ]
     },
     'installable': True,

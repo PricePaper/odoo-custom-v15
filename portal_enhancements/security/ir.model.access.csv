@@ -13,10 +13,10 @@ access_add_portal_contacts_user,access.add.portal.contacts.user,portal_enhanceme
 access_portal_contacts_user,access.portal.contacts.user,portal_enhancements.model_portal_contacts,base.group_user,1,1,1,1
 
 access_add_portal_companies_user,access.add.portal.companies.user,portal_enhancements.model_add_portal_companies,base.group_user,1,1,1,1
-access_portal_model_access_portal_user,access.portal.model.access.portal_user,portal_enhancements.model_portal_model_access,portal_enhancements.group_portal_enhanced_record_access,1,0,0,0
-access_portal_model_access,access.portal.model.access.user,portal_enhancements.model_portal_model_access,base.group_user,1,1,1,0
+access_portal_model_access_portal_user,access.portal.model.access.portal_user,portal_enhancements.model_portal_model_access,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+access_portal_model_access,access.portal.model.access.user,portal_enhancements.model_portal_model_access,base.group_user,1,1,1,1
 
-acess_portal_res_partner,potel.access.res.parnet,model_res_partner,base.group_portal,1,1,1,1
+acess_portal_res_partner,portel.access.res.partner,model_res_partner,base.group_portal,1,1,1,1
 
 access_portal_access_wizard,public_wizard_access_portal,model_portal_access,,1,1,1,1
 access_portal_approval_wizard,public_wizard_approval_portal,model_portal_approval,,1,1,1,1
@@ -44,3 +44,13 @@ access_customer_product_price_portal_user,access_customer_product_price_portal_u
 access_product_notes_portal_user,access_product_notes_portal_user,price_paper.model_product_notes,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
 
 access_crm_lead_portal_user,access.crm.lead.portal.user,crm.model_crm_lead,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+
+access_portal_wizard_user_portal_user,access.portal.user.wizard.portal.user,portal.model_portal_wizard_user,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+access_portal_wizard_portal_user,access.portal.wizard.portal.user,portal.model_portal_wizard,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+
+acess_portal_user_res_partner,portal.access.res.partner,model_res_partner,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+acess_portal_user_mail_template,portal.access.mail.template,mail.model_mail_template,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+
+
+access_portal_model_access_config_portal_user,access.portal.model.access.config.portal_user,portal_enhancements.model_portal_model_access_config,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+access_portal_model_access_config,access.portal.model.access.config.user,portal_enhancements.model_portal_model_access_config,base.group_user,1,1,1,1

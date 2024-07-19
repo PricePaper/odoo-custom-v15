@@ -3,3 +3,4 @@ access_push_token_user,push.token.user,model_push_token,base.group_user,1,1,1,1
 access_push_notification_user,push.notification.user,model_push_notification,base.group_user,1,1,1,1
 access_mobile_banner,mobile_banner_user,model_mobile_banner,base.group_user,1,1,1,1
 access_mobile_banner_pub,mobile_banner_pub,model_mobile_banner,,1,0,0,0
+access_push_token_portal_user,push.token.portal.user,model_push_token,portal_enhancements.group_portal_enhanced_record_access,0,0,1,0

@@ -142,6 +142,7 @@ class Partner(models.Model):
         """
 
         result = []
+        self = self.sudo()
 
         message = {'success': False,
                    'payment_token': False,

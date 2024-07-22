@@ -192,7 +192,7 @@ class Partner(models.Model):
 
         payment_token = self.env['payment.token'].create({
                                     'acquirer_id': acquirer_id,
-                                    'name': "%s - %s - %s" % (self.partner.name,
+                                    'name': "%s - %s - %s" % (partner.name,
                                                               payment_profile.get('paymentProfile', {}).get('payment', {}).get('creditCard', {}).get(
                                                                   'cardType'),
                                                               payment_profile.get('paymentProfile', {}).get('payment', {}).get('creditCard', {}).get(

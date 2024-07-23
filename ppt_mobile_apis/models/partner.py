@@ -200,7 +200,7 @@ class Partner(models.Model):
                                     'partner_id': partner_id,
                                     'acquirer_ref': payment_profile.get('paymentProfile', {}).get('customerPaymentProfileId'),
                                     'authorize_profile': customer_profile_id,
-                                    'authorize_payment_method_type': acquirer_id.authorize_payment_method_type,
+                                    'authorize_payment_method_type': acquirer.authorize_payment_method_type,
                                     'verified': True,
                                     'card_type': payment_profile.get('paymentProfile', {}).get('payment', {}).get('creditCard', {}).get('cardType'),
                                     'address_id': address_id or partner_id,

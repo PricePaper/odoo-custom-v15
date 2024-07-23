@@ -143,7 +143,6 @@ class Partner(models.Model):
 
         result = []
         self = self.sudo()
-
         message = {'success': False,
                    'payment_token': False,
                    'error': False}
@@ -152,21 +151,20 @@ class Partner(models.Model):
             message['error'] = "partner_id and acquirer_id  must be integers"
             result.append(message)
             return result
+
+
         if address_id:
-            address_id = self.browse(address_id)
-            if not address_id.exists():
+            address = self.browse(address_id)
+            if not address.exists():
                 message['error'] = "Billing Address does not exists"
                 result.append(message)
                 return result
-
         if not opaqueData:
             message['error'] = "opequedata missing"
             result.append(message)
             return result
-
         acquirer = self.env['payment.acquirer'].browse(acquirer_id).filtered(lambda rec: rec.provider == 'authorize')
         partner = self.browse(partner_id)
-
         if not acquirer.exists() or not partner.exists():
             message['error'] = "Partner or Acquirer does not exists"
             result.append(message)
@@ -183,12 +181,13 @@ class Partner(models.Model):
 
         authorize_api = AuthorizeAPICustom(acquirer)
 
-        payment_profile = authorize_api.create_payment_profile(customer_profile_id, partner, opaqueData, address_id)
+        payment_profile = authorize_api.create_payment_profile(customer_profile_id, partner, opaqueData, address)
 
         if not payment_profile.get('paymentProfile', {}).get('customerPaymentProfileId'):
             message['error'] = "Token creation error {err_code} {err_msg}".format(**payment_profile)
             result.append(message)
             return message
+
 
         payment_token = self.env['payment.token'].create({
                                     'acquirer_id': acquirer_id,
@@ -207,8 +206,9 @@ class Partner(models.Model):
                                     'is_default': is_default
                                 })
 
+
         if payment_token:
-            message['token'] = payment_token
+            message['payment_token'] = payment_token.id
             message['success'] = True
         result.append(message)
         return result

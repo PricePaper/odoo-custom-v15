@@ -36,6 +36,9 @@ class ResPartner(models.Model):
 
 
                 product_price = price_rec.price
+                if uom_price:
+                    if any(prc_dict['uom'] ==  price_rec.product_uom.id for prc_dict in uom_price):
+                        continue
                 price_dict  ={'uom':price_rec.product_uom.id,'price':float_round(product_price,precision_digits=2)}
                 uom_price.append(price_dict)
 
@@ -49,5 +52,4 @@ class ResPartner(models.Model):
                 msg = "Unit Price for this product is not found in any pricelists, fetching the unit price as product standard price."
 
             prices[product_id.id] = [{"customer_prices":uom_price,"standart_prices":standard_prices}]
-
         return prices

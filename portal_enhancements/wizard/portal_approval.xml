@@ -35,7 +35,7 @@
                         </group>
 
                     </group>
-                    <group name="name" string="Rejection Reason" attrs='{"invisible":[("business_approval","=",True),("payment_approval","=",True)]}'>
+                    <group name="name" string="Rejection Reason" attrs='{"invisible":[("business_approval","=",True),("payment_approval","=",True),"required":["|",("business_approval","!=",True),("payment_approval","!=",True)]}'>
 
                         <field name='rejection_reason'/>
                     </group>

@@ -17,7 +17,7 @@ class WebsiteSale(WebsiteSale):
         curr_comapny = request.session.get('current_website_company')
         partner = request.env['res.partner'].sudo().browse([int(curr_comapny)])
         bank_code = data.get('bank_code')
-        bank_id = request.env['res.bank'].sudo().search([('bic','=',bank_code)],lmit=1)
+        bank_id = request.env['res.bank'].sudo().search([('bic','=',bank_code)],limit=1)
         if not bank_id:
             bank_id = request.env['res.bank'].sudo().create({
                 'name':data.get('bank_name'),

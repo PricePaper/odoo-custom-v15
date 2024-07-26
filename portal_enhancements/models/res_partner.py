@@ -3,6 +3,11 @@
 from odoo import fields, models, api, _,SUPERUSER_ID
 from odoo.exceptions import UserError, Warning
 
+class ResPartnerBank(models.Model):
+    _inherit='res.partner.bank'
+
+    signature = fields.Binary(string='Signature')
+    acc_type = fields.Selection([('saving','Savings'),('checking','Checking')])
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
@@ -50,7 +55,7 @@ class ResPartner(models.Model):
 
     def create_helpdesk_ticket_approval(self):
         team_id = self.env['ir.config_parameter'].sudo().get_param('portal_enhancements.helpdesk_team_onbaording')
-
+        
         helpdesk_vals = {
                 'name':f'New Customer: "{self.name}" Approval',
                 'partner_id':self.id
@@ -101,7 +106,7 @@ class ResPartner(models.Model):
                 # 'default_contact_name':contact_name,
                 # 'default_contact_email':self.email_from
             }
-
+            
         }
 
     def write(self, vals):

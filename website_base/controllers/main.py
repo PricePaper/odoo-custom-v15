@@ -83,11 +83,9 @@ class WebsiteSale(WebsiteSale):
 
     def _prepare_product_values(self, product, category, search, **kwargs):
         res = super(WebsiteSale,self)._prepare_product_values(product=product,category=category,search=search,**kwargs)
-        
-        msg,product_price,price_form = self.get_product_price(product.product_variant_ids[0],product.product_variant_ids[0].sale_uoms[0])
-        
-
-        res.update(
+        if product.is_published:
+            msg,product_price,price_form = self.get_product_price(product.product_variant_ids[0],product.product_variant_ids[0].sale_uoms[0])
+            res.update(
             new_price =product_price,
             sale_uoms = product.product_variant_ids[0].sale_uoms,
             price_msg = msg

@@ -37,7 +37,7 @@
                     </group>
                     <group name="name" string="Rejection Reason" attrs='{"invisible":[("business_approval","=",True),("payment_approval","=",True)]}'>
 
-                        <field name='rejection_reason'/>
+                        <field name='rejection_reason' attrs='{"required":["|",("business_approval","!=",True),("payment_approval","!=",True)]}'/>
                     </group>
                     <footer>
                         <button string="Update Portal" name="validate_portal_access" type="object" class="oe_highlight" data-hotkey="q"/>

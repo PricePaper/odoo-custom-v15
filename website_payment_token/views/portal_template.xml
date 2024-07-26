@@ -32,7 +32,7 @@
                         <div class="modal-dialog" role="document" style='z-index:9999'>
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title">Payment Token</h5>
+                                    <h5 class="modal-title">New Credit Card</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <i class='fa fa-close'/>
                                     </button>
@@ -117,8 +117,8 @@
                                         </div>
 
                                         <div class="form-group col-12 col-lg-6">
-                                            <label for="cardCVV">CVV</label>
-                                            <input type="password" class="form-control" name ="card_cvv" id="cardCVV" aria-describedby="emailHelp" placeholder="CVV"/>
+                                            <label for="cardCVV">Card Code</label>
+                                            <input type="password" class="form-control" name ="card_cvv" id="cardCVV" aria-describedby="emailHelp" placeholder="Card Code"/>
                                         </div>
 
                                         <!-- <div class="form-group col-12 col-lg-6">
@@ -128,7 +128,7 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-primary token_generate">Generate Token</button>
+                                    <button type="button" class="btn btn-primary token_generate">Save Card</button>
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                 </div>
                             </div>
@@ -137,12 +137,12 @@
                     <div>
                         <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#generateModal">
                             <i class='fa fa-plus mr-2'/>
-                        Add Payment Token 
+                        Add Credit Card
                         </button>
                     </div>
                     <div>
                         <h2>
-                        Payment Token 
+                        Credit Card
                         </h2>
                         <div class='row'>
                             <t t-foreach="token_ids" t-as='token'>

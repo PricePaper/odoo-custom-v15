@@ -22,41 +22,33 @@ class Partner(models.Model):
         partner = self.browse(partner_id)
         if partner:
 
-            default_payment_term = partner.property_payment_term_id
+            default_term = partner.property_payment_term_id
 
-            if default_payment_term:
-                payment_terms = {
-                    'payment_term': default_payment_term.name,
-                    'payment_term_id': default_payment_term.id,
-                    'payment_methods': []
-                }
+            if default_term:
 
-                if default_payment_term.payment_method == 'ach-debit':
-                    payment_terms['payment_methods'] = [
-                        {'name': 'Credit Card', 'availability': False, 'payment_acquirer': 'authorize', 'default': False},
-                        {'name': 'COD', 'availability': False, 'payment_acquirer': 'cod', 'default': False},
-                        {'name': 'ACH-Debit', 'availability': True, 'payment_acquirer': 'ach-debit', 'default': True}
-                    ]
-                elif default_payment_term.is_pre_payment:
-                    payment_terms['payment_methods'] = [
-                        {'name': 'Credit Card', 'availability': True, 'payment_acquirer': 'authorize', 'default': True},
-                        {'name': 'COD', 'availability': False, 'payment_acquirer': 'cod', 'default': False},
-                        {'name': 'ACH-Debit', 'availability': True, 'payment_acquirer': 'ach-debit', 'default': False}
-                    ]
-                elif default_payment_term.is_discount:
-                    payment_terms['payment_methods'] = [
-                        {'name': 'Credit Card', 'availability': True, 'payment_acquirer': 'authorize', 'default': False},
-                        {'name': 'COD', 'availability': True, 'payment_acquirer': 'cod','default': True},
-                        {'name': 'ACH-Debit', 'availability': False, 'payment_acquirer': 'ach-debit', 'default': False}
-                    ]
+                PaymentTerm = self.env['account.payment.term']
+                cc_term = PaymentTerm.search([('is_pre_payment', '=', True)], limit=1)
+                ach_term = PaymentTerm.search([('payment_method', '=', 'ach-debit')], limit=1)
+                cod_term = PaymentTerm.search([('payment_method', '=', 'cod')], limit=1)
 
+
+                if default_term.payment_method == 'ach-debit':
+                    result = [{'name': 'ACH-Debit', 'payment_acquirer': 'ach-debit', 'default': True, 'payment_term_id': default_term.id},
+                        {'name': 'Credit Card', 'payment_acquirer': 'authorize', 'default': False, 'payment_term_id': cc_term.id},
+                        {'name': 'COD', 'payment_acquirer': 'cod', 'default': False, 'payment_term_id': cod_term.id}]
+                elif default_term.is_pre_payment:
+                    result = [{'name': 'ACH-Debit', 'payment_acquirer': 'ach-debit', 'default': False, 'payment_term_id': ach_term.id},
+                        {'name': 'Credit Card', 'payment_acquirer': 'authorize', 'default': True, 'payment_term_id': default_term.id},
+                        {'name': 'COD', 'payment_acquirer': 'cod', 'default': False, 'payment_term_id': cod_term.id}]
+                elif default_term.payment_method == 'cod':
+                    result = [{'name': 'ACH-Debit', 'payment_acquirer': 'ach-debit', 'default': False, 'payment_term_id': ach_term.id},
+                        {'name': 'Credit Card', 'payment_acquirer': 'authorize', 'default': False, 'payment_term_id': cc_term.id},
+                        {'name': 'COD', 'payment_acquirer': 'cod', 'default': True, 'payment_term_id': default_term.id}]
                 else:
-                    payment_terms['payment_methods'] = [
-                        {'name': 'Credit Card', 'availability': True, 'payment_acquirer': 'authorize', 'default': False},
-                        {'name': 'COD', 'availability': True, 'payment_acquirer': 'cod', 'default': False},
-                    ]
-                result.append(payment_terms)
-
+                    result = [{'name': 'ACH-Debit', 'payment_acquirer': 'ach-debit', 'default': False, 'payment_term_id': ach_term.id},
+                        {'name': 'Credit Card', 'payment_acquirer': 'authorize', 'default': False, 'payment_term_id': cc_term.id},
+                        {'name': 'COD', 'payment_acquirer': 'cod', 'default': False, 'payment_term_id': cod_term.id},
+                        {'name': 'default_term.name', 'payment_acquirer': 'normal', 'default': True, 'payment_term_id': default_term.id}]
             return result
 
     @api.model

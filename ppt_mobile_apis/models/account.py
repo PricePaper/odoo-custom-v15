@@ -20,7 +20,7 @@ class PaymentMove(models.Model):
 class PaymentTerm(models.Model):
     _inherit = 'account.payment.term'
 
-    payment_method = fields.Selection([('ach-debit', 'ACH-Debit')], string="Payment Method")
+    payment_method = fields.Selection([('ach-debit', 'ACH-Debit'), ('cod', 'COD')], string="Payment Method")
 
 
 

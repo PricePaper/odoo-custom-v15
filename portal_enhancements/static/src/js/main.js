@@ -124,17 +124,132 @@ odoo.define('portal_enhancements.common', function (require) {
                     '</h2>'
             });
 
-            var data = {}
-            var flag = false
-            var bank_data = []
-            var bank_flag = flag
-            var trade_data = []
-            var trade_flag = false
-            var officer_data = []
-            var officer_flag = false
+            var credit_application = $('.credit_application').length
+            var ach_debit_form = $('.ach_debit_application').length
+            if (credit_application) {
 
-            $('.main_info_data').each(function () {
-                $(this).find('input').each(function () {
+                var data = {}
+                var flag = false
+                var bank_data = []
+                var bank_flag = flag
+                var trade_data = []
+                var trade_flag = false
+                var officer_data = []
+                var officer_flag = false
+
+                $('.main_info_data').each(function () {
+                    $(this).find('input').each(function () {
+                        if (!$(this).val()) {
+                            $(this).addClass('is-invalid')
+                            $(this).focus()
+                            flag = true
+                        }
+                        else {
+
+                            $(this).removeClass('is-invalid')
+                            data[$(this).attr('name')] = $(this).val()
+                        }
+                    })
+                }).promise().done(function () {
+                    console.log(data)
+                    if (flag) {
+                        $.unblockUI();
+                    }
+                    else {
+                        console.log('hello12')
+                        $('.bank_list .bank_row').each(function () {
+                            var bank_data_dict = {}
+                            $(this).find('input').each(function () {
+                                if (!$(this).val()) {
+                                    $(this).addClass('is-invalid')
+                                    $(this).focus()
+                                    bank_flag = true
+                                }
+                                bank_data_dict[$(this).attr('name')] = $(this).val()
+                            }).promise().done(function () {
+                                bank_data.push(bank_data_dict)
+                            })
+
+                        }).promise().done(function () {
+                            console.log(bank_data)
+                            if (bank_flag) {
+                                $.unblockUI();
+                            }
+                            else {
+                                $('.trade_list .trade_row').each(function () {
+                                    var trade_data_dict = {}
+                                    $(this).find('input').each(function () {
+                                        if (!$(this).val()) {
+                                            $(this).addClass('is-invalid')
+                                            $(this).focus()
+                                            trade_flag = true
+                                        }
+                                        trade_data_dict[$(this).attr('name')] = $(this).val()
+                                    }).promise().done(function () {
+                                        trade_data.push(trade_data_dict)
+                                    })
+
+                                }).promise().done(function () {
+                                    if (trade_flag) {
+                                        $.unblockUI();
+                                    }
+                                    else {
+
+                                        $('.officers_list .officer_row').each(function () {
+                                            var off_data_dict = {}
+                                            $(this).find('input').each(function () {
+                                                if (!$(this).val()) {
+                                                    $(this).addClass('is-invalid')
+                                                    $(this).focus()
+                                                    officer_flag = true
+                                                }
+                                                off_data_dict[$(this).attr('name')] = $(this).val()
+                                            }).promise().done(function () {
+                                                officer_data.push(off_data_dict)
+                                            })
+
+                                        }).promise().done(function () {
+                                            if (officer_flag) {
+                                                $.unblockUI();
+                                            }
+                                            else {
+                                                console.log('main_complete')
+                                                data['bank_data'] = bank_data
+                                                data['trade_data'] = trade_data
+                                                data['officer_data'] = officer_data
+                                                console.log(data)
+                                                data['signature'] = signature
+                                                data['print_name'] = name
+                                                ajax.jsonRpc('/my/credit/submit', 'call', {
+                                                    data: data,
+
+
+                                                }).then(function (data) {
+
+                                                    window.location = '/my/website/company'
+                                                })
+
+
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+
+
+
+            }
+            if (ach_debit_form) {
+                var data = {}
+                var flag = false
+                $('.main_info_data input').each(function () {
+
+
+
+
                     if (!$(this).val()) {
                         $(this).addClass('is-invalid')
                         $(this).focus()
@@ -145,95 +260,26 @@ odoo.define('portal_enhancements.common', function (require) {
                         $(this).removeClass('is-invalid')
                         data[$(this).attr('name')] = $(this).val()
                     }
-                })
-            }).promise().done(function () {
-                console.log(data)
-                if (flag) {
-                    $.unblockUI();
-                }
-                else {
-                    console.log('hello12')
-                    $('.bank_list .bank_row').each(function () {
-                        var bank_data_dict = {}
-                        $(this).find('input').each(function () {
-                            if (!$(this).val()) {
-                                $(this).addClass('is-invalid')
-                                $(this).focus()
-                                bank_flag = true
-                            }
-                            bank_data_dict[$(this).attr('name')] = $(this).val()
-                        }).promise().done(function () {
-                            bank_data.push(bank_data_dict)
+
+                }).promise().done(function () {
+                    if (flag) {
+                        $.unblockUI();
+                    }
+                    else {
+                        data['signature'] = signature
+                        data['print_name'] = name
+                        ajax.jsonRpc('/my/ach/submit', 'call', {
+                            data: data,
+
+
+                        }).then(function (data) {
+
+                            window.location = '/my/website/company'
                         })
+                    }
 
-                    }).promise().done(function () {
-                        console.log(bank_data)
-                        if (bank_flag) {
-                            $.unblockUI();
-                        }
-                        else {
-                            $('.trade_list .trade_row').each(function () {
-                                var trade_data_dict = {}
-                                $(this).find('input').each(function () {
-                                    if (!$(this).val()) {
-                                        $(this).addClass('is-invalid')
-                                        $(this).focus()
-                                        trade_flag = true
-                                    }
-                                    trade_data_dict[$(this).attr('name')] = $(this).val()
-                                }).promise().done(function () {
-                                    trade_data.push(trade_data_dict)
-                                })
-
-                            }).promise().done(function () {
-                                if (trade_flag) {
-                                    $.unblockUI();
-                                }
-                                else {
-
-                                    $('.officers_list .officer_row').each(function () {
-                                        var off_data_dict = {}
-                                        $(this).find('input').each(function () {
-                                            if (!$(this).val()) {
-                                                $(this).addClass('is-invalid')
-                                                $(this).focus()
-                                                officer_flag = true
-                                            }
-                                            off_data_dict[$(this).attr('name')] = $(this).val()
-                                        }).promise().done(function () {
-                                            officer_data.push(off_data_dict)
-                                        })
-
-                                    }).promise().done(function () {
-                                        if (officer_flag) {
-                                            $.unblockUI();
-                                        }
-                                        else {
-                                            console.log('main_complete')
-                                            data['bank_data'] = bank_data
-                                            data['trade_data'] = trade_data
-                                            data['officer_data'] = officer_data
-                                            console.log(data)
-                                            data['signature'] = signature
-                                            data['print_name'] = name
-                                            ajax.jsonRpc('/my/credit/submit', 'call', {
-                                                data: data,
-                                                
-                    
-                                            }).then(function (data) {
-                    
-                                                window.location = '/my/website/company'
-                                            })
-
-
-                                        }
-                                    })
-                                }
-                            })
-                        }
-                    })
-                }
-            })
+                })
+            }
 
         },
         /**

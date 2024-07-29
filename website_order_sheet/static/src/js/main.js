@@ -342,16 +342,19 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
     }
 
     $(document).ready(function (ev) {
-        $('.main_ul').sortable({
-            placeholder: 'ui-state-highlight',
+        if (screen.width>=600){
 
-        })
-        $('.sub_ul').sortable({
-            items: 'li:not(li.main_element)',
-            connectWith: '.sub_ul',
-            placeholder: 'ui-state-highlight',
-
-        })
+            $('.main_ul').sortable({
+                placeholder: 'ui-state-highlight',
+    
+            })
+            $('.sub_ul').sortable({
+                items: 'li:not(li.main_element)',
+                connectWith: '.sub_ul',
+                placeholder: 'ui-state-highlight',
+    
+            })
+        }
 
 
     })

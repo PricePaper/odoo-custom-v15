@@ -85,6 +85,8 @@ class StockPicking(models.Model):
                     'invoice_date': rma.rma_date or False,#self.scheduled_date or
                     'rma_id': rma.id,
                 }
+                if self.picking_type_code == 'outgoing':
+                    inv_values['move_type'] = 'out_invoice'
                 salereps = rma.mapped('rma_sale_lines_ids').mapped('so_line_id').mapped('order_id').mapped('sales_person_ids')
                 commission_rule_ids = rma.mapped('rma_sale_lines_ids').mapped('so_line_id').mapped('order_id').mapped('commission_rule_ids')
                 if salereps:

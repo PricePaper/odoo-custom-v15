@@ -208,8 +208,8 @@ class SaleOrder(models.Model):
         return res
 
     @api.depends('state', 'order_line.invoice_status', 'order_line.invoice_lines')
-    def _get_invoiced(self):
-        super(SaleOrder, self)._get_invoiced()
+    def _get_invoice_status(self):
+        super(SaleOrder, self)._get_invoice_status()
         for order in self:
             if order.storage_contract and order.state in ['done', 'received', 'released']:
                 if any([l.invoice_status == 'to invoice' for l in order.order_line if not l.is_downpayment]):

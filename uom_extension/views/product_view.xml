@@ -108,7 +108,7 @@
                 <xpath expr="//field[@name='uom_id']" position="before">
                     <field name="incoming_quantity"/>
                     <field name="outgoing_quantity"/>
-                    <field name="qty_available_not_res_mod"/>
+                    <!-- <field name="qty_available_not_res_mod"/> -->
                     <field name="transit_qty"/>
                     <field name="virtually_available"/>
                     <field name="ppt_uom_id" string="Unit of Measure"/>
@@ -129,9 +129,9 @@
                 <xpath expr="//field[@name='qty_available']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
-                <xpath expr="//field[@name='qty_available_not_res']" position="attributes">
+                <!-- <xpath expr="//field[@name='qty_available_not_res']" position="attributes">
                     <attribute name="invisible">1</attribute>
-                </xpath>
+                </xpath> -->
                 <xpath expr="//field[@name='virtual_available']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>

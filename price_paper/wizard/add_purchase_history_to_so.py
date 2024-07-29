@@ -233,8 +233,12 @@ class AddPurchaseHistorySO(models.TransientModel):
                     'price_from': line_id.order_line.price_from and line_id.order_line.price_from.id,
                     'last_sale': last_sale
                 }
-                self.env['sale.order.line'].create(sale_order_line)
+                # self.env['sale.order.line'].create(sale_order_line)
+                order_id.write({
+                    'order_line': [0, 0, sale_order_line]
+                })
         return True
+
 
 
 AddPurchaseHistorySO()

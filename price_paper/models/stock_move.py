@@ -64,6 +64,17 @@ class StockMove(models.Model):
             return acc_dest
         return super()._get_dest_account(accounts_data)
 
+    def _action_done(self, cancel_backorder=False):
+        """override to add an identifier for sc delivery order"""
+        sc_moves = self.env['stock.move']
+        for move in self:
+            if move.sale_line_id and move.sale_line_id.storage_contract_line_id:
+                sc_moves |= move
+        context = dict(sc_moves._context)
+        context.update({"sc_delivery": True})
+        todo_moves = super(StockMove, sc_moves.with_context(context))._action_done(cancel_backorder=cancel_backorder)
+        todo_moves |= super(StockMove, self-sc_moves)._action_done(cancel_backorder=cancel_backorder)
+        return todo_moves
 
 StockMove()
 

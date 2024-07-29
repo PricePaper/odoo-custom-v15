@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Tree View for Tier -->
+    <record id="view_loyalty_tier_tree" model="ir.ui.view">
+        <field name="name">website.loyalty.tier.tree</field>
+        <field name="model">website.loyalty.tier</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View for Tier -->
+    <record id="view_loyalty_tier_form" model="ir.ui.view">
+        <field name="name">website.loyalty.tier.form</field>
+        <field name="model">website.loyalty.tier</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_loyalty_tier" model="ir.actions.act_window">
+        <field name="name">Website Loyalty Tier</field>
+        <field name="res_model">website.loyalty.tier</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem id="menu_website_loyalty_tier"
+              name="Tier"
+              parent="menu_website_loyalty_configuration_root"
+              action="action_loyalty_tier"
+              sequence="1"/>
+
+    <!--  Tier Customer and Configuration    -->
+    <!-- Tree View for Tier Customer and Configuration -->
+    <record id="view_loyalty_tier_customer_configuration_tree" model="ir.ui.view">
+        <field name="name">website.loyalty.tier.customer.tree</field>
+        <field name="model">website.loyalty.tier.customer</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="customer_rank"/>
+                <field name="tier_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View for Tier Customer and Configuration -->
+    <record id="view_loyalty_tier_customer_configuration_form" model="ir.ui.view">
+        <field name="name">website.loyalty.tier.customer.form</field>
+        <field name="model">website.loyalty.tier.customer</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="customer_rank"/>
+                        <field name="tier_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_loyalty_tier_customer_configuration" model="ir.actions.act_window">
+        <field name="name">Tier customer and Configuration</field>
+        <field name="res_model">website.loyalty.tier.customer</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+
+    <menuitem id="menu_website_loyalty_tier_customer_configuration"
+              name="Tier Customer and Configuration"
+              parent="menu_website_loyalty_configuration_root"
+              action="action_loyalty_tier_customer_configuration"
+              sequence="2"/>
+</odoo>

@@ -1,0 +1,90 @@
+<odoo>
+    <!-- Template for displaying loyalty transactions -->
+    <template id="loyalty_transactions_template" name="Loyalty Transactions">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Loyalty Transactions</t>
+            </t>
+
+            <!-- Display total pending and confirmed points in a smaller box with a divider -->
+            <div class="o_portal_summary">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px; background-color: #f9f9f9;">
+                            <div class="row">
+                                <div class="col-sm-5">
+                                    <div>
+                                        <strong style="font-size: 1.5em; color: #FF9800;">
+                                            Total Pending Points:
+                                            <t t-esc="total_pending_points"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 text-center">
+                                    <div style="border-left: 1px solid #ddd; height: 100%;"></div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div>
+                                        <strong style="font-size: 1.5em; color: #4CAF50;">
+                                            Total Confirmed Points:
+                                            <t t-esc="total_confirm_points"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <t t-if="not loyalty_transactions">
+                <p>There are currently no loyalty transactions for your account.</p>
+            </t>
+            <t t-if="loyalty_transactions" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th>Order</th>
+                        <th>Date</th>
+                        <th>Credit</th>
+                        <th>Debit</th>
+                        <th>Tier</th>
+                    </tr>
+                </thead>
+                <t t-foreach="loyalty_transactions" t-as="transaction">
+                    <tr>
+                        <td>
+                            <t t-esc="transaction.order_id.name"/>
+                        </td>
+                        <td>
+                            <t t-esc="transaction.date.strftime('%Y-%m-%d')"/>
+                        </td>
+                        <td>
+                            <t t-esc="transaction.credit"/>
+                        </td>
+                        <td>
+                            <t t-esc="transaction.debit"/>
+                        </td>
+                        <td>
+                            <t t-esc="transaction.tiers_id"/>
+                        </td>
+                    </tr>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+    <!-- Add Loyalty Transactions link to the portal menu -->
+    <template id="portal_my_loyalty_transactions" name="Show Loyalty Transactions" inherit_id="portal.portal_my_home"
+              priority="80">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Loyalty Transactions</t>
+                <t t-set="url" t-value="'/my/loyalty/transactions'"/>
+                <t t-set="placeholder_count" t-value="'loyalty_transaction_count'"/>
+            </t>
+        </xpath>
+    </template>
+</odoo>

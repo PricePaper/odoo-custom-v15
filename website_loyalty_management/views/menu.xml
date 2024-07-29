@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--    Top bar menu-items-->
+    <menuitem id="menu_website_loyalty_management_root" name="Loyalty"/>
+    <menuitem id="menu_website_loyalty_program_root" name="Loyalty Program"
+              parent="menu_website_loyalty_management_root" sequence="1"/>
+    <menuitem id="menu_website_loyalty_redeem_root" name="Redemption Rules"
+              parent="menu_website_loyalty_management_root" sequence="2"/>
+    <menuitem id="menu_website_loyalty_configuration_root" name="Configuration"
+              parent="menu_website_loyalty_management_root" sequence="3"/>
+
+</odoo>

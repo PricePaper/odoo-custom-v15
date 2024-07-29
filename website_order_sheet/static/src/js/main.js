@@ -269,6 +269,8 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
                     ajax.jsonRpc('/create/section', 'call', { 'section_name': result.value, 'partner_id': partner_id }).then(function (data) {
                         $(".main_ul").append(data.section_li);
                         initsortable()
+                        $('.save_data').removeClass('d-none');
+                        $('.create_order').removeClass('d-none');
                         // $target.parents('.o_wsale_product_grid_wrapper').find('.oe_product_image img').attr('src', data);
                     });
 

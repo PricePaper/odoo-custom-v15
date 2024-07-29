@@ -106,7 +106,7 @@
         <template id='website_order_sheet.section_li'>
             <li class='list-group-item border-0' >
                 <ul class='sub_ul list-group'>
-                    <li class='list-group-item main_element bg-light' t-att-data-id = "section.id">
+                    <li class='list-group-item main_element' t-att-data-id = "section.id">
                         <span>
                             <span class="font-weight-bold section_name" t-esc='section.section'/>
                             <a class='section_edit ml-2' herf="#">
@@ -121,6 +121,7 @@
                             <i class='fa fa-plus'/>
                                                     Add Product
                         </a>
+                        <hr/>
                     </li>
                 </ul>
             </li>
@@ -167,7 +168,7 @@
         </template>
         <template id = 'website_order_sheet.user_sheet'>
             <t t-call="portal.portal_layout">
-                <div class='container order_sheet mt-2 mb-2'>
+                <div class='container-fluid order_sheet mt-2 mb-2'>
                     <input type='hidden' name='partner_id' t-att-value = 'partner_id' />
                     <div class="modal fade" id="browseHistory" tabindex="-1" role="dialog" aria-labelledby="browseproduct" aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -247,13 +248,17 @@
                                 <t t-foreach='sheet.order_lines' t-as='line'>
                                     <li class='list-group-item border-0' >
                                         <ul class='sub_ul list-group'>
-                                            <li class='list-group-item main_element bg-light' t-att-data-id = "line.id">
+
+                                        
+
+                                            <li class='list-group-item main_element ' t-att-data-id = "line.id">
                                                 <span>
                                                     <span class="font-weight-bold section_name" t-esc='line.section'/>
                                                     <a class='section_edit ml-2' herf="#">
                                                         <i class='fa fa-edit'/>
                                                     </a>
                                                 </span>
+                                                
                                                 <a href="#" t-att-data-line = "line.id" class='ml-3 browse_product float-right' data-toggle="modal" data-target="#browseHistory">
                                                     <i class='fa fa-plus'/>
                                                     Browse History
@@ -262,24 +267,46 @@
                                                     <i class='fa fa-plus'/>
                                                     Add Product
                                                 </a>
+                                                <a  class='delete_section' t-attf-href='/delete/section/#{line.id}'><i class='fa fa-trash'/></a>
+                                                <hr/>
                                             </li>
                                             <t t-foreach='line.line_product_ids' t-as='product'>
                                                 <li class='list-group-item product' t-att-data-id='product.product_id.id'>
                                                     <div class='row align-items-center'>
-                                                        <div class='col-6 product_name'>
-                                                            <span t-field="product.product_id.image_128" t-options="{'widget': 'image', 'qweb_img_responsive': False, 'class': 'rounded o_image_64_max'}" />
-                                                            <strong t-esc='product.product_id.name'/>
+                                                        <div class='product_image'>
+                                                            <span t-field="product.product_id.image_128" t-options="{'widget': 'image', 'qweb_img_responsive': False, 'class': 'rounded o_image_128_max'}" />
                                                         </div>
-                                                        <div class='col-3 uom_select'>
+                                                        <div class='product_name'>
+                                                            <div class='product_real_name'>
+                                                                <span t-esc='product.product_id.name'/>
+                                                            </div>
+                                                            <div class='product_sku'>
+                                                                <strong>SKU: </strong><t t-out='product.product_id.default_code'/>
+                                                            </div>
+                                                        </div>
+
+
+                                                        
+                                                        <div class='uom_select_main'>
+                                                            <t t-set='main_uom' t-value='False'/>
+                                                            <div class='main_uom_select'>
                                                             <select class="form-select uom_select" aria-label="Default select example">
                                                                 <t t-foreach='product.product_id.sale_uoms' t-as ='uom'>
                                                                     <option t-att-value="uom.id">
                                                                         <t t-out='uom.name'/>
                                                                     </option>
+                                                                    <t t-set='main_uom' t-value='uom.id'/>
                                                                 </t>
                                                             </select>
+                                                            </div>
+                                                            <div class='product_price'>
+                                                                <!-- <t t-out='product.product_id.get_product_price_sheet(main_uom)'/> -->
+                                                                <strong class="oe_prnewice" style="white-space: nowrap;" t-esc="product.product_id.get_product_price_sheet(main_uom)" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                                            </div>
                                                         </div>
-                                                        <div class="col-3  mx-auto justify-content-center">
+
+
+                                                        <div class="main_quantity justify-content-center">
                                                             <div class='css_quantity input-group'>
                                                                 <div class="input-group-prepend">
                                                                     <a t-attf-href="#" class="btn btn-link js_add_cart_json d-none d-md-inline-block" aria-label="Remove one" title="Remove one">
@@ -294,6 +321,9 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+
+
+
                                                     </div>
                                                 </li>
                                             </t>
@@ -303,8 +333,8 @@
                             </ul>
                         </div>
                         <div class='col-12 sheet_button mt-4'>
-                            <button class='btn btn-dark font-weight-bold save_data btn-md'>Save Sheet</button>
-                            <button class='btn btn-primary font-weight-bold create_order btn-md float-right'>Save &amp; Create Order </button>
+                            <button t-attf-class='btn btn-dark font-weight-bold save_data btn-md #{"d-none" if not sheet.order_lines else ""}'>Save Sheet</button>
+                            <button t-attf-class='btn btn-primary font-weight-bold create_order btn-md float-right #{"d-none" if not sheet.order_lines else ""}'>Save &amp; Create Order </button>
                         </div>
                     </div>
                 </div>
@@ -317,6 +347,5 @@
                 </a>
             </xpath>
         </template>
-
     </data>
 </odoo>

@@ -15,7 +15,17 @@
         }
     }
 }
-
+.o_sign_signature_dialog{
+    .o_web_sign_signature_group{
+        .card-header{
+            @media(max-width:450px){
+                .row{
+                    flex-wrap: wrap !important;
+                }
+            }
+        }
+    }
+}
 .progress_verification_mobile {
     flex-direction: column;
     margin-left: 20px;

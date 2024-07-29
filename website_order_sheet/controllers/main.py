@@ -19,6 +19,14 @@ class WebsiteSale(main.WebsiteSale):
         product_varaint = request.env['product.template'].browse(product_ids).mapped('product_variant_ids').ids
         # _logger.info(f"======================={product_ids}")
         request.env['order.sheet.lines'].browse(int(section_key)).write({'line_product_ids':[(0,0,{'product_id':prod})for prod in product_varaint]})
+
+    @http.route('/delete/section/<int:section_id>',type='http',auth='user',website=True,sitemap=False)
+    def delete_section(self,section_id):
+        section= request.env['order.sheet.lines'].sudo().browse(section_id)
+        if section:
+            section.unlink()
+        environ = request.httprequest.headers.environ
+        return request.redirect(environ.get("HTTP_REFERER"))
  
     @http.route('/create/section',type='json',auth='user',website=True,csrf=False)
     def create_section(self,section_name,partner_id,**kwargs):

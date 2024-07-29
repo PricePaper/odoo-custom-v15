@@ -90,8 +90,10 @@
                             <t t-else=''>
                                 <t t-if='main_company.basic_verification_submit'>
                                     <t t-if ='not (main_company.businesss_registration_information )'>
+                                    <t t-if='main_company.rejection_reason'>
                                         <h6 class='text-danger mb-2'>Rejection Reason : <t t-out='main_company.rejection_reason'/>
                                         </h6>
+                                        </t>
                                         <h5 class='mt16 mb16'>Basic Information Completed, proceed with next step of Business Registration.</h5>
                                         <div class='completed progress_verification d-md-flex d-none'>
 
@@ -165,6 +167,9 @@
                                     <t t-else=''>
 
                                         <t t-if='not main_company.business_verification_status or not main_company.business_verification_status in ["submit","approved"]'>
+                                            <t t-if='main_company.rejection_reason'>
+                                            <h6 class='text-danger mb-2'>Rejection Reason : <t t-out='main_company.rejection_reason'/></h6>
+                                            </t>
                                             <h5 class='mt16 mb16'>Business Registration completed, Kindly add your payment method.</h5>
                                             <div class='completed progress_verification d-md-flex d-none'>
 

@@ -23,8 +23,11 @@
                                 <field name="partner_ids" string="Partners" widget="many2many_tags" invisible="1"/>
                             </group>
                         </group>
+                        <div class="text-muted">
+                            The "Generate Statement" button will send emails to customers who have invoices or payments within the specified date range.
+                        </div>
                         <footer>
-                              <button string="Generate Statement" type="object" name="action_generate_statement" class="btn-primary" />
+                              <button string="Generate Statement" type="object" name="action_generate_statement" class="btn-danger" />
                               <button string="Cancel" special="cancel" class="btn-secondary"/>
                         </footer>
                     </sheet>

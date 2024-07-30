@@ -7,6 +7,10 @@ import datetime
 import logging as server_log
 from dateutil.relativedelta import *
 from odoo.addons.price_paper.models import margin
+import statistics
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class ProductTemplate(models.Model):
@@ -370,25 +374,90 @@ class ProductProduct(models.Model):
         print('conversion is the problem', self.ppt_uom_id._compute_price(price, uom))
         return self.ppt_uom_id._compute_price(price, uom)
 
+    def job_queue_standard_price_update(self):
+        """
+        Create job for standard price update
+        """
+        price_from_msg = ''
+        date_to = datetime.datetime.today() - relativedelta(months=self.env.user.company_id.product_lst_price_months or 0, day=1)
+        product_list = self
+        if self.similar_product_ids:
+            product_list += self.similar_product_ids
+        sale_uoms = product_list.mapped('sale_uoms')
+        for uom in sale_uoms:
+
+            domain = [
+                ('display_type', '=', False),
+                ('order_id.date_order', '>=', date_to.strftime('%Y-%m-%d')),
+                ('order_id.state', 'in', ['sale', 'done']),
+                ('product_uom', '=', uom.id),
+                ('product_id', 'in', product_list.ids),
+                ('price_unit', '>', 0)
+            ]
+            OrderLine = self.env['sale.order.line']
+            lines = OrderLine.search(domain)
+            partners = lines.mapped('order_id.partner_id')
+            partner_count = len(partners)
+            partner_count_company = self.env.user.company_id.partner_count or 0
+            new_lst_price = 0
+            if partner_count >= partner_count_company:
+                try:
+                    new_lst_price = statistics.median_high(
+                        [lines.filtered(lambda l: l.order_id.partner_id == partner)[:1].price_unit for partner in
+                         partners])
+                    price_from = uom.name + ' Price is from Sales History.\n'
+                    cost = self.cost
+                    if uom != self.ppt_uom_id:
+                        uom_cost = float_round(self.ppt_uom_id._compute_price(cost, uom), precision_digits=2)
+                        cost = float_round(uom_cost * (1 + (self.categ_id.repacking_upcharge / 100)), precision_digits=2)
+                    if new_lst_price < cost:
+                        new_lst_price, price_from = self.get_price_from_competitor_or_categ(uom)
+
+                except statistics.StatisticsError as e:
+                    _logger.error('Not enough data to find mean price for product_id: {}.'.format(self.id))
+                    new_lst_price, price_from = self.get_price_from_competitor_or_categ(uom)
+            else:
+                new_lst_price, price_from = self.get_price_from_competitor_or_categ(uom)
+            price_from_msg += price_from
+            new_lst_price = float_round(new_lst_price, precision_digits=2)
+            for product in product_list:
+                if uom in product.sale_uoms:
+                    uom_rec = product.uom_standard_prices.filtered(lambda p: p.uom_id == uom)
+                    if uom_rec:
+                        if uom_rec[0].price != new_lst_price:
+                            uom_rec[0].with_context({'from_standardprice_cron': True}).price = new_lst_price
+                    else:
+                        vals = {'product_id': product.id,
+                                'uom_id': uom.id,
+                                'price': new_lst_price}
+                        self.env['product.standard.price'].with_context({'from_standardprice_cron': True}).create(vals)
+
+        return price_from_msg
+
     def get_price_from_competitor_or_categ(self, uom):
         """
         Get price from category or competitor
         """
         new_lst_price = 0
         cost = self.cost
+        if uom != self.ppt_uom_id:
+            uom_cost = float_round(self.ppt_uom_id._compute_price(cost, uom), precision_digits=2)
+            cost = float_round(uom_cost * (1 + (self.categ_id.repacking_upcharge / 100)), precision_digits=2)
         restaurant_id = self.env.ref('website_scraping.website_scraping_cofig_1').id
         webstaurant_id = self.env.ref('website_scraping.website_scraping_cofig_2').id
+        #get restaurant price
         new_lst_price = self.get_from_competitor(restaurant_id, uom)
         price_from = uom.name + ' Price is from Competitor: Restaurant Depot.\n'
-        if not new_lst_price:
-            price_from = uom.name + ' Price is from Competitor: Webstaurant Depot.\n'
-            new_lst_price = self.get_from_competitor(webstaurant_id, uom)
-        if not new_lst_price:
-            price_from = uom.name + ' Price is from Category.\n'
-            if uom != self.ppt_uom_id:
-                uom_cost = float_round(self.ppt_uom_id._compute_price(cost, uom), precision_digits=2)
-                cost = float_round(uom_cost * (1 + (self.categ_id.repacking_upcharge / 100)), precision_digits=2)
-            new_lst_price = margin.get_price(cost, self.categ_id.standard_price, percent=True)
+        if new_lst_price >= cost:
+            return new_lst_price,price_from
+        price_from = uom.name + ' Price is from Competitor: Webstaurant Depot.\n'
+        #get webstaurant price
+        new_lst_price = self.get_from_competitor(webstaurant_id, uom)
+        if new_lst_price >= cost:
+            return new_lst_price,price_from
+        price_from = uom.name + ' Price is from Category.\n'
+        #get category margin price
+        new_lst_price = margin.get_price(cost, self.categ_id.standard_price, percent=True)
         return new_lst_price,price_from
 
     def get_from_competitor(self, competitor_id, uom):

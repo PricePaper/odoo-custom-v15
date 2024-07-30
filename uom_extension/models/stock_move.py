@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 
-from odoo import models, fields, api, _
+from odoo import models, fields, api, _, SUPERUSER_ID
 from odoo.tools.float_utils import float_round, float_is_zero
 from odoo.exceptions import UserError
 
@@ -58,8 +58,9 @@ class StockMove(models.Model):
         Note - conversion done to ppt_uom_id to correct stock journal entries
         """
         svl_vals_list = []
+        context = dict(self._context)
         for move in self:
-            move = move.with_company(move.company_id)
+            move = move.sudo().with_company(move.company_id)
             valued_move_lines = move._get_out_move_lines()
             valued_quantity = 0
             for valued_move_line in valued_move_lines:
@@ -68,8 +69,11 @@ class StockMove(models.Model):
             if float_is_zero(forced_quantity or valued_quantity,
                              precision_rounding=move.product_id.ppt_uom_id.rounding or move.product_id.uom_id.rounding):
                 continue
-            svl_vals = move.product_id._prepare_out_svl_vals(forced_quantity or valued_quantity, move.company_id)
+            context.update({'move': move})
+
+            svl_vals = move.product_id.with_context(context)._prepare_out_svl_vals(forced_quantity or valued_quantity, move.company_id)
             svl_vals.update(move._prepare_common_svl_vals())
+
             if forced_quantity:
                 svl_vals[
                     'description'] = 'Correction of %s (modification of past move)' % move.picking_id.name or move.name

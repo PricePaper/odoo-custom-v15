@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-from datetime import date
 
 
 class CompetitorItems(models.Model):
@@ -65,17 +64,12 @@ class CompetitorItems(models.Model):
                 for line in lines:
                     if line.price != price:
                         line.write({'price': price,
-                                    'price_last_fetched': date.today()
-                                    })
-                    else:
-                        line.write({'price_last_fetched': date.today()
                                     })
                 if not lines:
                     self.env['customer.product.price'].create({'pricelist_id': pricelist.id,
                                                                'product_id': rec.product_id.id,
                                                                'price': price,
                                                                'product_uom': rec.product_id.ppt_uom_id.id,
-                                                               'price_last_fetched': date.today()
                                                                })
         return True
 

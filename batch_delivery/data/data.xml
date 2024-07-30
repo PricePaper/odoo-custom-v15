@@ -342,20 +342,10 @@
                                                               <td t-out="line.picking_id.sale_id.partner_id.name"/>
                                                           </t>
                                                           <t t-if='line.transit_picking_id'>
-                                                              <t t-if='line.transit_picking_id.sale_id.partner_id.rnk_lst_3_mon'>
-                                                                <td t-out="line.transit_picking_id.sale_id.partner_id.rnk_lst_3_mon"/>
-                                                              </t>
-                                                              <t t-if='not line.transit_picking_id.sale_id.partner_id.rnk_lst_3_mon'>
-                                                                <td>Z</td>
-                                                              </t>
+                                                              <td t-out="line.transit_picking_id.sale_id.partner_id.rnk_lst_3_mon"/>
                                                           </t>
                                                           <t t-if='line.picking_id'>
-                                                              <t t-if='line.picking_id.sale_id.partner_id.rnk_lst_3_mon'>
-                                                                  <td t-out="line.picking_id.sale_id.partner_id.rnk_lst_3_mon"/>
-                                                              </t>
-                                                              <t t-if='not line.picking_id.sale_id.partner_id.rnk_lst_3_mon'>
-                                                                <td>Z</td>
-                                                              </t>
+                                                              <td t-out="line.picking_id.sale_id.partner_id.rnk_lst_3_mon"/>
                                                           </t>
                                                           <td t-out="line.product_uom_qty"/>
                                                           <td t-out="line.reserved_availability"/>

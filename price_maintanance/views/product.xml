@@ -66,21 +66,6 @@
                             </group>
                         </group>
                         <notebook>
-
-                            <page string='Competitor Pricelist'>
-                                <group string='Competitor Pricelist Entries'>
-                                    <field name="competitor_price_ids" nolabel='1'>
-                                        <tree editable="top" create="0">
-                                            <field name="pricelist_id" readonly="1"/>
-                                            <field name="price"/>
-                                            <field name="product_uom" readonly="1" string="UOM"/>
-                                            <field name="price_last_updated" string="Last Updated"/>
-                                            <field name="price_last_fetched" string="Last Fetched"/>
-                                            <field name="sale_uoms" invisible="1"/>
-                                        </tree>
-                                    </field>
-                                </group>
-                            </page>
                             <page string='Future Price'>
                                 <group string="Future Price"/>
                                 <field name="future_price_ids" nolabel="1" context="{'product_id':id}">
@@ -122,6 +107,19 @@
                                 <button name="cost_change_cron_button" string='Run Cron'
                                         attrs="{'invisible': [('future_price_ids', '=', [])]}" type="object"
                                         icon="fa-spinner"/>
+                            </page>
+                            <page string='Competitor Pricelist'>
+                                <group string='Competitor Pricelist Entries'>
+                                    <field name="competitor_price_ids" nolabel='1'>
+                                        <tree editable="top" create="0">
+                                            <field name="pricelist_id" readonly="1"/>
+                                            <field name="price"/>
+                                            <field name="product_uom" readonly="1" string="UOM"/>
+                                            <field name="price_last_updated" string="Last Updated"/>
+                                            <field name="sale_uoms" invisible="1"/>
+                                        </tree>
+                                    </field>
+                                </group>
                             </page>
                             <page string='Customer Pricelist'>
                                 <group string='Customer Pricelist Entries'>

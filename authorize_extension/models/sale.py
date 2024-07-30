@@ -79,28 +79,29 @@ class SaleOrder(models.Model):
             'payment_warning': error_msg
         })
 
-    # def write(self, vals):
-    #     """
-    #     if transaction amount is less than order amount mark it as payment_low.
-    #     """
-    #     res = super(SaleOrder, self).write(vals)
-    #     if vals.get('order_line', False):
-    #         payment_terms = self.env['account.payment.term'].search([('is_pre_payment', '=', True)])
-    #         for order in self.filtered(lambda r: r.payment_term_id in payment_terms):
-    #             if not order.is_payment_bypassed and order.state in ('sale', 'done'):  # and not order.storage_contract:
-    #                 txs = order.transaction_ids.filtered(lambda r: r.state in ('authorized', 'done'))
-    #                 if txs:
-    #                     amount = sum(txs.mapped('amount')) - sum(txs.mapped('transaction_fee'))
-    #                     if amount < order.amount_total:
-    #                         transactions = order.transaction_ids.filtered(lambda r: r.state == 'authorized')
-    #                         transactions.action_void()
-    #                         order.action_payment_hold('Payment Hold: Total Amount increased.Mismatch with Payment Transaction',
-    #                                                   'Cancel Reason : New line added Payment Hold')
-    #     if 'payment_term_id' in vals.keys():
-    #         for order in self:
-    #             if not order.payment_term_id.is_pre_payment and order.is_payment_error:
-    #                 self.write({'is_payment_error': False, 'payment_warning': "", 'hold_state': 'release'})
-    #     return res
+    def write(self, vals):
+        """
+        if transaction amount is less than order amount mark it as payment_low.
+        """
+
+        res = super(SaleOrder, self).write(vals)
+        if vals.get('order_line', False):
+            payment_terms = self.env['account.payment.term'].search([('is_pre_payment', '=', True)])
+            for order in self.filtered(lambda r: r.payment_term_id in payment_terms):
+                if not order.is_payment_bypassed and order.state in ('sale', 'done'):  # and not order.storage_contract:
+                    txs = order.transaction_ids.filtered(lambda r: r.state in ('authorized', 'done'))
+                    if txs:
+                        amount = sum(txs.mapped('amount')) - sum(txs.mapped('transaction_fee'))
+                        if amount < order.amount_total:
+                            transactions = order.transaction_ids.filtered(lambda r: r.state == 'authorized')
+                            transactions.action_void()
+                            order.action_payment_hold('Payment Hold: Total Amount increased.Mismatch with Payment Transaction',
+                                                      'Cancel Reason : New line added Payment Hold')
+        if 'payment_term_id' in vals.keys():
+            for order in self:
+                if not order.payment_term_id.is_pre_payment and order.is_payment_error:
+                    self.write({'is_payment_error': False, 'payment_warning': "", 'hold_state': 'release'})
+        return res
 
     def _action_cancel(self):
         res = super(SaleOrder, self)._action_cancel()
@@ -302,19 +303,18 @@ class SaleOrder(models.Model):
                             rec.invoice_date_due and rec.invoice_date_due < date.today() or not rec.invoice_date_due))
 
                 msg = ''
-                if not order._context.get('from_late_order', False):
-                    invoice_name = []
-                    for invoice in pending_invoices:
-                        term_line = invoice.invoice_payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
-                        date_due = invoice.invoice_date_due
-                        if term_line and term_line.grace_period:
-                            date_due = date_due + timedelta(days=term_line.grace_period)
-                        if date_due and date_due < date.today():
-                            invoice_name.append(invoice.name)
-                    if invoice_name:
-                        msg += 'Customer has pending invoices.\n %s ' % '\n'.join(invoice_name)
-                    if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
-                        msg+='Credit limit Exceed'
+                invoice_name = []
+                for invoice in pending_invoices:
+                    term_line = invoice.invoice_payment_term_id.line_ids.filtered(lambda r: r.value == 'balance')
+                    date_due = invoice.invoice_date_due
+                    if term_line and term_line.grace_period:
+                        date_due = date_due + timedelta(days=term_line.grace_period)
+                    if date_due and date_due < date.today():
+                        invoice_name.append(invoice.name)
+                if invoice_name:
+                    msg += 'Customer has pending invoices.\n %s ' % '\n'.join(invoice_name)
+                if order.partner_id.credit + order.amount_total > order.partner_id.credit_limit:
+                    msg+='Credit limit Exceed'
                 if msg:
                     order.message_post(body=msg)
                     order.credit_hold_after_confirm = True

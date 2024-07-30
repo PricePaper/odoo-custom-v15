@@ -17,12 +17,6 @@
                   parent="sale.sale_order_menu"
                   groups="price_paper.group_allow_more_than_credit_limit,price_paper.group_allow_low_price_unit"
                   sequence="12"/>
-        <menuitem id="menu_hold_tag_orders"
-                  name="SO Hold History"
-                  action="action_orders_hold_tag"
-                  parent="sale.sale_order_menu"
-                  groups="sales_team.group_sale_manager,account.group_account_invoice"
-                  sequence="12"/>
         <menuitem id="menu_sale_history"
                   name="Sales History"
                   action="action_sale_history"

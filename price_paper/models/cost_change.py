@@ -216,7 +216,7 @@ class CostChange(models.Model):
                             {'user': self.user_id and self.user_id.id, 'cost_cron': True}).price = new_price
 
             # Update vendor price
-            if rec.cost_change_parent.vendor_id and rec.cost_change_parent.update_vendor_pricelist:
+            if rec.cost_change_parent.vendor_id:
 
                 supplier_info = product.seller_ids.filtered(lambda r: r.name == rec.cost_change_parent.vendor_id)
                 if supplier_info:

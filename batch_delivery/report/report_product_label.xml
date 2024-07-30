@@ -2,38 +2,30 @@
 <odoo>
     <template id="product_labels_template">
         <t t-call="web.basic_layout">
-            <t t-set="decimal_qty" t-value="0"/>
             <t t-set="qty" t-value="int(line[0].move_orig_ids.get_quantity('reserved_availability', 'quantity_done'))"/>
             <t t-if='line[0].move_orig_ids.get_quantity("reserved_availability", "quantity_done") % 1 != 0'>
                 <t t-set="qty" t-value="qty+1"/>
-                <t t-set="decimal_qty" t-value="line[0].move_orig_ids.get_quantity('reserved_availability', 'quantity_done') % 1"/>
             </t>
             <t t-if="line[0].sale_line_id">
                 <t t-if="line[0].sale_line_id.order_id.quick_sale">
                     <t t-set="qty" t-value="int(line[0].move_orig_ids.get_quantity('reserved_availability', 'quantity_done'))"/>
                     <t t-if='line[0].move_orig_ids.get_quantity("reserved_availability","quantity_done") % 1 != 0'>
                         <t t-set="qty" t-value="qty+1"/>
-                        <t t-set="decimal_qty" t-value='line[0].move_orig_ids.get_quantity("reserved_availability","quantity_done") % 1'/>
                     </t>
                 </t>
             </t>
-            <t t-set="inc" t-value="0"/>
             <t t-foreach="range(0,qty)" t-as="int(count)">
-                <t t-set="inc" t-value="inc+1"/>
                 <div class="page" style="page-break-after: always;">
                     <div class="col-xs-4" style="padding:0;">
+
 
                         <div style="width:384px;height:220px;overflow:hidden;">
                             <div style="width:384px;height:25px;"></div>
                             <div style="width:384px;">
                                 <div t-field="line[0].product_id.default_code"
                                      style="float: left;width: 50%;font-size: 16px;max-width:50%;white-space:nowrap;overflow: hidden;font-weight: bold;"/>
-                                <div style="float: left;width: 25%;font-size: 16px;font-weight: bold;text-align: right;max-width:25%;white-space:nowrap;overflow: hidden;">
-                                    <t t-if='decimal_qty != 0 and inc == qty'>
-                                        <span t-esc="decimal_qty"/>
-                                    </t>
-                                    <span t-field="line[0].product_uom"/>
-                                </div>
+                                <div t-field="line[0].product_uom"
+                                     style="float: left;width: 25%;font-size: 16px;font-weight: bold;text-align: right;max-width:25%;white-space:nowrap;overflow: hidden;"/>
                                 <div t-field="line[0].product_id.property_stock_location.name"
                                      style="float:left;width: 25%;font-size: 16px;text-align: right;padding-left: 5px;font-weight: bold;max-width:25%;white-space:nowrap;overflow: hidden;"/>
                             </div>

@@ -10,7 +10,30 @@ from odoo import http, _
 from odoo.http import request
 
 
+
+class MappForgotPassword(http.Controller):
+
+
+
+    @http.route('/mapp/forgot_password',type='json',auth='public')
+    def ppt_confianz_reset_password(self):
+        my_data = request.jsonrequest
+        login = my_data.get('email', False)
+        print(self, login)
+        result = {}
+        try:
+            request.env['res.users'].sudo().reset_password(login)
+            result = {'success': True,
+                    'message': 'Password reset link sent to mail ID'}
+        except Exception as e:
+            message = str(e)
+            result = {'success': False,
+                    'message': message}
+        return result
+
+
 class WebsiteSale(WebsiteSale):
+
 
     @http.route('/my/ach/submit',type='json',auth='user',website=True,sitemap=False)
     def ach_submit(self,data):
@@ -39,8 +62,8 @@ class WebsiteSale(WebsiteSale):
 
     @http.route('/my/credit/submit',type='json',auth='user',website=True,sitemap=False)
     def submit_credit(self,data):
-        
-        
+
+
         bank_data = data.get('bank_data')
         trade_data = data.get('trade_data')
         officer_data = data.get('officer_data')
@@ -246,7 +269,7 @@ class CustomerPortal(portal.CustomerPortal):
             page=page, sortby=sortby, filterby=filterby, search=search, search_in=search_in, groupby=groupby, **kwargs)
         return request.render("portal_enhancements.portal_my_managers", values)
 
-    @http.route(['/my/manager/edit/<int:partner_id>'],type='http',auth='user',website=True)        
+    @http.route(['/my/manager/edit/<int:partner_id>'],type='http',auth='user',website=True)
     def edit_manager(self,partner_id):
         partner_id = request.env["res.partner"].browse([int(partner_id)])
         partner_id_main = request.env.user.partner_id
@@ -451,7 +474,7 @@ class CustomerPortal(portal.CustomerPortal):
             if team_id:
                 helpdesk_vals['team_id'] = team_id.id
             ticket_id = request.env['helpdesk.ticket'].sudo().create(helpdesk_vals)
-        
+
             acttion = request.env.ref('portal_enhancements.action_res_partner_portal_enhancements')
 
             ticket_id.message_post(body=("New Manager Have been created kindly approve and grant Access") + " <a href='/web#id=%s&action=%s&model=res.partner&view_type=form' data-oe-model=res.partner>%s</a>" % (child_partner_id.id,acttion.id,child_partner_id.name))
@@ -492,8 +515,8 @@ class CustomerPortal(portal.CustomerPortal):
                 sign_request.action_sent_without_mail()
                 return request.redirect('/sign/document/%(request_id)s/%(access_token)s' % {'request_id': sign_request.id, 'access_token': request_item.access_token})
         else:
-            
-            
+
+
             return request.render("portal_enhancements.signup_with_info_template_business", {'partner':partner})
 
 
@@ -554,7 +577,7 @@ class CustomerPortal(portal.CustomerPortal):
         }
 
 
-    
+
     @http.route('/update/business/tax',type='json',auth='user',website=True)
     def business_tax_registration(self,**kwargs):
         curr_comapny = request.session.get('current_website_company')
@@ -588,9 +611,9 @@ class CustomerPortal(portal.CustomerPortal):
             sign_request.action_sent_without_mail()
             url = '/sign/document/%(request_id)s/%(access_token)s' % {'request_id': sign_request.id, 'access_token': request_item.access_token}
 
-        
+
         return {'status':True,'url':url}
-    
+
     @http.route('/web/signup_submit', type='http', auth='user', website=True)
     def user_details_submit(self, **kw):
         curr_comapny = request.session.get('current_website_company')
@@ -599,7 +622,7 @@ class CustomerPortal(portal.CustomerPortal):
         partner = request.env['res.partner'].sudo().browse([int(curr_comapny)])
         if 'submitted' in kw and request.httprequest.method == "POST":
             partner.write({
-                
+
                 'company_name': kw.get('company_name'),
                 'name': kw.get('dba'),
                 'fax_number': kw.get('fax_number'),
@@ -618,10 +641,10 @@ class CustomerPortal(portal.CustomerPortal):
             if kw.get('resale_tax','test') == 'resale':
                 # return request.redirect('/sign/a467a417-ed0f-44a8-9f00-8e565d20ba4d')
                 default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.resale_document_id_sign')
-                
+
                 default_template = request.env['sign.template'].sudo().browse([int(default_template_id)])
-                
-                
+
+
                 sign_request = request.env['sign.request'].with_user(default_template.create_uid).create({
                     'template_id': default_template.id,
                     'reference': "%(template_name)s-%(user_name)s" % {'template_name': default_template.attachment_id.name,'user_name':partner.name},
@@ -631,10 +654,10 @@ class CustomerPortal(portal.CustomerPortal):
                 sign_request.action_sent_without_mail()
                 return request.redirect('/sign/document/%(request_id)s/%(access_token)s' % {'request_id': sign_request.id, 'access_token': request_item.access_token})
             else:
-                
+
                 return request.redirect('/web/business/registration')
         else:
-            
-            
+
+
             states = request.env['res.country'].sudo().search([('code','=','US')],limit=1).state_ids
             return request.render("portal_enhancements.signup_with_info_template", {'partner':partner,'states':states,'countries':request.env['res.country'].sudo().search([])})

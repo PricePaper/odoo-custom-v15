@@ -17,7 +17,7 @@ odoo.define('portal_enhancements.common', function (require) {
     }
 
 
-    var SignatureForm = publicWidget.Widget.extend({
+    var SignatureFormNew = publicWidget.Widget.extend({
         template: 'portal.portal_signature',
         xmlDependencies: ['/portal/static/src/xml/portal_signature.xml'],
         events: {
@@ -293,7 +293,7 @@ odoo.define('portal_enhancements.common', function (require) {
         },
     });
 
-    publicWidget.registry.SignatureForm = publicWidget.Widget.extend({
+    publicWidget.registry.SignatureFormNew = publicWidget.Widget.extend({
         selector: '.o_portal_signature_form_new',
 
         /**
@@ -312,7 +312,7 @@ odoo.define('portal_enhancements.common', function (require) {
             };
             var sendLabel = this.$el.data('send-label');
 
-            var form = new SignatureForm(this, {
+            var form = new SignatureFormNew(this, {
                 callUrl: callUrl,
                 nameAndSignatureOptions: nameAndSignatureOptions,
                 sendLabel: sendLabel,

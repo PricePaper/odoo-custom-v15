@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
+import re
 import json
 import operator as py_operator
 from lxml import etree
 from odoo import fields, models, api, _
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools.float_utils import float_round
 from datetime import timedelta, time
 from odoo.osv import expression
+from odoo.tools import float_is_zero, float_repr, float_round, float_compare
+
 
 OPERATORS = {
     '<': py_operator.lt,
@@ -74,6 +76,44 @@ class ProductTemplate(models.Model):
             if product_ids:
                 return product_ids
             return super(ProductTemplate, self)._name_search(name=name, args=args, operator=operator, limit=limit, name_get_uid=name_get_uid)
+
+    @api.model
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
+        if not args:
+            args = []
+        if name:
+            positive_operators = ['=', 'ilike', '=ilike', 'like', '=like']
+            product_ids = []
+            if operator in positive_operators:
+                product_ids = list(self._search([('default_code', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid))
+                if not product_ids:
+                    product_ids = list(self._search([('barcode', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid))
+            if not product_ids and operator not in expression.NEGATIVE_TERM_OPERATORS:
+                # Do not merge the 2 next lines into one single search, SQL search performance would be abysmal
+                # on a database with thousands of matching products, due to the huge merge+unique needed for the
+                # OR operator (and given the fact that the 'name' lookup results come from the ir.translation table
+                # Performing a quick memory merge of ids in Python will give much better performance
+                product_ids = list(self._search(args + [('default_code', operator, name)], limit=limit))
+                if not limit or len(product_ids) < limit:
+                    # we may underrun the limit because of dupes in the results, that's fine
+                    limit2 = (limit - len(product_ids)) if limit else False
+                    product2_ids = self._search(args + [('name', operator, name), ('id', 'not in', product_ids)], limit=limit2, access_rights_uid=name_get_uid)
+                    product_ids.extend(product2_ids)
+            elif not product_ids and operator in expression.NEGATIVE_TERM_OPERATORS:
+                domain = expression.OR([
+                    ['&', ('default_code', operator, name), ('name', operator, name)],
+                    ['&', ('default_code', '=', False), ('name', operator, name)],
+                ])
+                domain = expression.AND([args, domain])
+                product_ids = list(self._search(domain, limit=limit, access_rights_uid=name_get_uid))
+            if not product_ids and operator in positive_operators:
+                ptrn = re.compile('(\[(.*?)\])')
+                res = ptrn.search(name)
+                if res:
+                    product_ids = list(self._search([('default_code', '=', res.group(2))] + args, limit=limit, access_rights_uid=name_get_uid))
+            if product_ids:
+                return product_ids
+        return super(ProductTemplate, self)._name_search(name=name, args=args, operator=operator, limit=limit, name_get_uid=name_get_uid)
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
@@ -430,7 +470,87 @@ class ProductProduct(models.Model):
             value -= product.price_extra
             product.update({'list_price': value})
 
+    def _run_fifo(self, quantity, company):
+        """override to modify the fifo taking rule for SC adn SC return"""
+        self.ensure_one()
 
+        # Find back incoming stock valuation layers (called candidates here) to value `quantity`.
+        qty_to_take_on_candidates = quantity
+        if self._context.get('sc_delivery'):
+            candidates = self.env['stock.valuation.layer']
+            move = self._context.get('move')
+            if move and move.is_storage_contract:
+                candidates = move.sale_line_id.storage_contract_line_id.purchase_line_ids.\
+                    filtered(lambda rec: rec.product_id == move.product_id).mapped('move_ids').\
+                    mapped('stock_valuation_layer_ids').filtered(lambda svl: svl.remaining_qty > 0)
+        else:
+            move = self._context.get('move')
+            #return SC move take the origin fifo
+            if move.is_storage_contract and move.purchase_line_id:
+                candidates = move.purchase_line_id.move_ids.mapped('stock_valuation_layer_ids').filtered(lambda svl: svl.remaining_qty > 0)
+            #normal Delivery Order
+            else:
+                candidates = self.env['stock.valuation.layer']
+                for svl in self.env['stock.valuation.layer'].sudo().search([
+                    ('product_id', '=', self.id),
+                    ('remaining_qty', '>', 0),
+                    ('company_id', '=', company.id),
+                ]):
+                    if svl.stock_move_id and svl.stock_move_id.purchase_line_id and svl.stock_move_id.purchase_line_id.order_id.storage_contract_po is False:
+                        candidates |= svl
+
+
+        new_standard_price = 0
+        tmp_value = 0  # to accumulate the value taken on the candidates
+        for candidate in candidates:
+            qty_taken_on_candidate = min(qty_to_take_on_candidates, candidate.remaining_qty)
+
+            candidate_unit_cost = candidate.remaining_value / candidate.remaining_qty
+            new_standard_price = candidate_unit_cost
+            value_taken_on_candidate = qty_taken_on_candidate * candidate_unit_cost
+            value_taken_on_candidate = candidate.currency_id.round(value_taken_on_candidate)
+            new_remaining_value = candidate.remaining_value - value_taken_on_candidate
+
+            candidate_vals = {
+                'remaining_qty': candidate.remaining_qty - qty_taken_on_candidate,
+                'remaining_value': new_remaining_value,
+            }
+
+            candidate.write(candidate_vals)
+
+            qty_to_take_on_candidates -= qty_taken_on_candidate
+            tmp_value += value_taken_on_candidate
+
+            if float_is_zero(qty_to_take_on_candidates, precision_rounding=self.uom_id.rounding):
+                if float_is_zero(candidate.remaining_qty, precision_rounding=self.uom_id.rounding):
+                    next_candidates = candidates.filtered(lambda svl: svl.remaining_qty > 0)
+                    new_standard_price = next_candidates and next_candidates[0].unit_cost or new_standard_price
+                break
+
+        # Update the standard price with the price of the last used candidate, if any.
+        if new_standard_price and self.cost_method == 'fifo':
+            self.sudo().with_company(company.id).with_context(disable_auto_svl=True).standard_price = new_standard_price
+
+        # If there's still quantity to value but we're out of candidates, we fall in the
+        # negative stock use case. We chose to value the out move at the price of the
+        # last out and a correction entry will be made once `_fifo_vacuum` is called.
+        vals = {}
+        if float_is_zero(qty_to_take_on_candidates, precision_rounding=self.uom_id.rounding):
+            vals = {
+                'value': -tmp_value,
+                'unit_cost': tmp_value / quantity,
+            }
+        else:
+            assert qty_to_take_on_candidates > 0
+            last_fifo_price = new_standard_price or self.standard_price
+            negative_stock_value = last_fifo_price * -qty_to_take_on_candidates
+            tmp_value += abs(negative_stock_value)
+            vals = {
+                'remaining_qty': -qty_to_take_on_candidates,
+                'value': -tmp_value,
+                'unit_cost': last_fifo_price,
+            }
+        return vals
 
 class ProductUom(models.Model):
     _inherit = "uom.uom"

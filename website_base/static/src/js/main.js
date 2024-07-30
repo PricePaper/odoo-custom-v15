@@ -2,6 +2,7 @@ odoo.define('website_base.product_uom', function (require) {
     'use strict';
 
     var publicWidget = require('web.public.widget');
+    require('website_sale.website_sale');
     var core = require('web.core');
     var _t = core._t;
     var ajax = require('web.ajax')
@@ -16,7 +17,24 @@ odoo.define('website_base.product_uom', function (require) {
         //         '</h2>'
         // });
 
-
+        publicWidget.registry.WebsiteSale.include({
+            _submitForm: function () {
+                const params = this.rootProduct;
+        
+                const $product = $('#product_detail');
+                const productTrackingInfo = $product.data('product-tracking-info');
+                if (productTrackingInfo) {
+                    productTrackingInfo.quantity = params.quantity;
+                    $product.trigger('add_to_cart_event', [productTrackingInfo]);
+                }
+                params.UomProduct = $("#UomProduct").val()
+                params.add_qty = params.quantity;
+                params.product_custom_attribute_values = JSON.stringify(params.product_custom_attribute_values);
+                params.no_variant_attribute_values = JSON.stringify(params.no_variant_attribute_values);
+                console.log(params)
+                return this.addToCart(params);
+            },
+        })
 
         publicWidget.registry.productUom = publicWidget.Widget.extend({
             selector: '#product_details',
@@ -57,5 +75,10 @@ odoo.define('website_base.product_uom', function (require) {
             }
 
         })
+
+
+
     })
+
+
 // })

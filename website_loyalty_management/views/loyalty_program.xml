@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_website_loyalty_program_tree" model="ir.ui.view">
+        <field name="name">website.loyalty.program.tree</field>
+        <field name="model">website.loyalty.program</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <!--                <field name="available_on"/>-->
+                <field name="no_of_points"/>
+                <field name="dollar_spent"/>
+                <field name="minimum_order"/>
+                <field name="maximum_points"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_website_loyalty_program_form" model="ir.ui.view">
+        <field name="name">website.loyalty.program.form</field>
+        <field name="model">website.loyalty.program</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                            <!--                            <group name="Available" string="Available On">-->
+                            <field name="available_on_sales" widget='boolean'/>
+                            <field name="available_on_website" widget='boolean'/>
+                            <!--                            </group>-->
+                            <field name="currency_id" invisible="1"/>
+                            <field name="dollar_spent" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                            <field name="no_of_points"/>
+                        </group>
+                        <group>
+                            <field name="company_id"/>
+                            <field name="minimum_order" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                            <field name="maximum_points"/>
+                            <field name="active"/>
+                            <field name="exclude_category_ids" widget="many2many_tags"/>
+                            <field name="only_category_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Bonus Rules" name="Bonus Rules">
+                            <field name="bonus_rule_ids" widget="one2many_list" mode="tree">
+                                <tree editable="bottom">
+                                    <field name="tier_id"/>
+                                    <field name="bonus_percentage"/>
+                                    <field name="order_value"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    <group>
+                        <field name="reward_message" nolabel="1" widget="html"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_website_loyalty_program" model="ir.actions.act_window">
+        <field name="name">Website Loyalty Program</field>
+        <field name="res_model">website.loyalty.program</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_website_loyalty_program"
+              name="Loyalty Programs"
+              parent="menu_website_loyalty_program_root"
+              action="action_website_loyalty_program"/>
+
+    <!-- website.loyalty.bonus.rules  -->
+    <record id="view_website_loyalty_bonus_rule_form" model="ir.ui.view">
+        <field name="name">website.loyalty.bonus.rules.form</field>
+        <field name="model">website.loyalty.bonus.rules</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="tier_id"/>
+                        <field name="bonus_percentage"/>
+                        <field name="order_value"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!--    <record id="action_website_loyalty_bonus_rule" model="ir.actions.act_window">-->
+    <!--        <field name="name">Website Loyalty Bonus Rules</field>-->
+    <!--        <field name="res_model">website.loyalty.bonus.rules</field>-->
+    <!--        <field name="view_mode">form</field>-->
+    <!--    </record>-->
+
+    <!--    <menuitem id="menu_website_loyalty_bonus_rules"-->
+    <!--              name="Loyalty Bonus Rules"-->
+    <!--              parent="menu_website_loyalty_program_root"-->
+    <!--              action="action_website_loyalty_bonus_rule"/>-->
+
+    <!-- Loyalty Redeem Rules   -->
+    <record id="view_website_loyalty_redeem_rule_tree" model="ir.ui.view">
+        <field name="name">website.loyalty.redeem.rules.tree</field>
+        <field name="model">website.loyalty.redeem.rules</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="minimum_order_redeem"/>
+                <field name="maximum_points_redeem"/>
+                <field name="no_of_points"/>
+                <field name="active"/>
+            </tree>
+
+        </field>
+    </record>
+
+    <record id="view_website_loyalty_redeem_rule_form" model="ir.ui.view">
+        <field name="name">website.loyalty.redeem.rules.form</field>
+        <field name="model">website.loyalty.redeem.rules</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <h2>
+                                <field name="name"/>
+                            </h2>
+                            <field name="minimum_order_redeem" widget='monetary'
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="maximum_points_redeem"/>
+                        </group>
+                        <group>
+                            <field name="no_of_points"/>
+                            <field name="active"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_website_loyalty_redeem_rule" model="ir.actions.act_window">
+        <field name="name">Website Loyalty Redeem Rules</field>
+        <field name="res_model">website.loyalty.redeem.rules</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_website_loyalty_redeem_rules"
+              name="Loyalty Redeem Rules"
+              parent="menu_website_loyalty_redeem_root"
+              action="action_website_loyalty_redeem_rule"/>
+
+
+</odoo>
+

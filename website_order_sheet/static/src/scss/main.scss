@@ -1,10 +1,228 @@
-#addProduct{
+#addProduct {
     z-index: 999999;
 }
-.mycart-popover{
-    .btn-primary{
+
+.mycart-popover {
+    .btn-primary {
         font-size: 22px;
         color: white !important;
         margin-bottom: 10px;
     }
+}
+
+
+.order_sheet {
+    font-family: $font-family_1 !important;
+
+    .main_ul {
+        li {
+            ul.sub_ul {
+                li.main_element {
+                    .delete_section {
+                        position: absolute;
+                        right: 6px;
+                        top: 0px;
+                        font-size: 12px;
+                        color: red;
+                    }
+
+                    padding-right: 26px !important;
+                    padding-bottom: unset;
+                }
+
+                li:nth-child(2) {
+                    border-top: unset;
+                    padding-top: unset;
+
+                }
+
+                li.product {
+                    height: 120px;
+
+                    .product_image {
+
+                        width: 10%;
+
+                        img {
+
+                            height: 100px;
+                            width: 100%;
+                            object-fit: cover;
+                        }
+
+                        padding-right: 20px;
+                    }
+
+                    .product_name {
+                        width: 60%;
+
+                        height: 100px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-around;
+
+                    }
+
+                    .uom_select_main {
+                        width: 15%;
+                        height: 100px;
+                        padding-right: 15px;
+                        padding-left: 10px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-around;
+
+                        .main_uom_select {
+                            select {
+                                width: 100%;
+                                padding: 6px;
+                                border-radius: 5px;
+                            }
+                        }
+                    }
+
+                    .main_quantity {
+                        width: 15%;
+                    }
+                }
+
+
+                @media(max-width:1000px){
+                    li.product {
+                        .product_image {
+                            img {
+                                height: 70px;
+                            }
+                        }
+                        .product_name {
+                        }
+                        .uom_select_main {
+                            .main_uom_select {
+                                select {
+                                }
+                            }
+                        }
+                    }
+                }
+
+                @media(max-width:800px){
+                    li.product {
+                        .product_image {
+                            img {
+                                height: 60px;
+                            }
+                        }
+                        .product_name {
+                            width: 55%;
+                        }
+                        .uom_select_main {
+                            width: 20%;
+                            .main_uom_select {
+                                select {
+                                }
+                            }
+                        }
+                    }
+
+                }
+                @media(max-width:500px){
+                    li.main_element {
+                        .browse_product,.add_product{
+                            font-size: 12px;
+                        }
+                    }
+                    li.product {
+                        .product_image {
+                            width: 15%;
+                            img {
+                                height: 50px;
+                            }
+                        }
+                        .product_name {
+                            width: 45%;
+                            .product_real_name,.product_sku{
+                                font-size: 12px;
+                            }
+                        }
+                        .uom_select_main {
+                            width: 25%;
+                            .main_uom_select {
+                                select {
+                                    font-size: 10px;
+                                    padding-right:unset ;
+                                    padding-left: unset;
+                                }
+                            }
+                            .product_price{
+                                font-size: 12px;
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+
+    .css_quantity {
+
+        // width: 100% !important;
+        height: 54px;
+
+        border-radius: 12px;
+        border: 2px solid black;
+        width: fit-content;
+        border-radius: 10px;
+
+        .input-group-prepend,
+        .input-group-append,
+        .js_quantity {
+            height: 50px;
+            border: unset !important;
+        }
+
+        .input-group-prepend,
+        .input-group-append {
+            .btn {
+
+                border-radius: 8px;
+                background-color: black;
+                color: white;
+            }
+
+
+
+        }
+        @media(max-width:767px){
+            overflow: hidden;
+            
+        }
+        @media(max-width:500px){
+            height: 40px;
+            width: 40px;
+            .js_quantity{
+                padding: unset;
+                height: 40px;
+                width: 40px;
+            }
+        }
+
+
+    }
+
+    .sheet_button {
+        @media(max-width:600px) {
+            display: flex;
+            flex-direction: column;
+
+            .save_data {
+                margin-bottom: 10px;
+            }
+        }
+    }
+}
+
+#browseHistory {
+    z-index: 999999;
 }

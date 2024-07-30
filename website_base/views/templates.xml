@@ -64,7 +64,7 @@
                 <div t-if='sale_uoms and not request.website.is_public_user()'>
                     <div class="form-group">
                         <label for="UomProduct">UOM</label>
-                        <select class="form-control" id="UomProduct">
+                        <select class="form-control" name='UomProduct' id="UomProduct">
                             <t t-foreach='sale_uoms' t-as='uom'>
                                 <option t-att-value='uom.id'>
                                     <t t-esc='uom.name'/>

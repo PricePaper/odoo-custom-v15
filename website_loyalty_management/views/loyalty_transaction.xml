@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_loyalty_transaction_tree" model="ir.ui.view">
+        <field name="name">loyalty.transaction.tree</field>
+        <field name="model">loyalty.transaction</field>
+        <field name="arch" type="xml">
+            <tree string="Loyalty Transactions">
+                <field name="date"/>
+                <field name="credit"/>
+                <field name="debit"/>
+                <field name="order_id"/>
+                <field name="partner_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_loyalty_transaction_form" model="ir.ui.view">
+        <field name="name">loyalty.transaction.form</field>
+        <field name="model">loyalty.transaction</field>
+        <field name="arch" type="xml">
+            <form string="Loyalty Transaction">
+                <group>
+                    <field name="date"/>
+                    <field name="credit"/>
+                    <field name="debit"/>
+                    <field name="order_id"/>
+                    <field name="partner_id"/>
+                    <field name="loyalty_program_id"/>
+<!--                    <field name="product_ids"/>-->
+                    <field name="tiers_id"/>
+                    <field name="state"/>
+                </group>
+            </form>
+        </field>
+    </record>
+</odoo>

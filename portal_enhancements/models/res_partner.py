@@ -7,7 +7,7 @@ class ResPartnerBank(models.Model):
     _inherit='res.partner.bank'
 
     signature = fields.Binary(string='Signature')
-    acc_type = fields.Selection([('saving','Savings'),('checking','Checking')])
+    # acc_type = fields.Selection([('saving','Savings'),('checking','Checking')])
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'

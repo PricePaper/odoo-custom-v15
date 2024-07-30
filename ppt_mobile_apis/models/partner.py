@@ -48,7 +48,7 @@ class Partner(models.Model):
                     result = [{'name': 'ACH-Debit', 'payment_acquirer': 'ach-debit', 'default': False, 'payment_term_id': ach_term.id},
                         {'name': 'Credit Card', 'payment_acquirer': 'authorize', 'default': False, 'payment_term_id': cc_term.id},
                         {'name': 'COD', 'payment_acquirer': 'cod', 'default': False, 'payment_term_id': cod_term.id},
-                        {'name': 'default_term.name', 'payment_acquirer': 'normal', 'default': True, 'payment_term_id': default_term.id}]
+                        {'name': default_term.name, 'payment_acquirer': 'normal', 'default': True, 'payment_term_id': default_term.id}]
             return result
 
     @api.model

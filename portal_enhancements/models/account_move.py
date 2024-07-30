@@ -14,7 +14,7 @@ class AccountMove(models.Model):
             return 0 if count else self
         return super(AccountMove, self).search(args, offset, limit, order, count=count)
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         partner_id = self.env.user.partner_id
         if partner_id.portal_access_level and not partner_id._check_portal_model_access(self._name):
@@ -44,7 +44,7 @@ class AccountMoveLine(models.Model):
             return 0 if count else self
         return super(AccountMoveLine, self).search(args, offset, limit, order, count=count)
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         partner_id = self.env.user.partner_id
         if partner_id.portal_access_level and not partner_id._check_portal_model_access(self.move_id._name):

@@ -1,0 +1,139 @@
+<odoo>
+    <data>
+
+        <record id="res_config_settings_view_form" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.website.sale.portal</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="website.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <div id="webmaster_settings" position="after">
+                    <h2>Manage User Requests</h2>
+                    <div class="row mt16 o_settings_container" id="manage_user_settings">
+                        <div class="o_setting_left_pane">
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <field name="helpdesk_team_website"/>
+                            <label for="helpdesk_team_website"/>
+                            <div class="text-muted">
+                                Select Team that will handle approve manager Requests
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="col-12 o_setting_box" id="use_sign_template">
+                        <div class="o_setting_left_pane">
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <h6>Sign Default Template</h6>
+                            <field name="resale_document_id_sign"/>
+                            <div class="text-muted">
+                                Select the default template to be used
+                            </div>
+                        </div>
+                    </div> -->
+                    <h2>Customer Onboarding Configuration</h2>
+                    <div class="row mt16 o_settings_container" id="manage_customer_onboarding">
+                        <div class="col-12 col-md-6 o_setting_box" id="use_sign_template">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <h6>Sign Default New York ST-120 form </h6>
+                                <field name="resale_document_id_sign"/>
+                                <div class="text-muted">
+                                Select the default New York ST-120 form  to be used
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 o_setting_box" id="use_ach_form">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <h6>Ach Debit Form </h6>
+                                <field name="ach_debit_form"/>
+                                <div class="text-muted">
+                                Select the default Ach Debit Form  to be used
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 o_setting_box" id="use_ach_form">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <h6>Credit Application Form </h6>
+                                <field name="credit_application"/>
+                                <div class="text-muted">
+                                Select the default Credit Application Form  to be used
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 o_setting_box" id="use_ach_form">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <h6>Helpdesk Team to handle Onboarding  </h6>
+                                <field name="helpdesk_team_onbaording"/>
+                                <div class="text-muted">
+                                Select the helpdesk team,to whom onboarding tickets will be assigned
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 o_setting_box" id="use_ach_form">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <h6>Payment Terms  </h6>
+                                <field name="cod_payment_terms"/>
+                                <div class="text-muted">
+                                Select the Payment Terms to be assigned to new User
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 o_setting_box" id="use_ach_form">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <h6>Document Workspace  </h6>
+                                <field name="document_folder_id"/>
+                                <div class="text-muted">
+                                Select the Document Folder to catergorise the tax exempt certificates.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 o_setting_box" id="use_ach_form">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <h6>Approval Email Template  </h6>
+                                <field name="approval_email_template"/>
+                                <div class="text-muted">
+                                Select Email template to be used for notifying user of approval.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 o_setting_box" id="use_ach_form">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <h6>Rejection Email Template  </h6>
+                                <field name="reject_email_template"/>
+                                <div class="text-muted">
+                                Select Email template to be used for notifying user of rejection.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 o_setting_box" id="use_ach_form">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <h6>Crm Stages  </h6>
+                                <field name="crm_hide_stages" widget='many2many_tags'/>
+                                <div class="text-muted">
+                                Crm Stages from which portal acess button needs to be hidden
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </field>
+        </record>
+    </data>
+</odoo>

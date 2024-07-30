@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_delivery_carrier_form_inherit_website_base" model="ir.ui.view">
+        <field name="name">delivery.carrier.form.inherit.website_base</field>
+        <field name="model">delivery.carrier</field>
+        <field name="inherit_id" ref="delivery.view_delivery_carrier_form"/>
+        <field name="arch" type="xml">
+            <field name="amount" position="after">
+                <field name="mobile_app_availability"/>
+                <field name="is_store_pickup"/>
+            </field>
+        </field>
+    </record>
+</odoo>

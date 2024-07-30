@@ -21,7 +21,9 @@ class Website(models.Model):
     def get_sample_oder(self,force_create=True):
 
         self.ensure_one()
-        partner = self.env.user.partner_id
+        cur_com = request.session.get('current_website_company',False)
+        partner = self.env['res.partner'].browse([int(cur_com)]) if cur_com else self.env.user.partner_id
+        # partner = self.env.user.partner_id
         sample_request_id = request.session.get('sample_request_id')
         sample_request = self.env['sample.request']
         if not self.env.user._is_public():

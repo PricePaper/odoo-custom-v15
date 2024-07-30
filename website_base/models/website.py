@@ -8,6 +8,41 @@ from odoo import api, fields, models, tools, SUPERUSER_ID, _
 from odoo.http import request
 from odoo.osv import expression
 from odoo.addons.http_routing.models.ir_http import url_for
+
+class SaleOrder(models.Model):
+    _inherit = 'sale.order'
+
+    amount_delivery = fields.Monetary(compute='_compute_amount_delivery',string='Delivery Amount',help="The amount without tax.")
+
+
+    def _cart_update(self, product_id=None, line_id=None, add_qty=0, set_qty=0, **kwargs):
+        res = super(SaleOrder,self)._cart_update(product_id=product_id, line_id=line_id, add_qty=add_qty, set_qty=set_qty, **kwargs)
+
+        line = res['line_id']
+        order_line = self.env['sale.order.line'].browse(line)
+        if kwargs.get('custom_uom'):
+            uom = int(kwargs.get('custom_uom'))
+        else:
+            uom = order_line.product_uom.id
+        
+        if order_line and uom:
+            price = order_line.product_id.get_product_price_sheet(uom)
+            if price:
+                order_line.write({
+                    'price_unit':price,
+                    'product_uom':uom
+                })
+
+
+        return res
+    
+    @api.depends('order_line.price_unit', 'order_line.tax_id', 'order_line.discount', 'order_line.product_uom_qty')
+    def _compute_amount_delivery(self):
+        for order in self:
+            if self.env.user.has_group('account.group_show_line_subtotals_tax_excluded'):
+                order.amount_delivery = sum(order.order_line.filtered('is_delivery').mapped('price_subtotal'))
+            else:
+                order.amount_delivery = sum(order.order_line.filtered('is_delivery').mapped('price_total'))
 class Website(models.Model):
     _inherit = 'website'
 
@@ -153,5 +188,5 @@ class Website(models.Model):
             for line in sale_order.order_line:
                 if line.exists():
                     sale_order._cart_update(product_id=line.product_id.id, line_id=line.id, add_qty=0)
-
+        
         return sale_order

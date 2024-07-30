@@ -363,6 +363,13 @@ input.form-control {
     border-width: 2px;
     border-color: rgba(86, 109, 139, .36);
 }
+select.form-control{
+    border-radius: 17px;
+    height: 83px;
+    margin-bottom: 14px;
+    border-width: 2px;
+    border-color: rgba(86, 109, 139, 0.36);
+}
 
 .form-control:focus {
     border-color: $primary;

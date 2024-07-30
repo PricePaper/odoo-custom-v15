@@ -1,0 +1,18 @@
+.o_sign_document_buttons {
+    display: flex;
+    margin-bottom: 10px;
+    justify-content: space-between;
+
+    a {
+        font-size: 14px;
+        padding: 10px;
+        @media (max-width:1430px) {
+            font-size: 11px;
+            
+        }
+        @media (max-width:1200px) {
+            font-size: 10px;
+            
+        }
+    }
+}

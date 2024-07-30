@@ -9,31 +9,24 @@ _logger = logging.getLogger(__name__)
 class WebsiteSale(main.WebsiteSale):
 
 
-    @http.route('/shop/delivery/cart',type='http',auth='user',website=True,csrf=False)
-    def delivery_cart(self,**kw):
-        partner = request.env.user.partner_id
-        delivery_addresses = partner.delivery_location
-        sale_orders = request.env['sale.order'].search([('partner_shipping_id','in',delivery_addresses.ids),('state','=','draft')])
-        return request.render('website_order_sheet.multiple_cart',{'sale_order_ids':sale_orders})
     
-    @http.route('/set/cart/order/<int:order_id>',type='http',auth='user',website=True,csrf=False)
-    def set_cart_order(self,order_id):
-        order = request.env['sale.order'].browse([int(order_id)])
-        print(order)
-        request.website.sale_reset()
-        # order.state='draft'
-        request.session.update({
-            'sale_order_id': order.sudo().id,
-            'website_sale_current_pl': order.sudo().pricelist_id.id,
-            'sale_last_order_id' : order.id
-        })
-        return request.redirect('/shop/cart')
+    
+   
 
     @http.route('/add/section/product',type='json',auth='user',website=True,csrf=False)
     def add_section_product(self,section_key,prod_ids):
         product_ids = list(map(int,prod_ids))
+        product_varaint = request.env['product.template'].browse(product_ids).mapped('product_variant_ids').ids
         # _logger.info(f"======================={product_ids}")
-        request.env['order.sheet.lines'].browse(int(section_key)).write({'line_product_ids':[(0,0,{'product_id':prod})for prod in product_ids]})
+        request.env['order.sheet.lines'].browse(int(section_key)).write({'line_product_ids':[(0,0,{'product_id':prod})for prod in product_varaint]})
+
+    @http.route('/delete/section/<int:section_id>',type='http',auth='user',website=True,sitemap=False)
+    def delete_section(self,section_id):
+        section= request.env['order.sheet.lines'].sudo().browse(section_id)
+        if section:
+            section.unlink()
+        environ = request.httprequest.headers.environ
+        return request.redirect(environ.get("HTTP_REFERER"))
  
     @http.route('/create/section',type='json',auth='user',website=True,csrf=False)
     def create_section(self,section_name,partner_id,**kwargs):
@@ -90,34 +83,40 @@ class WebsiteSale(main.WebsiteSale):
     @http.route(['/sheet/add/prod'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
     def order_history_table_add(self, section_key,prod_ids):
         sheet_line = request.env['order.sheet.lines'].sudo().browse([int(section_key)])
-        old_prod = sheet_line.product_ids.ids
+
+        old_prod = sheet_line.line_product_ids.mapped('product_id').ids
         prod_ids = list(map(int,prod_ids))
-        prod_ids.extend(old_prod)
-        sheet_line.product_ids = [(6,0,prod_ids)]
+        prod_to_add = list(set(prod_ids) - set(old_prod))
+       
+        # old_prod.extend(prod_to_add)
+        # sheet_line.product_ids = [(6,0,old_prod)]
         # sheet_line = request.env['order.sheet.lines'].sudo().browse([int(section_key)])
         # old_prod = sheet_line.product_ids.ids
-        prod_ids = list(map(int,prod_ids))
+        # prod_ids = list(set(map(int,prod_ids)))
         # prod_ids.extend(old_prod)
         # sheet_line.product_ids = [(6,0,prod_ids)]
-        product_ids = request.env['product.product'].sudo().browse(prod_ids)
-        value={}
-        value['prod_li'] = request.env['ir.ui.view']._render_template("website_order_sheet.prod_li", {
-            'product_ids':product_ids,'line_id':int(section_key)
-        })
-        return value
-        # return True
+        product_ids = request.env['product.product'].sudo().browse(prod_to_add)
+        sheet_line.write({'line_product_ids':[(0,0,{'product_id':prod.id})for prod in product_ids]})
+        # value={}
+        # value['prod_li'] = request.env['ir.ui.view']._render_template("website_order_sheet.prod_li", {
+        #     'product_ids':product_ids,'line_id':int(section_key)
+        # })
+        # return value
+        return True
 
 
 
     @http.route(['/sheet/browse/set'], type='json', auth="public", methods=['POST'], website=True, csrf=False)
     def order_history_table(self, offset):
-        user = request.env.user
-        sheet_id = request.env['website.order.sheet'].sudo().search([('user_id','=',user.partner_id.id)],limit=1)
+        print(offset)
+        # user = request.env.user
+        # sheet_id = request.env['website.order.sheet'].sudo().search([('user_id','=',user.partner_id.id)],limit=1)
 
-
+        cur_com = request.session.get('current_website_company',False)
+        partner = request.env['res.partner'].browse([int(cur_com)]) if cur_com else self.env.user.partner_id
         # products = self.order_line.mapped('product_id').ids
         sales_history = request.env['sale.history'].sudo().search(
-            ['|', ('active', '=', False), ('active', '=', True), ('partner_id', '=', user.partner_id.id),
+            ['|', ('active', '=', False), ('active', '=', True), ('partner_id', '=', partner.id),
               ('product_id', '!=', False),('product_id.categ_id.is_storage_contract','=',False)],limit=15,offset=int(offset))
         # addons product filtering
         addons_products = sales_history.mapped('product_id').filtered(lambda rec: rec.need_sub_product).mapped('product_addons_list')

@@ -1,0 +1,33 @@
+<odoo>
+    <template id="loyalty_template" name="Loyalty Program Page">
+        <t t-call="website.layout">
+            <div class="container mt-5">
+                <div class="row">
+                    <div class="col-12">
+                        <h1 class="text-center mb-4"><b>Loyalty Programs</b></h1>
+                        <t t-if="loyalty_programs">
+                            <div class="row">
+                                <t t-foreach="loyalty_programs" t-as="program">
+                                    <div class="col-md-4 mb-4">
+                                        <div class="card shadow-sm">
+                                            <div class="card-body">
+                                                <h5 class="card-title"><b><u><t t-esc="program.name"/></u></b></h5>
+                                                <p class="card-text">
+                                                    <strong>Available Points:</strong> <t t-esc="program.no_of_points"/><br/>
+                                                    <strong>Amount spent:</strong> <t t-esc="program.dollar_spent"/><br/>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <p class="text-center">No loyalty programs found.</p>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

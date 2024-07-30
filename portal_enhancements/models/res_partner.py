@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api, _
+from odoo import fields, models, api, _,SUPERUSER_ID
 from odoo.exceptions import UserError, Warning
 
+class ResPartnerBank(models.Model):
+    _inherit='res.partner.bank'
+
+    signature = fields.Binary(string='Signature')
+    acc_type = fields.Selection([('saving','Savings'),('checking','Checking')])
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
@@ -21,8 +26,88 @@ class ResPartner(models.Model):
                                           string="Manage Model Access Rights")
     portal_admin_id = fields.Many2one('res.partner', string="Related Administrator", domain=[('portal_access_level','=','user')])
     portal_manager_ids = fields.One2many('res.partner', 'portal_admin_id', string="Managers", domain=[('portal_access_level','=','manager')])
+    # dba = fields.Char(string='Doing Business As')
+    year_established = fields.Integer(string='Year Established')
+    established_state = fields.Many2one("res.country.state", string='Established State')
+    resale_taxexempt = fields.Selection([('resale','Resale'),('tax_exempt','Tax Exempt'),('none','None')],string='Resale or Tax Exempt')
+    typeofbusiness = fields.Selection([('corporation', 'Corporation'),('partnership', 'Partnership'),('sole_proprietor', 'Sole Proprietor'),('llc', 'LLC')],string='Type of Business')
+    is_verified = fields.Boolean(string='Verified',default=False)
+    basic_verification_submit = fields.Boolean(string='Basic Verification',default=False)
+    businesss_registration_information = fields.Boolean(string='Basic Resgistration',default=False)
+    business_verification_status = fields.Selection([('submit','Submitted'),('approved','approved'),('reject','Rejected')])
+    rejection_reason = fields.Char('Rejection Reason')
+    tax_exempt_certifcate_id = fields.Many2one('documents.document',string='Tax Exempt Certificate Id')
+    payment_value = fields.Selection([
+        ('ach_debit','Ach Debit'),
+        ('paid_delivery','Pay On Delivery'),
+        ('apply_credit','Apply Credit'),
+        ('credit_card','Credit Card'),
+        ],default='credit_card')
 
+    can_create_orders = fields.Boolean('Can create orders from website?',default=False)
 
+    portal_parent_ids = fields.Many2many('res.users', 'portal_user_partner_rel',
+                                             'portal_child_partner_id', 'portal_parent_user_id',
+                                             string="Portal Parent User")
+    sign_request_business = fields.Many2one('sign.request')
+
+    partner_credit = fields.Many2one('partner.credit')
+
+    def create_helpdesk_ticket_approval(self):
+        team_id = self.env['ir.config_parameter'].sudo().get_param('portal_enhancements.helpdesk_team_onbaording')
+        
+        helpdesk_vals = {
+                'name':f'New Customer: "{self.name}" Approval',
+                'partner_id':self.id
+            }
+        if team_id:
+                helpdesk_vals['team_id'] = int(team_id)
+        ticket_id = self.env['helpdesk.ticket'].with_user(SUPERUSER_ID).create(helpdesk_vals)
+        acttion = self.env.ref('price_paper.res_partner_pricepaper_vat_edit_permission_action')
+        ticket_id.message_post(body=("New Customer have completed the onboarding process kindly check and take appropriate actions") + " <a href='/web#id=%s&action=%s&model=res.partner&view_type=form' data-oe-model=res.partner>%s</a>" % (self.id,acttion.id,self.name))
+
+        return True
+
+    def verify_signatures(self):
+        partner = self
+        print('partner.resale_taxexempt')
+        # 'context':{
+            #     'default_portal_user':partner.id,
+            #     'default_contact_name':contact_name,
+            #     'default_contact_email':self.email_from
+            # }
+            # 'res_id': self.id,
+        payment_value = 'Paid at time of delivery (cash or check)'
+        if partner.payment_value =='ach_debit':
+            payment_value  ='Automatic ACH debit after delivery'
+        if partner.payment_value=='credit_card':
+            payment_value = 'Credit card (3% upcharge)'
+        if partner.payment_value=='apply_credit':
+            payment_value='Applied For credit'
+
+        business_type = 'Reseller with a valid resale certificate'
+        if partner.resale_taxexempt =='tax_exempt':
+            business_type = 'Tax exempt with a valid tax exempt certificate'
+        elif partner.resale_taxexempt =='None':
+            business_type ='Sales tax on all purchases'
+        else:
+            business_type = 'Reseller with a valid resale certificate'
+        return {
+            'name': 'Portal Approval',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'portal.approval',
+            'target':'new',
+            'context':{
+                'default_business_registration_type':business_type,
+                'default_business_resale_sign_document':self.sign_request_business.id,
+                'default_payment_type':payment_value
+                # 'default_contact_name':contact_name,
+                # 'default_contact_email':self.email_from
+            }
+            
+        }
 
     def write(self, vals):
         current_company_ids = self.portal_company_ids
@@ -152,4 +237,27 @@ class ResPartner(models.Model):
 
         return result
 
+    def action_grant_portal_access(self):
+        """
+        Handles api call from mobile app.
+        Grants portal access to the partner
+        @return: result
+        """
+        self.ensure_one()
+        result = []
+        result_dict = {'success': True, 'error': False}
+        wizard = self.env['portal.wizard'].create({})
 
+        portal_wizard_id = self.env['portal.wizard.user'].create({
+                                                                'wizard_id': wizard.id,
+                                                                'partner_id': self.id,
+                                                                'email': self.email})
+        try:
+            portal_wizard_id.action_grant_access()
+        except Exception as e:
+            result_dict['success'] = False
+            result_dict['error'] = str(e)
+
+        result.append(result_dict)
+
+        return result

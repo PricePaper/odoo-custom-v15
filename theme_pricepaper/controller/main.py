@@ -34,6 +34,9 @@ class WebsiteSale(WebsiteSale):
 
 
 class WebsiteBlog(http.Controller):
+
+   
+
     @http.route('/gen/captcha',type='json', auth="public", website=True,csrf=False)
     def gen_captcha(self,**kw):
         template = request.env['ir.ui.view']._render_template("website_base.captcha_check", {})
@@ -43,9 +46,6 @@ class WebsiteBlog(http.Controller):
         }
     @http.route('/contact/crm/lead',type='json', auth="public", website=True,csrf=False)
     def contact_crm(self,**kw):
-        Website = request.env['website']
-        current_website = Website.get_current_website()
-        team_id = current_website.crm_default_team_id.id
         crm_vals = {
             'name':'Website Contact Us',
             'contact_name':kw.get('name'),
@@ -53,7 +53,6 @@ class WebsiteBlog(http.Controller):
             'email_from':kw.get('email'),
             'phone':kw.get('phone'),
             'street':kw.get('address'),
-            'team_id':team_id,
             'description':kw.get('comments'),
             'type' :'lead'
         }

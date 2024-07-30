@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+<odoo>
+
+    <!-- Mail template are declared in a NOUPDATE block
+         so users can freely customize/delete them -->
+    <data noupdate="1">
+        <record id="email_template_approval" model="mail.template">
+            <field name="name">Customer: Approval Mail</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="email_from">{{ (object.company_id.email_formatted) }}</field>
+            <field name="partner_to">{{ object.id }}</field>
+            <field name="subject">{{ object.name }} Approval Email</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px; font-size: 13px;">
+                    Dear <t t-out="object.name or ''"></t>
+                    <br/>
+                    <br/>
+                    <p>Your Account is fully Approved and you can start placing orders now</p>
+                    <p style="margin: 16px 0px 16px 0px; text-align: center;">
+                        <a href="/my/website/company" style="background-color:#875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;">
+                            Start Odering
+                        </a>
+                    </p>
+                </div>
+
+            </field>
+        </record>
+
+
+        <record id="email_template_rejection" model="mail.template">
+            <field name="name">Customer: Rejection Mail</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="email_from">{{ (object.company_id.email_formatted) }}</field>
+            <field name="partner_to">{{ object.id }}</field>
+            <field name="subject">{{ object.name }} Rejection Email</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px; font-size: 13px;">
+                    Dear <t t-out="object.name or ''"></t>
+                    <br/>
+                    <br/>
+                    <p>Your account approval was not successful, due to following reasons:</p>
+                    <br/>
+                    <p>
+                        <t t-out='object.rejection_reason'/>
+                    </p>
+                    <p style="margin: 16px 0px 16px 0px; text-align: center;">
+                        <a href="/my/website/company" style="background-color:#875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;">
+                            Update Details
+                        </a>
+                    </p>
+                </div>
+            </field>
+        </record>
+
+    </data>
+</odoo>

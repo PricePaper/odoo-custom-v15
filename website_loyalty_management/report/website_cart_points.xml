@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="cart_template_inherit" inherit_id="website_sale.cart">
+        <xpath expr="//div[@id='o_cart_summary']" position="inside">
+            <!-- Conditional display for credit points -->
+            <t t-if="total_credit_points and total_credit_points > 0">
+                <div class="mt16">
+                    <h5><i><b>Credit Points: <t t-esc="total_credit_points"/></b></i></h5>
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>

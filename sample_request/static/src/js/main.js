@@ -12,10 +12,10 @@ odoo.define('sample_request.product', function (require) {
         selector: '.sample_request_cart',
         events: {
             'click .process_request': '_processRequest',
-            'click .delete-sample':'_deleteSample'
+            'click .delete-sample': '_deleteSample'
         },
-        _deleteSample:function(ev){
-            var line_id =  $(ev.currentTarget).attr('data-id')
+        _deleteSample: function (ev) {
+            var line_id = $(ev.currentTarget).attr('data-id')
             ev.preventDefault()
             ev.stopPropagation();
             var $self = this
@@ -27,10 +27,14 @@ odoo.define('sample_request.product', function (require) {
             });
 
             $self._rpc({
-                model: 'sample.request.line',
-                method: 'unlink',
-                args: [[parseInt(line_id)]],
-            }).then(function () {
+                route: '/sample/request/unlink',
+                params: {
+                    line_id: line_id,
+                }
+            }).then(function (res) {
+
+
+
                 window.location.reload();
 
 

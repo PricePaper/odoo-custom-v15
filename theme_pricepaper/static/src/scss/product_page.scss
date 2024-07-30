@@ -27,7 +27,7 @@
         height: 438px;
         width: 30vw;
         top: 50px;
-        right: -25%;
+        right: -24%;
         opacity: 1;
         background-size: contain;
         background-repeat: no-repeat;
@@ -43,7 +43,7 @@
         background: url(../img/white-dots.png);
         position: absolute;
         top: 2px;
-        left: 16%;
+        left: 12%;
         max-width: 384px;
         height: 324px;
         z-index: 3;
@@ -55,7 +55,12 @@
 
         @media (max-width:1024px) {
             top: -81px;
-            left: 12%;
+            left: 10%;
+
+        }
+        @media (max-width:950px) {
+            top: -105px;
+            left: 10%;
 
         }
 

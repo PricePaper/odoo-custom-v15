@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- <record id="view_tree_model_access_config_portal_enhancements" model="ir.ui.view">
+            <field name="name">portal.model.access.config.tree</field>
+            <field name="model">portal.model.access.config</field>
+            <field name="arch" type="xml">
+                <tree string="Model Access Config">
+                    <field name="model_id"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_tree_model_access_config_portal_enhancements" model="ir.ui.view">
+            <field name="name">portal.model.access.config.form</field>
+            <field name="model">portal.model.access.config</field>
+            <field name="arch" type="xml">
+                <form string="Model Access Config">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="model_id"/>
+                            </group>
+                            <group>
+                                <field name="name"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record> -->
+
+        <record id="action_model_access_config_portal_enhancements" model="ir.actions.act_window">
+            <field name="name">Portal Model Access Config</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">portal.model.access.config</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p>
+                    Create New Customer Product Price.
+                </p>
+            </field>
+
+        </record>
+
+        <menuitem id="menu_model_access_config"
+                  name="Portal Model access Config"
+                  action="action_model_access_config_portal_enhancements"
+                  parent="sale.sale_order_menu"
+                  groups="sales_team.group_sale_manager"
+                  sequence="1000" />
+
+    </data>
+</odoo>

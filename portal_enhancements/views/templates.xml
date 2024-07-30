@@ -1,33 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="portal_my_company" name="Comopany Switch">
-        <t t-call="website.layout">
-            <div class='oe_structure' id='company_switch_structure'/>
-            <div id='wrap' class='switch_company_wrap'>
+    
+    <template id="on_doc_sign" name="Document Sign" inherit_id="sign._doc_sign">
+        <xpath expr="//a[hasclass('o_sign_download_log_button')]" position="after">
+            <a role="button" t-if="sign_request.state == 'signed'" t-attf-href="/my/website/company?document_sign=1" class="btn btn-secondary o_sign_download_log_button">Continue Onboarding</a>
 
-                <div class='container'>
-                    <h4 class='pt32'>Switch Comopany</h4>
-                    <div class='main_div'>
-                        <div class='seconday_div'>
+        </xpath>
 
-                            <span>Please Select Desired Comapny</span>
-                            <select class="form-select form-select-lg mb-3" name='company_switch' aria-label=".form-select-lg example">
-                                <t t-foreach="company_ids" t-as="com">
-                                    <option t-att-selected='com.id==curr_comapny' t-att-value='com.id'>
-                                        <t t-out='com.name'/>
-                                    </option>
-                                </t>
-                            </select>
-                            <button class='btn btn-primary switch_company'>Switch Company</button>
-                        </div>
-                    </div>
-                </div>
+    </template>
+    <template id="on_doc_sign_inherit" name="Document Sign" inherit_id='sign.doc_sign'>
+        <xpath expr="//div[hasclass('o_sign_document')]//div[hasclass('container-fluid')]" position="attributes">
+            <attribute name='class' add='flex-row pt16 pb16' separator=" "/>
+        </xpath>
+        <xpath expr="//div[hasclass('o_sign_document')]//div[hasclass('justify-content-between')]" position="before">
+            <div class='d-md-none d-block'>
+                <a role="button" t-if="sign_request.state == 'signed'" t-attf-href="/my/website/company?document_sign=1" class="btn btn-secondary o_sign_download_log_button" style="    font-size: 9px;
+    padding: 5px;">Continue Onboarding</a>
             </div>
-            <div class='oe_structure' id='company_switch_structure1'/>
-        </t>
-
-
+        </xpath>
     </template>
 
 
@@ -40,7 +31,7 @@
                     </h2>
                     <div class='row'>
                         <t t-foreach='sale_order_ids' t-as='order'>
-                            <div class='col-4 mb32'>
+                            <div class='col-md-6 col-lg-4 col-12 mb32'>
                                 <div class='card h-100'>
                                     <div class='card-header'>
                                         <t t-esc='order.partner_shipping_id.name'/>
@@ -48,7 +39,7 @@
                                     <div class='card-body'>
                                         <table class='w-100'>
                                             <tr>
-                                                <th>
+                                                <th style='vertical-align: text-top;'>
                                                 Delivery Address:
                                                 </th>
                                                 <td class='text-end'>
@@ -125,7 +116,8 @@
 
         </xpath>
     </template>
-     <template id="portal_my_home_timesheet" name="Show Timesheets" inherit_id="hr_timesheet.portal_my_home_timesheet">
+
+    <template id="portal_my_home_timesheet" name="Show Timesheets" inherit_id="hr_timesheet.portal_my_home_timesheet">
         <xpath expr="//t[@t-value=&quot;'/my/timesheets'&quot;]/.." position="attributes">
             <attribute name="t-if" separator=" " add="timesheet_access" />
 
@@ -147,8 +139,8 @@
         </xpath>
     </template>
 
-     <template id="portal_my_home" name="Show Projects / Tasks" inherit_id="project.portal_my_home">
-         <xpath expr="//t[@t-value=&quot;'/my/projects'&quot;]/.." position="attributes">
+    <template id="portal_my_home" name="Show Projects / Tasks" inherit_id="project.portal_my_home">
+        <xpath expr="//t[@t-value=&quot;'/my/projects'&quot;]/.." position="attributes">
             <attribute name="t-if" separator=" " add="project_access" />
 
         </xpath>
@@ -158,11 +150,228 @@
         </xpath>
     </template>
 
+    <template id="portal_my_home_menu_my_manager" name="Portal layout : Manager menu entries" inherit_id="portal.portal_breadcrumbs" priority="20">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name in ['my_managers','my_managers_new']" t-attf-class="breadcrumb-item #{'active ' if not manager else ''}">
+                <a t-if="manager or page_name=='my_managers_new'" t-attf-href="/my/managers?{{ keep_query() }}">Managers</a>
+                <t t-else="">Managers</t>
+            </li>
+            <li t-if="managers and page_name =='my_managers'" class="breadcrumb-item active">
+                <t t-out="managers.name"/>
+            </li>
+            <li t-if="page_name =='my_managers_new'" class="breadcrumb-item active">
+                New Manager
+            </li>
+        </xpath>
+    </template>
+
+    <!-- <template id="portal_my_home_manager" name="Show Managers" customize_show="True" inherit_id="portal.portal_my_home" priority="20">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry" t-if='manage_managers'>
+                <t t-set="title">Manage Users</t>
+                <t t-set="url" t-value="'/my/managers'"/>
+                <t t-set="placeholder_count" t-value="'manager_count'"/>
+            </t>
+        </xpath>
+    </template> -->
+    <template id="user_dropdown" inherit_id="portal.user_dropdown">
+        <xpath expr="//*[@id='o_logout']" position="before">
+            <a t-attf-href="/my/website/company" role="menuitem" id="o_switch" class="dropdown-item">Switch Company</a>
+            <div id="o_logout_divider" class="dropdown-divider"></div>
+
+        </xpath>
+    </template>
+
+    <template id="portal_my_managers" name="My Managers">
+        <t t-call="portal.portal_layout">
+            <div class='d-flex justify-content-end mt-4'>
+                <a href='/my/manager/new' id="new_manager_request" class="btn btn-primary">
+                    New Manager
+                </a>
+            </div>
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">My Managers</t>
+            </t>
+            <t t-if="ResPartners">
+                <div class='row'>
+                    <t t-foreach='ResPartners' t-as='manager'>
+                        <div class='col-12 col-md-4 mb32'>
+                            <div class='card'>
+
+                                <div class='card-header'>
+                                    <t t-esc='manager.name'/>
+                                    <span class='float-right edit'>
+                                        <t t-if='(manager.with_context(active_test=False).user_ids and manager.with_context(active_test=False).user_ids[0].has_group("base.group_portal"))'>
+                                            <a t-att-class='"disabled" if not(manager.with_context(active_test=False).user_ids and manager.with_context(active_test=False).user_ids[0].has_group("base.group_portal")) else ""' t-att-href='"/my/manager/edit/"+str(manager.id)'>
+                                                <i class='fa fa-edit'/>
+                                            </a>
+                                        </t>
+                                    </span>
+                                </div>
+                                <div class='card-body'>
+                                    <table>
+                                        <tr>
+                                            <th>Accessible Compaines :</th>
+                                            <td>
+                                                <t t-out='len(manager.portal_company_ids)'/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class='card-footer'>
+                                    <span t-if='manager.with_context(active_test=False).user_ids and manager.with_context(active_test=False).user_ids[0].has_group("base.group_portal")'>
+                                    Access Granted
+                                    </span>
+                                    <span t-else=''>
+                                    Review In progess
+                                    </span>
 
 
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+            <p t-else="">There are currently no Managers assigned for your account.</p>
+        </t>
 
+    </template>
+    <template id="edit_manager" name="Edit Manager">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Edit Manager</t>
+            </t>
+            <h3>
+                <t t-out='partner_id.name'/>
+            </h3>
+            <div class='container new_manager mt64'>
+                <input name='partner_id' type='hidden' t-att-value='partner_id.id'/>
+                <div class='row'>
+                    <div class='col-12 col-md-6'>
+                        <div class="form-floating mb-3">
+                            <label for="contactName">Name</label>
+                            <input type='text' t-att-value='partner_id.name' class="form-control" id='contactName' name='contactName'/>
+                        </div>
+                    </div>
+                    <div class='col-12 col-md-6'>
+                        <div class="form-floating mb-3">
+                            <label for="contactEmail">Email</label>
+                            <input type='Email' class="form-control" t-att-value='partner_id.email' readonly='1' id='contactEmail' name='contactEmail'/>
+                        </div>
+                    </div>
+                    <div class='col-12 col-md-6'>
+                        <div class="form-floating mb-3">
+                            <label for="contactPhone">Phone</label>
+                            <input type='number' class="form-control" t-att-value='partner_id.phone' id='contactPhone' name='contactPhone'/>
+                        </div>
+                    </div>
+                    <div class='col-12 col-md-6'>
+                        <div class="form-floating mb-3">
+                            <label for="contactNote">Note</label>
+                            <input type='Note' class="form-control" t-att-value='partner_id.comment' id='contactNote' name='contactNote'/>
+                        </div>
+                    </div>
+                    <div class='col-12 col-md-6'>
+                        <h4>Select Companies to Allow</h4>
+                        <t t-foreach='allowed_compaines' t-as='company'>
+                            <div class="form-check">
+                                <input class="form-check-input allowed_company" t-att-checked='company.id in partner_allowed' type="checkbox" t-att-value="company.id" t-att-id="'flexCheckDefault'+str(company.id)"/>
+                                <label class="form-check-label" t-att-for="'flexCheckDefault'+str(company.id)">
+                                    <t t-out='company.name'/>
+                                </label>
+                            </div>
+                        </t>
+                    </div>
 
+                    <div class='col-12 col-md-6 mt-md-0 mt-4'>
+                        <h4>Manage Access</h4>
+                        <t t-foreach='manage_access' t-as='company'>
+                            <div class="form-check">
+                                <input class="form-check-input model_access" type="checkbox" t-att-checked='company.model_id.id in partner_portal_model_access' t-att-value="company.model_id.id" t-att-id="'flexCheckDefault'+str(company.id)"/>
+                                <label class="form-check-label" t-att-for="'flexCheckDefault'+str(company.id)">
+                                    <t t-out='company.name if company.name !="Journal Entry" else "Invoices"'/>
+                                </label>
+                            </div>
+                        </t>
+                    </div>
+                    <div class='col-12'>
+                        <button class='btn float-right btn-primary new_manager'>Submit</button>
+                    </div>
 
+                </div>
+            </div>
+        </t>
+
+    </template>
+
+    <template id="new_manager" name="New Manager">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">New Manager</t>
+            </t>
+            <h3>New Manager</h3>
+            <div class='container new_manager mt64'>
+                <div class='row'>
+                    <div class='col-12 col-md-6'>
+                        <div class="form-floating mb-3">
+                            <label for="contactName">Name</label>
+                            <input type='text' class="form-control" id='contactName' name='contactName'/>
+                        </div>
+                    </div>
+                    <div class='col-12 col-md-6'>
+                        <div class="form-floating mb-3">
+                            <label for="contactEmail">Email</label>
+                            <input type='Email' class="form-control" id='contactEmail' name='contactEmail'/>
+                        </div>
+                    </div>
+                    <div class='col-12 col-md-6'>
+                        <div class="form-floating mb-3">
+                            <label for="contactPhone">Phone</label>
+                            <input type='number' class="form-control" id='contactPhone' name='contactPhone'/>
+                        </div>
+                    </div>
+                    <div class='col-12 col-md-6'>
+                        <div class="form-floating mb-3">
+                            <label for="contactNote">Note</label>
+                            <input type='Note' class="form-control" id='contactNote' name='contactNote'/>
+                        </div>
+                    </div>
+                    <div class='col-12 col-md-6'>
+                        <h4>Select Companies to Allow</h4>
+                        <t t-foreach='allowed_compaines' t-as='company'>
+                            <div class="form-check">
+                                <input class="form-check-input allowed_company" type="checkbox" t-att-value="company.id" t-att-id="'flexCheckDefault'+str(company.id)"/>
+                                <label class="form-check-label" t-att-for="'flexCheckDefault'+str(company.id)">
+                                    <t t-out='company.name'/>
+                                </label>
+                            </div>
+                        </t>
+                    </div>
+
+                    <div class='col-12 col-md-6 mt-md-0 mt-4 mb-4'>
+                        <h4>Manage Access</h4>
+                        <t t-foreach='manage_access' t-as='company'>
+                            <div class="form-check">
+                                <input class="form-check-input model_access" type="checkbox" t-att-value="company.model_id.id" t-att-id="'flexCheckDefault'+str(company.id)"/>
+                                <label class="form-check-label" t-att-for="'flexCheckDefault'+str(company.id)">
+                                    <t t-out='company.name if company.name !="Journal Entry" else "Invoices"'/>
+                                </label>
+                            </div>
+                        </t>
+                    </div>
+                    <div class='col-12'>
+                        <button class='btn float-right btn-primary new_manager'>Submit</button>
+                    </div>
+
+                </div>
+            </div>
+        </t>
+
+    </template>
 
 
 

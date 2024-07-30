@@ -29,7 +29,7 @@
             <t t-if="delivery_location" >
                 <div class='row'>
                     <t t-foreach="delivery_location" t-as="location">
-                        <div class ='col-4 pt-2 pb-2'>
+                        <div class ='col-md-6 col-lg-4 pt-2 pb-2'>
                             <a t-attf-href='/my/order/sheeet/{{location.id}}'>
                                 <div class='card'>
                                     <div class='card-body border'>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_web_loyalty_manager" model="res.groups">
+        <field name="name">Manager</field>
+    </record>
+
+    <!--    record rules  -->
+    <record id="loyalty_program_rule_company" model="ir.rule">
+        <field name="name">Loyalty Programs: company-based access</field>
+        <field name="model_id" ref="model_website_loyalty_program"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="loyalty_program_redeem_rule_company" model="ir.rule">
+        <field name="name">Redemption Rules: company-based access</field>
+        <field name="model_id" ref="model_website_loyalty_redeem_rules"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+</odoo>

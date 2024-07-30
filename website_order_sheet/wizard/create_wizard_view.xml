@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="create_order_main_view_form" model="ir.ui.view">
+        <field name="name">create.order.view.form</field>
+        <field name="model">create.order.main</field>
+        <field name="arch" type="xml">
+            <form string="Create Order">
+                <sheet>
+                    <group string="Create Order">
+                        <field name="create_order_ids" nolabel="1">
+                            <tree nocreate="1" editable="top">
+                                <field name="qty"/>
+                                <field name="sale_uoms" invisible='1'/>
+                                <field name="uom_id" domain="[('id','in',sale_uoms)]" />
+                                <field name="name" readonly='1'/>
+                                <field name="product_id" readonly='1'/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="create_main_order" string="Create Order" type="object" class="btn-success"/>
+                    <button string="Discard" special="cancel" class="btn-danger"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -13,7 +13,6 @@
             <div class='product_carousel_wrap'>
                 <t t-call="website_sale.shop_product_carousel"/>
             </div>
-
         </xpath>
         <xpath expr="//*[@id='product_details']//p[@t-field['product.description_sale']]" position="replace"/>
         <xpath expr="//*[@id='product_detail']" position="after">

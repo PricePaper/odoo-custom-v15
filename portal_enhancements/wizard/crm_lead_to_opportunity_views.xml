@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_crm_lead2opportunity_partner_inherit_portal_enhancements" model="ir.ui.view">
+        <field name="name">crm.lead2opportunity.partner.view.form.inherit</field>
+        <field name="model">crm.lead2opportunity.partner</field>
+        <field name="inherit_id" ref="crm.view_crm_lead2opportunity_partner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='action']" position="after">
+                <!-- <field name="sample_request_id" invisible='1' /> -->
+                <group name="portal_group" string="Portal User" attrs="{'invisible':[('action','!=','create')]}" >
+                    <group>
+                        <field name="create_portal" attrs="{'invisible':[('action','!=','create')]}"/>
+                        <field name="portal_user" domain="[('portal_access_level', '!=', False)]" />
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- <record id="crm_lead_view_form_inherit_crm_lead_portal" model="ir.ui.view">
+        <field name="name">crm.lead.view.form.inherit</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <field name="portal_user" invisible="1" />
+                <button name="portal_enhancements.action_res_partner_portal_enhancements" context = "{'default_id':portal_user}" type="action" class="oe_stat_button" icon="fa-user" attrs="{'invisible': [('portal_user', '=', False)]}">
+                    <div class="o_stat_info">
+                        Portal User
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record> -->
+</odoo>
+

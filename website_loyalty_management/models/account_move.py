@@ -1,0 +1,39 @@
+from odoo import models, fields
+
+
+class AccountPaymentRegister(models.TransientModel):
+    _inherit = 'account.payment.register'
+
+    '''state change in loyalty.transaction according to payment state'''
+
+    def action_create_payments(self):
+        res = super(AccountPaymentRegister, self).action_create_payments()
+        # Call the method to update loyalty transaction state after payments are created
+        invoices = self.env['account.move'].browse(self._context.get('active_ids', []))
+        print("invoicessss = ", invoices)
+        invoices._update_loyalty_transaction_state()
+        return res
+
+
+class AccountMove(models.Model):
+    _inherit = 'account.move'
+
+    def _update_loyalty_transaction_state(self):
+        # Find all sale orders related to these invoices
+        sale_orders = self.env['sale.order'].search([('invoice_ids', 'in', self.ids)])
+
+        for order in sale_orders:
+            invoices = order.invoice_ids
+            total_invoice_amount = sum(invoice.amount_total for invoice in invoices)
+            is_amount_match = total_invoice_amount == order.amount_total
+            all_in_payment_or_paid = all(
+                invoice.payment_state in ['in_payment', 'paid'] for invoice in invoices
+            )
+
+            if is_amount_match and all_in_payment_or_paid:
+                loyalty_transactions = self.env['loyalty.transaction'].search([('order_id', '=', order.id)])
+                print('Related loyalty transactions:', loyalty_transactions)
+                for transaction in loyalty_transactions:
+                    if transaction.state == 'pending':
+                        transaction.state = 'confirmed'
+                        print('Loyalty transaction updated:', transaction)

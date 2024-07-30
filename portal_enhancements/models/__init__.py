@@ -9,3 +9,7 @@ from . import purchase_order
 from . import project_project
 from . import calendar_event
 from . import helpdesk_ticket
+from . import res_config
+from . import sign
+from . import res_users
+from . import partner_credit

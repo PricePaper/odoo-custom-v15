@@ -89,35 +89,35 @@
         </section>
 
     </template>
+    
 
-    <template id="meet_people" name="Meet People">
-        <section class="meet-people">
-            <div class="containerfluid py-lg-5 py-3 bg-primary team-header">
-                <div class="row m-0">
-                    <div class="col-lg-12 text-center">
-                        <h3 class="display-5  fw-sb mb-4 mb-md-5 mt-md-4 text-white ">Meet the paper people</h3>
-                    </div>
-                </div>
-            </div>
-            <div class="container ppt-container py-lg-5 py-3">
-
-                <div id="team" class="carousel slide py-lg-5" data-ride="carousel">
-                    <div class="carousel-indicators">
-                        <button type="button" data-target="#team" data-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                        <button type="button" data-target="#team" data-slide-to="1" aria-label="Slide 2"></button>
-                        <button type="button" data-target="#team" data-slide-to="2" aria-label="Slide 3"></button>
-                        <button type="button" data-target="#team" data-slide-to="3" aria-label="Slide 4"></button>
-                        <button type="button" data-target="#team" data-slide-to="4" aria-label="Slide 5"></button>
-                        <button type="button" data-target="#team" data-slide-to="5" aria-label="Slide 6"></button>
-                        <button type="button" data-target="#team" data-slide-to="6" aria-label="Slide 7"></button>
-                        <button type="button" data-target="#team" data-slide-to="7" aria-label="Slide 8"></button>
-                        <button type="button" data-target="#team" data-slide-to="8" aria-label="Slide 9"></button>
-                        <button type="button" data-target="#team" data-slide-to="9" aria-label="Slide 10"></button>
-                        <button type="button" data-target="#team" data-slide-to="10" aria-label="Slide 11"></button>
-                    </div>
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <div class="row align-items-end py-4">
+    <template id="meet_people2" name="Carousel">
+        <section class="s_carousel_wrapper" data-vxml="001">
+            <t t-set="uniq" t-value="datetime.datetime.now().microsecond"/>
+            <div t-attf-id="myCarousel{{uniq}}" class="s_carousel s_carousel_default py-lg-5 carousel slide team" data-interval="10000">
+                <!-- Indicators -->
+                <ol class="carousel-indicators">
+                    <li t-attf-data-target="#myCarousel{{uniq}}" data-slide-to="0" class="active"/>
+                    <li t-attf-data-target="#myCarousel{{uniq}}" data-slide-to="1"/>
+                    <li t-attf-data-target="#myCarousel{{uniq}}" data-slide-to="2"/>
+                    <li t-attf-data-target="#myCarousel{{uniq}}" data-slide-to="3"/>
+                    <li t-attf-data-target="#myCarousel{{uniq}}" data-slide-to="4"/>
+                    <li t-attf-data-target="#myCarousel{{uniq}}" data-slide-to="5"/>
+                    <li t-attf-data-target="#myCarousel{{uniq}}" data-slide-to="6"/>
+                    <li t-attf-data-target="#myCarousel{{uniq}}" data-slide-to="7"/>
+                    <li t-attf-data-target="#myCarousel{{uniq}}" data-slide-to="8"/>
+                    <li t-attf-data-target="#myCarousel{{uniq}}" data-slide-to="9"/>
+                    <li t-attf-data-target="#myCarousel{{uniq}}" data-slide-to="10"/>
+                </ol>
+                <!-- Content -->
+                <!-- TODO in master: remove the `content` classes in the div with
+                the class `row`, to avoid having unwanted dropzones when
+                dragging inner content. -->
+                <div class="carousel-inner">
+                    <!-- #01 -->
+                    <div class="carousel-item active oe_img_bg o_bg_img_center " data-name="Slide">
+                        <div class="container oe_unremovable">
+                            <div class="row content align-items-end py-4">
                                 <div class="col-lg-6 text-lg-end text-center">
                                     <div class="position-relative">
                                         <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/anthony-koutsouradis.png" alt="" style="max-width:560px"/>
@@ -135,9 +135,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="carousel-item">
-                            <div class="row align-items-end py-4">
-                                <div class="col-lg-6  text-lg-end text-center">
+                    </div>
+                    <!-- #02 -->
+                    <div class="carousel-item  oe_img_bg o_bg_img_center " data-name="Slide">
+                        <div class="container oe_unremovable">
+                            <div class="row content align-items-end py-4">
+                                <div class="col-lg-6 text-lg-end text-center">
                                     <div class="position-relative">
                                         <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/ean-j-price.png" alt="" style="max-width:560px"/>
                                         <span class="dot-bg"></span>
@@ -154,9 +157,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="carousel-item">
-                            <div class="row align-items-end py-4">
-                                <div class="col-lg-6  text-lg-end text-center">
+                    </div>
+                    <!-- #03 -->
+                    <div class="carousel-item  oe_img_bg o_bg_img_center " data-name="Slide">
+                        <div class="container oe_unremovable">
+                            <div class="row content align-items-end py-4">
+                                <div class="col-lg-6 text-lg-end text-center">
                                     <div class="position-relative">
                                         <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/gregory-tomao.png" alt="" style="max-width:560px"/>
                                         <span class="dot-bg"></span>
@@ -173,6 +179,209 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="carousel-item  oe_img_bg o_bg_img_center">
+                        <div class="row align-items-end py-4">
+                            <div class="col-lg-6  text-lg-end text-center">
+                                <div class="position-relative">
+                                    <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/ira-spector.png" alt="" style="max-width:560px"/>
+                                    <span class="dot-bg"></span>
+                                </div>
+
+                            </div>
+                            <div class="col-lg-6 text-white pt-lg-5">
+                                <div class="team-member-caption">
+                                    <div class="left-border-primary">
+                                        <h3 class="h3">Ira Spector</h3>
+                                        <p class="mb-0">  VP of Sales</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item  oe_img_bg o_bg_img_center">
+                        <div class="row align-items-end py-4">
+                            <div class="col-lg-6  text-lg-end text-center">
+                                <div class="position-relative">
+                                    <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/alan-oberstein.png" alt="" style="max-width:560px"/>
+                                    <span class="dot-bg"></span>
+                                </div>
+
+                            </div>
+                            <div class="col-lg-6 text-white pt-lg-5">
+                                <div class="team-member-caption">
+                                    <div class="left-border-primary">
+                                        <h3 class="h3">Alan Oberstein</h3>
+                                        <p class="mb-0">Sales Rep</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item  oe_img_bg o_bg_img_center">
+                        <div class="row align-items-end py-4">
+                            <div class="col-lg-6  text-lg-end text-center">
+                                <div class="position-relative">
+                                    <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/bob-miller.png" alt="" style="max-width:560px"/>
+                                    <span class="dot-bg"></span>
+                                </div>
+
+                            </div>
+                            <div class="col-lg-6 text-white pt-lg-5">
+                                <div class="team-member-caption">
+                                    <div class="left-border-primary">
+                                        <h3 class="h3">Bob Miller</h3>
+                                        <p class="mb-0">Sales Rep</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item  oe_img_bg o_bg_img_center">
+                        <div class="row align-items-end py-4">
+                            <div class="col-lg-6  text-lg-end text-center">
+                                <div class="position-relative">
+                                    <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/john-jaroski.png" alt="" style="max-width:560px"/>
+                                    <span class="dot-bg"></span>
+                                </div>
+
+                            </div>
+                            <div class="col-lg-6 text-white pt-lg-5">
+                                <div class="team-member-caption">
+                                    <div class="left-border-primary">
+                                        <h3 class="h3">John Jaroski</h3>
+                                        <p class="mb-0">Sales Rep</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item  oe_img_bg o_bg_img_center">
+                        <div class="row align-items-end py-4">
+                            <div class="col-lg-6  text-lg-end text-center">
+                                <div class="position-relative">
+                                    <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/baker.png" alt="" style="max-width:560px"/>
+                                    <span class="dot-bg"></span>
+                                </div>
+
+                            </div>
+                            <div class="col-lg-6 text-white pt-lg-5">
+                                <div class="team-member-caption">
+                                    <div class="left-border-primary">
+                                        <h3 class="h3">Mr. Baker</h3>
+                                        <p class="mb-0">Sales Rep</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item  oe_img_bg o_bg_img_center">
+                        <div class="row align-items-end py-4">
+                            <div class="col-lg-6  text-lg-end text-center">
+                                <div class="position-relative">
+                                    <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/rob-kopilow.png" alt="" style="max-width:560px"/>
+                                    <span class="dot-bg"></span>
+                                </div>
+
+                            </div>
+                            <div class="col-lg-6 text-white pt-lg-5">
+                                <div class="team-member-caption">
+                                    <div class="left-border-primary">
+                                        <h3 class="h3">Rob Kopilow</h3>
+                                        <p class="mb-0">Sales Rep</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item  oe_img_bg o_bg_img_center">
+                        <div class="row align-items-end py-4">
+                            <div class="col-lg-6  text-lg-end text-center">
+                                <div class="position-relative">
+                                    <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/seth-oberstein.png" alt="" style="max-width:560px"/>
+                                    <span class="dot-bg"></span>
+                                </div>
+
+                            </div>
+                            <div class="col-lg-6 text-white pt-lg-5">
+                                <div class="team-member-caption">
+                                    <div class="left-border-primary">
+                                        <h3 class="h3">Seth Oberstein</h3>
+                                        <p class="mb-0">Sales Rep</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item  oe_img_bg o_bg_img_center">
+                        <div class="row align-items-end py-4">
+                            <div class="col-lg-6  text-lg-end text-center">
+                                <div class="position-relative">
+                                    <img class="team-member img-fluid" src="/theme_pricepaper/static/src/img/steve-attard.png" alt="" style="max-width:560px"/>
+                                    <span class="dot-bg"></span>
+                                </div>
+
+                            </div>
+                            <div class="col-lg-6 text-white pt-lg-5">
+                                <div class="team-member-caption">
+                                    <div class="left-border-primary">
+                                        <h3 class="h3">Steve Attard</h3>
+                                        <p class="mb-0">Sales Rep</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+                <!-- Controls -->
+
+
+
+                <a class="carousel-control-prev o_not_editable" contenteditable="false" t-attf-href="#myCarousel{{uniq}}" data-slide="prev" role="img" aria-label="Previous" title="Previous">
+                    <span class="carousel-control-prev-icon"/>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next o_not_editable" contenteditable="false" t-attf-href="#myCarousel{{uniq}}" data-slide="next" role="img" aria-label="Next" title="Next">
+                    <span class="carousel-control-next-icon"/>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+        </section>
+    </template>
+
+    <template id="meet_people" name="Meet People">
+        <section class="meet-people">
+            <div class="containerfluid py-lg-5 py-3 bg-primary team-header">
+                <div class="row m-0">
+                    <div class="col-lg-12 text-center">
+                        <h3 class="display-5  fw-sb mb-4 mb-md-5 mt-md-4 text-white ">Meet the paper people</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="container ppt-container py-lg-5 py-3">
+                <t t-call='theme_pricepaper.meet_people2'/>
+                <!-- <div id="team" class="carousel slide py-lg-5" data-ride="carousel">
+                    <div class="carousel-indicators">
+                        <button type="button" data-target="#team" data-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                        <button type="button" data-target="#team" data-slide-to="1" aria-label="Slide 2"></button>
+                        <button type="button" data-target="#team" data-slide-to="2" aria-label="Slide 3"></button>
+                        <button type="button" data-target="#team" data-slide-to="3" aria-label="Slide 4"></button>
+                        <button type="button" data-target="#team" data-slide-to="4" aria-label="Slide 5"></button>
+                        <button type="button" data-target="#team" data-slide-to="5" aria-label="Slide 6"></button>
+                        <button type="button" data-target="#team" data-slide-to="6" aria-label="Slide 7"></button>
+                        <button type="button" data-target="#team" data-slide-to="7" aria-label="Slide 8"></button>
+                        <button type="button" data-target="#team" data-slide-to="8" aria-label="Slide 9"></button>
+                        <button type="button" data-target="#team" data-slide-to="9" aria-label="Slide 10"></button>
+                        <button type="button" data-target="#team" data-slide-to="10" aria-label="Slide 11"></button>
+                    </div>
+                    <div class="carousel-inner">
+                       
+                        
+                       
                         <div class="carousel-item">
                             <div class="row align-items-end py-4">
                                 <div class="col-lg-6  text-lg-end text-center">
@@ -337,7 +546,7 @@
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Next</span>
                     </button>
-                </div>
+                </div> -->
 
                 <div class="curvy-line"></div>
 

@@ -1,0 +1,28 @@
+<odoo>
+    <record id="mobile_banner_view_tree" model="ir.ui.view">
+        <field name="name">mobile.banner.view.tree</field>
+        <field name="model">mobile.banner</field>
+        <field name="arch" type="xml">
+            <tree string="Mobile Banner" editable='bottom'>
+                <field name="banner" widget='image'></field>
+                <field name="url"></field>
+                <field name="complete_url"></field>
+
+            </tree>
+        </field>
+    </record>
+
+    <record id="mobile_banner_action" model="ir.actions.act_window">
+        <field name="name">Mobile Banner</field>
+        <field name="res_model">mobile.banner</field>
+        <field name="view_mode">tree</field>
+
+    </record>
+      <menuitem name="Mobile Banner"
+            id="mobile_banner_root"
+            sequence="20"
+            parent="website.menu_website_configuration"
+            
+            action="mobile_banner_action"/>
+
+</odoo>

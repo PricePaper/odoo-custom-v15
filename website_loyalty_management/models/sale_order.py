@@ -51,6 +51,32 @@ class SaleOrder(models.Model):
         
         
 
+    def redeem_points(self,points):
+        result={
+            'status':False,
+            'err_msg':'Not Applicable'
+        }
+        if not self.partner_id.is_loyalty_eligible:
+            result['err_msg']=f'{self.partner_id.name} is not eligible for loyalty Programs'
+            return result
+        elif points >self.partner_id.total_confirm_points:
+            result['err_msg']=f'Customer have {self.partner_id.total_confirm_points} and trying to reedem {points}'
+            return result
+        else:
+            redeem_rule = self.env['website.loyalty.redeem.rules'].search([('active', '=', True)], limit=1)
+            if redeem_rule:
+                # Validate the redemption points
+                if points > redeem_rule.maximum_points_redeem:
+                    result['error_message'] = "Points exceed maximum points redeemable."
+                    return result
+                redeem_rule.redeem_points(self, points)
+                result['status'] = True
+                return result
+            else:
+                result['error_message'] = "No active redemption rule found."
+                return result
+        
+
 
     def action_redeem_loyalty(self):
         for order in self:

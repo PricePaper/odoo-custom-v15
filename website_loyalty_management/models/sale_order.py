@@ -11,7 +11,7 @@ class SaleOrder(models.Model):
           
         total_points = 0
         if order.partner_id.is_loyalty_eligible:
-            loyalty_programs = self.env['website.loyalty.program'].search([
+            loyalty_programs = self.env['website.loyalty.program'].sudo().search([
                 ('company_id', '=', order.company_id.id),
                 ('active', '=', True)
             ], order='minimum_order desc')

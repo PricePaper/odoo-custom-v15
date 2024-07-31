@@ -50,6 +50,7 @@ access_portal_wizard_portal_user,access.portal.wizard.portal.user,portal.model_p
 
 acess_portal_user_res_partner,portal.access.res.partner,model_res_partner,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
 acess_portal_user_mail_template,portal.access.mail.template,mail.model_mail_template,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+acess_portal_user_snailmail_letter,portal.access.snailmail.letter,snailmail.model_snailmail_letter,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
 
 
 access_portal_model_access_config_portal_user,access.portal.model.access.config.portal_user,portal_enhancements.model_portal_model_access_config,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0

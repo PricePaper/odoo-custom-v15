@@ -74,5 +74,6 @@ class LineProduct(models.Model):
     sheet_line_id = fields.Many2one('order.sheet.lines',string='Order Sheet Line')
     product_id = fields.Many2one('product.product',string='Product')
     default_code = fields.Char(string='Internal Refernce',related='product_id.default_code')
-    uom_id = fields.Many2one('uom.uom',string='uom')
+    sale_uoms = fields.Many2many('uom.uom',related='product_id.sale_uoms')
+    uom_id = fields.Many2one('uom.uom',string='uom',domain="[('id','in',sale_uoms)]")
 

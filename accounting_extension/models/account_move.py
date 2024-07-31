@@ -4,6 +4,7 @@ from odoo import api, fields, models, _
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
 import logging
+import traceback
 
 
 class AccountMove(models.Model):
@@ -187,6 +188,7 @@ class AccountMove(models.Model):
         except Exception as e:
             logging.error("Incoming vendor bill processing code by DP failed\n The error is %s" % e)
         return move
+
 
 
 class AccountMoveLine(models.Model):

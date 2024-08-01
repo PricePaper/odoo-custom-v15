@@ -14,14 +14,14 @@ class Partner(models.Model):
                                                compute='_compute_loyalty_transaction_count', store=True)
     total_pending_points = fields.Integer(string="Pending Points", compute='_compute_loyalty_points')
     total_confirm_points = fields.Integer(string="Confirm Points", compute='_compute_loyalty_points')
-    partenr_tier = fields.Char(string='Partner Tier',compute='_compute_partner_tier')
+    partner_tier = fields.Char(string='Partner Tier',compute='_compute_partner_tier')
 
     @api.depends('rnk_lst_3_mon')
     def _compute_partner_tier(self):
         for rec in self:
             tier = self.env['website.loyalty.tier.customer'].sudo().search([('customer_rank','=',rec.rnk_lst_3_mon)],limit=1)
             if tier:
-                rec.partenr_tier = tier.tier_id.name
+                rec.partner_tier = tier.tier_id.name
             else:
                 rec.partner_tier = ''
 

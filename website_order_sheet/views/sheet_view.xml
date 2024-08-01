@@ -38,6 +38,8 @@
                                                         <tree editable='bottom'>
                                                             <field name='sequence' widget='handle'/>
                                                             <field name='product_id'/>
+                                                            <field name='sale_uoms' invisible='1'/>
+                                                            <field name='uom_id'/>
                                                             <field name='default_code'/>
                                                         </tree>
                                                     </field>

@@ -4,7 +4,7 @@
     'author': 'Confianz Global',
     'website': '15.0',
     'License': 'LGPL-3',
-    'depends': ['website_sale', 'sale','portal'],
+    'depends': ['website_sale', 'sale','portal','crm_enhancements'],
     'data': ['security/security.xml',
              'security/ir.model.access.csv',
              'views/menu.xml',

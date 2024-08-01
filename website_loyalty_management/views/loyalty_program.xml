@@ -138,6 +138,7 @@
                             <field name="no_of_points"/>
                             <field name="active"/>
                             <field name="currency_id" invisible="1"/>
+                            <field name='redumption_product_id'/>
                         </group>
                     </group>
                 </sheet>

@@ -30,3 +30,9 @@ class SaleOrder(models.Model):
             return [{'login': acquirer.authorize_login, 'client': acquirer.authorize_client_key}]
         else:
             return False
+
+    def get_mobile_sale_team(self):
+        team = self.env['ir.config_parameter'].sudo().get_param('ppt_mobile_apis.mobile_app_sale_team')
+        if team:
+            return {'team_id': int(team)}
+        return {'team_id': False}

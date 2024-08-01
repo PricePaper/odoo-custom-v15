@@ -1,3 +1,4 @@
+from . import res_config
 from . import partner
 from . import product
 from . import account

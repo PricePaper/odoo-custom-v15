@@ -59,12 +59,16 @@ class CustomerStatementWizard(models.TransientModel):
         self.env.user.company_id.write({'last_statement_date': self.date_to})
 
         for customer in email_customer:
+
             name = 'Customer statement: '+ customer.name
             customer.with_delay(description=name, channel='root.customerstatement').job_queue_mail_customer_statement(self.date_from, self.date_to, self.env.uid)
         if pdf_customer:
             report = self.env.ref('customer_statement_report.report_customer_statement_pdf')
-            return report.report_action(pdf_customer, data={
+            report_action = report.report_action(pdf_customer, data={
                 'date_range': {
                     'd_from': self.date_from,
                     'd_to': self.date_to}
             })
+            report_action['close_on_report_download'] = True
+            return report_action
+        return {'type': 'ir.actions.act_window_close'}

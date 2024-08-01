@@ -113,8 +113,8 @@ class WebsiteLoyaltyRedeemRules(models.Model):
 
         # Add a redemption line to the sale order
         if self.redumption_product_id:
-            sale_order.write({
-                'order_line': [(0, 0, {
+            sale_order.sudo().write({
+                    'order_line': [(0, 0, {
                     'product_id': self.redumption_product_id.id,
                     'name': self.redumption_product_id.name,
                     'price_unit': -redemption_amount,
@@ -137,4 +137,3 @@ class WebsiteLoyaltyRedeemRules(models.Model):
                             'state': 'pending'
                         })
         return True
-

@@ -7,7 +7,7 @@ class SaleOrder(models.Model):
     '''For Redeem Loyalty button'''
 
     def get_total_points(self):
-        order = self
+        order = self.sudo()
           
         total_points = 0
         if order.partner_id.is_loyalty_eligible:

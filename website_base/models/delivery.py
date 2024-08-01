@@ -20,8 +20,9 @@ class DeliveryCarrier(models.Model):
         result = []
         if partner_id and not isinstance(partner_id, int):
             return result
+        self = self.sudo()
 
-        shipping_methods = self.sudo().search(
+        shipping_methods = self.search(
             [('mobile_app_availability', '=', True), ('delivery_type', 'in', ['fixed', 'base_on_rule'])])
 
         default_delivery_method = self

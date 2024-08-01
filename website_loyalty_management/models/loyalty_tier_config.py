@@ -9,6 +9,9 @@ class LoyaltyTransaction(models.Model):
     _description = 'Loyalty Tier'
 
     name = fields.Char(string="Tier Name")
+    tier_image = fields.Binary(string='Tier Image')
+    tier_color = fields.Char(string='Color Code')
+
 
     @api.constrains('name')
     def _check_unique_name(self):

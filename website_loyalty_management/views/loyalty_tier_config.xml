@@ -7,6 +7,8 @@
         <field name="arch" type="xml">
             <tree editable="bottom">
                 <field name="name"/>
+                <field name='tier_image' options="{'size': [150, 150]}" widget='image'/>
+                <field name="tier_color" widget='color'></field>
             </tree>
         </field>
     </record>

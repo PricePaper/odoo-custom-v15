@@ -14,5 +14,7 @@ class LoyaltyTransaction(models.Model):
     # product_ids = fields.Many2many('product.product', string='Products')
     tiers_id = fields.Char(string='Tier')  # previously many2one field
     state = fields.Selection(selection=[
+        ('draft','draft'),
         ('pending', 'pending'),
-        ('confirmed', 'confirmed')], string='State')
+        ('confirmed', 'confirmed'),
+        ('cancel','cancel')], string='State')

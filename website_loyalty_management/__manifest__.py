@@ -7,6 +7,7 @@
     'depends': ['website_sale', 'sale','portal','crm_enhancements'],
     'data': ['security/security.xml',
              'security/ir.model.access.csv',
+             'wizard/redeem_loyalty_wizard.xml',
              'views/menu.xml',
              'views/loyalty_program.xml',
              'views/res_partner.xml',
@@ -15,6 +16,7 @@
              'views/loyalty_tier_config.xml',
              'report/web_loyalty_template.xml',
              'report/website_loyalty_transaction_template.xml',
-             'report/website_cart_points.xml']
+             'report/website_cart_points.xml',
+]
 
 }

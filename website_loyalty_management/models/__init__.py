@@ -4,3 +4,4 @@ from . import sale_order
 from . import loyalty_transaction
 from . import loyalty_tier_config
 from . import account_move
+from . import sale_order_line

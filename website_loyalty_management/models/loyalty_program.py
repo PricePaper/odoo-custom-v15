@@ -89,7 +89,7 @@ class WebsiteLoyaltyRedeemRules(models.Model):
                                   default=lambda self: self.env.company.currency_id.id)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company.id,
                                  readonly=True)
-    redumption_product_id = fields.Many2one('product.product',string="Redemption product")
+    redumption_product_id = fields.Many2one('product.product', string="Redemption product")
 
     @api.constrains('active')
     def _check_single_active_rule(self):
@@ -100,7 +100,6 @@ class WebsiteLoyaltyRedeemRules(models.Model):
             ])
             if active_rules:
                 raise ValidationError('Only one redemption rule can be active at a time.')
-
 
     def redeem_points(self, sale_order, points):
         # Ensure the points are valid for redemption
@@ -113,27 +112,22 @@ class WebsiteLoyaltyRedeemRules(models.Model):
 
         # Add a redemption line to the sale order
         if self.redumption_product_id:
-            sale_order.sudo().write({
-                    'order_line': [(0, 0, {
+            sale_order.write({
+                'order_line': [(0, 0, {
                     'product_id': self.redumption_product_id.id,
                     'name': self.redumption_product_id.name,
                     'price_unit': -redemption_amount,
                     'product_uom_qty': 1,
                     'order_id': sale_order.id,
-                    'tax_id': False
+                    'tax_id': False,
+                    'is_redemption_product':True
                 })]
             })
+        return {
+            'status': True,
+            'amount': redemption_amount,
+            'points': points
+        }
 
-        # Deduct the redeemed points from the ccustomer's total points
-
-        self.env['loyalty.transaction'].create({
-                            'date': fields.Date.today(),
-                            # 'credit': final_credit,
-                            'debit': points,
-                            'order_id': sale_order.id,
-                            'partner_id': sale_order.partner_id.id,
-                            # 'loyalty_program_id': loyalty_program.id,
-                            # 'tiers_id': tier_name,  # Store the tier name directly
-                            'state': 'pending'
-                        })
-        return True
+        # # Deduct the redeemed points from the customer's total points
+        # sale_order.partner_id.total_confirm_points -= points

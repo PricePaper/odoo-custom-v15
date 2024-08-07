@@ -25,10 +25,16 @@ class AccountMove(models.Model):
         for order in sale_orders:
             invoices = order.invoice_ids
             total_invoice_amount = sum(invoice.amount_total for invoice in invoices)
-            is_amount_match = total_invoice_amount == order.amount_total
+            print("total invoice amount = ", total_invoice_amount)
+            rounded_total_invoice_amount = round(total_invoice_amount, 2)
+            print("round total invoice amount",rounded_total_invoice_amount)
+            rounded_order_amount_total = round(order.amount_total, 2)
+            is_amount_match = rounded_total_invoice_amount == rounded_order_amount_total
+            print("is amount match = ",is_amount_match)
             all_in_payment_or_paid = all(
-                invoice.payment_state in ['in_payment', 'paid'] for invoice in invoices
+                invoice.payment_state in ['in_payment'] for invoice in invoices
             )
+            print("all in payment",all_in_payment_or_paid)
 
             if is_amount_match and all_in_payment_or_paid:
                 loyalty_transactions = self.env['loyalty.transaction'].search([('order_id', '=', order.id)])

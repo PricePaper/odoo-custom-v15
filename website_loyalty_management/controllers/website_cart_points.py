@@ -61,13 +61,37 @@ class WebsiteSale(WebsiteSale):
                 ('available_on_website', '=', True)  # Ensure the program is available on the website
             ], order='minimum_order desc')
 
-            for loyalty_program in loyalty_programs:
-                total_amount = 0
-                for line in order.order_line:
-                    product = line.product_id
+            category_programs = loyalty_programs.filtered(lambda p: p.only_category_ids)
+            print("categorrrrry = ", category_programs)
+            no_category_programs = loyalty_programs.filtered(lambda p: not p.only_category_ids)
+            print("no category = ", no_category_programs)
+
+            applied_programs = {}
+
+            for line in order.order_line:
+                product = line.product_id
+                total_amount = line.price_subtotal
+                applied_program = None
+
+                # Check if the product belongs to a specific loyalty program with categories
+                for loyalty_program in category_programs:
                     if any(category.id in loyalty_program.only_category_ids.ids for category in
                            product.public_categ_ids):
-                        total_amount += line.price_subtotal
+                        applied_program = loyalty_program
+                        break
+
+                # If no specific category program is found, use the no-category program
+                if not applied_program and no_category_programs:
+                    applied_program = no_category_programs[0]
+
+                if applied_program:
+                    if applied_program.id not in applied_programs:
+                        applied_programs[applied_program.id] = {'program': applied_program, 'total_amount': 0}
+                    applied_programs[applied_program.id]['total_amount'] += total_amount
+
+            for program_data in applied_programs.values():
+                loyalty_program = program_data['program']
+                total_amount = program_data['total_amount']
 
                 if total_amount >= loyalty_program.minimum_order:
                     base_credit = (loyalty_program.no_of_points / loyalty_program.dollar_spent) * total_amount

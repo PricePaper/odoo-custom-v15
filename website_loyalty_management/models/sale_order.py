@@ -211,7 +211,16 @@ class SaleOrder(models.Model):
 
         result['status'] = True
         result['amount'] = redeem_result['amount']
-        result['points']: redeem_result['points_to_redeem']
+        result['points']=redeem_result['points']
+        if result['status']:
+            self.points_to_redeem = redeem_result['points']
+            self.env['loyalty.transaction'].create({
+                'date': fields.Date.today(),
+                'debit': self.points_to_redeem,
+                'order_id': self.id,
+                'partner_id': self.partner_id.id,
+                'state': 'draft'
+            })
 
         return result
 

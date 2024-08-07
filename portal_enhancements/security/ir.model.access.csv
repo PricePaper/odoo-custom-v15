@@ -55,3 +55,4 @@ acess_portal_user_snailmail_letter,portal.access.snailmail.letter,snailmail.mode
 
 access_portal_model_access_config_portal_user,access.portal.model.access.config.portal_user,portal_enhancements.model_portal_model_access_config,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
 access_portal_model_access_config,access.portal.model.access.config.user,portal_enhancements.model_portal_model_access_config,base.group_user,1,1,1,1
+access_portal_delivery_carrier,access.portal.delivery.carrier.user,delivery.model_delivery_carrier,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0

@@ -13,3 +13,4 @@ from . import res_config
 from . import sign
 from . import res_users
 from . import partner_credit
+from . import product

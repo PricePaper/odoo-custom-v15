@@ -208,6 +208,7 @@ class Partner(models.Model):
 
     def get_partner_delivery_date(self):
         partner_deliver_date = []
+        self = self.sudo()
         for partner in self:
             shipping_date = date.today() + relativedelta(days=1)
             day_list = []

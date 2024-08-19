@@ -1,8 +1,15 @@
-from odoo import fields, models
+from odoo import fields, models, api
 
 
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
+
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        res = super()._onchange_product_id()
+        if self.product_id:
+            self.product_uom_id = self.product_id.ppt_uom_id
+        return res
 
     def _sale_can_be_reinvoice(self):
         self.ensure_one()

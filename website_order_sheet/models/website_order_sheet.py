@@ -41,7 +41,7 @@ class OrderSheetLines(models.Model):
         partner_id = self.partner_id
         # products = self.order_line.mapped('product_id').ids
         sales_history = self.env['sale.history'].search(
-            ['|', ('active', '=', False), ('active', '=', True), ('partner_id', '=', partner_id.partner_id.id),
+            ['|', ('active', '=', False), ('active', '=', True), ('partner_id', '=', partner_id.id),
               ('product_id', '!=', False)]).filtered(
             lambda r: not r.product_id.categ_id.is_storage_contract  and not r.product_id.id in self.product_ids.ids)
         # addons product filtering
@@ -56,7 +56,7 @@ class OrderSheetLines(models.Model):
         }       
         
         return {
-            'name': '%s # %s' % (partner_id.partner_id.display_name, self.section ),
+            'name': '%s # %s' % (partner_id.display_name, self.section ),
             'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'add.purchase.history.so',

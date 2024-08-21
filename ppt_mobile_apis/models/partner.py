@@ -208,6 +208,7 @@ class Partner(models.Model):
 
     def get_partner_delivery_date(self):
         partner_deliver_date = []
+        self = self.sudo()
         for partner in self:
             shipping_date = date.today() + relativedelta(days=1)
             day_list = []
@@ -254,5 +255,5 @@ class Partner(models.Model):
                     day_diff = (6 - weekday) + day_list[0] + 1
                 shipping_date = date.today() + relativedelta(days=day_diff)
             shipping_date = shipping_date.strftime("%Y-%m-%d")
-            partner_deliver_date.append({'partner': partner.id, 'deliver_by': shipping_date})
+            partner_deliver_date.append({'partner': partner.id, 'deliver_by': shipping_date, 'day_list': day_list})
         return partner_deliver_date

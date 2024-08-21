@@ -376,6 +376,7 @@
             <field name="arch" type="xml">
               <xpath expr="//field[@name='name']" position="after">
                 <field name="partner_id"/>
+                <field name="rma_sale_lines_ids" string="Product" filter_domain="[('rma_sale_lines_ids.product_id', 'ilike', self)]"/>
               </xpath>
             </field>
         </record>

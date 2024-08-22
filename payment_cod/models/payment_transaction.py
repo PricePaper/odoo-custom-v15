@@ -61,6 +61,7 @@ class PaymentTransaction(models.Model):
         :param dict data: The cod feedback data
         :return: None
         """
+        
         super()._process_feedback_data(data)
         if self.provider != 'cod':
             return
@@ -68,6 +69,10 @@ class PaymentTransaction(models.Model):
         _logger.info(
             "validated cod payment for tx with reference %s: set as pending", self.reference
         )
+        if self.sale_order_ids:
+            for rec in self.sale_order_ids:
+                rec.invoice_address_id = rec.partner_id.id
+                rec.action_confirm()
         self._set_pending()
 
     def _log_received_message(self):

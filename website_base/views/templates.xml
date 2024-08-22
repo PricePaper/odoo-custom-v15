@@ -119,4 +119,20 @@
             <a href="/my/payment/token">Manage payment methods</a>
         </xpath>
     </template>
+    <template id="checkout" name="Checkout" inherit_id="payment.checkout">
+        <xpath expr="//span[hasclass('payment_option_name')]" position="replace">
+            <t t-if='acquirer.provider=="general" and website_sale_order and website_sale_order.partner_id.property_payment_term_id'>
+                <span class="payment_option_name">
+                    <b t-esc="website_sale_order.partner_id.property_payment_term_id.name"/>
+                </span>
+
+            </t>
+            <t t-else=''>
+                <span class="payment_option_name">
+                    <b t-esc="acquirer.display_as or acquirer.name"/>
+                </span>
+
+            </t>
+        </xpath>
+    </template>
 </odoo>

@@ -1,0 +1,14 @@
+<odoo>
+    <data>
+        <record id="sale_order_inherit_ppt_mapp" model="ir.ui.view">
+            <field name="name">sale.order.ppt_mapp</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form" />
+            <field name="arch" type="xml">
+                <field name='payment_term_id' position="before">
+                    <field name="mapp_record_id"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -22,6 +22,7 @@
         'views/res_config.xml',
         'views/account_views.xml',
         'views/mobile_banner.xml',
+        'views/sale_order.xml',
     ],
     'demo': [],
     'installable': True,

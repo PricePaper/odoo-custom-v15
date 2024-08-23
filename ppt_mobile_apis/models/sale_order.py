@@ -19,8 +19,8 @@ class SaleOrder(models.Model):
                 return new_order.id
         elif method == 'write':
             order = self.search([('id', '=', record_id)])
-            existing_lines = order.order_line.mapped('mapp_record_id')
-
+            if not order:
+                return True
             for line in vals.get('order_line', []):
                 if line[0] == 0:
                     if line[2].get('mapp_record_id', False):
@@ -29,7 +29,7 @@ class SaleOrder(models.Model):
                             line[0] = 1
                             line[1] = order_line.id
             return order.write(vals)
-        return []
+        return True
 
     def wrapper_sale_order_action_confirm(self):
         self.ensure_one()

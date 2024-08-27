@@ -24,7 +24,7 @@
                     <div class="col-xs-4" style="padding:0;">
 
                         <div style="width:384px;height:220px;overflow:hidden;">
-                            <div style="width:384px;height:25px;"></div>
+                            <div style="width:384px;height:15px;"></div>
                             <div style="width:384px;">
                                 <div t-field="line[0].product_id.default_code"
                                      style="float: left;width: 50%;font-size: 16px;max-width:50%;white-space:nowrap;overflow: hidden;font-weight: bold;"/>
@@ -60,7 +60,7 @@
                             <!-- <t t-set="barcode" t-value="'%s'%(line[0].sale_line[0]_id.id)"/> -->
                             <div style="width:384px;float:left;">
 
-                                <div style="text-align:center; vertical-align:middle;padding:30px 39px;" class="col-xs-5">
+                                <div style="text-align:center; vertical-align:middle;padding:20px 39px;" class="col-xs-5">
                                     <div style="width:100%;height:20%;"/>
 
                                     <!-- <img

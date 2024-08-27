@@ -101,5 +101,34 @@
             <field name="name">Payment Hold</field>
             <field name="code">Payment</field>
         </record>
+
+        <record id="week_day_mon" model="week.day">
+            <field name="name">Monday</field>
+            <field name="code">0</field>
+        </record>
+        <record id="week_day_tue" model="week.day">
+            <field name="name">Tuesday</field>
+            <field name="code">1</field>
+        </record>
+        <record id="week_day_wed" model="week.day">
+            <field name="name">Wednesday</field>
+            <field name="code">2</field>
+        </record>
+        <record id="week_day_thu" model="week.day">
+            <field name="name">Thursday</field>
+            <field name="code">3</field>
+        </record>
+        <record id="week_day_fri" model="week.day">
+            <field name="name">Friday</field>
+            <field name="code">4</field>
+        </record>
+        <record id="week_day_sat" model="week.day">
+            <field name="name">Saturday</field>
+            <field name="code">5</field>
+        </record>
+        <record id="week_day_sun" model="week.day">
+            <field name="name">Sunday</field>
+            <field name="code">6</field>
+        </record>
     </data>
 </odoo>

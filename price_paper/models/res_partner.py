@@ -5,6 +5,13 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError, UserError
 import re
 
+class WeekDay(models.Model):
+    _name = 'week.day'
+
+    name = fields.Char(string='name')
+    code = fields.Integer(string='Code')
+    partner_ids = fields.Many2many('res.partner', 'partner_order_days_rel', 'day_id', 'partner_id', string='Partner')
+
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
@@ -42,6 +49,7 @@ class ResPartner(models.Model):
     property_account_payable_id = fields.Many2one('account.account', required=False)
     supplier = fields.Boolean(string='Is a Vendor', help="Check this box if this contact is a vendor. It can be selected in purchase orders.")
     customer = fields.Boolean(string='Is a Customer', help="Check this box if this contact is a customer. It can be selected in sales orders.")
+    order_days = fields.Many2many('week.day', 'partner_order_days_rel', 'partner_id', 'day_id', string='Order Days')
 
     # todo due to field changing default=True, will be added only after go live
 

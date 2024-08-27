@@ -73,6 +73,9 @@
                 </xpath>
 
                 <xpath expr="//group[@name='misc']" position="after">
+                    <group>
+                        <field name="order_days" widget='many2many_tags'/>
+                    </group>
                     <group string="Shipping Days" name="shipping_days">
                         <field name="change_delivery_days"/>
                         <field name="zip_delivery_id" invisible="1"/>
@@ -413,6 +416,25 @@
                 </tree>
             </field>
         </record>
+        <record id="action_week_days_form" model="ir.actions.act_window">
+            <field name="name">Order Week Days</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">week.day</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p>
+                    Order Week Days.
+                </p>
+            </field>
+        </record>
+
+
+        <menuitem
+            id="res_partner_week_days"
+            name="Week Days"
+            parent="crm.crm_menu_sales"
+            action="action_week_days_form"
+            sequence="5"/>
         <menuitem action="res_partner_pricepaper_vat_edit_permission_action"
                   id="res_partner_pricepaper_vat_readonly_action_menu"
                   groups="account.group_account_invoice"

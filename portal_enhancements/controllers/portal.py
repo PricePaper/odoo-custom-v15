@@ -117,7 +117,7 @@ class WebsiteSale(WebsiteSale):
         else:
             partner_com = request.env['res.partner'].sudo().browse(
                 curr_comapny)
-            if not partner_com.is_verified:
+            if not partner_com.is_verified and not request.env.user.has_group('base.group_user'):
                 return request.redirect('/my/website/company?error=Business registration is not completed')
             else:
                 return super(WebsiteSale, self).shop_payment(**post)
@@ -126,7 +126,7 @@ class WebsiteSale(WebsiteSale):
     @http.route(['/shop/<model("product.template"):product>'], type='http', auth="public", website=True, sitemap=True)
     def product(self, product, category='', search='', **kwargs):
         curr_comapny = request.session.get('current_website_company')
-        if not curr_comapny and not request.env.user._is_public():
+        if not curr_comapny and not request.env.user._is_public() and not request.env.user.has_group('base.group_user'):
             return request.redirect('/my/website/company')
         else:
             return super(WebsiteSale, self).product(product, category=category, search=search, **kwargs)
@@ -403,7 +403,10 @@ class CustomerPortal(portal.CustomerPortal):
             if orders and main_com.is_verified :
                 return {'status': True, 'url': '/select/cart'}
             elif not main_com.is_verified:
-                return {'status': True, 'url': '/my/website/company'}
+                if request.env.user.has_group('base.group_user'):
+                    return {'status': True, 'url': '/shop'}
+                else:
+                    return {'status': True, 'url': '/my/website/company'}
             return {'status': True}
         else:
             request.session['current_website_company'] = None

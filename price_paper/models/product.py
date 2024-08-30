@@ -496,7 +496,7 @@ class ProductProduct(models.Model):
                     ('remaining_qty', '>', 0),
                     ('company_id', '=', company.id),
                 ]):
-                    if svl.stock_move_id and svl.stock_move_id.purchase_line_id and svl.stock_move_id.purchase_line_id.order_id.storage_contract_po is False:
+                    if svl.stock_move_id and ((svl.stock_move_id.purchase_line_id and svl.stock_move_id.purchase_line_id.order_id.storage_contract_po is False) or not svl.stock_move_id.purchase_line_id):
                         candidates |= svl
 
 

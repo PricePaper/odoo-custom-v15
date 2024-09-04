@@ -57,3 +57,4 @@ access_portal_model_access_config_portal_user,access.portal.model.access.config.
 access_portal_model_access_config,access.portal.model.access.config.user,portal_enhancements.model_portal_model_access_config,base.group_user,1,1,1,1
 access_portal_delivery_carrier,access.portal.delivery.carrier.user,delivery.model_delivery_carrier,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
 payment_token_portal_user,payment.token.portal_user,payment.model_payment_token,portal_enhancements.group_portal_enhanced_record_access,1,1,1,1
+acess_portal_user_commission_percentage,portal.access.commission_percentage,sales_commission.model_commission_percentage,portal_enhancements.group_portal_enhanced_record_access,1,0,0,0

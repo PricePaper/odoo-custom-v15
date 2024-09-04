@@ -41,7 +41,7 @@ class OrderSheetLines(models.Model):
         partner_id = self.partner_id
         # products = self.order_line.mapped('product_id').ids
         sales_history = self.env['sale.history'].search(
-            ['|', ('active', '=', False), ('active', '=', True), ('partner_id', '=', partner_id.partner_id.id),
+            ['|', ('active', '=', False), ('active', '=', True), ('partner_id', '=', partner_id.id),
               ('product_id', '!=', False)]).filtered(
             lambda r: not r.product_id.categ_id.is_storage_contract  and not r.product_id.id in self.product_ids.ids)
         # addons product filtering
@@ -56,7 +56,7 @@ class OrderSheetLines(models.Model):
         }       
         
         return {
-            'name': '%s # %s' % (partner_id.partner_id.display_name, self.section ),
+            'name': '%s # %s' % (partner_id.display_name, self.section ),
             'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'add.purchase.history.so',
@@ -77,3 +77,8 @@ class LineProduct(models.Model):
     sale_uoms = fields.Many2many('uom.uom',related='product_id.sale_uoms')
     uom_id = fields.Many2one('uom.uom',string='uom',domain="[('id','in',sale_uoms)]")
 
+
+    @api.onchange('product_id')
+    def change_product_id(self):
+        for rec in self:
+            rec.uom_id = rec.product_id.product_tmpl_id.ppt_uom_id.id

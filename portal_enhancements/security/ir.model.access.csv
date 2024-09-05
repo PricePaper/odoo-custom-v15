@@ -1,6 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_sale_order_portal_user,access.sale.order.portal.user,sale.model_sale_order,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
-access_sale_order_line_portal_user,access.sale.order.line.portal.user,sale.model_sale_order_line,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
+access_sale_order_portal_user,access.sale.order.portal.user,sale.model_sale_order,portal_enhancements.group_portal_enhanced_record_access,1,1,1,1
+access_sale_order_line_portal_user,access.sale.order.line.portal.user,sale.model_sale_order_line,portal_enhancements.group_portal_enhanced_record_access,1,1,1,1
 access_purchase_order_portal_user,access.purchase.order.portal.user,purchase.model_purchase_order,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
 access_purchase_order_line_portal_user,access.purchase.order.line.portal.user,purchase.model_purchase_order_line,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0
 access_account_move_portal_user,access.account.move.portal.user,account.model_account_move,portal_enhancements.group_portal_enhanced_record_access,1,1,1,0

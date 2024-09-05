@@ -11,7 +11,7 @@ Granting enhanced access to portal users
     """,
     'author': 'Confianz Global',
     'depends': ['base', 'sale', 'purchase', 'account', 'price_paper', 'calendar', 'partner_firstname', 'portal',
-                'website', 'contacts', 'helpdesk','theme_pricepaper','sign'],
+                'website', 'contacts', 'helpdesk','theme_pricepaper','sign', 'sales_commission'],
     'sequence': 1700,
     'demo': [
     ],

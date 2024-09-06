@@ -90,9 +90,9 @@
                             <t t-else=''>
                                 <t t-if='main_company.basic_verification_submit'>
                                     <t t-if ='not (main_company.businesss_registration_information )'>
-                                    <t t-if='main_company.rejection_reason'>
-                                        <h6 class='text-danger mb-2'>Rejection Reason : <t t-out='main_company.rejection_reason'/>
-                                        </h6>
+                                        <t t-if='main_company.rejection_reason'>
+                                            <h6 class='text-danger mb-2'>Rejection Reason : <t t-out='main_company.rejection_reason'/>
+                                            </h6>
                                         </t>
                                         <h5 class='mt16 mb16'>Basic Information Completed, proceed with next step of Business Registration.</h5>
                                         <div class='completed progress_verification d-md-flex d-none'>
@@ -168,7 +168,8 @@
 
                                         <t t-if='not main_company.business_verification_status or not main_company.business_verification_status in ["submit","approved"]'>
                                             <t t-if='main_company.rejection_reason'>
-                                            <h6 class='text-danger mb-2'>Rejection Reason : <t t-out='main_company.rejection_reason'/></h6>
+                                                <h6 class='text-danger mb-2'>Rejection Reason : <t t-out='main_company.rejection_reason'/>
+                                                </h6>
                                             </t>
                                             <h5 class='mt16 mb16'>Business Registration completed, Kindly add your payment method.</h5>
                                             <div class='completed progress_verification d-md-flex d-none'>
@@ -650,7 +651,7 @@
         </t>
     </template>
 
-    <template id='portal_credit_application'>
+    <template id='portal_credit_application' name='Credit Application'>
         <t t-call='website.layout'>
             <div class="jumbotron text-center bg-primary">
                 <h1 style="color: black; font-weight: bold;">Credit Application</h1>
@@ -697,8 +698,16 @@
                     </div>
 
                     <div class='form-group col-xl-4'>
-                        <label for='state'>State:</label>
-                        <input type="state" t-att-value='partner.state_id' class="form-control" name="state"/>
+                        <label for="state_id">State:</label>
+                                    <div/>
+                                    <select name="state_id" class="form-control">
+                                        <option value="">select...</option>
+                                        <t t-foreach="states or []" t-as="state">
+                                            <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
+                                                <t t-esc="state.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
                     </div>
 
                     <div class='form-group col-xl-4'>
@@ -730,6 +739,7 @@
                                 <input type="text" class="form-control" name="title"/>
                             </div>
                         </div>
+                        <hr class='deleteable_hr'/>
                     </div>
 
 
@@ -823,54 +833,128 @@
                         </a>
                     </div>
                     <div class='col-12 bank_row'>
-                        <div class='main_row row'>
-                            <div t-attf-class="form-group col-xl-6">
-                                <label for="name">Bank:</label>
+                        <ol>
+                            <li>
+                                <br/>
+                                <div class='main_row row'>
+                                    <div t-attf-class="form-group col-xl-6">
+                                        <label for="name">Bank:</label>
 
-                                <input type="text" class="form-control" name="name" required="True"/>
-                            </div>
-                            <div t-attf-class="form-group col-xl-6">
-                                <label for="Acc.#">Acc.#:</label>
+                                        <input type="text" class="form-control" name="name" required="True"/>
+                                    </div>
+                                    <div t-attf-class="form-group col-xl-6">
+                                        <label for="Acc.#">Acc.#:</label>
 
-                                <input type="text" class="form-control" name="acc"/>
-                            </div>
+                                        <input type="text" class="form-control" name="acc"/>
+                                    </div>
 
-                            <div class='form-group col-xl-3'>
-                                <label for='address'>Address:</label>
-                                <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
-                            </div>
+                                    <div class='form-group col-xl-3'>
+                                        <label for='address'>Address:</label>
+                                        <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
+                                    </div>
 
-                            <div class='form-group col-xl-3'>
-                                <label for='city'>city:</label>
-                                <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
-                            </div>
+                                    <div class='form-group col-xl-3'>
+                                        <label for='city'>city:</label>
+                                        <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
+                                    </div>
 
-                            <div class='form-group col-xl-3'>
-                                <label for='state'>State:</label>
-                                <input type="state" t-att-value='partner.state_id' class="form-control" name="state"/>
-                            </div>
+                                    <div class='form-group col-xl-3'>
+                                        <label for="state">State:</label>
+                                    <div/>
+                                    <select name="state" class="form-control">
+                                        <option value="">select...</option>
+                                        <t t-foreach="states or []" t-as="state">
+                                            <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
+                                                <t t-esc="state.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                    </div>
 
-                            <div class='form-group col-xl-3'>
-                                <label for='zip'>Zip:</label>
-                                <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
-                            </div>
+                                    <div class='form-group col-xl-3'>
+                                        <label for='zip'>Zip:</label>
+                                        <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
+                                    </div>
 
-                            <div class='form-group col-xl-4'>
-                                <label for='officer_name'>Officer Familiar with A/c </label>
-                                <input type="officer_name" class="form-control" name="officer_name"/>
-                            </div>
-                            <div class='form-group col-xl-4'>
-                                <label for='office_phone'>Phone:</label>
-                                <input type="office_phone" class="form-control" name="office_phone"/>
-                            </div>
-                            <div class='form-group col-xl-4'>
-                                <label for='offier_fax'>Fax:</label>
-                                <input type="offier_fax" class="form-control" name="offier_fax"/>
-                            </div>
+                                    <div class='form-group col-xl-4'>
+                                        <label for='officer_name'>Officer Familiar with A/c </label>
+                                        <input type="officer_name" class="form-control" name="officer_name"/>
+                                    </div>
+                                    <div class='form-group col-xl-4'>
+                                        <label for='office_phone'>Phone:</label>
+                                        <input type="office_phone" class="form-control" name="office_phone"/>
+                                    </div>
+                                    <div class='form-group col-xl-4'>
+                                        <label for='offier_fax'>Fax:</label>
+                                        <input type="offier_fax" class="form-control" name="offier_fax"/>
+                                    </div>
 
 
 
-                        </div>
+                                </div>
+                                <hr class='deleteable_hr'/>
+                            </li>
+                            <li>
+                                <br/>
+                                <div class='main_row row'>
+                                    <div t-attf-class="form-group col-xl-6">
+                                        <label for="name">Bank:</label>
+
+                                        <input type="text" class="form-control" name="name" required="True"/>
+                                    </div>
+                                    <div t-attf-class="form-group col-xl-6">
+                                        <label for="Acc.#">Acc.#:</label>
+
+                                        <input type="text" class="form-control" name="acc"/>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='address'>Address:</label>
+                                        <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='city'>city:</label>
+                                        <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                         <label for="state">State:</label>
+                                    <div/>
+                                    <select name="state" class="form-control">
+                                        <option value="">select...</option>
+                                        <t t-foreach="states or []" t-as="state">
+                                            <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
+                                                <t t-esc="state.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='zip'>Zip:</label>
+                                        <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
+                                    </div>
+
+                                    <div class='form-group col-xl-4'>
+                                        <label for='officer_name'>Officer Familiar with A/c </label>
+                                        <input type="officer_name" class="form-control" name="officer_name"/>
+                                    </div>
+                                    <div class='form-group col-xl-4'>
+                                        <label for='office_phone'>Phone:</label>
+                                        <input type="office_phone" class="form-control" name="office_phone"/>
+                                    </div>
+                                    <div class='form-group col-xl-4'>
+                                        <label for='offier_fax'>Fax:</label>
+                                        <input type="offier_fax" class="form-control" name="offier_fax"/>
+                                    </div>
+
+
+
+                                </div>
+                                <hr class='deleteable_hr'/>
+                            </li>
+                        </ol>
                     </div>
 
 
@@ -885,49 +969,289 @@
                         </a>
                     </div>
                     <div class='col-12 trade_row'>
-                        <div class='main_row row'>
-                            <div t-attf-class="form-group col-xl-4">
-                                <label for="name">Name:</label>
+                        <ol>
+                            <li>
+                            <br/>
+                                <div class='main_row row'>
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="name">Name:</label>
 
-                                <input type="text" class="form-control" name="name" required="True"/>
-                            </div>
-                            <div t-attf-class="form-group col-xl-4">
-                                <label for="phone">Phone:</label>
+                                        <input type="text" class="form-control" name="name" required="True"/>
+                                    </div>
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="phone">Phone:</label>
 
-                                <input type="text" class="form-control" name="phone"/>
-                            </div>
+                                        <input type="text" class="form-control" name="phone"/>
+                                    </div>
 
-                            <div t-attf-class="form-group col-xl-4">
-                                <label for="fax">fax:</label>
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="fax">fax:</label>
 
-                                <input type="text" class="form-control" name="fax"/>
-                            </div>
-
-
-
-                            <div class='form-group col-xl-3'>
-                                <label for='address'>Address:</label>
-                                <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
-                            </div>
-
-                            <div class='form-group col-xl-3'>
-                                <label for='city'>city:</label>
-                                <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
-                            </div>
-
-                            <div class='form-group col-xl-3'>
-                                <label for='state'>State:</label>
-                                <input type="state" t-att-value='partner.state_id' class="form-control" name="state"/>
-                            </div>
-
-                            <div class='form-group col-xl-3'>
-                                <label for='zip'>Zip:</label>
-                                <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
-                            </div>
+                                        <input type="text" class="form-control" name="fax"/>
+                                    </div>
 
 
 
-                        </div>
+                                    <div class='form-group col-xl-3'>
+                                        <label for='address'>Address:</label>
+                                        <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='city'>city:</label>
+                                        <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for="state">State:</label>
+                                    <div/>
+                                    <select name="state" class="form-control">
+                                        <option value="">select...</option>
+                                        <t t-foreach="states or []" t-as="state">
+                                            <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
+                                                <t t-esc="state.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='zip'>Zip:</label>
+                                        <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
+                                    </div>
+
+
+
+
+                                </div>
+                                <hr/>
+                            </li>
+                              <li>
+                            <br/>
+                                <div class='main_row row'>
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="name">Name:</label>
+
+                                        <input type="text" class="form-control" name="name" required="True"/>
+                                    </div>
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="phone">Phone:</label>
+
+                                        <input type="text" class="form-control" name="phone"/>
+                                    </div>
+
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="fax">fax:</label>
+
+                                        <input type="text" class="form-control" name="fax"/>
+                                    </div>
+
+
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='address'>Address:</label>
+                                        <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='city'>city:</label>
+                                        <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for="state">State:</label>
+                                    <div/>
+                                    <select name="state" class="form-control">
+                                        <option value="">select...</option>
+                                        <t t-foreach="states or []" t-as="state">
+                                            <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
+                                                <t t-esc="state.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='zip'>Zip:</label>
+                                        <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
+                                    </div>
+
+
+
+
+                                </div>
+                                <hr/>
+                            </li>
+                              <li>
+                            <br/>
+                                <div class='main_row row'>
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="name">Name:</label>
+
+                                        <input type="text" class="form-control" name="name" required="True"/>
+                                    </div>
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="phone">Phone:</label>
+
+                                        <input type="text" class="form-control" name="phone"/>
+                                    </div>
+
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="fax">fax:</label>
+
+                                        <input type="text" class="form-control" name="fax"/>
+                                    </div>
+
+
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='address'>Address:</label>
+                                        <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='city'>city:</label>
+                                        <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                         <label for="state">State:</label>
+                                    <div/>
+                                    <select name="state" class="form-control">
+                                        <option value="">select...</option>
+                                        <t t-foreach="states or []" t-as="state">
+                                            <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
+                                                <t t-esc="state.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='zip'>Zip:</label>
+                                        <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
+                                    </div>
+
+
+
+
+                                </div>
+                                <hr/>
+                            </li>
+                              <li>
+                            <br/>
+                                <div class='main_row row'>
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="name">Name:</label>
+
+                                        <input type="text" class="form-control" name="name" required="True"/>
+                                    </div>
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="phone">Phone:</label>
+
+                                        <input type="text" class="form-control" name="phone"/>
+                                    </div>
+
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="fax">fax:</label>
+
+                                        <input type="text" class="form-control" name="fax"/>
+                                    </div>
+
+
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='address'>Address:</label>
+                                        <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='city'>city:</label>
+                                        <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for="state">State:</label>
+                                    <div/>
+                                    <select name="state" class="form-control">
+                                        <option value="">select...</option>
+                                        <t t-foreach="states or []" t-as="state">
+                                            <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
+                                                <t t-esc="state.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='zip'>Zip:</label>
+                                        <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
+                                    </div>
+
+
+
+
+                                </div>
+                                <hr/>
+                            </li>
+                              <li>
+                            <br/>
+                                <div class='main_row row'>
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="name">Name:</label>
+
+                                        <input type="text" class="form-control" name="name" required="True"/>
+                                    </div>
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="phone">Phone:</label>
+
+                                        <input type="text" class="form-control" name="phone"/>
+                                    </div>
+
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="fax">fax:</label>
+
+                                        <input type="text" class="form-control" name="fax"/>
+                                    </div>
+
+
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='address'>Address:</label>
+                                        <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='city'>city:</label>
+                                        <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                       <label for="state">State:</label>
+                                    <div/>
+                                    <select name="state" class="form-control">
+                                        <option value="">select...</option>
+                                        <t t-foreach="states or []" t-as="state">
+                                            <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
+                                                <t t-esc="state.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='zip'>Zip:</label>
+                                        <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
+                                    </div>
+
+
+
+
+                                </div>
+                                <hr/>
+                            </li>
+                            
+                        </ol>
                     </div>
 
 
@@ -957,7 +1281,7 @@
                     </div>
                 </div>
                 <br/>
-                <div class="o_portal_signature_form_new" t-att-data-call-url="call_url" t-att-data-default-name="partner.name" t-att-data-mode="mode" t-att-data-send-label="send_label" t-att-data-signature-ratio="signature_ratio" t-att-data-signature-type="signature_type" t-att-data-font-color="font_color" />
+                <div class="o_portal_signature_form_new" t-att-data-call-url="call_url"  t-att-data-mode="mode" t-att-data-send-label="send_label" t-att-data-signature-ratio="signature_ratio" t-att-data-signature-type="signature_type" t-att-data-font-color="font_color" />
 
             </div>
         </t>

@@ -37,7 +37,7 @@ class TradeReference(models.Model):
     name = fields.Char(string='Name')
     address = fields.Char('Street')
     city = fields.Char('City')
-    state = fields.Char('state')
+    state = fields.Many2one('res.country.state')
     zip = fields.Char('zip')
     phone = fields.Char(string='Phone')
     fax = fields.Char(string='Fax')
@@ -52,7 +52,7 @@ class PartnerCreditBank(models.Model):
     acc = fields.Char("Acct. #")
     address = fields.Char('Street')
     city = fields.Char('City')
-    state = fields.Char('state')
+    state = fields.Many2one('res.country.state')
     zip = fields.Char('zip')
 
     officer_name = fields.Char(string='Officier Familiar With the account')

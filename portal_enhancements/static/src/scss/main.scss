@@ -15,17 +15,19 @@
         }
     }
 }
-.o_sign_signature_dialog{
-    .o_web_sign_signature_group{
-        .card-header{
-            @media(max-width:450px){
-                .row{
+
+.o_sign_signature_dialog {
+    .o_web_sign_signature_group {
+        .card-header {
+            @media(max-width:450px) {
+                .row {
                     flex-wrap: wrap !important;
                 }
             }
         }
     }
 }
+
 .progress_verification_mobile {
     flex-direction: column;
     margin-left: 20px;
@@ -88,6 +90,44 @@
             button.btn.btn-secondary {
                 width: 300px !important;
                 margin-left: unset;
+            }
+        }
+    }
+}
+
+.credit_application {
+    .officers_list {
+        .officer_row {
+            .main_row {
+                input.form-control,select {
+                    border-radius: 9px !important;
+                    height: 41px !important;
+                    margin-bottom: 0px !important;
+                    border-width: 2px !important;
+
+                }
+            }
+        }
+    }
+    .bank_list{
+        .bank_row{
+            input.form-control,select {
+                border-radius: 9px !important;
+                height: 41px !important;
+                margin-bottom: 0px !important;
+                border-width: 2px !important;
+
+            }
+        }
+    }
+    .trade_list{
+        .trade_row{
+            input.form-control,select {
+                border-radius: 9px !important;
+                height: 41px !important;
+                margin-bottom: 0px !important;
+                border-width: 2px !important;
+
             }
         }
     }

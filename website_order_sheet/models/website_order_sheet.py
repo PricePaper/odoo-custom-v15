@@ -10,7 +10,7 @@ class WebsiteOrderSheet(models.Model):
 
     name = fields.Char(string='Name')
     partner_id = fields.Many2one('res.partner','Partner')
-    order_lines = fields.One2many('order.sheet.lines','sheet_id',string='Order Lines')
+    order_lines = fields.One2many('order.sheet.lines','sheet_id',string='Order Lines',copy=True)
 
 
 class OrderSheetLines(models.Model):
@@ -25,7 +25,7 @@ class OrderSheetLines(models.Model):
     new_sheet_id = fields.Many2one('website.order.sheet',string="Sheet")
     section = fields.Char(string='Section Name',required=True)
     product_ids = fields.Many2many('product.product',string='Products')
-    line_product_ids = fields.One2many('section.product',"sheet_line_id",string='Section Products')
+    line_product_ids = fields.One2many('section.product',"sheet_line_id",string='Section Products',copy=True)
 
 
     @api.onchange('section')
@@ -77,3 +77,8 @@ class LineProduct(models.Model):
     sale_uoms = fields.Many2many('uom.uom',related='product_id.sale_uoms')
     uom_id = fields.Many2one('uom.uom',string='uom',domain="[('id','in',sale_uoms)]")
 
+
+    @api.onchange('product_id')
+    def change_product_id(self):
+        for rec in self:
+            rec.uom_id = rec.product_id.product_tmpl_id.ppt_uom_id.id

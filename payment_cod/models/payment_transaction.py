@@ -71,7 +71,11 @@ class PaymentTransaction(models.Model):
         )
         if self.sale_order_ids:
             PaymentTerm = self.env['account.payment.term']
-            cod_term = PaymentTerm.search([('payment_method', '=', 'cod')], limit=1)
+            cod_config = self.env['ir.config_parameter'].sudo().get_param('ppt_mobile_apis.cod_payment_term')
+            if cod_config:
+                cod_term = PaymentTerm.browse(int(cod_config))
+            else:
+                cod_term = PaymentTerm.search([('payment_method', '=', 'cod')], limit=1)
             for rec in self.sale_order_ids:
                 default_term = rec.partner_id.property_payment_term_id
                 rec.invoice_address_id = rec.partner_id.id

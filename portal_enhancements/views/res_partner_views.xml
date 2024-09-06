@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="open_credit" model="ir.actions.act_window">
+            <field name="name">Credit Application</field>
+            <field name="res_model">partner.credit</field>
+            <field name="view_mode">form</field>
+            <field name="domain">[('partner_id','=',active_id)]</field>
+            <field name="context">{}</field>
 
+        </record>
         <record id="res_partner_view_form" model="ir.ui.view">
             <field name="name">res.partner.form.sign.inherit</field>
             <field name="model">res.partner</field>
@@ -17,9 +24,18 @@
                             <span class="o_stat_text">Signature Requested</span>
                         </div>
                     </button>
+                    <field name="partner_credit" invisible='1'/>
+                    <button name='%(open_credit)d' type='action' string='Credit Application' class='oe_stat_button' icon='fa-pencil' attrs="{'invisible':[('partner_credit','=',False)]}"/>
                 </div>
+                <field name='fax_number' position='after'>
+                    <field name="is_verified" string='Customer Onboarding Completed'></field>
+                </field>
             </field>
         </record>
+
+
+
+
 
         <record id="view_partner_pricepaper_vat_form_inherit_price_paper" model="ir.ui.view">
             <field name="name">res.partner.view.form.inherit</field>
@@ -29,7 +45,7 @@
                 <xpath expr="//sheet" position="before">
                     <header>
                         <field name="business_verification_status" invisible='1' />
-                        <field name="is_verified"  invisible='1' />
+                        <field name="is_verified" invisible='1' />
                         <button class='btn-primary' name='verify_signatures' type='object' string='Verify Document' attrs="{'invisible': [('business_verification_status', '!=', 'submit')]}"/>
 
                     </header>
@@ -361,5 +377,341 @@
     <!--                    portal user menu-->
     <menuitem id="menu_res_partner_portal_enhancements" name="Portal Users" action="action_res_partner_portal_enhancements" parent="sale.sale_order_menu" groups="sales_team.group_sale_manager" sequence="1000" />
 
-</data>
+
+    <template id="report_credit_application">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2 class='text-center'>
+                        Application For Credit Account
+                        </h2>
+                        <br/>
+                        <br/>
+                        <div class='row'>
+                            <div class='col-6'>
+                                <strong>Company: </strong>
+                                <span>
+                                    <t t-esc='doc.company'/>
+                                </span>
+                            </div>
+                            <div class='col-6'>
+                                <strong>Phone: </strong>
+                                <span>
+                                    <t t-esc='doc.phone'/>
+                                </span>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class='row'>
+                            <div class='col-4'>
+                                <strong>FAX: </strong>
+                                <span>
+                                    <t t-esc='doc.fax'/>
+                                </span>
+                            </div>
+
+                            <div class='col-4'>
+                                <strong>Cell: </strong>
+                                <span>
+                                    <t t-esc='doc.phone'/>
+                                </span>
+                            </div>
+
+                            <div class='col-4'>
+                                <strong>Email: </strong>
+                                <span>
+                                    <t t-esc='doc.email'/>
+                                </span>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class='row'>
+                            <div class='col-12'>
+                                <strong>Address:</strong>
+                                <span>
+                                    <t t-esc='doc.address'/>
+                                </span>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class='row'>
+                            <div class='col-4'>
+                                <strong>City: </strong>
+                                <span>
+                                    <t t-esc='doc.city'/>
+                                </span>
+                            </div>
+
+                            <div class='col-4'>
+                                <strong>State: </strong>
+                                <span>
+                                    <t t-esc='doc.state_id.name'/>
+                                </span>
+                            </div>
+
+                            <div class='col-4'>
+                                <strong>Zip: </strong>
+                                <span>
+                                    <t t-esc='doc.zip'/>
+                                </span>
+                            </div>
+                        </div>
+                        <br/>
+                        <strong>List of name(s) and title(s) of corporate officers, partners or owners:</strong>
+                        <br/>
+                        <br/>
+                        <t t-foreach='doc.corporate_partner_ids' t-as='cor'>
+                            <div class='row'>
+                                <div class='col-6'>
+                                    <strong>Name: </strong>
+                                    <span>
+                                        <t t-esc='cor.name'/>
+                                    </span>
+                                </div>
+                                <div class='col-6'>
+                                    <strong>Title: </strong>
+                                    <span>
+                                        <t t-esc='cor.title'/>
+                                    </span>
+                                </div>
+                            </div>
+                        </t>
+                        <strong>Type of business:</strong>
+                        <t t-esc='doc.typeofbusiness'/>
+
+
+                        <div class='row'>
+                            <div class='col-6'>
+                                <strong>Annual Sales Volume: </strong>
+                                <span>
+                                    <t t-esc='doc.annual_sales_volume'/>
+                                </span>
+                            </div>
+                            <div class='col-6'>
+                                <strong>Accounts Payable Contact: </strong>
+                                <span>
+                                    <t t-esc='doc.account_payable_contact'/>
+                                </span>
+                            </div>
+                        </div>
+                        <br/>
+
+
+
+                        <div class='row'>
+                            <div class='col-4'>
+                                <strong>Year Established: </strong>
+                                <span>
+                                    <t t-esc='doc.year_established'/>
+                                </span>
+                            </div>
+
+                            <div class='col-4'>
+                                <strong>Num. Od Employees: </strong>
+                                <span>
+                                    <t t-esc='doc.no_emp'/>
+                                </span>
+                            </div>
+
+                            <div class='col-4'>
+                                <strong>Time at present location: </strong>
+                                <span>
+                                    <t t-esc='doc.time_present_location'/>
+                                </span>
+                            </div>
+                        </div>
+                        <br/>
+
+
+                        <strong>location:</strong>
+                        <t t-esc='doc.location'/>
+                        <br/>
+                        <br/>
+
+
+                        <strong>List of Bank Accounts</strong>
+                        <br/>
+                        <ol>
+                            <t t-foreach='doc.partner_credit_bank_ids' t-as='bank'>
+                                <li>
+                                    <div class='row'>
+                                        <div class='col-6'>
+                                            <strong>Bank: </strong>
+                                            <span>
+                                                <t t-esc='bank.name'/>
+                                            </span>
+                                        </div>
+
+                                        <div class='col-6'>
+                                            <strong>Acc#: </strong>
+                                            <span>
+                                                <t t-esc='bank.acc'/>
+                                            </span>
+                                        </div>
+
+
+                                    </div>
+
+                                    <div class='row'>
+                                        <div class='col-3'>
+                                            <strong>Address: </strong>
+                                            <span>
+                                                <t t-esc='bank.address'/>
+                                            </span>
+                                        </div>
+                                        <div class='col-3'>
+                                            <strong>City: </strong>
+                                            <span>
+                                                <t t-esc='bank.city'/>
+                                            </span>
+                                        </div>
+                                        <div class='col-3'>
+                                            <strong>State: </strong>
+                                            <span>
+                                                <t t-esc='bank.state.name'/>
+                                            </span>
+                                        </div>
+                                        <div class='col-3'>
+                                            <strong>Zip: </strong>
+                                            <span>
+                                                <t t-esc='bank.zip'/>
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class='row'>
+                                        <div class='col-4'>
+                                            <strong>Officer familliar account: </strong>
+                                            <span>
+                                                <t t-esc='bank.officer_name'/>
+                                            </span>
+                                        </div>
+                                        <div class='col-4'>
+                                            <strong>Phone: </strong>
+                                            <span>
+                                                <t t-esc='bank.office_phone'/>
+                                            </span>
+                                        </div>
+                                        <div class='col-4'>
+                                            <strong>Fax: </strong>
+                                            <span>
+                                                <t t-esc='bank.offier_fax'/>
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                </li>
+
+                            </t>
+                        </ol>
+
+                        <br/>
+                        <br/>
+
+
+                        <strong>Trade References</strong>
+                        <br/>
+                        <ol>
+                            <t t-foreach='doc.trade_reference_ids' t-as='trade'>
+                                <li>
+                                    <div class='row'>
+                                        <div class='col-4'>
+                                            <strong>Name: </strong>
+                                            <span>
+                                                <t t-esc='trade.name'/>
+                                            </span>
+                                        </div>
+                                        <div class='col-4'>
+                                            <strong>Phone: </strong>
+                                            <span>
+                                                <t t-esc='trade.phone'/>
+                                            </span>
+                                        </div>
+                                        <div class='col-4'>
+                                            <strong>Fax: </strong>
+                                            <span>
+                                                <t t-esc='trade.fax'/>
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                    <div class='row'>
+                                        <div class='col-3'>
+                                            <strong>Address: </strong>
+                                            <span>
+                                                <t t-esc='trade.address'/>
+                                            </span>
+                                        </div>
+                                        <div class='col-3'>
+                                            <strong>City: </strong>
+                                            <span>
+                                                <t t-esc='trade.city'/>
+                                            </span>
+                                        </div>
+                                        <div class='col-3'>
+                                            <strong>State: </strong>
+                                            <span>
+                                                <t t-esc='trade.state.name'/>
+                                            </span>
+                                        </div>
+                                        <div class='col-3'>
+                                            <strong>Zip: </strong>
+                                            <span>
+                                                <t t-esc='trade.zip'/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                </li>
+                            </t>
+                        </ol>
+                        <br/>
+                        <br/>
+                        <br/>   
+                        <span>
+    I authorize our bank(s) to furnish financial information required by Price Paper &amp; Twine Company in connection with this application for credit.
+We certify that the above statements are true and authorize Price Paper &amp; Twine Company to investigate the information above for the purposes of obtaining merchandise on
+credit. If the application is a corporation, limited liability company or limited partnership in consideration of granting credit to the applicant, the undersigned individually and
+not as an officer/director/member of applicant absolutely, unconditionally and personally guarantees and promises to pay Price Paper &amp; Twine Company all indebtedness
+owned by applicant whenever created or owned and waive all defenses available to a guarantor and further waives all notices, demands any presentments. This guaranty will
+remain effective until all obligations of applicant are paid in full and all credit relations between Price Paper &amp; Twine Company and the applicant have terminated. I will pay a
+reasonable attorney fee, collection fee and any other reasonable cost incurred in the collection of said account.
+Terms: Credit terms are stated on the invoice under “terms.” Invoices not paid according to terms will be subject to a 2% finance charge per month (21% per annum).
+                        </span>
+                        <br/>
+                        <div class='row'>
+                            <div class='col-4'>
+                                <span> Signature</span>
+                                <img t-att-src="image_data_uri(doc.signature)" style="max-height: 4cm; max-width: 8cm;"/>
+                            </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+
+
+
+        <record id="action_report_saleorder" model="ir.actions.report">
+            <field name="name">Quotation / Order</field>
+            <field name="model">partner.credit</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">portal_enhancements.report_credit_application</field>
+            <field name="report_file">portal_enhancements.report_credit_application</field>
+            <field name="print_report_name">(object.partner_id.name)</field>
+            <field name="binding_model_id" ref="model_partner_credit"/>
+            <field name="binding_type">report</field>
+        </record>
+
+
+
+
+    </data>
 </odoo>

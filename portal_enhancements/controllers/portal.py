@@ -77,8 +77,8 @@ class WebsiteSale(WebsiteSale):
 
         credit_application = request.env['partner.credit'].sudo().create(data)
         curr_comapny = request.session.get('current_website_company')
-
         partner = request.env['res.partner'].sudo().browse([int(curr_comapny)])
+        credit_application.partner_id = partner.id
         partner.partner_credit = credit_application.id
         partner.business_verification_status = 'submit'
         partner.create_helpdesk_ticket_approval()
@@ -103,8 +103,8 @@ class WebsiteSale(WebsiteSale):
             return request.redirect('/my/website/company')
         partner = request.env['res.partner'].sudo().browse([int(curr_comapny)])
 
-        values={'partner':partner}
-
+        values={'partner':partner,'states':request.env['res.country'].sudo().search([('code','=','US')],limit=1).state_ids}
+        print(values)
         return request.render("portal_enhancements.portal_credit_application", values)
 
 
@@ -112,12 +112,12 @@ class WebsiteSale(WebsiteSale):
     @http.route()
     def shop_payment(self, **post):
         curr_comapny = request.session.get('current_website_company')
-        if not curr_comapny and not request.env.user._is_public():
+        if not curr_comapny and not request.env.user._is_public() and not request.env.user.has_group('base.group_user'):
             return request.redirect('/my/website/company')
         else:
             partner_com = request.env['res.partner'].sudo().browse(
                 curr_comapny)
-            if not partner_com.is_verified:
+            if not partner_com.is_verified and not request.env.user.has_group('base.group_user'):
                 return request.redirect('/my/website/company?error=Business registration is not completed')
             else:
                 return super(WebsiteSale, self).shop_payment(**post)
@@ -126,7 +126,7 @@ class WebsiteSale(WebsiteSale):
     @http.route(['/shop/<model("product.template"):product>'], type='http', auth="public", website=True, sitemap=True)
     def product(self, product, category='', search='', **kwargs):
         curr_comapny = request.session.get('current_website_company')
-        if not curr_comapny and not request.env.user._is_public():
+        if not curr_comapny and not request.env.user._is_public() and not request.env.user.has_group('base.group_user'):
             return request.redirect('/my/website/company')
         else:
             return super(WebsiteSale, self).product(product, category=category, search=search, **kwargs)
@@ -544,28 +544,10 @@ class CustomerPortal(portal.CustomerPortal):
         elif payment_value =='ach_debit':
             partner.payment_value = payment_value
             url ='/partner/ach/debit'
-            # default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.ach_debit_form')
-            # default_template = request.env['sign.template'].sudo().browse([int(default_template_id)])
-            # sign_request = request.env['sign.request'].with_user(default_template.create_uid).create({
-            #     'template_id': default_template.id,
-            #     'reference': "%(template_name)s-%(user_name)s" % {'template_name': default_template.attachment_id.name,'user_name':partner.name},
-            #     'favorited_ids': [(4, default_template.create_uid.id)],
-            # })
-            # request_item = http.request.env['sign.request.item'].sudo().create({'sign_request_id': sign_request.id,'partner_id':partner.id, 'role_id': default_template.sign_item_ids.mapped('responsible_id').id})
-            # sign_request.action_sent_without_mail()
-            # url = '/sign/document/%(request_id)s/%(access_token)s' % {'request_id': sign_request.id, 'access_token': request_item.access_token}
+            
 
         elif payment_value =='apply_credit':
             partner.payment_value = payment_value
-            # default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.credit_application')
-            # default_template = request.env['sign.template'].sudo().browse([int(default_template_id)])
-            # sign_request = request.env['sign.request'].with_user(default_template.create_uid).create({
-            #     'template_id': default_template.id,
-            #     'reference': "%(template_name)s-%(user_name)s" % {'template_name': default_template.attachment_id.name,'user_name':partner.name},
-            #     'favorited_ids': [(4, default_template.create_uid.id)],
-            # })
-            # request_item = http.request.env['sign.request.item'].sudo().create({'is_credit_application':True,'sign_request_id': sign_request.id,'partner_id':partner.id, 'role_id': default_template.sign_item_ids.mapped('responsible_id').id})
-            # sign_request.action_sent_without_mail()
             url = '/partner/credit/application'
         else:
             partner.business_verification_status = 'submit'

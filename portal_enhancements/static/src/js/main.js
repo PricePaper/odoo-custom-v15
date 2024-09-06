@@ -588,6 +588,7 @@ odoo.define('portal_enhancements.common', function (require) {
         },
         _deleteOfficer: function (ev) {
             $(ev.currentTarget).parent('.deleteable').siblings('.deleteable_hr').remove()
+            $(ev.currentTarget).parents('li').remove()
             $(ev.currentTarget).parent('.deleteable').remove()
         },
         _addtrade: function (ev) {
@@ -642,8 +643,9 @@ odoo.define('portal_enhancements.common', function (require) {
                 `)
         },
         _addBank: function (ev) {
-            $(ev.currentTarget).parents('.bank_list').find('.bank_row').append(`
-                <hr class='deleteable_hr'/>
+            $(ev.currentTarget).parents('.bank_list').find('.bank_row li:last-of-type').after(`
+                <li>
+                <br/>
                 <div class='main_row deleteable row position-relative'>
                 <a class='delete_officer text-danger position-absolute' style='right:0;z-index:99'>
                         <i class='fa fa-trash'/>
@@ -693,11 +695,12 @@ odoo.define('portal_enhancements.common', function (require) {
 
 
                         </div><hr class='deleteable_hr'/>
+                        </li>
     `)
         },
         _addofficer: function (ev) {
             $(ev.currentTarget).parents('.officers_list').find('.officer_row').append(`
-                <hr class='deleteable_hr'/>
+                
                 <div class='main_row deleteable row position-relative'>
                     <a class='delete_officer text-danger position-absolute' style='right:0;z-index:99'>
                         <i class='fa fa-trash'/>

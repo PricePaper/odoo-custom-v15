@@ -6,19 +6,80 @@
         <field name="inherit_id" ref="sale.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//div[@data-key='sale_management']/div[3]" position="inside">
-              <div class="col-12 col-lg-6 o_setting_box" id="mobile_team">
-                  <div class="o_setting_left_pane"/>
-                  <div class="o_setting_right_pane">
-                      <span class="o_form_label">Mobile App</span>
-                      <div class="text-muted">
+                <div class="col-12 col-lg-6 o_setting_box" id="mobile_team">
+                    <div class="o_setting_left_pane"/>
+                    <div class="o_setting_right_pane">
+                        <span class="o_form_label">Mobile App</span>
+                        <div class="text-muted">
                           Team for Mobile App sale Orders
-                      </div>
-                      <div class="text-muted">
-                          <field name="mobile_app_sale_team" />
-                      </div>
-                  </div>
-              </div>
+                        </div>
+                        <div class="text-muted">
+                            <field name="mobile_app_sale_team" />
+                        </div>
+                    </div>
+                </div>
             </xpath>
         </field>
     </record>
+
+    <record id="res_config_settings_view_form_inherit" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.website.sale.portal</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="website.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <div id="webmaster_settings" position="after">
+                <h2>Website Default Payment Terms</h2>
+                <div class="row mt16 o_settings_container" id="manage_customer_onboarding">
+                    <div class="col-12 col-md-6 o_setting_box" id="use_sign_template">
+                        <div class="o_setting_left_pane">
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <h6>Cod Payment Term </h6>
+                            <field name="cod_payment_term"/>
+                            <div class="text-muted">
+                                Select the default cod Payment Term
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 o_setting_box" id="use_sign_template">
+                        <div class="o_setting_left_pane">
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <h6>Ach Payment Term </h6>
+                            <field name="ach_payment_term"/>
+                            <div class="text-muted">
+                                Select the default ACH Payment Term
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 o_setting_box" id="use_sign_template">
+                        <div class="o_setting_left_pane">
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <h6>Credit Payment Term </h6>
+                            <field name="credit_payment_term"/>
+                            <div class="text-muted">
+                                Select the default Credit Payment Term
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 o_setting_box" id="use_sign_template">
+                        <div class="o_setting_left_pane">
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <h6>Card Payment Term </h6>
+                            <field name="card_payment_term"/>
+                            <div class="text-muted">
+                                Select the default Card Payment Term
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </field>
+    </record>
+
 </odoo>

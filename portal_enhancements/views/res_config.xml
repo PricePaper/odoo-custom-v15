@@ -43,28 +43,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6 o_setting_box" id="use_ach_form">
-                            <div class="o_setting_left_pane">
-                            </div>
-                            <div class="o_setting_right_pane">
-                                <h6>Ach Debit Form </h6>
-                                <field name="ach_debit_form"/>
-                                <div class="text-muted">
-                                Select the default Ach Debit Form  to be used
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6 o_setting_box" id="use_ach_form">
-                            <div class="o_setting_left_pane">
-                            </div>
-                            <div class="o_setting_right_pane">
-                                <h6>Credit Application Form </h6>
-                                <field name="credit_application"/>
-                                <div class="text-muted">
-                                Select the default Credit Application Form  to be used
-                                </div>
-                            </div>
-                        </div>
+                        
+                        
                         <div class="col-12 col-md-6 o_setting_box" id="use_ach_form">
                             <div class="o_setting_left_pane">
                             </div>

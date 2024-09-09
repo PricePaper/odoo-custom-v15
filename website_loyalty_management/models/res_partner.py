@@ -34,7 +34,7 @@ class Partner(models.Model):
             print("total debit = ", total_debit)
             diff = total_credit - total_debit
             print("Difference = ", diff)
-            partner.total_loyalty_points = total_credit - total_debit - partner.no_transaction_debit
+            partner.total_loyalty_points = total_credit - total_debit
 
     @api.depends('loyalty_transaction_ids')
     def _compute_loyalty_transaction_count(self):

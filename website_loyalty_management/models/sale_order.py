@@ -44,7 +44,7 @@ class SaleOrder(models.Model):
                     final_credit = base_credit + bonus_points
 
                     # Lookup tier based on customer rank
-                    customer_rank = order.partner_id.customer_ranks
+                    customer_rank = order.partner_id.rnk_lst_3_mon
                     tier_customer = self.env['website.loyalty.tier.customer'].search(
                         [('customer_rank', '=', customer_rank)], limit=1)
                     tier_name = tier_customer.tier_id.name if tier_customer and tier_customer.tier_id else ""
@@ -56,6 +56,7 @@ class SaleOrder(models.Model):
 
     def action_confirm(self):
         res = super(SaleOrder, self).action_confirm()
+       
         for order in self:
             if order.partner_id.is_loyalty_eligible:
 
@@ -123,7 +124,7 @@ class SaleOrder(models.Model):
                         bonus_points = (related_bonus_percentage / 100) * base_credit if highest_order_value > 0 else 0
                         final_credit = base_credit + bonus_points
 
-                        customer_rank = order.partner_id.customer_ranks
+                        customer_rank = order.partner_id.rnk_lst_3_mon
                         tier_customer = self.env['website.loyalty.tier.customer'].search(
                             [('customer_rank', '=', customer_rank)], limit=1)
                         tier_name = tier_customer.tier_id.name if tier_customer and tier_customer.tier_id else ""
@@ -165,8 +166,6 @@ class SaleOrder(models.Model):
 
         return res
 
-    # redemption_product_present = any(line.is_redemption_product for line in order.order_line)
-    # print("redemption product", redemption_product_present)
 
     def redeem_points(self, points_to_redeem):
         self.ensure_one()
@@ -197,8 +196,11 @@ class SaleOrder(models.Model):
             return result
 
         # Check if the order total is greater than or equal to minimum_order_redeem
-        if self.amount_total < redeem_rule.minimum_order_redeem:
-            result['error_message'] = "Order total is less than the minimum order required for redeeming points."
+        eligible_for_redemption = any(
+            line.price_subtotal >= redeem_rule.minimum_order_redeem for line in self.order_line)
+        if not eligible_for_redemption:
+            result[
+                'error_message'] = "No product subtotal is greater than the minimum order required for redeeming points."
             return result
 
         # Validate the redemption points
@@ -211,16 +213,9 @@ class SaleOrder(models.Model):
 
         result['status'] = True
         result['amount'] = redeem_result['amount']
-        result['points']=redeem_result['points']
-        if result['status']:
-            self.points_to_redeem = redeem_result['points']
-            self.env['loyalty.transaction'].create({
-                'date': fields.Date.today(),
-                'debit': self.points_to_redeem,
-                'order_id': self.id,
-                'partner_id': self.partner_id.id,
-                'state': 'draft'
-            })
+        result['points']= redeem_result['points_to_redeem']
+
+        self.points_to_redeem = points_to_redeem
 
         return result
 

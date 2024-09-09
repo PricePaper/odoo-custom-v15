@@ -23,6 +23,12 @@ class SaleOrderLine(models.Model):
                 self.price_unit = self._origin.price_unit
             raise ValidationError("You cannot edit the redemption product details.")
 
+    def _is_not_sellable_line(self):
+        print("entered into it")
+        if self.is_redemption_product:
+            return True
+        return super(SaleOrderLine, self)._is_not_sellable_line()
+
     # def unlink(self):
     #     # Prevent deletion of redemption products
     #     if any(line.is_redemption_product for line in self):

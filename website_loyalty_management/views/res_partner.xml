@@ -6,16 +6,22 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
-             
-                <notebook>
+
+                <notebook position='inside'>
                     <page string="Loyalty Transactions" attrs="{'invisible': [('company_type', '!=', 'company')]}">
-                     <field name="is_loyalty_eligible" attrs="{'invisible': [('company_type', '!=', 'company')]}"/>
-                    <field name="total_loyalty_points" attrs="{'invisible': [('company_type', '!=', 'company')]}"/>
-                    <!--                    <field name="loyal_programs" attrs="{'invisible': [('company_type', '!=', 'company')]}"/>-->
-                    <field name="customer_ranks"/>
-                    <field name="total_pending_points"/>
-                    <field name="total_confirm_points"/>
-                    <field name="loyalty_transaction_count" readonly="True"/>
+                        <group>
+
+                            <field name="is_loyalty_eligible" attrs="{'invisible': [('company_type', '!=', 'company')]}"/>
+                            <field name="total_loyalty_points" attrs="{'invisible': [('company_type', '!=', 'company')]}"/>
+                        </group>
+                        <!--                    <field name="loyal_programs" attrs="{'invisible': [('company_type', '!=', 'company')]}"/>-->
+                        <group>
+
+                            <field name="rnk_lst_3_mon"/>
+                            <field name="total_pending_points"/>
+                            <field name="total_confirm_points"/>
+                        </group>
+                        <field name="loyalty_transaction_count" readonly="True"/>
                         <field name="loyalty_transaction_ids">
                             <tree string="Loyalty Transactions" editable="bottom">
                                 <field name="order_id"/>

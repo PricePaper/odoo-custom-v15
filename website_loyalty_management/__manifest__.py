@@ -17,6 +17,14 @@
              'report/web_loyalty_template.xml',
              'report/website_loyalty_transaction_template.xml',
              'report/website_cart_points.xml',
-]
+             'report/website_redeem_payment.xml',] ,
+    # 'qweb': [
+    #     'static/src/xml/website_sale_templates.xml',
+    # ],
+    'assets': {
+        'web.assets_frontend': [
+            'website_loyalty_management/static/src/js/redeem_loyalty.js',
+        ],
+    },
 
 }

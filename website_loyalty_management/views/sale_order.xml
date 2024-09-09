@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <record id="sale_website_loyalty_order_form" model="ir.ui.view">
             <field name="name">website.loyalty.sale.inherit</field>
             <field name="model">sale.order</field>
@@ -9,15 +8,19 @@
             <field name="arch" type="xml">
                 <xpath expr="//group[@name='note_group']" position="before">
                     <div class="oe_right">
-                        <button name="action_redeem_loyalty" class="btn btn-secondary"
+                        <button name="website_loyalty_management.action_redeem_loyalty_wizard" class="btn-secondary"
                                 string="Redeem Loyalty" help="Check whether you are eligible to Redeem Loyalty points"
-                                type="object" states="draft"/>
+                                type="action" states="draft"/>
                     </div>
+                </xpath>
+                <xpath expr="//field[@name='partner_shipping_id']" position="after">
+                    <field name="points_to_redeem"/>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
+                    <field name ="is_redemption_product" invisible="1"/>
                 </xpath>
             </field>
         </record>
-
-
     </data>
 </odoo>
 

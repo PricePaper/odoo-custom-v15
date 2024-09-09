@@ -1,0 +1,61 @@
+<odoo>
+    <template id="extend_payment_template" inherit_id="website_sale.payment">
+        <xpath expr="//div[@id='payment_method']" position="inside">
+            <t t-if="request.env.user.partner_id.is_loyalty_eligible">
+                <button id="redeem_loyalty_button" type="button" class="btn btn-primary">
+                    Redeem Loyalty
+                </button>
+            </t>
+            <input type="hidden" name="order_id" t-att-value="order.id"/>
+        </xpath>
+
+        <xpath expr="//div[@id='wrap']" position="before">
+            <div id="redeem_loyalty_modal" class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Redeem Loyalty Points</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="redeem_loyalty_form">
+                                <input type="hidden" name="order_id" t-att-value="order.id"/>
+                                <div class="form-group">
+                                    <label for="points_to_redeem">Enter points to redeem:</label>
+                                    <input type="number" id="points_to_redeem" class="form-control" required="1"/>
+                                </div>
+                                <button type="button" id="submit_redeem_loyalty" class="btn btn-primary">Redeem</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript" src="/website_loyalty_management/static/src/js/redeem_loyalty.js"></script>
+        </xpath>
+    </template>
+
+
+    <template id="loyalty_website_reward_points" name="Reward Points" inherit_id="website_sale.address_on_payment">
+    <xpath expr="//div[@id='shipping_and_billing']" position="after">
+        <div class="card">
+            <div class="card-body" id="reward_points_website">
+                <div>
+                    <b>Reward Points:</b>
+                    <span class="float-right" style="margin-right: 20px;" id="total_points">
+                        <t t-esc="request.env.user.partner_id.total_confirm_points"/> points
+                    </span>
+                </div>
+                <div>
+                    <b>Redeemed Points:</b>
+                    <span class="float-right" style="margin-right: 20px;" id="redeemed_points">
+                        0 points
+                    </span>
+                </div>
+            </div>
+        </div>
+    </xpath>
+</template>
+
+</odoo>

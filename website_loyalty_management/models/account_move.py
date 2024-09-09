@@ -40,6 +40,6 @@ class AccountMove(models.Model):
                 loyalty_transactions = self.env['loyalty.transaction'].search([('order_id', '=', order.id)])
                 print('Related loyalty transactions:', loyalty_transactions)
                 for transaction in loyalty_transactions:
-                    if transaction.state == 'pending':
+                    if transaction.state == 'pending' or transaction.state == 'draft':
                         transaction.state = 'confirmed'
                         print('Loyalty transaction updated:', transaction)

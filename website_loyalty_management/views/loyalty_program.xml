@@ -141,6 +141,16 @@
                             <field name='redumption_product_id'/>
                         </group>
                     </group>
+                    <notebook>
+                        <page name="Tier" string="string">
+                            <field name='tier_ids_main'>
+                                <tree editable='bottom'>
+                                    <field name="tier_id"></field>
+                                    <field name="points_multiplier"></field>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

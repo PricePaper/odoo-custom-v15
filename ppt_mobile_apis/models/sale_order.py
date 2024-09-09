@@ -1,12 +1,22 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, models, fields
+from odoo.exceptions import ValidationError
+
 
 
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
     mapp_record_id = fields.Char('Mapp Unique ID')
+
+    @api.constrains('mapp_record_id')
+    def _check_unique_constrain(self):
+        for rec in self:
+            if rec.mapp_record_id:
+                result = self.sudo().search([('mapp_record_id', '=', self.mapp_record_id), ('id', '!=', self.id)])
+                if result:
+                    raise ValidationError('Mapp Unique ID unique constrain')
 
     @api.model
     def sale_order_create_write_wrapper(self, method, vals, record_id=False):

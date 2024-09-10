@@ -126,6 +126,9 @@ odoo.define('portal_enhancements.common', function (require) {
 
             var credit_application = $('.credit_application').length
             var ach_debit_form = $('.ach_debit_application').length
+            
+            var phone_validation = new RegExp('^(\(\d{3}\)\s*|\d{3}[-.\s]?)\d{3}[-.\s]?\d{4}$');
+
             if (credit_application) {
 
                 var data = {}
@@ -146,8 +149,31 @@ odoo.define('portal_enhancements.common', function (require) {
                         }
                         else {
 
-                            $(this).removeClass('is-invalid')
-                            data[$(this).attr('name')] = $(this).val()
+                            if ( $(this).attr('name')=='mobile'){
+                                
+                                if (phone_validation.test($(this).val())){
+                                     $(this).removeClass('is-invalid')
+                                    data[$(this).attr('name')] = $(this).val()
+                                }
+                                else{
+                                    $(this).addClass('is-invalid')
+
+                                    $(this).focus()
+                                    $(this).get(0).setCustomValidity('Example: (631) 555-1212 or 516-555-1212');
+                                    $(this).get(0).reportValidity()
+
+                                    flag = true
+                                    console.log('hello')
+                                    return
+                                    
+                                    
+                                }
+                            }
+                            else{
+                                $(this).removeClass('is-invalid')
+
+                                data[$(this).attr('name')] = $(this).val()
+                            }
                         }
                     })
                 }).promise().done(function () {
@@ -329,10 +355,16 @@ odoo.define('portal_enhancements.common', function (require) {
                     form.focusName();
                 }
             });
-
+            // console.log(this.$el)
+            
             return Promise.all([
                 this._super.apply(this, arguments),
-                form.appendTo(this.$el)
+                form.appendTo(this.$el),
+                setTimeout(function(){
+                    $('#comapny_main_main').focus()
+
+                    
+                }, 100)
             ]);
         },
     });

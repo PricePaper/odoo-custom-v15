@@ -11,7 +11,9 @@ class WebsiteOrderSheet(models.Model):
     name = fields.Char(string='Name')
     partner_id = fields.Many2one('res.partner','Partner')
     order_lines = fields.One2many('order.sheet.lines','sheet_id',string='Order Lines',copy=True)
-
+    _sql_constraints = [
+        ('sheet_uniq_partner', 'unique (partner_id)', 'The Partner Must be Unique per sheet !')
+    ]
 
 class OrderSheetLines(models.Model):
     _name = "order.sheet.lines"

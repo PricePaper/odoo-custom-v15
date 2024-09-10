@@ -147,7 +147,9 @@
                                                         <i class='fa' >2</i>
                                                         <!-- <div class='divider'/> -->
                                                     </div>
-                                                    <span>Business Registration:<em class='text-primary'> Begin</em>
+                                                    <span>Business Registration:<em class='btn-primary btn ml-1' style="    padding: 5px 10px;
+    border-radius: 0px 15px;
+    color: white;"> Begin</em>
                                                     </span>
                                                 </a>
                                             </div>
@@ -237,7 +239,9 @@
                                                             <i class='fa'>3</i>
 
                                                         </div>
-                                                        <span>Payment Methods:<em class='text-primary'> Begin</em>
+                                                        <span>Payment Methods:<em class='btn btn-primary ml-2' style='    padding: 5px 10px;
+    border-radius: 0px 15px;
+    color: white;'> Begin</em>
                                                         </span>
                                                     </a>
                                                 </div>
@@ -367,7 +371,9 @@
                                                     <i class='fa active'>1</i>
                                                     <!-- <div class='divider active'/> -->
                                                 </div>
-                                                <span>Basic Information:<em class='text-primary'> Begin</em>
+                                                <span>Basic Information:<em class='btn btn-primary' style="    padding: 5px 10px;
+    border-radius: 0px 15px;
+    color: white;"> Begin</em>
                                                 </span>
                                             </a>
                                         </div>
@@ -663,7 +669,7 @@
                     <div t-attf-class="form-group col-xl-6">
                         <label for="company">Company:</label>
 
-                        <input type="text" class="form-control" t-att-value='partner.company_name' name="company" required="True"/>
+                        <input type="text" class="form-control" t-att-value='partner.company_name' id='comapny_main_main' name="company" required="True"/>
                     </div>
                     <div t-attf-class="form-group col-xl-6">
                         <label for="phone">Phone:</label>
@@ -677,9 +683,10 @@
                         <input type="email" t-att-value='partner.email' class="form-control" name="email"/>
                     </div>
 
-                    <div class='form-group col-xl-4'>
+                    <div class='form-group col-xl-4' style='position:relative'>
                         <label for='mobile'>Cell:</label>
-                        <input type="mobile" t-att-value='partner.mobile' class="form-control" name="mobile"/>
+                        <input type="mobile" t-att-value='partner.mobile' class="form-control" help='Example: (631) 555-1212 or 516-555-1212' name="mobile"/>
+                        <small style='position: absolute;bottom: -10px;'>Example: (631) 555-1212 or 516-555-1212</small>
                     </div>
 
                     <div class='form-group col-xl-4'>
@@ -699,15 +706,15 @@
 
                     <div class='form-group col-xl-4'>
                         <label for="state_id">State:</label>
-                                    <div/>
-                                    <select name="state_id" class="form-control">
-                                        <option value="">select...</option>
-                                        <t t-foreach="states or []" t-as="state">
-                                            <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
-                                                <t t-esc="state.name"/>
-                                            </option>
-                                        </t>
-                                    </select>
+                        <div/>
+                        <select name="state_id" class="form-control">
+                            <option value="">select...</option>
+                            <t t-foreach="states or []" t-as="state">
+                                <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
+                                    <t t-esc="state.name"/>
+                                </option>
+                            </t>
+                        </select>
                     </div>
 
                     <div class='form-group col-xl-4'>
@@ -721,7 +728,7 @@
                 <div class='row officers_list'>
                     <div class='col-12 d-flex justify-content-between'>
                         <h6>List of name(s) and title(s) of corporate officers, partners or owners:</h6>
-                        <a class='btn btn-link add_officers' style='font-size:16px; padding:0'>
+                        <a class='btn btn-primary add_officers' style='font-size:16px; padding:5px 10px;color:white'>
                             <i class='fa fa-plus pr16'/>
                             Add line
                         </a>
@@ -827,7 +834,7 @@
                 <div class='row bank_list'>
                     <div class='col-12 d-flex justify-content-between'>
                         <h6>List of Bank Accounts:</h6>
-                        <a class='btn btn-link add_Bank' style='font-size:16px; padding:0'>
+                        <a class='btn btn-primary add_Bank' style='font-size:16px; padding:5px 10px;color:white'>
                             <i class='fa fa-plus pr16'/>
                             Add line
                         </a>
@@ -860,15 +867,15 @@
 
                                     <div class='form-group col-xl-3'>
                                         <label for="state">State:</label>
-                                    <div/>
-                                    <select name="state" class="form-control">
-                                        <option value="">select...</option>
-                                        <t t-foreach="states or []" t-as="state">
-                                            <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
-                                                <t t-esc="state.name"/>
-                                            </option>
-                                        </t>
-                                    </select>
+                                        <div/>
+                                        <select name="state" class="form-control">
+                                            <option value="">select...</option>
+                                            <t t-foreach="states or []" t-as="state">
+                                                <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
+                                                    <t t-esc="state.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
@@ -897,6 +904,9 @@
                             <li>
                                 <br/>
                                 <div class='main_row row'>
+                                    <a class='delete_officer text-danger position-absolute' style='right:0;z-index:99'>
+                                        <i class='fa fa-trash'/>
+                                    </a>
                                     <div t-attf-class="form-group col-xl-6">
                                         <label for="name">Bank:</label>
 
@@ -919,16 +929,16 @@
                                     </div>
 
                                     <div class='form-group col-xl-3'>
-                                         <label for="state">State:</label>
-                                    <div/>
-                                    <select name="state" class="form-control">
-                                        <option value="">select...</option>
-                                        <t t-foreach="states or []" t-as="state">
-                                            <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
-                                                <t t-esc="state.name"/>
-                                            </option>
-                                        </t>
-                                    </select>
+                                        <label for="state">State:</label>
+                                        <div/>
+                                        <select name="state" class="form-control">
+                                            <option value="">select...</option>
+                                            <t t-foreach="states or []" t-as="state">
+                                                <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
+                                                    <t t-esc="state.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
@@ -963,7 +973,7 @@
                 <div class='row trade_list'>
                     <div class='col-12 d-flex justify-content-between'>
                         <h6>Trade References::</h6>
-                        <a class='btn btn-link add_trade' style='font-size:16px; padding:0'>
+                        <a class='btn btn-primary add_trade' style='font-size:16px; padding:5px 10px;color:white'>
                             <i class='fa fa-plus pr16'/>
                             Add line
                         </a>
@@ -971,7 +981,7 @@
                     <div class='col-12 trade_row'>
                         <ol>
                             <li>
-                            <br/>
+                                <br/>
                                 <div class='main_row row'>
                                     <div t-attf-class="form-group col-xl-4">
                                         <label for="name">Name:</label>
@@ -1004,15 +1014,15 @@
 
                                     <div class='form-group col-xl-3'>
                                         <label for="state">State:</label>
-                                    <div/>
-                                    <select name="state" class="form-control">
-                                        <option value="">select...</option>
-                                        <t t-foreach="states or []" t-as="state">
-                                            <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
-                                                <t t-esc="state.name"/>
-                                            </option>
-                                        </t>
-                                    </select>
+                                        <div/>
+                                        <select name="state" class="form-control">
+                                            <option value="">select...</option>
+                                            <t t-foreach="states or []" t-as="state">
+                                                <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
+                                                    <t t-esc="state.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
@@ -1026,8 +1036,8 @@
                                 </div>
                                 <hr/>
                             </li>
-                              <li>
-                            <br/>
+                            <li>
+                                <br/>
                                 <div class='main_row row'>
                                     <div t-attf-class="form-group col-xl-4">
                                         <label for="name">Name:</label>
@@ -1060,15 +1070,15 @@
 
                                     <div class='form-group col-xl-3'>
                                         <label for="state">State:</label>
-                                    <div/>
-                                    <select name="state" class="form-control">
-                                        <option value="">select...</option>
-                                        <t t-foreach="states or []" t-as="state">
-                                            <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
-                                                <t t-esc="state.name"/>
-                                            </option>
-                                        </t>
-                                    </select>
+                                        <div/>
+                                        <select name="state" class="form-control">
+                                            <option value="">select...</option>
+                                            <t t-foreach="states or []" t-as="state">
+                                                <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
+                                                    <t t-esc="state.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
@@ -1082,64 +1092,8 @@
                                 </div>
                                 <hr/>
                             </li>
-                              <li>
-                            <br/>
-                                <div class='main_row row'>
-                                    <div t-attf-class="form-group col-xl-4">
-                                        <label for="name">Name:</label>
-
-                                        <input type="text" class="form-control" name="name" required="True"/>
-                                    </div>
-                                    <div t-attf-class="form-group col-xl-4">
-                                        <label for="phone">Phone:</label>
-
-                                        <input type="text" class="form-control" name="phone"/>
-                                    </div>
-
-                                    <div t-attf-class="form-group col-xl-4">
-                                        <label for="fax">fax:</label>
-
-                                        <input type="text" class="form-control" name="fax"/>
-                                    </div>
-
-
-
-                                    <div class='form-group col-xl-3'>
-                                        <label for='address'>Address:</label>
-                                        <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
-                                    </div>
-
-                                    <div class='form-group col-xl-3'>
-                                        <label for='city'>city:</label>
-                                        <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
-                                    </div>
-
-                                    <div class='form-group col-xl-3'>
-                                         <label for="state">State:</label>
-                                    <div/>
-                                    <select name="state" class="form-control">
-                                        <option value="">select...</option>
-                                        <t t-foreach="states or []" t-as="state">
-                                            <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
-                                                <t t-esc="state.name"/>
-                                            </option>
-                                        </t>
-                                    </select>
-                                    </div>
-
-                                    <div class='form-group col-xl-3'>
-                                        <label for='zip'>Zip:</label>
-                                        <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
-                                    </div>
-
-
-
-
-                                </div>
-                                <hr/>
-                            </li>
-                              <li>
-                            <br/>
+                            <li>
+                                <br/>
                                 <div class='main_row row'>
                                     <div t-attf-class="form-group col-xl-4">
                                         <label for="name">Name:</label>
@@ -1172,15 +1126,15 @@
 
                                     <div class='form-group col-xl-3'>
                                         <label for="state">State:</label>
-                                    <div/>
-                                    <select name="state" class="form-control">
-                                        <option value="">select...</option>
-                                        <t t-foreach="states or []" t-as="state">
-                                            <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
-                                                <t t-esc="state.name"/>
-                                            </option>
-                                        </t>
-                                    </select>
+                                        <div/>
+                                        <select name="state" class="form-control">
+                                            <option value="">select...</option>
+                                            <t t-foreach="states or []" t-as="state">
+                                                <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
+                                                    <t t-esc="state.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
@@ -1194,9 +1148,12 @@
                                 </div>
                                 <hr/>
                             </li>
-                              <li>
-                            <br/>
+                            <li>
+                                <br/>
                                 <div class='main_row row'>
+                                    <a class='delete_officer text-danger position-absolute' style='right:0;z-index:99'>
+                                        <i class='fa fa-trash'/>
+                                    </a>
                                     <div t-attf-class="form-group col-xl-4">
                                         <label for="name">Name:</label>
 
@@ -1227,16 +1184,16 @@
                                     </div>
 
                                     <div class='form-group col-xl-3'>
-                                       <label for="state">State:</label>
-                                    <div/>
-                                    <select name="state" class="form-control">
-                                        <option value="">select...</option>
-                                        <t t-foreach="states or []" t-as="state">
-                                            <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
-                                                <t t-esc="state.name"/>
-                                            </option>
-                                        </t>
-                                    </select>
+                                        <label for="state">State:</label>
+                                        <div/>
+                                        <select name="state" class="form-control">
+                                            <option value="">select...</option>
+                                            <t t-foreach="states or []" t-as="state">
+                                                <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
+                                                    <t t-esc="state.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
@@ -1250,7 +1207,66 @@
                                 </div>
                                 <hr/>
                             </li>
-                            
+                            <li>
+                                <br/>
+                                <div class='main_row row'>
+                                    <a class='delete_officer text-danger position-absolute' style='right:0;z-index:99'>
+                                        <i class='fa fa-trash'/>
+                                    </a>
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="name">Name:</label>
+
+                                        <input type="text" class="form-control" name="name" required="True"/>
+                                    </div>
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="phone">Phone:</label>
+
+                                        <input type="text" class="form-control" name="phone"/>
+                                    </div>
+
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="fax">fax:</label>
+
+                                        <input type="text" class="form-control" name="fax"/>
+                                    </div>
+
+
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='address'>Address:</label>
+                                        <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='city'>city:</label>
+                                        <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for="state">State:</label>
+                                        <div/>
+                                        <select name="state" class="form-control">
+                                            <option value="">select...</option>
+                                            <t t-foreach="states or []" t-as="state">
+                                                <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
+                                                    <t t-esc="state.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='zip'>Zip:</label>
+                                        <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
+                                    </div>
+
+
+
+
+                                </div>
+                                <hr/>
+                            </li>
+
                         </ol>
                     </div>
 
@@ -1281,7 +1297,7 @@
                     </div>
                 </div>
                 <br/>
-                <div class="o_portal_signature_form_new" t-att-data-call-url="call_url"  t-att-data-mode="mode" t-att-data-send-label="send_label" t-att-data-signature-ratio="signature_ratio" t-att-data-signature-type="signature_type" t-att-data-font-color="font_color" />
+                <div class="o_portal_signature_form_new" t-att-data-call-url="call_url" t-att-data-mode="mode" t-att-data-send-label="send_label" t-att-data-signature-ratio="signature_ratio" t-att-data-signature-type="signature_type" t-att-data-font-color="font_color" />
 
             </div>
         </t>

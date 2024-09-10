@@ -151,11 +151,11 @@
 
                 <xpath expr="//tree[1]" position="attributes">
                     <attribute name="editable"/>
-                    <attribute name="decoration-danger">profit_margin&lt;0</attribute>
-                    <attribute name="decoration-bf">profit_margin&lt;0</attribute>
-                    <attribute name="decoration-it">profit_margin&lt;0</attribute>
-                    <attribute name="decoration-info">profit_margin==0</attribute>
-                    <attribute name="decoration-success">profit_margin&gt;0</attribute>
+                    <attribute name="decoration-danger">price_unit&lt;lst_price</attribute>
+                    <attribute name="decoration-bf">price_unit&lt;lst_price</attribute>
+                    <attribute name="decoration-it">price_unit&lt;lst_price</attribute>
+                    <attribute name="decoration-info">price_unit==lst_price</attribute>
+                    <attribute name="decoration-success">price_unit&gt;lst_price</attribute>
                     <attribute name="decoration-warning">procure_method == 'make_to_order'</attribute>
                     <attribute name="decoration-bf">procure_method == 'make_to_order'</attribute>
                 </xpath>

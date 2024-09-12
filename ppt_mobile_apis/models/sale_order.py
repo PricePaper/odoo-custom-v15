@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, models, fields
+from psycopg2 import IntegrityError
 
 
 class SaleOrder(models.Model):
@@ -8,15 +9,22 @@ class SaleOrder(models.Model):
 
     mapp_record_id = fields.Char('Mapp Unique ID')
 
+    _sql_constraints = [
+          ('sale_uniq_mobileuuid', 'unique (mapp_record_id)', 'Sale Order: The Mobile UUID must be Unique !')
+      ]
+
     @api.model
     def sale_order_create_write_wrapper(self, method, vals, record_id=False):
+        msg = 'success'
         if method == 'create':
-            order = self.search([('mapp_record_id', '=', vals.get('mapp_record_id', ''))])
-            if order:
-                return True
-            else:
+            try:
                 new_order = self.create(vals)
-                return new_order.id
+                return {'msg': msg, 'order_id': new_order.id, 'uuid': vals.get('mapp_record_id', '')}
+            except IntegrityError as e:
+                msg = e.pgerror
+            except Exception as e:
+                msg = str(e)
+            return {'msg': msg, 'uuid': vals.get('mapp_record_id', '')}
         elif method == 'write':
             order = self.search([('id', '=', record_id)])
             if not order:
@@ -28,8 +36,15 @@ class SaleOrder(models.Model):
                         if order_line:
                             line[0] = 1
                             line[1] = order_line.id
-            return order.write(vals)
-        return True
+            try:
+                order.write(vals)
+                return {'msg': msg, 'uuid': vals.get('mapp_record_id', '')}
+            except IntegrityError as e:
+                msg = e.pgerror
+            except Exception as e:
+                msg = str(e)
+            return {'msg': msg, 'uuid': vals.get('mapp_record_id', '')}
+        return {}
 
     def wrapper_sale_order_action_confirm(self):
         self.ensure_one()
@@ -66,3 +81,7 @@ class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
     mapp_record_id = fields.Char('Mapp Unique ID')
+
+    _sql_constraints = [
+    ('sale_line_uniq_mobileuuid', 'unique (mapp_record_id)', 'Sale Line: The Mobile UUID must be Unique !')
+]

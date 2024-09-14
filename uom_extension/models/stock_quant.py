@@ -48,7 +48,7 @@ class StockQuant(models.Model):
                                                                            quant.product_uom_ref_id,
                                                                            rounding_method='HALF-UP')
 
-    @api.depends('quantity')
+    @api.depends('quantity', 'product_uom_ref_id')
     def _compute_quantity_onhand(self):
         for quant in self:
             if quant.product_uom_ref_id:

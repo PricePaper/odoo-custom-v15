@@ -18,6 +18,18 @@
                       </div>
                   </div>
               </div>
+              <div class="col-12 col-lg-6 o_setting_box" id="mobile_team">
+                  <div class="o_setting_left_pane"/>
+                  <div class="o_setting_right_pane">
+                      <span class="o_form_label">Mobile App New Arrivals Category</span>
+                      <div class="text-muted">
+                        Category For new Arrivals
+                      </div>
+                      <div class="text-muted">
+                          <field name="mobile_app_new_category" />
+                      </div>
+                  </div>
+              </div>
             </xpath>
         </field>
     </record>

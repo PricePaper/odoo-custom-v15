@@ -11,6 +11,13 @@ class Product(models.Model):
 
 
     def _compute_portal_quantity(self):
-        
+
         for product in self:
             product.portal_qty_available = product.sudo().quantity_available
+
+    def get_mobile_new_arrival_categ(self):
+        res = {'categ_id': False}
+        categ = self.env['ir.config_parameter'].sudo().get_param('ppt_mobile_apis.mobile_app_new_category')
+        if categ:
+            res = {'categ_id': int(categ)}
+        return res

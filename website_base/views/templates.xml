@@ -27,7 +27,7 @@
                 <div class='price_line'>
 
                     <div class='new_pice'>
-                        <h3 t-if='not request.website.is_public_user()'>
+                        <h3 t-if='not request.website.is_public_user() and new_price'>
                             <span class="oe_prnewice" style="white-space: nowrap;" t-esc="new_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
                         </h3>
                     </div>

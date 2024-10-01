@@ -14,6 +14,12 @@
                           });
                       </script>
                         <div class="oe_title">
+                            <group>
+                                <group>
+                                    <field name="report_type" string="Type" />
+                                </group>
+                            </group>
+
                             <span>
                                 <field name="date_from" placeholder="Start Date"/><span style="padding:30px;">&#8594;</span> <field name="date_to" placeholder="End Date"/>
                             </span>
@@ -24,7 +30,7 @@
                             </group>
                         </group>
                         <div class="text-muted">
-                            The "Generate Statement" button will send emails to customers who have invoices or payments within the specified date range.
+                            The "Generate Statement" button will send emails to customers or generate PDF who have invoices or payments within the specified date range.
                         </div>
                         <footer>
                               <button string="Generate Statement" type="object" name="action_generate_statement" class="btn-danger" />

@@ -23,3 +23,4 @@ class ResConfigSettings(models.TransientModel):
     crm_hide_stages = fields.Many2many('crm.stage',string='Crm Stages from where we need to hide portal access button ',related='company_id.crm_hide_stages',readonly=False)
     approval_email_template = fields.Many2one('mail.template',config_parameter='portal_enhancements.approval_email_template')
     reject_email_template = fields.Many2one('mail.template',config_parameter='portal_enhancements.reject_email_template')
+    w_forms = fields.Binary(string='W3-Forms')

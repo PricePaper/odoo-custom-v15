@@ -91,6 +91,7 @@ class Lead2OpportunityPartner(models.TransientModel):
             main_company = result_opportunity.partner_id
             if main_company.parent_id:
                 main_company = main_company.parent_id
+                main_company.customer = True
             child_partner = main_company.child_ids
             if self.portal_user:
                 self.portal_user.portal_company_ids = [(4,main_company.id)]

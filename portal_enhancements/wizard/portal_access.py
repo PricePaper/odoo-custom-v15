@@ -32,6 +32,7 @@ class PortalAccess(models.TransientModel):
         main_company = oppr.partner_id
         if main_company.parent_id:
             main_company = main_company.parent_id
+            main_company.customer = True
         if self.portal_user and oppr:
             self.portal_user.portal_company_ids = [(4, main_company.id)]
             oppr.portal_user = self.portal_user.id

@@ -55,6 +55,12 @@ section.about-banner {
 // .price-paper{
 //     overflow: hidden;
 // }
+@media(max-width:350px){
+
+    a[name='o_payment_icon_more']{
+        display: none;
+    }
+}
 .price-paper-way {
     position: relative;
     z-index: 3;

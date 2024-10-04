@@ -46,7 +46,8 @@
                     <header>
                         <field name="business_verification_status" invisible='1' />
                         <field name="is_verified" invisible='1' />
-                        <button class='btn-primary' name='verify_signatures' type='object' string='Verify Document' attrs="{'invisible': [('business_verification_status', '!=', 'submit')]}"/>
+                        <field name="businesss_registration_information" invisible='1'></field>
+                        <button class='btn-primary' name='verify_signatures' type='object' string='Verify Document' attrs="{'invisible': ['|',('business_verification_status', '!=', 'submit'),'|',('is_verified','=',True),('businesss_registration_information','=',False)]}"/>
 
                     </header>
 

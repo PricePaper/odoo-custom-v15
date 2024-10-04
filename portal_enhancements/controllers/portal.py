@@ -35,6 +35,8 @@ class MappForgotPassword(http.Controller):
 class WebsiteSale(WebsiteSale):
 
 
+
+
     @http.route('/my/ach/submit',type='json',auth='user',website=True,sitemap=False)
     def ach_submit(self,data):
         curr_comapny = request.session.get('current_website_company')
@@ -57,6 +59,7 @@ class WebsiteSale(WebsiteSale):
         request.env['res.partner.bank'].sudo().create(account_data)
         partner.payment_value = 'ach_debit'
         partner.business_verification_status = 'submit'
+        partner.payment_information = True
         partner.create_helpdesk_ticket_approval()
 
 
@@ -81,8 +84,22 @@ class WebsiteSale(WebsiteSale):
         credit_application.partner_id = partner.id
         partner.partner_credit = credit_application.id
         partner.business_verification_status = 'submit'
+        partner.payment_information = True
         partner.create_helpdesk_ticket_approval()
         return True
+
+
+    @http.route('/partner/credit/card',type='http',auth='user',website=True,sitemap=False)
+    def partner_credit_card(self,*kw):
+        curr_comapny = request.session.get('current_website_company')
+        if not curr_comapny:
+            return request.redirect('/my/website/company')
+        partner = request.env['res.partner'].sudo().browse([int(curr_comapny)])
+
+        values={'partner':partner}
+
+        return request.render("portal_enhancements.portal_credit_card", values)
+
 
     @http.route('/partner/ach/debit',type='http',auth='user',website=True,sitemap=False)
     def partner_ach_application(self,*kw):
@@ -442,6 +459,21 @@ class CustomerPortal(portal.CustomerPortal):
             main_company = request.env['res.partner'].sudo().browse([int(curr_comapny)])
             if kwargs.get('document_sign'):
                 main_company.businesss_registration_information=True
+        if len(portal_companies)==1 and not curr_comapny:
+            request.session['current_website_company'] = int(portal_companies[0].id)
+            company_id = curr_comapny = portal_companies[0]
+            if company_id.is_verified:
+                orders = request.env['sale.order'].search_count(
+                    [('partner_id', '=', int(company_id)), ('state', '=', 'draft')])
+                website = request.env['website'].sudo().search([])
+                print(website)
+                order = website.sale_get_order(website=website, force_create=False)
+                if order.partner_id.id != int(company_id):
+                    website.sale_reset()
+                    return request.redirect('/my')
+                else:
+                    return request.redirect('/select/cart')
+
         return request.render("portal_enhancements.portal_my_company", {'company_ids': portal_companies, 'curr_comapny': curr_comapny,'main_company':main_company,'error_msg':kwargs.get('error')})
 
 
@@ -540,6 +572,7 @@ class CustomerPortal(portal.CustomerPortal):
             if default_template_id:
                 partner.property_payment_term_id = int(default_template_id)
             partner.business_verification_status = 'submit'
+            partner.payment_information = True
             partner.create_helpdesk_ticket_approval()
         elif payment_value =='ach_debit':
             partner.payment_value = payment_value
@@ -577,10 +610,16 @@ class CustomerPortal(portal.CustomerPortal):
             }
             document_id = request.env['documents.document'].sudo().create(document_data)
             partner.tax_exempt_certifcate_id = document_id.id
+            if partner.basic_verification_submit and partner.businesss_registration_information:
+                partner.business_verification_status = 'submit'
+                partner.create_helpdesk_ticket_approval()
         elif kwargs.get('tax_exempt') =='none':
             # default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.cod_payment_terms')
             # partner.property_payment_term_id = int(default_template_id)
             partner.businesss_registration_information = True
+            if partner.basic_verification_submit and partner.businesss_registration_information:
+                partner.business_verification_status = 'submit'
+                partner.create_helpdesk_ticket_approval()
         else:
             default_template_id = request.env['ir.config_parameter'].sudo().get_param('portal_enhancements.resale_document_id_sign')
             default_template = request.env['sign.template'].sudo().browse([int(default_template_id)])
@@ -592,7 +631,7 @@ class CustomerPortal(portal.CustomerPortal):
             request_item = http.request.env['sign.request.item'].sudo().create({'is_business_registration':True,'sign_request_id': sign_request.id,'partner_id':partner.id, 'role_id': default_template.sign_item_ids.mapped('responsible_id').id})
             sign_request.action_sent_without_mail()
             url = '/sign/document/%(request_id)s/%(access_token)s' % {'request_id': sign_request.id, 'access_token': request_item.access_token}
-
+        
 
         return {'status':True,'url':url}
 

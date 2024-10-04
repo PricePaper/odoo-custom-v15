@@ -31,11 +31,20 @@ class ResPartner(models.Model):
     established_state = fields.Many2one("res.country.state", string='Established State')
     resale_taxexempt = fields.Selection([('resale','Resale'),('tax_exempt','Tax Exempt'),('none','None')],string='Resale or Tax Exempt')
     typeofbusiness = fields.Selection([('corporation', 'Corporation'),('partnership', 'Partnership'),('sole_proprietor', 'Sole Proprietor'),('llc', 'LLC')],string='Type of Business')
+
+
+
+
+
     is_verified = fields.Boolean(string='Verified',default=False)
     basic_verification_submit = fields.Boolean(string='Basic Verification',default=False)
     businesss_registration_information = fields.Boolean(string='Basic Resgistration',default=False)
-    business_verification_status = fields.Selection([('submit','Submitted'),('approved','approved'),('reject','Rejected')])
+    payment_information = fields.Boolean(string='Payment Information',default=False)
+    business_verification_status = fields.Selection([('draft','draft'),('submit','Submitted'),('approved','approved'),('reject','Rejected')],default='draft')
     rejection_reason = fields.Char('Rejection Reason')
+
+
+
     tax_exempt_certifcate_id = fields.Many2one('documents.document',string='Tax Exempt Certificate Id')
     payment_value = fields.Selection([
         ('ach_debit','Ach Debit'),

@@ -111,6 +111,20 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-12 col-md-6 o_setting_box" id="use_w_forms">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <h6>W3-Forms  </h6>
+                                <field name="w_forms" />
+                                <div class="text-muted">
+                                W-3 Forms to display to customer
+                                </div>
+                            </div>
+                        </div>
+
+
+                        
                     </div>
                 </div>
             </field>

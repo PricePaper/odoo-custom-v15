@@ -127,7 +127,8 @@ odoo.define('portal_enhancements.common', function (require) {
             var credit_application = $('.credit_application').length
             var ach_debit_form = $('.ach_debit_application').length
             
-            var phone_validation = new RegExp('^(\(\d{3}\)\s*|\d{3}[-.\s]?)\d{3}[-.\s]?\d{4}$');
+            // var phone_validation = new RegExp('^(\([0-9]{3}\) |[0-9]{3}-)[0-9]{3}-[0-9]{4}$');
+            var phone_validation = /^[(]?(\d{3})[)]?[-\s]?(\d{3})[-\s]?(\d{4})$/;
 
             if (credit_application) {
 
@@ -441,6 +442,7 @@ odoo.define('portal_enhancements.common', function (require) {
             var $form = $('form[action="/web/signup_submit"]')
             var formData = new FormData($form[0]);
             var partner_id = false
+            var vat_validation = '^\d{2}-\d{7}$';
             formData.forEach(function (value, key) {
                 if (['company_name', 'name', 'fax_number', 'email', 'vat', 'year_established', 'phone', 'street', 'city', 'zip', 'typeofbusiness'].indexOf(key) > -1) {
 
@@ -473,14 +475,6 @@ odoo.define('portal_enhancements.common', function (require) {
             })
 
 
-            // $self._rpc({
-            //     model: 'res.partner',
-            //     method: 'write',
-            //     args: [[parseInt(partner_id)], data],
-
-            // }).then(function(){
-            //     console.log('compleet')
-            // });
         }
 
     })

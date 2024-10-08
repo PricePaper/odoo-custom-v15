@@ -556,7 +556,6 @@ class StockPicking(models.Model):
         return self.button_validate()
 
     def action_cancel(self):
-
         for rec in self:
             if self.mapped('invoice_ids').filtered(lambda r:  r.state == 'posted'):
                 raise UserError("Cannot perform this action, invoice not in draft state")
@@ -569,7 +568,7 @@ class StockPicking(models.Model):
                 (rec.transit_move_lines - done_moves)._action_cancel()
                 done_moves._transit_return()
         res = super(StockPicking, self).action_cancel()
-        self.write({'batch_id': False, 'is_late_order': False})
+        self.write({'batch_id': False, 'is_late_order': False, 'is_transit': False, 'is_transit_confirmed': False})
         return res
 
     def action_print_invoice(self):

@@ -11,7 +11,7 @@ Granting enhanced access to portal users
     """,
     'author': 'Confianz Global',
     'depends': ['base', 'sale', 'purchase', 'account', 'price_paper', 'calendar', 'partner_firstname', 'portal',
-                'website', 'contacts', 'helpdesk','theme_pricepaper','sign', 'sales_commission'],
+                'website', 'contacts', 'helpdesk','theme_pricepaper','sign','sales_commission'],
     'sequence': 1700,
     'demo': [
     ],
@@ -27,6 +27,7 @@ Granting enhanced access to portal users
         'views/website_onboarding.xml',
         'views/crm_lead.xml',
         'views/res_user_views.xml',
+        'views/onboarding_payment/credit_card.xml',
         'wizard/portal_access_view.xml',
         'wizard/add_portal_companies.xml',
         'wizard/crm_lead_to_opportunity_views.xml',

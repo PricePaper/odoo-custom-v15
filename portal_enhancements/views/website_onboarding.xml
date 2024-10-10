@@ -19,10 +19,9 @@
         </t>
         <t t-else=''>
             <div class='step'>
-                <a href='/web/sisignup_submit'>
+                <a href='/web/signup_submit'>
                     <div class='icon'>
                         <i class='fa'>1</i>
-
                     </div>
                     <span>Basic Information <em t-att-class='"btn-primary btn ml-1" if mobile else "text-primary"' t-att-style="'padding: 5px 10px;border-radius: 0px 15px;color: white;' if mobile else ''">Begin</em>
                     </span>

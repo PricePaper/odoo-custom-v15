@@ -1135,6 +1135,7 @@ Go to Company Page</a>
                                     <div/>
                                     <div/>
                                     <input type="text" t-att-value='partner.phone' class="form-control" name="phone" required="True"/>
+                                    <small style='position: absolute;bottom: -10px;'>Example: (631) 555-1212 or 516-555-1212</small>
                                 </div>
                                 <div t-attf-class="form-group col-xl-6">
                                     <label for="fax_number">Fax Number:</label>
@@ -1199,7 +1200,7 @@ Go to Company Page</a>
                         <input type="hidden" name="redirect" t-att-value="redirect"/>
                         <input type="hidden" name="token" t-att-value="token"/>
                         <div class="col-12 text-center">
-                            <button type="submit" class="btn btn-primary btn-submit">Submit</button>
+                            <button class="btn btn-primary btn-submit">Submit</button>
                         </div>
                     </div>
                 </form>

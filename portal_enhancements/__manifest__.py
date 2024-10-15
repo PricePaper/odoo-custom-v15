@@ -37,6 +37,7 @@ Granting enhanced access to portal users
      'assets': {
         'web.assets_frontend': [
             'portal_enhancements/static/src/js/main.js',
+            'portal_enhancements/static/src/js/onboarding/basic_information.js',
             'portal_enhancements/static/src/scss/main.scss',
 
 

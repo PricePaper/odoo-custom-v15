@@ -19,6 +19,19 @@ odoo.define('portal_enhancements.basic_info', function (require) {
         events: {
             'submit form': '_onFromSubmit',
         },
+        init: function (parent, options) {
+            this._super.apply(this, arguments);
+            const currentYear = new Date().getFullYear();
+            for (let year = 1900; year <= 2100; year++) {
+                $('#year').append(`<option value="${year}">${year}</option>`)
+                
+            }
+            $('#year').select2({
+                placeholder: "Select a year",
+                allowClear: true
+            });
+        },
+       
         _onFromSubmit: function (ev) {
 
             var $self = this

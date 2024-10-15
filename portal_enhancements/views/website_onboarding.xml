@@ -1156,7 +1156,8 @@ Go to Company Page</a>
                                 <div t-attf-class="form-group col-xl-6">
                                     <label for="year_established">Year Established:</label>
                                     <div/>
-                                    <input type="number" class="form-control" name="year_established" t-att-value='partner.year_established' required="True"/>
+                                    <select id="year" class="form-control" name="year_established" required="True"/>
+                                    <!-- <input type="number" class="form-control" name="year_established" t-att-value='partner.year_established' required="True"/> -->
                                 </div>
                                 <div t-attf-class="form-group col-xl-6">
                                     <label for="established_state">Established in State:</label>

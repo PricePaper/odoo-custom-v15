@@ -42,6 +42,8 @@ class SampleRequest(models.Model):
     customer_name = fields.Char(string="Customer Name")
 
     company_name = fields.Char(string="Company Name")
+    note = fields.Char(string='Reject Reason')
+
 
 
 

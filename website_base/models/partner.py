@@ -2,6 +2,12 @@ from odoo import api,models,fields
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, float_compare, float_is_zero, float_round
 from datetime import datetime, date
 
+
+class ResUsers(models.Model):
+    _inherit = 'res.users'
+
+    order_sheet_price = fields.Boolean(string='Pricing in Ordersheet visible',default=True)
+
 class ResPartner(models.Model):
     _inherit='res.partner'
 

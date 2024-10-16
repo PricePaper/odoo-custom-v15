@@ -21,6 +21,7 @@
         'views/templates.xml',
         'views/delivery_view.xml',
         'views/product_views.xml',
+        'views/res_user_views.xml',
         'views/account_payment_term_view.xml'
     ],
      'assets': {

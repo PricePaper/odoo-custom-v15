@@ -16,7 +16,6 @@
                         </group>
                         <!--                    <field name="loyal_programs" attrs="{'invisible': [('company_type', '!=', 'company')]}"/>-->
                         <group>
-
                             <field name="rnk_lst_3_mon"/>
                             <field name="total_pending_points"/>
                             <field name="total_confirm_points"/>

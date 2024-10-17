@@ -38,6 +38,8 @@
                                 <field name='lead_id' string='Lead/Opportunity' required="1"/>
                                 <!-- <field name="sample_route"/> -->
                                 <field name='carrier_id'/>
+                                <field name='note' attrs="{'invisible': [('state', '!=', 'reject')]}" readonly='1'/>
+
                             </group>
                             <group>
                                 <field name='partner_id'  widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}" domain="[('type','=','contact'),('parent_id','=',False),('customer','=',True)]"/>

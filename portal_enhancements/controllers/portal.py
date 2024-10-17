@@ -420,7 +420,10 @@ class CustomerPortal(portal.CustomerPortal):
             if orders and main_com.is_verified :
                 return {'status': True, 'url': '/select/cart'}
             elif not main_com.is_verified:
-                return {'status': True, 'url': '/my/website/company'}
+                if request.env.user.has_group('base.group_user'):
+                    return {'status': True, 'url': '/shop'}
+                else:
+                    return {'status': True, 'url': '/my/website/company'}
             return {'status': True}
         else:
             request.session['current_website_company'] = None

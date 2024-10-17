@@ -427,5 +427,12 @@
             </field>
             <field name="auto_delete" eval="True"/>
         </record>
+
+        <record id="group_uom_edit_users" model="res.groups">
+            <field name="name">UOM edit</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
     </data>
 </odoo>

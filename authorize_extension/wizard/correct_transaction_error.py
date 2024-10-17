@@ -48,6 +48,7 @@ class AddInvoiceTransaction(models.TransientModel):
                 if picking:
                     picking.write({'is_payment_hold': False})
                     transaction.sale_order_ids.write({'is_transaction_pending': False, 'hold_state': 'release'})
+                transaction.acquirer_reference = self.acquirer_reference
                 transaction._create_payment()
                 transaction.state = 'done'
         else:

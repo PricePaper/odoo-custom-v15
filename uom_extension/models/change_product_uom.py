@@ -23,6 +23,7 @@ class ChangeProductUom(models.TransientModel):
         product.sale_uoms = self.new_sale_uoms
         product.ppt_uom_id = self.new_uom.id
         product.uom_po_id = self.new_po_uom.id
+        product.standard_price = self.new_cost
 
         dl_std = self.env['product.standard.price']
         for price_rec in self.product_id.uom_standard_prices:
@@ -59,7 +60,7 @@ class ChangeProductUom(models.TransientModel):
                     if map_id.priority:
                         hp_old_uom = self.mapper_ids.filtered(lambda r: not r.priority and r.old_uom_id != map_id.old_uom_id).old_uom_id
 
-                        if line.pricelist_id.customer_product_price_ids.filtered(lambda r: r.product_uom in hp_old_uom):
+                        if line.pricelist_id.customer_product_price_ids.filtered(lambda r: r.product_id == self.product_id and r.product_uom in hp_old_uom):
                             if self.remove_old_pl_line:
                                 dl_lines |= line
                             continue
@@ -69,7 +70,11 @@ class ChangeProductUom(models.TransientModel):
                         default_1['price'] = new_price
                     else:
                         default_1['price'] = line.price
-                    line.copy(default=default_1)
+                    change_line = line.pricelist_id.customer_product_price_ids.filtered(lambda r: r.product_id == self.product_id and r.product_uom ==  map_id.new_uom_id)
+                    if change_line:
+                        change_line.price = default_1['price']
+                    else:
+                        line.copy(default=default_1)
                     if self.remove_old_pl_line:
                         dl_lines |= line
             dl_lines.unlink()

@@ -20,6 +20,4 @@ class Product(models.Model):
         categ = self.env['ir.config_parameter'].sudo().get_param('ppt_mobile_apis.mobile_app_new_category')
         if categ:
             res = {'categ_id': int(categ)}
-
-        print('wwwwwwww', res)
         return res

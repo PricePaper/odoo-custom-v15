@@ -36,7 +36,7 @@ class ReportPartnerLedger(models.AbstractModel):
 
     @api.model
     def _get_partner_ledger_lines(self, options, line_id=None):
-        ''' 
+        '''
         '''
         lines = []
         unfold_all = options.get('unfold_all') or (self._context.get('print_mode') and not options['unfolded_lines'])
@@ -131,7 +131,7 @@ class ReportPartnerLedger(models.AbstractModel):
             {'name': aml['matching_number'] or ''},
             {'name': self.format_value(cumulated_init_balance), 'class': 'number'},
             {'name': self.format_value(aml['debit'], blank_if_zero=True), 'class': 'number'},
-            {'name': self.format_value(aml['discount'], blank_if_zero=True), 'class': 'number'},  # discount line
+            {'name': self.format_value(aml.get('discount', 0), blank_if_zero=True), 'class': 'number'},  # discount line
             {'name': self.format_value(aml['credit'], blank_if_zero=True), 'class': 'number'},
         ]
         if self.user_has_groups('base.group_multi_currency'):

@@ -182,7 +182,12 @@
                                         <td class="text-right"><span t-field="line.quantity"/></td>
                                         <td class="text-left"><span t-field="line.product_uom_id" groups="uom.group_uom"/></td>
                                         <td name="account_invoice_line_name">
-                                          <span t-field="line.product_id.name"/>
+                                          <t t-if="line.product_id" >
+                                            <span t-field="line.product_id.name"/>
+                                          </t>
+                                          <t t-if="not line.product_id" >
+                                            <span t-field="line.name"/>
+                                          </t>
                                           <t t-if="line.sale_line_ids and line.sale_line_ids.note and line.sale_line_ids.note != line.sale_line_ids.name" >
                                             <br/>
                                             <span t-field="line.sale_line_ids.note" />

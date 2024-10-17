@@ -171,7 +171,7 @@ class StockPicking(models.Model):
     @api.depends('sale_id.invoice_status', 'invoice_ids', 'invoice_ids.state')
     def _compute_state_flags(self):
         for pick in self:
-            if pick.transit_move_lines:
+            if pick.transit_move_lines or pick.backorder_id:
                 pick.is_return = False
             elif pick.move_lines.mapped('move_orig_ids').ids:
                 pick.is_return = True
@@ -556,7 +556,6 @@ class StockPicking(models.Model):
         return self.button_validate()
 
     def action_cancel(self):
-
         for rec in self:
             if self.mapped('invoice_ids').filtered(lambda r:  r.state == 'posted'):
                 raise UserError("Cannot perform this action, invoice not in draft state")
@@ -569,7 +568,7 @@ class StockPicking(models.Model):
                 (rec.transit_move_lines - done_moves)._action_cancel()
                 done_moves._transit_return()
         res = super(StockPicking, self).action_cancel()
-        self.write({'batch_id': False, 'is_late_order': False})
+        self.write({'batch_id': False, 'is_late_order': False, 'is_transit': False, 'is_transit_confirmed': False})
         return res
 
     def action_print_invoice(self):

@@ -2,6 +2,7 @@
 
 from odoo import api, models, fields
 from psycopg2 import IntegrityError
+from odoo.exceptions import ValidationError
 
 
 class SaleOrder(models.Model):
@@ -12,6 +13,14 @@ class SaleOrder(models.Model):
     _sql_constraints = [
           ('sale_uniq_mobileuuid', 'unique (mapp_record_id)', 'Sale Order: The Mobile UUID must be Unique !')
       ]
+
+    @api.constrains('mapp_record_id')
+    def _check_unique_constrain(self):
+        for rec in self:
+            if rec.mapp_record_id:
+                result = self.sudo().search([('mapp_record_id', '=', self.mapp_record_id), ('id', '!=', self.id)])
+                if result:
+                    raise ValidationError('Mapp Unique ID unique constrain')
 
     @api.model
     def sale_order_create_write_wrapper(self, method, vals, record_id=False):
@@ -84,4 +93,4 @@ class SaleOrderLine(models.Model):
 
     _sql_constraints = [
     ('sale_line_uniq_mobileuuid', 'unique (mapp_record_id)', 'Sale Line: The Mobile UUID must be Unique !')
-]
+    ]

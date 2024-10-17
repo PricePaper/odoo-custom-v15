@@ -15,7 +15,7 @@ class CustomerProductPrice(models.Model):
     pricelist_id = fields.Many2one('product.pricelist', string='Price List')
     product_id = fields.Many2one('product.product', string='Product')
     price = fields.Float(string='Price')
-    partner_id = fields.Many2one('res.partner', string='Customer', compute='_compute_partner', store=False)
+    partner_id = fields.Many2one('res.partner', string='Customer', compute='_compute_partner', store=False, search='search_partner')
     sale_uoms = fields.Many2many(related='product_id.sale_uoms', string='Sale UOMS')
     product_uom = fields.Many2one('uom.uom', string='Unit Of Measure', domain="[('id', 'in', sale_uoms)]")
     price_last_updated = fields.Date(string='Price last updated', default=date.today(), readonly=True)
@@ -25,6 +25,10 @@ class CustomerProductPrice(models.Model):
     expiry_date = fields.Date('Valid Until', related='pricelist_id.expiry_date')
     lastsale_history_date = fields.Date(string='Last Sale Date')
     active = fields.Boolean(string='Active', default=True)
+
+    def search_partner(self, operator, value):
+        customer_product_price_ids = self.env['product.pricelist'].search([('partner_ids', operator, value)]).mapped('customer_product_price_ids')
+        return [('id', 'in', customer_product_price_ids.ids)]
 
     def update_last_sale(self):
         pricelists = self.env['product.pricelist'].search([('type', '!=', 'competitor')])

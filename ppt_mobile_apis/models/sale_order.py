@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, models, fields
+from psycopg2 import IntegrityError
 from odoo.exceptions import ValidationError
 
 
@@ -28,6 +29,8 @@ class SaleOrder(models.Model):
         if method == 'create':
             try:
                 new_order = self.create(vals)
+                for line in new_order.order_line:
+                    line.onchange_get_last_sale_info()
                 return {'msg': msg, 'order_id': new_order.id, 'uuid': vals.get('mapp_record_id', '')}
             except IntegrityError as e:
                 msg = e.pgerror
@@ -47,6 +50,8 @@ class SaleOrder(models.Model):
                             line[1] = order_line.id
             try:
                 order.write(vals)
+                for line in order.order_line:
+                    line.onchange_get_last_sale_info()
                 return {'msg': msg, 'uuid': vals.get('mapp_record_id', '')}
             except IntegrityError as e:
                 msg = e.pgerror

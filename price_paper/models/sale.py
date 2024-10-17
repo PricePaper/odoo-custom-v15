@@ -1434,14 +1434,15 @@ class SaleOrderLine(models.Model):
                 ('uom_id', '=', self.product_uom.id)
             ], limit=1)
             if last:
-                local = pytz.timezone(self.sudo().env.user.tz or "UTC")
-                last_date = datetime.strftime(
-                    pytz.utc.localize(
-                        datetime.strptime(
-                            str(last.order_id.date_order), DEFAULT_SERVER_DATETIME_FORMAT)
-                    ).astimezone(local), "%m/%d/%Y %H:%M:%S")
-                self.last_sale = 'Order Date  - %s\nPrice Unit    - %s\nSale Order  - %s' % (
-                    last_date, last.order_line_id.price_unit, last.order_id.name)
+                if last.order_line_id != self:
+                    local = pytz.timezone(self.sudo().env.user.tz or "UTC")
+                    last_date = datetime.strftime(
+                        pytz.utc.localize(
+                            datetime.strptime(
+                                str(last.order_id.date_order), DEFAULT_SERVER_DATETIME_FORMAT)
+                        ).astimezone(local), "%m/%d/%Y %H:%M:%S")
+                    self.last_sale = 'Order Date  - %s\nPrice Unit    - %s\nSale Order  - %s' % (
+                        last_date, last.order_line_id.price_unit, last.order_id.name)
             else:
                 self.last_sale = 'No Previous information Found'
         else:

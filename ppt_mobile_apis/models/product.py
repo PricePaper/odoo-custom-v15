@@ -8,6 +8,7 @@ class Product(models.Model):
     portal_qty_available = fields.Float(
         'Portal qty On Hand', compute='_compute_portal_quantity',
         digits='Product Unit of Measure')
+    is_storage_contract = fields.Boolean(string='Is storage contract', related='categ_id.is_storage_contract')
 
 
     def _compute_portal_quantity(self):

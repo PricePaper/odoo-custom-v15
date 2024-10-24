@@ -617,12 +617,12 @@ Go to Company Page</a>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='address'>Address:</label>
-                                        <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
+                                        <input type='text'  class='form-control' name='address'/>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='city'>city:</label>
-                                        <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
+                                        <input type="city"  class="form-control" name="city"/>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
@@ -640,7 +640,7 @@ Go to Company Page</a>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='zip'>Zip:</label>
-                                        <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
+                                        <input type="zip"  class="form-control" name="zip"/>
                                     </div>
 
                                     <div class='form-group col-xl-4'>
@@ -680,12 +680,12 @@ Go to Company Page</a>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='address'>Address:</label>
-                                        <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
+                                        <input type='text'  class='form-control' name='address'/>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='city'>city:</label>
-                                        <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
+                                        <input type="city"  class="form-control" name="city"/>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
@@ -703,7 +703,7 @@ Go to Company Page</a>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='zip'>Zip:</label>
-                                        <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
+                                        <input type="zip"  class="form-control" name="zip"/>
                                     </div>
 
                                     <div class='form-group col-xl-4'>
@@ -764,12 +764,12 @@ Go to Company Page</a>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='address'>Address:</label>
-                                        <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
+                                        <input type='text'  class='form-control' name='address'/>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='city'>city:</label>
-                                        <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
+                                        <input type="city"  class="form-control" name="city"/>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
@@ -787,7 +787,7 @@ Go to Company Page</a>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='zip'>Zip:</label>
-                                        <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
+                                        <input type="zip"  class="form-control" name="zip"/>
                                     </div>
 
 
@@ -820,12 +820,12 @@ Go to Company Page</a>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='address'>Address:</label>
-                                        <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
+                                        <input type='text'  class='form-control' name='address'/>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='city'>city:</label>
-                                        <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
+                                        <input type="city"  class="form-control" name="city"/>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
@@ -843,7 +843,7 @@ Go to Company Page</a>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='zip'>Zip:</label>
-                                        <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
+                                        <input type="zip"  class="form-control" name="zip"/>
                                     </div>
 
 
@@ -876,12 +876,12 @@ Go to Company Page</a>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='address'>Address:</label>
-                                        <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
+                                        <input type='text'  class='form-control' name='address'/>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='city'>city:</label>
-                                        <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
+                                        <input type="city"  class="form-control" name="city"/>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
@@ -899,66 +899,7 @@ Go to Company Page</a>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='zip'>Zip:</label>
-                                        <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
-                                    </div>
-
-
-
-
-                                </div>
-                                <hr/>
-                            </li>
-                            <li>
-                                <br/>
-                                <div class='main_row row'>
-                                    <a class='delete_officer text-danger position-absolute' style='right:0;z-index:99'>
-                                        <i class='fa fa-trash'/>
-                                    </a>
-                                    <div t-attf-class="form-group col-xl-4">
-                                        <label for="name">Name:</label>
-
-                                        <input type="text" class="form-control" name="name" required="True"/>
-                                    </div>
-                                    <div t-attf-class="form-group col-xl-4">
-                                        <label for="phone">Phone:</label>
-
-                                        <input type="text" class="form-control" name="phone"/>
-                                    </div>
-
-                                    <div t-attf-class="form-group col-xl-4">
-                                        <label for="fax">fax:</label>
-
-                                        <input type="text" class="form-control" name="fax"/>
-                                    </div>
-
-
-
-                                    <div class='form-group col-xl-3'>
-                                        <label for='address'>Address:</label>
-                                        <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
-                                    </div>
-
-                                    <div class='form-group col-xl-3'>
-                                        <label for='city'>city:</label>
-                                        <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
-                                    </div>
-
-                                    <div class='form-group col-xl-3'>
-                                        <label for="state">State:</label>
-                                        <div/>
-                                        <select name="state" class="form-control">
-                                            <option value="">select...</option>
-                                            <t t-foreach="states or []" t-as="state">
-                                                <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
-                                                    <t t-esc="state.name"/>
-                                                </option>
-                                            </t>
-                                        </select>
-                                    </div>
-
-                                    <div class='form-group col-xl-3'>
-                                        <label for='zip'>Zip:</label>
-                                        <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
+                                        <input type="zip"  class="form-control" name="zip"/>
                                     </div>
 
 
@@ -994,12 +935,12 @@ Go to Company Page</a>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='address'>Address:</label>
-                                        <input type='text' t-att-value='partner.street' class='form-control' name='address'/>
+                                        <input type='text'  class='form-control' name='address'/>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='city'>city:</label>
-                                        <input type="city" t-att-value='partner.city' class="form-control" name="city"/>
+                                        <input type="city"  class="form-control" name="city"/>
                                     </div>
 
                                     <div class='form-group col-xl-3'>
@@ -1017,7 +958,66 @@ Go to Company Page</a>
 
                                     <div class='form-group col-xl-3'>
                                         <label for='zip'>Zip:</label>
-                                        <input type="zip" t-att-value='partner.zip' class="form-control" name="zip"/>
+                                        <input type="zip"  class="form-control" name="zip"/>
+                                    </div>
+
+
+
+
+                                </div>
+                                <hr/>
+                            </li>
+                            <li>
+                                <br/>
+                                <div class='main_row row'>
+                                    <a class='delete_officer text-danger position-absolute' style='right:0;z-index:99'>
+                                        <i class='fa fa-trash'/>
+                                    </a>
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="name">Name:</label>
+
+                                        <input type="text" class="form-control" name="name" required="True"/>
+                                    </div>
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="phone">Phone:</label>
+
+                                        <input type="text" class="form-control" name="phone"/>
+                                    </div>
+
+                                    <div t-attf-class="form-group col-xl-4">
+                                        <label for="fax">fax:</label>
+
+                                        <input type="text" class="form-control" name="fax"/>
+                                    </div>
+
+
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='address'>Address:</label>
+                                        <input type='text'  class='form-control' name='address'/>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='city'>city:</label>
+                                        <input type="city"  class="form-control" name="city"/>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for="state">State:</label>
+                                        <div/>
+                                        <select name="state" class="form-control">
+                                            <option value="">select...</option>
+                                            <t t-foreach="states or []" t-as="state">
+                                                <option t-att-value='state.id' t-att-selected='state.id == partner.state_id.id' t-att-data-country_id="state.country_id.id">
+                                                    <t t-esc="state.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+
+                                    <div class='form-group col-xl-3'>
+                                        <label for='zip'>Zip:</label>
+                                        <input type="zip"  class="form-control" name="zip"/>
                                     </div>
 
 

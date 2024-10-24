@@ -1,11 +1,79 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
-from odoo.exceptions import UserError
-from odoo.tools.misc import formatLang, format_date
+from odoo.exceptions import UserError, ValidationError, RedirectWarning, CacheMiss, MissingError
+from odoo.tools.misc import formatLang, format_date, get_lang
 from datetime import datetime
+import logging
+import requests
+import re
+import urllib.parse
+import odoo
+import odoo.release
+from dateutil.relativedelta import relativedelta
+from requests.exceptions import RequestException, Timeout, ConnectionError
+from odoo.http import request
+from odoo.addons.account_online_synchronization.models.odoofin_auth import OdooFinAuth
 
 INV_LINES_PER_STUB = 9
+_logger = logging.getLogger(__name__)
+pattern = re.compile("^[a-z0-9-_]+$")
+runbot_pattern = re.compile(r"^https:\/\/[a-z0-9-_]+\.[a-z0-9-_]+\.odoo\.com$")
+
+
+
+class AccountOnlineLink(models.Model):
+    _inherit = 'account.online.link'
+
+
+    def _fetch_odoo_fin(self, url, data=None, ignore_status=False):
+        '''
+        Method used to fetch data from the Odoo Fin proxy.
+        :param url: Proxy's URL end point.
+        :param data: HTTP data request.
+        :return: A dict containing all data.
+        '''
+        if not data:
+            data = {}
+        if self.state == 'disconnected' and not ignore_status:
+            raise UserError(_('Please reconnect your online account.'))
+        if not url.startswith('/'):
+            raise UserError(_('Invalid URL'))
+
+        timeout = int(self.env['ir.config_parameter'].sudo().get_param('account_online_synchronization.request_timeout')) or 60
+        proxy_mode = self.env['ir.config_parameter'].sudo().get_param('account_online_synchronization.proxy_mode') or 'production'
+        if not pattern.match(proxy_mode) and not runbot_pattern.match(proxy_mode):
+            raise UserError(_('Invalid value for proxy_mode config parameter.'))
+        endpoint_url = 'https://%s.odoofin.com%s' % (proxy_mode, url)
+        if runbot_pattern.match(proxy_mode):
+            endpoint_url = '%s%s' % (proxy_mode, url)
+        cron = self.env.context.get('cron', False)
+        data['utils'] = {
+            'request_timeout': timeout,
+            'lang': get_lang(self.env).code,
+            'server_version': odoo.release.serie,
+            'db_uuid': self.env['ir.config_parameter'].sudo().get_param('database.uuid'),
+            'cron': cron,
+        }
+        if request:
+            # many banking institutions require the end-user IP/user_agent for traceability
+            # of client-initiated actions. It won't be stored on odoofin side.
+            data['utils']['psu_info'] = {
+                'ip': request.httprequest.remote_addr,
+                'user_agent': request.httprequest.user_agent.string,
+            }
+
+        try:
+            # We have to use sudo to pass record as some field are protected from read for common users.
+            resp = requests.post(url=endpoint_url, json=data, timeout=timeout, auth=OdooFinAuth(record=self.sudo()))
+            resp_json = resp.json()
+            logging.info(resp_json)
+            return self._handle_response(resp_json, url, data, ignore_status)
+        except (Timeout, ConnectionError, RequestException, ValueError):
+            _logger.warning('synchronization error')
+            raise UserError(
+                _("The online synchronization service is not available at the moment. "
+                  "Please try again later."))
 
 
 class AccountJournal(models.Model):
@@ -13,6 +81,22 @@ class AccountJournal(models.Model):
 
     old_outstanding_receipt_id = fields.Many2one('account.account', string='Old Outstanding Receipt Account')
     show_in_common_payment = fields.Boolean('Show in Batch common and Truck Payment')
+
+    @api.model
+    def _cron_fetch_online_transactions(self):
+        for journal in self.search([('account_online_account_id', '!=', False)]):
+            if journal.account_online_link_id.auto_sync:
+                try:
+                    logging.info("Fetching for Journal %s" % journal.name)
+                    journal.with_context(cron=True).manual_sync()
+                    # for cron jobs it is usually recommended to commit after each iteration, so that a later error or job timeout doesn't discard previous work
+                    self.env.cr.commit()
+                    logging.info("Fetch Complete for Journal %s" % journal.name)
+                except (UserError, RedirectWarning):
+                    # We need to rollback here otherwise the next iteration will still have the error when trying to commit
+                    logging.info("Error in Fetching for Journal %s" % journal.name)
+                    self.env.cr.rollback()
+                    pass
 
 
 class AccountRegisterPayment(models.TransientModel):

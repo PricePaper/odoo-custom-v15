@@ -318,10 +318,11 @@ class AuthorizeAPICustom:
                 elif avs_res == 'Z':
                     msg = 'The postal code matched, but the street address did not.'
                 if msg:
-                    if response.get('transactionResponse').get('responseCode', '') == '4':
-                        return msg
-                    else:
-                        raise ValidationError(msg)
+                    return msg
+                    # if response.get('transactionResponse').get('responseCode', '') == '4':
+                    #     return msg
+                    # else:
+                    #     raise ValidationError(msg)
         return ''
     def authorize_transaction(self, transaction, order, invoice=False):
         """

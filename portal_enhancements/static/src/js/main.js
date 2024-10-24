@@ -328,7 +328,7 @@ odoo.define('portal_enhancements.common', function (require) {
          */
         start: function () {
             var hasBeenReset = false;
-
+            this.$el.css('visibility', 'hidden')
             var callUrl = this.$el.data('call-url');
             var nameAndSignatureOptions = {
                 defaultName: this.$el.data('default-name'),
@@ -357,12 +357,12 @@ odoo.define('portal_enhancements.common', function (require) {
                 }
             });
             // console.log(this.$el)
-            
+            var main_el = this.$el
             return Promise.all([
                 this._super.apply(this, arguments),
                 form.appendTo(this.$el),
                 setTimeout(function(){
-                    $('#comapny_main_main').focus()
+                    main_el.css('visibility', 'visible')
 
                     
                 }, 100)

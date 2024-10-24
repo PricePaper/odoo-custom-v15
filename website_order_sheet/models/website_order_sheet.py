@@ -6,7 +6,7 @@ from odoo import models, fields, api
 class WebsiteOrderSheet(models.Model):
     _name = "website.order.sheet"
     _description='Model for managing Partner order sheet'
-
+    
 
     name = fields.Char(string='Name')
     partner_id = fields.Many2one('res.partner','Partner')
@@ -14,7 +14,6 @@ class WebsiteOrderSheet(models.Model):
     _sql_constraints = [
         ('sheet_uniq_partner', 'unique (partner_id)', 'The Partner Must be Unique per sheet !')
     ]
-
 
 class OrderSheetLines(models.Model):
     _name = "order.sheet.lines"
@@ -33,10 +32,10 @@ class OrderSheetLines(models.Model):
 
     @api.onchange('section')
     def Partner_section(self):
-        self.partner_id = self.sheet_id.partner_id.id
+        self.partner_id = self.sheet_id.partner_id.id    
 
     def section_add_products(self):
-
+        
         """
         Return 'add purchase history to so wizard'
         """
@@ -56,8 +55,8 @@ class OrderSheetLines(models.Model):
         context = {
             'default_sale_history_ids': [(6, 0, sales_history.ids)],
             'products': search_products
-        }
-
+        }       
+        
         return {
             'name': '%s # %s' % (partner_id.display_name, self.section ),
             'view_type': 'form',
@@ -72,7 +71,7 @@ class OrderSheetLines(models.Model):
 class LineProduct(models.Model):
     _name = 'section.product'
     _rec_name='product_id'
-
+    
     sequence = fields.Integer(string='Sequence')
     sheet_line_id = fields.Many2one('order.sheet.lines',string='Order Sheet Line')
     product_id = fields.Many2one('product.product',string='Product')
@@ -80,6 +79,20 @@ class LineProduct(models.Model):
     sale_uoms = fields.Many2many('uom.uom',related='product_id.sale_uoms')
     uom_id = fields.Many2one('uom.uom',string='uom',domain="[('id','in',sale_uoms)]")
 
+
+    def get_purchase_history(self):
+        partner_id = self.sheet_line_id.sheet_id.partner_id
+        product_id = self.product_id
+        today = fields.Date.context_today(self)
+        product_uom_qty = self.env['sale.order.line'].sudo().search([
+            ("confirmation_date",">=",today),
+            ("order_partner_id","=",partner_id.id),
+            ("is_delivery","=",False),
+            ("state","in",["done","sale"])
+            ],limit=100,order='confirmation_date asc').mapped("product_uom_qty")
+        # print(product_uom_qty)
+        return product_uom_qty
+        
 
     @api.onchange('product_id')
     def change_product_id(self):

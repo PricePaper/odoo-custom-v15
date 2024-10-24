@@ -4,6 +4,7 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
     var publicWidget = require('web.public.widget');
     var core = require('web.core');
     var ajax = require('web.ajax')
+    const rpc = require('web.rpc');
     // var window.localStorage = require('web.local_storage');
     var _t = core._t;
 
@@ -188,7 +189,9 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
             'click .save_data': "_saveSheet",
             'click .browse_product': "_browseProduct",
             'click .add_product': "_addProduct",
-            'click .create_order': "_CreateOrder"
+            'click .create_order': "_CreateOrder",
+            'click .delete_line':"_deleteLine",
+            'click .delete_section':"_deleteSection"
 
 
         },
@@ -207,7 +210,7 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
                 }
             }).promise().done(function () {
                 ajax.jsonRpc('/create/order', 'call', { 'prod_data': prod_data, 'partner_id': partner_id }).then(function (data) {
-                    window.location.reload()
+                    window.location = '/shop/cart'
                     // $target.parents('.o_wsale_product_grid_wrapper').find('.oe_product_image img').attr('src', data);
                 });
             })
@@ -243,8 +246,59 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
 
             })
         },
+        _deleteSection:function(ev){
+            var href = $(ev.currentTarget).attr('shref')
+            
+            Swal.fire({
+                heightAuto: false,
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, keep it'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  window.location = href
+                  
+                }
+              });
+        },
+        
+        _deleteLine:function(ev){
+
+            
+
+            var $parent = $(ev.currentTarget).parent('li')
+            var section_id = parseInt($(ev.currentTarget).attr('data-line_id'));
+            ev.preventDefault();
+            Swal.fire({
+                heightAuto: false,
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, keep it'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // Place your deletion logic here
+                  rpc.query({
+                    model:'section.product',
+                    method:'unlink',
+                    args:[[section_id]]
+                  })
+                  $parent.hide()
+                }
+              });
+        },
         _createSection: function (ev) {
             Swal.fire({
+                heightAuto: false,
                 title: "Add Section",
                 text: "Enter the section name:",
                 input: 'text',
@@ -283,6 +337,8 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
             var quantiy_input = $(ev.currentTarget).parents('.css_quantity').find('.quantity')
             var current = quantiy_input.val()
             quantiy_input.val(parseInt(current) + 1)
+            $(ev.currentTarget).parents('li.product').addClass('main_active')
+            
 
         },
         _minusQuantity: function (ev) {
@@ -290,6 +346,13 @@ odoo.define('website_order_sheet.order_sheet', function (require) {
             var current = quantiy_input.val()
             if (parseInt(current) > 0) {
                 quantiy_input.val(parseInt(current) - 1)
+                if (parseInt(current) - 1 == 0){
+                    $(ev.currentTarget).parents('li.product').removeClass('main_active')
+
+                }
+            }
+            else{
+                $(ev.currentTarget).parents('li.product').removeClass('main_active')
             }
 
         },

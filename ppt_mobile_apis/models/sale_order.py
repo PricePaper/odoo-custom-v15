@@ -9,6 +9,21 @@ class SaleOrder(models.Model):
     _inherit = "sale.order"
 
     mapp_record_id = fields.Char('Mapp Unique ID')
+    last_updated_on = fields.Datetime(string='Last Updated on')
+
+    @api.model
+    def create(self, vals):
+        vals['last_updated_on'] = fields.Datetime.now()
+        return super(SaleOrder, self).create(vals)
+
+    def write(self, vals):
+        val_keys = vals.keys()
+        if 'state' in val_keys or 'payment_term_id' in val_keys or \
+            'expected_date' in val_keys or 'release_date' in val_keys or \
+            'deliver_by' in val_keys or 'partner_shipping_id' in val_keys or  \
+            'sales_person_ids' in val_keys or 'token_id' in val_keys:
+            vals['last_updated_on'] = fields.Datetime.now()
+        return super(SaleOrder, self).write(vals)
 
     _sql_constraints = [
           ('sale_uniq_mobileuuid', 'unique (mapp_record_id)', 'Sale Order: The Mobile UUID must be Unique !')
@@ -94,6 +109,20 @@ class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
     mapp_record_id = fields.Char('Mapp Unique ID')
+    last_updated_on = fields.Datetime(string='Last Updated on')
+
+    @api.model
+    def create(self, vals):
+        vals['last_updated_on'] = fields.Datetime.now()
+        return super(SaleOrderLine, self).create(vals)
+
+    def write(self, vals):
+        val_keys = vals.keys()
+        if 'price_unit' in val_keys or 'order_id' in val_keys or \
+           'sequence' in val_keys or 'is_redemption_product' in val_keys or \
+           'product_id' in val_keys or 'product_uom_qty' in val_keys:
+            vals['last_updated_on'] = fields.Datetime.now()
+        return super(SaleOrderLine, self).write(vals)
 
     _sql_constraints = [
     ('sale_line_uniq_mobileuuid', 'unique (mapp_record_id)', 'Sale Line: The Mobile UUID must be Unique !')
